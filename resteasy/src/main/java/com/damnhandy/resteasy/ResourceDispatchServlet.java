@@ -1,0 +1,107 @@
+package com.damnhandy.resteasy;
+
+
+import java.io.IOException;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+
+import com.damnhandy.resteasy.core.ResourceDispatcher;
+import com.damnhandy.resteasy.core.ResourceInvoker;
+import com.damnhandy.resteasy.core.RestEasy;
+
+/**
+ * A controller servlet which routes requests to the appropriate WebResource
+ *
+ * @author Ryan J. McDonough
+ * @since 1.0
+ */
+public class ResourceDispatchServlet extends HttpServlet {
+	private static final Logger logger = Logger.getLogger(ResourceDispatchServlet.class);
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8821236352822311415L;
+    
+    /**
+     * 
+     *
+     * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+     */
+    @SuppressWarnings("unchecked")
+	public void init(ServletConfig config) throws ServletException {
+    	super.init(config);
+		RestEasy re = RestEasy.instance();
+		String jndiPattern = config.getInitParameter(RestEasy.JNDI_PATTERN);
+		String entityManagerJndiName = config.getInitParameter(RestEasy.ENTITYMANAGER_JNDI_NAME);
+		if(jndiPattern != null) {
+			re.setJndiPattern(jndiPattern);
+		}
+		if(entityManagerJndiName != null) {
+			re.setEntityManagerJndiName(entityManagerJndiName);
+		}
+		re.init();
+    	/* TODO: this could be implemented at some point, at presnet, its not really working.
+    	 * 
+		try {
+    		ServletContext ctx = config.getServletContext();
+    		String serviceName = ctx.getServletContextName();
+    		String path = config.getInitParameter("path");
+			jmdns = new JmDNS();
+			Hashtable properties = new Hashtable();
+			properties.put("path", path);
+			ServiceInfo info = new ServiceInfo("_http._tcp.local.", serviceName, 8080, 0, 0, properties);
+			jmdns.registerService(info);
+			logger.info("Registered ZeroConf service on: "+info.toString());
+		} catch (IOException e) {
+			throw new ServletException("IOException while trying to register service: "+e.getMessage(),e);
+		}*/
+    }
+    
+    /**
+     * 
+     *
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException,IOException {
+    	
+    	/*
+    	 * Look up the resource for the specified path na,e
+    	 */
+    	ResourceInvoker invoker = ResourceDispatcher.getInstance().findResourceInvoker(request.getPathInfo());
+        if(invoker != null) {
+        	logger.debug("Executing Method: "+request.getMethod());
+            try {
+				invoker.invoke(request, response);
+			} catch (HttpMethodInvocationException e) {
+				StringBuilder b = new StringBuilder();
+				b.append(e.getMessage()).append(" : ").append(e.getCause().getMessage());
+				response.sendError(e.getHttpStatusCode(),b.toString());
+				logger.error(b.toString());
+			} 
+             
+        } else {
+            logger.error("Invalid resource path: "+request.getPathInfo());
+        	response.sendError(HttpServletResponse.SC_NOT_FOUND,
+                               "The resource  for "+request.getPathInfo()
+                               +" was not found.");
+        }
+    }
+    
+    
+   
+    /**
+     * 
+     *
+     * @see javax.servlet.GenericServlet#destroy()
+     */
+	public void destroy() {
+        super.destroy();
+    }
+}
