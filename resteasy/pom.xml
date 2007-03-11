@@ -18,6 +18,7 @@
 			<timezone>-5</timezone>
 		</developer>
 	</developers>
+	
 	<contributors>
 		<contributor>
 			<name>Ryan J. McDonough</name>
@@ -31,8 +32,29 @@
 			</url>
 		</site>
 	</distributionManagement>
+	<scm>
+		<connection>
+			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/resteasy
+		</connection>
+		<developerConnection>
+			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/resteasy
+		</developerConnection>
+	</scm>
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>
+							src/main/assembly/bin.xml
+						</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<executions>
@@ -71,9 +93,19 @@
 			<id>jboss.com</id>
 			<url>http://repository.jboss.com/maven2</url>
 		</repository>
+		<repository>
+			<id>softeu-repo</id>
+			<url>http://maven.softeu.cz/</url>
+		</repository>
+
 	</repositories>
 	<dependencies>
-
+	
+		<dependency>
+			<groupId>sojo</groupId>
+			<artifactId>sojo</artifactId>
+			<version>0.4.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate</artifactId>
@@ -100,9 +132,9 @@
 			<version>1.4.1.GA</version>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>jboss.seam</groupId>
 			<artifactId>jboss-seam</artifactId>
-			<version>1.1.0.GA</version>
+			<version>1.2.0.GA</version>
 		</dependency>
 		<dependency>
 			<groupId>jmdns</groupId>
