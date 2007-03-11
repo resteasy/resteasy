@@ -1,0 +1,84 @@
+ -----
+ Quick Tutorial
+ -----
+ RESTEasy
+ -----
+
+ 
+Quick Tutorial
+
+  For XML represenations from Java Objects, much of the grunt work in RESTEasy is handled by JAXB. It can be handy to combine JAXB and JPA to annotate your Java objects. In doing so, exposing your class as a RESTful web service is very transparent. 
+  
+  Assume you have a Contact enity that is annotated with JPA annotations and JAXB annotations as follows:
+ 
++-----+
+
+@Entity
+@Table(name = "contact")
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "contactType")
+public class ContactReference implements Serializable,Auditable {
+
+   @Id
+   @Column(name = "contact_id", nullable = false)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @XmlAttribute
+   private Long id;
+
+   @Column(name = "full_name", nullable = false)
+   private String fullName;
+
+   @XmlElementWrapper(name="addresses")   
+   @XmlElement(name="address",required = true, nillable = true)
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+   private Set<Address> addresses = new HashSet<Address>();
+
+   @XmlElementWrapper(name="phoneNumbers")
+   @XmlElement(name="phoneNumber",required = true, nillable = true)
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+   private Set<PhoneNumber> phoneNumbers = new HashSet<PhoneNumber>();
+
+   @Column(name = "created")
+   @Temporal(TemporalType.TIMESTAMP)
+   @XmlAttribute
+   private Date created;
+    
+    ...[ omitted for brevity ]...
+
++-----+
+
+ Exposing a Stateless Session Bean a RESTful Web Service is very simple. By annotating a Stateful Session Bean as follows, the bean will expose a means to retreive a contact by ID and update a contact.
+
++-----+
+
+@Stateless
+@WebResource("/contacts/{contactId}")
+public class ContactServiceBean implements ContactService { 
+
+@PersistenceContext
+private EntityManager entityManager;
+
+@HttpMethod("GET")
+public Contact getContactById(@URLParam("contactId") Long contactId) {
+    Contact contact = entityManager.find(Contact.class, contactId);
+    return contact;
+  }
+
+@HttpMethod("POST")
+public Contact updateContact(@Representation("contact") Contact contact) {
+    return entityManager.merge(contact);
+  }
+}
+
++-----+
+
+ When issuing an HTTP GET to the following URL :
+ 
++-----+
+http://localhost/resteasy/contacts/12345
++-----+
+
+ You will get back an XML document that represents the contact. If a POST operation is used, the input XML document is unmarshalled to a Contact instance by JAXB and the updateContact() method is invoked.
+
+

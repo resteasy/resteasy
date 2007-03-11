@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="RESTEasy">
+	
+	<skin>
+    	<groupId>com.damnhandy.resteasy-skin</groupId>
+    	<artifactId>resteasy-skin</artifactId>
+    	<version>1.0</version>
+  	</skin>
+  	
+  	<!--
+  		<skin>
+    	<groupId>com.kobyleha.maven.skins</groupId>
+    	<artifactId>embedchat-skin</artifactId>
+    	<version>1.0</version>
+  	</skin>
+  	-->
   <bannerLeft>
     <name>RESTEasy</name>
     <src>images/resteasy_logo.png</src>
@@ -12,15 +26,20 @@
   -->
   <body>
     <links>
-      <item name="Apache" href="http://www.apache.org/" />
-      <item name="Maven 1.0" href="http://maven.apache.org/"/>
-      <item name="Maven 2" href="http://maven.apache.org/maven2/"/>
+      <item name="DamnHandy" href="http://www.damnhandy.com/" />
+      <item name="Forums" href="http://forum.damnhandy.com/" />
+      <item name="Source Forge Project" href="http://sourceforge.net/projects/resteasy/"/>
     </links>
 
     <menu name="RESTEasy 1.0a1">
-      <item name="APT Format" href="format.html"/>
-      <item name="FAQ" href="faq.html"/>
-      <item name="Xdoc Example" href="xdoc.html"/>      
+      <item name="Home" href="index.html"/>
+      <item name="Tutorial" href="tutorial.html"/>
+      <item name="Team List" href="team-list.html"/> 
+      <item name="Subversion Access" href="source-repository.html"/> 
+      <item name="Project Info" href="project-info.html"/> 
+      <item name="JavaDocs" href="apidocs/index.html"/>
+      <item name="FAQ" href="faq.html"/>  
+      <item name="Source Forge Project" href="http://sourceforge.net/projects/resteasy/"/>  
     </menu>
   </body>
 </project>

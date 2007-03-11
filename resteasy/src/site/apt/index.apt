@@ -1,16 +1,53 @@
  -----
- The Site
+ Home
  -----
- The Maven Team
+ Ryan J. McDonough
  -----
 
-Maven Site for your project
+RESTEasy 1.0a1
 
- Congratulations! If you are looking at this page then you have successfully generated a
- template site employing the site archetype and you have run:
-  
-+-----+
+ RESTEasy is a Java framework for creating RESTful web services from POJOs, EJB3 Session Beans, Message Driven Beans. At present, RESTEasy is very much a work in progress and not yet suitable for production applications. Work is still being done on defining the API and the frameworks internals and a lot will change by the time 1.0 is released.
 
-m2 site:site
+ For XML representations, RESTEasy uses JAXB2 to translate XML to Java and Java to XML. The mechanism used to handle this conversion is extensible to utilize other Java to XML APIs, but it just hasn't been done yet.
+ 
+* Project Goals
 
-+-----+
+	* Make development of REST-style web services easy
+	
+	* To be transparent and non-invasive
+	
+	* Leverage existing APIs
+	
+	* Easily extensible. It should require as little code as possible to introduce a new content type.
+	
+	* Be a JSR-311 implementation
+	
+	* Compatability with HTTP clients that do not support PUT or DELETE operations.
+	
+	* Compatability with other REST APIs such as RESTlet and Ruby on Rails
+	
+	* A full-featured search API
+	
+	* Adherence to the HTTP spec & REST principles
+	
+
+	
+	
+* Planned Features
+
+	* Annotation Driven
+	
+	* Server-side representation caching
+	
+	* Conditional GETs
+	
+	* Pluggable Representation Handlers
+	
+	* Integration with JBoss Seam
+	
+	* Integration with JPA & Hibernate
+	
+	* Spring support
+	
+
+ 
