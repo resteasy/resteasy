@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * Annotation which indicates this method parameters value can be found 
+ * Indicates this method parameter values or field valie that can be found 
  * in the WebResources path. By default, the application will attempt to
  * find a path param value which matches the method method parameter name. 
  * For example, if the WebResource path value is:
@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER,ElementType.FIELD})
 public @interface URIParam {
 	
 	/**
