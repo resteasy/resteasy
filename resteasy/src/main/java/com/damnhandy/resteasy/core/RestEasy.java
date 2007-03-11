@@ -1,5 +1,7 @@
 package com.damnhandy.resteasy.core;
 
+import javax.servlet.ServletContext;
+
 
 /**
  * 
@@ -12,7 +14,7 @@ public class RestEasy {
 	public static final String JNDI_PATTERN = "jndiPattern";
 	public static final String ENTITYMANAGER_JNDI_NAME = "entityManagerJndiName";
 	private static RestEasy instance = new RestEasy();
-	
+	private ServletContext servletContext;
 	private String jndiPattern;
 	private String entityManagerJndiName;
 
@@ -26,10 +28,18 @@ public class RestEasy {
 		return instance;
 	}
 
-	public void init() {
+	public void init(ServletContext servletContext) {
+		this.servletContext = servletContext;
 		ResourceDispatcher.getInstance().init();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public ServletContext getServletContext() {
+		return this.servletContext;
+	}
 	/**
 	 * @return the jndiPattern
 	 */

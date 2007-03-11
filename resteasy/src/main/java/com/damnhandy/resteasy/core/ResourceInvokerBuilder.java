@@ -195,7 +195,18 @@ public class ResourceInvokerBuilder {
         invoker.setPatternKey(new PatternKey(invoker.getRequestPatternString()));
         if(invoker.getMethods().size() == 0) {
         	throw new ConfigurationException("A WebResource must define 1 or more HttpMethods. The class "
-        			+invoker.getTargetClass().getSimpleName()+" defines no HttpMethods.");
+        			+invoker.getTargetClass().getSimpleName()+" defines none.");
+        } 
+        /*
+         * Print the configuration to the Log
+         */
+        else {
+        	for(Map.Entry<MethodKey,MethodMapping> entry : invoker.getMethods().entrySet()) {
+        		logger.info(invoker.getTargetClass().getSimpleName()+": bound "+
+        				    entry.getKey().toString()+" to URL pattern "+
+        				    invoker.getRequestPatternString()+
+        				    " using Method "+entry.getValue().toString());
+        	}
         }
 	}
 	
@@ -207,11 +218,21 @@ public class ResourceInvokerBuilder {
 	 * @param id
 	 */
 	private static void processMethod(HttpMethod resourceMethod,Method method,ResourceInvoker invoker,String id) {
+		/*
+		 * A GET method cannot be mapped to a method that returns void.
+		 */
+		if(resourceMethod.value().equals(HttpMethod.GET) && method.getReturnType() == null) {
+			throw new ConfigurationException("HTTP GET methods must have a return value. The method "
+					+method.getName()+" does not specify a return value.");
+		}
+		/*
+		 * Make sure the resource ID matches the ID of the WebResource
+		 */
 		if(resourceMethod.resourceId().equals(id)) {
-        	Response responseRepresentation = method.getAnnotation(Response.class);
+        	Response response = method.getAnnotation(Response.class);
             String responseMediaType = null;
-            if(responseRepresentation != null) {
-            	responseMediaType = responseRepresentation.mediaType();
+            if(response != null) {
+            	responseMediaType = response.mediaType();
             }
             String httpMethod = resourceMethod.value();
             String disriminator = resourceMethod.discriminator();
@@ -255,13 +276,15 @@ public class ResourceInvokerBuilder {
                 }
             }
             MethodMapping mapping = new MethodMapping(method,paramMappings);
+            /*mapping.setResponseCode(response.responseCode());
+            mapping.setFailureResponseCode(response.failureResponseCode());*/
             mapping.setRequestMediaType(requestMediaType);
             mapping.setRequestRespresentationType(requestRespresentationType);
             mapping.setRequestRespresentationId(requestName);
             mapping.setResponseMediaType(responseMediaType);
             MethodKey key = new MethodKey(httpMethod,disriminator);
             invoker.addMethodMapping(key,mapping);
-            logger.info(invoker.getTargetClass().getSimpleName()+": bound "+key.toString()+" to URL pattern "+invoker.getRequestPatternString()+" using Method "+mapping.toString());
+            
         }	
 	}
 	

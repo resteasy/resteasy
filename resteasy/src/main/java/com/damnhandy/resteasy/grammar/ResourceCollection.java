@@ -23,19 +23,19 @@ import javax.xml.bind.annotation.XmlType;
 public class ResourceCollection {
 
 	@XmlElement(name = "resources",required = true, nillable = true)
-	private Set<Reference> resources = new HashSet<Reference>();
+	private Set<ResourceReference> resources = new HashSet<ResourceReference>();
 
 	/**
 	 * @return the resources
 	 */
-	public Set<Reference> getResources() {
+	public Set<ResourceReference> getResources() {
 		return resources;
 	}
 
 	/**
 	 * @param resources the resources to set
 	 */
-	public void setResources(Set<Reference> resources) {
+	public void setResources(Set<ResourceReference> resources) {
 		this.resources = resources;
 	}
 	

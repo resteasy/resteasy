@@ -4,13 +4,17 @@
 package com.damnhandy.resteasy.core;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.activation.DataSource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBElement;
@@ -19,7 +23,6 @@ import org.apache.log4j.Logger;
 
 import com.damnhandy.resteasy.HttpHeaders;
 import com.damnhandy.resteasy.HttpMethodInvocationException;
-import com.damnhandy.resteasy.Location;
 import com.damnhandy.resteasy.RespresentationHandlerException;
 import com.damnhandy.resteasy.annotations.HttpMethod;
 import com.damnhandy.resteasy.handler.RepresentationHandler;
@@ -186,7 +189,7 @@ public abstract class ResourceInvoker {
         if(pathValues.size() > 0) {
             mergeURITemplateValues(inputs,pathValues);
         }
-        unmarshallRequest(request,mapping,inputs);
+        readRequest(request,mapping,inputs);
         return inputs;
 	}
 	/**
@@ -197,6 +200,7 @@ public abstract class ResourceInvoker {
 	protected final MethodMapping findMethodMapping(HttpServletRequest request) {
 		String discriminator = request.getParameter(HttpMethod.DISCRIMINATOR_KEY);
     	MethodKey key = new MethodKey(request.getMethod(),discriminator);
+    
         MethodMapping mapping = getMethods().get(key);
         if(mapping == null) {
         	throw new HttpMethodInvocationException("The method is not allowed for this resource.",HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -213,11 +217,35 @@ public abstract class ResourceInvoker {
      */
     public void invoke(HttpServletRequest request, HttpServletResponse response)
         throws HttpMethodInvocationException {
+    	DataSource ds = new DataSource() {
+
+			public String getContentType() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public InputStream getInputStream() throws IOException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public String getName() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public OutputStream getOutputStream() throws IOException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+    		
+    	};
+    	
     	MethodMapping mapping = findMethodMapping(request);
 		Map<String,Object> inputs = extractInputsFromRequest(request,mapping);
     	try {
 			Object result = invokeMethod(mapping,inputs,getTargetInstance());
-			marshallResponse(response,result,mapping.getResponseMediaType());
+			writeResponse(request,response,result,mapping);
 		} finally {
 			inputs.clear();
 			mapping = null;
@@ -231,14 +259,16 @@ public abstract class ResourceInvoker {
      * @param mapping
      * @param inputs
      */
-    protected void unmarshallRequest(HttpServletRequest request,MethodMapping mapping,Map<String,Object> inputs) {
+    protected void readRequest(HttpServletRequest request,MethodMapping mapping,Map<String,Object> inputs) {
     	String method = request.getMethod();
     	if((method.equals("PUT") || 
             method.equals("POST"))) {
     		/*
     		 * Check the the media types match
     		 */
-    		if(request.getContentType().equals(mapping.getRequestMediaType())) {
+    						
+			if(request.getContentType() != null &&  
+			   request.getContentType().equals(mapping.getRequestMediaType())) {
 				RepresentationHandler requestHandler = ResourceDispatcher.findRepresentationHandler(mapping.getRequestMediaType());
 				if(requestHandler == null) {
 					throw new HttpMethodInvocationException("The input media type "+mapping.getRequestMediaType()+
@@ -250,13 +280,14 @@ public abstract class ResourceInvoker {
 				}
 				try {
 					Object requestValue =
-							requestHandler.handleRequest(request.getInputStream(), mapping.getRequestRespresentationType());
+							requestHandler.handleRequest(request.getInputStream(), 
+														 mapping.getRequestRespresentationType());
 					inputs.put(mapping.getRequestRespresentationId(),requestValue);
 				} catch (IOException e) {
 					throw new RespresentationHandlerException("",e);
 				}
-    		}
-    		/*
+			}
+			/*
 			 * If the requested content type does not match the methods media type, 
 			 * a 415 error is thrown.
 			 */
@@ -278,21 +309,31 @@ public abstract class ResourceInvoker {
      * @param result
      * @param mediaType
      */
-    protected void marshallResponse(HttpServletResponse response,Object result,String mediaType) {
+    protected void writeResponse(HttpServletRequest request,
+    							 HttpServletResponse response,
+    							 Object result,
+    							 MethodMapping mapping) {
     	try {
+    		String mediaType = mapping.getResponseMediaType();
 			/*
 			 * If the result is null, there is no need to write a response.
 			 */
 			if(result != null) {
 				/*
-				 * TODO: need something better than this
+				 * If the Response code indicates that the new resources was created
+				 * and the return type is a URL, we issue a 204 and return the URL
+				 * in the Location header.
 				 */
-				if(result instanceof Location) {
-					Location location = (Location) result;
-					
-					response.setStatus(location.getStatus());
-					response.setHeader(HttpHeaders.LOCATION, result.toString());
-				} else {
+				if(result instanceof URL) {
+					URL location = (URL) result;
+					response.setStatus(HttpServletResponse.SC_CREATED);
+					response.setHeader(HttpHeaders.LOCATION, location.toString());
+				} 
+				/*
+				 * If the result is not null and not a URL, we look up the
+				 * desired return media type to find an appropriate RepresentationHandler.
+				 */
+				else {
 					RepresentationHandler handler = ResourceDispatcher.findRepresentationHandler(mediaType);
 					if(handler == null) {
 						throw new HttpMethodInvocationException("The response media type "+mediaType+
@@ -301,14 +342,31 @@ public abstract class ResourceInvoker {
 					}
 					response.setContentType(mediaType);
 				    handler.handleResponse(response.getOutputStream(), result);
+				    response.setStatus(HttpServletResponse.SC_OK);
 				}
-				
+			}
+			/*
+			 * If the result is null, it is most likely that the requested ID does not exist 
+			 * and a 404 should be returned.
+			 */
+			else if(result == null && request.getMethod().equals("GET")) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+			/*
+			 * If the method has not return value and does not return a new
+			 * location, the server should return a 204
+			 */
+			else if(result == null && 
+					(request.getMethod().equals("POST") ||
+					 request.getMethod().equals("PUT"))) {
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
 			}
 		} catch (IOException e) {
 			throw new RespresentationHandlerException("",e);
 		}
     }
     
+
     /**
      * Merge an Query Parameters into the inputs map.
      * @param inputs
@@ -367,6 +425,9 @@ public abstract class ResourceInvoker {
             throw new HttpMethodInvocationException("InvocationTargetException when invoking service: "+e.getMessage() +" target exception: "+e.getTargetException().getMessage(),HttpServletResponse.SC_NOT_IMPLEMENTED,e);
         } catch (SecurityException e) {
         	throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
+		} catch (ClassCastException e) {
+        	throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
+        	
 		} 
     }
     

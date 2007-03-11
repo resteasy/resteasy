@@ -45,7 +45,7 @@ public class ResourceDispatchServlet extends HttpServlet {
 		if(entityManagerJndiName != null) {
 			re.setEntityManagerJndiName(entityManagerJndiName);
 		}
-		re.init();
+		re.init(this.getServletContext());
     	/* TODO: this could be implemented at some point, at presnet, its not really working.
     	 * 
 		try {
@@ -74,18 +74,10 @@ public class ResourceDispatchServlet extends HttpServlet {
     	/*
     	 * Look up the resource for the specified path na,e
     	 */
+    	logger.debug("Executing Method: "+request.getMethod()+" for path "+request.getPathInfo());
     	ResourceInvoker invoker = ResourceDispatcher.getInstance().findResourceInvoker(request.getPathInfo());
         if(invoker != null) {
-        	logger.debug("Executing Method: "+request.getMethod());
-            try {
-				invoker.invoke(request, response);
-			} catch (HttpMethodInvocationException e) {
-				StringBuilder b = new StringBuilder();
-				b.append(e.getMessage()).append(" : ").append(e.getCause().getMessage());
-				response.sendError(e.getHttpStatusCode(),b.toString());
-				logger.error(b.toString());
-			} 
-             
+        	invoker.invoke(request, response);
         } else {
             logger.error("Invalid resource path: "+request.getPathInfo());
         	response.sendError(HttpServletResponse.SC_NOT_FOUND,

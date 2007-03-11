@@ -9,6 +9,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.damnhandy.resteasy.ResponseCodes;
+
 /**
  * 
  * @author Ryan J. McDonough
@@ -33,4 +35,18 @@ public @interface Response {
 	 * @return
 	 */
 	public boolean extendTxn() default false;
+	
+	/**
+	 * Returns the correct HTTP response code. The default value is 200 (OK),
+	 * which should be appriate for most cases. This value should be overriden
+	 * in situations where you are creating resource. 
+	 * @return
+	 */
+	public int responseCode() default ResponseCodes.OK;
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public int failureResponseCode() default ResponseCodes.OK;
 }

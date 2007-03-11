@@ -52,7 +52,7 @@ public class EJBResourceInvoker extends ResourceInvoker {
 	/** 
 	 *
 	 * @see com.damnhandy.resteasy.core.ResourceInvoker#invoke(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
+	 *
 	@Override
 	public void invoke(HttpServletRequest request, HttpServletResponse response) throws HttpMethodInvocationException {
 		UserTransaction ut = null;
@@ -60,10 +60,7 @@ public class EJBResourceInvoker extends ResourceInvoker {
     	MethodKey key = new MethodKey(request.getMethod(),discriminator);
         MethodMapping mapping = getMethods().get(key);
 		try {
-			/*
-			 * If the return type is is an Entity, we need to make sure
-			 * the Transaction 
-			 */
+			
 			Response responseConfig = mapping.getMethod().getAnnotation(Response.class);
 			if(responseConfig != null && responseConfig.extendTxn()) {
 				ut = (UserTransaction) ctx.lookup("UserTransaction");	
@@ -99,7 +96,7 @@ public class EJBResourceInvoker extends ResourceInvoker {
 			}
 		}
 		
-	}
+	}*/
 
 	/**
 	 * 

@@ -13,13 +13,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 /**
+ * A light-weight class that can be used to return only a sub-set of the data 
+ * used by an XML resources. It is useful for situtions where an XML resource
+ * contains several fields and you only need to display a name and an ID in
+ * a search results list.
+ * 
  * @author Ryan J. McDonough
  * Feb 18, 2007
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "resourceReferenceType")
-public class Reference {
+public class ResourceReference {
 	@XmlAttribute(required=true)
 	private URL location;
 	private Map<String,Object> properties = new HashMap<String,Object>();
