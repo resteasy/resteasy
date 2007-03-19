@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
-public @interface Representation {
+public @interface RepresentationIn {
     
 	/**
 	 * 
@@ -40,5 +40,5 @@ public @interface Representation {
      * 
      * @return
      */
-    public Class<?> type() default Representation.class;
+    public Class<?> type() default RepresentationIn.class;
 }

@@ -17,23 +17,23 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface RepresentationType {
+public @interface MediaTypeVarient {
 
 	/**
 	 * The mime-type of this representation type
 	 * @return
 	 */
-	public String type();
+	public String contentType();
 	
 	/**
 	 * The assocaited extention for this type
 	 * @return
 	 */
-	public String[] ext();
+	public String extention() default "";
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public boolean defaultType() default false;
+	public float qsValue() default 1.0f;
 }

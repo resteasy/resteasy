@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.damnhandy.resteasy.MessageTypes;
 
 /**
  * TODO: Implement this usage in the ResourceInvoker

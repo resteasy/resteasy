@@ -5,7 +5,7 @@ package com.damnhandy.resteasy.core;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.damnhandy.resteasy.HttpMethodInvocationException;
+import com.damnhandy.resteasy.exceptions.HttpMethodInvocationException;
 
 /**
  * The default ResourceInvoker for POJO-based services.

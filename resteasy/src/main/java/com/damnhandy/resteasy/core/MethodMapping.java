@@ -12,12 +12,12 @@ import java.util.Map.Entry;
  * Jan 21, 2007
  *
  */
-public class MethodMapping {
+public class MethodMapping<T> {
 
 	private final Method method;
 	private final Map<String,Class<?>> parameterMap;
     private String responseMediaType = "application/xml";
-    private Class requestRespresentationType = null;
+    private Class<T> requestRespresentationType = null;
     private String requestMediaType = "application/xml";
     private String requestRespresentationId;
     private int responseCode;
@@ -83,13 +83,13 @@ public class MethodMapping {
 	/**
 	 * @return the requestRespresentationType
 	 */
-	public Class getRequestRespresentationType() {
+	public Class<T> getRequestRespresentationType() {
 		return requestRespresentationType;
 	}
 	/**
 	 * @param requestRespresentationType the requestRespresentationType to set
 	 */
-	public void setRequestRespresentationType(Class requestRespresentationType) {
+	public void setRequestRespresentationType(Class<T> requestRespresentationType) {
 		this.requestRespresentationType = requestRespresentationType;
 	}
 	/**

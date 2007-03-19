@@ -21,13 +21,14 @@ import org.apache.log4j.Logger;
 import com.damnhandy.resteasy.ConfigurationException;
 import com.damnhandy.resteasy.annotations.HttpMethod;
 import com.damnhandy.resteasy.annotations.HttpMethods;
+import com.damnhandy.resteasy.annotations.RepresentationIn;
 import com.damnhandy.resteasy.annotations.QueryParam;
-import com.damnhandy.resteasy.annotations.Representation;
-import com.damnhandy.resteasy.annotations.Response;
+import com.damnhandy.resteasy.annotations.RepresentationOut;
 import com.damnhandy.resteasy.annotations.URIParam;
 import com.damnhandy.resteasy.annotations.WebResource;
 import com.damnhandy.resteasy.helper.ClassUtils;
 import com.damnhandy.resteasy.helper.URITemplateHelper;
+import com.damnhandy.resteasy.representation.Representation;
 
 /**
  * A helper class that builds a ResourceInvoker for a given WebResource.
@@ -215,9 +216,12 @@ public class ResourceInvokerBuilder {
 	 * @param resourceMethod
 	 * @param method
 	 * @param invoker
-	 * @param id
+	 * @param resourceId
 	 */
-	private static void processMethod(HttpMethod resourceMethod,Method method,ResourceInvoker invoker,String id) {
+	private static void processMethod(HttpMethod resourceMethod,
+									  Method method,
+									  ResourceInvoker invoker,
+									  String resourceId) {
 		/*
 		 * A GET method cannot be mapped to a method that returns void.
 		 */
@@ -228,8 +232,8 @@ public class ResourceInvokerBuilder {
 		/*
 		 * Make sure the resource ID matches the ID of the WebResource
 		 */
-		if(resourceMethod.resourceId().equals(id)) {
-        	Response response = method.getAnnotation(Response.class);
+		if(resourceMethod.resourceId().equals(resourceId)) {
+        	RepresentationOut response = method.getAnnotation(RepresentationOut.class);
             String responseMediaType = null;
             if(response != null) {
             	responseMediaType = response.mediaType();
@@ -242,10 +246,24 @@ public class ResourceInvokerBuilder {
             Map<String,Class<?>> paramMappings = new LinkedHashMap<String,Class<?>>();
             Annotation[][] params = method.getParameterAnnotations();
             String[] paramNames = new String[params.length];
-            Class requestRespresentationType = null;
+            Class<?> requestRespresentationType = null;
             String requestMediaType = null;
             String requestName = null;
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            /*
+             * Scan for a Representation parameter
+             *
+            for(int p = 0; p < parameterTypes.length; p++) {
+            	if(parameterTypes[p].isAssignableFrom(Representation.class)) {
+            		
+            	}
+            }*/
+            /*
+             * Scan for annotated parametr types
+             */
             for(int j = 0; j < params.length; j++) {
+            	 
+            	
                 for(int h = 0; h < params[j].length; h++) {
                     Annotation annotation = params[j][h];
                     if(annotation instanceof QueryParam) {
@@ -261,9 +279,10 @@ public class ResourceInvokerBuilder {
                          */
                         invoker.addUriTemplateParamType(urlParam.value(), method.getParameterTypes()[j]);
                     } 
-                    else if(annotation instanceof Representation) {
-                        Representation representation = (Representation) annotation;
-                        Class type = method.getParameterTypes()[j];
+                    
+                    else if(annotation instanceof RepresentationIn) {
+                    	RepresentationIn representation = (RepresentationIn) annotation;
+                        Class<?> type = method.getParameterTypes()[j];
                         if(!representation.type().equals(Representation.class)) {
                         	type = representation.type();
                         }

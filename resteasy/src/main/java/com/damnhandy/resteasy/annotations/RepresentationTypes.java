@@ -16,12 +16,12 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER})
+@Target({ElementType.TYPE})
 public @interface RepresentationTypes {
 
 	/**
 	 * 
 	 * @return
 	 */
-	public RepresentationType[] types();
+	public MediaTypeVarient[] types();
 }

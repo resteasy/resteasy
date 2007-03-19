@@ -4,28 +4,28 @@
 package com.damnhandy.resteasy.core;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.activation.DataSource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBElement;
 
 import org.apache.log4j.Logger;
 
-import com.damnhandy.resteasy.HttpHeaders;
-import com.damnhandy.resteasy.HttpMethodInvocationException;
-import com.damnhandy.resteasy.RespresentationHandlerException;
 import com.damnhandy.resteasy.annotations.HttpMethod;
+import com.damnhandy.resteasy.common.HttpHeaderNames;
+import com.damnhandy.resteasy.common.HttpHeaders;
+import com.damnhandy.resteasy.exceptions.HttpMethodInvocationException;
+import com.damnhandy.resteasy.exceptions.RespresentationHandlerException;
 import com.damnhandy.resteasy.handler.RepresentationHandler;
+import com.damnhandy.resteasy.handler.RepresentationHandlerFactory;
 import com.damnhandy.resteasy.helper.URITemplateHelper;
 
 
@@ -217,30 +217,8 @@ public abstract class ResourceInvoker {
      */
     public void invoke(HttpServletRequest request, HttpServletResponse response)
         throws HttpMethodInvocationException {
-    	DataSource ds = new DataSource() {
-
-			public String getContentType() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public InputStream getInputStream() throws IOException {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public String getName() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public OutputStream getOutputStream() throws IOException {
-				// TODO Auto-generated method stub
-				return null;
-			}
-    		
-    	};
     	
+    	HttpHeaders headers = extractHttpHeadersFromRequest(request);
     	MethodMapping mapping = findMethodMapping(request);
 		Map<String,Object> inputs = extractInputsFromRequest(request,mapping);
     	try {
@@ -252,6 +230,17 @@ public abstract class ResourceInvoker {
 		}
     }
 
+    
+    private HttpHeaders extractHttpHeadersFromRequest(HttpServletRequest request) {
+    	HttpHeaders headers = new HttpHeaders();
+    	Enumeration headerNames = request.getHeaderNames();
+    	while(headerNames.hasMoreElements()) {
+    		String headerName = (String) headerNames.nextElement();
+    		String headerValue = request.getHeader(headerName);
+    		headers.addHeader(headerName, headerValue);
+    	}
+    	return headers;
+    }
     /**
      * Parses the input stream to extract the input data and Unmarshall it
      * to it Java type
@@ -269,7 +258,8 @@ public abstract class ResourceInvoker {
     						
 			if(request.getContentType() != null &&  
 			   request.getContentType().equals(mapping.getRequestMediaType())) {
-				RepresentationHandler requestHandler = ResourceDispatcher.findRepresentationHandler(mapping.getRequestMediaType());
+				RepresentationHandlerFactory factory = RepresentationHandlerFactory.instance();
+				RepresentationHandler<?> requestHandler = factory.getHandlerByMimeType(request.getContentType());
 				if(requestHandler == null) {
 					throw new HttpMethodInvocationException("The input media type "+mapping.getRequestMediaType()+
 															" is not supported for this operation,",
@@ -312,7 +302,7 @@ public abstract class ResourceInvoker {
     protected void writeResponse(HttpServletRequest request,
     							 HttpServletResponse response,
     							 Object result,
-    							 MethodMapping mapping) {
+    							 MethodMapping<?> mapping) {
     	try {
     		String mediaType = mapping.getResponseMediaType();
 			/*
@@ -327,14 +317,15 @@ public abstract class ResourceInvoker {
 				if(result instanceof URL) {
 					URL location = (URL) result;
 					response.setStatus(HttpServletResponse.SC_CREATED);
-					response.setHeader(HttpHeaders.LOCATION, location.toString());
+					response.setHeader(HttpHeaderNames.LOCATION, location.toString());
 				} 
 				/*
 				 * If the result is not null and not a URL, we look up the
 				 * desired return media type to find an appropriate RepresentationHandler.
 				 */
 				else {
-					RepresentationHandler handler = ResourceDispatcher.findRepresentationHandler(mediaType);
+					RepresentationHandlerFactory factory = RepresentationHandlerFactory.instance();
+					RepresentationHandler handler = factory.getHandlerByMimeType(mediaType);
 					if(handler == null) {
 						throw new HttpMethodInvocationException("The response media type "+mediaType+
 																" is not supported for this operation,",
@@ -373,7 +364,7 @@ public abstract class ResourceInvoker {
      * @param request
      * @param mapping
      */
-    private void mergeQueryParameters(Map<String,Object> inputs,HttpServletRequest request,MethodMapping mapping) {
+    private void mergeQueryParameters(Map<String,Object> inputs,HttpServletRequest request,MethodMapping<?> mapping) {
        Set<String> paramNames = mapping.getParameterMap().keySet();
         for(String paramName : paramNames) {
         	Object value = request.getParameter(paramName);
@@ -404,7 +395,7 @@ public abstract class ResourceInvoker {
      * @return
      * @throws Exception
      */
-    protected Object invokeMethod(MethodMapping mapping,Map<String,Object> inputs,Object target)
+    protected Object invokeMethod(MethodMapping<?> mapping,Map<String,Object> inputs,Object target)
     	throws HttpMethodInvocationException {
         try {
         	Method method = mapping.getMethod();
@@ -441,7 +432,7 @@ public abstract class ResourceInvoker {
     * @throws InvocationTargetException
     * @throws NoSuchMethodException
     */
-   private Object convertType(Object input, Class targetType,MethodMapping mapping)
+   private Object convertType(Object input, Class targetType,MethodMapping<?> mapping)
    throws HttpMethodInvocationException {
 	   if(input == null) {
 		   return input;

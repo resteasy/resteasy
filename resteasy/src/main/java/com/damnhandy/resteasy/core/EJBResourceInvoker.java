@@ -5,19 +5,8 @@ package com.damnhandy.resteasy.core;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 import com.damnhandy.resteasy.ConfigurationException;
-import com.damnhandy.resteasy.HttpMethodInvocationException;
-import com.damnhandy.resteasy.annotations.HttpMethod;
-import com.damnhandy.resteasy.annotations.Response;
 
 /**
  * @author Ryan J. McDonough

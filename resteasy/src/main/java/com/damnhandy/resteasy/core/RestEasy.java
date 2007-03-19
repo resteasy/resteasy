@@ -2,6 +2,8 @@ package com.damnhandy.resteasy.core;
 
 import javax.servlet.ServletContext;
 
+import com.damnhandy.resteasy.handler.RepresentationHandlerFactory;
+
 
 /**
  * 
@@ -31,6 +33,7 @@ public class RestEasy {
 	public void init(ServletContext servletContext) {
 		this.servletContext = servletContext;
 		ResourceDispatcher.getInstance().init();
+		RepresentationHandlerFactory.instance();
 	}
 	
 	/**

@@ -18,7 +18,7 @@ import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.damnhandy.resteasy.HttpMethodInvocationException;
+import com.damnhandy.resteasy.exceptions.HttpMethodInvocationException;
 
 /**
  * A ResourceInvoker that publishes the representation to a JMS queue. 

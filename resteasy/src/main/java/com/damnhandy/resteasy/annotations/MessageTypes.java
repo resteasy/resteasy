@@ -1,4 +1,4 @@
-package com.damnhandy.resteasy;
+package com.damnhandy.resteasy.annotations;
 /**
  * 
  * @author Ryan J. McDonough

@@ -9,13 +9,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.jboss.seam.deployment.WebResourceScanner;
 
 import com.damnhandy.resteasy.annotations.WebResource;
 import com.damnhandy.resteasy.annotations.WebResources;
 import com.damnhandy.resteasy.handler.JAXBRepresentationHandler;
 import com.damnhandy.resteasy.handler.PlainTextRepresentationHandler;
 import com.damnhandy.resteasy.handler.RepresentationHandler;
+import com.damnhandy.resteasy.scanner.WebResourceScanner;
 
 /**
  * @author ryan

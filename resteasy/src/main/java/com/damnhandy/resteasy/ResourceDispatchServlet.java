@@ -2,6 +2,7 @@ package com.damnhandy.resteasy;
 
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.damnhandy.resteasy.common.HttpHeaders;
 import com.damnhandy.resteasy.core.ResourceDispatcher;
 import com.damnhandy.resteasy.core.ResourceInvoker;
 import com.damnhandy.resteasy.core.RestEasy;
@@ -46,21 +48,6 @@ public class ResourceDispatchServlet extends HttpServlet {
 			re.setEntityManagerJndiName(entityManagerJndiName);
 		}
 		re.init(this.getServletContext());
-    	/* TODO: this could be implemented at some point, at presnet, its not really working.
-    	 * 
-		try {
-    		ServletContext ctx = config.getServletContext();
-    		String serviceName = ctx.getServletContextName();
-    		String path = config.getInitParameter("path");
-			jmdns = new JmDNS();
-			Hashtable properties = new Hashtable();
-			properties.put("path", path);
-			ServiceInfo info = new ServiceInfo("_http._tcp.local.", serviceName, 8080, 0, 0, properties);
-			jmdns.registerService(info);
-			logger.info("Registered ZeroConf service on: "+info.toString());
-		} catch (IOException e) {
-			throw new ServletException("IOException while trying to register service: "+e.getMessage(),e);
-		}*/
     }
     
     /**
@@ -86,7 +73,7 @@ public class ResourceDispatchServlet extends HttpServlet {
         }
     }
     
-    
+
    
     /**
      * 
