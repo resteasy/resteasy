@@ -1,11 +1,21 @@
 <?xml version="1.0"?>
-<project>
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.damnhandy.resteasy</groupId>
-	<artifactId>resteasy</artifactId>
-	<name>resteasy</name>
-	<version>1.0.0a1</version>
+	<groupId>com.damnhandy</groupId>
+	<artifactId>resteasy-server</artifactId>
+	<name>resteasy-server</name>
+	<version>1.0.0-SNAPSHOT</version>
 	<url>http://resteasy.damnhamdy.com</url>
+	<licenses>
+		<license>
+			<name>GNU LESSER GENERAL PUBLIC LICENSE</name>
+			<url>http://www.gnu.org/licenses/lgpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<developers>
 		<developer>
 			<id>ryan</id>
@@ -25,8 +35,15 @@
 		</contributor>
 	</contributors>
 	<distributionManagement>
+		<snapshotRepository>
+			<id>damnhandy.snapshots</id>
+			<name>Damnhandy SNAPSHOT Repository</name>
+			<url>
+				scpexe://damnhandy.com/home/dh_host/repository.damnhandy.com/snapshots
+			</url>
+		</snapshotRepository>
 		<site>
-			<id>website</id>
+			<id>damnhandy.website</id>
 			<url>
 				scp://damnhandy.com/home/dh_host/resteasy.damnhandy.com
 			</url>
@@ -83,6 +100,10 @@
 	</build>
 	<repositories>
 		<repository>
+			<id>damnhandy.snapshots</id>
+			<url>http://repository.damnhandy.com/snapshots/</url>
+		</repository>
+		<repository>
 			<id>java.net</id>
 			<url>
 				https://maven-repository.dev.java.net/nonav/repository
@@ -97,54 +118,32 @@
 			<id>softeu-repo</id>
 			<url>http://maven.softeu.cz/</url>
 		</repository>
+		
 
 	</repositories>
 	<dependencies>
-	
+		<dependency>
+			<groupId>com.damnhandy</groupId>
+  			<artifactId>resteasy-common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>sojo</groupId>
 			<artifactId>sojo</artifactId>
 			<version>0.4.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate</artifactId>
-			<version>3.2.2.ga</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>3.2.1.ga</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.2.1.ga</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-cache</artifactId>
-			<version>1.4.1.GA</version>
-		</dependency>
+	
 		<dependency>
 			<groupId>jboss.seam</groupId>
 			<artifactId>jboss-seam</artifactId>
 			<version>1.2.0.GA</version>
 		</dependency>
-		<dependency>
-			<groupId>jmdns</groupId>
-			<artifactId>jmdns</artifactId>
-			<version>1.0</version>
-		</dependency>
+
 		<dependency>
 			<groupId>jboss</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.4.ga</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javaee</groupId>
@@ -155,13 +154,20 @@
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
-			<version>2.0.4</version>
+			<version>2.1.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>2.0</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

@@ -5,8 +5,9 @@ package com.damnhandy.resteasy.test;
 
 import java.util.Set;
 
-import org.jboss.seam.deployment.WebResourceScanner;
 import org.junit.Test;
+
+import com.damnhandy.resteasy.scanner.WebResourceScanner;
 
 /**
  * @author Ryan J. McDonough
@@ -16,7 +17,7 @@ import org.junit.Test;
 public class TestComponentScanner {
 
 	/**
-	 * Test method for {@link org.jboss.seam.deployment.WebResourceScanner#handleItem(java.lang.String)}.
+	 * Test method for {@link com.damnhandy.resteasy.scanner.WebResourceScanner#handleItem(java.lang.String)}.
 	 */
 	@Test
 	public void testFindResources() {
