@@ -21,14 +21,13 @@ import org.apache.log4j.Logger;
 import com.damnhandy.resteasy.ConfigurationException;
 import com.damnhandy.resteasy.annotations.HttpMethod;
 import com.damnhandy.resteasy.annotations.HttpMethods;
-import com.damnhandy.resteasy.annotations.RepresentationIn;
 import com.damnhandy.resteasy.annotations.QueryParam;
+import com.damnhandy.resteasy.annotations.RepresentationIn;
 import com.damnhandy.resteasy.annotations.RepresentationOut;
 import com.damnhandy.resteasy.annotations.URIParam;
 import com.damnhandy.resteasy.annotations.WebResource;
 import com.damnhandy.resteasy.helper.ClassUtils;
 import com.damnhandy.resteasy.helper.URITemplateHelper;
-import com.damnhandy.resteasy.representation.Representation;
 
 /**
  * A helper class that builds a ResourceInvoker for a given WebResource.
@@ -283,7 +282,7 @@ public class ResourceInvokerBuilder {
                     else if(annotation instanceof RepresentationIn) {
                     	RepresentationIn representation = (RepresentationIn) annotation;
                         Class<?> type = method.getParameterTypes()[j];
-                        if(!representation.type().equals(Representation.class)) {
+                        if(!representation.type().equals(RepresentationIn.class)) {
                         	type = representation.type();
                         }
                         paramNames[j] = representation.value();
