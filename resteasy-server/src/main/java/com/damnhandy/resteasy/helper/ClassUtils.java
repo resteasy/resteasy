@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 
 import com.damnhandy.resteasy.annotations.WebResource;
 import com.damnhandy.resteasy.annotations.WebResources;
+import com.damnhandy.resteasy.entity.DefaultEJBResourceManagerBean;
 
 /**
  * @author Ryan J. McDonough
@@ -23,6 +24,9 @@ public class ClassUtils {
 	 * @return
 	 */
 	public static boolean isEJB(Class<?> targetClass) {
+		if(targetClass.equals(DefaultEJBResourceManagerBean.class)) {
+			return true;
+		}
 		if(targetClass.isAnnotationPresent(Stateless.class) ||
 		   targetClass.isAnnotationPresent(Stateful.class)) {
 			return true;

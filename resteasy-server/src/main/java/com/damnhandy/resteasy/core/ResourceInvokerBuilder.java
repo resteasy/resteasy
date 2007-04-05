@@ -7,12 +7,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.Local;
 import javax.ejb.MessageDriven;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
+import javax.jms.Message;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -24,10 +27,14 @@ import com.damnhandy.resteasy.annotations.HttpMethods;
 import com.damnhandy.resteasy.annotations.QueryParam;
 import com.damnhandy.resteasy.annotations.RepresentationIn;
 import com.damnhandy.resteasy.annotations.RepresentationOut;
+import com.damnhandy.resteasy.annotations.Type;
 import com.damnhandy.resteasy.annotations.URIParam;
 import com.damnhandy.resteasy.annotations.WebResource;
+import com.damnhandy.resteasy.entity.DefaultEJBResourceManager;
+import com.damnhandy.resteasy.entity.DefaultEJBResourceManagerBean;
 import com.damnhandy.resteasy.helper.ClassUtils;
 import com.damnhandy.resteasy.helper.URITemplateHelper;
+import com.damnhandy.resteasy.representation.Representation;
 
 /**
  * A helper class that builds a ResourceInvoker for a given WebResource.
@@ -39,6 +46,7 @@ import com.damnhandy.resteasy.helper.URITemplateHelper;
 public class ResourceInvokerBuilder {
 	private static final Logger logger = Logger.getLogger(ResourceInvokerBuilder.class);
 	private static InitialContext ctx;
+	private static final String REPRESENTATION = "representation";
 	
 	/**
 	 * 
@@ -69,7 +77,34 @@ public class ResourceInvokerBuilder {
 		else {
 			invoker = new POJOResourceInvoker(resourceClass);
 		}
-		prepareInvoker(resource,resourceClass,invoker);
+		prepareInvoker(resource.id(),resource.value(),resourceClass,invoker);
+		return invoker;
+	}
+	
+	/**
+	 * 
+	 * @param persisterClass
+	 * @param entityClass
+	 * @param entity
+	 * @return
+	 */
+	public static ResourceInvoker createEntityResourceInvoker(Class<?> entityClass, 
+															  Class<?> resourceClass,
+															  String id,
+															  String path) {
+		
+		ResourceInvoker invoker = null;
+		if(ClassUtils.isEJB(resourceClass)) {
+			Class<?> localInterface = getLocalInterfaceClass(resourceClass);
+			String jndiName = getJndiName(resourceClass);
+			invoker = new EJBResourceInvoker(resourceClass,
+											 localInterface,
+											 jndiName);
+		} 
+		else {
+			throw new ConfigurationException("Sorry, non-EJB ResourceManagers are not suppored yet.");
+		}
+		prepareInvoker(id,path,resourceClass,invoker);
 		return invoker;
 	}
 	
@@ -138,7 +173,6 @@ public class ResourceInvokerBuilder {
 		
 		if(jndiName == null || 
 		   jndiName.length() == 0) {
-			//jndiName = Init.instance().getJndiPattern().replace( "#{ejbName}", Seam.getEjbName(beanClass));
 			jndiName = RestEasy.instance().getJndiPattern().replaceAll("\\{ejbName\\}", beanClass.getSimpleName());
 		}
 		return jndiName;
@@ -150,14 +184,43 @@ public class ResourceInvokerBuilder {
 	 * @return
 	 */
 	private static Class<?> getLocalInterfaceClass(Class<?> beanClass) {
+		if(beanClass.equals(DefaultEJBResourceManagerBean.class)) {
+			return DefaultEJBResourceManager.class;
+		}
+		
 		Class<?>[] interfaces = beanClass.getInterfaces();
 		/*
-		 * Get the interface marked with @Local
+		 * Get the interface marked with @Local, there "should" be only one
 		 */
 		for(int i = 0; i < interfaces.length; i++) {
 			if(interfaces[i].isAnnotationPresent(Local.class)) {
 				return interfaces[i];
 			}
+		}
+		return null;
+	}
+	
+
+	/**
+	 * 
+	 * @param representationIn
+	 * @return
+	 */
+	private static String getInputType(String defaultValue,RepresentationIn representationIn) {
+		if (representationIn != null) {
+			return representationIn.value();
+		}
+		return defaultValue;
+	}
+	
+	/**
+	 * 
+	 * @param representationOut
+	 * @return
+	 */
+	private static QualityValue getOutputType(RepresentationOut representationOut) {
+		if(representationOut != null) {
+			return new QualityValue(representationOut.value(),representationOut.qs());
 		}
 		return null;
 	}
@@ -168,12 +231,21 @@ public class ResourceInvokerBuilder {
 	 * @param resourceClass
 	 * @param invoker
 	 */
-	private static void prepareInvoker(WebResource resource,
+	private static void prepareInvoker(String id,
+									   String path,
 									   Class<?> resourceClass,
 									   ResourceInvoker invoker) {
-		String id = resource.id();
-		String path = resource.value();
+		SortedSet<QualityValue> qualityOfSource = new TreeSet<QualityValue>();
 		invoker.setUriTemplateNamePositions(URITemplateHelper.extractURLTemplateNames(path));
+		String inputType = getInputType(ContentNegotiator.DEFAULT_TYPE,
+										resourceClass.getAnnotation(RepresentationIn.class));
+		RepresentationOut outputType = resourceClass.getAnnotation(RepresentationOut.class);
+		QualityValue qualityValue;
+		if(outputType == null) {
+			qualityValue = new QualityValue(ContentNegotiator.DEFAULT_TYPE,1.0f);
+		}
+		qualityValue = getOutputType(resourceClass.getAnnotation(RepresentationOut.class));
+		qualityOfSource.add(qualityValue);
         Class<?> targetClass = invoker.getTargetClass();
         Method[] methods = targetClass.getMethods();
         for(int i = 0; i < methods.length; i++) {
@@ -184,15 +256,19 @@ public class ResourceInvokerBuilder {
             if(method.isAnnotationPresent(HttpMethods.class)) {
             	HttpMethod[] httpMethods = method.getAnnotation(HttpMethods.class).methods();
             	for(int m = 0; m < httpMethods.length; m++) {
-            		processMethod(httpMethods[m],method,invoker,id);
+            		processMethod(httpMethods[m],method,invoker,id,inputType,qualityOfSource,qualityValue);
             	}
             } else if(method.isAnnotationPresent(HttpMethod.class)) {
             	HttpMethod resourceMethod = method.getAnnotation(HttpMethod.class);
-            	processMethod(resourceMethod,method,invoker,id);
+            	processMethod(resourceMethod,method,invoker,id,inputType,qualityOfSource,qualityValue);
             }
         }
-        invoker.setRequestPatternString(URITemplateHelper.replaceURLTemplateIDs(path,invoker.getUriTemplateParamTypes()));
+        String uriPattern = 
+        	URITemplateHelper.replaceURLTemplateIDs(path,invoker.getUriTemplateParamTypes());
+        invoker.setRequestPatternString(uriPattern);
         invoker.setPatternKey(new PatternKey(invoker.getRequestPatternString()));
+        QualityValue[] qualityValues = qualityOfSource.toArray(new QualityValue[qualityOfSource.size()]);
+        invoker.setQualityOfSource(qualityValues);
         if(invoker.getMethods().size() == 0) {
         	throw new ConfigurationException("A WebResource must define 1 or more HttpMethods. The class "
         			+invoker.getTargetClass().getSimpleName()+" defines none.");
@@ -217,14 +293,19 @@ public class ResourceInvokerBuilder {
 	 * @param invoker
 	 * @param resourceId
 	 */
+	@SuppressWarnings("unchecked")
 	private static void processMethod(HttpMethod resourceMethod,
 									  Method method,
 									  ResourceInvoker invoker,
-									  String resourceId) {
+									  String resourceId,
+									  String parentInputType,
+									  SortedSet<QualityValue> qualityOfSource,
+									  QualityValue defaultQS) {
 		/*
-		 * A GET method cannot be mapped to a method that returns void.
+		 * A GET method should not be mapped to a method that returns void.
 		 */
-		if(resourceMethod.value().equals(HttpMethod.GET) && method.getReturnType() == null) {
+		if(resourceMethod.value().equals(HttpMethod.GET) && 
+		   method.getReturnType() == null) {
 			throw new ConfigurationException("HTTP GET methods must have a return value. The method "
 					+method.getName()+" does not specify a return value.");
 		}
@@ -232,11 +313,16 @@ public class ResourceInvokerBuilder {
 		 * Make sure the resource ID matches the ID of the WebResource
 		 */
 		if(resourceMethod.resourceId().equals(resourceId)) {
-        	RepresentationOut response = method.getAnnotation(RepresentationOut.class);
-            String responseMediaType = null;
-            if(response != null) {
-            	responseMediaType = response.mediaType();
-            }
+			
+			QualityValue qualityFactor = getOutputType(method.getAnnotation(RepresentationOut.class));
+			if(qualityFactor != null) {
+				if(qualityFactor.getMediaType().equals("application/pdf")) {
+					System.out.println("Type");
+				}
+				qualityOfSource.add(qualityFactor);
+			} else {
+				qualityFactor = defaultQS;
+			}
             String httpMethod = resourceMethod.value();
             String disriminator = resourceMethod.discriminator();
             if(disriminator.length() == 0) {
@@ -244,63 +330,48 @@ public class ResourceInvokerBuilder {
             }
             Map<String,Class<?>> paramMappings = new LinkedHashMap<String,Class<?>>();
             Annotation[][] params = method.getParameterAnnotations();
-            String[] paramNames = new String[params.length];
-            Class<?> requestRespresentationType = null;
-            String requestMediaType = null;
-            String requestName = null;
             Class<?>[] parameterTypes = method.getParameterTypes();
-            /*
-             * Scan for a Representation parameter
-             *
-            for(int p = 0; p < parameterTypes.length; p++) {
-            	if(parameterTypes[p].isAssignableFrom(Representation.class)) {
-            		
-            	}
-            }*/
+            Class<?> requestRespresentationType = null;
             /*
              * Scan for annotated parametr types
              */
-            for(int j = 0; j < params.length; j++) {
-            	 
-            	
-                for(int h = 0; h < params[j].length; h++) {
-                    Annotation annotation = params[j][h];
+            boolean hasInputRepresentation = false;
+            for(int p = 0; p < parameterTypes.length; p++) {
+            	for(int h = 0; h < params[p].length; h++) {
+                    Annotation annotation = params[p][h];
                     if(annotation instanceof QueryParam) {
                         QueryParam pathParam = (QueryParam) annotation;
-                        paramMappings.put(pathParam.value(), method.getParameterTypes()[j]);
-                        paramNames[j] = pathParam.value();
+                        paramMappings.put(pathParam.value(), method.getParameterTypes()[p]);
                     } else if(annotation instanceof URIParam) {
                     	URIParam urlParam = (URIParam) annotation;
-                        paramMappings.put(urlParam.value(), method.getParameterTypes()[j]);
-                        paramNames[j] = urlParam.value();
+                        paramMappings.put(urlParam.value(), method.getParameterTypes()[p]);
                         /*
-                         * Add a URI parameter type value
+                         * Add a URI parameter type value so that the proper regex can
+                         * be generated after the methods have been processed.
                          */
-                        invoker.addUriTemplateParamType(urlParam.value(), method.getParameterTypes()[j]);
+                        invoker.addUriTemplateParamType(urlParam.value(), 
+                        								method.getParameterTypes()[p]);
+                    } else if(annotation instanceof Type &&
+                    		  (Representation.class.isAssignableFrom(parameterTypes[p]) ||
+                    		   Message.class.isAssignableFrom(parameterTypes[p]))) {
+                    	Type type = (Type) annotation;
+                        paramMappings.put(REPRESENTATION, type.value());
+                        requestRespresentationType = type.value();
+                        hasInputRepresentation = true;
                     } 
-                    
-                    else if(annotation instanceof RepresentationIn) {
-                    	RepresentationIn representation = (RepresentationIn) annotation;
-                        Class<?> type = method.getParameterTypes()[j];
-                        if(!representation.type().equals(RepresentationIn.class)) {
-                        	type = representation.type();
-                        }
-                        paramNames[j] = representation.value();
-                        requestRespresentationType = type;
-                        requestMediaType = representation.mediaType();
-                        requestName = representation.value();
-                        paramMappings.put(representation.value(),type);
-                    }
                 }
             }
             MethodMapping mapping = new MethodMapping(method,paramMappings);
-            /*mapping.setResponseCode(response.responseCode());
-            mapping.setFailureResponseCode(response.failureResponseCode());*/
-            mapping.setRequestMediaType(requestMediaType);
-            mapping.setRequestRespresentationType(requestRespresentationType);
-            mapping.setRequestRespresentationId(requestName);
-            mapping.setResponseMediaType(responseMediaType);
-            MethodKey key = new MethodKey(httpMethod,disriminator);
+            String requestMediaType = null;
+			if(hasInputRepresentation) {
+				requestMediaType = getInputType(parentInputType,
+							method.getAnnotation(RepresentationIn.class));
+				mapping.setRequestMediaType(requestMediaType);
+	            mapping.setRequestRespresentationType(requestRespresentationType);
+	            mapping.setRequestRespresentationId(REPRESENTATION);
+			}
+            mapping.setResponseMediaType(qualityFactor.getMediaType());
+            MethodKey key = new MethodKey(httpMethod,disriminator,requestMediaType,qualityFactor.getMediaType());
             invoker.addMethodMapping(key,mapping);
             
         }	

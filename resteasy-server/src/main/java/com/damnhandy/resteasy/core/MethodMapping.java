@@ -17,35 +17,12 @@ public class MethodMapping<T> {
 	private final Method method;
 	private final Map<String,Class<?>> parameterMap;
     private String responseMediaType = "application/xml";
-    private Class<T> requestRespresentationType = null;
     private String requestMediaType = "application/xml";
+    private Class<T> requestRespresentationType = null;
     private String requestRespresentationId;
-    private int responseCode;
-    private int failureResponseCode;
-	/**
-	 * @return the failureResponseCode
-	 */
-	protected int getFailureResponseCode() {
-		return failureResponseCode;
-	}
-	/**
-	 * @param failureResponseCode the failureResponseCode to set
-	 */
-	protected void setFailureResponseCode(int failureResponseCode) {
-		this.failureResponseCode = failureResponseCode;
-	}
-	/**
-	 * @return the responseCode
-	 */
-	protected int getResponseCode() {
-		return responseCode;
-	}
-	/**
-	 * @param responseCode the responseCode to set
-	 */
-	protected void setResponseCode(int responseCode) {
-		this.responseCode = responseCode;
-	}
+    
+
+
 	/**
 	 * @param method
 	 * @param paramTypes

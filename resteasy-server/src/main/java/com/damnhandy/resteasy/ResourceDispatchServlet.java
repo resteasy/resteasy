@@ -2,7 +2,6 @@ package com.damnhandy.resteasy;
 
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.damnhandy.resteasy.common.HttpHeaders;
 import com.damnhandy.resteasy.core.ResourceDispatcher;
 import com.damnhandy.resteasy.core.ResourceInvoker;
 import com.damnhandy.resteasy.core.RestEasy;

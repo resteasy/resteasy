@@ -12,9 +12,6 @@ import org.apache.log4j.Logger;
 
 import com.damnhandy.resteasy.annotations.WebResource;
 import com.damnhandy.resteasy.annotations.WebResources;
-import com.damnhandy.resteasy.handler.JAXBRepresentationHandler;
-import com.damnhandy.resteasy.handler.PlainTextRepresentationHandler;
-import com.damnhandy.resteasy.handler.RepresentationHandler;
 import com.damnhandy.resteasy.scanner.WebResourceScanner;
 
 /**
@@ -29,11 +26,7 @@ public class ResourceDispatcher {
      */
     private Map<PatternKey,ResourceInvoker> routes =
             new ConcurrentHashMap<PatternKey,ResourceInvoker>();
-    /**
-     *
-     */
-    private Map<String,RepresentationHandler> handlers =
-            new ConcurrentHashMap<String,RepresentationHandler>();
+
     
     private ResourceDispatcher() {
        
@@ -51,48 +44,52 @@ public class ResourceDispatcher {
     	Set<Class<Object>> scannedClasses = new HashSet<Class<Object>>();
         scannedClasses.addAll( new WebResourceScanner("resteasy.properties").getClasses() );
         scannedClasses.addAll( new WebResourceScanner("META-INF/resteasy.properties").getClasses() );
+        scannedClasses.addAll( new WebResourceScanner("WEB-INF/resteasy.properties").getClasses() );
     	for(Class<Object> resourceClass : scannedClasses) {
+    		/*
+    		 * Process a Class that can respond to multiple WebReosurces
+    		 */
     		if(resourceClass.isAnnotationPresent(WebResources.class)) {
-    			logger.info("Found Resource Collection: "+resourceClass.getSimpleName());
+    			logger.info("Found WebResources Collection: "+resourceClass.getSimpleName());
     			WebResource[] resources = resourceClass.getAnnotation(WebResources.class).resources();
     			for(int i = 0; i < resources.length; i++) {
                     ResourceInvoker invoker = ResourceInvokerBuilder.createResourceInvoker(resourceClass,resources[i]);
                     routes.put(invoker.getPatternKey(), invoker);
     			}
-    		} else {
-    			logger.info("Found Resource: "+resourceClass.getSimpleName());
+    		} 
+    		/*
+    		 * Process a singular WebResource
+    		 */
+    		else if(resourceClass.isAnnotationPresent(WebResource.class)) {
+    			logger.info("Found WebResource: "+resourceClass.getSimpleName());
     			WebResource resource = resourceClass.getAnnotation(WebResource.class);
                 ResourceInvoker invoker = ResourceInvokerBuilder.createResourceInvoker(resourceClass,resource);
                 routes.put(invoker.getPatternKey(), invoker);
-    		}
+    		} 
+    		/*
+    		 * Process a RESTful Entity Bean
+    		 *
+    		else if(resourceClass.isAnnotationPresent(RestfulEntity.class)) {
+    			logger.info("Found RestfulEntity: "+resourceClass.getSimpleName());
+    			RestfulEntity restfulEntity = resourceClass.getAnnotation(RestfulEntity.class);
+                
+    			ResourceInvoker baseURIInvoker = 
+                	ResourceInvokerBuilder.createEntityResourceInvoker(resourceClass, 
+                			restfulEntity.resourceManager(),
+                			"baseURI",
+                			restfulEntity.baseURI());
+                routes.put(baseURIInvoker.getPatternKey(), baseURIInvoker);
+                
+                ResourceInvoker targetURIInvoker = 
+                	ResourceInvokerBuilder.createEntityResourceInvoker(resourceClass, 
+                			restfulEntity.resourceManager(),
+                			"targetURIInvoker",
+                			restfulEntity.instanceURI());
+                routes.put(targetURIInvoker.getPatternKey(), targetURIInvoker);
+    		}*/
         }
-        handlers.put("application/xml",new JAXBRepresentationHandler());
-        handlers.put("text/plain",new PlainTextRepresentationHandler());
     }
-    
-    
-    /**
-     * 
-     * @param mediaType
-     * @return
-     */
-    private RepresentationHandler findHandler(String mediaType) {
-        if(mediaType == null) {
-        	mediaType = "application/xml";
-        }
-    	RepresentationHandler handler = handlers.get(mediaType);
-        if(handler == null) {
-            handler = handlers.get("application/xml");
-        }
-        return handler;
-    }
-    
-    /**
-     *
-     */
-    public static RepresentationHandler findRepresentationHandler(String mediaType) {
-        return getInstance().findHandler(mediaType);
-    }
+
     
     /**
      * Finds the resource which matches this path fragment

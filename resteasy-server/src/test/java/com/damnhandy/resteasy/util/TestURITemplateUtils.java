@@ -71,7 +71,7 @@ public class TestURITemplateUtils {
 	}
 
 	/**
-	 * Test method for {@link com.damnhandy.resteasy.helper.URITemplateHelper#extractURLParameterValues(java.lang.String, java.util.regex.Pattern)}.
+	 * Test method for {@link com.damnhandy.resteasy.helper.URITemplateHelper#extractURLParameterValuesFromRequest(java.lang.String, java.util.regex.Pattern)}.
 	 */
 	@Test
 	public void testExtractURLParameterValues() {
@@ -82,14 +82,14 @@ public class TestURITemplateUtils {
 		String requestedPath = "/contacts/33445/addresses/12";
 		String result = URITemplateHelper.replaceURLTemplateIDs(path,types);
 		Assert.assertTrue("/contacts/(\\d+)/addresses/(\\d+)$".equals(result));
-		Map<Integer,String> positions = URITemplateHelper.extractURLParameterValues(requestedPath, Pattern.compile(result));
+		Map<Integer,String> positions = URITemplateHelper.extractURLParameterValuesFromRequest(requestedPath, Pattern.compile(result));
 		Assert.assertFalse(positions.isEmpty());
 		Assert.assertTrue(positions.get(new Integer(1)).equals("33445"));
 		Assert.assertTrue(positions.get(new Integer(2)).equals("12"));
 	}
 	
 	/**
-	 * Test method for {@link com.damnhandy.resteasy.helper.URITemplateHelper#extractURLParameterValues(java.lang.String, java.util.regex.Pattern)}.
+	 * Test method for {@link com.damnhandy.resteasy.helper.URITemplateHelper#extractURLParameterValuesFromRequest(java.lang.String, java.util.regex.Pattern)}.
 	 */
 	@Test
 	public void testExtractURLParameterValuesMixedTypes() {
@@ -100,7 +100,7 @@ public class TestURITemplateUtils {
 		String requestedPath = "/contacts/33445/addresses/12";
 		String result = URITemplateHelper.replaceURLTemplateIDs(path,types);
 		Assert.assertTrue("/contacts/(\\d+)/addresses/([^}]+)$".equals(result));
-		Map<Integer,String> positions = URITemplateHelper.extractURLParameterValues(requestedPath, Pattern.compile(result));
+		Map<Integer,String> positions = URITemplateHelper.extractURLParameterValuesFromRequest(requestedPath, Pattern.compile(result));
 		Assert.assertFalse(positions.isEmpty());
 		Assert.assertTrue(positions.get(new Integer(1)).equals("33445"));
 		Assert.assertTrue(positions.get(new Integer(2)).equals("12"));

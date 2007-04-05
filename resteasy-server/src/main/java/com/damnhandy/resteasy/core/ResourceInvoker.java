@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -16,8 +17,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBElement;
-
-import org.apache.log4j.Logger;
 
 import com.damnhandy.resteasy.annotations.HttpMethod;
 import com.damnhandy.resteasy.common.HttpHeaderNames;
@@ -27,6 +26,7 @@ import com.damnhandy.resteasy.exceptions.RespresentationHandlerException;
 import com.damnhandy.resteasy.handler.RepresentationHandler;
 import com.damnhandy.resteasy.handler.RepresentationHandlerFactory;
 import com.damnhandy.resteasy.helper.URITemplateHelper;
+import com.damnhandy.resteasy.representation.Representation;
 
 
 /**
@@ -41,15 +41,20 @@ import com.damnhandy.resteasy.helper.URITemplateHelper;
  */
 
 public abstract class ResourceInvoker {
-	private static final Logger logger = Logger.getLogger(ResourceInvoker.class);
+	//private static final Logger logger = Logger.getLogger(ResourceInvoker.class);
 	/**
 	 * The Class that will be invoked
 	 */
 	private Class<?> targetClass;
+	
+	/**
+	 * 
+	 */
+	private QualityValue[] qualityOfSource;
     /**
      * A Mapping of HTTP methods to Java methods
      */
-	private Map<MethodKey,MethodMapping> methods = new HashMap<MethodKey,MethodMapping>();
+	private Map<MethodKey,MethodMapping> methods = new LinkedHashMap<MethodKey,MethodMapping>();
     /**
      * Stores the position of the URI Template parameter name
      */
@@ -79,6 +84,7 @@ public abstract class ResourceInvoker {
     
     
     /**
+     * Returns the Java types for the URI Template parameter values
 	 * @return the uriTemplateParamTypes
 	 */
 	protected Map<String, Class<?>> getUriTemplateParamTypes() {
@@ -87,14 +93,14 @@ public abstract class ResourceInvoker {
 
 
 	/**
-	 * 
+	 * Adds the simple Java type of the URI template parameter. This value will
+	 * be used to create a regex that will match the Java type
 	 * @param name
 	 * @param type
 	 */
 	protected void addUriTemplateParamType(String name,Class<?> type) {
 		uriTemplateParamTypes.put(name,type);
 	}
-
 
 
 	/**
@@ -173,7 +179,7 @@ public abstract class ResourceInvoker {
         /*
          * A map that holds the method parameter name and value
          */
-		Map<String,Object> inputs = new HashMap<String,Object>();
+		Map<String,Object> inputs = new LinkedHashMap<String,Object>();
         /*
          * Find any request parameters that are needed by this method
          */
@@ -182,7 +188,7 @@ public abstract class ResourceInvoker {
          * Extract any template parameters from the URL
          */
         Map<Integer,String> pathValues = 
-        	URITemplateHelper.extractURLParameterValues(request.getPathInfo(), getPatternKey().getPattern());
+        	URITemplateHelper.extractURLParameterValuesFromRequest(request.getPathInfo(), getPatternKey().getPattern());
         /*
          * Merge the template params into the inputs map
          */
@@ -192,6 +198,8 @@ public abstract class ResourceInvoker {
         readRequest(request,mapping,inputs);
         return inputs;
 	}
+	
+	
 	/**
 	 * Returns the MethodMapping instance for the requested HTTP operation.
 	 * @param request
@@ -199,8 +207,15 @@ public abstract class ResourceInvoker {
 	 */
 	protected final MethodMapping findMethodMapping(HttpServletRequest request) {
 		String discriminator = request.getParameter(HttpMethod.DISCRIMINATOR_KEY);
-    	MethodKey key = new MethodKey(request.getMethod(),discriminator);
-    
+		String acceptHeader = request.getHeader(HttpHeaderNames.ACCEPT);
+		/*
+		 * TODO: find a way to test this better
+		 */
+		String outputType = ContentNegotiator.negotiateMediaType(acceptHeader, getQualityOfSource());
+    	MethodKey key = new MethodKey(request.getMethod(),
+    								  discriminator,
+    								  request.getContentType(),
+    								  outputType);
         MethodMapping mapping = getMethods().get(key);
         if(mapping == null) {
         	throw new HttpMethodInvocationException("The method is not allowed for this resource.",HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -216,9 +231,7 @@ public abstract class ResourceInvoker {
      * @param response the HttpServletResponse
      */
     public void invoke(HttpServletRequest request, HttpServletResponse response)
-        throws HttpMethodInvocationException {
-    	
-    	HttpHeaders headers = extractHttpHeadersFromRequest(request);
+        throws HttpMethodInvocationException {    	
     	MethodMapping mapping = findMethodMapping(request);
 		Map<String,Object> inputs = extractInputsFromRequest(request,mapping);
     	try {
@@ -230,7 +243,11 @@ public abstract class ResourceInvoker {
 		}
     }
 
-    
+    /**
+     * 
+     * @param request
+     * @return
+     */
     private HttpHeaders extractHttpHeadersFromRequest(HttpServletRequest request) {
     	HttpHeaders headers = new HttpHeaders();
     	Enumeration headerNames = request.getHeaderNames();
@@ -241,6 +258,8 @@ public abstract class ResourceInvoker {
     	}
     	return headers;
     }
+    
+    
     /**
      * Parses the input stream to extract the input data and Unmarshall it
      * to it Java type
@@ -248,46 +267,64 @@ public abstract class ResourceInvoker {
      * @param mapping
      * @param inputs
      */
-    protected void readRequest(HttpServletRequest request,MethodMapping mapping,Map<String,Object> inputs) {
+    @SuppressWarnings("unchecked")
+	protected void readRequest(HttpServletRequest request,MethodMapping mapping,Map<String,Object> inputs) {
     	String method = request.getMethod();
+    	
+    	
     	if((method.equals("PUT") || 
             method.equals("POST"))) {
-    		/*
-    		 * Check the the media types match
-    		 */
-    						
-			if(request.getContentType() != null &&  
-			   request.getContentType().equals(mapping.getRequestMediaType())) {
+    		Object requestValue = null;
+			String contentType = request.getContentType();
+    		HttpHeaders headers = extractHttpHeadersFromRequest(request);
+			/*
+			 * Just suck out the parameterMap if the content type is application/x-www-form-urlencoded 
+			 */
+			if(request.getContentType().equals("application/x-www-form-urlencoded")) {
+				requestValue = request.getParameterMap();
+			} 
+			/*
+			 * Otherwise, extract the entity from the InputStream
+			 */
+			else {
 				RepresentationHandlerFactory factory = RepresentationHandlerFactory.instance();
-				RepresentationHandler<?> requestHandler = factory.getHandlerByMimeType(request.getContentType());
+				RepresentationHandler<?> requestHandler = factory.getHandlerByMimeType(contentType);
 				if(requestHandler == null) {
 					throw new HttpMethodInvocationException("The input media type "+mapping.getRequestMediaType()+
 															" is not supported for this operation,",
 															 HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
 				}
-				if(logger.isDebugEnabled()) {
-					logger.debug("Handing "+request.getMethod()+" method...");
-				}
 				try {
-					Object requestValue =
-							requestHandler.handleRequest(request.getInputStream(), 
-														 mapping.getRequestRespresentationType());
-					inputs.put(mapping.getRequestRespresentationId(),requestValue);
+					requestValue = requestHandler.handleRequest(request.getInputStream(), 
+														        mapping.getRequestRespresentationType(),
+														        headers);
+					
 				} catch (IOException e) {
 					throw new RespresentationHandlerException("",e);
 				}
+				inputs.put(mapping.getRequestRespresentationId(),requestValue);
 			}
-			/*
+    	}
+    	
+    	/*
+    	 * 
+    		String contentType = request.getContentType();
+			if(contentType != null &&  
+			   request.getContentType().equals(mapping.getRequestMediaType())) {
+				
+				}
+			}
+			*
 			 * If the requested content type does not match the methods media type, 
 			 * a 415 error is thrown.
-			 */
+			 *
 			else {
 				throw new HttpMethodInvocationException("The server is refusing to service the request because the entity " +
 						"of the request is in a format ("+request.getContentType()
 						+")not supported by the requested resource for the requested method.",
 							HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
 			}
-    	}
+    	 */
     } 
     
         
@@ -299,59 +336,88 @@ public abstract class ResourceInvoker {
      * @param result
      * @param mediaType
      */
-    protected void writeResponse(HttpServletRequest request,
+    @SuppressWarnings("unchecked")
+	protected void writeResponse(HttpServletRequest request,
     							 HttpServletResponse response,
     							 Object result,
     							 MethodMapping<?> mapping) {
     	try {
-    		String mediaType = mapping.getResponseMediaType();
-			/*
-			 * If the result is null, there is no need to write a response.
-			 */
-			if(result != null) {
-				/*
-				 * If the Response code indicates that the new resources was created
-				 * and the return type is a URL, we issue a 204 and return the URL
-				 * in the Location header.
-				 */
-				if(result instanceof URL) {
-					URL location = (URL) result;
-					response.setStatus(HttpServletResponse.SC_CREATED);
-					response.setHeader(HttpHeaderNames.LOCATION, location.toString());
-				} 
-				/*
-				 * If the result is not null and not a URL, we look up the
-				 * desired return media type to find an appropriate RepresentationHandler.
-				 */
-				else {
-					RepresentationHandlerFactory factory = RepresentationHandlerFactory.instance();
-					RepresentationHandler handler = factory.getHandlerByMimeType(mediaType);
-					if(handler == null) {
-						throw new HttpMethodInvocationException("The response media type "+mediaType+
-																" is not supported for this operation,",
-																 HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
-					}
-					response.setContentType(mediaType);
-				    handler.handleResponse(response.getOutputStream(), result);
-				    response.setStatus(HttpServletResponse.SC_OK);
-				}
-			}
-			/*
-			 * If the result is null, it is most likely that the requested ID does not exist 
-			 * and a 404 should be returned.
-			 */
-			else if(result == null && request.getMethod().equals("GET")) {
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			}
-			/*
-			 * If the method has not return value and does not return a new
-			 * location, the server should return a 204
-			 */
-			else if(result == null && 
-					(request.getMethod().equals("POST") ||
-					 request.getMethod().equals("PUT"))) {
-				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-			}
+    		/*
+    		 * 
+    		 */
+    		if(result instanceof Representation<?>) {
+        		Representation<?> representation = (Representation<?>) result;
+        		response.setContentType(representation.getMediaType());
+        		response.addHeader(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(representation.getLength()));
+        		/*
+        		 * Last-Modified values should be set together
+        		 */
+        		if(representation.getLastModified() != null && request.getQueryString() == null) {
+        			Long lastModified = representation.getLastModified().getTime();
+        			response.addDateHeader(HttpHeaderNames.LAST_MODIFIED,lastModified);
+        			if(representation.getETag() != null) {
+            			response.addHeader(HttpHeaderNames.ETAG, representation.getETag());
+            		}
+          		}
+        		if(representation.getExpires() != null) {
+        			response.addDateHeader(HttpHeaderNames.EXPIRES, representation.getExpires().getTime());
+        		}
+        		representation.writeTo(response.getOutputStream());
+        		response.setStatus(HttpServletResponse.SC_OK);
+        	} 
+    		
+    		else {
+        		String mediaType = mapping.getResponseMediaType();
+    			/*
+    			 * If the result is null, there is no need to write a response.
+    			 */
+    			if(result != null) {
+    				/*
+    				 * If the Response code indicates that the new resources was created
+    				 * and the return type is a URL, we issue a 204 and return the URL
+    				 * in the Location header.
+    				 */
+    				if(result instanceof URL) {
+    					URL location = (URL) result;
+    					response.setStatus(HttpServletResponse.SC_CREATED);
+    					response.setHeader(HttpHeaderNames.LOCATION, location.toString());
+    				} 
+    				/*
+    				 * If the result is not null and not a URL, we look up the
+    				 * desired return media type to find an appropriate RepresentationHandler.
+    				 */
+    				else {
+    					RepresentationHandlerFactory factory = RepresentationHandlerFactory.instance();
+    					RepresentationHandler handler = factory.getHandlerByMimeType(mediaType);
+    					if(handler == null) {
+    						throw new HttpMethodInvocationException("The response media type "+mediaType+
+    																" is not supported for this operation,",
+    																 HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
+    					}
+    					response.setContentType(mediaType);
+    				    handler.handleResponse(response.getOutputStream(), result);
+    				    response.setStatus(HttpServletResponse.SC_OK);
+    				}
+    			}
+    			/*
+    			 * If the result is null, it is most likely that the requested ID does not exist 
+    			 * and a 404 should be returned.
+    			 */
+    			else if(result == null && request.getMethod().equals("GET")) {
+    				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    			}
+    			/*
+    			 * If the method has not return value and does not return a new
+    			 * location, the server should return a 204
+    			 */
+    			else if(result == null && 
+    					(request.getMethod().equals("POST") ||
+    					 request.getMethod().equals("PUT"))) {
+    				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+    			}
+        	}
+    		
+    		
 		} catch (IOException e) {
 			throw new RespresentationHandlerException("",e);
 		}
@@ -439,9 +505,10 @@ public abstract class ResourceInvoker {
 	   }
 	   if(targetType.isInstance(input)) {
            return input;
-       } 
+       }
        else if(mapping.getRequestRespresentationType() != null &&
-                 mapping.getRequestRespresentationType().isInstance(input)) {
+               mapping.getRequestRespresentationType().equals(targetType) &&
+               input instanceof Representation) {
            return input;
        } 
        else if(input instanceof JAXBElement) {
@@ -452,7 +519,6 @@ public abstract class ResourceInvoker {
            else {
                throw new HttpMethodInvocationException("type mismatch!",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
            }
-           
        }
        else {
            try {
@@ -485,6 +551,24 @@ public abstract class ResourceInvoker {
 	 */
 	protected void setPatternKey(PatternKey patternKey) {
 		this.patternKey = patternKey;
+	}
+
+
+
+	/**
+	 * @return the qualityOfSource
+	 */
+	protected QualityValue[] getQualityOfSource() {
+		return qualityOfSource;
+	}
+
+
+
+	/**
+	 * @param qualityOfSource the qualityOfSource to set
+	 */
+	protected void setQualityOfSource(QualityValue[] qualityOfSource) {
+		this.qualityOfSource = qualityOfSource;
 	}
 	
 }

@@ -9,25 +9,24 @@ import javassist.bytecode.ClassFile;
 import org.apache.log4j.Logger;
 
 import com.damnhandy.resteasy.annotations.RestfulEntity;
-import com.damnhandy.resteasy.annotations.WebResource;
-import com.damnhandy.resteasy.annotations.WebResources;
 import com.damnhandy.resteasy.common.Scanner;
 
 /**
  * 
- * @author ryan
+ * @author Ryan J. McDonough
+ * @since 1.0
  *
  */
-public class WebResourceScanner extends Scanner {
-	private static final Logger log = Logger.getLogger(WebResourceScanner.class);
+public class RestfulEntityScanner extends Scanner {
+	private static final Logger log = Logger.getLogger(RestfulEntityScanner.class);
 
 	private Set<Class<Object>> classes;
 
-	public WebResourceScanner(String resourceName) {
+	public RestfulEntityScanner(String resourceName) {
 		super(resourceName);
 	}
 
-	public WebResourceScanner(String resourceName, ClassLoader classLoader) {
+	public RestfulEntityScanner(String resourceName, ClassLoader classLoader) {
 		super(resourceName, classLoader);
 	}
 
@@ -53,12 +52,10 @@ public class WebResourceScanner extends Scanner {
 			try {
 				ClassFile classFile = getClassFile(name);
 
-				if ((hasAnnotation(classFile, WebResource.class) || 
-					 hasAnnotation(classFile, WebResources.class)  ||
-					 hasAnnotation(classFile, RestfulEntity.class)) || 
+				if ((hasAnnotation(classFile, RestfulEntity.class)) || 
 					classLoader.getResources(filename).hasMoreElements()) {
 					if (log.isDebugEnabled()) {
-						log.info("Found Resource: " + name);
+						log.info("Found RestfulEntity: " + name);
 					}
 					classes.add((Class<Object>) classLoader.loadClass(classname));
 				}

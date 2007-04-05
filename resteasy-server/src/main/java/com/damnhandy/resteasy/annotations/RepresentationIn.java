@@ -16,15 +16,9 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER})
+@Target({ElementType.PARAMETER,ElementType.METHOD,ElementType.TYPE})
 public @interface RepresentationIn {
-    
-	/**
-	 * 
-	 * @return
-	 */
-    public String value();
-
+   
     /**
      * Specified the media type of the representation. By default,
      * the value is <code>application/xml</code>. If you need a 
@@ -32,7 +26,7 @@ public @interface RepresentationIn {
      * 
      * @return the media type for the representation
      */
-    public String mediaType() default "application/xml";
+    public String value() default "application/xml";
     
     /**
      * Used by MessageDriven WebResources to declare the type of the Object

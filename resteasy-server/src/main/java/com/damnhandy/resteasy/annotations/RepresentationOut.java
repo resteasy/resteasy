@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD,ElementType.TYPE})
 public @interface RepresentationOut {
 
 	/**
@@ -25,9 +25,22 @@ public @interface RepresentationOut {
 	 * is used.
 	 * @return
 	 */
-	public String mediaType() default "application/xml";
+	public String value() default "application/xml";
 	
+	/**
+	 * An optional file extention that can be used to demand the
+	 * media media type, bypassing content negotiation. By default,
+	 * no value is specified.
+	 * @return
+	 */
+	public String ext() default "";
 	
+	/**
+	 * Defines the quality of source for this media type. The default 
+	 * value is 0.8
+	 * @return
+	 */
+	public float qs() default 0.8f;
 	
 	
 }

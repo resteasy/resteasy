@@ -18,7 +18,9 @@ import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.damnhandy.resteasy.common.HttpHeaderNames;
 import com.damnhandy.resteasy.exceptions.HttpMethodInvocationException;
+import com.damnhandy.resteasy.representation.Representation;
 
 /**
  * A ResourceInvoker that publishes the representation to a JMS queue. 
@@ -121,13 +123,23 @@ public class MDBQueueInvoker extends ResourceInvoker {
 		ObjectMessage message = null;
 		try {
 			Object object = inputs.get(mapping.getRequestRespresentationId());
-			if(object instanceof Serializable) {
-				Serializable messageBody = (Serializable) object;
+			if(object instanceof Representation) {
+				Representation representation = (Representation) object;
 				message = session.createObjectMessage();
-				message.setObject(messageBody);
+				try {
+					Serializable body = Serializable.class.cast(representation.getContent());
+					message.setObject(body);
+					message.setLongProperty(HttpHeaderNames.LAST_MODIFIED, representation.getLastModified().getTime());
+					message.setLongProperty(HttpHeaderNames.CONTENT_LENGTH, representation.getLength());
+					message.setStringProperty(HttpHeaderNames.CONTENT_LENGTH, representation.getMediaType());
+				} catch(ClassCastException e) {
+					throw new HttpMethodInvocationException("The type "+object.getClass().getSimpleName()+
+							" is not a Serizable instance and cannot be placed in a JMS message.",500);
+				}
+				
 			} else {
 				throw new HttpMethodInvocationException("The type "+object.getClass().getSimpleName()+
-						" is not a Serizable instance and cannot be placed in a JMS message.",500);
+						" is not a Representation instance and the message body cannot be acquired.",500);
 			}
 		} catch (JMSException e) {
 			throw new HttpMethodInvocationException("",e);

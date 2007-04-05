@@ -10,6 +10,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
+import com.damnhandy.resteasy.core.ResourceInvoker;
+
 
 /**
  * A utility class for handling URI template parameters. As the Java
@@ -22,7 +26,7 @@ import java.util.regex.Pattern;
  *
  */
 public class URITemplateHelper {
-
+	public static final Logger logger = Logger.getLogger(URITemplateHelper.class);
 	/**
 	 * The default regex group for URI template parameters
 	 */
@@ -46,7 +50,7 @@ public class URITemplateHelper {
      * it can extract the the URI template parameter values.
 	 * @param path
 	 * @return a map
-	 * @see #extractURLParameterValues(String, Pattern) 
+	 * @see #extractURLParameterValuesFromRequest(String, Pattern) 
 	 * @see com.damnhandy.resteasy.core.ResourceInvoker
 	 */
 	public static Map<String,Integer> extractURLTemplateNames(String path) {
@@ -72,7 +76,7 @@ public class URITemplateHelper {
 	 * @return a Map of 
 	 * @see #extractURLTemplateNames(String)
 	 */	
-	public static Map<Integer,String> extractURLParameterValues(String path,Pattern pattern) {
+	public static Map<Integer,String> extractURLParameterValuesFromRequest(String path,Pattern pattern) {
 		Matcher matcher = pattern.matcher(path);
 		Set<String> names = new LinkedHashSet<String>();
 		int count = matcher.groupCount();
@@ -100,16 +104,30 @@ public class URITemplateHelper {
 	 * @param orginalPathExpression
 	 * @return
 	 */
-	public static String replaceURLTemplateIDs(String orginalPathExpression,Map<String, Class<?>> uriParamTypes) {
+	public static String replaceURLTemplateIDs(String orginalPathExpression,
+											   Map<String, Class<?>> uriParamTypes) {
 		Matcher matcher = URI_TEMPLATE_PATTERN.matcher(orginalPathExpression);
 		StringBuffer reviesedPath = new StringBuffer();
 		int count = 1;
 		while (matcher.find()) {
 			String value = matcher.group();
 			value = value.substring(1,(value.length() - 1));
-			if(Number.class.isAssignableFrom(uriParamTypes.get(value))) {
+			/*
+			 * Ensures that the regex matched a numeric type of the template
+			 * value is a number
+			 */
+			Class parameterType = uriParamTypes.get(value);
+			if(parameterType != null && Number.class.isAssignableFrom(parameterType)) {
+				logger.info(value+" is a numeric type:");
 				matcher.appendReplacement(reviesedPath, Matcher.quoteReplacement(NUMERIC_URI_PARAM_PATTERN));
-			} else {
+			} 
+			/*
+			 * Otherwise, a general String expression is used.
+			 */
+			else {
+				if(parameterType == null) {
+					logger.warn("Java type for URI param "+value+" was NULL!");
+				}
 				matcher.appendReplacement(reviesedPath, Matcher.quoteReplacement(DEFAULT_URI_PARAM_PATTERN));
 			}
 			count++;

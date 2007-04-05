@@ -5,8 +5,12 @@ package com.damnhandy.resteasy.core;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 
 import com.damnhandy.resteasy.ConfigurationException;
+import com.damnhandy.resteasy.exceptions.HttpMethodInvocationException;
 
 /**
  * @author Ryan J. McDonough
@@ -14,7 +18,7 @@ import com.damnhandy.resteasy.ConfigurationException;
  *
  */
 public class EJBResourceInvoker extends ResourceInvoker {
-	
+	private static final Logger logger = Logger.getLogger(EJBResourceInvoker.class);
 	private Class<?> beanClass;
 	private String jndiName;
 	private InitialContext ctx;
@@ -38,54 +42,6 @@ public class EJBResourceInvoker extends ResourceInvoker {
 
 	
 	
-	/** 
-	 *
-	 * @see com.damnhandy.resteasy.core.ResourceInvoker#invoke(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 *
-	@Override
-	public void invoke(HttpServletRequest request, HttpServletResponse response) throws HttpMethodInvocationException {
-		UserTransaction ut = null;
-		String discriminator = request.getParameter(HttpMethod.DISCRIMINATOR_KEY);
-    	MethodKey key = new MethodKey(request.getMethod(),discriminator);
-        MethodMapping mapping = getMethods().get(key);
-		try {
-			
-			Response responseConfig = mapping.getMethod().getAnnotation(Response.class);
-			if(responseConfig != null && responseConfig.extendTxn()) {
-				ut = (UserTransaction) ctx.lookup("UserTransaction");	
-				ut.begin();
-			}
-			super.invoke(request, response);
-			
-		} catch (SecurityException e) {
-			 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-		} catch (IllegalStateException e) {
-			 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-		} catch (NamingException e) {
-			 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-		} catch (NotSupportedException e) {
-			 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-		} catch (SystemException e) {
-			 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-		} finally {
-			if(ut != null) {
-				try {
-					ut.commit();
-				}  catch (IllegalStateException e) {
-					 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-				} catch (RollbackException e) {
-					 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-				} catch (HeuristicMixedException e) {
-					 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-				} catch (HeuristicRollbackException e) {
-					 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-				} catch (SystemException e) {
-					 throw new HttpMethodInvocationException("",HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-				}
-			}
-		}
-		
-	}*/
 
 	/**
 	 * 
@@ -97,7 +53,8 @@ public class EJBResourceInvoker extends ResourceInvoker {
 		try {
 			target = ctx.lookup(jndiName);
 		} catch (NamingException e) {
-			
+			logger.error("NamingException while getting EJB ("+jndiName+") to invoke: "+e.getMessage(), e);
+			throw new HttpMethodInvocationException("NamingException while getting EJB ("+jndiName+") to invoke: "+e.getMessage(),HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
 		}
 		return target;
 	}
