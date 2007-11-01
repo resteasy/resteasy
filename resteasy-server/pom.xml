@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<!-- Just seeing if SVN commits work or whether i have to use CVS: Bill -->
 <project
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
