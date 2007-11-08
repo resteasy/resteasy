@@ -154,13 +154,12 @@
 			<version>5.5.15</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<version>5.0.0-SNAPSHOT</version>
+      <dependency>
+			<groupId>javaee</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>5</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>

@@ -353,15 +353,16 @@ public abstract class ResourceInvoker {
         		 * Last-Modified values should be set together
         		 */
         		if(representation.getLastModified() != null && request.getQueryString() == null) {
-        			Long lastModified = representation.getLastModified().getTime();
+        			Long lastModified = representation.getLastModified().getTime().getTime();
         			response.addDateHeader(HttpHeaderNames.LAST_MODIFIED,lastModified);
         			if(representation.getETag() != null) {
             			response.addHeader(HttpHeaderNames.ETAG, representation.getETag());
             		}
           		}
-        		if(representation.getExpires() != null) {
+             /*
+              if(representation.getExpires() != null) {
         			response.addDateHeader(HttpHeaderNames.EXPIRES, representation.getExpires().getTime());
-        		}
+        		}*/
         		representation.writeTo(response.getOutputStream());
         		response.setStatus(HttpServletResponse.SC_OK);
         	} 

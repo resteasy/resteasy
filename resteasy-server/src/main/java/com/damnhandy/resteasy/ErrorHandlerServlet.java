@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.damnhandy.resteasy.common.HttpHeaderNames;
-import com.damnhandy.resteasy.grammar.Fault;
+//import com.damnhandy.resteasy.grammar.Fault;
 import com.damnhandy.resteasy.representation.JAXBRepresentation;
 import com.damnhandy.resteasy.representation.Representation;
 
@@ -31,7 +31,8 @@ public class ErrorHandlerServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		Fault fault = new Fault();
+      /*
+      Fault fault = new Fault();
 		Object e = request.getAttribute(Fault.EXCEPTION);
 		if(e != null && e instanceof Exception) {
 			Exception exception = (Exception) e;
@@ -47,7 +48,9 @@ public class ErrorHandlerServlet extends HttpServlet {
 		response.setDateHeader(HttpHeaderNames.DATE, System.currentTimeMillis());
 		Representation<Fault> representation = new JAXBRepresentation<Fault>(fault);
 		representation.writeTo(response.getOutputStream());
-	}
+		*/
+      response.getOutputStream().println("THERE WAS AN ERROR, We need to add back the Fault handling");
+   }
 	/**
 	 * 
 	 * @param e

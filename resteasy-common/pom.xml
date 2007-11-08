@@ -116,10 +116,13 @@
 			<id>softeu-repo</id>
 			<url>http://maven.softeu.cz/</url>
 		</repository>
+      <repository>
+         <id>damn handy</id>
+         <url>http://repository.damnhandy.com/snapshots</url>
+      </repository>
 
 	</repositories>
 	<dependencies>
-
 		<dependency>
 			<groupId>sojo</groupId>
 			<artifactId>sojo</artifactId>

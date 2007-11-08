@@ -129,7 +129,7 @@ public class MDBQueueInvoker extends ResourceInvoker {
 				try {
 					Serializable body = Serializable.class.cast(representation.getContent());
 					message.setObject(body);
-					message.setLongProperty(HttpHeaderNames.LAST_MODIFIED, representation.getLastModified().getTime());
+					message.setLongProperty(HttpHeaderNames.LAST_MODIFIED, representation.getLastModified().getTime().getTime());
 					message.setLongProperty(HttpHeaderNames.CONTENT_LENGTH, representation.getLength());
 					message.setStringProperty(HttpHeaderNames.CONTENT_LENGTH, representation.getMediaType());
 				} catch(ClassCastException e) {
