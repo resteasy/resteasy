@@ -1,13 +1,13 @@
-<?xml version="1.0"?>
-<project
-	xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.damnhandy</groupId>
-	<artifactId>resteasy-server</artifactId>
-	<name>resteasy-server</name>
+	<artifactId>jsr311-api</artifactId>
+	<name>jsr311-api</name>
+	<packaging>jar</packaging>
 	<version>1.0.0-SNAPSHOT</version>
+
 	<url>http://resteasy.damnhamdy.com</url>
 	<licenses>
 		<license>
@@ -28,7 +28,7 @@
 			<timezone>-5</timezone>
 		</developer>
 	</developers>
-	
+
 	<contributors>
 		<contributor>
 			<name>Ryan J. McDonough</name>
@@ -42,12 +42,7 @@
 				scpexe://damnhandy.com/home/dh_host/repository.damnhandy.com/snapshots
 			</url>
 		</snapshotRepository>
-		<site>
-			<id>damnhandy.website</id>
-			<url>
-				scp://damnhandy.com/home/dh_host/resteasy.damnhandy.com
-			</url>
-		</site>
+
 	</distributionManagement>
 	<scm>
 		<connection>
@@ -58,6 +53,13 @@
 		</developerConnection>
 	</scm>
 	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
@@ -74,7 +76,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<!--
 				<executions>
 					<execution>
 						<phase>process-classes</phase>
@@ -83,7 +84,6 @@
 						</goals>
 					</execution>
 				</executions>
-				-->
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -102,20 +102,12 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>damnhandy.snapshots</id>
-			<url>http://repository.damnhandy.com/snapshots/</url>
-		</repository>
-		<repository>
 			<id>java.net</id>
 			<url>
 				https://maven-repository.dev.java.net/nonav/repository
 			</url>
 			<layout>legacy</layout>
 		</repository>
-        <repository>
-            <id>glassfish</id>
-            <url>http://download.java.net/maven/1</url>
-        </repository>
 		<repository>
 			<id>jboss.com</id>
 			<url>http://repository.jboss.com/maven2</url>
@@ -124,74 +116,28 @@
 			<id>softeu-repo</id>
 			<url>http://maven.softeu.cz/</url>
 		</repository>
-		
+      <repository>
+         <id>damn handy</id>
+         <url>http://repository.damnhandy.com/snapshots</url>
+      </repository>
 
 	</repositories>
 	<dependencies>
-		<dependency>
-			<groupId>com.damnhandy</groupId>
-  			<artifactId>resteasy-common</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-        <dependency>
-            <groupId>com.damnhandy</groupId>
-              <artifactId>jsr311-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
 		<dependency>
 			<groupId>sojo</groupId>
 			<artifactId>sojo</artifactId>
 			<version>0.4.0</version>
 		</dependency>
-	
-		<dependency>
-			<groupId>jboss.seam</groupId>
-			<artifactId>jboss-seam</artifactId>
-			<version>1.2.0.GA</version>
-		</dependency>
-
 		<dependency>
 			<groupId>jboss</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.4.ga</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>tomcat</groupId>
-			<artifactId>jasper-runtime</artifactId>
-			<version>5.5.15</version>
-			<scope>provided</scope>
-		</dependency>
-        <dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-        <dependency>
-			<groupId>javax.ejb</groupId>
-			<artifactId>ejb-api</artifactId>
-			<version>3.0</version>
-			<scope>provided</scope>
-		</dependency>
-        <dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>persistence-api</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.1</version>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 			<version>2.1.2</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
