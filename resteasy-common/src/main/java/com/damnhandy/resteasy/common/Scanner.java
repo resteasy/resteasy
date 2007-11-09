@@ -89,7 +89,7 @@ public abstract class Scanner
                }
                urlPath = dirOrArchive.getParent();
             }
-            log.info("scanning: " + urlPath);
+            log.debug("scanning: " + urlPath);
             File file = new File(urlPath);
             if ( file.isDirectory() )
             {

@@ -112,6 +112,10 @@
 			</url>
 			<layout>legacy</layout>
 		</repository>
+        <repository>
+            <id>glassfish</id>
+            <url>http://download.java.net/maven/1</url>
+        </repository>
 		<repository>
 			<id>jboss.com</id>
 			<url>http://repository.jboss.com/maven2</url>
@@ -154,10 +158,22 @@
 			<version>5.5.15</version>
 			<scope>provided</scope>
 		</dependency>
-      <dependency>
-			<groupId>javaee</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>5</version>
+        <dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+        <dependency>
+			<groupId>javax.ejb</groupId>
+			<artifactId>ejb-api</artifactId>
+			<version>3.0</version>
+			<scope>provided</scope>
+		</dependency>
+        <dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -166,7 +182,6 @@
 			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>

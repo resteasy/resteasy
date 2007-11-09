@@ -83,7 +83,7 @@
 	</logger>
 	
 	<root>
-		<priority value="debug" />
+		<priority value="info" />
 		<appender-ref ref="console" />
 		<appender-ref ref="junits" />
 	</root>

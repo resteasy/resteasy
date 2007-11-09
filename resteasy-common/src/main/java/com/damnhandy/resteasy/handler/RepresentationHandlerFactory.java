@@ -105,7 +105,7 @@ public class RepresentationHandlerFactory {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		logger.info("Initialized "+handlerMap.size()+" handlers");
+		logger.debug("Initialized "+handlerMap.size()+" handlers");
 	}
 	
 	/**
@@ -133,7 +133,7 @@ public class RepresentationHandlerFactory {
 		throws InstantiationException, IllegalAccessException {
 		RepresentationHandler handler =  (RepresentationHandler) handlerClass.newInstance();
 		handlerMap.put(counter, handler);
-		logger.info("Loaded RepresentationHandler: "+ handlerClass.getSimpleName());
+		logger.debug("Loaded RepresentationHandler: "+ handlerClass.getSimpleName());
 		return counter;
 	}
 }

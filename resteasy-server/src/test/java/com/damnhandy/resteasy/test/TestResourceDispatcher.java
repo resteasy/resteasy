@@ -6,6 +6,11 @@ package com.damnhandy.resteasy.test;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
+import com.damnhandy.resteasy.core.ResourceDispatcher;
+import com.damnhandy.resteasy.core.ResourceInvoker;
+import com.damnhandy.resteasy.test.mock.MockHttpServletResponse;
+import com.damnhandy.resteasy.test.mock.MockHttpServletRequest;
 
 /**
  * @author Ryan J. McDonough
@@ -28,28 +33,20 @@ public class TestResourceDispatcher {
 	public void tearDown() throws Exception {
 	}
 
-	/**
-	 * Test method for {@link com.damnhandy.resteasy.core.ResourceDispatcher#init()}.
-	 */
-	@Test
-	public void testInit() {
-		
-	}
+    @Test
+    public void testResourceInvocation() throws Exception {
+        ResourceDispatcher dispatcher = ResourceDispatcher.getInstance();
+        dispatcher.processClass(DummyResource.class);
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/dummy");
+        request.addParameter("echo", "hello world");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setPathInfo("/dummy");
+        ResourceInvoker invoker = ResourceDispatcher.getInstance().findResourceInvoker(request.getPathInfo());
+        Assert.assertNotNull(invoker);
+        invoker.invoke(request, response);
 
-	/**
-	 * Test method for {@link com.damnhandy.resteasy.core.ResourceDispatcher#findRepresentationHandler(java.lang.String)}.
-	 */
-	@Test
-	public void testFindRepresentationHandler() {
-		
-	}
 
-	/**
-	 * Test method for {@link com.damnhandy.resteasy.core.ResourceDispatcher#findResourceInvoker(java.lang.String)}.
-	 */
-	@Test
-	public void testFindResourceInvoker() {
-		
-	}
+
+    }
 
 }
