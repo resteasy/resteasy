@@ -1,5 +1,7 @@
 package org.resteasy;
 
+import org.resteasy.specimpl.MultivaluedMapImpl;
+
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.OutputStream;
 

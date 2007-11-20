@@ -1,13 +1,14 @@
 package org.resteasy;
 
+import org.resteasy.specimpl.UriInfoImpl;
+
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.InputStream;
 
 /**
- *
  * Abstraction for an inbound http request on the server, or a response from a server to a client
- *
+ * <p/>
  * We have this abstraction so that we can reuse marshalling objects in a client framework and serverside framework
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

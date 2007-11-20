@@ -1,5 +1,9 @@
 package org.resteasy;
 
+import org.resteasy.specimpl.UriInfoImpl;
+import org.resteasy.spi.ResourceFactory;
+import org.resteasy.util.HttpHeaderNames;
+
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
@@ -86,9 +90,9 @@ public class ResourceInvoker {
             if ((query = findAnnotation(annotations, QueryParam.class)) != null) {
                 params[i] = new QueryParamExtractor(method, query.value(), type, defaultVal);
             } else if ((header = findAnnotation(annotations, HeaderParam.class)) != null) {
-                params[i] = new HeaderParamExtractor(method, query.value(), type, defaultVal);
+                params[i] = new HeaderParamExtractor(method, header.value(), type, defaultVal);
             } else if ((uriParam = findAnnotation(annotations, UriParam.class)) != null) {
-                params[i] = new UriParamExtractor(method, query.value(), type, defaultVal);
+                params[i] = new UriParamExtractor(method, uriParam.value(), type, defaultVal);
             } else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null) {
                 params[i] = new MatrixParamExtractor(method, matrix.value(), type, defaultVal);
             } else if (findAnnotation(annotations, HttpContext.class) != null) {
@@ -111,7 +115,7 @@ public class ResourceInvoker {
         for (int i : uriParams.keySet()) {
             String paramName = uriParams.get(i);
             String value = uriInfo.getPathSegments().get(i).getPath();
-            uriInfo.getQueryParameters().add(paramName, value);
+            uriInfo.getTemplateParameters().add(paramName, value);
         }
         if (params != null && params.length > 0) {
             args = new Object[params.length];
@@ -146,25 +150,22 @@ public class ResourceInvoker {
         if (contentType == null) {
             matches = true;
         } else {
-            if (consumes == null || consumes.length == 0)
-            {
+            if (consumes == null || consumes.length == 0) {
                 matches = true;
-            }
-            else
-            {
-            for (MediaType type : consumes) {
-                if (type.isCompatible(contentType)) {
-                    matches = true;
-                    break;
+            } else {
+                for (MediaType type : consumes) {
+                    if (type.isCompatible(contentType)) {
+                        matches = true;
+                        break;
+                    }
                 }
-            }
             }
         }
         if (!matches) return false;
         matches = false;
         if (accepts == null || accepts.size() == 0) return true;
         if (produces == null || produces.length == 0) return true;
-        
+
         for (MediaType accept : accepts) {
             for (MediaType type : produces) {
                 if (type.isCompatible(accept)) {
@@ -178,6 +179,8 @@ public class ResourceInvoker {
 
     public MediaType matchByType(List<MediaType> accepts) {
         if (accepts == null || accepts.size() == 0) return produces[0];
+
+        if (produces == null || produces.length == 0) return accepts.get(0);
 
         for (MediaType accept : accepts) {
             for (MediaType type : produces) {

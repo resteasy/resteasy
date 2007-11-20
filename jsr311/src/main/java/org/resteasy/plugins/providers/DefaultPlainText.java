@@ -1,6 +1,6 @@
 package org.resteasy.plugins.providers;
 
-import org.resteasy.StringToPrimitive;
+import org.resteasy.util.StringToPrimitive;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;

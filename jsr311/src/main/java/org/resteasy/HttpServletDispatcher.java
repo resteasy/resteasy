@@ -1,5 +1,10 @@
 package org.resteasy;
 
+import org.resteasy.specimpl.HttpHeadersImpl;
+import org.resteasy.specimpl.MultivaluedMapImpl;
+import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.util.HttpHeaderNames;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -45,18 +50,17 @@ public class HttpServletDispatcher extends HttpServlet {
      * @throws IOException
      */
     public void invoke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-       service(httpServletRequest, httpServletResponse);
+        service(httpServletRequest, httpServletResponse);
     }
 
     public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) {
         HttpHeaders headers = extractHttpHeaders(request);
         MultivaluedMapImpl<String, String> parameters = extractParameters(request);
         String path = request.getPathInfo();
-        
 
-        ResourceInvoker invoker = registry.getResourceInvoker(path, headers.getMediaType(), headers.getAcceptableMediaTypes());
-        if (invoker == null)
-        {
+
+        ResourceInvoker invoker = registry.getResourceInvoker(httpMethod, path, headers.getMediaType(), headers.getAcceptableMediaTypes());
+        if (invoker == null) {
             try {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             } catch (IOException e) {
@@ -64,8 +68,7 @@ public class HttpServletDispatcher extends HttpServlet {
             }
             return;
         }
-        if (!invoker.getHttpMethods().contains(httpMethod))
-        {
+        if (!invoker.getHttpMethods().contains(httpMethod)) {
             try {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             } catch (IOException e) {
@@ -86,22 +89,20 @@ public class HttpServletDispatcher extends HttpServlet {
 
 
         invoker.invoke(in, out);
-        for (String header: out.getOutputHeaders().keySet())
-        {
+        for (String header : out.getOutputHeaders().keySet()) {
             response.setHeader(header, out.getOutputHeaders().getFirst(header));
 
         }
         response.setStatus(HttpServletResponse.SC_OK);
     }
-    
+
     public static MultivaluedMapImpl<String, String> extractParameters(HttpServletRequest request) {
         MultivaluedMapImpl<String, String> parameters = new MultivaluedMapImpl<String, String>();
 
         Enumeration parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
             String parameterName = (String) parameterNames.nextElement();
-            for (String parameterValue : request.getParameterValues(parameterName))
-            {
+            for (String parameterValue : request.getParameterValues(parameterName)) {
                 parameters.add(parameterName, parameterValue);
             }
         }
@@ -116,7 +117,8 @@ public class HttpServletDispatcher extends HttpServlet {
         List<MediaType> acceptableMediaTypes = extractAccepts(requestHeaders);
         headers.setAcceptableMediaTypes(acceptableMediaTypes);
         headers.setLanguage(requestHeaders.getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
-        String contentType = requestHeaders.getFirst(HttpHeaderNames.CONTENT_TYPE);
+
+        String contentType = request.getContentType();
         if (contentType != null) headers.setMediaType(MediaType.parse(contentType));
 
         List<javax.ws.rs.core.Cookie> cookies = extractCookies(request);

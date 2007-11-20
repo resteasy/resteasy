@@ -1,5 +1,7 @@
 package org.resteasy;
 
+import org.resteasy.util.StringToPrimitive;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,18 +28,16 @@ public abstract class StringParameterExtractor implements ParameterExtractor {
         this.paramName = paramName;
         this.paramType = paramType;
 
-        Class baseType = type;
+        baseType = type;
         if (type.isArray()) baseType = type.getComponentType();
 
-        if (!baseType.isPrimitive())
-        {
+        if (!baseType.isPrimitive()) {
             try {
                 constructor = type.getConstructor(String.class);
             } catch (NoSuchMethodException ignored) {
 
             }
-            if (constructor == null)
-            {
+            if (constructor == null) {
                 try {
                     valueOf = type.getDeclaredMethod("valueOf", String.class);
                 } catch (NoSuchMethodException e) {
@@ -48,48 +48,37 @@ public abstract class StringParameterExtractor implements ParameterExtractor {
         }
     }
 
-    protected String getParamSignature()
-    {
+    protected String getParamSignature() {
         return paramType + "(\"" + paramName + "\")";
     }
 
-    protected Object extractValues(List<String> values)
-    {
-        if (type.isArray())
-        {
-            if (values == null)
-            {
+    protected Object extractValues(List<String> values) {
+        if (type.isArray()) {
+            if (values == null) {
                 Object[] vals = (Object[]) Array.newInstance(type.getComponentType(), 1);
                 vals[0] = extractValue(null);
                 return vals;
             }
-            Object[] vals = (Object[])Array.newInstance(type.getComponentType(), values.size());
+            Object[] vals = (Object[]) Array.newInstance(type.getComponentType(), values.size());
             for (int i = 0; i < vals.length; i++) vals[i] = extractValue(values.get(i));
             return vals;
-        }
-        else
-        {
+        } else {
             return extractValue(values.get(0));
         }
-        
+
     }
 
     protected Object extractValue(String strVal) {
-        if (strVal == null)
-        {
-            if (defaultValue == null)
-            {
+        if (strVal == null) {
+            if (defaultValue == null) {
                 if (baseType.isPrimitive()) strVal = "0";
                 else return null;
-            }
-            else
-            {
-               strVal = defaultValue;
+            } else {
+                strVal = defaultValue;
             }
         }
         if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
-        if (constructor != null)
-        {
+        if (constructor != null) {
             try {
                 return constructor.newInstance(strVal);
             } catch (InstantiationException e) {
@@ -100,8 +89,7 @@ public abstract class StringParameterExtractor implements ParameterExtractor {
                 throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for method " + method, e.getTargetException());
             }
         }
-        if (valueOf != null)
-        {
+        if (valueOf != null) {
             try {
                 return valueOf.invoke(null, strVal);
             } catch (IllegalAccessException e) {
