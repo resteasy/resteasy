@@ -26,8 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines the MIME type(s) that the methods of a resource class or
- * EntityProvider can produce.
+ * Defines the MIME type(s) that the methods of a resource class can produce.
  * If not specified then a container will assume that any type can be produced.
  * Method level annotations override a class level annotation. A container
  * is responsible for ensuring that the method invoked is capable of producing

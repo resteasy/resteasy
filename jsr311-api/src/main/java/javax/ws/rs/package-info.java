@@ -2,7 +2,7 @@
  * High-level interfaces and annotations used to create RESTful service 
  * resources. E.g.:
 <pre>
-&#064;UriTemplate("widgets/{widgetid}")
+&#064;Path("widgets/{widgetid}")
 &#064;ConsumeMime("application/widgets+xml")
 &#064;ProduceMime("application/widgets+xml")
 public class WidgetResource {

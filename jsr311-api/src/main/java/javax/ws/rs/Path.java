@@ -11,7 +11,7 @@
  */
 
 /*
- * UriTemplate.java
+ * Path.java
  *
  * Created on September 15, 2006, 2:33 PM
  *
@@ -20,7 +20,6 @@
 package javax.ws.rs;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -28,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  * Identifies the URI path that a resource class or class method
  * will serve requests for. Root
- * resource classes require an @UriTemplate annotation.
+ * resource classes require an @Path annotation.
  * Classes may also be annotated with 
  * <code>@ConsumeMime</code> and <code>@ProduceMime</code> to filter the
  * requests they will receive.
@@ -44,7 +43,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UriTemplate {
+public @interface Path {
     /**
      * Defines a URI template for the resource. Requests to URIs that match
      * the template will be served by the annotated class or class method.
@@ -52,7 +51,7 @@ public @interface UriTemplate {
      * name is the template variable name. Paths are relative to the base URI
      * of the container.
      * 
-     * <p>E.g.: @UriTemplate("widgets/{id}")</p>
+     * <p>E.g.: @Path("widgets/{id}")</p>
      */
     String value();
     
@@ -68,9 +67,9 @@ public @interface UriTemplate {
     /**
      * Controls whether a trailing template variable is limited to a single path
      * segment (<code>true</code>) or not (<code>false</code>). E.g. 
-     * <code>@UriTemplate("widgets/{id}")</code> would
+     * <code>@Path("widgets/{id}")</code> would
      * match widgets/foo but not widgets/foo/bar whereas 
-     * <code>@UriTemplate(value="widgets/{id}", limit=false)</code> would match 
+     * <code>@Path(value="widgets/{id}", limit=false)</code> would match
      * both.
      */
     boolean limited() default true;

@@ -34,8 +34,6 @@ public class MediaType {
     private String type;
     private String subtype;
     private Map<String, String> parameters;
-    private static final HeaderProvider<MediaType> mediaTypeProvider = 
-            ProviderFactory.getInstance().createHeaderProvider(MediaType.class);
 
     /**
      * The value of a type or subtype wildcard.
@@ -54,11 +52,8 @@ public class MediaType {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      */
     public static MediaType parse(String type) throws IllegalArgumentException {
-        try {
-            return mediaTypeProvider.fromString(type);
-        } catch (ParseException ex) {
-            throw new IllegalArgumentException(ApiMessages.MEDIA_TYPE_INVALID(type),ex);
-        }
+        String[] paths = type.split("/");
+        return new MediaType(paths[0], paths[1]);
     }
 
     /**
@@ -179,6 +174,6 @@ public class MediaType {
      */
     @Override
     public String toString() {
-        return mediaTypeProvider.toString(this);
+        return type.toLowerCase()+"/"+subtype.toLowerCase();
     }
 }

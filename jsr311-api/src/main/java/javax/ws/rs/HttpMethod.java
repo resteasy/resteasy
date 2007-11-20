@@ -79,7 +79,16 @@ public @interface HttpMethod {
      * HTTP HEAD method
      */
     public static final String HEAD="HEAD";
-    
+    /**
+     * HTTP OPTIONS method
+     */
+    public static final String OPTIONS="OPTIONS";
+
+    /**
+     * HTTP TRACE method
+     */
+    public static final String TRACE="TRACE";
+
     /**
      * Specifies the name of a HTTP method. E.g. "GET".
      */

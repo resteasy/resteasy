@@ -37,9 +37,8 @@ public abstract class Response {
     
     /**
      * Return the entity for the response. The response will be serialized using an
-     * EntityProvider for the class of the entity.
+     * Provider for the class of the entity.
      * @return an object instance or null if there is no entity
-     * @see javax.ws.rs.ext.EntityProvider
      */
     public abstract Object getEntity();
     

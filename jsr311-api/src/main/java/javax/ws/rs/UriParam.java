@@ -42,7 +42,7 @@ public @interface UriParam {
      * to initialize the value of the annotated method parameter, class field or
      * property.
      * 
-     * <p>E.g. a class annotated with: <code>@UriTemplate("widgets/{id}")</code>
+     * <p>E.g. a class annotated with: <code>@Path("widgets/{id}")</code>
      * can have methods annotated with @HttpMethod whose arguments are annotated
      * with <code>@UriParam("id")</code>.
      */

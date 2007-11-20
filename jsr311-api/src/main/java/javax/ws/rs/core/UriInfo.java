@@ -118,7 +118,7 @@ public interface UriInfo {
      * All sequences of escaped octets are decoded,
      * equivalent to <code>getURIParameters(true)</code>.
      * @return a map of parameter names and values.
-     * @see javax.ws.rs.UriTemplate
+     * @see javax.ws.rs.Path
      */
     public MultivaluedMap<String, String> getTemplateParameters();
     
@@ -128,7 +128,7 @@ public interface UriInfo {
      * @param decode controls whether sequences of escaped octets are decoded
      * (true) or not (false).
      * @return a map of parameter names and values.
-     * @see javax.ws.rs.UriTemplate
+     * @see javax.ws.rs.Path
      */
     public MultivaluedMap<String, String> getTemplateParameters(boolean decode);
     

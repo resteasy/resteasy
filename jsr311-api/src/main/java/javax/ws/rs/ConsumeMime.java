@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines the MIME types that the methods of a resource class or EntityProvider
+ * Defines the MIME types that the methods of a resource class
  * can accept. If
  * not specified, a container will assume that any MIME type is acceptable.
  * Method level annotations override a class level annotation. A container
