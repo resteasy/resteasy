@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ext.ProviderFactory;
 
 /**
+ * Simple smoke test
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
