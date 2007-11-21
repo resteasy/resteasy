@@ -92,13 +92,16 @@ public class Registry {
     }
 
     public void addResourceFactory(ResourceFactory factory) {
-        Class<?> clazz = factory.getScannableClass();
-        Path basePath = clazz.getAnnotation(Path.class);
-        String base = (basePath == null) ? null : basePath.value();
-        addResourceFactory(factory, clazz, base);
+        addResourceFactory(factory, null);
     }
 
-    public void addResourceFactory(ResourceFactory factory, Class<?> clazz, String base) {
+    public void addResourceFactory(ResourceFactory factory, String base) {
+        Class<?> clazz = factory.getScannableClass();
+        Path classBasePath = clazz.getAnnotation(Path.class);
+        String classBase = (classBasePath == null) ? null : classBasePath.value();
+        if (base == null) base = classBase;
+        else if (classBase != null) base = base + "/" + classBase;
+
         for (Method method : clazz.getMethods()) {
             Path path = method.getAnnotation(Path.class);
             Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
@@ -111,7 +114,7 @@ public class Registry {
             if (pathExpression == null) pathExpression = "";
             if (httpMethods == null) {
                 ResourceLocator locator = new ResourceLocator(pathExpression, factory, method, providerFactory);
-                addResourceFactory(locator, method.getReturnType(), pathExpression);
+                addResourceFactory(locator, pathExpression);
             } else {
                 ResourceMethod invoker = new ResourceMethod(pathExpression, clazz, method, factory, providerFactory, httpMethods);
                 String[] paths = pathExpression.split("/");
