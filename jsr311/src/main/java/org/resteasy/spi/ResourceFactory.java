@@ -7,7 +7,7 @@ package org.resteasy.spi;
  * @version $Revision: 1 $
  */
 public interface ResourceFactory {
-    Object createResource();
+    Object createResource(HttpInputMessage input, HttpOutputMessage output);
 
     /**
      * Class to scan for jax-rs annotations

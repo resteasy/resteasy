@@ -1,5 +1,7 @@
 package org.resteasy;
 
+import org.resteasy.spi.HttpInputMessage;
+
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 

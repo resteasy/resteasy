@@ -1,5 +1,7 @@
 package org.resteasy;
 
+import org.resteasy.spi.HttpInputMessage;
+
 import javax.ws.rs.UriParam;
 import java.lang.reflect.Method;
 import java.util.List;

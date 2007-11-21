@@ -2,6 +2,9 @@ package org.resteasy;
 
 import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.MultivaluedMapImpl;
+import org.resteasy.specimpl.UriInfoImpl;
+import org.resteasy.spi.HttpInputMessage;
+import org.resteasy.spi.HttpOutputMessage;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 
@@ -59,7 +62,7 @@ public class HttpServletDispatcher extends HttpServlet {
         String path = request.getPathInfo();
 
 
-        ResourceInvoker invoker = registry.getResourceInvoker(httpMethod, path, headers.getMediaType(), headers.getAcceptableMediaTypes());
+        ResourceMethod invoker = registry.getResourceInvoker(httpMethod, path, headers.getMediaType(), headers.getAcceptableMediaTypes());
         if (invoker == null) {
             try {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -81,7 +84,7 @@ public class HttpServletDispatcher extends HttpServlet {
         HttpInputMessage in;
         HttpOutputMessage out;
         try {
-            in = new HttpInputMessage(headers, request.getInputStream(), path, parameters);
+            in = new HttpInputMessage(headers, request.getInputStream(), new UriInfoImpl(path), parameters);
             out = new HttpOutputMessage(response.getOutputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);

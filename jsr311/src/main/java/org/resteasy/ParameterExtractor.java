@@ -1,5 +1,7 @@
 package org.resteasy;
 
+import org.resteasy.spi.HttpInputMessage;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $

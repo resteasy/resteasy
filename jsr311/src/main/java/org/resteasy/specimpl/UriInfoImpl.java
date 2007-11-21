@@ -36,10 +36,6 @@ public class UriInfoImpl implements UriInfo {
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     public String getPath(boolean decode) {
         throw new RuntimeException("NOT IMPLEMENTED");
     }
@@ -92,7 +88,4 @@ public class UriInfoImpl implements UriInfo {
         throw new RuntimeException("NOT IMPLEMENTED");
     }
 
-    public void setQueryParameters(MultivaluedMap<String, String> queryParameters) {
-        this.queryParameters = queryParameters;
-    }
 }

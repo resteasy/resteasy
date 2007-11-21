@@ -1,5 +1,7 @@
 package org.resteasy;
 
+import org.resteasy.spi.HttpInputMessage;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ProviderFactory;
