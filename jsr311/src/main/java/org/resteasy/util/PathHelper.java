@@ -3,8 +3,6 @@
  */
 package org.resteasy.util;
 
-import org.apache.log4j.Logger;
-
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -23,7 +21,6 @@ import java.util.regex.Pattern;
  *        Nov 8, 2006
  */
 public class PathHelper {
-    public static final Logger logger = Logger.getLogger(PathHelper.class);
     /**
      * The default regex group for URI template parameters
      */
@@ -120,9 +117,8 @@ public class PathHelper {
             count++;
         }
         matcher.appendTail(reviesedPath);
-		return reviesedPath.append("$").toString();
-	}
-
+        return reviesedPath.append("$").toString();
+    }
 
 
 }

@@ -32,7 +32,6 @@ public class Registry {
         public void addChild(String[] path, int pathIndex, ResourceMethod invoker) {
             Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
             if (matcher.matches()) {
-                String uriParamName = matcher.group(2);
                 Node child = new Node();
                 wildChildren.add(child);
                 if (path.length == pathIndex + 1) {

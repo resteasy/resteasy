@@ -1,10 +1,10 @@
 package org.resteasy.test.smoke;
 
-import com.damnhandy.resteasy.test.mock.MockHttpServletRequest;
-import com.damnhandy.resteasy.test.mock.MockHttpServletResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.resteasy.HttpServletDispatcher;
+import org.resteasy.mock.MockHttpServletRequest;
+import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.providers.DefaultPlainText;
 import org.resteasy.plugins.resourcefactory.POJOResourceFactory;
 
