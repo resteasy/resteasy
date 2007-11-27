@@ -17,9 +17,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Mock implementation of the {@link javax.servlet.ServletContext} interface.
  *
@@ -55,9 +52,6 @@ import org.apache.commons.logging.LogFactory;
 public class MockServletContext implements ServletContext {
 
 	private static final String TEMP_DIR_SYSTEM_PROPERTY = "java.io.tmpdir";
-
-
-	private final Log logger = LogFactory.getLog(getClass());
 
 	private final Object resourceLoader;
 
@@ -238,15 +232,15 @@ public class MockServletContext implements ServletContext {
 	}
 
 	public void log(String message) {
-		logger.info(message);
+		//logger.info(message);
 	}
 
 	public void log(Exception ex, String message) {
-		logger.info(message, ex);
+		//logger.info(message, ex);
 	}
 
 	public void log(String message, Throwable ex) {
-		logger.info(message, ex);
+		//logger.info(message, ex);
 	}
 
 	public String getRealPath(String path) {

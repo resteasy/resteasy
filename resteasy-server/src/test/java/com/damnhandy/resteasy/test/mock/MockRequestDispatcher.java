@@ -4,9 +4,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Mock implementation of the {@link javax.servlet.RequestDispatcher} interface.
  *
@@ -19,7 +16,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class MockRequestDispatcher implements RequestDispatcher {
 
-	private final Log logger = LogFactory.getLog(getClass());
 
 	private final String url;
 
@@ -44,9 +40,6 @@ public class MockRequestDispatcher implements RequestDispatcher {
 			throw new IllegalArgumentException("MockRequestDispatcher requires MockHttpServletResponse");
 		}
 		((MockHttpServletResponse) response).setForwardedUrl(this.url);
-		if (logger.isDebugEnabled()) {
-			logger.debug("MockRequestDispatcher: forwarding to URL [" + this.url + "]");
-		}
 	}
 
 	public void include(ServletRequest request, ServletResponse response) {
@@ -56,9 +49,6 @@ public class MockRequestDispatcher implements RequestDispatcher {
 			throw new IllegalArgumentException("MockRequestDispatcher requires MockHttpServletResponse");
 		}
 		((MockHttpServletResponse) response).setIncludedUrl(this.url);
-		if (logger.isDebugEnabled()) {
-			logger.debug("MockRequestDispatcher: including URL [" + this.url + "]");
-		}
 	}
 
 }
