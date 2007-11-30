@@ -2,6 +2,7 @@ package org.resteasy;
 
 import org.resteasy.spi.HttpInputMessage;
 import org.resteasy.spi.ResourceFactory;
+import org.resteasy.util.FindAnnotation;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.DefaultValue;
@@ -50,7 +51,7 @@ public abstract class ResourceInvoker {
             Class type = method.getParameterTypes()[i];
             Annotation[] annotations = method.getParameterAnnotations()[i];
 
-            DefaultValue defaultValue = findAnnotation(method.getParameterAnnotations()[i], DefaultValue.class);
+            DefaultValue defaultValue = FindAnnotation.findAnnotation(method.getParameterAnnotations()[i], DefaultValue.class);
             String defaultVal = null;
             if (defaultValue != null) defaultVal = defaultValue.value();
 
@@ -59,27 +60,20 @@ public abstract class ResourceInvoker {
             MatrixParam matrix;
             UriParam uriParam;
 
-            if ((query = findAnnotation(annotations, QueryParam.class)) != null) {
+            if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null) {
                 params[i] = new QueryParamExtractor(method, query.value(), type, defaultVal);
-            } else if ((header = findAnnotation(annotations, HeaderParam.class)) != null) {
+            } else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null) {
                 params[i] = new HeaderParamExtractor(method, header.value(), type, defaultVal);
-            } else if ((uriParam = findAnnotation(annotations, UriParam.class)) != null) {
+            } else if ((uriParam = FindAnnotation.findAnnotation(annotations, UriParam.class)) != null) {
                 params[i] = new UriParamExtractor(method, uriParam.value(), type, defaultVal);
-            } else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null) {
+            } else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null) {
                 params[i] = new MatrixParamExtractor(method, matrix.value(), type, defaultVal);
-            } else if (findAnnotation(annotations, HttpContext.class) != null) {
+            } else if (FindAnnotation.findAnnotation(annotations, HttpContext.class) != null) {
                 params[i] = new HttpContextParameter(type);
             } else {
                 params[i] = new MessageBodyParameterExtractor(type, providerFactory);
             }
         }
-    }
-
-    public static <T> T findAnnotation(Annotation[] searchList, Class<T> annotation) {
-        for (Annotation ann : searchList) {
-            if (ann.annotationType().equals(annotation)) return (T) ann;
-        }
-        return null;
     }
 
     protected Object[] getArguments(HttpInputMessage input) {
