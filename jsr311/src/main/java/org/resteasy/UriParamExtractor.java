@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInputMessage;
+import org.resteasy.spi.HttpInput;
 
 import javax.ws.rs.UriParam;
 import java.lang.reflect.Method;
@@ -15,7 +15,7 @@ public class UriParamExtractor extends StringParameterExtractor {
         super(type, method, paramName, "@" + UriParam.class.getSimpleName(), defaultValue);
     }
 
-    public Object extract(HttpInputMessage request) {
+    public Object extract(HttpInput request) {
         List<String> list = request.getUri().getTemplateParameters().get(paramName);
         return extractValues(list);
     }

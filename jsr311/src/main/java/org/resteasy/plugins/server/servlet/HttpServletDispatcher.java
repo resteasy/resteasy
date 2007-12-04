@@ -5,8 +5,8 @@ import org.resteasy.ResourceMethod;
 import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.UriInfoImpl;
-import org.resteasy.spi.HttpInputMessage;
-import org.resteasy.spi.HttpOutputMessage;
+import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 
@@ -83,11 +83,11 @@ public class HttpServletDispatcher extends HttpServlet {
         }
 
 
-        HttpInputMessage in;
-        HttpOutputMessage out;
+        HttpInput in;
+        HttpOutput out;
         try {
-            in = new HttpInputMessage(headers, request.getInputStream(), new UriInfoImpl(path), parameters);
-            out = new HttpOutputMessage(response.getOutputStream());
+            in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(path), parameters);
+            out = new HttpServletOutputMessage(response);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

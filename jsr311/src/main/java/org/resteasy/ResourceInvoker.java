@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInputMessage;
+import org.resteasy.spi.HttpInput;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.util.FindAnnotation;
 import org.resteasy.util.PathHelper;
@@ -76,7 +76,7 @@ public abstract class ResourceInvoker {
         }
     }
 
-    protected Object[] getArguments(HttpInputMessage input) {
+    protected Object[] getArguments(HttpInput input) {
         Object[] args = null;
         if (params != null && params.length > 0) {
             args = new Object[params.length];
@@ -88,7 +88,7 @@ public abstract class ResourceInvoker {
         return args;
     }
 
-    protected void populateUriParams(HttpInputMessage input) {
+    protected void populateUriParams(HttpInput input) {
         UriInfo uriInfo = input.getUri();
         for (int i : uriParams.keySet()) {
             String paramName = uriParams.get(i);

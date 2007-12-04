@@ -1,7 +1,7 @@
 package org.resteasy;
 
 import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.spi.HttpOutputMessage;
+import org.resteasy.spi.HttpOutput;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -23,7 +23,7 @@ public class MessageBodyParameterMarshaller implements ParameterMarshaller {
         this.mediaType = mediaType;
     }
 
-    public void marshall(Object obj, UriBuilderImpl uri, HttpOutputMessage output) {
+    public void marshall(Object obj, UriBuilderImpl uri, HttpOutput output) {
         try {
             MessageBodyWriter writer = getMessageBodyWriter();
             writer.writeTo(obj, mediaType, output.getOutputHeaders(), output.getOutputStream());

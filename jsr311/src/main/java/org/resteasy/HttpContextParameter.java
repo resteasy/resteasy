@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInputMessage;
+import org.resteasy.spi.HttpInput;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
@@ -16,7 +16,7 @@ public class HttpContextParameter implements ParameterExtractor {
         this.type = type;
     }
 
-    public Object extract(HttpInputMessage request) {
+    public Object extract(HttpInput request) {
         if (type.equals(HttpHeaders.class)) return request.getHttpHeaders();
         if (type.equals(UriInfo.class)) return request.getUri();
         return null;

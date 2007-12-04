@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInputMessage;
+import org.resteasy.spi.HttpInput;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -20,7 +20,7 @@ public class MessageBodyParameterExtractor implements ParameterExtractor {
         this.factory = factory;
     }
 
-    public Object extract(HttpInputMessage request) {
+    public Object extract(HttpInput request) {
         try {
             MediaType mediaType = request.getHttpHeaders().getMediaType();
             MessageBodyReader reader = factory.createMessageBodyReader(type, mediaType);

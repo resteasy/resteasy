@@ -177,6 +177,7 @@ public class UriBuilderImpl extends UriBuilder {
      */
     public UriBuilder uriParam(String name, String value) throws IllegalArgumentException {
         if (path == null) return this;
+        if (path.startsWith("/")) path = path.substring(1);
         String[] paths = path.split("/");
         int i = 0;
         for (String p : paths) {
@@ -208,6 +209,7 @@ public class UriBuilderImpl extends UriBuilder {
 
     public URI build(Map<String, String> values) throws IllegalArgumentException, UriBuilderException {
         if (values.size() > 0 || path == null) return build();
+        if (path.startsWith("/")) path = path.substring(1);
         String[] paths = path.split("/");
         int i = 0;
         for (String p : paths) {
@@ -228,6 +230,7 @@ public class UriBuilderImpl extends UriBuilder {
 
     public URI build(String... values) throws IllegalArgumentException, UriBuilderException {
         if (values.length > 0 || path == null) return build();
+        if (path.startsWith("/")) path = path.substring(1);
         String[] paths = path.split("/");
         int i = 0, j = 0;
         for (String p : paths) {

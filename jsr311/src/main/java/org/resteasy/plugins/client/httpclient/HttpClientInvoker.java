@@ -9,7 +9,7 @@ import org.resteasy.MessageBodyParameterMarshaller;
 import org.resteasy.ParameterMarshaller;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.spi.HttpOutputMessage;
+import org.resteasy.spi.HttpOutput;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -38,7 +38,7 @@ abstract public class HttpClientInvoker extends ClientInvoker {
 
     public Object invoke(Object[] args) {
         if (builder == null) throw new RuntimeException("You have not set a base URI for the client proxy");
-        HttpOutputMessage output = new HttpOutputMessage(null);
+        HttpOutput output = new HttpOutputMessage(null);
 
         UriBuilderImpl uri = (UriBuilderImpl) builder.clone();
 
@@ -47,7 +47,7 @@ abstract public class HttpClientInvoker extends ClientInvoker {
         for (ParameterMarshaller param : params) {
             if (param instanceof MessageBodyParameterMarshaller) {
                 MessageBodyParameterMarshaller bodyMarshaller = (MessageBodyParameterMarshaller) param;
-                body = new BodyRequestEntity(body, bodyMarshaller, output.getOutputHeaders());
+                body = new BodyRequestEntity(args[i++], bodyMarshaller, output.getOutputHeaders());
             } else param.marshall(args[i++], uri, output);
         }
 
@@ -83,27 +83,34 @@ abstract public class HttpClientInvoker extends ClientInvoker {
         }
 
         try {
-
-            String mediaType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue();
-            if (mediaType == null) {
-                ProduceMime produce = method.getAnnotation(ProduceMime.class);
-                if (produce == null) produce = (ProduceMime) declaring.getAnnotation(ProduceMime.class);
-                if (produce == null)
-                    throw new RuntimeException("Unable to determine content type of response for GET " + url);
-                mediaType = produce.value()[0];
-            }
-            MediaType media = MediaType.parse(mediaType);
-            MessageBodyReader reader = providerFactory.createMessageBodyReader(method.getReturnType(), media);
-            if (reader == null)
-                throw new RuntimeException("Unable to find a message body reader for GET " + url + " content-type: " + mediaType);
-            MultivaluedMap<String, String> responseHeaders = new MultivaluedMapImpl<String, String>();
-            for (Header header : baseMethod.getResponseHeaders()) {
-                responseHeaders.add(header.getName(), header.getValue());
-            }
-            try {
-                return reader.readFrom(method.getReturnType(), media, responseHeaders, baseMethod.getResponseBodyAsStream());
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to unmarshall response from GET " + url + " content-type: " + mediaType, e);
+            if (method.getReturnType() != null && !method.getReturnType().equals(void.class)) {
+                Header contentType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
+                if (contentType == null) {
+                    throw new RuntimeException("Unable to determine content type of resource: " + url);
+                }
+                String mediaType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue();
+                if (mediaType == null) {
+                    ProduceMime produce = method.getAnnotation(ProduceMime.class);
+                    if (produce == null) produce = (ProduceMime) declaring.getAnnotation(ProduceMime.class);
+                    if (produce == null)
+                        throw new RuntimeException("Unable to determine content type of response for GET " + url);
+                    mediaType = produce.value()[0];
+                }
+                MediaType media = MediaType.parse(mediaType);
+                MessageBodyReader reader = providerFactory.createMessageBodyReader(method.getReturnType(), media);
+                if (reader == null)
+                    throw new RuntimeException("Unable to find a message body reader for GET " + url + " content-type: " + mediaType);
+                MultivaluedMap<String, String> responseHeaders = new MultivaluedMapImpl<String, String>();
+                for (Header header : baseMethod.getResponseHeaders()) {
+                    responseHeaders.add(header.getName(), header.getValue());
+                }
+                try {
+                    return reader.readFrom(method.getReturnType(), media, responseHeaders, baseMethod.getResponseBodyAsStream());
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to unmarshall response from GET " + url + " content-type: " + mediaType, e);
+                }
+            } else {
+                return null;
             }
 
         }

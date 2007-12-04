@@ -1,7 +1,7 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInputMessage;
-import org.resteasy.spi.HttpOutputMessage;
+import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.util.HttpHeaderNames;
 
@@ -54,7 +54,7 @@ public class ResourceMethod extends ResourceInvoker {
     }
 
 
-    public void invoke(HttpInputMessage input, HttpOutputMessage output) {
+    public void invoke(HttpInput input, HttpOutput output) {
         Object resource = factory.createResource(input, output);
         populateUriParams(input);
         Object[] args = getArguments(input);
@@ -66,6 +66,9 @@ public class ResourceMethod extends ResourceInvoker {
             try {
                 long size = writer.getSize(rtn);
                 output.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, ((Long) size).toString());
+                if (rtnType != null) {
+                    output.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_TYPE, rtnType.toString());
+                }
                 writer.writeTo(rtn, rtnType, output.getOutputHeaders(), output.getOutputStream());
             } catch (IOException e) {
                 throw new RuntimeException(e);

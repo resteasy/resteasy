@@ -19,6 +19,7 @@ public class SimpleResource {
     @Path("basic")
     @ProduceMime("text/plain")
     public String getBasic() {
+        System.out.println("getBasic()");
         return "basic";
     }
 

@@ -1,7 +1,7 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInputMessage;
-import org.resteasy.spi.HttpOutputMessage;
+import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResourceFactory;
 
 import javax.ws.rs.ext.ProviderFactory;
@@ -18,7 +18,7 @@ public class ResourceLocator extends ResourceInvoker implements ResourceFactory 
         super(path, factory, method, providerFactory);
     }
 
-    public Object createResource(HttpInputMessage input, HttpOutputMessage output) {
+    public Object createResource(HttpInput input, HttpOutput output) {
         Object resource = factory.createResource(input, output);
         populateUriParams(input);
         Object[] args = getArguments(input);

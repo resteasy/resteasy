@@ -1,11 +1,11 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInputMessage;
+import org.resteasy.spi.HttpInput;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public interface ParameterExtractor {
-    Object extract(HttpInputMessage request);
+    Object extract(HttpInput request);
 }
