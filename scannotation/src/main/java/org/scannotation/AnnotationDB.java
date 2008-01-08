@@ -183,6 +183,7 @@ public class AnnotationDB implements Serializable
          {
             Set<String> intfs = new HashSet<String>();
             for (String intf : cf.getInterfaces()) intfs.add(intf);
+            implementsIndex.put(cf.getName(), intfs);
          }
 
       }
