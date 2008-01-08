@@ -23,8 +23,9 @@ public class Registry {
 
     public class Node {
         private List<ResourceMethod> invokers = new ArrayList<ResourceMethod>();
-        private List<Node> wildChildren = new ArrayList<Node>();
+        private List<Node> uriParamChildren = new ArrayList<Node>();
         private Map<String, Node> children = new HashMap<String, Node>();
+        private Node wildcard;
 
         public Node() {
         }
@@ -33,12 +34,15 @@ public class Registry {
             Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
             if (matcher.matches()) {
                 Node child = new Node();
-                wildChildren.add(child);
+                uriParamChildren.add(child);
                 if (path.length == pathIndex + 1) {
                     child.invokers.add(invoker);
                 } else {
                     child.addChild(path, ++pathIndex, invoker);
                 }
+            } else if (path[pathIndex].trim().equals("*")) {
+                if (wildcard == null) wildcard = new Node();
+                wildcard.invokers.add(invoker);
             } else {
                 Node child = children.get(path[pathIndex]);
                 if (child == null) {
@@ -60,16 +64,20 @@ public class Registry {
 
         private ResourceMethod findChild(String httpMethod, String[] path, int pathIndex, MediaType contentType, List<MediaType> accepts) {
             Node next = children.get(path[pathIndex]);
-            if (next != null) return next.findResourceInvoker(httpMethod, path, ++pathIndex, contentType, accepts);
-            else if (wildChildren != null) {
-                for (Node wildcard : wildChildren) {
+            if (next != null) {
+                ResourceMethod method = next.findResourceInvoker(httpMethod, path, ++pathIndex, contentType, accepts);
+                if (method != null) return method;
+            }
+            if (uriParamChildren != null) {
+                for (Node wildcard : uriParamChildren) {
                     ResourceMethod wildcardReturn = wildcard.findResourceInvoker(httpMethod, path, ++pathIndex, contentType, accepts);
                     if (wildcardReturn != null) return wildcardReturn;
                 }
-                return null;
-            } else {
-                return null;
             }
+            if (wildcard != null) {
+                return wildcard.match(httpMethod, contentType, accepts);
+            }
+            return null;
         }
 
         private ResourceMethod match(String httpMethod, MediaType contentType, List<MediaType> accepts) {
