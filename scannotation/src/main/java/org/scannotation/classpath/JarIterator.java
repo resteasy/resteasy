@@ -17,6 +17,7 @@ public class JarIterator implements StreamIterator
    JarEntry next;
    Filter filter;
    boolean initial = true;
+   boolean closed = false;
 
    public JarIterator(File file, Filter filter) throws IOException
    {
@@ -41,7 +42,10 @@ public class JarIterator implements StreamIterator
          {
             next = jar.getNextJarEntry();
          } while (next != null && (next.isDirectory() || (filter == null || !filter.accepts(next.getName()))));
-         if (next == null) jar.close();
+         if (next == null)
+         {
+            close();
+         }
       }
       catch (IOException e)
       {
@@ -51,9 +55,23 @@ public class JarIterator implements StreamIterator
 
    public InputStream next()
    {
-      if (next == null && !initial) return null;
+      if (closed || (next == null && !initial)) return null;
       setNext();
       if (next == null) return null;
       return new InputStreamWrapper(jar);
+   }
+
+   public void close()
+   {
+      try
+      {
+         closed = true;
+         jar.close();
+      }
+      catch (IOException ignored)
+      {
+
+      }
+
    }
 }

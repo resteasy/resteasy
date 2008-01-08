@@ -61,4 +61,8 @@ public class FileIterator implements StreamIterator
          throw new RuntimeException(e);
       }
    }
+
+   public void close()
+   {
+   }
 }
