@@ -13,6 +13,9 @@
       <sourceFolder url="file://$MODULE_DIR$/titan-test/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/titan-test/src/test/java" isTestSource="true" />
     </content>
+    <content url="file://$MODULE_DIR$/../tiny-webserver">
+      <sourceFolder url="file://$MODULE_DIR$/../tiny-webserver/WebServer/src" isTestSource="false" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
@@ -81,15 +84,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../.m2/repository/tjws/webserver/1.3.1/webserver-1.3.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.m2/repository/hibernate/hibernate3/3.2.4.SP1/hibernate3-3.2.4.SP1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -117,7 +111,106 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/sun/xml/bind/jaxb-impl/2.1.2/jaxb-impl-2.1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/activation/activation/1.1/activation-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../tiny-webserver/WebServer/lib/gnujsp09.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../tiny-webserver/WebServer/lib/app.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../tiny-webserver/WebServer/lib/jsp.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../tiny-webserver/WebServer/lib/jspengine.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../tiny-webserver/WebServer/lib/servlet.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../tiny-webserver/WebServer/lib/war.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../tiny-webserver/WebServer/lib/webserver.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

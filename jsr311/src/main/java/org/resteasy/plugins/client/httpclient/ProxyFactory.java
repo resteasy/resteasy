@@ -21,8 +21,12 @@ import java.util.Set;
 public class ProxyFactory {
 
     public static <T> T create(Class<T> clazz, String base) {
+        return create(clazz, base, new HttpClient());
+    }
+
+    public static <T> T create(Class<T> clazz, String base, HttpClient client) {
         try {
-            return create(clazz, new URI(base), new HttpClient(), ProviderFactory.getInstance());
+            return create(clazz, new URI(base), client, ProviderFactory.getInstance());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

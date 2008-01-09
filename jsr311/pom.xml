@@ -20,6 +20,13 @@
             <id>jboss</id>
             <url>http://repository.jboss.org/maven2</url>
         </repository>
+        <repository>
+            <id>java.net</id>
+            <url>
+                https://maven-repository.dev.java.net/nonav/repository
+            </url>
+            <layout>legacy</layout>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -27,6 +34,11 @@
             <artifactId>junit</artifactId>
             <version>4.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.1.2</version>
         </dependency>
         <dependency>
             <groupId>jsr311-api</groupId>

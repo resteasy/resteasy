@@ -97,6 +97,7 @@ public class HttpServletDispatcher extends HttpServlet {
             invoker.invoke(in, out);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             this.log("Failed REST request", e);
             return;
         }
