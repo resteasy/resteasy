@@ -9,10 +9,6 @@
     <url>http://maven.apache.org</url>
     <repositories>
         <repository>
-            <id>glassfish</id>
-            <url>http://download.java.net/maven/1</url>
-        </repository>
-        <repository>
             <id>jakarta</id>
             <url>http://jakarta.apache.org/commons/httpclient/</url>
         </repository>
@@ -32,7 +28,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.0</version>
+            <version>4.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -49,12 +45,6 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>jboss</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.4.ga</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
