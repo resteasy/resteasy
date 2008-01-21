@@ -28,10 +28,18 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 public class HttpServletDispatcher extends HttpServlet {
-    private ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
-    private Registry registry = new Registry(providerFactory);
+
+
+    private ResteasyProviderFactory providerFactory;
+    private Registry registry;
 
     public void init(ServletConfig servletConfig) throws ServletException {
+        this.providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
+        if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
+
+
+        this.registry = (Registry) servletConfig.getServletContext().getAttribute(Registry.class.getName());
+        if (registry == null) registry = new Registry(providerFactory);
     }
 
     public ResteasyProviderFactory getProviderFactory() {
@@ -40,6 +48,14 @@ public class HttpServletDispatcher extends HttpServlet {
 
     public Registry getRegistry() {
         return registry;
+    }
+
+    public void setProviderFactory(ResteasyProviderFactory providerFactory) {
+        this.providerFactory = providerFactory;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
     }
 
     protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {

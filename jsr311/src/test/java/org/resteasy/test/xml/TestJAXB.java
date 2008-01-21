@@ -28,13 +28,6 @@ public class TestJAXB {
 
     @BeforeClass
     public static void before() throws Exception {
-        ProviderFactory.setInstance(dispatcher.getProviderFactory());
-        dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-        dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
-        dispatcher.getProviderFactory().addMessageBodyReader(new JAXBProvider());
-        dispatcher.getProviderFactory().addMessageBodyWriter(new JAXBProvider());
-
-
         server = new Serve();
         Properties props = new Properties();
         props.put("port", 8081);
@@ -47,6 +40,11 @@ public class TestJAXB {
                 server.serve();
             }
         }.start();
+        ProviderFactory.setInstance(dispatcher.getProviderFactory());
+        dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
+        dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
+        dispatcher.getProviderFactory().addMessageBodyReader(new JAXBProvider());
+        dispatcher.getProviderFactory().addMessageBodyWriter(new JAXBProvider());
     }
 
     @AfterClass

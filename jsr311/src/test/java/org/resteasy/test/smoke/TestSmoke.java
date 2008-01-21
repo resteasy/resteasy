@@ -2,11 +2,13 @@ package org.resteasy.test.smoke;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.resteasy.Registry;
 import org.resteasy.mock.MockHttpServletRequest;
 import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.providers.DefaultPlainText;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ext.ProviderFactory;
@@ -22,6 +24,8 @@ public class TestSmoke {
     @Test
     public void testNoDefaultsResource() throws Exception {
         HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+        dispatcher.setProviderFactory(new ResteasyProviderFactory());
+        dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
         ProviderFactory.setInstance(dispatcher.getProviderFactory());
         dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
         dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
@@ -80,6 +84,8 @@ public class TestSmoke {
     @Test
     public void testLocatingResource() throws Exception {
         HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+        dispatcher.setProviderFactory(new ResteasyProviderFactory());
+        dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
         ProviderFactory.setInstance(dispatcher.getProviderFactory());
         dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
         dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());

@@ -31,10 +31,6 @@ public class TestWireSmoke {
 
     @BeforeClass
     public static void before() throws Exception {
-        ProviderFactory.setInstance(dispatcher.getProviderFactory());
-        dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-        dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
-
         server = new Serve();
         Properties props = new Properties();
         props.put("port", 8081);
@@ -47,6 +43,9 @@ public class TestWireSmoke {
                 server.serve();
             }
         }.start();
+        ProviderFactory.setInstance(dispatcher.getProviderFactory());
+        dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
+        dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
     }
 
     @AfterClass
