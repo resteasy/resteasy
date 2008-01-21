@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ResteasyProviderFactory extends RuntimeDelegate
 {
 
-    private List<ObjectFactory> instanceFactories = new ArrayList<ObjectFactory>();
     private List<MessageBodyReader> messageBodyReaders = new ArrayList<MessageBodyReader>();
     private List<MessageBodyWriter> messageBodyWriters = new ArrayList<MessageBodyWriter>();
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
@@ -79,10 +78,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    {
       headerDelegates.put(clazz, header);
    }
-
-   public void addObjectFactory(ObjectFactory factory) {
-        instanceFactories.add(factory);
-    }
 
     public void addMessageBodyReader(MessageBodyReader provider) {
         messageBodyReaders.add(provider);
