@@ -11,31 +11,37 @@ import java.io.OutputStream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class BodyRequestEntity implements RequestEntity {
+public class BodyRequestEntity implements RequestEntity
+{
 
-    private MessageBodyParameterMarshaller marshaller;
-    private Object object;
-    private MultivaluedMap<String, Object> httpHeaders;
+   private MessageBodyParameterMarshaller marshaller;
+   private Object object;
+   private MultivaluedMap<String, Object> httpHeaders;
 
-    public BodyRequestEntity(Object object, MessageBodyParameterMarshaller marshaller, MultivaluedMap<String, Object> httpHeaders) {
-        this.marshaller = marshaller;
-        this.object = object;
-        this.httpHeaders = httpHeaders;
-    }
+   public BodyRequestEntity(Object object, MessageBodyParameterMarshaller marshaller, MultivaluedMap<String, Object> httpHeaders)
+   {
+      this.marshaller = marshaller;
+      this.object = object;
+      this.httpHeaders = httpHeaders;
+   }
 
-    public boolean isRepeatable() {
-        return true;
-    }
+   public boolean isRepeatable()
+   {
+      return true;
+   }
 
-    public void writeRequest(OutputStream outputStream) throws IOException {
-        marshaller.getMessageBodyWriter().writeTo(object, marshaller.getMediaType(), httpHeaders, outputStream);
-    }
+   public void writeRequest(OutputStream outputStream) throws IOException
+   {
+      marshaller.getMessageBodyWriter().writeTo(object, marshaller.getMediaType(), httpHeaders, outputStream);
+   }
 
-    public long getContentLength() {
-        return marshaller.getMessageBodyWriter().getSize(object);
-    }
+   public long getContentLength()
+   {
+      return marshaller.getMessageBodyWriter().getSize(object);
+   }
 
-    public String getContentType() {
-        return marshaller.getMediaType().toString();
-    }
+   public String getContentType()
+   {
+      return marshaller.getMediaType().toString();
+   }
 }

@@ -29,168 +29,204 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServletDispatcher extends HttpServlet {
+public class HttpServletDispatcher extends HttpServlet
+{
 
 
-    private ResteasyProviderFactory providerFactory;
-    private Registry registry;
+   private ResteasyProviderFactory providerFactory;
+   private Registry registry;
 
-    public void init(ServletConfig servletConfig) throws ServletException {
-        this.providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
-        if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
-
-
-        this.registry = (Registry) servletConfig.getServletContext().getAttribute(Registry.class.getName());
-        if (registry == null) registry = new Registry(providerFactory);
-    }
-
-    public ResteasyProviderFactory getProviderFactory() {
-        return providerFactory;
-    }
-
-    public Registry getRegistry() {
-        return registry;
-    }
-
-    public void setProviderFactory(ResteasyProviderFactory providerFactory) {
-        this.providerFactory = providerFactory;
-    }
-
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
-    }
-
-    protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
-    }
-
-    /**
-     * wrapper around service so we can test easily
-     *
-     * @param httpServletRequest
-     * @param httpServletResponse
-     * @throws ServletException
-     * @throws IOException
-     */
-    public void invoke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        service(httpServletRequest, httpServletResponse);
-    }
-
-    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) {
-        HttpHeaders headers = extractHttpHeaders(request);
-        MultivaluedMapImpl<String, String> parameters = extractParameters(request);
-        String path = request.getPathInfo();
+   public void init(ServletConfig servletConfig) throws ServletException
+   {
+      this.providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
+      if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
 
 
-        ResourceMethod invoker = registry.getResourceInvoker(httpMethod, path, headers.getMediaType(), headers.getAcceptableMediaTypes());
-        if (invoker == null) {
-            try {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return;
-        }
-        if (!invoker.getHttpMethods().contains(httpMethod)) {
-            try {
-                response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return;
-        }
+      this.registry = (Registry) servletConfig.getServletContext().getAttribute(Registry.class.getName());
+      if (registry == null) registry = new Registry(providerFactory);
+   }
+
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return providerFactory;
+   }
+
+   public Registry getRegistry()
+   {
+      return registry;
+   }
+
+   public void setProviderFactory(ResteasyProviderFactory providerFactory)
+   {
+      this.providerFactory = providerFactory;
+   }
+
+   public void setRegistry(Registry registry)
+   {
+      this.registry = registry;
+   }
+
+   protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException
+   {
+      service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
+   }
+
+   /**
+    * wrapper around service so we can test easily
+    *
+    * @param httpServletRequest
+    * @param httpServletResponse
+    * @throws ServletException
+    * @throws IOException
+    */
+   public void invoke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException
+   {
+      service(httpServletRequest, httpServletResponse);
+   }
+
+   public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response)
+   {
+      HttpHeaders headers = extractHttpHeaders(request);
+      MultivaluedMapImpl<String, String> parameters = extractParameters(request);
+      String path = request.getPathInfo();
 
 
-        HttpInput in;
-        HttpOutput out;
-        try {
-            in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(path), parameters);
-            out = new HttpServletOutputMessage(response);
-        } catch (IOException e) {
+      ResourceMethod invoker = registry.getResourceInvoker(httpMethod, path, headers.getMediaType(), headers.getAcceptableMediaTypes());
+      if (invoker == null)
+      {
+         try
+         {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+         }
+         catch (IOException e)
+         {
             throw new RuntimeException(e);
-        }
+         }
+         return;
+      }
+      if (!invoker.getHttpMethods().contains(httpMethod))
+      {
+         try
+         {
+            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         return;
+      }
 
 
-        try {
-            invoker.invoke(in, out);
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            e.printStackTrace();
-            this.log("Failed REST request", e);
-            return;
-        }
-        for (String header : out.getOutputHeaders().keySet()) {
-            response.setHeader(header, out.getOutputHeaders().getFirst(header).toString());
+      HttpInput in;
+      HttpOutput out;
+      try
+      {
+         in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(path), parameters);
+         out = new HttpServletOutputMessage(response);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
 
-        }
-        response.setStatus(HttpServletResponse.SC_OK);
-    }
 
-    public static MultivaluedMapImpl<String, String> extractParameters(HttpServletRequest request) {
-        MultivaluedMapImpl<String, String> parameters = new MultivaluedMapImpl<String, String>();
+      try
+      {
+         invoker.invoke(in, out);
+      }
+      catch (Exception e)
+      {
+         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+         e.printStackTrace();
+         this.log("Failed REST request", e);
+         return;
+      }
+      for (String header : out.getOutputHeaders().keySet())
+      {
+         response.setHeader(header, out.getOutputHeaders().getFirst(header).toString());
 
-        Enumeration parameterNames = request.getParameterNames();
-        while (parameterNames.hasMoreElements()) {
-            String parameterName = (String) parameterNames.nextElement();
-            for (String parameterValue : request.getParameterValues(parameterName)) {
-                parameters.add(parameterName, parameterValue);
-            }
-        }
-        return parameters;
-    }
+      }
+      response.setStatus(HttpServletResponse.SC_OK);
+   }
 
-    public static HttpHeaders extractHttpHeaders(HttpServletRequest request) {
-        HttpHeadersImpl headers = new HttpHeadersImpl();
+   public static MultivaluedMapImpl<String, String> extractParameters(HttpServletRequest request)
+   {
+      MultivaluedMapImpl<String, String> parameters = new MultivaluedMapImpl<String, String>();
 
-        MultivaluedMapImpl<String, String> requestHeaders = extractRequestHeaders(request);
-        headers.setRequestHeaders(requestHeaders);
-        List<MediaType> acceptableMediaTypes = extractAccepts(requestHeaders);
-        headers.setAcceptableMediaTypes(acceptableMediaTypes);
-        headers.setLanguage(requestHeaders.getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Enumeration parameterNames = request.getParameterNames();
+      while (parameterNames.hasMoreElements())
+      {
+         String parameterName = (String) parameterNames.nextElement();
+         for (String parameterValue : request.getParameterValues(parameterName))
+         {
+            parameters.add(parameterName, parameterValue);
+         }
+      }
+      return parameters;
+   }
 
-        String contentType = request.getContentType();
-        if (contentType != null) headers.setMediaType(MediaType.parse(contentType));
+   public static HttpHeaders extractHttpHeaders(HttpServletRequest request)
+   {
+      HttpHeadersImpl headers = new HttpHeadersImpl();
 
-        Map<String, javax.ws.rs.core.Cookie> cookies = extractCookies(request);
-        headers.setCookies(cookies);
-        return headers;
+      MultivaluedMapImpl<String, String> requestHeaders = extractRequestHeaders(request);
+      headers.setRequestHeaders(requestHeaders);
+      List<MediaType> acceptableMediaTypes = extractAccepts(requestHeaders);
+      headers.setAcceptableMediaTypes(acceptableMediaTypes);
+      headers.setLanguage(requestHeaders.getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
 
-    }
+      String contentType = request.getContentType();
+      if (contentType != null) headers.setMediaType(MediaType.parse(contentType));
 
-    private static Map<String, javax.ws.rs.core.Cookie> extractCookies(HttpServletRequest request) {
-        Map<String, javax.ws.rs.core.Cookie> cookies = new HashMap<String, javax.ws.rs.core.Cookie>();
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                cookies.put(cookie.getName(), new javax.ws.rs.core.Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion()));
+      Map<String, javax.ws.rs.core.Cookie> cookies = extractCookies(request);
+      headers.setCookies(cookies);
+      return headers;
 
-            }
-        }
-        return cookies;
-    }
+   }
 
-    public static List<MediaType> extractAccepts(MultivaluedMapImpl<String, String> requestHeaders) {
-        List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
-        List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT);
-        if (accepts == null) return acceptableMediaTypes;
+   private static Map<String, javax.ws.rs.core.Cookie> extractCookies(HttpServletRequest request)
+   {
+      Map<String, javax.ws.rs.core.Cookie> cookies = new HashMap<String, javax.ws.rs.core.Cookie>();
+      if (request.getCookies() != null)
+      {
+         for (Cookie cookie : request.getCookies())
+         {
+            cookies.put(cookie.getName(), new javax.ws.rs.core.Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion()));
 
-        for (String accept : accepts) {
-            acceptableMediaTypes.add(MediaType.parse(accept));
-        }
-        return acceptableMediaTypes;
-    }
+         }
+      }
+      return cookies;
+   }
 
-    public static MultivaluedMapImpl<String, String> extractRequestHeaders(HttpServletRequest request) {
-        MultivaluedMapImpl<String, String> requestHeaders = new MultivaluedMapImpl<String, String>();
+   public static List<MediaType> extractAccepts(MultivaluedMapImpl<String, String> requestHeaders)
+   {
+      List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
+      List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT);
+      if (accepts == null) return acceptableMediaTypes;
 
-        Enumeration headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = (String) headerNames.nextElement();
-            Enumeration headerValues = request.getHeaders(headerName);
-            while (headerValues.hasMoreElements()) {
-                String headerValue = (String) headerValues.nextElement();
-                requestHeaders.add(headerName, headerValue);
-            }
-        }
-        return requestHeaders;
-    }
+      for (String accept : accepts)
+      {
+         acceptableMediaTypes.add(MediaType.parse(accept));
+      }
+      return acceptableMediaTypes;
+   }
+
+   public static MultivaluedMapImpl<String, String> extractRequestHeaders(HttpServletRequest request)
+   {
+      MultivaluedMapImpl<String, String> requestHeaders = new MultivaluedMapImpl<String, String>();
+
+      Enumeration headerNames = request.getHeaderNames();
+      while (headerNames.hasMoreElements())
+      {
+         String headerName = (String) headerNames.nextElement();
+         Enumeration headerValues = request.getHeaders(headerName);
+         while (headerValues.hasMoreElements())
+         {
+            String headerValue = (String) headerValues.nextElement();
+            requestHeaders.add(headerName, headerValue);
+         }
+      }
+      return requestHeaders;
+   }
 }

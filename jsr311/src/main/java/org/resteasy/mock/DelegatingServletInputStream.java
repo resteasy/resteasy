@@ -15,36 +15,41 @@ import java.io.InputStream;
  * @see org.springframework.mock.web.MockHttpServletRequest
  * @since 1.0.2
  */
-public class DelegatingServletInputStream extends ServletInputStream {
+public class DelegatingServletInputStream extends ServletInputStream
+{
 
-    private final InputStream sourceStream;
-
-
-    /**
-     * Create a DelegatingServletInputStream for the given source stream.
-     *
-     * @param sourceStream the source stream (never <code>null</code>)
-     */
-    public DelegatingServletInputStream(InputStream sourceStream) {
-        Assert.notNull(sourceStream, "Source InputStream must not be null");
-        this.sourceStream = sourceStream;
-    }
-
-    /**
-     * Return the underlying source stream (never <code>null</code>).
-     */
-    public final InputStream getSourceStream() {
-        return this.sourceStream;
-    }
+   private final InputStream sourceStream;
 
 
-    public int read() throws IOException {
-        return this.sourceStream.read();
-    }
+   /**
+    * Create a DelegatingServletInputStream for the given source stream.
+    *
+    * @param sourceStream the source stream (never <code>null</code>)
+    */
+   public DelegatingServletInputStream(InputStream sourceStream)
+   {
+      Assert.notNull(sourceStream, "Source InputStream must not be null");
+      this.sourceStream = sourceStream;
+   }
 
-    public void close() throws IOException {
-        super.close();
-        this.sourceStream.close();
-	}
+   /**
+    * Return the underlying source stream (never <code>null</code>).
+    */
+   public final InputStream getSourceStream()
+   {
+      return this.sourceStream;
+   }
+
+
+   public int read() throws IOException
+   {
+      return this.sourceStream.read();
+   }
+
+   public void close() throws IOException
+   {
+      super.close();
+      this.sourceStream.close();
+   }
 
 }

@@ -10,16 +10,19 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class QueryParamExtractor extends StringParameterExtractor {
+public class QueryParamExtractor extends StringParameterExtractor
+{
 
 
-    public QueryParamExtractor(Method method, String paramName, Class type, String defaultValue) {
-        super(type, method, paramName, "@" + QueryParam.class.getSimpleName(), defaultValue);
-    }
+   public QueryParamExtractor(Method method, String paramName, Class type, String defaultValue)
+   {
+      super(type, method, paramName, "@" + QueryParam.class.getSimpleName(), defaultValue);
+   }
 
-    public Object extract(HttpInput request) {
-        List<String> list = request.getParameters().get(paramName);
-        return extractValues(list);
-    }
+   public Object extract(HttpInput request)
+   {
+      List<String> list = request.getParameters().get(paramName);
+      return extractValues(list);
+   }
 
 }

@@ -11,45 +11,54 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpHeadersImpl implements HttpHeaders {
+public class HttpHeadersImpl implements HttpHeaders
+{
 
-    private MultivaluedMap<String, String> requestHeaders;
-    private List<MediaType> acceptableMediaTypes;
-    private MediaType mediaType;
-    private String language;
-    private Map<String, Cookie> cookies;
+   private MultivaluedMap<String, String> requestHeaders;
+   private List<MediaType> acceptableMediaTypes;
+   private MediaType mediaType;
+   private String language;
+   private Map<String, Cookie> cookies;
 
-    public MultivaluedMap<String, String> getRequestHeaders() {
-        return requestHeaders;
-    }
+   public MultivaluedMap<String, String> getRequestHeaders()
+   {
+      return requestHeaders;
+   }
 
-    public void setRequestHeaders(MultivaluedMap<String, String> requestHeaders) {
-        this.requestHeaders = requestHeaders;
-    }
+   public void setRequestHeaders(MultivaluedMap<String, String> requestHeaders)
+   {
+      this.requestHeaders = requestHeaders;
+   }
 
-    public List<MediaType> getAcceptableMediaTypes() {
-        return acceptableMediaTypes;
-    }
+   public List<MediaType> getAcceptableMediaTypes()
+   {
+      return acceptableMediaTypes;
+   }
 
-    public void setAcceptableMediaTypes(List<MediaType> acceptableMediaTypes) {
-        this.acceptableMediaTypes = acceptableMediaTypes;
-    }
+   public void setAcceptableMediaTypes(List<MediaType> acceptableMediaTypes)
+   {
+      this.acceptableMediaTypes = acceptableMediaTypes;
+   }
 
-    public MediaType getMediaType() {
-        return mediaType;
-    }
+   public MediaType getMediaType()
+   {
+      return mediaType;
+   }
 
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
-    }
+   public void setMediaType(MediaType mediaType)
+   {
+      this.mediaType = mediaType;
+   }
 
-    public String getLanguage() {
-        return language;
-    }
+   public String getLanguage()
+   {
+      return language;
+   }
 
-    public void setLanguage(String language) {
-        this.language = language;
-    }
+   public void setLanguage(String language)
+   {
+      this.language = language;
+   }
 
    public Map<String, Cookie> getCookies()
    {

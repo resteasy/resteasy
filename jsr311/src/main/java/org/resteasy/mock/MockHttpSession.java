@@ -23,194 +23,232 @@ import java.util.Map;
  * @author Rod Johnson
  * @since 1.0.2
  */
-public class MockHttpSession implements HttpSession {
+public class MockHttpSession implements HttpSession
+{
 
-    public static final String SESSION_COOKIE_NAME = "JSESSION";
+   public static final String SESSION_COOKIE_NAME = "JSESSION";
 
-    private static int nextId = 1;
-
-
-    private final String id = Integer.toString(nextId++);
-
-    private final long creationTime = System.currentTimeMillis();
-
-    private int maxInactiveInterval;
-
-    private long lastAccessedTime = System.currentTimeMillis();
-
-    private final ServletContext servletContext;
-
-    private final Hashtable attributes = new Hashtable();
-
-    private boolean invalid = false;
-
-    private boolean isNew = true;
+   private static int nextId = 1;
 
 
-    /**
-     * Create a new MockHttpSession with a default {@link org.springframework.mock.web.MockServletContext}.
-     *
-     * @see org.springframework.mock.web.MockServletContext
-     */
-    public MockHttpSession() {
-        this(null);
-    }
+   private final String id = Integer.toString(nextId++);
 
-    /**
-     * Create a new MockHttpSession.
-     *
-     * @param servletContext the ServletContext that the session runs in
-     */
-    public MockHttpSession(ServletContext servletContext) {
-        this.servletContext = (servletContext != null ? servletContext : new MockServletContext());
-    }
+   private final long creationTime = System.currentTimeMillis();
+
+   private int maxInactiveInterval;
+
+   private long lastAccessedTime = System.currentTimeMillis();
+
+   private final ServletContext servletContext;
+
+   private final Hashtable attributes = new Hashtable();
+
+   private boolean invalid = false;
+
+   private boolean isNew = true;
 
 
-    public long getCreationTime() {
-        return this.creationTime;
-    }
+   /**
+    * Create a new MockHttpSession with a default {@link org.springframework.mock.web.MockServletContext}.
+    *
+    * @see org.springframework.mock.web.MockServletContext
+    */
+   public MockHttpSession()
+   {
+      this(null);
+   }
 
-    public String getId() {
-        return this.id;
-    }
+   /**
+    * Create a new MockHttpSession.
+    *
+    * @param servletContext the ServletContext that the session runs in
+    */
+   public MockHttpSession(ServletContext servletContext)
+   {
+      this.servletContext = (servletContext != null ? servletContext : new MockServletContext());
+   }
 
-    public void access() {
-        this.lastAccessedTime = System.currentTimeMillis();
-        this.isNew = false;
-    }
 
-    public long getLastAccessedTime() {
-        return this.lastAccessedTime;
-    }
+   public long getCreationTime()
+   {
+      return this.creationTime;
+   }
 
-    public ServletContext getServletContext() {
-        return this.servletContext;
-    }
+   public String getId()
+   {
+      return this.id;
+   }
 
-    public void setMaxInactiveInterval(int interval) {
-        this.maxInactiveInterval = interval;
-    }
+   public void access()
+   {
+      this.lastAccessedTime = System.currentTimeMillis();
+      this.isNew = false;
+   }
 
-    public int getMaxInactiveInterval() {
-        return this.maxInactiveInterval;
-    }
+   public long getLastAccessedTime()
+   {
+      return this.lastAccessedTime;
+   }
 
-    public HttpSessionContext getSessionContext() {
-        throw new UnsupportedOperationException("getSessionContext");
-    }
+   public ServletContext getServletContext()
+   {
+      return this.servletContext;
+   }
 
-    public Object getAttribute(String name) {
-        Assert.notNull(name, "Attribute name must not be null");
-        return this.attributes.get(name);
-    }
+   public void setMaxInactiveInterval(int interval)
+   {
+      this.maxInactiveInterval = interval;
+   }
 
-    public Object getValue(String name) {
-        return getAttribute(name);
-    }
+   public int getMaxInactiveInterval()
+   {
+      return this.maxInactiveInterval;
+   }
 
-    public Enumeration getAttributeNames() {
-        return this.attributes.keys();
-    }
+   public HttpSessionContext getSessionContext()
+   {
+      throw new UnsupportedOperationException("getSessionContext");
+   }
 
-    public String[] getValueNames() {
-        return (String[]) this.attributes.keySet().toArray(new String[this.attributes.size()]);
-    }
+   public Object getAttribute(String name)
+   {
+      Assert.notNull(name, "Attribute name must not be null");
+      return this.attributes.get(name);
+   }
 
-    public void setAttribute(String name, Object value) {
-        Assert.notNull(name, "Attribute name must not be null");
-        if (value != null) {
-            this.attributes.put(name, value);
-            if (value instanceof HttpSessionBindingListener) {
-                ((HttpSessionBindingListener) value).valueBound(new HttpSessionBindingEvent(this, name, value));
-            }
-        } else {
-            removeAttribute(name);
-        }
-    }
+   public Object getValue(String name)
+   {
+      return getAttribute(name);
+   }
 
-    public void putValue(String name, Object value) {
-        setAttribute(name, value);
-    }
+   public Enumeration getAttributeNames()
+   {
+      return this.attributes.keys();
+   }
 
-    public void removeAttribute(String name) {
-        Assert.notNull(name, "Attribute name must not be null");
-        Object value = this.attributes.remove(name);
-        if (value instanceof HttpSessionBindingListener) {
+   public String[] getValueNames()
+   {
+      return (String[]) this.attributes.keySet().toArray(new String[this.attributes.size()]);
+   }
+
+   public void setAttribute(String name, Object value)
+   {
+      Assert.notNull(name, "Attribute name must not be null");
+      if (value != null)
+      {
+         this.attributes.put(name, value);
+         if (value instanceof HttpSessionBindingListener)
+         {
+            ((HttpSessionBindingListener) value).valueBound(new HttpSessionBindingEvent(this, name, value));
+         }
+      }
+      else
+      {
+         removeAttribute(name);
+      }
+   }
+
+   public void putValue(String name, Object value)
+   {
+      setAttribute(name, value);
+   }
+
+   public void removeAttribute(String name)
+   {
+      Assert.notNull(name, "Attribute name must not be null");
+      Object value = this.attributes.remove(name);
+      if (value instanceof HttpSessionBindingListener)
+      {
+         ((HttpSessionBindingListener) value).valueUnbound(new HttpSessionBindingEvent(this, name, value));
+      }
+   }
+
+   public void removeValue(String name)
+   {
+      removeAttribute(name);
+   }
+
+   /**
+    * Clear all of this session's attributes.
+    */
+   public void clearAttributes()
+   {
+      for (Iterator it = this.attributes.entrySet().iterator(); it.hasNext();)
+      {
+         Map.Entry entry = (Map.Entry) it.next();
+         String name = (String) entry.getKey();
+         Object value = entry.getValue();
+         it.remove();
+         if (value instanceof HttpSessionBindingListener)
+         {
             ((HttpSessionBindingListener) value).valueUnbound(new HttpSessionBindingEvent(this, name, value));
-        }
-    }
+         }
+      }
+   }
 
-    public void removeValue(String name) {
-        removeAttribute(name);
-    }
+   public void invalidate()
+   {
+      this.invalid = true;
+      clearAttributes();
+   }
 
-    /**
-     * Clear all of this session's attributes.
-     */
-    public void clearAttributes() {
-        for (Iterator it = this.attributes.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry) it.next();
-            String name = (String) entry.getKey();
-            Object value = entry.getValue();
-            it.remove();
-            if (value instanceof HttpSessionBindingListener) {
-                ((HttpSessionBindingListener) value).valueUnbound(new HttpSessionBindingEvent(this, name, value));
+   public boolean isInvalid()
+   {
+      return this.invalid;
+   }
+
+   public void setNew(boolean value)
+   {
+      this.isNew = value;
+   }
+
+   public boolean isNew()
+   {
+      return this.isNew;
+   }
+
+
+   /**
+    * Serialize the attributes of this session into an object that can
+    * be turned into a byte array with standard Java serialization.
+    *
+    * @return a representation of this session's serialized state
+    */
+   public Serializable serializeState()
+   {
+      HashMap state = new HashMap();
+      for (Iterator it = this.attributes.entrySet().iterator(); it.hasNext();)
+      {
+         Map.Entry entry = (Map.Entry) it.next();
+         String name = (String) entry.getKey();
+         Object value = entry.getValue();
+         it.remove();
+         if (value instanceof Serializable)
+         {
+            state.put(name, value);
+         }
+         else
+         {
+            // Not serializable... Servlet containers usually automatically
+            // unbind the attribute in this case.
+            if (value instanceof HttpSessionBindingListener)
+            {
+               ((HttpSessionBindingListener) value).valueUnbound(new HttpSessionBindingEvent(this, name, value));
             }
-        }
-    }
+         }
+      }
+      return state;
+   }
 
-    public void invalidate() {
-        this.invalid = true;
-        clearAttributes();
-    }
-
-    public boolean isInvalid() {
-        return this.invalid;
-    }
-
-    public void setNew(boolean value) {
-        this.isNew = value;
-    }
-
-    public boolean isNew() {
-        return this.isNew;
-    }
-
-
-    /**
-     * Serialize the attributes of this session into an object that can
-     * be turned into a byte array with standard Java serialization.
-     *
-     * @return a representation of this session's serialized state
-     */
-    public Serializable serializeState() {
-        HashMap state = new HashMap();
-        for (Iterator it = this.attributes.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry) it.next();
-            String name = (String) entry.getKey();
-            Object value = entry.getValue();
-            it.remove();
-            if (value instanceof Serializable) {
-                state.put(name, value);
-            } else {
-                // Not serializable... Servlet containers usually automatically
-                // unbind the attribute in this case.
-                if (value instanceof HttpSessionBindingListener) {
-                    ((HttpSessionBindingListener) value).valueUnbound(new HttpSessionBindingEvent(this, name, value));
-                }
-            }
-        }
-        return state;
-    }
-
-    /**
-     * Deserialize the attributes of this session from a state object
-     * created by {@link #serializeState()}.
-     *
-     * @param state a representation of this session's serialized state
-     */
-    public void deserializeState(Serializable state) {
-		this.attributes.putAll((Map) state);
-	}
+   /**
+    * Deserialize the attributes of this session from a state object
+    * created by {@link #serializeState()}.
+    *
+    * @param state a representation of this session's serialized state
+    */
+   public void deserializeState(Serializable state)
+   {
+      this.attributes.putAll((Map) state);
+   }
 
 }

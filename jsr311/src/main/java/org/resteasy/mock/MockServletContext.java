@@ -45,266 +45,305 @@ import java.util.Set;
  * @see org.springframework.context.support.FileSystemXmlApplicationContext
  * @since 1.0.2
  */
-public class MockServletContext implements ServletContext {
+public class MockServletContext implements ServletContext
+{
 
-    private static final String TEMP_DIR_SYSTEM_PROPERTY = "java.io.tmpdir";
+   private static final String TEMP_DIR_SYSTEM_PROPERTY = "java.io.tmpdir";
 
-    private final Object resourceLoader;
+   private final Object resourceLoader;
 
-    private final String resourceBasePath;
+   private final String resourceBasePath;
 
-    private final Properties initParameters = new Properties();
+   private final Properties initParameters = new Properties();
 
-    private final Hashtable attributes = new Hashtable();
+   private final Hashtable attributes = new Hashtable();
 
-    private String servletContextName = "MockServletContext";
+   private String servletContextName = "MockServletContext";
 
 
-    /**
-     * Create a new MockServletContext, using no base path and a
-     * DefaultResourceLoader (i.e. the classpath root as WAR root).
-     *
-     * @see org.springframework.core.io.DefaultResourceLoader
-     */
-    public MockServletContext() {
-        this("", null);
-    }
+   /**
+    * Create a new MockServletContext, using no base path and a
+    * DefaultResourceLoader (i.e. the classpath root as WAR root).
+    *
+    * @see org.springframework.core.io.DefaultResourceLoader
+    */
+   public MockServletContext()
+   {
+      this("", null);
+   }
 
-    /**
-     * Create a new MockServletContext, using a DefaultResourceLoader.
-     *
-     * @param resourceBasePath the WAR root directory (should not end with a slash)
-     * @see org.springframework.core.io.DefaultResourceLoader
-     */
-    public MockServletContext(String resourceBasePath) {
-        this(resourceBasePath, null);
-    }
+   /**
+    * Create a new MockServletContext, using a DefaultResourceLoader.
+    *
+    * @param resourceBasePath the WAR root directory (should not end with a slash)
+    * @see org.springframework.core.io.DefaultResourceLoader
+    */
+   public MockServletContext(String resourceBasePath)
+   {
+      this(resourceBasePath, null);
+   }
 
-    /**
-     * Create a new MockServletContext, using the specified ResourceLoader
-     * and no base path.
-     *
-     * @param resourceLoader the ResourceLoader to use (or null for the default)
-     */
-    public MockServletContext(Object resourceLoader) {
-        this("", resourceLoader);
-    }
+   /**
+    * Create a new MockServletContext, using the specified ResourceLoader
+    * and no base path.
+    *
+    * @param resourceLoader the ResourceLoader to use (or null for the default)
+    */
+   public MockServletContext(Object resourceLoader)
+   {
+      this("", resourceLoader);
+   }
 
-    /**
-     * Create a new MockServletContext.
-     *
-     * @param resourceBasePath the WAR root directory (should not end with a slash)
-     * @param resourceLoader   the ResourceLoader to use (or null for the default)
-     */
-    public MockServletContext(String resourceBasePath, Object resourceLoader) {
-        this.resourceLoader = null;//(resourceLoader != null ? resourceLoader : new ºDefaultResourceLoader());
-        this.resourceBasePath = (resourceBasePath != null ? resourceBasePath : "");
+   /**
+    * Create a new MockServletContext.
+    *
+    * @param resourceBasePath the WAR root directory (should not end with a slash)
+    * @param resourceLoader   the ResourceLoader to use (or null for the default)
+    */
+   public MockServletContext(String resourceBasePath, Object resourceLoader)
+   {
+      this.resourceLoader = null;//(resourceLoader != null ? resourceLoader : new ºDefaultResourceLoader());
+      this.resourceBasePath = (resourceBasePath != null ? resourceBasePath : "");
 
-        // Use JVM temp dir as ServletContext temp dir.
-        String tempDir = System.getProperty(TEMP_DIR_SYSTEM_PROPERTY);
-        if (tempDir != null) {
-            this.attributes.put("javax.servlet.context.tempdir", new File(tempDir));
+      // Use JVM temp dir as ServletContext temp dir.
+      String tempDir = System.getProperty(TEMP_DIR_SYSTEM_PROPERTY);
+      if (tempDir != null)
+      {
+         this.attributes.put("javax.servlet.context.tempdir", new File(tempDir));
+      }
+   }
+
+   public String getContextPath()
+   {
+      return resourceBasePath;  //To change body of implemented methods use File | Settings | File Templates.
+   }
+
+   /**
+    * Build a full resource location for the given path,
+    * prepending the resource base path of this MockServletContext.
+    *
+    * @param path the path as specified
+    * @return the full resource path
+    */
+   protected String getResourceLocation(String path)
+   {
+      if (!path.startsWith("/"))
+      {
+         path = "/" + path;
+      }
+      return this.resourceBasePath + path;
+   }
+
+
+   public ServletContext getContext(String name)
+   {
+      throw new UnsupportedOperationException("getContext");
+   }
+
+   public int getMajorVersion()
+   {
+      return 2;
+   }
+
+   public int getMinorVersion()
+   {
+      return 4;
+   }
+
+   public String getMimeType(String filePath)
+   {
+      throw new UnsupportedOperationException("getMimeType");
+   }
+
+   public Set getResourcePaths(String path)
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+      /*
+
+          String actualPath = (path.endsWith("/") ? path : path + "/");
+        Resource resource = this.resourceLoader.getResource(getResourceLocation(actualPath));
+        try {
+           File file = resource.getFile();
+           String[] fileList = file.list();
+           if (ObjectUtils.isEmpty(fileList)) {
+              return null;
+           }
+           Set resourcePaths = new LinkedHashSet();
+           for (int i = 0; i < fileList.length; i++) {
+              String resultPath = actualPath + fileList[i];
+              if (resource.createRelative(fileList[i]).getFile().isDirectory()) {
+                 resultPath += "/";
+              }
+              resourcePaths.add(resultPath);
+           }
+           return resourcePaths;
         }
-    }
-
-    public String getContextPath() {
-        return resourceBasePath;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    /**
-     * Build a full resource location for the given path,
-     * prepending the resource base path of this MockServletContext.
-     *
-     * @param path the path as specified
-     * @return the full resource path
-     */
-    protected String getResourceLocation(String path) {
-        if (!path.startsWith("/")) {
-            path = "/" + path;
+        catch (IOException ex) {
+           logger.warn("Couldn't get resource paths for " + resource, ex);
+           return null;
         }
-        return this.resourceBasePath + path;
-    }
+        */
+   }
 
+   public URL getResource(String path) throws MalformedURLException
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
 
-    public ServletContext getContext(String name) {
-        throw new UnsupportedOperationException("getContext");
-    }
-
-    public int getMajorVersion() {
-        return 2;
-    }
-
-    public int getMinorVersion() {
-        return 4;
-    }
-
-    public String getMimeType(String filePath) {
-        throw new UnsupportedOperationException("getMimeType");
-    }
-
-    public Set getResourcePaths(String path) {
-        throw new RuntimeException("NOT IMPLEMENTED");
-        /*
-
-        String actualPath = (path.endsWith("/") ? path : path + "/");
-		Resource resource = this.resourceLoader.getResource(getResourceLocation(actualPath));
-		try {
-			File file = resource.getFile();
-			String[] fileList = file.list();
-			if (ObjectUtils.isEmpty(fileList)) {
-				return null;
-			}
-			Set resourcePaths = new LinkedHashSet();
-			for (int i = 0; i < fileList.length; i++) {
-				String resultPath = actualPath + fileList[i];
-				if (resource.createRelative(fileList[i]).getFile().isDirectory()) {
-					resultPath += "/";
-				}
-				resourcePaths.add(resultPath);
-			}
-			return resourcePaths;
-		}
-		catch (IOException ex) {
-			logger.warn("Couldn't get resource paths for " + resource, ex);
-			return null;
-		}
-		*/
-    }
-
-    public URL getResource(String path) throws MalformedURLException {
-        throw new RuntimeException("NOT IMPLEMENTED");
-
-        /*
-        Resource resource = this.resourceLoader.getResource(getResourceLocation(path));
-		if (!resource.exists()) {
-			return null;
-		}
-		try {
-			return resource.getURL();
-		}
-		catch (MalformedURLException ex) {
-			throw ex;
-		}
-		catch (IOException ex) {
-			logger.warn("Couldn't get URL for " + resource, ex);
-			return null;
-		}
-		*/
-    }
-
-    public InputStream getResourceAsStream(String path) {
-        throw new RuntimeException("NOT IMPLEMENTED");
-        /*
-        Resource resource = this.resourceLoader.getResource(getResourceLocation(path));
-		if (!resource.exists()) {
-			return null;
-		}
-		try {
-			return resource.getInputStream();
-		}
-		catch (IOException ex) {
-			logger.warn("Couldn't open InputStream for " + resource, ex);
-			return null;
-		}
-		*/
-    }
-
-    public RequestDispatcher getRequestDispatcher(String path) {
-        if (!path.startsWith("/")) {
-            throw new IllegalArgumentException("RequestDispatcher path at ServletContext level must start with '/'");
+      /*
+          Resource resource = this.resourceLoader.getResource(getResourceLocation(path));
+        if (!resource.exists()) {
+           return null;
         }
-        return new MockRequestDispatcher(path);
-    }
-
-    public RequestDispatcher getNamedDispatcher(String path) {
-        return null;
-    }
-
-    public Servlet getServlet(String name) {
-        return null;
-    }
-
-    public Enumeration getServlets() {
-        return Collections.enumeration(Collections.EMPTY_SET);
-    }
-
-    public Enumeration getServletNames() {
-        return Collections.enumeration(Collections.EMPTY_SET);
-    }
-
-    public void log(String message) {
-        System.out.println(message);
-    }
-
-    public void log(Exception ex, String message) {
-        System.out.println(message);
-    }
-
-    public void log(String message, Throwable ex) {
-        System.out.println(message);
-    }
-
-    public String getRealPath(String path) {
-        throw new RuntimeException("NOT IMPLEMENTED");
-        /*
-        Resource resource = this.resourceLoader.getResource(getResourceLocation(path));
-		try {
-			return resource.getFile().getAbsolutePath();
-		}
-		catch (IOException ex) {
-			logger.warn("Couldn't determine real path of resource " + resource, ex);
-			return null;
-		}
-		*/
-    }
-
-    public String getServerInfo() {
-        return "MockServletContext";
-    }
-
-    public String getInitParameter(String name) {
-        Assert.notNull(name, "Parameter name must not be null");
-        return this.initParameters.getProperty(name);
-    }
-
-    public void addInitParameter(String name, String value) {
-        Assert.notNull(name, "Parameter name must not be null");
-        this.initParameters.setProperty(name, value);
-    }
-
-    public Enumeration getInitParameterNames() {
-        return this.initParameters.keys();
-    }
-
-    public Object getAttribute(String name) {
-        Assert.notNull(name, "Attribute name must not be null");
-        return this.attributes.get(name);
-    }
-
-    public Enumeration getAttributeNames() {
-        return this.attributes.keys();
-    }
-
-    public void setAttribute(String name, Object value) {
-        Assert.notNull(name, "Attribute name must not be null");
-        if (value != null) {
-            this.attributes.put(name, value);
-        } else {
-            this.attributes.remove(name);
+        try {
+           return resource.getURL();
         }
-    }
+        catch (MalformedURLException ex) {
+           throw ex;
+        }
+        catch (IOException ex) {
+           logger.warn("Couldn't get URL for " + resource, ex);
+           return null;
+        }
+        */
+   }
 
-    public void removeAttribute(String name) {
-        Assert.notNull(name, "Attribute name must not be null");
-        this.attributes.remove(name);
-    }
+   public InputStream getResourceAsStream(String path)
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+      /*
+          Resource resource = this.resourceLoader.getResource(getResourceLocation(path));
+        if (!resource.exists()) {
+           return null;
+        }
+        try {
+           return resource.getInputStream();
+        }
+        catch (IOException ex) {
+           logger.warn("Couldn't open InputStream for " + resource, ex);
+           return null;
+        }
+        */
+   }
 
-    public void setServletContextName(String servletContextName) {
-        this.servletContextName = servletContextName;
-    }
+   public RequestDispatcher getRequestDispatcher(String path)
+   {
+      if (!path.startsWith("/"))
+      {
+         throw new IllegalArgumentException("RequestDispatcher path at ServletContext level must start with '/'");
+      }
+      return new MockRequestDispatcher(path);
+   }
 
-    public String getServletContextName() {
-		return this.servletContextName;
-	}
+   public RequestDispatcher getNamedDispatcher(String path)
+   {
+      return null;
+   }
+
+   public Servlet getServlet(String name)
+   {
+      return null;
+   }
+
+   public Enumeration getServlets()
+   {
+      return Collections.enumeration(Collections.EMPTY_SET);
+   }
+
+   public Enumeration getServletNames()
+   {
+      return Collections.enumeration(Collections.EMPTY_SET);
+   }
+
+   public void log(String message)
+   {
+      System.out.println(message);
+   }
+
+   public void log(Exception ex, String message)
+   {
+      System.out.println(message);
+   }
+
+   public void log(String message, Throwable ex)
+   {
+      System.out.println(message);
+   }
+
+   public String getRealPath(String path)
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+      /*
+          Resource resource = this.resourceLoader.getResource(getResourceLocation(path));
+        try {
+           return resource.getFile().getAbsolutePath();
+        }
+        catch (IOException ex) {
+           logger.warn("Couldn't determine real path of resource " + resource, ex);
+           return null;
+        }
+        */
+   }
+
+   public String getServerInfo()
+   {
+      return "MockServletContext";
+   }
+
+   public String getInitParameter(String name)
+   {
+      Assert.notNull(name, "Parameter name must not be null");
+      return this.initParameters.getProperty(name);
+   }
+
+   public void addInitParameter(String name, String value)
+   {
+      Assert.notNull(name, "Parameter name must not be null");
+      this.initParameters.setProperty(name, value);
+   }
+
+   public Enumeration getInitParameterNames()
+   {
+      return this.initParameters.keys();
+   }
+
+   public Object getAttribute(String name)
+   {
+      Assert.notNull(name, "Attribute name must not be null");
+      return this.attributes.get(name);
+   }
+
+   public Enumeration getAttributeNames()
+   {
+      return this.attributes.keys();
+   }
+
+   public void setAttribute(String name, Object value)
+   {
+      Assert.notNull(name, "Attribute name must not be null");
+      if (value != null)
+      {
+         this.attributes.put(name, value);
+      }
+      else
+      {
+         this.attributes.remove(name);
+      }
+   }
+
+   public void removeAttribute(String name)
+   {
+      Assert.notNull(name, "Attribute name must not be null");
+      this.attributes.remove(name);
+   }
+
+   public void setServletContextName(String servletContextName)
+   {
+      this.servletContextName = servletContextName;
+   }
+
+   public String getServletContextName()
+   {
+      return this.servletContextName;
+   }
 
 }

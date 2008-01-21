@@ -9,12 +9,13 @@ import java.io.InputStream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface HttpInput {
-    HttpHeaders getHttpHeaders();
+public interface HttpInput
+{
+   HttpHeaders getHttpHeaders();
 
-    InputStream getInputStream();
+   InputStream getInputStream();
 
-    UriInfo getUri();
+   UriInfo getUri();
 
-    MultivaluedMap<String, String> getParameters();
+   MultivaluedMap<String, String> getParameters();
 }

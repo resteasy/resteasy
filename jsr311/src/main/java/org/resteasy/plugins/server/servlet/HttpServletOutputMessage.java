@@ -11,24 +11,31 @@ import java.io.OutputStream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServletOutputMessage implements HttpOutput {
-    private HttpServletResponse response;
-    private HttpServletResponseHeaders headers;
+public class HttpServletOutputMessage implements HttpOutput
+{
+   private HttpServletResponse response;
+   private HttpServletResponseHeaders headers;
 
-    public HttpServletOutputMessage(HttpServletResponse response) {
-        this.response = response;
-        headers = new HttpServletResponseHeaders(response);
-    }
+   public HttpServletOutputMessage(HttpServletResponse response)
+   {
+      this.response = response;
+      headers = new HttpServletResponseHeaders(response);
+   }
 
-    public MultivaluedMap<String, Object> getOutputHeaders() {
-        return headers;
-    }
+   public MultivaluedMap<String, Object> getOutputHeaders()
+   {
+      return headers;
+   }
 
-    public OutputStream getOutputStream() {
-        try {
-            return response.getOutputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+   public OutputStream getOutputStream()
+   {
+      try
+      {
+         return response.getOutputStream();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
 }

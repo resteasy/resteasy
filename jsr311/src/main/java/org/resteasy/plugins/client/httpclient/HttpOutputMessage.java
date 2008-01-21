@@ -12,19 +12,23 @@ import java.io.OutputStream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpOutputMessage implements HttpOutput {
-    protected MultivaluedMap<String, Object> outputHeaders = new MultivaluedMapImpl<String, Object>();
-    protected OutputStream outputStream;
+public class HttpOutputMessage implements HttpOutput
+{
+   protected MultivaluedMap<String, Object> outputHeaders = new MultivaluedMapImpl<String, Object>();
+   protected OutputStream outputStream;
 
-    public HttpOutputMessage(OutputStream outputStream) {
-        this.outputStream = outputStream;
-    }
+   public HttpOutputMessage(OutputStream outputStream)
+   {
+      this.outputStream = outputStream;
+   }
 
-    public MultivaluedMap<String, Object> getOutputHeaders() {
-        return outputHeaders;
-    }
+   public MultivaluedMap<String, Object> getOutputHeaders()
+   {
+      return outputHeaders;
+   }
 
-    public OutputStream getOutputStream() {
-        return outputStream;
-    }
+   public OutputStream getOutputStream()
+   {
+      return outputStream;
+   }
 }

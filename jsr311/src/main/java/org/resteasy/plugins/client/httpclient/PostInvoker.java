@@ -11,12 +11,15 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class PostInvoker extends HttpClientInvoker {
-    public PostInvoker(HttpClient client, Class<?> declaring, Method method, ResteasyProviderFactory providerFactory) {
-        super(client, declaring, method, providerFactory);
-    }
+public class PostInvoker extends HttpClientInvoker
+{
+   public PostInvoker(HttpClient client, Class<?> declaring, Method method, ResteasyProviderFactory providerFactory)
+   {
+      super(client, declaring, method, providerFactory);
+   }
 
-    public HttpMethodBase createBaseMethod(String uri) {
-        return new PostMethod(uri);
-    }
+   public HttpMethodBase createBaseMethod(String uri)
+   {
+      return new PostMethod(uri);
+   }
 }

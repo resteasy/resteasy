@@ -1,21 +1,21 @@
 package org.resteasy.spi;
 
-import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.resteasy.specimpl.UriBuilderImpl;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -25,16 +25,16 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ResteasyProviderFactory extends RuntimeDelegate
 {
 
-    private List<MessageBodyReader> messageBodyReaders = new ArrayList<MessageBodyReader>();
-    private List<MessageBodyWriter> messageBodyWriters = new ArrayList<MessageBodyWriter>();
+   private List<MessageBodyReader> messageBodyReaders = new ArrayList<MessageBodyReader>();
+   private List<MessageBodyWriter> messageBodyWriters = new ArrayList<MessageBodyWriter>();
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
    private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
 
    public static void setInstance(ResteasyProviderFactory factory)
    {
-       pfr.set(factory);
-       RuntimeDelegate.setDelegate(factory);
+      pfr.set(factory);
+      RuntimeDelegate.setDelegate(factory);
    }
 
    /**
@@ -45,8 +45,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate
     * META-INF/services/javax.ws.rs.ext.ProviderFactory in jars available
     * to the runtime.
     */
-   public static ResteasyProviderFactory getInstance() {
-       return pfr.get();
+   public static ResteasyProviderFactory getInstance()
+   {
+      return pfr.get();
    }
 
    public ResteasyProviderFactory()
@@ -79,49 +80,61 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       headerDelegates.put(clazz, header);
    }
 
-    public void addMessageBodyReader(MessageBodyReader provider) {
-        messageBodyReaders.add(provider);
-    }
+   public void addMessageBodyReader(MessageBodyReader provider)
+   {
+      messageBodyReaders.add(provider);
+   }
 
-    public void addMessageBodyWriter(MessageBodyWriter provider) {
-        messageBodyWriters.add(provider);
-    }
+   public void addMessageBodyWriter(MessageBodyWriter provider)
+   {
+      messageBodyWriters.add(provider);
+   }
 
-    public <T> MessageBodyReader<T> createMessageBodyReader(Class<T> type, MediaType mediaType) {
-        for (MessageBodyReader<T> factory : messageBodyReaders) {
-            ConsumeMime consumeMime = factory.getClass().getAnnotation(ConsumeMime.class);
-            boolean compatible = false;
-            for (String consume : consumeMime.value()) {
-                if (mediaType.isCompatible(MediaType.parse(consume))) {
-                    compatible = true;
-                    break;
-                }
+   public <T> MessageBodyReader<T> createMessageBodyReader(Class<T> type, MediaType mediaType)
+   {
+      for (MessageBodyReader<T> factory : messageBodyReaders)
+      {
+         ConsumeMime consumeMime = factory.getClass().getAnnotation(ConsumeMime.class);
+         boolean compatible = false;
+         for (String consume : consumeMime.value())
+         {
+            if (mediaType.isCompatible(MediaType.parse(consume)))
+            {
+               compatible = true;
+               break;
             }
-            if (!compatible) continue;
+         }
+         if (!compatible) continue;
 
-            if (factory.isReadable(type)) {
-                return factory;
-            }
-        }
-        return null;
-    }
+         if (factory.isReadable(type))
+         {
+            return factory;
+         }
+      }
+      return null;
+   }
 
-    public <T> MessageBodyWriter<T> createMessageBodyWriter(Class<T> type, MediaType mediaType) {
-        for (MessageBodyWriter<T> factory : messageBodyWriters) {
-            ProduceMime produceMime = factory.getClass().getAnnotation(ProduceMime.class);
-            boolean compatible = false;
-            for (String produce : produceMime.value()) {
-                if (mediaType.isCompatible(MediaType.parse(produce))) {
-                    compatible = true;
-                    break;
-                }
+   public <T> MessageBodyWriter<T> createMessageBodyWriter(Class<T> type, MediaType mediaType)
+   {
+      for (MessageBodyWriter<T> factory : messageBodyWriters)
+      {
+         ProduceMime produceMime = factory.getClass().getAnnotation(ProduceMime.class);
+         boolean compatible = false;
+         for (String produce : produceMime.value())
+         {
+            if (mediaType.isCompatible(MediaType.parse(produce)))
+            {
+               compatible = true;
+               break;
             }
-            if (!compatible) continue;
+         }
+         if (!compatible) continue;
 
-            if (factory.isWriteable(type)) {
-                return factory;
-            }
-        }
-        return null;
-    }
+         if (factory.isWriteable(type))
+         {
+            return factory;
+         }
+      }
+      return null;
+   }
 }

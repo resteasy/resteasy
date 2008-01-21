@@ -21,60 +21,66 @@ import java.util.Properties;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TestJAXB {
+public class TestJAXB
+{
 
-    private static Serve server = null;
-    private static HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+   private static Serve server = null;
+   private static HttpServletDispatcher dispatcher = new HttpServletDispatcher();
 
-    @BeforeClass
-    public static void before() throws Exception {
-        server = new Serve();
-        Properties props = new Properties();
-        props.put("port", 8081);
-        props.setProperty(Serve.ARG_NOHUP, "nohup");
-        server.arguments = props;
-        server.addDefaultServlets(null); // optional file servlet
-        server.addServlet("/", dispatcher); // optional
-        new Thread() {
-            public void run() {
-                server.serve();
-            }
-        }.start();
-        ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-        dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-        dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
-        dispatcher.getProviderFactory().addMessageBodyReader(new JAXBProvider());
-        dispatcher.getProviderFactory().addMessageBodyWriter(new JAXBProvider());
-    }
+   @BeforeClass
+   public static void before() throws Exception
+   {
+      server = new Serve();
+      Properties props = new Properties();
+      props.put("port", 8081);
+      props.setProperty(Serve.ARG_NOHUP, "nohup");
+      server.arguments = props;
+      server.addDefaultServlets(null); // optional file servlet
+      server.addServlet("/", dispatcher); // optional
+      new Thread()
+      {
+         public void run()
+         {
+            server.serve();
+         }
+      }.start();
+      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
+      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
+      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
+      dispatcher.getProviderFactory().addMessageBodyReader(new JAXBProvider());
+      dispatcher.getProviderFactory().addMessageBodyWriter(new JAXBProvider());
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        server.notifyStop();
-    }
+   @AfterClass
+   public static void after() throws Exception
+   {
+      server.notifyStop();
+   }
 
-    @Test
-    public void testNoDefaultsResource() throws Exception {
-        POJOResourceFactory noDefaults = new POJOResourceFactory(BookStore.class);
-        dispatcher.getRegistry().addResourceFactory(noDefaults);
+   @Test
+   public void testNoDefaultsResource() throws Exception
+   {
+      POJOResourceFactory noDefaults = new POJOResourceFactory(BookStore.class);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
 
-        HttpClient httpClient = new HttpClient();
-        BookStoreClient client = ProxyFactory.create(BookStoreClient.class, "http://localhost:8081", httpClient);
+      HttpClient httpClient = new HttpClient();
+      BookStoreClient client = ProxyFactory.create(BookStoreClient.class, "http://localhost:8081", httpClient);
 
-        Book book = client.getBookByISBN("596529260");
-        Assert.assertNotNull(book);
-        Assert.assertEquals("RESTful Web Services", book.getTitle());
+      Book book = client.getBookByISBN("596529260");
+      Assert.assertNotNull(book);
+      Assert.assertEquals("RESTful Web Services", book.getTitle());
 
-        // TJWS does not support chunk encodings well so I need to kill kept alive connections
-        httpClient.getHttpConnectionManager().closeIdleConnections(0);
+      // TJWS does not support chunk encodings well so I need to kill kept alive connections
+      httpClient.getHttpConnectionManager().closeIdleConnections(0);
 
-        book = new Book("Bill Burke", "666", "EJB 3.0");
-        client.addBook(book);
-        // TJWS does not support chunk encodings so I need to kill kept alive connections
-        httpClient.getHttpConnectionManager().closeIdleConnections(0);
-        book = client.getBookByISBN("666");
-        Assert.assertEquals("Bill Burke", book.getAuthor());
-        httpClient.getHttpConnectionManager().closeIdleConnections(0);
-    }
+      book = new Book("Bill Burke", "666", "EJB 3.0");
+      client.addBook(book);
+      // TJWS does not support chunk encodings so I need to kill kept alive connections
+      httpClient.getHttpConnectionManager().closeIdleConnections(0);
+      book = client.getBookByISBN("666");
+      Assert.assertEquals("Bill Burke", book.getAuthor());
+      httpClient.getHttpConnectionManager().closeIdleConnections(0);
+   }
 
 
 }

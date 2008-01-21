@@ -6,13 +6,14 @@ package org.resteasy.spi;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface ResourceFactory {
-    Object createResource(HttpInput input, HttpOutput output);
+public interface ResourceFactory
+{
+   Object createResource(HttpInput input, HttpOutput output);
 
-    /**
-     * Class to scan for jax-rs annotations
-     *
-     * @return
-     */
-    Class<?> getScannableClass();
+   /**
+    * Class to scan for jax-rs annotations
+    *
+    * @return
+    */
+   Class<?> getScannableClass();
 }

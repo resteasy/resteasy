@@ -15,32 +15,38 @@ import java.io.InputStream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServletInputMessage implements HttpInput {
-    protected HttpHeaders httpHeaders;
-    protected InputStream inputStream;
-    protected UriInfo uri;
-    protected MultivaluedMap<String, String> parameters;
+public class HttpServletInputMessage implements HttpInput
+{
+   protected HttpHeaders httpHeaders;
+   protected InputStream inputStream;
+   protected UriInfo uri;
+   protected MultivaluedMap<String, String> parameters;
 
-    public HttpServletInputMessage(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, MultivaluedMap<String, String> parameters) {
-        this.httpHeaders = httpHeaders;
-        this.inputStream = inputStream;
-        this.uri = uri;
-        this.parameters = parameters;
-    }
+   public HttpServletInputMessage(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, MultivaluedMap<String, String> parameters)
+   {
+      this.httpHeaders = httpHeaders;
+      this.inputStream = inputStream;
+      this.uri = uri;
+      this.parameters = parameters;
+   }
 
-    public HttpHeaders getHttpHeaders() {
-        return httpHeaders;
-    }
+   public HttpHeaders getHttpHeaders()
+   {
+      return httpHeaders;
+   }
 
-    public InputStream getInputStream() {
-        return inputStream;
-    }
+   public InputStream getInputStream()
+   {
+      return inputStream;
+   }
 
-    public UriInfo getUri() {
-        return uri;
-    }
+   public UriInfo getUri()
+   {
+      return uri;
+   }
 
-    public MultivaluedMap<String, String> getParameters() {
-        return parameters;
-    }
+   public MultivaluedMap<String, String> getParameters()
+   {
+      return parameters;
+   }
 }

@@ -11,16 +11,20 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MatrixParamExtractor extends StringParameterExtractor {
-    public MatrixParamExtractor(Method method, String paramName, Class type, String defaultValue) {
-        super(type, method, paramName, "@" + MatrixParam.class.getSimpleName(), defaultValue);
-    }
+public class MatrixParamExtractor extends StringParameterExtractor
+{
+   public MatrixParamExtractor(Method method, String paramName, Class type, String defaultValue)
+   {
+      super(type, method, paramName, "@" + MatrixParam.class.getSimpleName(), defaultValue);
+   }
 
-    public Object extract(HttpInput request) {
-        for (PathSegment segment : request.getUri().getPathSegments()) {
-            List<String> list = segment.getMatrixParameters().get(paramName);
-            if (list != null) return extractValues(list);
-        }
-        return extractValue(null);
-    }
+   public Object extract(HttpInput request)
+   {
+      for (PathSegment segment : request.getUri().getPathSegments())
+      {
+         List<String> list = segment.getMatrixParameters().get(paramName);
+         if (list != null) return extractValues(list);
+      }
+      return extractValue(null);
+   }
 }

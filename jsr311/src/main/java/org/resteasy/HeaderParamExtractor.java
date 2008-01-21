@@ -10,14 +10,17 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HeaderParamExtractor extends StringParameterExtractor implements ParameterExtractor {
+public class HeaderParamExtractor extends StringParameterExtractor implements ParameterExtractor
+{
 
-    public HeaderParamExtractor(Method method, String header, Class type, String defaultValue) {
-        super(type, method, header, "@" + HeaderParam.class.getSimpleName(), defaultValue);
-    }
+   public HeaderParamExtractor(Method method, String header, Class type, String defaultValue)
+   {
+      super(type, method, header, "@" + HeaderParam.class.getSimpleName(), defaultValue);
+   }
 
-    public Object extract(HttpInput request) {
-        List<String> list = request.getHttpHeaders().getRequestHeaders().get(paramName);
-        return extractValues(list);
-    }
+   public Object extract(HttpInput request)
+   {
+      List<String> list = request.getHttpHeaders().getRequestHeaders().get(paramName);
+      return extractValues(list);
+   }
 }

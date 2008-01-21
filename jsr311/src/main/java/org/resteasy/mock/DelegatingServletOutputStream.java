@@ -15,41 +15,47 @@ import java.io.OutputStream;
  * @see org.springframework.mock.web.MockHttpServletResponse
  * @since 1.0.2
  */
-public class DelegatingServletOutputStream extends ServletOutputStream {
+public class DelegatingServletOutputStream extends ServletOutputStream
+{
 
-    private final OutputStream targetStream;
-
-
-    /**
-     * Create a DelegatingServletOutputStream for the given target stream.
-     *
-     * @param targetStream the target stream (never <code>null</code>)
-     */
-    public DelegatingServletOutputStream(OutputStream targetStream) {
-        Assert.notNull(targetStream, "Target OutputStream must not be null");
-        this.targetStream = targetStream;
-    }
-
-    /**
-     * Return the underlying target stream (never <code>null</code>).
-     */
-    public final OutputStream getTargetStream() {
-        return this.targetStream;
-    }
+   private final OutputStream targetStream;
 
 
-    public void write(int b) throws IOException {
-        this.targetStream.write(b);
-    }
+   /**
+    * Create a DelegatingServletOutputStream for the given target stream.
+    *
+    * @param targetStream the target stream (never <code>null</code>)
+    */
+   public DelegatingServletOutputStream(OutputStream targetStream)
+   {
+      Assert.notNull(targetStream, "Target OutputStream must not be null");
+      this.targetStream = targetStream;
+   }
 
-    public void flush() throws IOException {
-        super.flush();
-        this.targetStream.flush();
-    }
+   /**
+    * Return the underlying target stream (never <code>null</code>).
+    */
+   public final OutputStream getTargetStream()
+   {
+      return this.targetStream;
+   }
 
-    public void close() throws IOException {
-        super.close();
-        this.targetStream.close();
-	}
+
+   public void write(int b) throws IOException
+   {
+      this.targetStream.write(b);
+   }
+
+   public void flush() throws IOException
+   {
+      super.flush();
+      this.targetStream.flush();
+   }
+
+   public void close() throws IOException
+   {
+      super.close();
+      this.targetStream.close();
+   }
 
 }
