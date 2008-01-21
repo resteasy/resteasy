@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Contract for a provider that supports the conversion of a stream to a
+ * Contract for a provider that supports the conversion of a stream to a 
  * Java type. To add a <code>MessageBodyReader</code> implementation, annotate the
  * implementation class with <code>@Provider</code>.
  *
@@ -36,9 +36,8 @@ import javax.ws.rs.core.MultivaluedMap;
  * @see Provider
  * @see javax.ws.rs.ConsumeMime
  */
-@Contract
 public interface MessageBodyReader<T> {
-
+    
     /**
      * Ascertain if the MessageBodyReader supports a particular type.
      *
@@ -49,17 +48,17 @@ public interface MessageBodyReader<T> {
 
     /**
      * Read a type from the {@link InputStream}.
-     *
+     * 
      * @return the type that was read from the stream.
-     * @param type the type that is to be read from the entity stream.
+     * @param type the type that is to be read from the entity stream. 
      *             May be null if only one type is supported.
      * @param mediaType the media type of the HTTP entity.
      * @param httpHeaders the HTTP headers associated with HTTP entity.
      * @param entityStream the {@link InputStream} of the HTTP entity.
      * @throws java.io.IOException if an IO error arises
      */
-    T readFrom(Class<T> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders,
+    T readFrom(Class<T> type, MediaType mediaType, 
+            MultivaluedMap<String, String> httpHeaders, 
             InputStream entityStream) throws IOException;
-
+    
 }

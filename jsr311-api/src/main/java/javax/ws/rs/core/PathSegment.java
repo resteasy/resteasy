@@ -21,11 +21,8 @@ package javax.ws.rs.core;
 
 /**
  * Represents a URI path segment and any associated matrix parameters.
- * <p>
- * All sequences of escaped octets for the path segment and matrix 
- * parameters are decoded.
  *
- * @author Marc.Hadley@Sun.Com
+ * @see UriInfo#getPathSegments
  */
 public interface PathSegment {
 

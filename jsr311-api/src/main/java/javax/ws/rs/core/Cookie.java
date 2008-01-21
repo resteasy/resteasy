@@ -20,8 +20,8 @@
 package javax.ws.rs.core;
 
 import java.text.ParseException;
-import javax.ws.rs.ext.HeaderProvider;
-import javax.ws.rs.ext.ProviderFactory;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * Represents the value of a HTTP cookie, transferred in a request. 
@@ -36,14 +36,15 @@ public class Cookie {
      */
     public static final int DEFAULT_VERSION = 1;
     
+    private static final HeaderDelegate<Cookie> delegate = 
+            RuntimeDelegate.getInstance().createHeaderDelegate(Cookie.class);
+    
     private String name;
     private String value;
     private int version = DEFAULT_VERSION;
     private String path = null;
     private String domain = null;
-    private static final HeaderProvider<Cookie> cookieProvider = 
-            ProviderFactory.getInstance().createHeaderProvider(Cookie.class);
-    
+
     /**
      * Create a new instance.
      * @param name the name of the cookie
@@ -91,11 +92,7 @@ public class Cookie {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      */
     public static Cookie parse(String value) throws IllegalArgumentException {
-        try {
-            return cookieProvider.fromString(value);
-        } catch (ParseException ex) {
-            throw new IllegalArgumentException(ApiMessages.COOKIE_INVALID(value),ex);
-        }
+        return delegate.fromString(value);
     }
     
     /**
@@ -145,6 +142,6 @@ public class Cookie {
      */
     @Override
     public String toString() {
-        return cookieProvider.toString(this);
+        return delegate.toString(this);
     }
 }

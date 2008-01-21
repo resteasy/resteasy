@@ -19,11 +19,10 @@
 
 package javax.ws.rs.core;
 
-import javax.ws.rs.ext.HeaderProvider;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
-import javax.ws.rs.ext.ProviderFactory;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * An abstraction for a media type. Instances are immutable.
@@ -45,6 +44,9 @@ public class MediaType {
      */
     private static final Map<String, String> emptyMap = Collections.emptyMap();
     
+    private static final HeaderDelegate<MediaType> delegate = 
+            RuntimeDelegate.getInstance().createHeaderDelegate(MediaType.class);
+
     /**
      * Creates a new instance of MediaType by parsing the supplied string.
      * @param type the media type string
@@ -52,8 +54,7 @@ public class MediaType {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      */
     public static MediaType parse(String type) throws IllegalArgumentException {
-        String[] paths = type.split("/");
-        return new MediaType(paths[0], paths[1]);
+        return delegate.fromString(type);
     }
 
     /**
@@ -174,6 +175,6 @@ public class MediaType {
      */
     @Override
     public String toString() {
-        return type.toLowerCase()+"/"+subtype.toLowerCase();
+        return delegate.toString(this);
     }
 }

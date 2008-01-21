@@ -116,7 +116,7 @@ public interface UriInfo {
     /**
      * Get the values of any embedded URI template parameters.
      * All sequences of escaped octets are decoded,
-     * equivalent to <code>getURIParameters(true)</code>.
+     * equivalent to <code>getTemplateParameters(true)</code>.
      * @return a map of parameter names and values.
      * @see javax.ws.rs.Path
      */

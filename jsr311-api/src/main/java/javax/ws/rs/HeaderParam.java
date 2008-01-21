@@ -35,7 +35,6 @@ import java.lang.annotation.Target;
  * (see, for example, {@link Integer#valueOf(String)}).
  * 
  * @see DefaultValue
- * @see javax.ws.rs.ext.HeaderProvider
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

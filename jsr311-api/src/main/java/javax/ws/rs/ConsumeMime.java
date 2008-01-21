@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines the MIME types that the methods of a resource class
+ * Defines the MIME types that the methods of a resource class or MessageBodyReader
  * can accept. If
  * not specified, a container will assume that any MIME type is acceptable.
  * Method level annotations override a class level annotation. A container
@@ -34,7 +34,8 @@ import java.lang.annotation.Target;
  * the media type of the HTTP request entity body. If no such method is
  * available the container must respond with a HTTP "415 Unsupported Media Type"
  * as specified by RFC 2616.
- *
+ * 
+ * @see javax.ws.rs.ext.MessageBodyReader
  */
 @Inherited
 @Target({ElementType.TYPE, ElementType.METHOD})

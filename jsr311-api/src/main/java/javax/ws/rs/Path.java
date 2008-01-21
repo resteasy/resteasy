@@ -20,6 +20,7 @@
 package javax.ws.rs;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -31,13 +32,13 @@ import java.lang.annotation.Target;
  * Classes may also be annotated with 
  * <code>@ConsumeMime</code> and <code>@ProduceMime</code> to filter the
  * requests they will receive.
- *
+ * 
  * The container must honour annotations from the javax.annotation package. In
  * particular, resource class instance lifecycle can be managed using the
  * javax.annotation.PostConstruct and java.annotation.PreDestroy annotations
  * and a class can obtain access to container context information using 
  * javax.annotation.Resource as specified in JSR 250.
- *
+ * 
  * @see ConsumeMime
  * @see ProduceMime
  */
@@ -69,7 +70,7 @@ public @interface Path {
      * segment (<code>true</code>) or not (<code>false</code>). E.g. 
      * <code>@Path("widgets/{id}")</code> would
      * match widgets/foo but not widgets/foo/bar whereas 
-     * <code>@Path(value="widgets/{id}", limit=false)</code> would match
+     * <code>@Path(value="widgets/{id}", limit=false)</code> would match 
      * both.
      */
     boolean limited() default true;

@@ -20,8 +20,8 @@
 package javax.ws.rs.core;
 
 import java.text.ParseException;
-import javax.ws.rs.ext.HeaderProvider;
-import javax.ws.rs.ext.ProviderFactory;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * An abstraction for the value of a HTTP Entity Tag, used as the value of an ETag response header.
@@ -31,9 +31,10 @@ public class EntityTag {
     
     private String value;
     private boolean weak;
-    private static final HeaderProvider<EntityTag> tagProvider = 
-            ProviderFactory.getInstance().createHeaderProvider(EntityTag.class);
     
+    private static final HeaderDelegate<EntityTag> delegate = 
+            RuntimeDelegate.getInstance().createHeaderDelegate(EntityTag.class);
+
     /**
      * Creates a new instance of a strong EntityTag
      * @param value the value of the tag
@@ -60,11 +61,7 @@ public class EntityTag {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      */
     public static EntityTag parse(String value) throws IllegalArgumentException {
-        try {
-            return tagProvider.fromString(value);
-        } catch (ParseException ex) {
-            throw new IllegalArgumentException(ApiMessages.ETAG_INVALID(value),ex);
-        }
+        return delegate.fromString(value);
     }
     
     /**
@@ -108,6 +105,6 @@ public class EntityTag {
      */
     @Override
     public String toString() {
-        return tagProvider.toString(this);
+        return delegate.toString(this);
     }
 }

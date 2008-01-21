@@ -19,56 +19,71 @@
 
 package javax.ws.rs.core;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import javax.ws.rs.ext.ProviderFactory;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Abstraction for a resource representation variant. 
  */
-public interface Variant {
+public class Variant {
+    
+    private String language;
+    private MediaType mediaType;
+    private String encoding;
     
     /**
-     * Get the character set of the variant
-     * @return the character set or null if none set
+     * Create a new instance of Variant
+     * @param mediaType the media type of the variant - may be null
+     * @param language the language of the variant - may be null
+     * @param encoding the content encoding of the variant - may be null
      */
-    public String getCharset();
-
+    public Variant(MediaType mediaType, String language, String encoding) {
+        this.encoding = encoding;
+        this.language = language;
+        this.mediaType = mediaType;
+    }
+    
     /**
      * Get the language of the variant
      * @return the language or null if none set
      */
-    public String getLanguage();
+    public String getLanguage() {
+        return language;
+    }
 
     /**
      * Get the media type of the variant
      * @return the media type or null if none set
      */
-    public MediaType getMediaType();
+    public MediaType getMediaType() {
+        return mediaType;
+    }
 
     /**
      * Get the encoding of the variant
      * @return the encoding or null if none set
      */
-    public String getEncoding();
+    public String getEncoding() {
+        return encoding;
+    }
     
     /**
      * A builder for a list of representation variants. 
      */
-    public static abstract class ListBuilder {
+    public static abstract class VariantListBuilder {
         
-        private ListBuilder() {
-        }
-
+        /**
+         * Protected constructor, use the static <code>newInstance</code>
+         * method to obtain an instance.
+         */
+        protected VariantListBuilder() {}
+        
         /**
          * Create a new builder instance.
          * @return a new Builder
          */
-        public static ListBuilder newInstance() {
-            ListBuilder b = ProviderFactory.getInstance().createInstance(ListBuilder.class);
-            if (b==null)
-                throw new UnsupportedOperationException(ApiMessages.NO_BUILDER_IMPL());
+        public static VariantListBuilder newInstance() {
+            VariantListBuilder b = RuntimeDelegate.getInstance().createVariantListBuilder();
             return b;
         }
                 
@@ -86,39 +101,35 @@ public interface Variant {
          * If more than one value is supplied for one or more of the variant properties
          * then a variant will be generated for each possible combination. E.g.
          * in the following <code>list</code> would have four members:
-         * <p><pre>List<Variant> list = ListBuilder.newInstance().languages("en","fr")
-         *   .charsets("ISO-8859-1", "UTF-8").add().build()</pre>
+         * <p><pre>List<Variant> list = VariantListBuilder.newInstance().languages("en","fr")
+         *   .encodings("zip", "identity").add().build()</pre>
+         * 
          * 
          * @return the updated builder
          */
-        public abstract ListBuilder add();
-        
-        /**
-         * Set the character set[s] for this variant.
-         * @param charsets the available character sets
-         * @return the updated builder
-         */
-        public abstract ListBuilder charsets(String... charsets);
+        public abstract VariantListBuilder add();
         
         /**
          * Set the language[s] for this variant.
          * @param languages the available languages
          * @return the updated builder
          */
-        public abstract ListBuilder languages(String... languages);
+        public abstract VariantListBuilder languages(String... languages);
         
         /**
          * Set the encoding[s] for this variant.
          * @param encodings the available encodings
          * @return the updated builder
          */
-        public abstract ListBuilder encodings(String... encodings);
+        public abstract VariantListBuilder encodings(String... encodings);
         
         /**
          * Set the media type[s] for this variant.
-         * @param mediaTypes the available mediaTypes
+         * @param mediaTypes the available mediaTypes. If specific charsets
+         * are supported they should be included as parameters of the respective
+         * media type.
          * @return the updated builder
          */
-        public abstract ListBuilder mediaTypes(MediaType... mediaTypes);
+        public abstract VariantListBuilder mediaTypes(MediaType... mediaTypes);
     }
 }

@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Contract for a provider that supports the conversion of a Java type to a
+ * Contract for a provider that supports the conversion of a Java type to a 
  * stream. To add a <code>MessageBodyWriter</code> implementation, annotate the
  * implementation class with <code>@Provider</code>.
  *
@@ -36,9 +36,8 @@ import javax.ws.rs.core.MultivaluedMap;
  * @see Provider
  * @see javax.ws.rs.ProduceMime
  */
-@Contract
 public interface MessageBodyWriter<T> {
-
+    
     /**
      * Ascertain if the MessageBodyWriter supports a particular type.
      *
@@ -46,10 +45,10 @@ public interface MessageBodyWriter<T> {
      * @return true if the type is supported, otherwise false.
      */
     boolean isWriteable(Class<?> type);
-
+    
     /**
-     * Called before <code>writeTo</code> to ascertain the length in bytes of
-     * the serialized form of <code>t</code>. A non-negative return value is
+     * Called before <code>writeTo</code> to ascertain the length in bytes of 
+     * the serialized form of <code>t</code>. A non-negative return value is 
      * used in a HTTP <code>Content-Length</code> header.
      * @param t the type
      * @return length in bytes or -1 if the length cannot be determined in
@@ -59,14 +58,14 @@ public interface MessageBodyWriter<T> {
 
     /**
      * Write a type to an HTTP response.
-     *
+     * 
      * @param t the type to write.
      * @param mediaType the media type of the HTTP entity.
      * @param httpHeaders the HTTP response headers.
      * @param entityStream the {@link OutputStream} for the HTTP entity.
-     * @throws java.io.IOException if an IO error arises
+     * @throws java.io.IOException if an IO error arises 
      */
-    void writeTo(T t, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders,
-            OutputStream entityStream) throws IOException;
+    void writeTo(T t, MediaType mediaType, 
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException;    
 }

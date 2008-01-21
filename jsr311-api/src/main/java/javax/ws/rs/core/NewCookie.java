@@ -20,8 +20,8 @@
 package javax.ws.rs.core;
 
 import java.text.ParseException;
-import javax.ws.rs.ext.HeaderProvider;
-import javax.ws.rs.ext.ProviderFactory;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * Used to create a new HTTP cookie, transferred in a response.
@@ -34,11 +34,12 @@ public class NewCookie extends Cookie {
      */
     public static final int DEFAULT_MAX_AGE = -1;
     
+    private static final HeaderDelegate<NewCookie> delegate = 
+            RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class);
+
     private String comment = null;
     private int maxAge = DEFAULT_MAX_AGE;
     private boolean secure = false;
-    private static final HeaderProvider<NewCookie> cookieProvider = 
-            ProviderFactory.getInstance().createHeaderProvider(NewCookie.class);
     
     /**
      * Create a new instance.
@@ -110,11 +111,7 @@ public class NewCookie extends Cookie {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      */
     public static NewCookie parse(String value) throws IllegalArgumentException {
-        try {
-            return cookieProvider.fromString(value);
-        } catch (ParseException ex) {
-            throw new IllegalArgumentException(ApiMessages.COOKIE_INVALID(value),ex);
-        }
+        return delegate.fromString(value);
     }
     
     /**
@@ -154,6 +151,6 @@ public class NewCookie extends Cookie {
      */
     @Override
     public String toString() {
-        return cookieProvider.toString(this);
+        return delegate.toString(this);
     }
 }

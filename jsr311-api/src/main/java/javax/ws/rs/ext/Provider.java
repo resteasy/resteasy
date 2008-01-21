@@ -26,9 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks an implementation of a extension contract. The marked class must
- * implement one or more interfaces marked with the Contract annotation.
- * @see Contract
+ * Marks an implementation of MessageBodyReader or MessageBodyWriter, an
+ * annotated class MUST implement either or both of these interfaces.
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

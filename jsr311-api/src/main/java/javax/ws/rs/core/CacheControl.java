@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.ext.HeaderProvider;
-import javax.ws.rs.ext.ProviderFactory;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * An abstraction for the value of a HTTP Cache-Control response header.
@@ -43,8 +43,10 @@ public class CacheControl {
     private int maxAge = -1;
     private int sMaxAge = -1;
     private Map<String, String> cacheExtension;
-    private static final HeaderProvider<CacheControl> cacheControlProvider = 
-            ProviderFactory.getInstance().createHeaderProvider(CacheControl.class);
+    
+    private static final HeaderDelegate<CacheControl> delegate = 
+            RuntimeDelegate.getInstance().createHeaderDelegate(CacheControl.class);
+
     
     /**
      * Create a new instance of CacheControl. The new instance will have the 
@@ -80,11 +82,7 @@ public class CacheControl {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      */
     public static CacheControl parse(String value) throws IllegalArgumentException {
-        try {
-            return cacheControlProvider.fromString(value);
-        } catch (ParseException ex) {
-            throw new IllegalArgumentException(ApiMessages.CACHE_CONTROL_INVALID(value),ex);
-        }
+        return delegate.fromString(value);
     }
     
     /**
@@ -317,6 +315,6 @@ public class CacheControl {
      */
     @Override
     public String toString() {
-        return cacheControlProvider.toString(this);
+        return delegate.toString(this);
     }
 }

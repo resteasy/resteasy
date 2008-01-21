@@ -19,6 +19,7 @@
 package javax.ws.rs.core;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * An injectable interface that provides access to HTTP header information
@@ -41,20 +42,20 @@ public interface HttpHeaders {
     
     /**
      * Get the media type of the request entity
-     * @return the media type
+     * @return the media type or null if there is no request entity.
      */
     public MediaType getMediaType();
     
     /**
      * Get the language of the request entity
-     * @return the language of the entity
+     * @return the language of the entity or null if not specified
      */
     public String getLanguage();
 
     /**
-     * Get a list of cookies that accompanied the request.
-     * @return list of cookies
+     * Get any cookies that accompanied the request.
+     * @return a map of cookie name (String) to Cookie.
      */
-    public List<Cookie> getCookies();
+    public Map<String, Cookie> getCookies();
     
 }

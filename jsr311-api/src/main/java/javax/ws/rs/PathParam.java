@@ -11,7 +11,7 @@
  */
 
 /*
- * UriParam.java
+ * PathParam.java
  *
  * Created on November 16, 2006, 2:04 PM
  *
@@ -36,15 +36,15 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UriParam {
+public @interface PathParam {
     /**
      * Defines the name of the URI template parameter who value will be used
      * to initialize the value of the annotated method parameter, class field or
      * property.
      * 
      * <p>E.g. a class annotated with: <code>@Path("widgets/{id}")</code>
-     * can have methods annotated with @HttpMethod whose arguments are annotated
-     * with <code>@UriParam("id")</code>.
+     * can have methods annotated with a HTTP method annotation whose arguments are annotated
+     * with <code>@PathParam("id")</code>.
      */
     String value();
 }

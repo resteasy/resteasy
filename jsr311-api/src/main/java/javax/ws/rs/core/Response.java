@@ -22,23 +22,24 @@ package javax.ws.rs.core;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
-import javax.ws.rs.ext.Contract;
-import javax.ws.rs.ext.ProviderFactory;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Defines the contract between a returned instance and the runtime when
  * an application needs to provide metadata to the runtime. An application
  * class can extend this class directly or can use one the static 
- * methods to create an instance using a Builder.
+ * methods to create an instance using a ResponseBuilder.
  * 
- * @see Response.Builder
+ * 
+ * @see Response.ResponseBuilder
  */
 public abstract class Response {
     
     /**
-     * Return the entity for the response. The response will be serialized using an
-     * Provider for the class of the entity.
+     * Return the entity for the response. The response will be serialized using a
+     * MessageBodyWriter for the class of the entity.
      * @return an object instance or null if there is no entity
+     * @see javax.ws.rs.ext.MessageBodyWriter
      */
     public abstract Object getEntity();
     
@@ -49,154 +50,171 @@ public abstract class Response {
     public abstract int getStatus();
 
     /**
-     * Get metadata associated with the response as a map.
+     * Get metadata associated with the response as a map. The returned map
+     * may be subsequently modified by the JAX-RS runtime.
      * @return response metadata as a map
      */
     public abstract MultivaluedMap<String, Object> getMetadata();
     
     /**
-     * Create a new Builder with an OK status.
-     * @return a new Builder
+     * Create a new ResponseBuilder with the supplied status.
+     * @param status the response status
+     * @return a new ResponseBuilder
      */
-    public static Builder ok() {
-        Builder b = Builder.newInstance();
-        b.status(200);
+    public static ResponseBuilder status(int status) {
+        ResponseBuilder b = ResponseBuilder.newInstance();
+        b.status(status);
         return b;
     }
 
     /**
-     * Create a new Builder that contains a representation.
+     * Create a new ResponseBuilder with an OK status.
+     * 
+     * @return a new ResponseBuilder
+     */
+    public static ResponseBuilder ok() {
+        ResponseBuilder b = status(200);
+        return b;
+    }
+
+    /**
+     * Create a new ResponseBuilder that contains a representation.
+     * 
+     * @param entity the representation entity data
+     * @return a new ResponseBuilder
+     */
+    public static ResponseBuilder ok(Object entity) {
+        ResponseBuilder b = ok();
+        b.entity(entity);
+        return b;
+    }
+
+    /**
+     * Create a new ResponseBuilder that contains a representation.
+     * 
      * @param entity the representation entity data
      * @param type the media type of the entity
-     * @return a new Builder
+     * @return a new ResponseBuilder
      */
-    public static Builder ok(Object entity, MediaType type) {
-        Builder b = ok();
+    public static ResponseBuilder ok(Object entity, MediaType type) {
+        ResponseBuilder b = ok();
         b.entity(entity);
         b.type(type);
         return b;
     }
 
     /**
-     * Create a new Builder that contains a representation.
+     * Create a new ResponseBuilder that contains a representation.
+     * 
      * @param entity the representation entity data
      * @param type the media type of the entity
-     * @return a new Builder
+     * @return a new ResponseBuilder
      */
-    public static Builder ok(Object entity, String type) {
-        Builder b = ok();
+    public static ResponseBuilder ok(Object entity, String type) {
+        ResponseBuilder b = ok();
         b.entity(entity);
         b.type(type);
         return b;
     }
 
     /**
-     * Create a new Builder that contains a representation.
+     * Create a new ResponseBuilder that contains a representation.
+     * 
      * @param entity the representation entity data
      * @param variant representation metadata
-     * @return a new Builder
+     * @return a new ResponseBuilder
      */
-    public static Builder ok(Object entity, Variant variant) {
-        Builder b = ok();
+    public static ResponseBuilder ok(Object entity, Variant variant) {
+        ResponseBuilder b = ok();
         b.entity(entity);
         b.variant(variant);
         return b;
     }
 
     /**
-     * Create a new Builder with an server error status.
-     * @return a new Builder
+     * Create a new ResponseBuilder with an server error status.
+     * 
+     * @return a new ResponseBuilder
      */
-    public static Builder serverError() {
-        Builder b = Builder.newInstance();
-        b.status(500);
+    public static ResponseBuilder serverError() {
+        ResponseBuilder b = status(500);
         return b;
     }
 
     /**
-     * Create a new Builder for a created resource.
-     * @param entity the representation of the new resource
+     * Create a new ResponseBuilder for a created resource.
+     * 
      * @param location the URI of the new resource
-     * @return a new Builder
+     * @return a new ResponseBuilder
      */
-    public static Builder created(Object entity, URI location) {
-        Builder b = created(location);
-        b.entity(entity);
+    public static ResponseBuilder created(URI location) {
+        ResponseBuilder b = status(201).location(location);
         return b;
     }
 
     /**
-     * Create a new Builder for a created resource.
-     * @param location the URI of the new resource
-     * @return a new Builder
+     * Create a new ResponseBuilder for an empty response.
+     * 
+     * @return a new ResponseBuilder
      */
-    public static Builder created(URI location) {
-        Builder b = Builder.newInstance();
-        b.status(201).location(location);
+    public static ResponseBuilder noContent() {
+        ResponseBuilder b = status(204);
         return b;
     }
 
     /**
-     * Create a new Builder for an empty response.
-     * @return a new Builder
+     * Create a new ResponseBuilder with a not-modified status.
+     * 
+     * @return a new ResponseBuilder
      */
-    public static Builder noContent() {
-        Builder b = Builder.newInstance();
-        b.status(204);
+    public static ResponseBuilder notModified() {
+        ResponseBuilder b = status(304);
         return b;
     }
 
     /**
-     * Create a new Builder with a not-modified status.
-     * @return a new Builder
-     */
-    public static Builder notModified() {
-        Builder b = Builder.newInstance();
-        b.status(304);
-        return b;
-    }
-
-    /**
-     * Create a new Builder with a not-modified status.
+     * Create a new ResponseBuilder with a not-modified status.
+     * 
      * @param tag a tag for the unmodified entity
-     * @return a new Builder
+     * @return a new ResponseBuilder
      */
-    public static Builder notModified(EntityTag tag) {
-        Builder b = notModified();
+    public static ResponseBuilder notModified(EntityTag tag) {
+        ResponseBuilder b = notModified();
         b.tag(tag);
         return b;
     }
 
     /**
-     * Create a new Builder with a not-modified status.
+     * Create a new ResponseBuilder with a not-modified status.
+     * 
      * @param tag a tag for the unmodified entity
-     * @return a new Builder
+     * @return a new ResponseBuilder
      */
-    public static Builder notModified(String tag) {
-        Builder b = notModified();
+    public static ResponseBuilder notModified(String tag) {
+        ResponseBuilder b = notModified();
         b.tag(tag);
         return b;
     }
 
     /**
-     * Create a new Builder for a temporary redirection.
+     * Create a new ResponseBuilder for a temporary redirection.
+     * 
      * @param location the redirection URI
-     * @return a new Builder
+     * @return a new ResponseBuilder
      */
-    public static Builder temporaryRedirect(URI location) {
-        Builder b = Builder.newInstance();
-        b.status(307).location(location);
+    public static ResponseBuilder temporaryRedirect(URI location) {
+        ResponseBuilder b = status(307).location(location);
         return b;
     }
 
     /**
-     * Create a new Builder for a not acceptable response.
+     * Create a new ResponseBuilder for a not acceptable response.
+     * 
      * @param variants list of variants that were available
-     * @return a new Builder
+     * @return a new ResponseBuilder
      */
-    public static Builder notAcceptable(List<Variant> variants) {
-        Builder b = Builder.newInstance();
-        b.status(406).variants(variants);
+    public static ResponseBuilder notAcceptable(List<Variant> variants) {
+        ResponseBuilder b = status(406).variants(variants);
         return b;
     }
         
@@ -206,157 +224,173 @@ public abstract class Response {
      * static methods of the Response class, instance methods provide the
      * ability to set metadata. E.g. to create a response that indicates the 
      * creation of a new resource:
-     * <pre>@HttpMethod
+     * <pre>@POST
      * Response addWidget(...) {
      *   Widget w = ...
      *   URI widgetId = ...
      *   return Response.created(w, widgetId).build();
      * }</pre>
      */
-    @Contract
-    public static abstract class Builder {
-        private Builder() {
-        }
+    public static abstract class ResponseBuilder {
+
+        /**
+         * Protected constructor, use one of the static methods of
+         * <code>Response</code> to obtain an instance.
+         */
+        protected ResponseBuilder() {}
         
         /**
          * Create a new builder instance.
-         * @return a new Builder
+         * 
+         * @return a new ResponseBuilder
          */
-        protected static synchronized Builder newInstance() {
-            Builder b = ProviderFactory.getInstance().createInstance(Builder.class);
-            if (b==null)
-                throw new UnsupportedOperationException(ApiMessages.NO_BUILDER_IMPL());
+        protected static ResponseBuilder newInstance() {
+            ResponseBuilder b = RuntimeDelegate.getInstance().createResponseBuilder();
             return b;
         }
         
         /**
-         * Create a Response instance from the current Builder. The builder
+         * Create a Response instance from the current ResponseBuilder. The builder
          * is reset to a blank state equivalent to calling the ok method.
+         * 
          * @return a Response instance
          */
         public abstract Response build();
         
 
         /**
-         * Set the status on the Builder.
+         * Set the status on the ResponseBuilder.
+         * 
          * @param status the response status
-         * @return the updated Builder
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder status(int status);
+        public abstract ResponseBuilder status(int status);
         
         /**
-         * Set the entity on the Builder.
+         * Set the entity on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param entity the response entity
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder entity(Object entity);
+        public abstract ResponseBuilder entity(Object entity);
         
         /**
-         * Set the type on the Builder.
+         * Set the response media type on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param type the media type of the response entity
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder type(MediaType type);
+        public abstract ResponseBuilder type(MediaType type);
         
         /**
-         * Set the type on the Builder.
+         * Set the response media type on the ResponseBuilder.
          * 
-         * @return the updated Builder
-         * @param type  the media type of the response entity
+         * @param type the media type of the response entity
+         * @return the updated ResponseBuilder
+         * @throws IllegalArgumentException if type cannot be parsed
          */
-        public abstract Builder type(String type);
+        public abstract ResponseBuilder type(String type);
         
         /**
-         * Set representation metadata on the Builder.
+         * Set representation metadata on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param variant metadata of the response entity
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder variant(Variant variant);
+        public abstract ResponseBuilder variant(Variant variant);
         
         /**
-         * Create an entity that lists the available variants. Typically used
-         * in conjunction with a 406 Not Acceptable status code.
+         * Add a Vary header that lists the available variants.
          * 
-         * @return the updated Builder
          * @param variants a list of available representation variants
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder variants(List<Variant> variants);
+        public abstract ResponseBuilder variants(List<Variant> variants);
 
         /**
-         * Set the language on the Builder.
+         * Set the language on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param language the language of the response entity
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder language(String language);
+        public abstract ResponseBuilder language(String language);
         
         /**
-         * Set the location on the Builder.
+         * Set the location on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param location the location
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder location(URI location);
+        public abstract ResponseBuilder location(URI location);
         
         /**
-         * Set the content location on the Builder.
+         * Set the content location on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param location the content location
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder contentLocation(URI location);
+        public abstract ResponseBuilder contentLocation(URI location);
         
         /**
-         * Set the entity tag on the Builder.
+         * Set an entity tag on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param tag the entity tag
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder tag(EntityTag tag);
+        public abstract ResponseBuilder tag(EntityTag tag);
         
         /**
-         * Set the entity tag on the Builder.
+         * Set a strong entity tag on the ResponseBuilder.
          * 
-         * @return the updated Builder
-         * @param tag the entity tag
+         * 
+         * @param tag the string content of a strong entity tag. The JAX-RS
+         * runtime will quote the supplied value when creating the header.
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder tag(String tag);
+        public abstract ResponseBuilder tag(String tag);
         
         /**
-         * Set the last modified date on the Builder.
+         * Set the last modified date on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param lastModified the last modified date
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder lastModified(Date lastModified);
+        public abstract ResponseBuilder lastModified(Date lastModified);
         
         /**
-         * Set the cache control data on the Builder.
+         * Set the cache control data on the ResponseBuilder.
          * 
-         * @return the updated Builder
+         * 
          * @param cacheControl the cache control directives
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder cacheControl(CacheControl cacheControl);
+        public abstract ResponseBuilder cacheControl(CacheControl cacheControl);
         
         /**
-         * Set the value of a specific header on the Builder.
+         * Set the value of a specific header on the ResponseBuilder.
+         * 
          * @param name the name of the header
          * @param value the value of the header, the header will be serialized
-         * using a HeaderProvider for the class of the value
-         * @see javax.ws.rs.ext.HeaderProvider
-         * @return the updated Builder
+         * using its toString method
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder header(String name, Object value);
+        public abstract ResponseBuilder header(String name, Object value);
         
         /**
-         * Set a new cookie on the Builder.
+         * Add cookies to the ResponseBuilder. If more than one cookie with
+         * the same is supplied, later ones overwrite earlier ones.
          * 
-         * @return the updated Builder
-         * @param cookie the new cookie that will accompany the response.
+         * @param cookies new cookies that will accompany the response.
+         * @return the updated ResponseBuilder
          */
-        public abstract Builder cookie(NewCookie cookie);
+        public abstract ResponseBuilder cookie(NewCookie... cookies);
     }
 }

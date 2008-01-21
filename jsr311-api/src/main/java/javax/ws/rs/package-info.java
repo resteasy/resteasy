@@ -8,12 +8,12 @@
 public class WidgetResource {
 
   &#064;GET
-  public String getWidget(&#064;UriParam("widgetid") String id) {
+  public String getWidget(&#064;PathParam("widgetid") String id) {
     return getWidgetAsXml(id);
   }
   
   &#064;PUT
-  public void updateWidget(&#064;UriParam("widgetid") String id,
+  public void updateWidget(&#064;PathParam("widgetid") String id,
     Source update) {
     updateWidgetFromXml(id, update);
   }
