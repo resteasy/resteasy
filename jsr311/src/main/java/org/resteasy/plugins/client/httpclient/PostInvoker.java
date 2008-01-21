@@ -3,8 +3,8 @@ package org.resteasy.plugins.client.httpclient;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.ext.ProviderFactory;
 import java.lang.reflect.Method;
 
 /**
@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
  * @version $Revision: 1 $
  */
 public class PostInvoker extends HttpClientInvoker {
-    public PostInvoker(HttpClient client, Class<?> declaring, Method method, ProviderFactory providerFactory) {
+    public PostInvoker(HttpClient client, Class<?> declaring, Method method, ResteasyProviderFactory providerFactory) {
         super(client, declaring, method, providerFactory);
     }
 

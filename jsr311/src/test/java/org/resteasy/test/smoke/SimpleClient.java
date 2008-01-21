@@ -7,7 +7,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.UriParam;
+import javax.ws.rs.PathParam;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -37,5 +37,5 @@ public interface SimpleClient {
     @GET
     @Path("uriParam/{param}")
     @ProduceMime("text/plain")
-    int getUriParam(@UriParam("param")int param);
+    int getUriParam(@PathParam("param")int param);
 }

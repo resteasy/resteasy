@@ -2,7 +2,7 @@ package org.resteasy;
 
 import org.resteasy.spi.HttpInput;
 
-import javax.ws.rs.UriParam;
+import javax.ws.rs.PathParam;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class UriParamExtractor extends StringParameterExtractor {
     public UriParamExtractor(Method method, String paramName, Class type, String defaultValue) {
-        super(type, method, paramName, "@" + UriParam.class.getSimpleName(), defaultValue);
+        super(type, method, paramName, "@" + PathParam.class.getSimpleName(), defaultValue);
     }
 
     public Object extract(HttpInput request) {

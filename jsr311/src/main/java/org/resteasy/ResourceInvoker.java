@@ -2,17 +2,17 @@ package org.resteasy;
 
 import org.resteasy.spi.HttpInput;
 import org.resteasy.spi.ResourceFactory;
+import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.FindAnnotation;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.UriParam;
 import javax.ws.rs.core.HttpContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ProviderFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -25,13 +25,13 @@ import java.util.regex.Matcher;
  */
 public abstract class ResourceInvoker {
     protected ResourceFactory factory;
-    protected ProviderFactory providerFactory;
+    protected ResteasyProviderFactory providerFactory;
     protected Method method;
     protected ParameterExtractor[] params;
     protected Map<Integer, String> uriParams = new HashMap<Integer, String>();
     protected String path;
 
-    public ResourceInvoker(String path, ResourceFactory factory, Method method, ProviderFactory providerFactory) {
+    public ResourceInvoker(String path, ResourceFactory factory, Method method, ResteasyProviderFactory providerFactory) {
         this.factory = factory;
         this.method = method;
         this.providerFactory = providerFactory;
@@ -58,13 +58,13 @@ public abstract class ResourceInvoker {
             QueryParam query;
             HeaderParam header;
             MatrixParam matrix;
-            UriParam uriParam;
+            PathParam uriParam;
 
             if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null) {
                 params[i] = new QueryParamExtractor(method, query.value(), type, defaultVal);
             } else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null) {
                 params[i] = new HeaderParamExtractor(method, header.value(), type, defaultVal);
-            } else if ((uriParam = FindAnnotation.findAnnotation(annotations, UriParam.class)) != null) {
+            } else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null) {
                 params[i] = new UriParamExtractor(method, uriParam.value(), type, defaultVal);
             } else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null) {
                 params[i] = new MatrixParamExtractor(method, matrix.value(), type, defaultVal);

@@ -1,10 +1,10 @@
 package org.resteasy;
 
 import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.ProviderFactory;
 import java.io.IOException;
 
 /**
@@ -13,9 +13,9 @@ import java.io.IOException;
  */
 public class MessageBodyParameterExtractor implements ParameterExtractor {
     private Class type;
-    private ProviderFactory factory;
+    private ResteasyProviderFactory factory;
 
-    public MessageBodyParameterExtractor(Class type, ProviderFactory factory) {
+    public MessageBodyParameterExtractor(Class type, ResteasyProviderFactory factory) {
         this.type = type;
         this.factory = factory;
     }

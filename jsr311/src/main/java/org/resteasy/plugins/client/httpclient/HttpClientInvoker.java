@@ -10,6 +10,7 @@ import org.resteasy.ParameterMarshaller;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.spi.HttpOutput;
+import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -17,7 +18,6 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.ProviderFactory;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -29,7 +29,7 @@ import java.net.MalformedURLException;
 abstract public class HttpClientInvoker extends ClientInvoker {
     private HttpClient client;
 
-    public HttpClientInvoker(HttpClient client, Class<?> declaring, Method method, ProviderFactory providerFactory) {
+    public HttpClientInvoker(HttpClient client, Class<?> declaring, Method method, ResteasyProviderFactory providerFactory) {
         super(declaring, method, providerFactory);
         this.client = client;
     }
@@ -61,7 +61,7 @@ abstract public class HttpClientInvoker extends ClientInvoker {
         }
 
         for (String key : output.getOutputHeaders().keySet()) {
-            String value = output.getOutputHeaders().getFirst(key);
+            String value = output.getOutputHeaders().getFirst(key).toString();
             baseMethod.setRequestHeader(key, value);
         }
 

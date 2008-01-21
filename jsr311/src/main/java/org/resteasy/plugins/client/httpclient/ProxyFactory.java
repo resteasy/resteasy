@@ -3,10 +3,10 @@ package org.resteasy.plugins.client.httpclient;
 import org.apache.commons.httpclient.HttpClient;
 import org.resteasy.ClientInvoker;
 import org.resteasy.ClientProxy;
+import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.ext.ProviderFactory;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -26,13 +26,13 @@ public class ProxyFactory {
 
     public static <T> T create(Class<T> clazz, String base, HttpClient client) {
         try {
-            return create(clazz, new URI(base), client, ProviderFactory.getInstance());
+            return create(clazz, new URI(base), client, ResteasyProviderFactory.getInstance());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ProviderFactory providerFactory) {
+    public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory) {
         HashMap<Method, ClientInvoker> methodMap = new HashMap<Method, ClientInvoker>();
 
         for (Method method : clazz.getMethods()) {

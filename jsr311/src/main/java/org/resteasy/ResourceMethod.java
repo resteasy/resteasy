@@ -3,13 +3,13 @@ package org.resteasy;
 import org.resteasy.spi.HttpInput;
 import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResourceFactory;
+import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.ProviderFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,7 +26,7 @@ public class ResourceMethod extends ResourceInvoker {
     protected MediaType[] consumes;
     protected Set<String> httpMethods;
 
-    public ResourceMethod(String path, Class<?> clazz, Method method, ResourceFactory factory, ProviderFactory providerFactory, Set<String> httpMethods) {
+    public ResourceMethod(String path, Class<?> clazz, Method method, ResourceFactory factory, ResteasyProviderFactory providerFactory, Set<String> httpMethods) {
         super(path, factory, method, providerFactory);
         this.httpMethods = httpMethods;
 

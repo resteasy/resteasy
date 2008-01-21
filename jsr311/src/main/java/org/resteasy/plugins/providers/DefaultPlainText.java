@@ -86,7 +86,7 @@ public class DefaultPlainText implements MessageBodyReader<Object>, MessageBodyW
         return o.toString().getBytes().length;
     }
 
-    public void writeTo(Object o, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, OutputStream entityStream) throws IOException {
+    public void writeTo(Object o, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         entityStream.write(o.toString().getBytes());
     }
 }

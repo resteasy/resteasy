@@ -1,33 +1,87 @@
 package org.resteasy.spi;
 
+import org.resteasy.specimpl.UriBuilderImpl;
+import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.HeaderProvider;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.ProviderFactory;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResteasyProviderFactory extends ProviderFactory {
+public class ResteasyProviderFactory extends RuntimeDelegate
+{
 
     private List<ObjectFactory> instanceFactories = new ArrayList<ObjectFactory>();
-    private List<HeaderProvider> headerProviders = new ArrayList<HeaderProvider>();
     private List<MessageBodyReader> messageBodyReaders = new ArrayList<MessageBodyReader>();
     private List<MessageBodyWriter> messageBodyWriters = new ArrayList<MessageBodyWriter>();
+   private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
+   private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
 
-    public void addObjectFactory(ObjectFactory factory) {
+   public static void setInstance(ResteasyProviderFactory factory)
+   {
+       pfr.set(factory);
+       RuntimeDelegate.setDelegate(factory);
+   }
+
+   /**
+    * Get an instance of ProviderFactory. The implementation of
+    * ProviderFactory that will be instantiated is determined using the
+    * Services API (as detailed in the JAR specification) to determine
+    * the classname. The Services API will look for a classname in the file
+    * META-INF/services/javax.ws.rs.ext.ProviderFactory in jars available
+    * to the runtime.
+    */
+   public static ResteasyProviderFactory getInstance() {
+       return pfr.get();
+   }
+
+   public ResteasyProviderFactory()
+   {
+      addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
+   }
+
+   public UriBuilder createUriBuilder()
+   {
+      return new UriBuilderImpl();
+   }
+
+   public Response.ResponseBuilder createResponseBuilder()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
+
+   public Variant.VariantListBuilder createVariantListBuilder()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
+
+   public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> tClass)
+   {
+      return headerDelegates.get(tClass);
+   }
+
+   public void addHeaderDelegate(Class clazz, HeaderDelegate header)
+   {
+      headerDelegates.put(clazz, header);
+   }
+
+   public void addObjectFactory(ObjectFactory factory) {
         instanceFactories.add(factory);
-    }
-
-    public void addHeaderProvider(HeaderProvider provider) {
-        headerProviders.add(provider);
     }
 
     public void addMessageBodyReader(MessageBodyReader provider) {
@@ -36,20 +90,6 @@ public class ResteasyProviderFactory extends ProviderFactory {
 
     public void addMessageBodyWriter(MessageBodyWriter provider) {
         messageBodyWriters.add(provider);
-    }
-
-    public <T> T createInstance(Class<T> type) {
-        for (ObjectFactory<T> factory : instanceFactories) {
-            if (factory.supports(type)) return factory.create(type);
-        }
-        return null;
-    }
-
-    public <T> HeaderProvider<T> createHeaderProvider(Class<T> type) {
-        for (HeaderProvider<T> factory : headerProviders) {
-            if (factory.supports(type)) return factory;
-        }
-        return null;
     }
 
     public <T> MessageBodyReader<T> createMessageBodyReader(Class<T> type, MediaType mediaType) {

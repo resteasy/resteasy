@@ -13,26 +13,26 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServletResponseHeaders implements MultivaluedMap<String, String> {
+public class HttpServletResponseHeaders implements MultivaluedMap<String, Object> {
 
-    private MultivaluedMap<String, String> cachedHeaders = new MultivaluedMapImpl<String, String>();
+    private MultivaluedMap<String, Object> cachedHeaders = new MultivaluedMapImpl<String, Object>();
     private HttpServletResponse response;
 
     public HttpServletResponseHeaders(HttpServletResponse response) {
         this.response = response;
     }
 
-    public void putSingle(String key, String value) {
+    public void putSingle(String key, Object value) {
         cachedHeaders.putSingle(key, value);
-        response.addHeader(key, value);
+        response.addHeader(key, value.toString());
     }
 
-    public void add(String key, String value) {
+    public void add(String key, Object value) {
         cachedHeaders.add(key, value);
-        response.addHeader(key, value);
+        response.addHeader(key, value.toString());
     }
 
-    public String getFirst(String key) {
+    public Object getFirst(String key) {
         return cachedHeaders.getFirst(key);
     }
 
@@ -52,22 +52,22 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, String
         return cachedHeaders.containsValue(o);
     }
 
-    public List<String> get(Object o) {
+    public List<Object> get(Object o) {
         return cachedHeaders.get(o);
     }
 
-    public List<String> put(String s, List<String> strings) {
-        for (String string : strings) {
-            response.addHeader(s, string);
+    public List<Object> put(String s, List<Object> objs) {
+        for (Object obj : objs) {
+            response.addHeader(s, obj.toString());
         }
-        return cachedHeaders.put(s, strings);
+        return cachedHeaders.put(s, objs);
     }
 
-    public List<String> remove(Object o) {
+    public List<Object> remove(Object o) {
         throw new RuntimeException("Removing a header is illegal for an HttpServletResponse");
     }
 
-    public void putAll(Map<? extends String, ? extends List<String>> map) {
+    public void putAll(Map<? extends String, ? extends List<Object>> map) {
         throw new RuntimeException("putAll() on this class not supported yet");
     }
 
@@ -79,11 +79,11 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, String
         return cachedHeaders.keySet();
     }
 
-    public Collection<List<String>> values() {
+    public Collection<List<Object>> values() {
         return cachedHeaders.values();
     }
 
-    public Set<Entry<String, List<String>>> entrySet() {
+    public Set<Entry<String, List<Object>>> entrySet() {
         return cachedHeaders.entrySet();
     }
 

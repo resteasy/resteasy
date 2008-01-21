@@ -15,9 +15,9 @@ public class BodyRequestEntity implements RequestEntity {
 
     private MessageBodyParameterMarshaller marshaller;
     private Object object;
-    private MultivaluedMap<String, String> httpHeaders;
+    private MultivaluedMap<String, Object> httpHeaders;
 
-    public BodyRequestEntity(Object object, MessageBodyParameterMarshaller marshaller, MultivaluedMap<String, String> httpHeaders) {
+    public BodyRequestEntity(Object object, MessageBodyParameterMarshaller marshaller, MultivaluedMap<String, Object> httpHeaders) {
         this.marshaller = marshaller;
         this.object = object;
         this.httpHeaders = httpHeaders;

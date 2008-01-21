@@ -59,7 +59,7 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
         */
     }
 
-    public void writeTo(java.lang.Object object, MediaType mediaType, MultivaluedMap<String, String> multivaluedMap, OutputStream outputStream) throws IOException {
+    public void writeTo(java.lang.Object object, MediaType mediaType, MultivaluedMap<String, Object> multivaluedMap, OutputStream outputStream) throws IOException {
         try {
             JAXBContext jaxb = JAXBContext.newInstance(object.getClass());
             jaxb.createMarshaller().marshal(object, outputStream);

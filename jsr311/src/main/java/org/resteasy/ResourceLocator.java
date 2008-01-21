@@ -3,8 +3,8 @@ package org.resteasy;
 import org.resteasy.spi.HttpInput;
 import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResourceFactory;
+import org.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.ext.ProviderFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
  */
 public class ResourceLocator extends ResourceInvoker implements ResourceFactory {
 
-    public ResourceLocator(String path, ResourceFactory factory, Method method, ProviderFactory providerFactory) {
+    public ResourceLocator(String path, ResourceFactory factory, Method method, ResteasyProviderFactory providerFactory) {
         super(path, factory, method, providerFactory);
     }
 

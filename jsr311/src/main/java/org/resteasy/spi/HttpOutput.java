@@ -8,7 +8,7 @@ import java.io.OutputStream;
  * @version $Revision: 1 $
  */
 public interface HttpOutput {
-    MultivaluedMap<String, String> getOutputHeaders();
+    MultivaluedMap<String, Object> getOutputHeaders();
 
     OutputStream getOutputStream();
 }

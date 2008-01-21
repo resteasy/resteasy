@@ -21,7 +21,9 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -118,7 +120,7 @@ public class HttpServletDispatcher extends HttpServlet {
             return;
         }
         for (String header : out.getOutputHeaders().keySet()) {
-            response.setHeader(header, out.getOutputHeaders().getFirst(header));
+            response.setHeader(header, out.getOutputHeaders().getFirst(header).toString());
 
         }
         response.setStatus(HttpServletResponse.SC_OK);
@@ -149,17 +151,17 @@ public class HttpServletDispatcher extends HttpServlet {
         String contentType = request.getContentType();
         if (contentType != null) headers.setMediaType(MediaType.parse(contentType));
 
-        List<javax.ws.rs.core.Cookie> cookies = extractCookies(request);
+        Map<String, javax.ws.rs.core.Cookie> cookies = extractCookies(request);
         headers.setCookies(cookies);
         return headers;
 
     }
 
-    private static List<javax.ws.rs.core.Cookie> extractCookies(HttpServletRequest request) {
-        List<javax.ws.rs.core.Cookie> cookies = new ArrayList<javax.ws.rs.core.Cookie>();
+    private static Map<String, javax.ws.rs.core.Cookie> extractCookies(HttpServletRequest request) {
+        Map<String, javax.ws.rs.core.Cookie> cookies = new HashMap<String, javax.ws.rs.core.Cookie>();
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                cookies.add(new javax.ws.rs.core.Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion()));
+                cookies.put(cookie.getName(), new javax.ws.rs.core.Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion()));
 
             }
         }

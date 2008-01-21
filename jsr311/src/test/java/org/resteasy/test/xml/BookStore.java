@@ -5,7 +5,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
-import javax.ws.rs.UriParam;
+import javax.ws.rs.PathParam;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class BookStore {
     @GET
     @Path("books/{isbn}")
     @ProduceMime("text/xml")
-    public Book getBookByISBN(@UriParam("isbn")String isbn) {
+    public Book getBookByISBN(@PathParam("isbn")String isbn) {
         return availableBooks.get(isbn);
     }
 

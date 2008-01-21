@@ -1,14 +1,11 @@
 package org.resteasy.spi;
 
-import javax.ws.rs.ext.Contract;
-
 /**
  * used by ResteasyProviderFactory for the createInstance() method
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Contract
 public interface ObjectFactory<T> {
     /**
      * Ascertain if the Provider supports a particular type.

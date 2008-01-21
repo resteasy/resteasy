@@ -1,12 +1,12 @@
 package org.resteasy;
 
 import org.resteasy.spi.ResourceFactory;
+import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.IsHttpMethod;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ProviderFactory;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,9 +92,9 @@ public class Registry {
     }
 
     private Node root = new Node();
-    private ProviderFactory providerFactory;
+    private ResteasyProviderFactory providerFactory;
 
-    public Registry(ProviderFactory providerFactory) {
+    public Registry(ResteasyProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
     }
 

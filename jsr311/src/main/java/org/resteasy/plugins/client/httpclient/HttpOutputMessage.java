@@ -13,14 +13,14 @@ import java.io.OutputStream;
  * @version $Revision: 1 $
  */
 public class HttpOutputMessage implements HttpOutput {
-    protected MultivaluedMap<String, String> outputHeaders = new MultivaluedMapImpl<String, String>();
+    protected MultivaluedMap<String, Object> outputHeaders = new MultivaluedMapImpl<String, Object>();
     protected OutputStream outputStream;
 
     public HttpOutputMessage(OutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
-    public MultivaluedMap<String, String> getOutputHeaders() {
+    public MultivaluedMap<String, Object> getOutputHeaders() {
         return outputHeaders;
     }
 

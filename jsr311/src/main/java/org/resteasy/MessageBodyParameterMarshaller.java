@@ -2,10 +2,10 @@ package org.resteasy;
 
 import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.spi.HttpOutput;
+import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.ProviderFactory;
 import java.io.IOException;
 
 /**
@@ -14,10 +14,10 @@ import java.io.IOException;
  */
 public class MessageBodyParameterMarshaller implements ParameterMarshaller {
     private Class type;
-    private ProviderFactory factory;
+    private ResteasyProviderFactory factory;
     private MediaType mediaType;
 
-    public MessageBodyParameterMarshaller(MediaType mediaType, Class type, ProviderFactory factory) {
+    public MessageBodyParameterMarshaller(MediaType mediaType, Class type, ResteasyProviderFactory factory) {
         this.type = type;
         this.factory = factory;
         this.mediaType = mediaType;

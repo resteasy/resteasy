@@ -11,7 +11,6 @@ import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.ext.ProviderFactory;
 
 /**
  * Simple smoke test
@@ -26,7 +25,7 @@ public class TestSmoke {
         HttpServletDispatcher dispatcher = new HttpServletDispatcher();
         dispatcher.setProviderFactory(new ResteasyProviderFactory());
         dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
-        ProviderFactory.setInstance(dispatcher.getProviderFactory());
+        ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
         dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
         dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
 
@@ -86,7 +85,7 @@ public class TestSmoke {
         HttpServletDispatcher dispatcher = new HttpServletDispatcher();
         dispatcher.setProviderFactory(new ResteasyProviderFactory());
         dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
-        ProviderFactory.setInstance(dispatcher.getProviderFactory());
+        ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
         dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
         dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
 

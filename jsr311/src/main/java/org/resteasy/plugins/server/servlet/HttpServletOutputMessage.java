@@ -20,7 +20,7 @@ public class HttpServletOutputMessage implements HttpOutput {
         headers = new HttpServletResponseHeaders(response);
     }
 
-    public MultivaluedMap<String, String> getOutputHeaders() {
+    public MultivaluedMap<String, Object> getOutputHeaders() {
         return headers;
     }
 

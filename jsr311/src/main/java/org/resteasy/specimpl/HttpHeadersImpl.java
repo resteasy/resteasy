@@ -5,6 +5,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -16,7 +17,7 @@ public class HttpHeadersImpl implements HttpHeaders {
     private List<MediaType> acceptableMediaTypes;
     private MediaType mediaType;
     private String language;
-    private List<Cookie> cookies;
+    private Map<String, Cookie> cookies;
 
     public MultivaluedMap<String, String> getRequestHeaders() {
         return requestHeaders;
@@ -50,12 +51,13 @@ public class HttpHeadersImpl implements HttpHeaders {
         this.language = language;
     }
 
-    public List<Cookie> getCookies() {
-        return cookies;
-    }
+   public Map<String, Cookie> getCookies()
+   {
+      return cookies;
+   }
 
-    public void setCookies(List<Cookie> cookies) {
-        this.cookies = cookies;
-    }
-
+   public void setCookies(Map<String, Cookie> cookies)
+   {
+      this.cookies = cookies;
+   }
 }
