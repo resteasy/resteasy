@@ -1,16 +1,15 @@
 package org.resteasy;
 
+import org.resteasy.specimpl.ResponseImpl;
 import org.resteasy.spi.HttpInput;
-import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
-import org.resteasy.util.HttpHeaderNames;
+import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyWriter;
-import java.io.IOException;
+import javax.ws.rs.core.Response;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -60,31 +59,26 @@ public class ResourceMethod extends ResourceInvoker
    }
 
 
-   public void invoke(HttpInput input, HttpOutput output)
+   public ResponseImpl invoke(HttpInput input)
    {
-      Object resource = factory.createResource(input, output);
+      Object resource = factory.createResource(input);
       populateUriParams(input);
       Object[] args = getArguments(input);
       try
       {
          Object rtn = method.invoke(resource, args);
-         if (method.getReturnType().equals(void.class)) return;
-         MediaType rtnType = matchByType(input.getHttpHeaders().getAcceptableMediaTypes());
-         MessageBodyWriter writer = providerFactory.createMessageBodyWriter(method.getReturnType(), rtnType);
-         try
+         if (method.getReturnType().equals(void.class)) return new ResponseImpl();
+         if (method.getReturnType().equals(ResponseImpl.class))
          {
-            long size = writer.getSize(rtn);
-            output.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, ((Long) size).toString());
-            if (rtnType != null)
-            {
-               output.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_TYPE, rtnType.toString());
-            }
-            writer.writeTo(rtn, rtnType, output.getOutputHeaders(), output.getOutputStream());
+            return (ResponseImpl) rtn;
          }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         else if (method.getReturnType().equals(Response.class))
+            throw new RuntimeException("You must use JAX-RS apis to create Response objects");
+
+         ResponseImpl response = new ResponseImpl();
+         response.setEntity(rtn);
+         response.setStatus(HttpResponseCodes.SC_OK);
+         return response;
       }
       catch (IllegalAccessException e)
       {
@@ -94,8 +88,6 @@ public class ResourceMethod extends ResourceInvoker
       {
          throw new RuntimeException(e.getCause());
       }
-
-
    }
 
    public boolean matchByType(MediaType contentType, List<MediaType> accepts)

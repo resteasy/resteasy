@@ -4,9 +4,9 @@ import org.resteasy.Registry;
 import org.resteasy.ResourceMethod;
 import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.MultivaluedMapImpl;
+import org.resteasy.specimpl.ResponseImpl;
 import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpInput;
-import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 
@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -119,11 +121,9 @@ public class HttpServletDispatcher extends HttpServlet
 
 
       HttpInput in;
-      HttpOutput out;
       try
       {
          in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(path), parameters);
-         out = new HttpServletOutputMessage(response);
       }
       catch (IOException e)
       {
@@ -133,7 +133,42 @@ public class HttpServletDispatcher extends HttpServlet
 
       try
       {
-         invoker.invoke(in, out);
+         ResponseImpl responseImpl = invoker.invoke(in);
+         HttpServletResponseHeaders outputHeaders = new HttpServletResponseHeaders(response, providerFactory);
+         if (responseImpl.getMetadata() != null && responseImpl.getMetadata().size() > 0)
+         {
+            outputHeaders.putAll(responseImpl.getMetadata());
+         }
+         for (NewCookie cookie : responseImpl.getNewCookies())
+         {
+            Cookie cook = new Cookie(cookie.getName(), cookie.getValue());
+            cook.setMaxAge(cookie.getMaxAge());
+            cook.setVersion(cookie.getVersion());
+            cook.setDomain(cookie.getDomain());
+            cook.setPath(cookie.getPath());
+            cook.setSecure(cookie.isSecure());
+            cook.setComment(cookie.getComment());
+            response.addCookie(cook);
+         }
+
+         if (responseImpl.getEntity() != null)
+         {
+            MediaType rtnType = invoker.matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
+            MessageBodyWriter writer = providerFactory.createMessageBodyWriter(responseImpl.getEntity().getClass(), rtnType);
+            try
+            {
+               long size = writer.getSize(responseImpl.getEntity());
+               response.setContentLength((int) size);
+               response.setContentType(rtnType.toString());
+               writer.writeTo(responseImpl.getEntity(), rtnType, outputHeaders, response.getOutputStream());
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+         response.setStatus(responseImpl.getStatus());
+
       }
       catch (Exception e)
       {
@@ -142,12 +177,6 @@ public class HttpServletDispatcher extends HttpServlet
          this.log("Failed REST request", e);
          return;
       }
-      for (String header : out.getOutputHeaders().keySet())
-      {
-         response.setHeader(header, out.getOutputHeaders().getFirst(header).toString());
-
-      }
-      response.setStatus(HttpServletResponse.SC_OK);
    }
 
    public static MultivaluedMapImpl<String, String> extractParameters(HttpServletRequest request)

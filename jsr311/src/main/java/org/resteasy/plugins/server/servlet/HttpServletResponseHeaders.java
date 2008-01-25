@@ -1,9 +1,11 @@
 package org.resteasy.plugins.server.servlet;
 
 import org.resteasy.specimpl.MultivaluedMapImpl;
+import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +20,12 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
 
    private MultivaluedMap<String, Object> cachedHeaders = new MultivaluedMapImpl<String, Object>();
    private HttpServletResponse response;
+   private ResteasyProviderFactory factory;
 
-   public HttpServletResponseHeaders(HttpServletResponse response)
+   public HttpServletResponseHeaders(HttpServletResponse response, ResteasyProviderFactory factory)
    {
       this.response = response;
+      this.factory = factory;
    }
 
    public void putSingle(String key, Object value)
@@ -33,7 +37,14 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
    public void add(String key, Object value)
    {
       cachedHeaders.add(key, value);
-      response.addHeader(key, value.toString());
+      addResponseHeader(key, value);
+   }
+
+   protected void addResponseHeader(String key, Object value)
+   {
+      RuntimeDelegate.HeaderDelegate delegate = factory.createHeaderDelegate(value.getClass());
+      if (delegate != null) response.addHeader(key, delegate.toString(value));
+      else response.addHeader(key, value.toString());
    }
 
    public Object getFirst(String key)
@@ -70,7 +81,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
    {
       for (Object obj : objs)
       {
-         response.addHeader(s, obj.toString());
+         addResponseHeader(s, obj);
       }
       return cachedHeaders.put(s, objs);
    }
@@ -82,7 +93,14 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
 
    public void putAll(Map<? extends String, ? extends List<Object>> map)
    {
-      throw new RuntimeException("putAll() on this class not supported yet");
+      for (String key : map.keySet())
+      {
+         List<Object> objs = map.get(key);
+         for (Object obj : objs)
+         {
+            add(key, obj);
+         }
+      }
    }
 
    public void clear()

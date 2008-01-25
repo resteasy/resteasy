@@ -1,6 +1,7 @@
 package org.resteasy.spi;
 
 import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.resteasy.specimpl.ResponseBuilderImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
 
 import javax.ws.rs.ConsumeMime;
@@ -62,7 +63,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public Response.ResponseBuilder createResponseBuilder()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return new ResponseBuilderImpl();
    }
 
    public Variant.VariantListBuilder createVariantListBuilder()

@@ -1,7 +1,6 @@
 package org.resteasy.plugins.server.resourcefactory;
 
 import org.resteasy.spi.HttpInput;
-import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResourceFactory;
 
 /**
@@ -17,7 +16,7 @@ public class POJOResourceFactory implements ResourceFactory
       this.scannableClass = scannableClass;
    }
 
-   public Object createResource(HttpInput input, HttpOutput output)
+   public Object createResource(HttpInput input)
    {
       try
       {

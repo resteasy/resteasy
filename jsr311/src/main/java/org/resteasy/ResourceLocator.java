@@ -1,7 +1,6 @@
 package org.resteasy;
 
 import org.resteasy.spi.HttpInput;
-import org.resteasy.spi.HttpOutput;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
 
@@ -20,9 +19,9 @@ public class ResourceLocator extends ResourceInvoker implements ResourceFactory
       super(path, factory, method, providerFactory);
    }
 
-   public Object createResource(HttpInput input, HttpOutput output)
+   public Object createResource(HttpInput input)
    {
-      Object resource = factory.createResource(input, output);
+      Object resource = factory.createResource(input);
       populateUriParams(input);
       Object[] args = getArguments(input);
       try

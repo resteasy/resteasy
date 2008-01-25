@@ -2,6 +2,7 @@ package org.resteasy;
 
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.util.GetRestful;
 import org.resteasy.util.IsHttpMethod;
 import org.resteasy.util.PathHelper;
 
@@ -123,14 +124,41 @@ public class Registry
       this.providerFactory = providerFactory;
    }
 
+   /**
+    * Bind an endpoint ResourceFactory.  ResourceFactory.getScannableClass() defines what class should be scanned
+    * for JAX-RS annotations.  The class and any implemented interfaces are scanned for annotations.
+    *
+    * @param factory
+    */
    public void addResourceFactory(ResourceFactory factory)
    {
       addResourceFactory(factory, null);
    }
 
+   /**
+    * ResourceFactory.getScannableClass() defines what class should be scanned
+    * for JAX-RS annotations.    The class and any implemented interfaces are scanned for annotations.
+    *
+    * @param factory
+    * @param base    base URI path for any resources provided by the factory
+    */
    public void addResourceFactory(ResourceFactory factory, String base)
    {
       Class<?> clazz = factory.getScannableClass();
+      List<Class> restful = GetRestful.getRestfulClasses(clazz);
+      for (Class cls : restful) addResourceFactory(factory, base, cls);
+   }
+
+   /**
+    * ResourceFactory.getScannableClass() is not used, only the clazz parameter and not any implemented interfaces
+    * of the clazz parameter.
+    *
+    * @param factory
+    * @param base    base URI path for any resources provided by the factory
+    * @param clazz   specific class
+    */
+   public void addResourceFactory(ResourceFactory factory, String base, Class<?> clazz)
+   {
       Path classBasePath = clazz.getAnnotation(Path.class);
       String classBase = (classBasePath == null) ? null : classBasePath.value();
       if (base == null) base = classBase;
@@ -163,6 +191,15 @@ public class Registry
       }
    }
 
+   /**
+    * Find a resource to invoke on
+    *
+    * @param httpMethod  GET, POST, PUT, OPTIONS, TRACE, etc...
+    * @param path        uri path
+    * @param contentType produced type
+    * @param accepts     accept header
+    * @return
+    */
    public ResourceMethod getResourceInvoker(String httpMethod, String path, MediaType contentType, List<MediaType> accepts)
    {
       if (path.startsWith("/")) path = path.substring(1);
