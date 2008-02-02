@@ -119,4 +119,9 @@ public abstract class ResourceInvoker
          uriInfo.getTemplateParameters().putSingle(paramName, value);
       }
    }
+
+   public Method getMethod()
+   {
+      return method;
+   }
 }

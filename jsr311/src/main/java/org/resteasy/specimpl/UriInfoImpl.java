@@ -18,13 +18,38 @@ public class UriInfoImpl implements UriInfo
    private MultivaluedMap<String, String> queryParameters;
    private MultivaluedMap<String, String> templateParameters;
    private List<PathSegment> pathSegments;
+   private URI absolutePath;
+   private URI absolutePathWithQueryString;
+   private URI baseURI;
 
-   public UriInfoImpl(String path)
+   public static void main(String[] args)
+   {
+      String val = "http://foo.com/hello/world/dude";
+      val = val.substring(0, val.indexOf("world/dude"));
+      System.out.print(val);
+   }
+
+   public UriInfoImpl(URI absolutePath, String path, String queryString)
    {
       this.path = path;
+      this.absolutePath = absolutePath;
+      if (queryString == null) this.absolutePathWithQueryString = absolutePath;
+      else
+      {
+         this.absolutePathWithQueryString = URI.create(absolutePath.toString() + "?" + queryString);
+      }
+      if (path.trim().equals("")) baseURI = absolutePath;
+      else
+      {
+         String abs = absolutePath.toString();
+         abs = abs.substring(0, abs.indexOf(path));
+         baseURI = URI.create(abs);
+      }
+
       pathSegments = new ArrayList<PathSegment>();
       queryParameters = new MultivaluedMapImpl<String, String>();
       templateParameters = new MultivaluedMapImpl<String, String>();
+
 
       if (path.startsWith("/")) path = path.substring(1);
       String[] paths = path.split("/");
@@ -57,32 +82,32 @@ public class UriInfoImpl implements UriInfo
 
    public URI getRequestUri()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return absolutePathWithQueryString;
    }
 
    public UriBuilder getRequestUriBuilder()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return UriBuilder.fromUri(absolutePathWithQueryString);
    }
 
    public URI getAbsolutePath()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return absolutePath;
    }
 
    public UriBuilder getAbsolutePathBuilder()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return UriBuilder.fromUri(absolutePath);
    }
 
    public URI getBaseUri()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return baseURI;
    }
 
    public UriBuilder getBaseUriBuilder()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return UriBuilder.fromUri(baseURI);
    }
 
    public MultivaluedMap<String, String> getTemplateParameters()

@@ -21,6 +21,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -91,6 +95,20 @@ public class HttpServletDispatcher extends HttpServlet
       HttpHeaders headers = extractHttpHeaders(request);
       MultivaluedMapImpl<String, String> parameters = extractParameters(request);
       String path = request.getPathInfo();
+      URI absolutePath = null;
+      try
+      {
+         URL absolute = new URL(request.getRequestURL().toString());
+         absolutePath = absolute.toURI();
+      }
+      catch (MalformedURLException e)
+      {
+         throw new RuntimeException(e);
+      }
+      catch (URISyntaxException e)
+      {
+         throw new RuntimeException(e);
+      }
 
 
       ResourceMethod invoker = registry.getResourceInvoker(httpMethod, path, headers.getMediaType(), headers.getAcceptableMediaTypes());
@@ -123,7 +141,7 @@ public class HttpServletDispatcher extends HttpServlet
       HttpInput in;
       try
       {
-         in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(path), parameters);
+         in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(absolutePath, path, request.getQueryString()), parameters);
       }
       catch (IOException e)
       {

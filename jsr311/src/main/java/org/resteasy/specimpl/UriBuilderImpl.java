@@ -8,6 +8,9 @@ import javax.ws.rs.core.UriBuilderException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -19,7 +22,6 @@ public class UriBuilderImpl extends UriBuilder
 {
    private String host;
    private String scheme;
-   private String ssp;
    private int port = -1;
 
    // todo need to implement encoding
@@ -37,7 +39,6 @@ public class UriBuilderImpl extends UriBuilder
       UriBuilderImpl impl = new UriBuilderImpl();
       impl.host = host;
       impl.scheme = scheme;
-      impl.ssp = ssp;
       impl.port = port;
       impl.encode = encode;
       impl.userInfo = userInfo;
@@ -57,13 +58,12 @@ public class UriBuilderImpl extends UriBuilder
 
    public UriBuilder uri(URI uri) throws IllegalArgumentException
    {
-      host = uri.getHost();
-      scheme = uri.getScheme();
-      ssp = uri.getSchemeSpecificPart();
-      port = uri.getPort();
-      userInfo = uri.getUserInfo();
-      path = uri.getPath();
-      if (path == null)
+      if (uri.getHost() != null) host = uri.getHost();
+      if (uri.getScheme() != null) scheme = uri.getScheme();
+      if (uri.getHost() != null) port = uri.getPort();
+      if (uri.getUserInfo() != null) userInfo = uri.getUserInfo();
+      if (uri.getPath() != null && !uri.getPath().equals("")) path = uri.getPath();
+      if (path != null)
       {
          int idx = path.indexOf(';');
          if (idx > -1)
@@ -72,8 +72,8 @@ public class UriBuilderImpl extends UriBuilder
             path = path.substring(0, idx);
          }
       }
-      fragment = uri.getFragment();
-      query = uri.getQuery();
+      if (uri.getFragment() != null) fragment = uri.getFragment();
+      if (uri.getQuery() != null) query = uri.getQuery();
       return this;
    }
 
@@ -85,8 +85,16 @@ public class UriBuilderImpl extends UriBuilder
 
    public UriBuilder schemeSpecificPart(String ssp) throws IllegalArgumentException
    {
-      this.ssp = ssp;
-      return this;
+      URI uri = null;
+      try
+      {
+         uri = new URI(scheme, ssp, fragment);
+      }
+      catch (URISyntaxException e)
+      {
+         throw new RuntimeException(e);
+      }
+      return uri(uri);
    }
 
    public UriBuilder userInfo(String ui) throws IllegalArgumentException
@@ -114,17 +122,24 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
-   public UriBuilder path(String... segments) throws IllegalArgumentException
+   protected static String paths(String basePath, String... segments)
    {
+      String path = basePath;
       if (path == null) path = "";
-      StringBuilder builder = new StringBuilder(path);
       for (String segment : segments)
       {
-         builder.append("/");
+         if ("".equals(segment)) continue;
+         if (!path.endsWith("/")) path += "/";
+         if (segment.equals("/")) continue;
          if (segment.startsWith("/")) segment = segment.substring(1);
-         builder.append(segment);
+         path += segment;
       }
-      path = builder.toString();
+      return path;
+   }
+
+   public UriBuilder path(String... segments) throws IllegalArgumentException
+   {
+      path = paths(path, segments);
       return this;
    }
 
@@ -228,10 +243,18 @@ public class UriBuilderImpl extends UriBuilder
 
    public URI build() throws UriBuilderException
    {
+      return build(path);
+   }
+
+   protected URI build(String tmpPath) throws UriBuilderException
+   {
       try
       {
-         String tmpPath = path;
-         if (matrix != null) tmpPath += matrix;
+         if (matrix != null)
+         {
+            if (!matrix.startsWith(";")) tmpPath += ";";
+            tmpPath += matrix;
+         }
          return new URI(scheme, userInfo, host, port, tmpPath, query, fragment);
       }
       catch (URISyntaxException e)
@@ -240,9 +263,10 @@ public class UriBuilderImpl extends UriBuilder
       }
    }
 
+
    public URI build(Map<String, String> values) throws IllegalArgumentException, UriBuilderException
    {
-      if (values.size() > 0 || path == null) return build();
+      if (values.size() <= 0 || path == null) return build();
       if (path.startsWith("/")) path = path.substring(1);
       String[] paths = path.split("/");
       int i = 0;
@@ -259,30 +283,44 @@ public class UriBuilderImpl extends UriBuilder
          }
          i++;
       }
-      path = null;
-      path(paths);
-      return build();
+      String tmpPath = paths(null, paths);
+      return build(tmpPath);
    }
 
-   public URI build(String... values) throws IllegalArgumentException, UriBuilderException
+   protected List<String> getUriParamNamesInDeclarationOrder()
    {
-      if (values.length > 0 || path == null) return build();
+      List<String> params = new ArrayList<String>();
+      if (path == null) return params;
       if (path.startsWith("/")) path = path.substring(1);
       String[] paths = path.split("/");
-      int i = 0, j = 0;
       for (String p : paths)
       {
          Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(p);
          if (matcher.matches())
          {
-            if (j >= values.length)
-               throw new IllegalArgumentException("Not enough values passed in to fill all parameters");
-            paths[i] = values[j++];
+            params.add(matcher.group(2));
          }
-         i++;
       }
-      path = null;
-      path(paths);
-      return build();
+      return params;
+   }
+
+   public URI build(String... values) throws IllegalArgumentException, UriBuilderException
+   {
+      if (values.length <= 0) return build();
+      List<String> params = getUriParamNamesInDeclarationOrder();
+      if (params.size() == 0) throw new IllegalArgumentException("There are no @PathParams");
+
+      Map<String, String> pathParams = new HashMap<String, String>();
+
+      int i = 0;
+
+      for (String val : values)
+      {
+         String pathParam = params.get(i++);
+         if (pathParams.containsKey(pathParam))
+            throw new IllegalArgumentException("More values passed in than there are @PathParams");
+         pathParams.put(pathParam, val);
+      }
+      return build(pathParams);
    }
 }

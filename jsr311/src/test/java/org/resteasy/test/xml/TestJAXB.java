@@ -7,13 +7,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
-import org.resteasy.plugins.providers.DefaultPlainText;
-import org.resteasy.plugins.providers.JAXBProvider;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.ResteasyProviderFactory;
-
-import java.util.Properties;
+import org.resteasy.test.EmbeddedServletContainer;
 
 /**
  * Simple smoke test
@@ -25,36 +21,18 @@ public class TestJAXB
 {
 
    private static Serve server = null;
-   private static HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+   private static HttpServletDispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception
    {
-      server = new Serve();
-      Properties props = new Properties();
-      props.put("port", 8081);
-      props.setProperty(Serve.ARG_NOHUP, "nohup");
-      server.arguments = props;
-      server.addDefaultServlets(null); // optional file servlet
-      server.addServlet("/", dispatcher); // optional
-      new Thread()
-      {
-         public void run()
-         {
-            server.serve();
-         }
-      }.start();
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
-      dispatcher.getProviderFactory().addMessageBodyReader(new JAXBProvider());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new JAXBProvider());
+      dispatcher = EmbeddedServletContainer.start();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      server.notifyStop();
+      EmbeddedServletContainer.stop();
    }
 
    @Test

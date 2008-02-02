@@ -1,17 +1,12 @@
 package org.resteasy.test.smoke;
 
-import Acme.Serve.Serve;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
-import org.resteasy.plugins.providers.DefaultPlainText;
-import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.ResteasyProviderFactory;
-
-import java.util.Properties;
+import org.resteasy.test.EmbeddedServletContainer;
 
 /**
  * Simple smoke test
@@ -22,43 +17,26 @@ import java.util.Properties;
 public class TestClient
 {
 
-   private static Serve server = null;
-   private static HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+   private static HttpServletDispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception
    {
-      server = new Serve();
-      Properties props = new Properties();
-      props.put("port", 8081);
-      props.setProperty(Serve.ARG_NOHUP, "nohup");
-      server.arguments = props;
-      server.addDefaultServlets(null); // optional file servlet
-      server.addServlet("/", dispatcher); // optional
-      new Thread()
-      {
-         public void run()
-         {
-            server.serve();
-         }
-      }.start();
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
-
+      dispatcher = EmbeddedServletContainer.start();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      server.notifyStop();
+      EmbeddedServletContainer.stop();
    }
 
    @Test
    public void testNoDefaultsResource() throws Exception
    {
-      POJOResourceFactory noDefaults = new POJOResourceFactory(SimpleResource.class);
-      dispatcher.getRegistry().addResourceFactory(noDefaults);
+      int oldSize = dispatcher.getRegistry().getSize();
+      dispatcher.getRegistry().addResource(SimpleResource.class);
+      Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
       SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
 
@@ -66,6 +44,9 @@ public class TestClient
       client.putBasic("hello world");
       Assert.assertEquals("hello world", client.getQueryParam("hello world"));
       Assert.assertEquals(1234, client.getUriParam(1234));
+
+      dispatcher.getRegistry().removeRegistrations(SimpleResource.class);
+      Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }
 
 

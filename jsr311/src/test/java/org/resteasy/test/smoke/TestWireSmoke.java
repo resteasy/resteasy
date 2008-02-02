@@ -1,6 +1,5 @@
 package org.resteasy.test.smoke;
 
-import Acme.Serve.Serve;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -10,13 +9,10 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.resteasy.plugins.providers.DefaultPlainText;
-import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.test.EmbeddedServletContainer;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Properties;
 
 /**
  * Simple smoke test
@@ -27,42 +23,26 @@ import java.util.Properties;
 public class TestWireSmoke
 {
 
-   private static Serve server = null;
-   private static HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+   private static HttpServletDispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception
    {
-      server = new Serve();
-      Properties props = new Properties();
-      props.put("port", 8081);
-      props.setProperty(Acme.Serve.Serve.ARG_NOHUP, "nohup");
-      server.arguments = props;
-      server.addDefaultServlets(null); // optional file servlet
-      server.addServlet("/", dispatcher); // optional
-      new Thread()
-      {
-         public void run()
-         {
-            server.serve();
-         }
-      }.start();
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
+      dispatcher = EmbeddedServletContainer.start();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      server.notifyStop();
+      EmbeddedServletContainer.stop();
    }
 
    @Test
    public void testNoDefaultsResource() throws Exception
    {
-      POJOResourceFactory noDefaults = new POJOResourceFactory(SimpleResource.class);
-      dispatcher.getRegistry().addResourceFactory(noDefaults);
+      int oldSize = dispatcher.getRegistry().getSize();
+      dispatcher.getRegistry().addResource(SimpleResource.class);
+      Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
       HttpClient client = new HttpClient();
 
@@ -117,14 +97,17 @@ public class TestWireSmoke
          Assert.assertEquals("Wild", method.getResponseBodyAsString());
          method.releaseConnection();
       }
+      dispatcher.getRegistry().removeRegistrations(SimpleResource.class);
+      Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }
 
 
    @Test
    public void testLocatingResource() throws Exception
    {
-      POJOResourceFactory noDefaults = new POJOResourceFactory(LocatingResource.class);
-      dispatcher.getRegistry().addResourceFactory(noDefaults);
+      int oldSize = dispatcher.getRegistry().getSize();
+      dispatcher.getRegistry().addResource(LocatingResource.class);
+      Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
       HttpClient client = new HttpClient();
 
@@ -158,5 +141,7 @@ public class TestWireSmoke
          Assert.assertEquals("1234", method.getResponseBodyAsString());
          method.releaseConnection();
       }
+      dispatcher.getRegistry().removeRegistrations(LocatingResource.class);
+      Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }
 }
