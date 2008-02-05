@@ -92,8 +92,8 @@ public abstract class StringParameterExtractor implements ParameterExtractor
       if (type.isArray())
       {
          if (values == null) return null;
-         Object[] vals = (Object[]) Array.newInstance(type.getComponentType(), values.size());
-         for (int i = 0; i < vals.length; i++) vals[i] = extractValue(values.get(i));
+         Object vals = Array.newInstance(type.getComponentType(), values.size());
+         for (int i = 0; i < values.size(); i++) Array.set(vals, i, extractValue(values.get(i)));
          return vals;
       }
       else if (isList)

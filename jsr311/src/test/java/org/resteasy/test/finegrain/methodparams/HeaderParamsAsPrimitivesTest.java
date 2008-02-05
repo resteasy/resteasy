@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.mock.MockHttpServletRequest;
 import org.resteasy.mock.MockHttpServletResponse;
+import org.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpHeaderNames;
@@ -21,6 +22,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,9 +31,25 @@ import java.util.List;
  */
 public class HeaderParamsAsPrimitivesTest
 {
-   private HttpClient client = new HttpClient();
+   private static HttpClient client = new HttpClient();
 
    private static HttpServletDispatcher dispatcher;
+   private static IResourceHeaderPrimitives resourceHeaderPrimitives;
+   private static IResourceHeaderPrimitivesDefault resourceHeaderPrimitivesDefault;
+   private static IResourceHeaderPrimitivesDefaultOverride resourceHeaderPrimitivesDefaultOverride;
+   private static IResourceHeaderPrimitivesDefaultNull resourceHeaderPrimitivesDefaultNull;
+   private static IResourceHeaderPrimitiveWrappers resourceHeaderPrimitiveWrappers;
+   private static IResourceHeaderPrimitiveWrappersDefault resourceHeaderPrimitiveWrappersDefault;
+   private static IResourceHeaderPrimitiveWrappersDefaultOverride resourceHeaderPrimitiveWrappersDefaultOverride;
+   private static IResourceHeaderPrimitiveWrappersDefaultNull resourceHeaderPrimitiveWrappersDefaultNull;
+   private static IResourceHeaderPrimitiveList resourceHeaderPrimitiveList;
+   private static IResourceHeaderPrimitiveListDefault resourceHeaderPrimitiveListDefault;
+   private static IResourceHeaderPrimitiveListDefaultOverride resourceHeaderPrimitiveListDefaultOverride;
+   private static IResourceHeaderPrimitiveListDefaultNull resourceHeaderPrimitiveListDefaultNull;
+   private static IResourceHeaderPrimitiveArray resourceHeaderPrimitiveArray;
+   private static IResourceHeaderPrimitiveArrayDefault resourceHeaderPrimitiveArrayDefault;
+   private static IResourceHeaderPrimitiveArrayDefaultOverride resourceHeaderPrimitiveArrayDefaultOverride;
+   private static IResourceHeaderPrimitiveArrayDefaultNull resourceHeaderPrimitiveArrayDefaultNull;
 
    @BeforeClass
    public static void before() throws Exception
@@ -49,6 +67,27 @@ public class HeaderParamsAsPrimitivesTest
       dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveListDefault.class);
       dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveListDefaultNull.class);
       dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveListDefaultOverride.class);
+      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveArray.class);
+      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveArrayDefault.class);
+      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveArrayDefaultNull.class);
+      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveArrayDefaultOverride.class);
+      resourceHeaderPrimitives = ProxyFactory.create(IResourceHeaderPrimitives.class, "http://localhost:8081");
+      resourceHeaderPrimitivesDefault = ProxyFactory.create(IResourceHeaderPrimitivesDefault.class, "http://localhost:8081");
+      resourceHeaderPrimitivesDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitivesDefaultOverride.class, "http://localhost:8081");
+      resourceHeaderPrimitivesDefaultNull = ProxyFactory.create(IResourceHeaderPrimitivesDefaultNull.class, "http://localhost:8081");
+      resourceHeaderPrimitiveWrappers = ProxyFactory.create(IResourceHeaderPrimitiveWrappers.class, "http://localhost:8081");
+      resourceHeaderPrimitiveWrappersDefault = ProxyFactory.create(IResourceHeaderPrimitiveWrappersDefault.class, "http://localhost:8081");
+      resourceHeaderPrimitiveWrappersDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitiveWrappersDefaultOverride.class, "http://localhost:8081");
+      resourceHeaderPrimitiveWrappersDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveWrappersDefaultNull.class, "http://localhost:8081");
+      resourceHeaderPrimitiveList = ProxyFactory.create(IResourceHeaderPrimitiveList.class, "http://localhost:8081");
+      resourceHeaderPrimitiveListDefault = ProxyFactory.create(IResourceHeaderPrimitiveListDefault.class, "http://localhost:8081");
+      resourceHeaderPrimitiveListDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitiveListDefaultOverride.class, "http://localhost:8081");
+      resourceHeaderPrimitiveListDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveListDefaultNull.class, "http://localhost:8081");
+      resourceHeaderPrimitiveArray = ProxyFactory.create(IResourceHeaderPrimitiveArray.class, "http://localhost:8081");
+      resourceHeaderPrimitiveArrayDefault = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefault.class, "http://localhost:8081");
+      resourceHeaderPrimitiveArrayDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefaultOverride.class, "http://localhost:8081");
+      resourceHeaderPrimitiveArrayDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefaultNull.class, "http://localhost:8081");
+
    }
 
    @AfterClass
@@ -58,7 +97,7 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/")
-   public static class ResourceHeaderPrimitives
+   public static class ResourceHeaderPrimitives implements IResourceHeaderPrimitives
    {
       @GET
       @ProduceMime("application/boolean")
@@ -238,7 +277,7 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/default/override")
-   public static class ResourceHeaderPrimitivesDefaultOverride
+   public static class ResourceHeaderPrimitivesDefaultOverride implements IResourceHeaderPrimitivesDefaultOverride
    {
       @GET
       @ProduceMime("application/boolean")
@@ -298,7 +337,7 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/wrappers")
-   public static class ResourceHeaderPrimitiveWrappers
+   public static class ResourceHeaderPrimitiveWrappers implements IResourceHeaderPrimitiveWrappers
    {
       @GET
       @ProduceMime("application/boolean")
@@ -480,7 +519,7 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/wrappers/default/override")
-   public static class ResourceHeaderPrimitiveWrappersDefaultOverride
+   public static class ResourceHeaderPrimitiveWrappersDefaultOverride implements IResourceHeaderPrimitiveWrappersDefaultOverride
    {
       @GET
       @ProduceMime("application/boolean")
@@ -540,7 +579,7 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/list")
-   public static class ResourceHeaderPrimitiveList
+   public static class ResourceHeaderPrimitiveList implements IResourceHeaderPrimitiveList
    {
       @GET
       @ProduceMime("application/boolean")
@@ -734,7 +773,7 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/list/default/override")
-   public static class ResourceHeaderPrimitiveListDefaultOverride
+   public static class ResourceHeaderPrimitiveListDefaultOverride implements IResourceHeaderPrimitiveListDefaultOverride
    {
       @GET
       @ProduceMime("application/boolean")
@@ -793,6 +832,90 @@ public class HeaderParamsAsPrimitivesTest
       }
    }
 
+
+   @Path("/array")
+   public static class ResourceHeaderPrimitiveArray implements IResourceHeaderPrimitiveArray
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      public String doGetBoolean(@HeaderParam("boolean")boolean[] v)
+      {
+         Assert.assertEquals(true, v[0]);
+         Assert.assertEquals(true, v[1]);
+         Assert.assertEquals(true, v[2]);
+         return "content";
+      }
+
+      @GET
+      @ProduceMime("application/short")
+      public String doGetShort(@HeaderParam("short")short[] v)
+      {
+         Assert.assertTrue(32767 == v[0]);
+         Assert.assertTrue(32767 == v[0]);
+         Assert.assertTrue(32767 == v[0]);
+         return "content";
+      }
+   }
+
+   @Path("/array/default/null")
+   public static class ResourceHeaderPrimitiveArrayDefaultNull
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      public String doGetBoolean(@HeaderParam("boolean")boolean[] v)
+      {
+         Assert.assertEquals(null, v);
+         return "content";
+      }
+
+      @GET
+      @ProduceMime("application/short")
+      public String doGetShort(@HeaderParam("short")short[] v)
+      {
+         Assert.assertEquals(null, v);
+         return "content";
+      }
+   }
+
+   @Path("/array/default")
+   public static class ResourceHeaderPrimitiveArrayDefault
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("true")boolean[] v)
+      {
+         Assert.assertEquals(true, v[0]);
+         return "content";
+      }
+
+      @GET
+      @ProduceMime("application/short")
+      public String doGetShort(@HeaderParam("short") @DefaultValue("32767")short[] v)
+      {
+         Assert.assertTrue(32767 == v[0]);
+         return "content";
+      }
+   }
+
+   @Path("/array/default/override")
+   public static class ResourceHeaderPrimitiveArrayDefaultOverride implements IResourceHeaderPrimitiveArrayDefaultOverride
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false")boolean[] v)
+      {
+         Assert.assertEquals(true, v[0]);
+         return "content";
+      }
+
+      @GET
+      @ProduceMime("application/short")
+      public String doGetShort(@HeaderParam("int") @DefaultValue("0")short[] v)
+      {
+         Assert.assertTrue(32767 == v[0]);
+         return "content";
+      }
+   }
 
    public void _test(String type, String value)
    {
@@ -974,54 +1097,103 @@ public class HeaderParamsAsPrimitivesTest
    public void testGetBoolean()
    {
       _test("boolean", "true");
+      resourceHeaderPrimitives.doGet(true);
+      resourceHeaderPrimitiveWrappers.doGet(Boolean.TRUE);
+      ArrayList<Boolean> list = new ArrayList<Boolean>();
+      list.add(Boolean.TRUE);
+      list.add(Boolean.TRUE);
+      list.add(Boolean.TRUE);
+      resourceHeaderPrimitiveList.doGetBoolean(list);
+      boolean[] array = {true, true, true};
+      resourceHeaderPrimitiveArray.doGetBoolean(array);
    }
 
    @Test
    public void testGetBooleanPrimitivesDefault()
    {
       _testDefault("boolean", "true");
+      resourceHeaderPrimitivesDefault.doGetBoolean();
+      resourceHeaderPrimitivesDefaultNull.doGetBoolean();
+      resourceHeaderPrimitivesDefaultOverride.doGet(true);
    }
 
    @Test
    public void testGetBooleanPrimitiveWrapperDefault()
    {
       _testWrappersDefault("boolean", "true");
+      resourceHeaderPrimitiveWrappersDefault.doGetBoolean();
+      resourceHeaderPrimitiveWrappersDefaultNull.doGetBoolean();
+      resourceHeaderPrimitiveWrappersDefaultOverride.doGet(Boolean.TRUE);
    }
 
    @Test
    public void testGetBooleanPrimitiveListDefault()
    {
       _testListDefault("boolean", "true");
+      resourceHeaderPrimitiveListDefault.doGetBoolean();
+      resourceHeaderPrimitiveListDefaultNull.doGetBoolean();
+      List<Boolean> list = new ArrayList<Boolean>();
+      list.add(Boolean.TRUE);
+      resourceHeaderPrimitiveListDefaultOverride.doGetBoolean(list);
+      resourceHeaderPrimitiveArrayDefault.doGetBoolean();
+      resourceHeaderPrimitiveArrayDefaultNull.doGetBoolean();
+      boolean[] array = {true};
+      resourceHeaderPrimitiveArrayDefaultOverride.doGetBoolean(array);
    }
 
    @Test
    public void testGetByte()
    {
       _test("byte", "127");
+      resourceHeaderPrimitives.doGet((byte) 127);
+      resourceHeaderPrimitiveWrappers.doGet(new Byte((byte) 127));
+      ArrayList<Byte> list = new ArrayList<Byte>();
+      list.add(new Byte((byte) 127));
+      list.add(new Byte((byte) 127));
+      list.add(new Byte((byte) 127));
+      resourceHeaderPrimitiveList.doGetByte(list);
    }
 
    @Test
    public void testGetBytePrimitivesDefault()
    {
       _testDefault("byte", "127");
+      resourceHeaderPrimitivesDefault.doGetByte();
+      resourceHeaderPrimitivesDefaultNull.doGetByte();
+      resourceHeaderPrimitivesDefaultOverride.doGet((byte) 127);
    }
 
    @Test
    public void testGetBytePrimitiveWrappersDefault()
    {
       _testWrappersDefault("byte", "127");
+      resourceHeaderPrimitiveWrappersDefault.doGetByte();
+      resourceHeaderPrimitiveWrappersDefaultNull.doGetByte();
+      resourceHeaderPrimitiveWrappersDefaultOverride.doGet(new Byte((byte) 127));
    }
 
    @Test
    public void testGetBytePrimitiveListDefault()
    {
       _testListDefault("byte", "127");
+      resourceHeaderPrimitiveListDefault.doGetByte();
+      resourceHeaderPrimitiveListDefaultNull.doGetByte();
+      List<Byte> list = new ArrayList<Byte>();
+      list.add(new Byte((byte) 127));
+      resourceHeaderPrimitiveListDefaultOverride.doGetByte(list);
    }
 
    @Test
    public void testGetShort()
    {
       _test("short", "32767");
+      resourceHeaderPrimitives.doGet((short) 32767);
+      resourceHeaderPrimitiveWrappers.doGet(new Short((short) 32767));
+      ArrayList<Short> list = new ArrayList<Short>();
+      list.add(new Short((short) 32767));
+      list.add(new Short((short) 32767));
+      list.add(new Short((short) 32767));
+      resourceHeaderPrimitiveList.doGetShort(list);
    }
 
    @Test
@@ -1195,5 +1367,437 @@ public class HeaderParamsAsPrimitivesTest
             throw new RuntimeException(e);
          }
       }
+   }
+
+   @Path("/")
+   public static interface IResourceHeaderPrimitives
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGet(@HeaderParam("boolean")boolean v);
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGet(@HeaderParam("byte")byte v);
+
+      @GET
+      @ProduceMime("application/short")
+      String doGet(@HeaderParam("short")short v);
+
+      @GET
+      @ProduceMime("application/int")
+      String doGet(@HeaderParam("int")int v);
+
+      @GET
+      @ProduceMime("application/long")
+      String doGet(@HeaderParam("long")long v);
+
+      @GET
+      @ProduceMime("application/float")
+      String doGet(@HeaderParam("float")float v);
+
+      @GET
+      @ProduceMime("application/double")
+      String doGet(@HeaderParam("double")double v);
+   }
+
+   @Path("/default/null")
+   public static interface IResourceHeaderPrimitivesDefaultNull
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean();
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGetByte();
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort();
+
+      @GET
+      @ProduceMime("application/int")
+      String doGetInt();
+
+      @GET
+      @ProduceMime("application/long")
+      String doGetLong();
+
+      @GET
+      @ProduceMime("application/float")
+      String doGetFloat();
+
+      @GET
+      @ProduceMime("application/double")
+      String doGet();
+   }
+
+   @Path("/default")
+   public static interface IResourceHeaderPrimitivesDefault
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean();
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGetByte();
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort();
+
+      @GET
+      @ProduceMime("application/int")
+      String doGetInt();
+
+      @GET
+      @ProduceMime("application/long")
+      String doGetLong();
+
+      @GET
+      @ProduceMime("application/float")
+      String doGetFloat();
+
+      @GET
+      @ProduceMime("application/double")
+      String doGetDouble();
+   }
+
+   @Path("/default/override")
+   public static interface IResourceHeaderPrimitivesDefaultOverride
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGet(@HeaderParam("boolean") @DefaultValue("false")boolean v);
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGet(@HeaderParam("byte") @DefaultValue("1")byte v);
+
+      @GET
+      @ProduceMime("application/short")
+      String doGet(@HeaderParam("short") @DefaultValue("1")short v);
+
+      @GET
+      @ProduceMime("application/int")
+      String doGet(@HeaderParam("int") @DefaultValue("1")int v);
+
+      @GET
+      @ProduceMime("application/long")
+      String doGet(@HeaderParam("long") @DefaultValue("1")long v);
+
+      @GET
+      @ProduceMime("application/float")
+      String doGet(@HeaderParam("float") @DefaultValue("0.0")float v);
+
+      @GET
+      @ProduceMime("application/double")
+      String doGet(@HeaderParam("double") @DefaultValue("0.0")double v);
+   }
+
+   @Path("/wrappers")
+   public static interface IResourceHeaderPrimitiveWrappers
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGet(@HeaderParam("boolean")Boolean v);
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGet(@HeaderParam("byte")Byte v);
+
+      @GET
+      @ProduceMime("application/short")
+      String doGet(@HeaderParam("short")Short v);
+
+      @GET
+      @ProduceMime("application/int")
+      String doGet(@HeaderParam("int")Integer v);
+
+      @GET
+      @ProduceMime("application/long")
+      String doGet(@HeaderParam("long")Long v);
+
+      @GET
+      @ProduceMime("application/float")
+      String doGet(@HeaderParam("float")Float v);
+
+      @GET
+      @ProduceMime("application/double")
+      String doGet(@HeaderParam("double")Double v);
+   }
+
+   @Path("/wrappers/default/null")
+   public static interface IResourceHeaderPrimitiveWrappersDefaultNull
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean();
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGetByte();
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort();
+
+      @GET
+      @ProduceMime("application/int")
+      String doGetInt();
+
+      @GET
+      @ProduceMime("application/long")
+      String doGetLong();
+
+      @GET
+      @ProduceMime("application/float")
+      String doGetFloat();
+
+      @GET
+      @ProduceMime("application/double")
+      String doGetDouble();
+   }
+
+   @Path("/wrappers/default")
+   public static interface IResourceHeaderPrimitiveWrappersDefault
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean();
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGetByte();
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort();
+
+      @GET
+      @ProduceMime("application/int")
+      String doGetInteger();
+
+      @GET
+      @ProduceMime("application/long")
+      String doGetLong();
+
+      @GET
+      @ProduceMime("application/float")
+      String doGetFloat();
+
+      @GET
+      @ProduceMime("application/double")
+      String doGetDouble();
+   }
+
+   @Path("/wrappers/default/override")
+   public static interface IResourceHeaderPrimitiveWrappersDefaultOverride
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGet(@HeaderParam("boolean") @DefaultValue("false")Boolean v);
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGet(@HeaderParam("byte") @DefaultValue("1")Byte v);
+
+      @GET
+      @ProduceMime("application/short")
+      String doGet(@HeaderParam("short") @DefaultValue("1")Short v);
+
+      @GET
+      @ProduceMime("application/int")
+      String doGet(@HeaderParam("int") @DefaultValue("1")Integer v);
+
+      @GET
+      @ProduceMime("application/long")
+      String doGet(@HeaderParam("long") @DefaultValue("1")Long v);
+
+      @GET
+      @ProduceMime("application/float")
+      String doGet(@HeaderParam("float") @DefaultValue("0.0")Float v);
+
+      @GET
+      @ProduceMime("application/double")
+      String doGet(@HeaderParam("double") @DefaultValue("0.0")Double v);
+   }
+
+   @Path("/list")
+   public static interface IResourceHeaderPrimitiveList
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean(@HeaderParam("boolean")List<Boolean> v);
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGetByte(@HeaderParam("byte")List<Byte> v);
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort(@HeaderParam("short")List<Short> v);
+
+      @GET
+      @ProduceMime("application/int")
+      String doGetInteger(@HeaderParam("int")List<Integer> v);
+
+      @GET
+      @ProduceMime("application/long")
+      String doGetLong(@HeaderParam("long")List<Long> v);
+
+      @GET
+      @ProduceMime("application/float")
+      String doGetFloat(@HeaderParam("float")List<Float> v);
+
+      @GET
+      @ProduceMime("application/double")
+      String doGetDouble(@HeaderParam("double")List<Double> v);
+   }
+
+   @Path("/list/default/null")
+   public static interface IResourceHeaderPrimitiveListDefaultNull
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean();
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGetByte();
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort();
+
+      @GET
+      @ProduceMime("application/int")
+      String doGetInteger();
+
+      @GET
+      @ProduceMime("application/long")
+      String doGetLong();
+
+      @GET
+      @ProduceMime("application/float")
+      String doGetFloat();
+
+      @GET
+      @ProduceMime("application/double")
+      String doGetDouble();
+   }
+
+   @Path("/list/default")
+   public static interface IResourceHeaderPrimitiveListDefault
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean();
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGetByte();
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort();
+
+      @GET
+      @ProduceMime("application/int")
+      String doGetInteger();
+
+      @GET
+      @ProduceMime("application/long")
+      String doGetLong();
+
+      @GET
+      @ProduceMime("application/float")
+      String doGetFloat();
+
+      @GET
+      @ProduceMime("application/double")
+      String doGetDouble();
+   }
+
+   @Path("/list/default/override")
+   public static interface IResourceHeaderPrimitiveListDefaultOverride
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false")List<Boolean> v);
+
+      @GET
+      @ProduceMime("application/byte")
+      String doGetByte(@HeaderParam("byte") @DefaultValue("0")List<Byte> v);
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort(@HeaderParam("short") @DefaultValue("0")List<Short> v);
+
+      @GET
+      @ProduceMime("application/int")
+      String doGetInteger(@HeaderParam("int") @DefaultValue("0")List<Integer> v);
+
+      @GET
+      @ProduceMime("application/long")
+      String doGetLong(@HeaderParam("long") @DefaultValue("0")List<Long> v);
+
+      @GET
+      @ProduceMime("application/float")
+      String doGetFloat(@HeaderParam("float") @DefaultValue("0.0")List<Float> v);
+
+      @GET
+      @ProduceMime("application/double")
+      String doGetDouble(@HeaderParam("double") @DefaultValue("0.0")List<Double> v);
+   }
+
+   @Path("/array")
+   public static interface IResourceHeaderPrimitiveArray
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean(@HeaderParam("boolean")boolean[] v);
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort(@HeaderParam("short")short[] v);
+   }
+
+   @Path("/array/default/null")
+   public static interface IResourceHeaderPrimitiveArrayDefaultNull
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean();
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort();
+   }
+
+   @Path("/array/default")
+   public static interface IResourceHeaderPrimitiveArrayDefault
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean();
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort();
+   }
+
+   @Path("/array/default/override")
+   public static interface IResourceHeaderPrimitiveArrayDefaultOverride
+   {
+      @GET
+      @ProduceMime("application/boolean")
+      String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false")boolean[] v);
+
+      @GET
+      @ProduceMime("application/short")
+      String doGetShort(@HeaderParam("int") @DefaultValue("0")short[] v);
    }
 }

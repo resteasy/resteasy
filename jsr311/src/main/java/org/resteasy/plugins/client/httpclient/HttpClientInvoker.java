@@ -21,6 +21,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -71,8 +72,11 @@ abstract public class HttpClientInvoker extends ClientInvoker
 
       for (String key : output.getOutputHeaders().keySet())
       {
-         String value = output.getOutputHeaders().getFirst(key).toString();
-         baseMethod.setRequestHeader(key, value);
+         List<Object> value = output.getOutputHeaders().get(key);
+         for (Object obj : value)
+         {
+            baseMethod.addRequestHeader(key, obj.toString());
+         }
       }
 
       if (accepts != null)
