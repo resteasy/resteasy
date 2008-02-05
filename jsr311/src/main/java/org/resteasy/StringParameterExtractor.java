@@ -6,6 +6,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,22 +25,38 @@ public abstract class StringParameterExtractor implements ParameterExtractor
    protected String defaultValue;
    protected String paramName;
    protected String paramType;
+   protected boolean isList;
 
-   public StringParameterExtractor(Class type, Method method, String paramName, String paramType, String defaultValue)
+   public StringParameterExtractor(int idx, Method method, String paramName, String paramType, String defaultValue)
    {
-      this.type = type;
+      this.type = method.getParameterTypes()[idx];
       this.method = method;
       this.paramName = paramName;
       this.paramType = paramType;
+      this.defaultValue = defaultValue;
 
       baseType = type;
       if (type.isArray()) baseType = type.getComponentType();
+      if (List.class.isAssignableFrom(type))
+      {
+         Type pType = method.getGenericParameterTypes()[idx];
+         if (pType instanceof ParameterizedType)
+         {
+            ParameterizedType zType = (ParameterizedType) pType;
+            baseType = (Class) zType.getActualTypeArguments()[0];
+         }
+         else
+         {
+            baseType = java.lang.String.class;
+         }
+         isList = true;
+      }
 
       if (!baseType.isPrimitive())
       {
          try
          {
-            constructor = type.getConstructor(String.class);
+            constructor = baseType.getConstructor(String.class);
          }
          catch (NoSuchMethodException ignored)
          {
@@ -47,11 +66,11 @@ public abstract class StringParameterExtractor implements ParameterExtractor
          {
             try
             {
-               valueOf = type.getDeclaredMethod("valueOf", String.class);
+               valueOf = baseType.getDeclaredMethod("valueOf", String.class);
             }
             catch (NoSuchMethodException e)
             {
-               throw new RuntimeException("Unable to find a constructor that takes a String param or a valueOf() method for " + getParamSignature() + " on " + method);
+               throw new RuntimeException("Unable to find a constructor that takes a String param or a valueOf() method for " + getParamSignature() + " on " + method + " for basetype: " + baseType.getName());
             }
 
          }
@@ -65,20 +84,32 @@ public abstract class StringParameterExtractor implements ParameterExtractor
 
    protected Object extractValues(List<String> values)
    {
+      if (values == null && (type.isArray() || isList) && defaultValue != null)
+      {
+         values = new ArrayList<String>(1);
+         values.add(defaultValue);
+      }
       if (type.isArray())
       {
-         if (values == null)
-         {
-            Object[] vals = (Object[]) Array.newInstance(type.getComponentType(), 1);
-            vals[0] = extractValue(null);
-            return vals;
-         }
+         if (values == null) return null;
          Object[] vals = (Object[]) Array.newInstance(type.getComponentType(), values.size());
          for (int i = 0; i < vals.length; i++) vals[i] = extractValue(values.get(i));
          return vals;
       }
+      else if (isList)
+      {
+         if (values == null) return null;
+         ArrayList list = new ArrayList();
+         for (String str : values)
+         {
+            list.add(extractValue(str));
+         }
+         return list;
+      }
       else
       {
+         if (values == null) return extractValue(null);
+         if (values.size() == 0) return extractValue(null);
          return extractValue(values.get(0));
       }
 
@@ -90,12 +121,13 @@ public abstract class StringParameterExtractor implements ParameterExtractor
       {
          if (defaultValue == null)
          {
-            if (baseType.isPrimitive()) strVal = "0";
-            else return null;
+            //System.out.println("NO DEFAULT VALUE");
+            if (!baseType.isPrimitive()) return null;
          }
          else
          {
             strVal = defaultValue;
+            //System.out.println("DEFAULT VAULUE: " + strVal);
          }
       }
       if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);

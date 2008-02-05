@@ -13,9 +13,9 @@ import java.util.List;
 public class HeaderParamExtractor extends StringParameterExtractor implements ParameterExtractor
 {
 
-   public HeaderParamExtractor(Method method, String header, Class type, String defaultValue)
+   public HeaderParamExtractor(Method method, String header, int index, String defaultValue)
    {
-      super(type, method, header, "@" + HeaderParam.class.getSimpleName(), defaultValue);
+      super(index, method, header, "@" + HeaderParam.class.getSimpleName(), defaultValue);
    }
 
    public Object extract(HttpInput request)

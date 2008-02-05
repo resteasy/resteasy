@@ -67,19 +67,19 @@ public abstract class ResourceInvoker
 
          if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
          {
-            params[i] = new QueryParamExtractor(method, query.value(), type, defaultVal);
+            params[i] = new QueryParamExtractor(method, query.value(), i, defaultVal);
          }
          else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
          {
-            params[i] = new HeaderParamExtractor(method, header.value(), type, defaultVal);
+            params[i] = new HeaderParamExtractor(method, header.value(), i, defaultVal);
          }
          else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
          {
-            params[i] = new UriParamExtractor(method, uriParam.value(), type, defaultVal);
+            params[i] = new UriParamExtractor(method, uriParam.value(), i, defaultVal);
          }
          else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
          {
-            params[i] = new MatrixParamExtractor(method, matrix.value(), type, defaultVal);
+            params[i] = new MatrixParamExtractor(method, matrix.value(), i, defaultVal);
          }
          else if (FindAnnotation.findAnnotation(annotations, HttpContext.class) != null)
          {

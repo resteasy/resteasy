@@ -41,9 +41,17 @@ public class UriInfoImpl implements UriInfo
       if (path.trim().equals("")) baseURI = absolutePath;
       else
       {
-         String abs = absolutePath.toString();
+         String abs = absolutePath.getPath();
          abs = abs.substring(0, abs.indexOf(path));
-         baseURI = URI.create(abs);
+         try
+         {
+            baseURI = UriBuilder.fromUri(absolutePath).path(abs).build();
+
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("URI value was: " + abs + " path: " + path, e);
+         }
       }
 
       pathSegments = new ArrayList<PathSegment>();

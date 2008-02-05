@@ -13,9 +13,9 @@ import java.util.List;
  */
 public class MatrixParamExtractor extends StringParameterExtractor
 {
-   public MatrixParamExtractor(Method method, String paramName, Class type, String defaultValue)
+   public MatrixParamExtractor(Method method, String paramName, int index, String defaultValue)
    {
-      super(type, method, paramName, "@" + MatrixParam.class.getSimpleName(), defaultValue);
+      super(index, method, paramName, "@" + MatrixParam.class.getSimpleName(), defaultValue);
    }
 
    public Object extract(HttpInput request)

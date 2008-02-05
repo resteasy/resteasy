@@ -63,7 +63,15 @@ public class ResourceMethod extends ResourceInvoker
    {
       Object resource = factory.createResource(input);
       populateUriParams(input);
-      Object[] args = getArguments(input);
+      Object[] args = new Object[0];
+      try
+      {
+         args = getArguments(input);
+      }
+      catch (Exception e)
+      {
+         throw new Failure(e, HttpResponseCodes.SC_BAD_REQUEST);
+      }
       try
       {
          Object rtn = method.invoke(resource, args);
@@ -82,11 +90,25 @@ public class ResourceMethod extends ResourceInvoker
       }
       catch (IllegalAccessException e)
       {
-         throw new RuntimeException(e);
+         throw new RuntimeException(method.toString(), e);
       }
       catch (InvocationTargetException e)
       {
-         throw new RuntimeException(e.getCause());
+         throw new RuntimeException(method.toString(), e.getCause());
+      }
+      catch (IllegalArgumentException e)
+      {
+         String msg = method.toString() + "  (";
+         for (Object arg : args)
+         {
+            if (arg == null)
+            {
+               msg += ", null";
+               continue;
+            }
+            msg += ", " + arg;
+         }
+         throw new RuntimeException(msg, e);
       }
    }
 
@@ -117,8 +139,16 @@ public class ResourceMethod extends ResourceInvoker
       }
       if (!matches) return false;
       matches = false;
-      if (accepts == null || accepts.size() == 0) return true;
-      if (produces == null || produces.length == 0) return true;
+      if (accepts == null || accepts.size() == 0)
+      {
+         //System.out.println("**** no accepts " +" method: " + method);
+         return true;
+      }
+      if (produces == null || produces.length == 0)
+      {
+         //System.out.println("**** no produces " +" method: " + method);
+         return true;
+      }
 
       for (MediaType accept : accepts)
       {
@@ -126,6 +156,7 @@ public class ResourceMethod extends ResourceInvoker
          {
             if (type.isCompatible(accept))
             {
+               //System.out.println("**** produces: " + type + " matches accept: " + accept + " method: " + method);
                matches = true;
                break;
             }

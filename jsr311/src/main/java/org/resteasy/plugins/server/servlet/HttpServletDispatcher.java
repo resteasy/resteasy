@@ -1,5 +1,7 @@
 package org.resteasy.plugins.server.servlet;
 
+import org.resteasy.Failure;
+import org.resteasy.Headers;
 import org.resteasy.Registry;
 import org.resteasy.ResourceMethod;
 import org.resteasy.specimpl.HttpHeadersImpl;
@@ -151,7 +153,18 @@ public class HttpServletDispatcher extends HttpServlet
 
       try
       {
-         ResponseImpl responseImpl = invoker.invoke(in);
+         ResponseImpl responseImpl = null;
+         try
+         {
+            responseImpl = invoker.invoke(in);
+         }
+         catch (Failure e)
+         {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            e.printStackTrace();
+            this.log("Failed REST request", e);
+            return;
+         }
          HttpServletResponseHeaders outputHeaders = new HttpServletResponseHeaders(response, providerFactory);
          if (responseImpl.getMetadata() != null && responseImpl.getMetadata().size() > 0)
          {
@@ -173,6 +186,10 @@ public class HttpServletDispatcher extends HttpServlet
          {
             MediaType rtnType = invoker.matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
             MessageBodyWriter writer = providerFactory.createMessageBodyWriter(responseImpl.getEntity().getClass(), rtnType);
+            if (writer == null)
+            {
+               throw new RuntimeException("Could not find MessageBodyWriter for response object of type: " + responseImpl.getEntity().getClass() + " of media type: " + rtnType);
+            }
             try
             {
                long size = writer.getSize(responseImpl.getEntity());
@@ -261,7 +278,7 @@ public class HttpServletDispatcher extends HttpServlet
 
    public static MultivaluedMapImpl<String, String> extractRequestHeaders(HttpServletRequest request)
    {
-      MultivaluedMapImpl<String, String> requestHeaders = new MultivaluedMapImpl<String, String>();
+      Headers requestHeaders = new Headers();
 
       Enumeration headerNames = request.getHeaderNames();
       while (headerNames.hasMoreElements())
@@ -271,6 +288,7 @@ public class HttpServletDispatcher extends HttpServlet
          while (headerValues.hasMoreElements())
          {
             String headerValue = (String) headerValues.nextElement();
+            //System.out.println("ADDING HEADER: " + headerName + " value: " + headerValue);
             requestHeaders.add(headerName, headerValue);
          }
       }

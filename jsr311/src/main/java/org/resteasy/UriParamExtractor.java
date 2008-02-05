@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class UriParamExtractor extends StringParameterExtractor
 {
-   public UriParamExtractor(Method method, String paramName, Class type, String defaultValue)
+   public UriParamExtractor(Method method, String paramName, int index, String defaultValue)
    {
-      super(type, method, paramName, "@" + PathParam.class.getSimpleName(), defaultValue);
+      super(index, method, paramName, "@" + PathParam.class.getSimpleName(), defaultValue);
    }
 
    public Object extract(HttpInput request)

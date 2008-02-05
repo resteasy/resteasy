@@ -17,7 +17,7 @@ public class RegisterBuiltin
       factory.addMessageBodyReader(new JAXBProvider());
       factory.addMessageBodyWriter(new JAXBProvider());
 
-      factory.addMessageBodyReader(new DefaultTextToFromString());
-      factory.addMessageBodyWriter(new DefaultTextToFromString());
+      factory.addMessageBodyReader(new DefaultFromString());
+      factory.addMessageBodyWriter(new DefaultFromString());
    }
 }

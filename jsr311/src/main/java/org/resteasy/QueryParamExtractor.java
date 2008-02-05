@@ -14,9 +14,9 @@ public class QueryParamExtractor extends StringParameterExtractor
 {
 
 
-   public QueryParamExtractor(Method method, String paramName, Class type, String defaultValue)
+   public QueryParamExtractor(Method method, String paramName, int index, String defaultValue)
    {
-      super(type, method, paramName, "@" + QueryParam.class.getSimpleName(), defaultValue);
+      super(index, method, paramName, "@" + QueryParam.class.getSimpleName(), defaultValue);
    }
 
    public Object extract(HttpInput request)
