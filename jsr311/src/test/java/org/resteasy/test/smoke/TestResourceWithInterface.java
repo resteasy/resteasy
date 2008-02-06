@@ -6,12 +6,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
-import org.resteasy.plugins.providers.DefaultPlainText;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.ResteasyProviderFactory;
-
-import java.util.Properties;
+import org.resteasy.test.EmbeddedServletContainer;
 
 /**
  * Simple smoke test
@@ -28,30 +25,14 @@ public class TestResourceWithInterface
    @BeforeClass
    public static void before() throws Exception
    {
+      dispatcher = EmbeddedServletContainer.start();
       server = new Serve();
-      Properties props = new Properties();
-      props.put("port", 8081);
-      props.setProperty(Serve.ARG_NOHUP, "nohup");
-      server.arguments = props;
-      server.addDefaultServlets(null); // optional file servlet
-      server.addServlet("/", dispatcher); // optional
-      new Thread()
-      {
-         public void run()
-         {
-            server.serve();
-         }
-      }.start();
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
-
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      server.notifyStop();
+      EmbeddedServletContainer.stop();
    }
 
    @Test

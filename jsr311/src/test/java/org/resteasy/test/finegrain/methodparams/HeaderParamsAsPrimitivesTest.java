@@ -93,6 +93,22 @@ public class HeaderParamsAsPrimitivesTest
    @AfterClass
    public static void after() throws Exception
    {
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitives.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitivesDefault.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitivesDefaultOverride.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitivesDefaultNull.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveWrappers.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveWrappersDefault.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveWrappersDefaultNull.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveWrappersDefaultOverride.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveList.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveListDefault.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveListDefaultNull.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveListDefaultOverride.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveArray.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveArrayDefault.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveArrayDefaultNull.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveArrayDefaultOverride.class);
       EmbeddedServletContainer.stop();
    }
 
