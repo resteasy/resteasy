@@ -39,6 +39,7 @@ public abstract class ResourceInvoker
       this.providerFactory = providerFactory;
       params = new ParameterExtractor[method.getParameterTypes().length];
       this.path = path;
+      if (path.startsWith("/")) path = path.substring(1);
       String[] paths = path.split("/");
       int i = 0;
       for (String p : paths)

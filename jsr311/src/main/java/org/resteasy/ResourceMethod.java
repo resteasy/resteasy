@@ -61,16 +61,25 @@ public class ResourceMethod extends ResourceInvoker
 
    public ResponseImpl invoke(HttpInput input)
    {
-      Object resource = factory.createResource(input);
-      populateUriParams(input);
-      Object[] args = new Object[0];
+      Object resource = null;
       try
       {
+         resource = factory.createResource(input);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+      Object[] args = null;
+      try
+      {
+         populateUriParams(input);
+         args = new Object[0];
          args = getArguments(input);
       }
       catch (Exception e)
       {
-         throw new Failure(e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new Failure("Failed processing arguments of " + method.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
       }
       try
       {
@@ -90,23 +99,32 @@ public class ResourceMethod extends ResourceInvoker
       }
       catch (IllegalAccessException e)
       {
-         throw new RuntimeException(method.toString(), e);
+         throw new RuntimeException("Failed processing of " + method.toString(), e);
       }
       catch (InvocationTargetException e)
       {
-         throw new RuntimeException(method.toString(), e.getCause());
+         throw new RuntimeException("Failed processing " + method.toString(), e.getCause());
       }
       catch (IllegalArgumentException e)
       {
-         String msg = method.toString() + "  (";
+         String msg = "Bad arguments passed to " + method.toString() + "  (";
+         boolean first = false;
          for (Object arg : args)
          {
+            if (!first)
+            {
+               first = true;
+            }
+            else
+            {
+               msg += ",";
+            }
             if (arg == null)
             {
-               msg += ", null";
+               msg += " null";
                continue;
             }
-            msg += ", " + arg;
+            msg += " " + arg;
          }
          throw new RuntimeException(msg, e);
       }
@@ -167,7 +185,11 @@ public class ResourceMethod extends ResourceInvoker
 
    public MediaType matchByType(List<MediaType> accepts)
    {
-      if (accepts == null || accepts.size() == 0) return produces[0];
+      if (accepts == null || accepts.size() == 0)
+      {
+         if (produces == null) return MediaType.parse("*/*");
+         else return produces[0];
+      }
 
       if (produces == null || produces.length == 0) return accepts.get(0);
 

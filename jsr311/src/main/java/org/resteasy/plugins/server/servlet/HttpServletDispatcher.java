@@ -185,6 +185,10 @@ public class HttpServletDispatcher extends HttpServlet
          if (responseImpl.getEntity() != null)
          {
             MediaType rtnType = invoker.matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
+            if (rtnType == null)
+            {
+               rtnType = MediaType.parse("*/*");
+            }
             MessageBodyWriter writer = providerFactory.createMessageBodyWriter(responseImpl.getEntity().getClass(), rtnType);
             if (writer == null)
             {
