@@ -2,6 +2,8 @@ package org.resteasy.specimpl;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -18,6 +20,8 @@ public class PathSegmentImpl implements PathSegment
       int semicolon = path.indexOf(';');
       if (semicolon >= 0)
       {
+         if (semicolon > 0) this.path = path.substring(0, semicolon);
+         else this.path = "";
          String matrixParams = path.substring(semicolon + 1);
          String[] params = matrixParams.split(";");
          for (String param : params)
@@ -44,6 +48,19 @@ public class PathSegmentImpl implements PathSegment
 
    public MultivaluedMap<String, String> getMatrixParameters()
    {
-      return null;
+      return matrixParameters;
+   }
+
+   public static List<PathSegment> parseSegments(String path)
+   {
+      List<PathSegment> pathSegments = new ArrayList<PathSegment>();
+
+      if (path.startsWith("/")) path = path.substring(1);
+      String[] paths = path.split("/");
+      for (String p : paths)
+      {
+         pathSegments.add(new PathSegmentImpl(p));
+      }
+      return pathSegments;
    }
 }

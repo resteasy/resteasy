@@ -6,6 +6,7 @@ import org.resteasy.Registry;
 import org.resteasy.ResourceMethod;
 import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.MultivaluedMapImpl;
+import org.resteasy.specimpl.PathSegmentImpl;
 import org.resteasy.specimpl.ResponseImpl;
 import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpInput;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -112,8 +114,8 @@ public class HttpServletDispatcher extends HttpServlet
          throw new RuntimeException(e);
       }
 
-
-      ResourceMethod invoker = registry.getResourceInvoker(httpMethod, path, headers.getMediaType(), headers.getAcceptableMediaTypes());
+      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path);
+      ResourceMethod invoker = registry.getResourceInvoker(httpMethod, pathSegments, headers.getMediaType(), headers.getAcceptableMediaTypes());
       if (invoker == null)
       {
          try
@@ -143,7 +145,7 @@ public class HttpServletDispatcher extends HttpServlet
       HttpInput in;
       try
       {
-         in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(absolutePath, path, request.getQueryString()), parameters);
+         in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(absolutePath, path, request.getQueryString(), pathSegments), parameters);
       }
       catch (IOException e)
       {

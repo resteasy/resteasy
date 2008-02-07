@@ -3,6 +3,7 @@ package org.resteasy;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,15 +121,15 @@ public class PathSegmentNode
       return null;
    }
 
-   public ResourceMethod findResourceInvoker(String httpMethod, String[] path, int pathIndex, MediaType contentType, List<MediaType> accepts)
+   public ResourceMethod findResourceInvoker(String httpMethod, List<PathSegment> path, int pathIndex, MediaType contentType, List<MediaType> accepts)
    {
-      if (pathIndex >= path.length) return match(httpMethod, contentType, accepts);
+      if (pathIndex >= path.size()) return match(httpMethod, contentType, accepts);
       else return findChild(httpMethod, path, pathIndex, contentType, accepts);
    }
 
-   private ResourceMethod findChild(String httpMethod, String[] path, int pathIndex, MediaType contentType, List<MediaType> accepts)
+   private ResourceMethod findChild(String httpMethod, List<PathSegment> path, int pathIndex, MediaType contentType, List<MediaType> accepts)
    {
-      PathSegmentNode next = children.get(path[pathIndex]);
+      PathSegmentNode next = children.get(path.get(pathIndex).getPath());
       if (next != null)
       {
          ResourceMethod method = next.findResourceInvoker(httpMethod, path, ++pathIndex, contentType, accepts);

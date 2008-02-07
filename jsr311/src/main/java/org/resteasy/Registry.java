@@ -8,6 +8,7 @@ import org.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
@@ -174,9 +175,8 @@ public class Registry
     * @param accepts     accept header
     * @return
     */
-   public ResourceMethod getResourceInvoker(String httpMethod, String path, MediaType contentType, List<MediaType> accepts)
+   public ResourceMethod getResourceInvoker(String httpMethod, List<PathSegment> path, MediaType contentType, List<MediaType> accepts)
    {
-      if (path.startsWith("/")) path = path.substring(1);
-      return root.findResourceInvoker(httpMethod, path.split("/"), 0, contentType, accepts);
+      return root.findResourceInvoker(httpMethod, path, 0, contentType, accepts);
    }
 }

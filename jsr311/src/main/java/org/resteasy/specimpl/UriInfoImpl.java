@@ -5,7 +5,6 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,8 +30,18 @@ public class UriInfoImpl implements UriInfo
 
    public UriInfoImpl(URI absolutePath, String path, String queryString)
    {
+      this(absolutePath, path, queryString, PathSegmentImpl.parseSegments(path));
+   }
+
+   public UriInfoImpl(URI absolutePath, String path, String queryString, List<PathSegment> pathSegments)
+   {
       this.path = path;
       this.absolutePath = absolutePath;
+      this.queryParameters = new MultivaluedMapImpl<String, String>();
+      this.templateParameters = new MultivaluedMapImpl<String, String>();
+      this.pathSegments = pathSegments;
+
+
       if (queryString == null) this.absolutePathWithQueryString = absolutePath;
       else
       {
@@ -53,19 +62,6 @@ public class UriInfoImpl implements UriInfo
             throw new RuntimeException("URI value was: " + abs + " path: " + path, e);
          }
       }
-
-      pathSegments = new ArrayList<PathSegment>();
-      queryParameters = new MultivaluedMapImpl<String, String>();
-      templateParameters = new MultivaluedMapImpl<String, String>();
-
-
-      if (path.startsWith("/")) path = path.substring(1);
-      String[] paths = path.split("/");
-      for (String p : paths)
-      {
-         pathSegments.add(new PathSegmentImpl(p));
-      }
-
    }
 
    public String getPath()
