@@ -20,6 +20,8 @@ public class UriInfoImpl implements UriInfo
    private URI absolutePath;
    private URI absolutePathWithQueryString;
    private URI baseURI;
+   private MultivaluedMap<String, PathSegment> pathParamSegments = new MultivaluedMapImpl<String, PathSegment>();
+   private String queryString;
 
    public static void main(String[] args)
    {
@@ -40,6 +42,7 @@ public class UriInfoImpl implements UriInfo
       this.queryParameters = new MultivaluedMapImpl<String, String>();
       this.templateParameters = new MultivaluedMapImpl<String, String>();
       this.pathSegments = pathSegments;
+      this.queryString = queryString;
 
 
       if (queryString == null) this.absolutePathWithQueryString = absolutePath;
@@ -62,6 +65,11 @@ public class UriInfoImpl implements UriInfo
             throw new RuntimeException("URI value was: " + abs + " path: " + path, e);
          }
       }
+   }
+
+   public UriInfoImpl clone()
+   {
+      return new UriInfoImpl(absolutePath, path, queryString, pathSegments);
    }
 
    public String getPath()
@@ -112,6 +120,11 @@ public class UriInfoImpl implements UriInfo
    public UriBuilder getBaseUriBuilder()
    {
       return UriBuilder.fromUri(baseURI);
+   }
+
+   public MultivaluedMap<String, PathSegment> getPathParamSegments()
+   {
+      return pathParamSegments;
    }
 
    public MultivaluedMap<String, String> getTemplateParameters()

@@ -15,7 +15,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public abstract class StringParameterExtractor implements ParameterExtractor
+public class StringParameterExtractor
 {
    protected Class type;
    protected Class baseType;
@@ -77,12 +77,12 @@ public abstract class StringParameterExtractor implements ParameterExtractor
       }
    }
 
-   protected String getParamSignature()
+   public String getParamSignature()
    {
       return paramType + "(\"" + paramName + "\")";
    }
 
-   protected Object extractValues(List<String> values)
+   public Object extractValues(List<String> values)
    {
       if (values == null && (type.isArray() || isList) && defaultValue != null)
       {
@@ -115,7 +115,7 @@ public abstract class StringParameterExtractor implements ParameterExtractor
 
    }
 
-   protected Object extractValue(String strVal)
+   public Object extractValue(String strVal)
    {
       if (strVal == null)
       {

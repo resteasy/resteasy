@@ -1,6 +1,7 @@
 package org.resteasy;
 
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
+import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.GetRestful;
@@ -61,6 +62,8 @@ public class Registry
    {
       Class<?> clazz = factory.getScannableClass();
       List<Class> restful = GetRestful.getRestfulClasses(clazz);
+      if (restful == null)
+         throw new RuntimeException("could find no jax-rs annotations on class or public methods or interfaces of class: " + clazz.getName());
       for (Class cls : restful) addResourceFactory(factory, base, cls);
    }
 
@@ -74,22 +77,19 @@ public class Registry
     */
    public void addResourceFactory(ResourceFactory factory, String base, Class<?> clazz)
    {
-      Path classBasePath = clazz.getAnnotation(Path.class);
-      String classBase = (classBasePath == null) ? null : classBasePath.value();
-      if (base == null) base = classBase;
-      else if (classBase != null) base = base + "/" + classBase;
-
       for (Method method : clazz.getMethods())
       {
          Path path = method.getAnnotation(Path.class);
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
          if (path == null && httpMethods == null) continue;
 
-         String pathExpression = null;
-         if (base != null) pathExpression = base;
-         if (path != null)
-            pathExpression = (pathExpression == null) ? path.value() : pathExpression + "/" + path.value();
+         UriBuilderImpl builder = new UriBuilderImpl();
+         builder.setPath(base);
+         if (clazz.isAnnotationPresent(Path.class)) builder.path(clazz);
+         if (path != null) builder.path(method);
+         String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
+
          if (httpMethods == null)
          {
             ResourceLocator locator = new ResourceLocator(pathExpression, factory, method, providerFactory);
@@ -125,30 +125,35 @@ public class Registry
 
    private void removeRegistration(String base, Class<?> clazz)
    {
-      Path classBasePath = clazz.getAnnotation(Path.class);
-      String classBase = (classBasePath == null) ? null : classBasePath.value();
-      if (base == null) base = classBase;
-      else if (classBase != null) base = base + "/" + classBase;
-
       for (Method method : clazz.getMethods())
       {
          Path path = method.getAnnotation(Path.class);
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
          if (path == null && httpMethods == null) continue;
 
-         String pathExpression = null;
-         if (base != null) pathExpression = base;
-         if (path != null)
-            pathExpression = (pathExpression == null) ? path.value() : pathExpression + "/" + path.value();
+         UriBuilderImpl builder = new UriBuilderImpl();
+         builder.setPath(base);
+         if (clazz.isAnnotationPresent(Path.class)) builder.path(clazz);
+         if (path != null) builder.path(method);
+         String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
+
          if (httpMethods == null)
          {
             removeRegistrations(method.getReturnType(), pathExpression);
          }
          else
          {
+            if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
             String[] paths = pathExpression.split("/");
-            if (root.removeChild(paths, 0, method) != null) size--;
+            try
+            {
+               if (root.removeChild(paths, 0, method) != null) size--;
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException("pathExpression: " + pathExpression, e);
+            }
 
          }
 

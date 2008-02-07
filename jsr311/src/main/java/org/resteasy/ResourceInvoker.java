@@ -15,7 +15,9 @@ import javax.ws.rs.core.HttpContext;
 import javax.ws.rs.core.UriInfo;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -29,7 +31,7 @@ public abstract class ResourceInvoker
    protected ResteasyProviderFactory providerFactory;
    protected Method method;
    protected ParameterExtractor[] params;
-   protected Map<Integer, String> uriParams = new HashMap<Integer, String>();
+   protected Map<String, List<Integer>> uriParams = new HashMap<String, List<Integer>>();
    protected String path;
 
    public ResourceInvoker(String path, ResourceFactory factory, Method method, ResteasyProviderFactory providerFactory)
@@ -48,7 +50,13 @@ public abstract class ResourceInvoker
          if (matcher.matches())
          {
             String uriParamName = matcher.group(2);
-            uriParams.put(i, uriParamName);
+            List<Integer> paramIndexes = uriParams.get(uriParamName);
+            if (paramIndexes == null)
+            {
+               paramIndexes = new ArrayList<Integer>();
+               uriParams.put(uriParamName, paramIndexes);
+            }
+            paramIndexes.add(i);
          }
          i++;
       }
@@ -76,7 +84,7 @@ public abstract class ResourceInvoker
          }
          else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
          {
-            params[i] = new UriParamExtractor(method, uriParam.value(), i, defaultVal);
+            params[i] = new UriParamExtractor(this, method, uriParam.value(), i, defaultVal);
          }
          else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
          {
@@ -111,18 +119,25 @@ public abstract class ResourceInvoker
    protected void populateUriParams(HttpInput input)
    {
       UriInfo uriInfo = input.getUri();
-      for (int i : uriParams.keySet())
+      for (String paramName : uriParams.keySet())
       {
-         String paramName = uriParams.get(i);
-         String value = uriInfo.getPathSegments().get(i).getPath();
+         List<Integer> indexes = uriParams.get(paramName);
+         for (int i : indexes)
+         {
+            String value = uriInfo.getPathSegments().get(i).getPath();
+            uriInfo.getTemplateParameters().add(paramName, value);
 
-         // put single so that we override any Locator's that set the uriParams to be what we don't want
-         uriInfo.getTemplateParameters().putSingle(paramName, value);
+         }
       }
    }
 
    public Method getMethod()
    {
       return method;
+   }
+
+   public Map<String, List<Integer>> getUriParams()
+   {
+      return uriParams;
    }
 }

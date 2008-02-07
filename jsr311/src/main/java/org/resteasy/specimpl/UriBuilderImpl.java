@@ -118,7 +118,7 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder replacePath(String path) throws IllegalArgumentException
    {
       this.path = path;
-      if (!path.startsWith("/")) this.path = "/" + path;
+      if (path != null && !path.startsWith("/")) this.path = "/" + path;
       return this;
    }
 
@@ -322,5 +322,58 @@ public class UriBuilderImpl extends UriBuilder
          pathParams.put(pathParam, val);
       }
       return build(pathParams);
+   }
+
+   public String getHost()
+   {
+      return host;
+   }
+
+   public String getScheme()
+   {
+      return scheme;
+   }
+
+   public int getPort()
+   {
+      return port;
+   }
+
+   public boolean isEncode()
+   {
+      return encode;
+   }
+
+   public String getUserInfo()
+   {
+      return userInfo;
+   }
+
+   public String getPath()
+   {
+      return path;
+   }
+
+   public String getMatrix()
+   {
+      return matrix;
+   }
+
+   public String getQuery()
+   {
+      return query;
+   }
+
+   public String getFragment()
+   {
+      return fragment;
+   }
+
+   /**
+    * nullable
+    */
+   public void setPath(String path)
+   {
+      this.path = path;
    }
 }

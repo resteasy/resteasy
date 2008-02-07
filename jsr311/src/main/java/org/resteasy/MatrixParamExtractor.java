@@ -12,7 +12,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MatrixParamExtractor extends StringParameterExtractor
+public class MatrixParamExtractor extends StringParameterExtractor implements ParameterExtractor
 {
    public MatrixParamExtractor(Method method, String paramName, int index, String defaultValue)
    {

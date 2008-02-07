@@ -10,7 +10,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class QueryParamExtractor extends StringParameterExtractor
+public class QueryParamExtractor extends StringParameterExtractor implements ParameterExtractor
 {
 
 
