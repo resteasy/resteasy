@@ -190,7 +190,7 @@ public class PathSegmentNode
       boolean first = true;
       MediaType current = null;
 
-      // pull out top choices that have equal weighting
+      // pull out top choices that have equal weighting and that are the same
       for (MediaType type : consumes)
       {
          if (first)
