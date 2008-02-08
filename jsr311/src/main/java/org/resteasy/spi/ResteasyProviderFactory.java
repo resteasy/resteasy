@@ -51,6 +51,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       return pfr.get();
    }
 
+   public static ResteasyProviderFactory initializeInstance()
+   {
+      setInstance(new ResteasyProviderFactory());
+      return getInstance();
+   }
+
    public ResteasyProviderFactory()
    {
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());

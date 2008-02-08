@@ -1,5 +1,6 @@
 package org.resteasy;
 
+import org.resteasy.util.MediaTypeHelper;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.MediaType;
@@ -7,6 +8,7 @@ import javax.ws.rs.core.PathSegment;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -152,13 +154,94 @@ public class PathSegmentNode
 
    private ResourceMethod match(String httpMethod, MediaType contentType, List<MediaType> accepts)
    {
+      List<ResourceMethod> list = new ArrayList<ResourceMethod>();
+      IdentityHashMap<MediaType, ResourceMethod> consumesMap = new IdentityHashMap<MediaType, ResourceMethod>();
+
+      // make a list of all compatible ResourceMethods
+      // Populate the consumes identity map with media types from each ResourceMethod
       for (ResourceMethod invoker : invokers)
       {
          if (invoker.matchByType(contentType, accepts) && invoker.getHttpMethods().contains(httpMethod))
-            return invoker;
+         {
+            list.add(invoker);
+            if (invoker.getConsumes() == null)
+            {
+               MediaType defaultConsumes = MediaType.parse("*/*;q=0.0");
+               consumesMap.put(defaultConsumes, invoker);
+            }
+            else
+            {
+               for (MediaType consume : invoker.getConsumes())
+               {
+                  consumesMap.put(consume, invoker);
+               }
+            }
+         }
+      }
+
+      if (list.size() == 0) return null;
+      if (list.size() == 1) return list.get(0);
+
+      list = new ArrayList<ResourceMethod>();
+      ArrayList<MediaType> consumes = new ArrayList<MediaType>();
+      consumes.addAll(consumesMap.keySet());
+      MediaTypeHelper.sort(consumes);
+
+      boolean first = true;
+      float current = 0.0F;
+
+      // pull out top choices that have equal weighting
+      for (MediaType type : consumes)
+      {
+         if (first)
+         {
+            list.add(consumesMap.get(type));
+            current = MediaTypeHelper.getQ(type);
+            first = false;
+         }
+         else
+         {
+            float compare = MediaTypeHelper.getQ(type);
+            if (current != compare) break;
+            list.add(consumesMap.get(type));
+         }
+      }
+
+      if (list.size() == 1) return list.get(0);
+
+      // make an identiy map of produced media types
+      IdentityHashMap<MediaType, ResourceMethod> producesMap = new IdentityHashMap<MediaType, ResourceMethod>();
+      for (ResourceMethod invoker : list)
+      {
+         if (invoker.getProduces() == null)
+         {
+            MediaType defaultProduces = MediaType.parse("*/*;q=0.0");
+            producesMap.put(defaultProduces, invoker);
+         }
+         else
+         {
+            for (MediaType produce : invoker.getProduces())
+            {
+               producesMap.put(produce, invoker);
+            }
+         }
+      }
+
+      // sort media types then get first in list and match it into identity map
+      ArrayList<MediaType> produces = new ArrayList<MediaType>();
+      produces.addAll(producesMap.keySet());
+      MediaTypeHelper.sort(produces);
+      MediaTypeHelper.sort(accepts);
+
+      for (MediaType accept : accepts)
+      {
+         for (MediaType produce : produces)
+         {
+            if (accept.isCompatible(produce)) return producesMap.get(produce);
+         }
+
       }
       return null;
    }
-
 
 }

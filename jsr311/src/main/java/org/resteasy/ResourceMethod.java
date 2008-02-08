@@ -207,4 +207,14 @@ public class ResourceMethod extends ResourceInvoker
    {
       return httpMethods;
    }
+
+   public MediaType[] getProduces()
+   {
+      return produces;
+   }
+
+   public MediaType[] getConsumes()
+   {
+      return consumes;
+   }
 }

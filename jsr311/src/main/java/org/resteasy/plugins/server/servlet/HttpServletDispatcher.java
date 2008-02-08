@@ -12,6 +12,7 @@ import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpInput;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
+import org.resteasy.util.MediaTypeHelper;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -115,7 +116,25 @@ public class HttpServletDispatcher extends HttpServlet
       }
 
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path);
-      ResourceMethod invoker = registry.getResourceInvoker(httpMethod, pathSegments, headers.getMediaType(), headers.getAcceptableMediaTypes());
+      ResourceMethod invoker = null;
+      try
+      {
+         invoker = registry.getResourceInvoker(httpMethod, pathSegments, headers.getMediaType(), headers.getAcceptableMediaTypes());
+      }
+      catch (Failure e)
+      {
+         try
+         {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+         }
+         catch (IOException e1)
+         {
+            throw new RuntimeException(e1);
+         }
+         e.printStackTrace();
+         this.log("Failed REST request", e);
+         return;
+      }
       if (invoker == null)
       {
          try
@@ -277,7 +296,7 @@ public class HttpServletDispatcher extends HttpServlet
 
       for (String accept : accepts)
       {
-         acceptableMediaTypes.add(MediaType.parse(accept));
+         acceptableMediaTypes.addAll(MediaTypeHelper.parseHeader(accept));
       }
       return acceptableMediaTypes;
    }
