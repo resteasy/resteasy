@@ -188,7 +188,7 @@ public class PathSegmentNode
       MediaTypeHelper.sort(consumes);
 
       boolean first = true;
-      float current = 0.0F;
+      MediaType current = null;
 
       // pull out top choices that have equal weighting
       for (MediaType type : consumes)
@@ -196,14 +196,16 @@ public class PathSegmentNode
          if (first)
          {
             list.add(consumesMap.get(type));
-            current = MediaTypeHelper.getQ(type);
+            current = type;
             first = false;
          }
          else
          {
-            float compare = MediaTypeHelper.getQ(type);
-            if (current != compare) break;
-            list.add(consumesMap.get(type));
+            if (MediaTypeHelper.same(current, type))
+            {
+               list.add(consumesMap.get(type));
+            }
+            else break;
          }
       }
 

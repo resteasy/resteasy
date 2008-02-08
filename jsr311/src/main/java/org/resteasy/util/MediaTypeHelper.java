@@ -113,6 +113,11 @@ public class MediaTypeHelper
       }
    }
 
+   public static boolean same(MediaType one, MediaType two)
+   {
+      return new MediaTypeComparator().compare(one, two) == 0;
+   }
+
    public static void sort(List<MediaType> types)
    {
       Collections.sort(types, new MediaTypeComparator());
