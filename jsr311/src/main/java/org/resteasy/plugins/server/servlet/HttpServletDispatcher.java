@@ -132,7 +132,6 @@ public class HttpServletDispatcher extends HttpServlet
             throw new RuntimeException(e1);
          }
          e.printStackTrace();
-         this.log("Failed REST request", e);
          return;
       }
       if (invoker == null)
@@ -183,7 +182,6 @@ public class HttpServletDispatcher extends HttpServlet
          {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             e.printStackTrace();
-            this.log("Failed REST request", e);
             return;
          }
          HttpServletResponseHeaders outputHeaders = new HttpServletResponseHeaders(response, providerFactory);
@@ -234,7 +232,6 @@ public class HttpServletDispatcher extends HttpServlet
       {
          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
          e.printStackTrace();
-         this.log("Failed REST request", e);
          return;
       }
    }

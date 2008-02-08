@@ -1,6 +1,7 @@
 package org.resteasy.plugins.server.servlet;
 
 import org.resteasy.Registry;
+import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
@@ -32,11 +33,16 @@ public class ResteasyBootstrap implements ServletContextListener
 
    public void contextInitialized(ServletContextEvent event)
    {
+      ResteasyProviderFactory.setInstance(factory);
+
       event.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), factory);
       event.getServletContext().setAttribute(Registry.class.getName(), registry);
 
       String providers = event.getServletContext().getInitParameter("resteasy.providers");
+
       if (providers != null) setProviders(providers);
+      else RegisterBuiltin.register(factory);
+
       boolean scanProviders = false;
       boolean scanResources = false;
 
@@ -63,9 +69,11 @@ public class ResteasyBootstrap implements ServletContextListener
          URL[] urls = WarUrlFinder.findWebInfLibClasspaths(event);
          URL url = WarUrlFinder.findWebInfClassesPath(event);
          AnnotationDB db = new AnnotationDB();
+         String[] ignoredPackages = {"org.resteasy.plugins", "javax.ws.rs"};
+         db.setIgnoredPackages(ignoredPackages);
          try
          {
-            db.scanArchives(url);
+            if (url != null) db.scanArchives(url);
             db.scanArchives(urls);
             try
             {
@@ -106,8 +114,10 @@ public class ResteasyBootstrap implements ServletContextListener
    protected void processProviders(AnnotationDB db)
    {
       Set<String> classes = db.getAnnotationIndex().get(Provider.class.getName());
+      if (classes == null) return;
       for (String clazz : classes)
       {
+         System.out.println("FOUND JAX-RS @Provider: " + clazz);
          Class provider = null;
          try
          {
@@ -145,10 +155,13 @@ public class ResteasyBootstrap implements ServletContextListener
    protected void processResources(AnnotationDB db)
    {
       Set<String> classes = new HashSet<String>();
-      classes.addAll(db.getAnnotationIndex().get(Path.class.getName()));
-      classes.addAll(db.getAnnotationIndex().get(HttpMethod.class.getName()));
+      Set<String> paths = db.getAnnotationIndex().get(Path.class.getName());
+      if (paths != null) classes.addAll(paths);
+      paths = db.getAnnotationIndex().get(HttpMethod.class.getName());
+      if (paths != null) classes.addAll(paths);
       for (String clazz : classes)
       {
+         System.out.println("FOUND JAX-RS resource: " + clazz);
          Class resource = null;
          try
          {
