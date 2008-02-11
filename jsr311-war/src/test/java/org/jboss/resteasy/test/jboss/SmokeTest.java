@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.jboss;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.junit.Assert;
+import org.junit.Test;
 import org.resteasy.util.HttpResponseCodes;
 
 
@@ -14,13 +14,9 @@ import org.resteasy.util.HttpResponseCodes;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SmokeTest extends TestCase //JBossTestCase
+public class SmokeTest
 {
-   public SmokeTest(String s)
-   {
-      super(s);
-   }
-
+   @Test
    public void testNoDefaultsResource() throws Exception
    {
       HttpClient client = new HttpClient();
@@ -78,7 +74,7 @@ public class SmokeTest extends TestCase //JBossTestCase
       }
    }
 
-
+   @Test
    public void testLocatingResource() throws Exception
    {
       HttpClient client = new HttpClient();
