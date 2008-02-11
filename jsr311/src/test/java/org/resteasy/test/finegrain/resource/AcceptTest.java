@@ -256,5 +256,45 @@ public class AcceptTest
       }
    }
 
+   @Path("/")
+   public static class ComplexResource
+   {
+      @ConsumeMime("text/*")
+      @ProduceMime("text/html")
+      @GET
+      public String method1()
+      {
+         return null;
+      }
+
+      @ConsumeMime("text/xml")
+      @ProduceMime("text/json")
+      @GET
+      public String method2()
+      {
+         return null;
+      }
+   }
+
+   @Test
+   public void testComplex() throws Exception
+   {
+      Registry registry = new Registry(ResteasyProviderFactory.getInstance());
+      registry.addResource(ComplexResource.class);
+
+      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
+      MediaType contentType = new MediaType("text", "xml");
+
+      ArrayList<MediaType> accepts = new ArrayList<MediaType>();
+      accepts.add(new MediaType("*", "*"));
+      accepts.add(new MediaType("text", "html"));
+
+      {
+         ResourceMethod method = registry.getResourceInvoker("GET", pathSegments, contentType, accepts);
+         Assert.assertNotNull(method);
+         Assert.assertEquals(ComplexResource.class.getMethod("method2"), method.getMethod());
+      }
+   }
+
 
 }
