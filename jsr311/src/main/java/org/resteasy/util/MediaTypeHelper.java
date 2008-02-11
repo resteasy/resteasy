@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -113,6 +114,11 @@ public class MediaTypeHelper
       }
    }
 
+   public static int compare(MediaType one, MediaType two)
+   {
+      return new MediaTypeComparator().compare(one, two);
+   }
+
    public static boolean same(MediaType one, MediaType two)
    {
       return new MediaTypeComparator().compare(one, two) == 0;
@@ -144,5 +150,43 @@ public class MediaTypeHelper
          types.add(MediaType.parse(medias[i].trim()));
       }
       return types;
+   }
+
+   public static boolean equivalent(MediaType m1, MediaType m2)
+   {
+      if (m1 == m2) return true;
+
+      if (!m1.getType().equals(m2.getType())) return false;
+      if (!m1.getSubtype().equals(m2.getSubtype())) return false;
+
+      return equivalentParams(m1, m2);
+   }
+
+   public static boolean equivalentParams(MediaType m1, MediaType m2)
+   {
+      Map<String, String> params1 = m1.getParameters();
+      Map<String, String> params2 = m2.getParameters();
+
+      if (params1 == params2) return true;
+      if (params1 == null || params2 == null) return false;
+      if (params1.size() == 0 && params2.size() == 0) return true;
+      int numParams1 = params1.size();
+      if (params1.containsKey("q")) numParams1--;
+      int numParams2 = params2.size();
+      if (params2.containsKey("q")) numParams2--;
+
+      if (numParams1 != numParams2) return false;
+      if (numParams1 == 0) return true;
+
+      for (String key : params1.keySet())
+      {
+         if (key.equals("q")) continue;
+         String value = params1.get(key);
+         String value2 = params2.get(key);
+         if (value == value2) continue; // both null
+         if (value == null || value2 == null) return false;
+         if (value.equals(value2) == false) return false;
+      }
+      return true;
    }
 }

@@ -1,5 +1,6 @@
 package org.resteasy.spi;
 
+import org.resteasy.MediaTypeMap;
 import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.resteasy.specimpl.ResponseBuilderImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
@@ -13,7 +14,6 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +26,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ResteasyProviderFactory extends RuntimeDelegate
 {
 
-   private List<MessageBodyReader> messageBodyReaders = new ArrayList<MessageBodyReader>();
-   private List<MessageBodyWriter> messageBodyWriters = new ArrayList<MessageBodyWriter>();
+   private MediaTypeMap<MessageBodyReader> messageBodyReaders = new MediaTypeMap<MessageBodyReader>();
+   private MediaTypeMap<MessageBodyWriter> messageBodyWriters = new MediaTypeMap<MessageBodyWriter>();
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
    private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
@@ -89,33 +89,46 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public void addMessageBodyReader(MessageBodyReader provider)
    {
-      messageBodyReaders.add(provider);
+      ConsumeMime consumeMime = provider.getClass().getAnnotation(ConsumeMime.class);
+      if (consumeMime != null)
+      {
+         for (String consume : consumeMime.value())
+         {
+            MediaType mime = MediaType.parse(consume);
+            messageBodyReaders.add(mime, provider);
+         }
+      }
+      else
+      {
+         messageBodyReaders.add(new MediaType("*", "*"), provider);
+      }
    }
 
    public void addMessageBodyWriter(MessageBodyWriter provider)
    {
-      messageBodyWriters.add(provider);
+      ProduceMime produceMime = provider.getClass().getAnnotation(ProduceMime.class);
+      if (produceMime != null)
+      {
+         for (String produce : produceMime.value())
+         {
+            MediaType mime = MediaType.parse(produce);
+            messageBodyWriters.add(mime, provider);
+         }
+      }
+      else
+      {
+         messageBodyWriters.add(new MediaType("*", "*"), provider);
+      }
    }
 
    public <T> MessageBodyReader<T> createMessageBodyReader(Class<T> type, MediaType mediaType)
    {
-      for (MessageBodyReader<T> factory : messageBodyReaders)
+      List<MessageBodyReader> readers = messageBodyReaders.getPossible(mediaType);
+      for (MessageBodyReader reader : readers)
       {
-         ConsumeMime consumeMime = factory.getClass().getAnnotation(ConsumeMime.class);
-         boolean compatible = false;
-         for (String consume : consumeMime.value())
+         if (reader.isReadable(type))
          {
-            if (mediaType.isCompatible(MediaType.parse(consume)))
-            {
-               compatible = true;
-               break;
-            }
-         }
-         if (!compatible) continue;
-
-         if (factory.isReadable(type))
-         {
-            return factory;
+            return (MessageBodyReader<T>) reader;
          }
       }
       return null;
@@ -123,23 +136,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public <T> MessageBodyWriter<T> createMessageBodyWriter(Class<T> type, MediaType mediaType)
    {
-      for (MessageBodyWriter<T> factory : messageBodyWriters)
+      List<MessageBodyWriter> writers = messageBodyWriters.getPossible(mediaType);
+      for (MessageBodyWriter writer : writers)
       {
-         ProduceMime produceMime = factory.getClass().getAnnotation(ProduceMime.class);
-         boolean compatible = false;
-         for (String produce : produceMime.value())
+         if (writer.isWriteable(type))
          {
-            if (mediaType.isCompatible(MediaType.parse(produce)))
-            {
-               compatible = true;
-               break;
-            }
-         }
-         if (!compatible) continue;
-
-         if (factory.isWriteable(type))
-         {
-            return factory;
+            return (MessageBodyWriter<T>) writer;
          }
       }
       return null;
