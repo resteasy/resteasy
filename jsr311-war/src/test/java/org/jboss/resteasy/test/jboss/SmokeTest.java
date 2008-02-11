@@ -1,13 +1,12 @@
 package org.jboss.resteasy.test.jboss;
 
 import junit.framework.Assert;
-import junit.framework.Test;
+import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.jboss.test.JBossTestCase;
 import org.resteasy.util.HttpResponseCodes;
 
 
@@ -15,7 +14,7 @@ import org.resteasy.util.HttpResponseCodes;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SmokeTest extends JBossTestCase
+public class SmokeTest extends TestCase //JBossTestCase
 {
    public SmokeTest(String s)
    {
@@ -116,11 +115,12 @@ public class SmokeTest extends JBossTestCase
       }
    }
 
-
+   /*
    public static Test suite() throws Exception
    {
       System.out.println("***********");
       System.out.println(System.getProperty("jbosstest.deploy.dir"));
       return getDeploySetup(SmokeTest.class, "jsr311-war.war");
    }
+   */
 }

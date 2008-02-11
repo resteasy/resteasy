@@ -12,10 +12,6 @@
          <id>jboss</id>
          <url>http://repository.jboss.org/maven2</url>
       </repository>
-      <repository>
-         <id>maven</id>
-         <url>http://repo1.maven.org/maven2</url>
-      </repository>
    </repositories>
    <dependencies>
       <dependency>
@@ -41,35 +37,6 @@
       <finalName>jsr311-war</finalName>
       <plugins>
          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>jboss-maven-plugin</artifactId>
-            <configuration>
-               <jbossHome>/Users/billburke/jboss/jboss-4.2.2.GA</jbossHome>
-            </configuration>
-            <executions>
-               <execution>
-                  <id>jboss-deploy</id>
-                  <phase>pre-integration-test</phase>
-                  <goals>
-                     <goal>deploy</goal>
-                  </goals>
-                  <configuration>
-                     <fileName>${basedir}/target/jsr311-war.war</fileName>
-                  </configuration>
-               </execution>
-               <execution>
-                  <id>jboss-undeploy</id>
-                  <phase>post-integration-test</phase>
-                  <goals>
-                     <goal>undeploy</goal>
-                  </goals>
-                  <configuration>
-                     <fileName>${basedir}/target/jsr311-war.war</fileName>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
@@ -84,6 +51,16 @@
                   </goals>
                   <configuration>
                      <skip>false</skip>
+                     <systemProperties>
+                        <property>
+                           <name>jbosstest.deploy.dir</name>
+                           <value>${basedir}/target</value>
+                        </property>
+                        <property>
+                           <name>jbosstest.nodeploy</name>
+                           <value>false</value>
+                        </property>
+                     </systemProperties>
                   </configuration>
                </execution>
             </executions>
