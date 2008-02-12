@@ -125,7 +125,7 @@ public class HttpServletDispatcher extends HttpServlet
       {
          try
          {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendError(e.getErrorCode());
          }
          catch (IOException e1)
          {

@@ -130,7 +130,33 @@ public class ResourceMethod extends ResourceInvoker
       }
    }
 
-   public boolean matchByType(MediaType contentType, List<MediaType> accepts)
+   public boolean doesProduce(List<MediaType> accepts)
+   {
+      if (accepts == null || accepts.size() == 0)
+      {
+         //System.out.println("**** no accepts " +" method: " + method);
+         return true;
+      }
+      if (produces == null || produces.length == 0)
+      {
+         //System.out.println("**** no produces " +" method: " + method);
+         return true;
+      }
+
+      for (MediaType accept : accepts)
+      {
+         for (MediaType type : produces)
+         {
+            if (type.isCompatible(accept))
+            {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
+   public boolean doesConsume(MediaType contentType)
    {
       boolean matches = false;
       if (contentType == null)
@@ -152,31 +178,6 @@ public class ResourceMethod extends ResourceInvoker
                   matches = true;
                   break;
                }
-            }
-         }
-      }
-      if (!matches) return false;
-      matches = false;
-      if (accepts == null || accepts.size() == 0)
-      {
-         //System.out.println("**** no accepts " +" method: " + method);
-         return true;
-      }
-      if (produces == null || produces.length == 0)
-      {
-         //System.out.println("**** no produces " +" method: " + method);
-         return true;
-      }
-
-      for (MediaType accept : accepts)
-      {
-         for (MediaType type : produces)
-         {
-            if (type.isCompatible(accept))
-            {
-               //System.out.println("**** produces: " + type + " matches accept: " + accept + " method: " + method);
-               matches = true;
-               break;
             }
          }
       }

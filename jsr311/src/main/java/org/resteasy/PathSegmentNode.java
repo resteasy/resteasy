@@ -1,5 +1,6 @@
 package org.resteasy;
 
+import org.resteasy.util.HttpResponseCodes;
 import org.resteasy.util.MediaTypeHelper;
 import org.resteasy.util.PathHelper;
 
@@ -132,23 +133,41 @@ public class PathSegmentNode
    private ResourceMethod findChild(String httpMethod, List<PathSegment> path, int pathIndex, MediaType contentType, List<MediaType> accepts)
    {
       PathSegmentNode next = children.get(path.get(pathIndex).getPath());
+      Failure failure = null;
       if (next != null)
       {
-         ResourceMethod method = next.findResourceInvoker(httpMethod, path, ++pathIndex, contentType, accepts);
-         if (method != null) return method;
+         try
+         {
+            ResourceMethod method = next.findResourceInvoker(httpMethod, path, pathIndex + 1, contentType, accepts);
+            if (method != null) return method;
+         }
+         catch (Failure e)
+         {
+            failure = e;
+            // special case for root path, there should be no other way to have an empty ""
+            if (path.get(pathIndex).getPath().equals("")) throw failure;
+         }
       }
       if (uriParamChildren != null)
       {
          for (PathSegmentNode wildcard : uriParamChildren)
          {
-            ResourceMethod wildcardReturn = wildcard.findResourceInvoker(httpMethod, path, ++pathIndex, contentType, accepts);
-            if (wildcardReturn != null) return wildcardReturn;
+            try
+            {
+               ResourceMethod wildcardReturn = wildcard.findResourceInvoker(httpMethod, path, pathIndex + 1, contentType, accepts);
+               if (wildcardReturn != null) return wildcardReturn;
+            }
+            catch (Failure e)
+            {
+               failure = e;
+            }
          }
       }
       if (wildcard != null)
       {
          return wildcard.match(httpMethod, contentType, accepts);
       }
+      if (failure != null) throw failure;
       return null;
    }
 
@@ -157,29 +176,53 @@ public class PathSegmentNode
       List<ResourceMethod> list = new ArrayList<ResourceMethod>();
       IdentityHashMap<MediaType, ResourceMethod> consumesMap = new IdentityHashMap<MediaType, ResourceMethod>();
 
+      boolean methodMatch = false;
+      boolean consumeMatch = false;
+
       // make a list of all compatible ResourceMethods
       // Populate the consumes identity map with media types from each ResourceMethod
       for (ResourceMethod invoker : invokers)
       {
-         if (invoker.matchByType(contentType, accepts) && invoker.getHttpMethods().contains(httpMethod))
+
+         if (invoker.getHttpMethods().contains(httpMethod))
          {
-            list.add(invoker);
-            if (invoker.getConsumes() == null)
+            methodMatch = true;
+            if (invoker.doesConsume(contentType))
             {
-               MediaType defaultConsumes = MediaType.parse("*/*;q=0.0");
-               consumesMap.put(defaultConsumes, invoker);
-            }
-            else
-            {
-               for (MediaType consume : invoker.getConsumes())
+               consumeMatch = true;
+               if (invoker.doesProduce(accepts))
                {
-                  consumesMap.put(consume, invoker);
+                  list.add(invoker);
+                  if (invoker.getConsumes() == null)
+                  {
+                     MediaType defaultConsumes = MediaType.parse("*/*;q=0.0");
+                     consumesMap.put(defaultConsumes, invoker);
+                  }
+                  else
+                  {
+                     for (MediaType consume : invoker.getConsumes())
+                     {
+                        consumesMap.put(consume, invoker);
+                     }
+                  }
                }
             }
+
          }
       }
 
-      if (list.size() == 0) return null;
+      if (list.size() == 0)
+      {
+         if (!methodMatch)
+         {
+            throw new Failure("No matching http method", HttpResponseCodes.SC_METHOD_NOT_ALLOWED);
+         }
+         if (!consumeMatch)
+         {
+            throw new Failure("Cannot consume content type", HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE);
+         }
+         throw new Failure("No match for accept header", HttpResponseCodes.SC_NOT_ACCEPTABLE);
+      }
       if (list.size() == 1) return list.get(0);
 
       list = new ArrayList<ResourceMethod>();
