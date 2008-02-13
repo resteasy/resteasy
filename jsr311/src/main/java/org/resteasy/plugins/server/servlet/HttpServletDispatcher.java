@@ -194,10 +194,10 @@ public class HttpServletDispatcher extends HttpServlet
             Cookie cook = new Cookie(cookie.getName(), cookie.getValue());
             cook.setMaxAge(cookie.getMaxAge());
             cook.setVersion(cookie.getVersion());
-            cook.setDomain(cookie.getDomain());
-            cook.setPath(cookie.getPath());
+            if (cookie.getDomain() != null) cook.setDomain(cookie.getDomain());
+            if (cookie.getPath() != null) cook.setPath(cookie.getPath());
             cook.setSecure(cookie.isSecure());
-            cook.setComment(cookie.getComment());
+            if (cookie.getComment() != null) cook.setComment(cookie.getComment());
             response.addCookie(cook);
          }
 

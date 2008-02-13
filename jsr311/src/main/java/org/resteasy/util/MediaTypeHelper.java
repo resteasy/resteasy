@@ -114,23 +114,28 @@ public class MediaTypeHelper
       }
    }
 
-   public static int compare(MediaType one, MediaType two)
+   public static int compareWeight(MediaType one, MediaType two)
    {
       return new MediaTypeComparator().compare(one, two);
    }
 
-   public static boolean same(MediaType one, MediaType two)
+   public static boolean sameWeight(MediaType one, MediaType two)
    {
       return new MediaTypeComparator().compare(one, two) == 0;
    }
 
-   public static void sort(List<MediaType> types)
+   public static void sortByWeight(List<MediaType> types)
    {
+      if (types.size() <= 1) return;
       Collections.sort(types, new MediaTypeComparator());
    }
 
    public static MediaType getBestMatch(List<MediaType> desired, List<MediaType> provided)
    {
+      sortByWeight(desired);
+      if (provided == null || provided.size() == 0) return desired.get(0);
+      sortByWeight(provided);
+
       for (MediaType desire : desired)
       {
          for (MediaType provide : provided)

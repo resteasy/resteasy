@@ -1,13 +1,17 @@
 package org.resteasy.spi;
 
 import org.resteasy.MediaTypeMap;
+import org.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.resteasy.specimpl.ResponseBuilderImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
@@ -60,6 +64,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    public ResteasyProviderFactory()
    {
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
+      addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
+      addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
    }
 
    public UriBuilder createUriBuilder()

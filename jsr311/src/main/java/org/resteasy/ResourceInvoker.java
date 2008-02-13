@@ -6,6 +6,7 @@ import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.FindAnnotation;
 import org.resteasy.util.PathHelper;
 
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
@@ -73,6 +74,7 @@ public abstract class ResourceInvoker
          HeaderParam header;
          MatrixParam matrix;
          PathParam uriParam;
+         CookieParam cookie;
 
          if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
          {
@@ -81,6 +83,10 @@ public abstract class ResourceInvoker
          else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
          {
             params[i] = new HeaderParamExtractor(method, header.value(), i, defaultVal);
+         }
+         else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
+         {
+            params[i] = new CookieParamExtractor(method, cookie.value(), i, defaultVal);
          }
          else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
          {

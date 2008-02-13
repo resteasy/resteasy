@@ -72,7 +72,7 @@ public class MediaTypeTest
       list.add(array[2]);
       list.add(array[3]);
 
-      MediaTypeHelper.sort(list);
+      MediaTypeHelper.sortByWeight(list);
 
       Assert.assertTrue(list.get(0).toString(), array[2] == list.get(0));
       Assert.assertTrue(array[1] == list.get(1));
@@ -99,7 +99,7 @@ public class MediaTypeTest
       list.add(array[3]);
       list.add(array[4]);
 
-      MediaTypeHelper.sort(list);
+      MediaTypeHelper.sortByWeight(list);
 
       Assert.assertTrue(array[2] == list.get(0));
       Assert.assertTrue(array[1] == list.get(1));

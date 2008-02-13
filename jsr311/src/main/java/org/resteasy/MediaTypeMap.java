@@ -30,7 +30,7 @@ public class MediaTypeMap<T>
 
       public int compareTo(Entry entry)
       {
-         return MediaTypeHelper.compare(mediaType, entry.mediaType);
+         return MediaTypeHelper.compareWeight(mediaType, entry.mediaType);
       }
    }
 

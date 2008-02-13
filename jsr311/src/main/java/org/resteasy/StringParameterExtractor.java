@@ -27,7 +27,17 @@ public class StringParameterExtractor
    protected String paramType;
    protected boolean isList;
 
+   public StringParameterExtractor()
+   {
+
+   }
+
    public StringParameterExtractor(int idx, Method method, String paramName, String paramType, String defaultValue)
+   {
+      initialize(idx, method, paramName, paramType, defaultValue);
+   }
+
+   protected void initialize(int idx, Method method, String paramName, String paramType, String defaultValue)
    {
       this.type = method.getParameterTypes()[idx];
       this.method = method;
@@ -47,7 +57,7 @@ public class StringParameterExtractor
          }
          else
          {
-            baseType = java.lang.String.class;
+            baseType = String.class;
          }
          isList = true;
       }

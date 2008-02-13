@@ -85,12 +85,17 @@ public class ResourceMethod extends ResourceInvoker
       {
          Object rtn = method.invoke(resource, args);
          if (method.getReturnType().equals(void.class)) return new ResponseImpl();
-         if (method.getReturnType().equals(ResponseImpl.class))
+         if (method.getReturnType().equals(Response.class))
          {
-            return (ResponseImpl) rtn;
+            if (rtn == null) throw new RuntimeException("Response return is null");
+            if (rtn.getClass().equals(ResponseImpl.class))
+            {
+               return (ResponseImpl) rtn;
+            }
+            else throw new RuntimeException("You must use JAX-RS apis to create Response objects");
+
          }
-         else if (method.getReturnType().equals(Response.class))
-            throw new RuntimeException("You must use JAX-RS apis to create Response objects");
+
 
          ResponseImpl response = new ResponseImpl();
          response.setEntity(rtn);

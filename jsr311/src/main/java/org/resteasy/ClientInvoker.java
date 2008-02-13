@@ -5,10 +5,12 @@ import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.FindAnnotation;
 import org.resteasy.util.MediaTypeHelper;
 
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -42,6 +44,7 @@ abstract public class ClientInvoker
          HeaderParam header;
          MatrixParam matrix;
          PathParam uriParam;
+         CookieParam cookie;
 
          if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
          {
@@ -51,6 +54,10 @@ abstract public class ClientInvoker
          {
             params[i] = new HeaderParamMarshaller(header.value());
          }
+         else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
+         {
+            params[i] = new CookieParamMarshaller(cookie.value());
+         }
          else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
          {
             params[i] = new UriParamMarshaller(uriParam.value());
@@ -58,6 +65,10 @@ abstract public class ClientInvoker
          else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
          {
             params[i] = new MatrixParamMarshaller(matrix.value());
+         }
+         else if (type.equals(Cookie.class))
+         {
+            params[i] = new CookieParamMarshaller(null);
          }
          else
          {

@@ -228,7 +228,7 @@ public class PathSegmentNode
       list = new ArrayList<ResourceMethod>();
       ArrayList<MediaType> consumes = new ArrayList<MediaType>();
       consumes.addAll(consumesMap.keySet());
-      MediaTypeHelper.sort(consumes);
+      MediaTypeHelper.sortByWeight(consumes);
 
       boolean first = true;
       MediaType current = null;
@@ -244,7 +244,7 @@ public class PathSegmentNode
          }
          else
          {
-            if (MediaTypeHelper.same(current, type))
+            if (MediaTypeHelper.sameWeight(current, type))
             {
                list.add(consumesMap.get(type));
             }
@@ -275,8 +275,8 @@ public class PathSegmentNode
       // sort media types then get first in list and match it into identity map
       ArrayList<MediaType> produces = new ArrayList<MediaType>();
       produces.addAll(producesMap.keySet());
-      MediaTypeHelper.sort(produces);
-      MediaTypeHelper.sort(accepts);
+      MediaTypeHelper.sortByWeight(produces);
+      MediaTypeHelper.sortByWeight(accepts);
 
       for (MediaType accept : accepts)
       {
