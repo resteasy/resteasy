@@ -8,6 +8,7 @@ import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.InvocationTargetException;
@@ -108,6 +109,16 @@ public class ResourceMethod extends ResourceInvoker
       }
       catch (InvocationTargetException e)
       {
+         Throwable cause = e.getCause();
+         if (cause instanceof WebApplicationException)
+         {
+            WebApplicationException wae = (WebApplicationException) cause;
+            if (wae.getResponse() != null)
+            {
+               cause.printStackTrace();
+               return (ResponseImpl) wae.getResponse();
+            }
+         }
          throw new RuntimeException("Failed processing " + method.toString(), e.getCause());
       }
       catch (IllegalArgumentException e)
