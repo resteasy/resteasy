@@ -23,7 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 @Provider
 @ProduceMime("text/plain")
 @ConsumeMime("text/plain")
-public class DefaultPlainText implements MessageBodyReader<Object>, MessageBodyWriter<Object>
+public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
    public boolean isReadable(Class<?> type)
    {

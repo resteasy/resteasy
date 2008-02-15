@@ -6,6 +6,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -18,8 +19,9 @@ import java.io.OutputStream;
  * @author <a href="mailto:hbraun@redhat.com">Heiko Braun</a>
  * @version $Revision: 1 $
  */
-@ProduceMime("text/xml")
-@ConsumeMime("text/xml")
+@Provider
+@ProduceMime({"text/xml", "application/xml"})
+@ConsumeMime({"text/xml", "application/xml"})
 public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
    public boolean isReadable(Class<?> aClass)

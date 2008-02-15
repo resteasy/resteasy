@@ -3,7 +3,7 @@ package org.resteasy.test.finegrain;
 import org.junit.Assert;
 import org.junit.Test;
 import org.resteasy.MediaTypeMap;
-import org.resteasy.plugins.providers.DefaultPlainText;
+import org.resteasy.plugins.providers.DefaultTextPlain;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.spi.ResteasyProviderFactory;
 
@@ -71,7 +71,7 @@ public class MediaTypeMapTest
 
       MessageBodyWriter<Integer> writer = ResteasyProviderFactory.getInstance().createMessageBodyWriter(Integer.class, new MediaType("text", "plain"));
       Assert.assertNotNull(writer);
-      Assert.assertEquals(writer.getClass(), DefaultPlainText.class);
+      Assert.assertEquals(writer.getClass(), DefaultTextPlain.class);
    }
 
 

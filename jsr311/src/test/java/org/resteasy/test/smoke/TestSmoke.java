@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.resteasy.Registry;
 import org.resteasy.mock.MockHttpServletRequest;
 import org.resteasy.mock.MockHttpServletResponse;
-import org.resteasy.plugins.providers.DefaultPlainText;
+import org.resteasy.plugins.providers.DefaultTextPlain;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.resteasy.spi.ResteasyProviderFactory;
@@ -28,8 +28,8 @@ public class TestSmoke
       dispatcher.setProviderFactory(new ResteasyProviderFactory());
       dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
       ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
+      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultTextPlain());
+      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultTextPlain());
 
       POJOResourceFactory noDefaults = new POJOResourceFactory(SimpleResource.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -89,8 +89,8 @@ public class TestSmoke
       dispatcher.setProviderFactory(new ResteasyProviderFactory());
       dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
       ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultPlainText());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultPlainText());
+      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultTextPlain());
+      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultTextPlain());
 
       POJOResourceFactory noDefaults = new POJOResourceFactory(LocatingResource.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);

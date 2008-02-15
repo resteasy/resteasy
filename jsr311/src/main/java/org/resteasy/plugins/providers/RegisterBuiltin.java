@@ -10,14 +10,19 @@ public class RegisterBuiltin
 {
    public static void register(ResteasyProviderFactory factory)
    {
-      factory.addMessageBodyReader(new DefaultPlainText());
-      factory.addMessageBodyWriter(new DefaultPlainText());
+      factory.addMessageBodyReader(new DefaultTextPlain());
+      factory.addMessageBodyWriter(new DefaultTextPlain());
 
 
       factory.addMessageBodyReader(new JAXBProvider());
       factory.addMessageBodyWriter(new JAXBProvider());
 
-      factory.addMessageBodyReader(new DefaultFromString());
-      factory.addMessageBodyWriter(new DefaultFromString());
+      factory.addMessageBodyReader(new StringTextStar());
+      factory.addMessageBodyWriter(new StringTextStar());
+
+      factory.addMessageBodyReader(new InputStreamProvider());
+      factory.addMessageBodyWriter(new InputStreamProvider());
+
+      factory.addMessageBodyReader(new UrlFormEncoder());
    }
 }
