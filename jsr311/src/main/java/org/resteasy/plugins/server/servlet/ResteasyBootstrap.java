@@ -88,7 +88,7 @@ public class ResteasyBootstrap implements ServletContextListener
          }
          catch (IOException e)
          {
-            throw new RuntimeException("Unable to scan WEB-INF for JAX-RS annotations", e);
+            throw new RuntimeException("Unable to scan WEB-INF for JAX-RS annotations, you must manually register your classes/resources", e);
          }
 
          if (scanProviders) processProviders(db);

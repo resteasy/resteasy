@@ -4,6 +4,8 @@ import org.resteasy.spi.HttpInput;
 import org.resteasy.spi.ResourceFactory;
 
 /**
+ * Allocates an instance of a class at each invocation
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

@@ -11,5 +11,6 @@
    <modules>
       <module>jsr311-api</module>
       <module>jsr311</module>
+      <module>spring-integration-test</module>
    </modules>
 </project>

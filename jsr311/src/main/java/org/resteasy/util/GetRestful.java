@@ -45,4 +45,10 @@ public class GetRestful
       if (rtn.size() == 0) return null;
       return rtn;
    }
+
+   public static boolean isRestful(Class clazz)
+   {
+      List<Class> clazzes = getRestfulClasses(clazz);
+      return clazzes != null && clazzes.size() > 0;
+   }
 }

@@ -50,11 +50,17 @@ public class HttpServletDispatcher extends HttpServlet
    public void init(ServletConfig servletConfig) throws ServletException
    {
       this.providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
-      if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
+      if (providerFactory == null)
+      {
+         providerFactory = new ResteasyProviderFactory();
+      }
 
 
       this.registry = (Registry) servletConfig.getServletContext().getAttribute(Registry.class.getName());
-      if (registry == null) registry = new Registry(providerFactory);
+      if (registry == null)
+      {
+         registry = new Registry(providerFactory);
+      }
    }
 
    public ResteasyProviderFactory getProviderFactory()
