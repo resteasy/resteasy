@@ -1,9 +1,9 @@
 package org.resteasy.plugins.server.servlet;
 
-import org.resteasy.Registry;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
+import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
@@ -98,7 +98,13 @@ public class ResteasyBootstrap implements ServletContextListener
       String jndiResources = event.getServletContext().getInitParameter("resteasy.jndi.resources");
       if (jndiResources != null)
       {
-         // todo
+         processJndiResources(jndiResources);
+      }
+
+      String resources = event.getServletContext().getInitParameter("resteasy.resources");
+      if (resources != null)
+      {
+         processResources(resources);
       }
    }
 
@@ -108,6 +114,23 @@ public class ResteasyBootstrap implements ServletContextListener
       for (String resource : resources)
       {
          registry.addResourceFactory(new JndiResourceFactory(resource.trim()));
+      }
+   }
+
+   protected void processResources(String list)
+   {
+      String[] resources = list.trim().split(",");
+      for (String resource : resources)
+      {
+         try
+         {
+            Class clazz = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
+            registry.addResource(clazz);
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
       }
    }
 

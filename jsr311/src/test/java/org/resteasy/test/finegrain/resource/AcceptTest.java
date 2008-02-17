@@ -3,9 +3,9 @@ package org.resteasy.test.finegrain.resource;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.resteasy.Registry;
 import org.resteasy.ResourceMethod;
 import org.resteasy.specimpl.PathSegmentImpl;
+import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ConsumeMime;

@@ -1,6 +1,6 @@
 package org.resteasy.plugins.server.servlet;
 
-import org.resteasy.Registry;
+import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;

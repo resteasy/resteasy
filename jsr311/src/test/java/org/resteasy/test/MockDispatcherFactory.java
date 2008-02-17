@@ -1,8 +1,8 @@
 package org.resteasy.test;
 
-import org.resteasy.Registry;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 /**

@@ -2,7 +2,6 @@ package org.resteasy.plugins.server.servlet;
 
 import org.resteasy.Failure;
 import org.resteasy.Headers;
-import org.resteasy.Registry;
 import org.resteasy.ResourceMethod;
 import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.MultivaluedMapImpl;
@@ -10,6 +9,7 @@ import org.resteasy.specimpl.PathSegmentImpl;
 import org.resteasy.specimpl.ResponseImpl;
 import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.MediaTypeHelper;
