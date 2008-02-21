@@ -1,0 +1,15 @@
+<project>
+   <name>Resteasy JAX-RS JBoss Integration Testing</name>
+   <url>http://www.attainware.com/</url>
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.resteasy</groupId>
+   <version>1.0</version>
+   <artifactId>resteasy-jaxrs-all</artifactId>
+   <packaging>pom</packaging>
+
+   <modules>
+      <module>basic-integration-test</module>
+      <module>spring-integration-test</module>
+   </modules>
+</project>
