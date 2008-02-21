@@ -1,0 +1,16 @@
+<project>
+   <name>Resteasy JAX-RS</name>
+   <url>http://www.attainware.com/</url>
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.resteasy</groupId>
+   <version>1.0</version>
+   <artifactId>resteasy-jaxrs-all</artifactId>
+   <packaging>pom</packaging>
+
+   <modules>
+      <module>jaxrs-api</module>
+      <module>resteasy-jaxrs</module>
+      <module>resteasy-jaxrs-war</module>
+   </modules>
+</project>
