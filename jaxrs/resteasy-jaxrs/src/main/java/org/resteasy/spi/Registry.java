@@ -64,7 +64,14 @@ public class Registry
       Class<?> clazz = factory.getScannableClass();
       List<Class> restful = GetRestful.getRestfulClasses(clazz);
       if (restful == null)
-         throw new RuntimeException("could find no jax-rs annotations on class or public methods or interfaces of class: " + clazz.getName());
+      {
+         String msg = "could find no jax-rs annotations on class or public methods or interfaces of class: " + clazz.getName() + " implements: ";
+         for (Class intf : clazz.getInterfaces())
+         {
+            msg += " " + intf.getName();
+         }
+         throw new RuntimeException(msg);
+      }
       for (Class cls : restful) addResourceFactory(factory, base, cls);
    }
 
