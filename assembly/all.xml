@@ -1,0 +1,35 @@
+<assembly>
+   <id>doc</id>
+
+   <formats>
+      <format>zip</format>
+   </formats>
+
+   <includeBaseDirectory>true</includeBaseDirectory>
+
+   <moduleSets>
+      <moduleSet>
+         <includes>
+            <include>org.resteasy:resteasy-jaxrs-war</include>
+         </includes>
+         <binaries>
+            <includeDependencies>false</includeDependencies>
+            <unpack>true</unpack>
+            <outputDirectory/>
+         </binaries>
+      </moduleSet>
+   </moduleSets>
+   <fileSets>
+      <fileSet>
+         <directory>resteasy-jaxrs/target/apidocs</directory>
+         <outputDirectory>docs/apidocs</outputDirectory>
+      </fileSet>
+      <fileSet>
+         <directory/>
+         <includes>
+            <include>README.html</include>
+         </includes>
+      </fileSet>
+   </fileSets>
+
+</assembly>
