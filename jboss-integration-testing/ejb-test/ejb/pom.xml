@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.resteasy</groupId>
+   <artifactId>ejb-test</artifactId>
+   <packaging>jar</packaging>
+   <version>SNAPSHOT</version>
+   <name>EJB test - EJB</name>
+   <url>http://maven.apache.org</url>
+   <repositories>
+      <repository>
+         <id>jboss</id>
+         <url>http://repository.jboss.org/maven2</url>
+      </repository>
+   </repositories>
+   <dependencies>
+      <dependency>
+         <groupId>org.resteasy</groupId>
+         <artifactId>jaxrs-api</artifactId>
+         <version>beta1</version>
+      </dependency>
+      <dependency>
+         <groupId>javax.ejb</groupId>
+         <artifactId>ejb-api</artifactId>
+         <version>3.0</version>
+         <scope>provided</scope>
+      </dependency>
+   </dependencies>
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <source>1.5</source>
+               <target>1.5</target>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>
