@@ -12,7 +12,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.HttpContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -96,7 +96,7 @@ public abstract class ResourceInvoker
          {
             params[i] = new MatrixParamExtractor(method, matrix.value(), i, defaultVal);
          }
-         else if (FindAnnotation.findAnnotation(annotations, HttpContext.class) != null)
+         else if (FindAnnotation.findAnnotation(annotations, Context.class) != null)
          {
             params[i] = new HttpContextParameter(type);
          }

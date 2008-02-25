@@ -4,6 +4,7 @@ import org.resteasy.MediaTypeMap;
 import org.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.resteasy.plugins.delegates.NewCookieHeaderDelegate;
+import org.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.resteasy.specimpl.ResponseBuilderImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
 
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,14 +44,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       RuntimeDelegate.setDelegate(factory);
    }
 
-   /**
-    * Get an instance of ProviderFactory. The implementation of
-    * ProviderFactory that will be instantiated is determined using the
-    * Services API (as detailed in the JAR specification) to determine
-    * the classname. The Services API will look for a classname in the file
-    * META-INF/services/javax.ws.rs.ext.ProviderFactory in jars available
-    * to the runtime.
-    */
    public static ResteasyProviderFactory getInstance()
    {
       return pfr.get();
@@ -66,6 +60,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
       addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
       addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
+      addHeaderDelegate(URI.class, new UriHeaderDelegate());
    }
 
    public UriBuilder createUriBuilder()

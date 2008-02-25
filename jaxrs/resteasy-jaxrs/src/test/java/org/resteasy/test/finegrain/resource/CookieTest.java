@@ -15,8 +15,8 @@ import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -41,7 +41,7 @@ public class CookieTest
 
       @Path("/headers")
       @GET
-      public String headers(@HttpContext HttpHeaders headers)
+      public String headers(@Context HttpHeaders headers)
       {
          String value = headers.getCookies().get("meaning").getValue();
          Assert.assertEquals(value, "42");

@@ -31,7 +31,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
    public void putSingle(String key, Object value)
    {
       cachedHeaders.putSingle(key, value);
-      response.addHeader(key, value.toString());
+      addResponseHeader(key, value);
    }
 
    public void add(String key, Object value)
