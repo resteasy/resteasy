@@ -23,6 +23,7 @@ public class RegisterBuiltin
       factory.addMessageBodyReader(new InputStreamProvider());
       factory.addMessageBodyWriter(new InputStreamProvider());
 
-      factory.addMessageBodyReader(new UrlFormEncoder());
+      factory.addMessageBodyReader(new ByteArrayProvider());
+      factory.addMessageBodyWriter(new ByteArrayProvider());
    }
 }
