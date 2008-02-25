@@ -40,10 +40,10 @@ import java.lang.annotation.Target;
  * the contents of the HTTP request entity body. The parameter will be null if
  * the HTTP request entity body is of zero length.</li>
  * <li>Methods may have zero or more additional method arguments, each of which
- * must be annotated with either <code>@PathParam</code>, 
- * <code>@HeaderParam</code>, 
+ * must be annotated with either <code>@PathParam</code>,
+ * <code>@HeaderParam</code>,
  * <code>@MatrixParam</code>, <code>@QueryParam</code> or
- * <code>@HttpContext</code></li>
+ * <code>@Context</code></li>
  * </ul>
  *
  * @see GET
@@ -59,35 +59,37 @@ import java.lang.annotation.Target;
 @Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface HttpMethod {
-    
-    /**
-     * HTTP GET method
-     */
-    public static final String GET="GET";
-    /**
-     * HTTP POST method
-     */
-    public static final String POST="POST"; 
-    /**
-     * HTTP PUT method
-     */
-    public static final String PUT="PUT";
-    /**
-     * HTTP DELETE method
-     */
-    public static final String DELETE="DELETE";
-    /**
-     * HTTP HEAD method
-     */
-    public static final String HEAD="HEAD";
-    
+public @interface HttpMethod
+{
+
+   /**
+    * HTTP GET method
+    */
+   public static final String GET = "GET";
+   /**
+    * HTTP POST method
+    */
+   public static final String POST = "POST";
+   /**
+    * HTTP PUT method
+    */
+   public static final String PUT = "PUT";
+   /**
+    * HTTP DELETE method
+    */
+   public static final String DELETE = "DELETE";
    /**
     * HTTP HEAD method
     */
-   public static final String OPTIONS="OPTIONS";
-    /**
-     * Specifies the name of a HTTP method. E.g. "GET".
-     */
-    String value();        
+   public static final String HEAD = "HEAD";
+
+   /**
+    * HTTP HEAD method
+    */
+   public static final String OPTIONS = "OPTIONS";
+
+   /**
+    * Specifies the name of a HTTP method. E.g. "GET".
+    */
+   String value();
 }

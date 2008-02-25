@@ -1,5 +1,6 @@
 package org.resteasy.specimpl;
 
+import org.resteasy.ResourceMethod;
 import org.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
@@ -80,14 +81,27 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 
    public Response.ResponseBuilder location(URI location)
    {
-      metadata.putSingle(HttpHeaderNames.LOCATION, location.toString());
+      if (!location.isAbsolute() && ResourceMethod.request.get() != null)
+      {
+         String path = location.getPath();
+         if (path.startsWith("/")) path = path.substring(1);
+         URI baseUri = ResourceMethod.request.get().getUri().getBaseUri();
+         location = baseUri.resolve(path);
+      }
+      metadata.putSingle(HttpHeaderNames.LOCATION, location);
       return this;
    }
 
    public Response.ResponseBuilder contentLocation(URI location)
    {
-
-      metadata.putSingle(HttpHeaderNames.LOCATION, location.toString());
+      if (!location.isAbsolute() && ResourceMethod.request.get() != null)
+      {
+         String path = location.getPath();
+         if (path.startsWith("/")) path = path.substring(1);
+         URI baseUri = ResourceMethod.request.get().getUri().getBaseUri();
+         location = baseUri.resolve(path);
+      }
+      metadata.putSingle(HttpHeaderNames.CONTENT_LOCATION, location);
       return this;
    }
 
@@ -129,4 +143,5 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       }
       return this;
    }
+
 }

@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Registry of resources and methods/classes that can dispatch HTTP method requests
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

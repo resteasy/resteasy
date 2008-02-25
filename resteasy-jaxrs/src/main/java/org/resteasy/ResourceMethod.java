@@ -59,8 +59,22 @@ public class ResourceMethod extends ResourceInvoker
 
    }
 
+   public static final ThreadLocal<HttpInput> request = new ThreadLocal<HttpInput>();
 
    public ResponseImpl invoke(HttpInput input)
+   {
+      try
+      {
+         request.set(input);
+         return internalInvoke(input);
+      }
+      finally
+      {
+         request.set(null);
+      }
+   }
+
+   protected ResponseImpl internalInvoke(HttpInput input)
    {
       Object resource = null;
       try

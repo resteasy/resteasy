@@ -18,13 +18,19 @@ public class EmbeddedServletContainer
 
    public static HttpServletDispatcher start() throws Exception
    {
+      return start("/");
+   }
+
+
+   public static HttpServletDispatcher start(String bindPath) throws Exception
+   {
       server = new Serve();
       Properties props = new Properties();
       props.put("port", 8081);
       props.setProperty(Serve.ARG_NOHUP, "nohup");
       server.arguments = props;
       server.addDefaultServlets(null); // optional file servlet
-      server.addServlet("/", dispatcher); // optional
+      server.addServlet(bindPath, dispatcher); // optional
       new Thread()
       {
          public void run()

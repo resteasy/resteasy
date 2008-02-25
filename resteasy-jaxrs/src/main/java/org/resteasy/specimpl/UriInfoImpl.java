@@ -55,9 +55,13 @@ public class UriInfoImpl implements UriInfo
       {
          String abs = absolutePath.getPath();
          abs = abs.substring(0, abs.indexOf(path));
+         if (!abs.endsWith("/")) abs += "/";
+//         System.out.println("abs: " + abs);
+//         System.out.println("absolutePath: " + absolutePath);
+//         System.out.println("path: " + path);
          try
          {
-            baseURI = UriBuilder.fromUri(absolutePath).path(abs).build();
+            baseURI = UriBuilder.fromUri(absolutePath).replacePath(abs).build();
 
          }
          catch (Exception e)

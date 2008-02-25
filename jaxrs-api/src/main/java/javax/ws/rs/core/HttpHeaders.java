@@ -23,39 +23,46 @@ import java.util.Map;
 
 /**
  * An injectable interface that provides access to HTTP header information
- * @see HttpContext
+ *
+ * @see Context
  */
-public interface HttpHeaders {
-    
-    /**
-     * Get the values of HTTP request headers. The returned Map is case-insensitive
-     * wrt keys and is read-only.
-     * @return a map of header names and values.
-     */
-    public MultivaluedMap<String, String> getRequestHeaders();
+public interface HttpHeaders
+{
 
-    /**
-     * Get a list of media types that are acceptable for the response.
-     * @return list of requested response media types
-     */
-    public List<MediaType> getAcceptableMediaTypes();
-    
-    /**
-     * Get the media type of the request entity
-     * @return the media type or null if there is no request entity.
-     */
-    public MediaType getMediaType();
-    
-    /**
-     * Get the language of the request entity
-     * @return the language of the entity or null if not specified
-     */
-    public String getLanguage();
+   /**
+    * Get the values of HTTP request headers. The returned Map is case-insensitive
+    * wrt keys and is read-only.
+    *
+    * @return a map of header names and values.
+    */
+   public MultivaluedMap<String, String> getRequestHeaders();
 
-    /**
-     * Get any cookies that accompanied the request.
-     * @return a map of cookie name (String) to Cookie.
-     */
-    public Map<String, Cookie> getCookies();
-    
+   /**
+    * Get a list of media types that are acceptable for the response.
+    *
+    * @return list of requested response media types
+    */
+   public List<MediaType> getAcceptableMediaTypes();
+
+   /**
+    * Get the media type of the request entity
+    *
+    * @return the media type or null if there is no request entity.
+    */
+   public MediaType getMediaType();
+
+   /**
+    * Get the language of the request entity
+    *
+    * @return the language of the entity or null if not specified
+    */
+   public String getLanguage();
+
+   /**
+    * Get any cookies that accompanied the request.
+    *
+    * @return a map of cookie name (String) to Cookie.
+    */
+   public Map<String, Cookie> getCookies();
+
 }
