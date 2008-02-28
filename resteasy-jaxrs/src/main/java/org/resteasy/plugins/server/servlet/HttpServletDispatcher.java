@@ -209,7 +209,18 @@ public class HttpServletDispatcher extends HttpServlet
 
          if (responseImpl.getEntity() != null)
          {
-            MediaType rtnType = invoker.matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
+            Object contentType = responseImpl.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
+            MediaType rtnType = null;
+            if (contentType != null) // if set by the response
+            {
+               System.out.println("content type was set: " + contentType);
+               rtnType = MediaType.parse(contentType.toString());
+            }
+            else
+            {
+               System.out.println("finding content type from @ProduceMime");
+               rtnType = invoker.matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
+            }
             if (rtnType == null)
             {
                rtnType = MediaType.parse("*/*");
@@ -222,6 +233,8 @@ public class HttpServletDispatcher extends HttpServlet
             try
             {
                long size = writer.getSize(responseImpl.getEntity());
+               System.out.println("Writer: " + writer.getClass().getName());
+               System.out.println("JAX-RS Content Size: " + size);
                response.setContentLength((int) size);
                response.setContentType(rtnType.toString());
                writer.writeTo(responseImpl.getEntity(), rtnType, outputHeaders, response.getOutputStream());
@@ -306,7 +319,7 @@ public class HttpServletDispatcher extends HttpServlet
 
    public static MultivaluedMapImpl<String, String> extractRequestHeaders(HttpServletRequest request)
    {
-      Headers requestHeaders = new Headers();
+      Headers<String> requestHeaders = new Headers<String>();
 
       Enumeration headerNames = request.getHeaderNames();
       while (headerNames.hasMoreElements())

@@ -1,5 +1,6 @@
 package org.resteasy.specimpl;
 
+import org.resteasy.Headers;
 import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -14,10 +15,10 @@ public class ResponseImpl extends Response
 {
    private Object entity;
    private int status = HttpResponseCodes.SC_OK;
-   private MultivaluedMap<String, Object> metadata = new MultivaluedMapImpl<String, Object>();
+   private Headers<Object> metadata = new Headers<Object>();
    private NewCookie[] newCookies = {};
 
-   public ResponseImpl(Object entity, int status, MultivaluedMap<String, Object> metadata, NewCookie[] newCookies)
+   public ResponseImpl(Object entity, int status, Headers<Object> metadata, NewCookie[] newCookies)
    {
       this.entity = entity;
       this.status = status;
@@ -61,7 +62,8 @@ public class ResponseImpl extends Response
 
    public void setMetadata(MultivaluedMap<String, Object> metadata)
    {
-      this.metadata = metadata;
+      this.metadata.clear();
+      this.metadata.putAll(metadata);
    }
 
    public void setNewCookies(NewCookie[] newCookies)

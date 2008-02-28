@@ -1,12 +1,12 @@
 package org.resteasy.specimpl;
 
+import org.resteasy.Headers;
 import org.resteasy.ResourceMethod;
 import org.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
@@ -23,7 +23,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 {
    private Object entity;
    private int status;
-   private MultivaluedMap<String, Object> metadata = new MultivaluedMapImpl<String, Object>();
+   private Headers<Object> metadata = new Headers<Object>();
    private List<NewCookie> cookies = new ArrayList<NewCookie>();
 
    public Response build()
