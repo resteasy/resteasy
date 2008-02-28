@@ -1,0 +1,15 @@
+<assembly>
+  <id>all</id>
+
+  <formats>
+    <format>zip</format>
+  </formats>
+     <includeBaseDirectory>true</includeBaseDirectory>
+
+   <fileSets>
+      <fileSet>
+         <directory>../resteasy-jaxrs-war/target/resteasy-jaxrs</directory>
+         <outputDirectory>resteasy-jaxrs.war</outputDirectory>
+      </fileSet>
+   </fileSets>
+</assembly>
