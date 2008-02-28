@@ -1,10 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.resteasy</groupId>
+      <artifactId>resteasy-jaxrs-all</artifactId>
+      <version>1.0</version>
+   </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.resteasy</groupId>
    <artifactId>resteasy-jaxrs-war</artifactId>
    <packaging>war</packaging>
-   <version>beta2</version>
+   <version>${resteasy-version}</version>
    <name>Resteasy JAX-RS Template Webapp</name>
    <url>http://maven.apache.org</url>
    <repositories>
@@ -17,7 +22,7 @@
       <dependency>
          <groupId>org.resteasy</groupId>
          <artifactId>resteasy-jaxrs</artifactId>
-         <version>beta2</version>
+         <version>${resteasy-version}</version>
       </dependency>
    </dependencies>
    <build>
