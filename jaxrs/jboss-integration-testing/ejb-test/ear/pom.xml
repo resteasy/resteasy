@@ -1,10 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.resteasy</groupId>
+      <artifactId>ejb-integration-test</artifactId>
+      <version>1.0</version>
+   </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.resteasy</groupId>
    <artifactId>ejb-test-ear</artifactId>
    <packaging>jar</packaging>
-   <version>SNAPSHOT</version>
+   <version>${resteasy-version}</version>
    <name>Basic Integration Test</name>
    <url>http://maven.apache.org</url>
    <repositories>
@@ -17,18 +22,18 @@
       <dependency>
          <groupId>org.resteasy</groupId>
          <artifactId>resteasy-jaxrs</artifactId>
-         <version>beta2</version>
+         <version>${resteasy-version}</version>
       </dependency>
       <dependency>
          <groupId>org.resteasy</groupId>
          <artifactId>ejb-test</artifactId>
-         <version>SNAPSHOT</version>
+         <version>${resteasy-version}</version>
          <type>ejb</type>
       </dependency>
       <dependency>
          <groupId>org.resteasy</groupId>
          <artifactId>ejb-test-war</artifactId>
-         <version>SNAPSHOT</version>
+         <version>${resteasy-version}</version>
          <type>war</type>
       </dependency>
       <dependency>
@@ -44,6 +49,7 @@
             <artifactId>maven-ear-plugin</artifactId>
             <configuration>
                <defaultJavaBundleDir>lib/</defaultJavaBundleDir>
+               <finalName>ejb-integration-test</finalName>
             </configuration>
             <executions>
                <execution>
@@ -70,7 +76,7 @@
                      <goal>deploy</goal>
                   </goals>
                   <configuration>
-                     <fileName>${basedir}/target/ejb-test-ear-SNAPSHOT.ear</fileName>
+                     <fileName>${basedir}/target/ejb-integration-test.ear</fileName>
                   </configuration>
                </execution>
                <execution>
@@ -80,7 +86,7 @@
                      <goal>undeploy</goal>
                   </goals>
                   <configuration>
-                     <fileName>${basedir}/target/ejb-test-ear-SNAPSHOT.ear</fileName>
+                     <fileName>${basedir}/target/ejb-integration-test.ear</fileName>
                   </configuration>
                </execution>
             </executions>
