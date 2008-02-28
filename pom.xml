@@ -2,40 +2,45 @@
    <name>Resteasy JAX-RS</name>
    <url>http://www.attainware.com/</url>
    <modelVersion>4.0.0</modelVersion>
+   <properties>
+      <resteasy-version>1.0-beta-2</resteasy-version>
+   </properties>
 
    <groupId>org.resteasy</groupId>
    <artifactId>resteasy-jaxrs-all</artifactId>
-   <version>beta2</version>
+   <version>1.0</version>
    <packaging>pom</packaging>
 
    <modules>
       <module>jaxrs-api</module>
       <module>resteasy-jaxrs</module>
       <module>resteasy-jaxrs-war</module>
+      <module>distribution</module>
    </modules>
-   <build>
-      <plugins>
-         <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.2-beta-1</version>
-            <executions>
-               <execution>
-                  <id>assemble</id>
-                  <phase>install</phase>
-                  <goals>
-                     <goal>attached</goal>
-                  </goals>
-                  <configuration>
-                     <descriptors>
-                        <descriptor>assembly/all.xml</descriptor>
-                     </descriptors>
-                     <outputDirectory>target/distribution</outputDirectory>
-                     <workDirectory>target/assembly/work</workDirectory>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-      </plugins>
-   </build>
+   <!--
+  <build>
+     <plugins>
+        <plugin>
+           <artifactId>maven-assembly-plugin</artifactId>
+           <version>2.2-beta-1</version>
+           <executions>
+              <execution>
+                 <id>assemble</id>
+                 <phase>install</phase>
+                 <goals>
+                    <goal>attached</goal>
+                 </goals>
+                 <configuration>
+                    <descriptors>
+                       <descriptor>assembly/all.xml</descriptor>
+                    </descriptors>
+                    <outputDirectory>target/distribution</outputDirectory>
+                    <workDirectory>target/assembly/work</workDirectory>
+                 </configuration>
+              </execution>
+           </executions>
+        </plugin>
+     </plugins>
+  </build> -->
 
 </project>
