@@ -17,7 +17,7 @@
       <dependency>
          <groupId>org.resteasy</groupId>
          <artifactId>resteasy-jaxrs</artifactId>
-         <version>beta1</version>
+         <version>beta2</version>
       </dependency>
       <dependency>
          <groupId>org.resteasy</groupId>

@@ -106,7 +106,7 @@ public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyW
 
    public boolean isWriteable(Class<?> type)
    {
-      return true;
+      return !type.isArray();
    }
 
    public long getSize(Object o)

@@ -55,18 +55,6 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
    public long getSize(java.lang.Object object)
    {
       return -1;
-      /*
-      try
-      {
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-         JAXBContext jaxb = JAXBContext.newInstance(object.getClass());
-         jaxb.createMarshaller().marshal(object, baos);
-          return baos.toByteArray().length;
-      } catch (JAXBException e)
-      {
-          throw new RuntimeException(e);
-      }
-      */
    }
 
    public void writeTo(java.lang.Object object, MediaType mediaType, MultivaluedMap<String, Object> multivaluedMap, OutputStream outputStream) throws IOException
