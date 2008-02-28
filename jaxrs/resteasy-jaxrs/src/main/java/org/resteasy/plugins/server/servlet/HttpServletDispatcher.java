@@ -213,12 +213,12 @@ public class HttpServletDispatcher extends HttpServlet
             MediaType rtnType = null;
             if (contentType != null) // if set by the response
             {
-               System.out.println("content type was set: " + contentType);
+               //System.out.println("content type was set: " + contentType);
                rtnType = MediaType.parse(contentType.toString());
             }
             else
             {
-               System.out.println("finding content type from @ProduceMime");
+               //System.out.println("finding content type from @ProduceMime");
                rtnType = invoker.matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
             }
             if (rtnType == null)
@@ -233,8 +233,8 @@ public class HttpServletDispatcher extends HttpServlet
             try
             {
                long size = writer.getSize(responseImpl.getEntity());
-               System.out.println("Writer: " + writer.getClass().getName());
-               System.out.println("JAX-RS Content Size: " + size);
+               //System.out.println("Writer: " + writer.getClass().getName());
+               //System.out.println("JAX-RS Content Size: " + size);
                response.setContentLength((int) size);
                response.setContentType(rtnType.toString());
                writer.writeTo(responseImpl.getEntity(), rtnType, outputHeaders, response.getOutputStream());
