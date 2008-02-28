@@ -21,11 +21,11 @@
    </moduleSets>
    <fileSets>
       <fileSet>
-         <directory>resteasy-jaxrs/target/apidocs</directory>
+         <directory>resteasy-jaxrs/target/site/apidocs</directory>
          <outputDirectory>docs/apidocs/resteasy</outputDirectory>
       </fileSet>
       <fileSet>
-         <directory>jaxrs-api/target/apidocs</directory>
+         <directory>jaxrs-api/target/site/apidocs</directory>
          <outputDirectory>docs/apidocs/jaxrs-api</outputDirectory>
       </fileSet>
       <fileSet>
