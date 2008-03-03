@@ -26,7 +26,7 @@ public class POJOResourceFactory implements ResourceFactory
       }
       catch (InstantiationException e)
       {
-         throw new RuntimeException(e.getCause());
+         throw new RuntimeException(e);
       }
       catch (IllegalAccessException e)
       {
