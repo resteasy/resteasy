@@ -1,0 +1,18 @@
+<project>
+   <properties>
+      <resteasy-mom-version>1.0-beta-2</resteasy-mom-version>
+   </properties>
+   <name>Resteasy JAX-RS</name>
+   <url>http://www.attainware.com/</url>
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.resteasy.mom</groupId>
+   <version>1.0</version>
+   <artifactId>resteasy-mom-all</artifactId>
+   <packaging>pom</packaging>
+
+   <modules>
+      <module>resteasy-mom</module>
+      <module>resteasy-mom-war</module>
+   </modules>
+</project>
