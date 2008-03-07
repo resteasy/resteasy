@@ -5,16 +5,16 @@ import org.resteasy.util.HttpResponseCodes;
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
-import javax.jms.Message;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.POST;
 import javax.ws.rs.core.Response;
 
 /**
@@ -29,12 +29,15 @@ public class Receiver
    private Session session;
    private Message currentMessage;
    private MessageProcessor processor;
+   private String selector;
 
-   public Receiver(Destination destination, Connection connection, MessageProcessor processor) throws Exception
+   public Receiver(Destination destination, Connection connection, MessageProcessor processor, String selector) throws Exception
    {
       this.destination = destination;
       this.connection = connection;
       this.processor = processor;
+      this.selector = selector;
+      System.out.println("SELECTOR: " + selector);
    }
 
    public MessageConsumer getConsumer() throws Exception
@@ -46,7 +49,7 @@ public class Receiver
 
          try
          {
-            consumer = session.createConsumer(destination);
+            consumer = session.createConsumer(destination, selector);
             connection.start();
          }
          catch (Exception ex)

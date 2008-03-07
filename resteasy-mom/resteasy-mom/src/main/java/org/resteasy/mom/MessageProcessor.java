@@ -1,5 +1,7 @@
 package org.resteasy.mom;
 
+import org.resteasy.util.HttpHeaderNames;
+
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -9,6 +11,7 @@ import javax.jms.Session;
 import javax.jms.StreamMessage;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +35,40 @@ public class MessageProcessor
       this.connection = connection;
       this.dlq = dlq;
       this.bufferSize = bufferSize;
+   }
+
+   public String createSelector(HttpHeaders headers)
+   {
+      StringBuffer selector = new StringBuffer();
+
+      boolean first = true;
+
+      for (MediaType type : headers.getAcceptableMediaTypes())
+      {
+         if (type.isWildcardType()) return "";
+         if (first)
+         {
+            first = false;
+         }
+         else
+         {
+            selector.append(" OR ");
+         }
+         selector.append(toJavaIdentifier(HttpHeaderNames.CONTENT_TYPE));
+         if (type.isWildcardSubtype())
+         {
+            selector.append(" LIKE '")
+                    .append(type.getType())
+                    .append("/%'");
+         }
+         else
+         {
+            selector.append(" = '")
+                    .append(type.toString())
+                    .append("'");
+         }
+      }
+      return selector.toString();
    }
 
    public Message createMessage(HttpHeaders headers, InputStream entityStream, Session session)
@@ -75,12 +112,12 @@ public class MessageProcessor
     */
    protected String toJavaIdentifier(String str)
    {
-      return str.replace('-', '$');
+      return str.replace('-', '$').toLowerCase();
    }
 
    protected String toHeaderName(String str)
    {
-      return str.replace('$', '-');
+      return str.replace('$', '-').toLowerCase();
    }
 
    protected Response extractStreamResponse(StreamMessage message)

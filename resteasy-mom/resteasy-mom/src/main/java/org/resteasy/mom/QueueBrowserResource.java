@@ -2,22 +2,22 @@ package org.resteasy.mom;
 
 import org.resteasy.util.HttpResponseCodes;
 
+import javax.jms.Connection;
+import javax.jms.Message;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
+import javax.jms.Session;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response;
-import javax.jms.Session;
-import javax.jms.QueueBrowser;
-import javax.jms.Queue;
-import javax.jms.Message;
-import javax.jms.Connection;
-import java.util.Enumeration;
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -37,9 +37,8 @@ public class QueueBrowserResource
    }
 
    @GET
-   @Path("/messages.html")
    @ProduceMime("text/html")
-   public String getBrowser(@QueryParam("index") @DefaultValue("0") int index, @Context UriInfo info) throws Exception
+   public String getBrowser(@QueryParam("index") @DefaultValue("0")int index, @Context UriInfo info) throws Exception
    {
       StringBuffer buffer = new StringBuffer("<html><body>");
       buffer.append("<h1>Queue Message Browser: ");
@@ -54,7 +53,7 @@ public class QueueBrowserResource
          int i = 0;
          for (; en.hasMoreElements() && count < 10; i++)
          {
-            Message message = (Message)en.nextElement();
+            Message message = (Message) en.nextElement();
             if (i >= index)
             {
                buffer.append("<li><a href=\"");
@@ -82,7 +81,7 @@ public class QueueBrowserResource
 
    @GET
    @Path("/messages/{id}")
-   public Response get(@PathParam("id") String id) throws Exception
+   public Response get(@PathParam("id")String id) throws Exception
    {
       Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
       try
@@ -92,7 +91,7 @@ public class QueueBrowserResource
          Message target = null;
          while (en.hasMoreElements())
          {
-            Message message = (Message)en.nextElement();
+            Message message = (Message) en.nextElement();
             if (message.getJMSMessageID().equals(id))
             {
                target = message;

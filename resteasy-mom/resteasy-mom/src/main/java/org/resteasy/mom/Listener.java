@@ -29,7 +29,7 @@ public class Listener implements MessageListener
    private String callback;
    private MessageProcessor processor;
 
-   public Listener(Destination destination, Connection connection, String callback, MessageProcessor processor) throws Exception
+   public Listener(Destination destination, Connection connection, String callback, MessageProcessor processor, String selector) throws Exception
    {
       this.destination = destination;
       this.connection = connection;
@@ -38,7 +38,8 @@ public class Listener implements MessageListener
       this.processor = processor;
 
       System.out.println("Callback URI: " + callback);
-      consumer = session.createConsumer(destination);
+      System.out.println("SELECTOR : " + selector);
+      consumer = session.createConsumer(destination, selector);
       consumer.setMessageListener(this);
       connection.start();
    }

@@ -32,6 +32,16 @@ public class QueueTest
    private static String lastMessage;
    private static CountDownLatch latch;
 
+   /*
+   @Test
+   public void testDummy() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      postStupidMessageXmlMessage(client);
+      Thread.sleep(3000000);
+   }
+   */
+
    @Test
    public void testQueueReceiverClientAcknowledged() throws Exception
    {
@@ -330,6 +340,16 @@ public class QueueTest
    {
       PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
       method.setRequestEntity(new StringRequestEntity("stupid message", "text/plain", null));
+      int status = client.executeMethod(method);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      method.releaseConnection();
+   }
+
+   private void postStupidMessageXmlMessage(HttpClient client)
+           throws IOException
+   {
+      PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
+      method.setRequestEntity(new StringRequestEntity("<project><target>Hello World</target></project>", "application/xml", null));
       int status = client.executeMethod(method);
       Assert.assertEquals(HttpResponseCodes.SC_OK, status);
       method.releaseConnection();

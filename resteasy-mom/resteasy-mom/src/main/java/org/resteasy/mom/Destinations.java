@@ -2,16 +2,15 @@ package org.resteasy.mom;
 
 import org.resteasy.util.HttpResponseCodes;
 
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import javax.jms.Connection;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,7 +37,7 @@ public class Destinations
          InitialContext ctx = new InitialContext();
          Connection connection = getConnectionFactory(ctx).createConnection();
          processor = new MessageProcessor(connection, getDLQ(ctx), 100);
-         
+
       }
       return processor;
    }
@@ -58,7 +57,7 @@ public class Destinations
 
    public static Destination getDLQ(InitialContext ctx) throws Exception
    {
-      return (Destination)ctx.lookup("queue/DLQ");
+      return (Destination) ctx.lookup("queue/DLQ");
    }
 
    public QueueResource getQueueResource(String name) throws Exception
@@ -68,7 +67,7 @@ public class Destinations
       {
          return queue;
       }
-      
+
       InitialContext ctx = new InitialContext();
       Destination destination = null;
       try

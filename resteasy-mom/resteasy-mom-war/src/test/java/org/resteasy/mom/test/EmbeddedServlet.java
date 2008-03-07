@@ -1,8 +1,8 @@
 package org.resteasy.mom.test;
 
 import Acme.Serve.Serve;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
+import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import java.util.Properties;
