@@ -26,19 +26,40 @@ public class DurableTopicReceiver extends Receiver
       consumer = session.createDurableSubscriber((Topic) destination, name, selector, false);
    }
 
-   public void unsubscribe()
+   @Override
+   public void close()
+   {
+      throw new RuntimeException("Illegal to call this method, call close(boolean unsubscribe)");
+   }
+
+   public synchronized void close(boolean unsubscribe)
    {
       try
       {
-         session.unsubscribe(name);
+         connection.stop();
       }
-      catch (JMSException ignored)
+      catch (JMSException e)
       {
+         throw new RuntimeException(e);
       }
-   }
+      try
+      {
+         if (consumer != null) consumer.close();
+      }
+      catch (JMSException ignored) {}
+      consumer = null;
 
-   public void close()
-   {
+      try
+      {
+         if (unsubscribe)
+         {
+            session.unsubscribe(name);
+         }
+
+         if (session != null) session.close();
+      }
+      catch (JMSException ignore) {}
+      session = null;
       try
       {
          if (connection != null) connection.close();

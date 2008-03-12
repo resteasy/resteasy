@@ -62,6 +62,7 @@ public class Listener implements MessageListener
          System.out.println("LISTENER RECEIVED body length: " + body.length);
          Map<String, String> headers = processor.extractHeaders(message);
 
+         System.out.println("setting up PostMethod to: " + callback);
          PostMethod method = new PostMethod(callback);
          for (String key : headers.keySet())
          {
@@ -82,6 +83,7 @@ public class Listener implements MessageListener
          }
          catch (Exception e)
          {
+            e.printStackTrace();
          }
          System.out.println("Failed sending to listener, deadlettering");
          processor.deadletter(message);

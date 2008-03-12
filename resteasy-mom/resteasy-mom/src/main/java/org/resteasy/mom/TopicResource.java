@@ -37,9 +37,11 @@ public class TopicResource extends DestinationResource
       this.factory = factory;
    }
 
+
    @Path("/durable/receivers/{id}")
    public DurableTopicReceiver getDurableReceiver(@PathParam("id")String id)
    {
+      id = "durable/receivers/" + id;
       System.out.println("getDurableReceiver: " + id);
       DurableTopicReceiver receiver = durableReceivers.get(id);
       if (receiver == null) throw new WebApplicationException(HttpResponseCodes.SC_NOT_FOUND);
@@ -51,15 +53,26 @@ public class TopicResource extends DestinationResource
    public Response createDurableReceiver(@PathParam("id")String id,
                                          @Context HttpHeaders headers) throws Exception
    {
+      id = "durable/receivers/" + id;
       if (durableReceivers.containsKey(id))
       {
          return Response.ok().build();
       }
       else
       {
+         System.out.println("Creating durable receiver: " + id);
          Connection connection = factory.createConnection();
          connection.setClientID(id);
-         DurableTopicReceiver receiver = new DurableTopicReceiver(id, connection, destination, processor, processor.createSelector(headers));
+         DurableTopicReceiver receiver = null;
+         try
+         {
+            receiver = new DurableTopicReceiver(id, connection, destination, processor, processor.createSelector(headers));
+         }
+         catch (Exception e)
+         {
+            try { connection.close(); } catch (Exception ignored) {}
+            throw e;
+         }
          durableReceivers.put(id, receiver);
          return Response.status(HttpResponseCodes.SC_CREATED).build();
       }
@@ -70,10 +83,10 @@ public class TopicResource extends DestinationResource
    public Response closeDurableReceiver(@PathParam("id")String id,
                                         @QueryParam("unsubscribe") @DefaultValue("true")boolean unsubscribe) throws Exception
    {
+      id = "durable/receivers/" + id;
       DurableTopicReceiver receiver = durableReceivers.remove(id);
       if (receiver == null) throw new WebApplicationException(HttpResponseCodes.SC_NOT_FOUND);
-      if (unsubscribe) receiver.unsubscribe();
-      receiver.close();
+      receiver.close(unsubscribe);
       return Response.status(HttpResponseCodes.SC_NO_CONTENT).build();
    }
 
@@ -83,15 +96,27 @@ public class TopicResource extends DestinationResource
                                          String callback,
                                          @Context HttpHeaders headers) throws Exception
    {
+      id = "durable/listeners/" + id;
       if (durableListeners.containsKey(id))
       {
          return Response.ok().build();
       }
       else
       {
+         System.out.println("Creating durable listener: " + id + " callback uri: " + callback);
+
          Connection connection = factory.createConnection();
          connection.setClientID(id);
-         DurableTopicListener receiver = new DurableTopicListener(id, destination, connection, callback, processor, processor.createSelector(headers));
+         DurableTopicListener receiver = null;
+         try
+         {
+            receiver = new DurableTopicListener(id, destination, connection, callback, processor, processor.createSelector(headers));
+         }
+         catch (Exception e)
+         {
+            try { connection.close(); } catch (Exception ignored) {}
+            throw e;
+         }
          durableListeners.put(id, receiver);
          return Response.status(HttpResponseCodes.SC_CREATED).build();
       }
@@ -102,10 +127,10 @@ public class TopicResource extends DestinationResource
    public Response closeDurableListener(@PathParam("id")String id,
                                         @QueryParam("unsubscribe") @DefaultValue("true")boolean unsubscribe) throws Exception
    {
+      id = "durable/listeners/" + id;
       DurableTopicListener receiver = durableListeners.remove(id);
       if (receiver == null) throw new WebApplicationException(HttpResponseCodes.SC_NOT_FOUND);
-      if (unsubscribe) receiver.unsubscribe();
-      receiver.close();
+      receiver.close(unsubscribe);
       return Response.status(HttpResponseCodes.SC_NO_CONTENT).build();
    }
 

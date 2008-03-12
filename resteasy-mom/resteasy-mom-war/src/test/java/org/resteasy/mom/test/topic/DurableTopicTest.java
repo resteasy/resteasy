@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TopicTest
+public class DurableTopicTest
 {
    private static final String RESTEASY_MOM_URI = "http://localhost:8080/resteasy-mom/";
-   private static final String RECEIVER_1 = RESTEASY_MOM_URI + "topics/testTopic/receivers/1";
+   private static final String RECEIVER_1 = RESTEASY_MOM_URI + "topics/testTopic/durable/receivers/1";
 
    private static String lastMessage;
    private static CountDownLatch latch;
@@ -43,26 +43,22 @@ public class TopicTest
    */
 
    @Test
-   public void testDummy()
-   {
-   }
-
-   @Test
-   public void testTopicReceiverClientAcknowledged() throws Exception
+   public void testDurableTopicReceiverClientAcknowledged() throws Exception
    {
       HttpClient client = new HttpClient();
 
       createReceiver1(client);
+
+      // test idempotence
+      {
+         PutMethod method = new PutMethod(RECEIVER_1);
+         int status = client.executeMethod(method);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         method.releaseConnection();
+
+      }
       try
       {
-         // test idempotence
-         {
-            PutMethod method = new PutMethod(RECEIVER_1);
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-            method.releaseConnection();
-
-         }
          postStupidMessage(client);
          post2ndStupidMessage(client);
 
@@ -93,7 +89,7 @@ public class TopicTest
    }
 
    @Test
-   public void testtopicListener() throws Exception
+   public void testDurableTopicListener() throws Exception
    {
       HttpServletDispatcher dispatcher = EmbeddedServlet.start();
       HttpClient client = new HttpClient();
@@ -101,7 +97,7 @@ public class TopicTest
       {
          dispatcher.getRegistry().addResource(Listener.class);
          {
-            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
+            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/listener", "text/plain", null));
             int status = client.executeMethod(method);
             Assert.assertEquals(HttpResponseCodes.SC_CREATED, status);
@@ -117,7 +113,7 @@ public class TopicTest
       }
       finally
       {
-         DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
+         DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/1");
          client.executeMethod(method);
          method.releaseConnection();
          EmbeddedServlet.stop();
@@ -125,7 +121,7 @@ public class TopicTest
    }
 
    @Test
-   public void testtopicListenerFailure() throws Exception
+   public void testDurableTopicListenerFailure() throws Exception
    {
       HttpServletDispatcher dispatcher = EmbeddedServlet.start();
       HttpClient client = new HttpClient();
@@ -133,7 +129,7 @@ public class TopicTest
       {
          dispatcher.getRegistry().addResource(Listener.class);
          {
-            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/errorTesting");
+            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/errorTesting");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8085/listener", "text/plain", null));
             int status = client.executeMethod(method);
             Assert.assertEquals(HttpResponseCodes.SC_CREATED, status);
@@ -147,7 +143,7 @@ public class TopicTest
       {
          try
          {
-            DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/errorTesting");
+            DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/errorTesting");
             client.executeMethod(method);
             method.releaseConnection();
          }
@@ -166,14 +162,18 @@ public class TopicTest
       @POST
       public Response post(String msg)
       {
-         if (!msg.equals(compareTo)) failure = true;
+         if (!msg.equals(compareTo))
+         {
+            System.out.println("***** FAILED IN BigMessageListener: " + msg);
+            failure = true;
+         }
          latch.countDown();
          return Response.ok().build();
       }
    }
 
    @Test
-   public void testtopicListenerBigMessage() throws Exception
+   public void testDurableTopicListenerBigMessage() throws Exception
    {
       HttpServletDispatcher dispatcher = EmbeddedServlet.start();
       HttpClient client = new HttpClient();
@@ -181,7 +181,7 @@ public class TopicTest
       {
          dispatcher.getRegistry().addResource(BigMessageListener.class);
          {
-            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
+            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/biglistener", "text/plain", null));
             int status = client.executeMethod(method);
             Assert.assertEquals(HttpResponseCodes.SC_CREATED, status);
@@ -208,7 +208,7 @@ public class TopicTest
       }
       finally
       {
-         DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
+         DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/1");
          client.executeMethod(method);
          method.releaseConnection();
          EmbeddedServlet.stop();
