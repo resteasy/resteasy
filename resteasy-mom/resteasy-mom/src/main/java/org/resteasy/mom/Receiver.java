@@ -21,36 +21,42 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class Receiver
+public abstract class Receiver
 {
-   private Destination destination;
-   private Connection connection;
-   private MessageConsumer consumer;
-   private Session session;
-   private Message currentMessage;
-   private MessageProcessor processor;
-   private String selector;
+   protected Destination destination;
+   protected Connection connection;
+   protected MessageConsumer consumer;
+   protected Session session;
+   protected Message currentMessage;
+   protected MessageProcessor processor;
+   protected String selector;
 
-   public Receiver(Destination destination, Connection connection, MessageProcessor processor, String selector) throws Exception
+   public Receiver(Connection connection, String selector, Destination destination, MessageProcessor processor)
    {
-      this.destination = destination;
       this.connection = connection;
-      this.processor = processor;
       this.selector = selector;
-      System.out.println("SELECTOR: " + selector);
+      this.destination = destination;
+      this.processor = processor;
+   }
+
+   protected Receiver(String selector, Destination destination, MessageProcessor processor)
+   {
+      this.selector = selector;
+      this.destination = destination;
+      this.processor = processor;
    }
 
    public MessageConsumer getConsumer() throws Exception
    {
       if (consumer == null)
       {
-         close();
-         this.session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+         this.session = getConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
 
          try
          {
-            consumer = session.createConsumer(destination, selector);
-            connection.start();
+            createConsumer();
+            System.out.println("COnnection started");
+            getConnection().start();
          }
          catch (Exception ex)
          {
@@ -60,6 +66,13 @@ public class Receiver
       }
       return consumer;
    }
+
+   protected void createConsumer()
+           throws JMSException
+   {
+      consumer = session.createConsumer(destination, selector);
+   }
+
 
    public synchronized void close()
    {
@@ -79,21 +92,7 @@ public class Receiver
       session = null;
    }
 
-   @POST
-   @Path("/head")
-   public synchronized Response getAndAcknowledge(@QueryParam("wait") @DefaultValue("-1")long wait) throws Exception
-   {
-      if (currentMessage != null)
-      {
-         return Response.status(HttpResponseCodes.SC_CONFLICT).build();
-      }
-      Message message = getMessage(wait);
-      Response response = processor.extractResponse(message);
-      message.acknowledge();
-      return response;
-   }
-
-   private Message getMessage(long wait) throws Exception
+   protected Message getMessage(long wait) throws Exception
    {
       System.out.println("wait time: " + wait);
       Message message = null;
@@ -127,4 +126,22 @@ public class Receiver
       currentMessage = null;
    }
 
+   @POST
+   @Path("/head")
+   public synchronized Response getAndAcknowledge(@QueryParam("wait") @DefaultValue("-1")long wait) throws Exception
+   {
+      if (currentMessage != null)
+      {
+         return Response.status(HttpResponseCodes.SC_CONFLICT).build();
+      }
+      Message message = getMessage(wait);
+      Response response = processor.extractResponse(message);
+      message.acknowledge();
+      return response;
+   }
+
+   protected Connection getConnection()
+   {
+      return connection;
+   }
 }

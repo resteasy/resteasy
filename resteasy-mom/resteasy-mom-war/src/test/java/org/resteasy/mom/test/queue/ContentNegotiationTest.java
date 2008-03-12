@@ -34,6 +34,11 @@ public class ContentNegotiationTest
 
    private static final String RESTEASY_MOM_URI = "http://localhost:8080/resteasy-mom/";
 
+   @Test
+   public void testDummy()
+   {
+   }
+
    @Path("/")
    public static class PlainTextListener
    {

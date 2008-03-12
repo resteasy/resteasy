@@ -21,27 +21,21 @@ import java.util.Map;
  */
 public class Listener implements MessageListener
 {
-   private Destination destination;
-   private Connection connection;
-   private MessageConsumer consumer;
-   private Session session;
-   private HttpClient httpClient = new HttpClient();
-   private String callback;
-   private MessageProcessor processor;
+   protected Destination destination;
+   protected Connection connection;
+   protected MessageConsumer consumer;
+   protected Session session;
+   protected HttpClient httpClient = new HttpClient();
+   protected String callback;
+   protected MessageProcessor processor;
 
-   public Listener(Destination destination, Connection connection, String callback, MessageProcessor processor, String selector) throws Exception
+   public Listener(Destination destination, Connection connection, String callback, MessageProcessor processor) throws Exception
    {
       this.destination = destination;
       this.connection = connection;
       this.callback = callback;
       this.session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       this.processor = processor;
-
-      System.out.println("Callback URI: " + callback);
-      System.out.println("SELECTOR : " + selector);
-      consumer = session.createConsumer(destination, selector);
-      consumer.setMessageListener(this);
-      connection.start();
    }
 
    protected boolean isDead(int status)

@@ -26,13 +26,13 @@ import java.util.Map;
  */
 public class MessageProcessor
 {
-   private Connection connection;
+   private Connection deadletterConnection;
    private Destination dlq;
    private int bufferSize = 100;
 
-   public MessageProcessor(Connection connection, Destination dlq, int bufferSize) throws Exception
+   public MessageProcessor(Connection deadletterConnection, Destination dlq, int bufferSize) throws Exception
    {
-      this.connection = connection;
+      this.deadletterConnection = deadletterConnection;
       this.dlq = dlq;
       this.bufferSize = bufferSize;
    }
@@ -201,9 +201,9 @@ public class MessageProcessor
    {
       try
       {
-         if (connection == null || dlq == null) return;
+         if (deadletterConnection == null || dlq == null) return;
          System.out.println("DEAD LETTER!!!!");
-         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+         Session session = deadletterConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
          try
          {
             MessageProducer producer = session.createProducer(dlq);

@@ -1,4 +1,4 @@
-package org.resteasy.mom.test.queue;
+package org.resteasy.mom.test.topic;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class QueueTest
+public class TopicTest
 {
    private static final String RESTEASY_MOM_URI = "http://localhost:8080/resteasy-mom/";
-   private static final String RECEIVER_1 = RESTEASY_MOM_URI + "queues/A/receivers/1";
+   private static final String RECEIVER_1 = RESTEASY_MOM_URI + "topics/testTopic/receivers/1";
 
    private static String lastMessage;
    private static CountDownLatch latch;
@@ -43,17 +43,10 @@ public class QueueTest
    */
 
    @Test
-   public void testDummy()
-   {
-   }
-
-   @Test
-   public void testQueueReceiverClientAcknowledged() throws Exception
+   public void testTopicReceiverClientAcknowledged() throws Exception
    {
       HttpClient client = new HttpClient();
 
-      postStupidMessage(client);
-      post2ndStupidMessage(client);
       createReceiver1(client);
 
       // test idempotence
@@ -64,44 +57,15 @@ public class QueueTest
          method.releaseConnection();
 
       }
+      postStupidMessage(client);
+      post2ndStupidMessage(client);
+
+
       getStupidMethod(client);
       getStupidMethod(client);
       acknowledge(client);
       get2ndStupidMethod(client);
       acknowledge(client);
-
-
-      postStupidMessage(client);
-      post2ndStupidMessage(client);
-      getStupidMethod(client);
-      deleteReceiver1(client);
-
-
-      createReceiver1(client);
-      getStupidMethod(client);
-      acknowledge(client);
-      get2ndStupidMethod(client);
-      acknowledge(client);
-      deleteReceiver1(client);
-   }
-
-   @Test
-   public void testQueueReceiverAutoAcknowledge() throws Exception
-   {
-      HttpClient client = new HttpClient();
-
-      postStupidMessage(client);
-      post2ndStupidMessage(client);
-      createReceiver1(client);
-      try
-      {
-         getStupidMethodViaPost(client, RECEIVER_1);
-         get2ndStupidMethodViaPost(client, RECEIVER_1);
-      }
-      finally
-      {
-         deleteReceiver1(client);
-      }
    }
 
    @Path("/")
@@ -118,7 +82,7 @@ public class QueueTest
    }
 
    @Test
-   public void testQueueListener() throws Exception
+   public void testtopicListener() throws Exception
    {
       HttpServletDispatcher dispatcher = EmbeddedServlet.start();
       HttpClient client = new HttpClient();
@@ -126,7 +90,7 @@ public class QueueTest
       {
          dispatcher.getRegistry().addResource(Listener.class);
          {
-            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "queues/A/listeners/1");
+            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/listener", "text/plain", null));
             int status = client.executeMethod(method);
             Assert.assertEquals(HttpResponseCodes.SC_CREATED, status);
@@ -142,7 +106,7 @@ public class QueueTest
       }
       finally
       {
-         DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "queues/A/listeners/1");
+         DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
          client.executeMethod(method);
          method.releaseConnection();
          EmbeddedServlet.stop();
@@ -150,7 +114,7 @@ public class QueueTest
    }
 
    @Test
-   public void testQueueListenerFailure() throws Exception
+   public void testtopicListenerFailure() throws Exception
    {
       HttpServletDispatcher dispatcher = EmbeddedServlet.start();
       HttpClient client = new HttpClient();
@@ -158,7 +122,7 @@ public class QueueTest
       {
          dispatcher.getRegistry().addResource(Listener.class);
          {
-            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "queues/A/listeners/errorTesting");
+            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/errorTesting");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8085/listener", "text/plain", null));
             int status = client.executeMethod(method);
             Assert.assertEquals(HttpResponseCodes.SC_CREATED, status);
@@ -172,7 +136,7 @@ public class QueueTest
       {
          try
          {
-            DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "queues/A/listeners/errorTesting");
+            DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/errorTesting");
             client.executeMethod(method);
             method.releaseConnection();
          }
@@ -198,7 +162,7 @@ public class QueueTest
    }
 
    @Test
-   public void testQueueListenerBigMessage() throws Exception
+   public void testtopicListenerBigMessage() throws Exception
    {
       HttpServletDispatcher dispatcher = EmbeddedServlet.start();
       HttpClient client = new HttpClient();
@@ -206,7 +170,7 @@ public class QueueTest
       {
          dispatcher.getRegistry().addResource(BigMessageListener.class);
          {
-            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "queues/A/listeners/1");
+            PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/biglistener", "text/plain", null));
             int status = client.executeMethod(method);
             Assert.assertEquals(HttpResponseCodes.SC_CREATED, status);
@@ -222,7 +186,7 @@ public class QueueTest
          BigMessageListener.compareTo = msg.toString();
 
 
-         PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
+         PostMethod method = new PostMethod(RESTEASY_MOM_URI + "topics/testTopic");
          method.setRequestEntity(new StringRequestEntity(BigMessageListener.compareTo, "text/plain", null));
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
@@ -233,7 +197,7 @@ public class QueueTest
       }
       finally
       {
-         DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "queues/A/listeners/1");
+         DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
          client.executeMethod(method);
          method.releaseConnection();
          EmbeddedServlet.stop();
@@ -315,25 +279,10 @@ public class QueueTest
       method.releaseConnection();
    }
 
-   private void get2ndStupidMethodViaPost(HttpClient client, String receiver)
-           throws IOException
-   {
-      PostMethod method = new PostMethod(receiver + "/head");
-      NameValuePair[] params = {new NameValuePair("wait", "1000")};
-      method.setQueryString(params);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-      byte[] responseBody = method.getResponseBody();
-      System.out.println("body length: " + responseBody.length);
-      String response = new String(responseBody, "US-ASCII");
-      Assert.assertEquals("2nd stupid message", response);
-      method.releaseConnection();
-   }
-
    private void post2ndStupidMessage(HttpClient client)
            throws IOException
    {
-      PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
+      PostMethod method = new PostMethod(RESTEASY_MOM_URI + "topics/testTopic");
       method.setRequestEntity(new StringRequestEntity("2nd stupid message", "text/plain", null));
       int status = client.executeMethod(method);
       Assert.assertEquals(HttpResponseCodes.SC_OK, status);
@@ -343,20 +292,11 @@ public class QueueTest
    private void postStupidMessage(HttpClient client)
            throws IOException
    {
-      PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
+      PostMethod method = new PostMethod(RESTEASY_MOM_URI + "topics/testTopic");
       method.setRequestEntity(new StringRequestEntity("stupid message", "text/plain", null));
       int status = client.executeMethod(method);
       Assert.assertEquals(HttpResponseCodes.SC_OK, status);
       method.releaseConnection();
    }
 
-   private void postStupidMessageXmlMessage(HttpClient client)
-           throws IOException
-   {
-      PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
-      method.setRequestEntity(new StringRequestEntity("<project><target>Hello World</target></project>", "application/xml", null));
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-      method.releaseConnection();
-   }
 }
