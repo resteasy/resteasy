@@ -2,7 +2,6 @@ package org.resteasy.mom;
 
 import org.resteasy.util.HttpResponseCodes;
 
-import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.naming.InitialContext;
@@ -19,29 +18,73 @@ import java.util.concurrent.ConcurrentHashMap;
 @Path("/")
 public class Destinations
 {
-   private static ConcurrentHashMap<String, QueueResource> queues = new ConcurrentHashMap<String, QueueResource>();
-   private static ConcurrentHashMap<String, TopicResource> topics = new ConcurrentHashMap<String, TopicResource>();
+   private ConcurrentHashMap<String, QueueResource> queues = new ConcurrentHashMap<String, QueueResource>();
+   private ConcurrentHashMap<String, TopicResource> topics = new ConcurrentHashMap<String, TopicResource>();
+
+   private ConnectionFactory factory;
+   private MessageProcessor processor;
+   private String queueJndiPrefix = "queue/";
+   private String topicJndiPrefix = "topic/";
 
 
-   protected static ConnectionFactory getConnectionFactory(InitialContext ctx) throws Exception
+   public void addQueue(String name, Destination queue) throws Exception
    {
-      return (ConnectionFactory) ctx.lookup("java:/ConnectionFactory");
+      QueueResource res = new QueueResource(name, factory.createConnection(), queue, processor);
+      queues.put(name, res);
    }
 
-   private static MessageProcessor processor;
-
-   private synchronized static MessageProcessor getMessageProcessor() throws Exception
+   public void addTopic(String name, Destination topic) throws Exception
    {
-      if (processor == null)
+      TopicResource res = new TopicResource(name, factory, factory.createConnection(), topic, processor);
+      topics.put(name, res);
+   }
+
+   public void setQueueJndiPrefix(String queueJndiPrefix)
+   {
+      this.queueJndiPrefix = queueJndiPrefix;
+   }
+
+   public void setTopicJndiPrefix(String topicJndiPrefix)
+   {
+      this.topicJndiPrefix = topicJndiPrefix;
+   }
+
+   public void setFactory(ConnectionFactory factory)
+   {
+      this.factory = factory;
+   }
+
+   public void setProcessor(MessageProcessor processor)
+   {
+      this.processor = processor;
+   }
+
+   public void stop()
+   {
+      for (QueueResource queue : queues.values())
       {
-         InitialContext ctx = new InitialContext();
-         Connection connection = getConnectionFactory(ctx).createConnection();
-         processor = new MessageProcessor(connection, getDLQ(ctx), 100);
-
+         try
+         {
+            queue.close();
+         }
+         catch (Exception ignored)
+         {
+            ignored.printStackTrace();
+         }
       }
-      return processor;
+      for (TopicResource topic : topics.values())
+      {
+         try
+         {
+            topic.close();
+         }
+         catch (Exception ignored)
+         {
+            ignored.printStackTrace();
+         }
+      }
+      processor.close();
    }
-
 
    @Path("/queues/{destination}")
    public QueueResource getQueue(@PathParam("destination")String name) throws Exception
@@ -53,11 +96,6 @@ public class Destinations
    public TopicResource getTopic(@PathParam("destination")String name) throws Exception
    {
       return getTopicResource(name);
-   }
-
-   public static Destination getDLQ(InitialContext ctx) throws Exception
-   {
-      return (Destination) ctx.lookup("queue/DLQ");
    }
 
    public QueueResource getQueueResource(String name) throws Exception
@@ -72,13 +110,13 @@ public class Destinations
       Destination destination = null;
       try
       {
-         destination = (Destination) ctx.lookup("queue/" + name);
+         destination = (Destination) ctx.lookup(queueJndiPrefix + name);
       }
       catch (NamingException e)
       {
          throw new WebApplicationException(e, HttpResponseCodes.SC_NOT_FOUND);
       }
-      queue = new QueueResource(name, getConnectionFactory(ctx).createConnection(), destination, getMessageProcessor());
+      queue = new QueueResource(name, factory.createConnection(), destination, processor);
       QueueResource tmp = queues.putIfAbsent(name, queue);
       if (tmp == null)
       {
@@ -104,14 +142,13 @@ public class Destinations
       Destination destination = null;
       try
       {
-         destination = (Destination) ctx.lookup("topic/" + name);
+         destination = (Destination) ctx.lookup(topicJndiPrefix + name);
       }
       catch (NamingException e)
       {
          throw new WebApplicationException(e, HttpResponseCodes.SC_NOT_FOUND);
       }
-      ConnectionFactory factory = getConnectionFactory(ctx);
-      topic = new TopicResource(name, factory, factory.createConnection(), destination, getMessageProcessor());
+      topic = new TopicResource(name, factory, factory.createConnection(), destination, processor);
       TopicResource tmp = topics.putIfAbsent(name, topic);
       if (tmp == null)
       {

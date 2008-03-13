@@ -190,7 +190,7 @@ public class TopicTest
          latch = new CountDownLatch(1);
 
          StringBuffer msg = new StringBuffer();
-         for (int i = 0; i < 100; i++)
+         for (int i = 0; i < 1000; i++)
          {
             msg.append(Integer.toString(i));
          }

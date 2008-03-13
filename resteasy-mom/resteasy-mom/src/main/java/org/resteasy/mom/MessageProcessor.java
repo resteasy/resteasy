@@ -37,6 +37,18 @@ public class MessageProcessor
       this.bufferSize = bufferSize;
    }
 
+   public void close()
+   {
+      try
+      {
+         deadletterConnection.close();
+      }
+      catch (JMSException ignored)
+      {
+         ignored.printStackTrace();
+      }
+   }
+
    public String createSelector(HttpHeaders headers)
    {
       StringBuffer selector = new StringBuffer();

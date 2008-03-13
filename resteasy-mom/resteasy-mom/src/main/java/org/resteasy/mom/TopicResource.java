@@ -37,6 +37,33 @@ public class TopicResource extends DestinationResource
       this.factory = factory;
    }
 
+   public void close() throws Exception
+   {
+      for (DurableTopicReceiver receiver : durableReceivers.values())
+      {
+         try
+         {
+            receiver.close(false);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      for (DurableTopicListener receiver : durableListeners.values())
+      {
+         try
+         {
+            receiver.close(false);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      super.close();
+   }
+
 
    @Path("/durable/receivers/{id}")
    public DurableTopicReceiver getDurableReceiver(@PathParam("id")String id)

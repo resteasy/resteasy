@@ -6,11 +6,15 @@
    <display-name>Archetype Created Web Application</display-name>
    <context-param>
       <param-name>resteasy.scan</param-name>
-      <param-value>true</param-value>
+      <param-value>false</param-value>
    </context-param>
 
    <listener>
       <listener-class>org.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+   </listener>
+
+   <listener>
+      <listener-class>org.resteasy.mom.ResteasyMomBootstrap</listener-class>
    </listener>
 
    <servlet>
