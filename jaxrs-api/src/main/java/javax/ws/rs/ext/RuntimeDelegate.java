@@ -19,7 +19,7 @@
 
 package javax.ws.rs.ext;
 
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
@@ -39,7 +39,7 @@ public abstract class RuntimeDelegate
    public static final String JAXRS_RUNTIME_DELEGATE_PROPERTY
            = "javax.ws.rs.ext.RuntimeDelegate";
    private static final String JAXRS_DEFAULT_RUNTIME_DELEGATE
-           = "org.resteasy.spi.ResteasyProviderFactory";
+           = "com.sun.ws.rs.ext.RuntimeDelegateImpl";
 
    private static AtomicReference<RuntimeDelegate> rdr =
            new AtomicReference<RuntimeDelegate>();
@@ -48,14 +48,10 @@ public abstract class RuntimeDelegate
    {
    }
 
-   public static void setDelegate(RuntimeDelegate delegate)
-   {
-      rdr.set(delegate);
-   }
-
    /**
-    * Obtain a RuntimeDelegate instance. The first invocation will create
-    * an instance which will then be cached for future use.
+    * Obtain a RuntimeDelegate instance. If an instance had not already been
+    * created and set via {@link #setInstance}, the first invocation will
+    * create an instance which will then be cached for future use.
     * <p/>
     * <p/>
     * The algorithm used to locate the RuntimeDelegate subclass to use consists
@@ -82,13 +78,14 @@ public abstract class RuntimeDelegate
     * Finally, a default implementation class name is used.
     * </li>
     * </ul>
+    *
+    * @return an instance of RuntimeDelegate
     */
    public static RuntimeDelegate getInstance()
    {
       RuntimeDelegate rd = rdr.get();
       if (rd != null)
          return rd;
-      if (rd == null) return null;
       synchronized (rdr)
       {
          rd = rdr.get();
@@ -117,38 +114,75 @@ public abstract class RuntimeDelegate
          }
          catch (Exception ex)
          {
-            throw new WebApplicationException(ex, 500);
+            throw new RuntimeException(ex);
          }
-         rdr.set(rd);
+         rdr.compareAndSet(null, rd);
       }
-      return rd;
+      return rdr.get();
    }
 
    /**
-    * Create a new instance of a UriBuilder.
+    * Set the runtime delegate that will be used by JAX-RS classes. If this method
+    * is not called prior to {@link #getInstance} then an implementation will
+    * be sought as described in {@link #getInstance}.
+    *
+    * @param rd the runtime delegate instance
+    */
+   public static void setInstance(RuntimeDelegate rd)
+   {
+      rdr.set(rd);
+   }
+
+   /**
+    * Create a new instance of a {@link javax.ws.rs.core.UriBuilder} with
+    * automatic encoding enabled.
     *
     * @return new UriBuilder instance
+    * @see javax.ws.rs.core.UriBuilder
     */
    public abstract UriBuilder createUriBuilder();
 
    /**
-    * Create a new instance of a ResponseBuilder.
+    * Create a new instance of a {@link javax.ws.rs.core.Response.ResponseBuilder}.
     *
     * @return new ResponseBuilder instance
+    * @see javax.ws.rs.core.Response.ResponseBuilder
     */
    public abstract ResponseBuilder createResponseBuilder();
 
    /**
-    * Create a new instance of a VariantListBuilder.
+    * Create a new instance of a {@link javax.ws.rs.core.Variant.VariantListBuilder}.
     *
     * @return new VariantListBuilder instance
+    * @see javax.ws.rs.core.Variant.VariantListBuilder
     */
    public abstract VariantListBuilder createVariantListBuilder();
 
    /**
+    * Create a configured instance of the supplied endpoint type. How the
+    * returned endpoint instance is published is dependent on the type of
+    * endpoint.
+    *
+    * @param applicationConfig the application configuration
+    * @param endpointType      the type of endpoint instance to be created.
+    * @return a configured instance of the requested type.
+    * @throws java.lang.IllegalArgumentException
+    *          if the requested endpoint
+    *          type is not supported.
+    * @throws java.lang.UnsupportedOperationException
+    *          if the implementation
+    *          supports no endpoint types.
+    */
+   public abstract <T> T createEndpoint(ApplicationConfig applicationConfig,
+                                        Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException;
+
+   /**
     * Obtain an instance of a HeaderDelegate for the supplied class. An
-    * implementation is required to support the following classes:
+    * implementation is required to support the following values for type:
     * Cookie, CacheControl, EntityTag, NewCookie, MediaType.
+    *
+    * @param type the class of the header
+    * @return an instance of HeaderDelegate for the supplied type
     */
    public abstract <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type);
 
@@ -156,6 +190,8 @@ public abstract class RuntimeDelegate
     * Defines the contract for a delegate that is responsible for
     * converting between the String form of a HTTP header and
     * the corresponding JAX-RS type <code>T</code>.
+    *
+    * @param T a JAX-RS type that corresponds to the value of a HTTP header
     */
    public static interface HeaderDelegate<T>
    {

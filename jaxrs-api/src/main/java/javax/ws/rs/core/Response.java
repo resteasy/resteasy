@@ -29,6 +29,9 @@ import java.util.List;
  * an application needs to provide metadata to the runtime. An application
  * class can extend this class directly or can use one the static
  * methods to create an instance using a ResponseBuilder.
+ * <p/>
+ * Several methods have parameters of type URI, {@link UriBuilder} provides
+ * convenient methods to create such values as does <code>URI.create()</code>.
  *
  * @see Response.ResponseBuilder
  */
@@ -58,6 +61,31 @@ public abstract class Response
     * @return response metadata as a map
     */
    public abstract MultivaluedMap<String, Object> getMetadata();
+
+   /**
+    * Create a new ResponseBuilder by performing a shallow copy of an
+    * existing Response. The returned builder has its own metadata map but
+    * entries are simply references to the keys and values contained in the
+    * supplied Response metadata map.
+    *
+    * @param response a Response from which the status code, entity and metadata
+    *                 will be copied
+    * @return a new ReponseBuilder
+    */
+   public static ResponseBuilder fromResponse(Response response)
+   {
+      ResponseBuilder b = status(response.getStatus());
+      b.entity(response.getEntity());
+      for (String headerName : response.getMetadata().keySet())
+      {
+         List<Object> headerValues = response.getMetadata().get(headerName);
+         for (Object headerValue : headerValues)
+         {
+            b.header(headerName, headerValue);
+         }
+      }
+      return b;
+   }
 
    /**
     * Create a new ResponseBuilder with the supplied status.
@@ -153,11 +181,12 @@ public abstract class Response
    }
 
    /**
-    * Create a new ResponseBuilder for a created resource.
+    * Create a new ResponseBuilder for a created resource, set the location
+    * header using the supplied value.
     *
     * @param location the URI of the new resource. If a relative URI is
     *                 supplied it will be converted into an absolute URI by resolving it
-    *                 relative to the base URI (see {@link UriInfo#getBaseUri}).
+    *                 relative to the request URI (see {@link UriInfo#getRequestUri}).
     * @return a new ResponseBuilder
     */
    public static ResponseBuilder created(URI location)
@@ -202,9 +231,12 @@ public abstract class Response
    }
 
    /**
-    * Create a new ResponseBuilder with a not-modified status.
+    * Create a new ResponseBuilder with a not-modified status
+    * and a strong entity tag. This is a shortcut
+    * for <code>notModified(new EntityTag(<i>value</i>))</code>.
     *
-    * @param tag a tag for the unmodified entity
+    * @param tag the string content of a strong entity tag. The JAX-RS
+    *            runtime will quote the supplied value when creating the header.
     * @return a new ResponseBuilder
     */
    public static ResponseBuilder notModified(String tag)
@@ -215,11 +247,28 @@ public abstract class Response
    }
 
    /**
+    * Create a new ResponseBuilder for a redirection. Used in the
+    * redirect-after-POST (aka POST/redirect/GET) pattern.
+    *
+    * @param location the redirection URI. If a relative URI is
+    *                 supplied it will be converted into an absolute URI by resolving it
+    *                 relative to the base URI of the application (see
+    *                 {@link UriInfo#getBaseUri}).
+    * @return a new ResponseBuilder
+    */
+   public static ResponseBuilder seeOther(URI location)
+   {
+      ResponseBuilder b = status(303).location(location);
+      return b;
+   }
+
+   /**
     * Create a new ResponseBuilder for a temporary redirection.
     *
-    * @param location the URI of the new resource. If a relative URI is
+    * @param location the redirection URI. If a relative URI is
     *                 supplied it will be converted into an absolute URI by resolving it
-    *                 relative to the base URI (see {@link UriInfo#getBaseUri}).
+    *                 relative to the base URI of the application (see
+    *                 {@link UriInfo#getBaseUri}).
     * @return a new ResponseBuilder
     */
    public static ResponseBuilder temporaryRedirect(URI location)
@@ -249,9 +298,12 @@ public abstract class Response
     * <pre>@POST
     * Response addWidget(...) {
     *   Widget w = ...
-    *   URI widgetId = ...
-    *   return Response.created(w, widgetId).build();
+    *   URI widgetId = UriBuilder.fromResource(Widget.class)...
+    *   return Response.created(widgetId).build();
     * }</pre>
+    * <p/>
+    * Several methods have parameters of type URI, {@link UriBuilder} provides
+    * convenient methods to create such values as does <code>URI.create()</code>.
     */
    public static abstract class ResponseBuilder
    {
@@ -283,6 +335,13 @@ public abstract class Response
        */
       public abstract Response build();
 
+      /**
+       * Create a copy of the ResponseBuilder preserving its state.
+       *
+       * @return a copy of the ResponseBuilder
+       */
+      @Override
+      public abstract ResponseBuilder clone();
 
       /**
        * Set the status on the ResponseBuilder.
@@ -344,20 +403,20 @@ public abstract class Response
       /**
        * Set the location on the ResponseBuilder.
        *
-       * @param location the URI of the new resource. If a relative URI is
+       * @param location the location. If a relative URI is
        *                 supplied it will be converted into an absolute URI by resolving it
-       *                 relative to the base URI (see {@link UriInfo#getBaseUri}).
-       * @return a new ResponseBuilder
+       *                 relative to the base URI of the application (see
+       *                 {@link UriInfo#getBaseUri}).
+       * @return the updated ResponseBuilder
        */
       public abstract ResponseBuilder location(URI location);
 
       /**
        * Set the content location on the ResponseBuilder.
        *
-       * @param location the URI of the new resource. If a relative URI is
-       *                 supplied it will be converted into an absolute URI by resolving it
-       *                 relative to the base URI (see {@link UriInfo#getBaseUri}).
-       * @return a new ResponseBuilder
+       * @param location the content location. Relative or absolute URIs
+       *                 may be used for the value of content location.
+       * @return the updated ResponseBuilder
        */
       public abstract ResponseBuilder contentLocation(URI location);
 
@@ -370,7 +429,8 @@ public abstract class Response
       public abstract ResponseBuilder tag(EntityTag tag);
 
       /**
-       * Set a strong entity tag on the ResponseBuilder.
+       * Set a strong entity tag on the ResponseBuilder. This is a shortcut
+       * for <code>tag(new EntityTag(<i>value</i>))</code>.
        *
        * @param tag the string content of a strong entity tag. The JAX-RS
        *            runtime will quote the supplied value when creating the header.

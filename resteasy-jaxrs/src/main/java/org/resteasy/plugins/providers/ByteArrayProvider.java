@@ -6,12 +6,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -21,21 +21,20 @@ import java.io.OutputStream;
 @ConsumeMime("*/*")
 public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBodyWriter<byte[]>
 {
-   public boolean isReadable(Class<?> type)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return type.isArray() && type.getComponentType().equals(byte.class);
    }
 
-   public byte[] readFrom(Class<byte[]> type, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public byte[] readFrom(Class<byte[]> type, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream));
 
       byte[] buffer = new byte[100];
       int wasRead = 0;
       do
       {
-         wasRead = entityStream.read(buffer, 0, 100);
+         wasRead = entityStream.read(buffer);
          if (wasRead > 0)
          {
             baos.write(buffer, 0, wasRead);
@@ -44,7 +43,7 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
       return baos.toByteArray();
    }
 
-   public boolean isWriteable(Class<?> type)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return type.isArray() && type.getComponentType().equals(byte.class);
    }
@@ -54,7 +53,7 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
       return bytes.length;
    }
 
-   public void writeTo(byte[] bytes, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(byte[] bytes, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       entityStream.write(bytes);
    }

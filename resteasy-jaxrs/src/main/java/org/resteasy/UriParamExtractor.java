@@ -4,7 +4,8 @@ import org.resteasy.spi.HttpInput;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
-import java.lang.reflect.Method;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -17,11 +18,11 @@ public class UriParamExtractor implements ParameterExtractor
    private StringParameterExtractor extractor;
    private String paramName;
 
-   public UriParamExtractor(ResourceInvoker invoker, Method method, String paramName, int index, String defaultValue)
+   public UriParamExtractor(ResourceInvoker invoker, Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue)
    {
-      if (method.getParameterTypes()[index].equals(PathSegment.class) == false)
+      if (type.equals(PathSegment.class) == false)
       {
-         extractor = new StringParameterExtractor(index, method, paramName, "@" + PathParam.class.getSimpleName(), defaultValue);
+         extractor = new StringParameterExtractor(type, genericType, paramName, "@" + PathParam.class.getSimpleName(), defaultValue, target);
       }
       this.paramName = paramName;
       this.invoker = invoker;

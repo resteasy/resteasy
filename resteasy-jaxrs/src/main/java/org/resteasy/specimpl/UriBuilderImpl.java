@@ -115,10 +115,9 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
-   public UriBuilder replacePath(String path) throws IllegalArgumentException
+   public UriBuilder replacePath(String... segments) throws IllegalArgumentException
    {
-      this.path = path;
-      if (path != null && !path.startsWith("/")) this.path = "/" + path;
+      this.path = paths(null, segments);
       return this;
    }
 
@@ -264,7 +263,7 @@ public class UriBuilderImpl extends UriBuilder
    }
 
 
-   public URI build(Map<String, String> values) throws IllegalArgumentException, UriBuilderException
+   public URI build(Map<String, Object> values) throws IllegalArgumentException, UriBuilderException
    {
       if (values.size() <= 0 || path == null) return build();
       if (path.startsWith("/")) path = path.substring(1);
@@ -276,10 +275,10 @@ public class UriBuilderImpl extends UriBuilder
          if (matcher.matches())
          {
             String uriParamName = matcher.group(2);
-            String value = values.get(uriParamName);
+            Object value = values.get(uriParamName);
             if (value == null)
                throw new IllegalArgumentException("uri parameter {" + uriParamName + "} does not exist as a value");
-            paths[i] = value;
+            paths[i] = value.toString();
          }
          i++;
       }
@@ -304,25 +303,26 @@ public class UriBuilderImpl extends UriBuilder
       return params;
    }
 
-   public URI build(String... values) throws IllegalArgumentException, UriBuilderException
+   public URI build(Object... values) throws IllegalArgumentException, UriBuilderException
    {
       if (values.length <= 0) return build();
       List<String> params = getUriParamNamesInDeclarationOrder();
       if (params.size() == 0) throw new IllegalArgumentException("There are no @PathParams");
 
-      Map<String, String> pathParams = new HashMap<String, String>();
+      Map<String, Object> pathParams = new HashMap<String, Object>();
 
       int i = 0;
 
-      for (String val : values)
+      for (Object val : values)
       {
          String pathParam = params.get(i++);
          if (pathParams.containsKey(pathParam))
             throw new IllegalArgumentException("More values passed in than there are @PathParams");
-         pathParams.put(pathParam, val);
+         pathParams.put(pathParam, val.toString());
       }
       return build(pathParams);
    }
+
 
    public String getHost()
    {

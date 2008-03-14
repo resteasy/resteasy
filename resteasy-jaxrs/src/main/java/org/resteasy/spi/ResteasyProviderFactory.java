@@ -10,6 +10,7 @@ import org.resteasy.specimpl.UriBuilderImpl;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
@@ -19,6 +20,8 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +44,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    public static void setInstance(ResteasyProviderFactory factory)
    {
       pfr.set(factory);
-      RuntimeDelegate.setDelegate(factory);
+      RuntimeDelegate.setInstance(factory);
    }
 
    public static ResteasyProviderFactory getInstance()
@@ -122,12 +125,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       }
    }
 
-   public <T> MessageBodyReader<T> createMessageBodyReader(Class<T> type, MediaType mediaType)
+   public <T> MessageBodyReader<T> createMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<MessageBodyReader> readers = messageBodyReaders.getPossible(mediaType);
       for (MessageBodyReader reader : readers)
       {
-         if (reader.isReadable(type))
+         if (reader.isReadable(type, genericType, annotations))
          {
             return (MessageBodyReader<T>) reader;
          }
@@ -135,16 +138,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       return null;
    }
 
-   public <T> MessageBodyWriter<T> createMessageBodyWriter(Class<T> type, MediaType mediaType)
+   public <T> MessageBodyWriter<T> createMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<MessageBodyWriter> writers = messageBodyWriters.getPossible(mediaType);
       for (MessageBodyWriter writer : writers)
       {
-         if (writer.isWriteable(type))
+         if (writer.isWriteable(type, genericType, annotations))
          {
             return (MessageBodyWriter<T>) writer;
          }
       }
+      return null;
+   }
+
+   public <T> T createEndpoint(ApplicationConfig applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
+   {
       return null;
    }
 }

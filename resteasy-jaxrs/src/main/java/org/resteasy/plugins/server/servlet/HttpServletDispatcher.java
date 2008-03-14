@@ -24,8 +24,11 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -225,7 +228,20 @@ public class HttpServletDispatcher extends HttpServlet
             {
                rtnType = MediaType.parse("*/*");
             }
-            MessageBodyWriter writer = providerFactory.createMessageBodyWriter(responseImpl.getEntity().getClass(), rtnType);
+
+            Class type = null;
+            if (responseImpl.getEntity() == null) type = invoker.getMethod().getReturnType();
+            else type = responseImpl.getEntity().getClass();
+
+            Type genericType = null;
+            if (!Response.class.equals(invoker.getMethod().getReturnType()))
+            {
+               genericType = invoker.getMethod().getGenericReturnType();
+            }
+
+            Annotation[] annotations = invoker.getMethod().getAnnotations();
+
+            MessageBodyWriter writer = providerFactory.createMessageBodyWriter(type, genericType, annotations, rtnType);
             if (writer == null)
             {
                throw new RuntimeException("Could not find MessageBodyWriter for response object of type: " + responseImpl.getEntity().getClass() + " of media type: " + rtnType);
@@ -237,7 +253,15 @@ public class HttpServletDispatcher extends HttpServlet
                //System.out.println("JAX-RS Content Size: " + size);
                response.setContentLength((int) size);
                response.setContentType(rtnType.toString());
-               writer.writeTo(responseImpl.getEntity(), rtnType, outputHeaders, response.getOutputStream());
+               writer.writeTo(responseImpl.getEntity(), invoker.getMethod().getGenericReturnType(), invoker.getMethod().getAnnotations(), rtnType, outputHeaders, response.getOutputStream());
+               if (Response.class.equals(invoker.getMethod().getReturnType()))
+               {
+                  writer.writeTo(responseImpl.getEntity(), genericType, annotations, rtnType, outputHeaders, response.getOutputStream());
+
+               }
+               else
+               {
+               }
             }
             catch (IOException e)
             {

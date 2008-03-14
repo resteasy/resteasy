@@ -151,4 +151,13 @@ public class UriInfoImpl implements UriInfo
       throw new RuntimeException("NOT IMPLEMENTED");
    }
 
+   public List<String> getAncestorResourceURIs()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
+
+   public List<Object> getAncestorResources()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
 }

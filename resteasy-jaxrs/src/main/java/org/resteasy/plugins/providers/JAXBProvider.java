@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:hbraun@redhat.com">Heiko Braun</a>
@@ -24,12 +26,12 @@ import java.io.OutputStream;
 @ConsumeMime({"text/xml", "application/xml"})
 public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
-   public boolean isReadable(Class<?> aClass)
+   public boolean isReadable(Class<?> aClass, Type genericType, Annotation[] annotations)
    {
       return aClass.isAnnotationPresent(XmlRootElement.class);
    }
 
-   public java.lang.Object readFrom(Class<java.lang.Object> aClass, MediaType mediaType, MultivaluedMap<String, String> multivaluedMap, InputStream inputStream) throws IOException
+   public Object readFrom(Class<Object> aClass, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream inputStream) throws IOException
    {
       try
       {
@@ -47,9 +49,9 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
       }
    }
 
-   public boolean isWriteable(Class<?> aClass)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
-      return aClass.isAnnotationPresent(XmlRootElement.class);
+      return type.isAnnotationPresent(XmlRootElement.class);
    }
 
    public long getSize(java.lang.Object object)
@@ -57,7 +59,7 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
       return -1;
    }
 
-   public void writeTo(java.lang.Object object, MediaType mediaType, MultivaluedMap<String, Object> multivaluedMap, OutputStream outputStream) throws IOException
+   public void writeTo(Object object, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream outputStream) throws IOException
    {
       try
       {

@@ -11,34 +11,44 @@
  */
 
 /*
- * HeaderParam.java
+ * CookieParam.java
  *
- * Created on January 24, 2007, 2:33 PM
+ * Created on November 16, 2006, 2:04 PM
  *
  */
 
 package javax.ws.rs;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Binds a cookie to a Java method parameter.
+ * Binds the value of a HTTP cookie to a Java method parameter.
+ * A default value can be specified using the {@link DefaultValue}
+ * annotation.
  * <p/>
- * Parameter can be a cookie object or primitive value
+ * The type of the annotated parameter must either:
+ * <ul>
+ * <li>Be {@link javax.ws.rs.core.Cookie}</li>
+ * <li>Be a primitive type</li>
+ * <li>Have a constructor that accepts a single String argument</li>
+ * <li>Have a static method named <code>valueOf</code> that accepts a single
+ * String argument (see, for example, {@link Integer#valueOf(String)})
+ * </ul>
+ *
+ * @see DefaultValue
+ * @see javax.ws.rs.core.Cookie
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 public @interface CookieParam
 {
    /**
-    * Defines the name of the HTTP header whose value will be used
+    * Defines the name of the HTTP cookie whose value will be used
     * to initialize the value of the annotated method argument, class field or
-    * bean property. Case insensitive.
+    * bean property.
     */
-   public abstract String value();
+   String value();
 }

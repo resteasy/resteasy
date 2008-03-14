@@ -37,6 +37,17 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return new ResponseImpl(entity, status, metadata, newCookies);
    }
 
+   @Override
+   public Response.ResponseBuilder clone()
+   {
+      ResponseBuilderImpl impl = new ResponseBuilderImpl();
+      impl.metadata.putAll(metadata);
+      impl.entity = entity;
+      impl.cookies.addAll(cookies);
+      impl.status = status;
+      return impl;
+   }
+
    public Response.ResponseBuilder status(int status)
    {
       this.status = status;

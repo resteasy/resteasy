@@ -26,12 +26,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The @Context annotation is used to inject request information into a class
+ * The @Context annotation is used to inject information into a class
  * field or method parameter.
  *
  * @see UriInfo
  * @see Request
  * @see HttpHeaders
+ * @see SecurityContext
+ * @see javax.ws.rs.ext.ContextResolver
+ * @see javax.ws.rs.ext.MessageBodyWorkers
  */
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

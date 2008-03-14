@@ -26,12 +26,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks an implementation of MessageBodyReader or MessageBodyWriter, an
- * annotated class MUST implement either or both of these interfaces.
+ * Marks an implementation of {@link ContextResolver}, {@link MessageBodyReader}
+ * or {@link MessageBodyWriter}. An annotated class MUST implement one or more of
+ * these interfaces.
+ *
+ * @see MessageBodyReader
+ * @see MessageBodyWriter
+ * @see ContextResolver
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Provider {
-    
+public @interface Provider
+{
+
 }

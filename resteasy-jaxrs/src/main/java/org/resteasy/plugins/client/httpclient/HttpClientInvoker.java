@@ -53,9 +53,10 @@ abstract public class HttpClientInvoker extends ClientInvoker
          if (param instanceof MessageBodyParameterMarshaller)
          {
             MessageBodyParameterMarshaller bodyMarshaller = (MessageBodyParameterMarshaller) param;
-            body = new BodyRequestEntity(args[i++], bodyMarshaller, output.getOutputHeaders());
+            body = new BodyRequestEntity(args[i], method.getGenericParameterTypes()[i], method.getParameterAnnotations()[i], bodyMarshaller, output.getOutputHeaders());
          }
-         else param.marshall(args[i++], uri, output);
+         else param.marshall(args[i], uri, output);
+         i++;
       }
 
       String url = null;
@@ -120,7 +121,7 @@ abstract public class HttpClientInvoker extends ClientInvoker
                mediaType = produce.value()[0];
             }
             MediaType media = MediaType.parse(mediaType);
-            MessageBodyReader reader = providerFactory.createMessageBodyReader(method.getReturnType(), media);
+            MessageBodyReader reader = providerFactory.createMessageBodyReader(method.getReturnType(), method.getGenericReturnType(), method.getAnnotations(), media);
             if (reader == null)
                throw new RuntimeException("Unable to find a message body reader for GET " + url + " content-type: " + mediaType);
             MultivaluedMap<String, String> responseHeaders = new MultivaluedMapImpl<String, String>();
@@ -130,7 +131,8 @@ abstract public class HttpClientInvoker extends ClientInvoker
             }
             try
             {
-               return reader.readFrom(method.getReturnType(), media, responseHeaders, baseMethod.getResponseBodyAsStream());
+               return reader.readFrom(method.getReturnType(), method.getGenericReturnType(), media, method.getAnnotations(), responseHeaders, baseMethod.getResponseBodyAsStream());
+
             }
             catch (IOException e)
             {

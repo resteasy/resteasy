@@ -26,24 +26,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Binds a HTTP header to a Java method parameter.
- * A default value can be specified using the DefaultValue annotation.
- * The class of the annotated parameter must
- * have a constructor
- * that accepts a single String or List<String> argument, or a static method 
- * named <code>valueOf</code> that accepts a single String argument
- * (see, for example, {@link Integer#valueOf(String)}).
- * 
+ * Binds a HTTP header to a Java method parameter. Where multiple headers of
+ * the same name exist in a request, the first value is used - see
+ * {@link javax.ws.rs.core.HttpHeaders} for a means of retrieving all values
+ * of particular header. A default value can be specified using the
+ * {@link DefaultValue} annotation.
+ * <p/>
+ * The type of the annotated parameter must either:
+ * <ul>
+ * <li>Be a primitive type</li>
+ * <li>Have a constructor that accepts a single String argument</li>
+ * <li>Have a static method named <code>valueOf</code> that accepts a single
+ * String argument (see, for example, {@link Integer#valueOf(String)})
+ * </ul>
+ *
  * @see DefaultValue
+ * @see javax.ws.rs.core.HttpHeaders
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface HeaderParam {
-    /**
-     * Defines the name of the HTTP header whose value will be used
-     * to initialize the value of the annotated method argument, class field or
-     * bean property. Case insensitive.
-     */
-    String value();
+public @interface HeaderParam
+{
+   /**
+    * Defines the name of the HTTP header whose value will be used
+    * to initialize the value of the annotated method argument, class field or
+    * bean property. Case insensitive.
+    */
+   String value();
 }

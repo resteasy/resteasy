@@ -19,92 +19,107 @@
 
 package javax.ws.rs.core;
 
-import java.text.ParseException;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * An abstraction for the value of a HTTP Entity Tag, used as the value of an ETag response header.
+ *
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP/1.1 section 3.11</a>
  */
-public class EntityTag {
-    
-    private String value;
-    private boolean weak;
-    
-    private static final HeaderDelegate<EntityTag> delegate = 
-            RuntimeDelegate.getInstance().createHeaderDelegate(EntityTag.class);
+public class EntityTag
+{
 
-    /**
-     * Creates a new instance of a strong EntityTag
-     * @param value the value of the tag
-     */
-    public EntityTag(String value) {
-        this.value = value;
-        this.weak = false;
-    }
-    
-    /**
-     * Creates a new instance of an EntityTag
-     * @param value the value of the tag
-     * @param weak true if this represents a weak tag, false otherwise
-     */
-    public EntityTag(String value, boolean weak) {
-        this.value = value;
-        this.weak = weak;
-    }
-    
-    /**
-     * Creates a new instance of EntityTag by parsing the supplied string.
-     * @param value the entity tag string
-     * @return the newly created EntityTag
-     * @throws IllegalArgumentException if the supplied string cannot be parsed
-     */
-    public static EntityTag parse(String value) throws IllegalArgumentException {
-        return delegate.fromString(value);
-    }
-    
-    /**
-     * Check the strength of an EntityTag
-     * @return true if this represents a weak tag, false otherwise
-     */
-    public boolean isWeak() {
-        return weak;
-    }
-    
-    /**
-     * Get the value of an EntityTag
-     * @return the value of the tag
-     */
-    public String getValue() {
-        return value;
-    }
-    
-    /**
-     * Compares obj to this tag to see if they are the same considering weakness and
-     * value.
-     * @param obj the object to compare to
-     * @return true if the two tags are the same, false otherwise.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (!(obj instanceof EntityTag))
-            return super.equals(obj);
-        EntityTag other = (EntityTag)obj;
-        if (value.equals(other.getValue()) && weak==other.isWeak())
-            return true;
-        return false;
-    }
+   private String value;
+   private boolean weak;
 
-    /**
-     * Convert the entity tag to a string suitable for use as the value of the
-     * corresponding HTTP header.
-     * @return a stringified entity tag
-     */
-    @Override
-    public String toString() {
-        return delegate.toString(this);
-    }
+   private static final HeaderDelegate<EntityTag> delegate =
+           RuntimeDelegate.getInstance().createHeaderDelegate(EntityTag.class);
+
+   /**
+    * Creates a new instance of a strong EntityTag.
+    *
+    * @param value the value of the tag, quotes not included.
+    */
+   public EntityTag(String value)
+   {
+      this.value = value;
+      this.weak = false;
+   }
+
+   /**
+    * Creates a new instance of an EntityTag
+    *
+    * @param value the value of the tag, quotes not included.
+    * @param weak  true if this represents a weak tag, false otherwise
+    */
+   public EntityTag(String value, boolean weak)
+   {
+      this.value = value;
+      this.weak = weak;
+   }
+
+   /**
+    * Creates a new instance of EntityTag by parsing the supplied string.
+    *
+    * @param value the entity tag string
+    * @return the newly created EntityTag
+    * @throws IllegalArgumentException if the supplied string cannot be parsed
+    */
+   public static EntityTag parse(String value) throws IllegalArgumentException
+   {
+      return delegate.fromString(value);
+   }
+
+   /**
+    * Check the strength of an EntityTag
+    *
+    * @return true if this represents a weak tag, false otherwise
+    */
+   public boolean isWeak()
+   {
+      return weak;
+   }
+
+   /**
+    * Get the value of an EntityTag
+    *
+    * @return the value of the tag
+    */
+   public String getValue()
+   {
+      return value;
+   }
+
+   /**
+    * Compares obj to this tag to see if they are the same considering weakness and
+    * value.
+    *
+    * @param obj the object to compare to
+    * @return true if the two tags are the same, false otherwise.
+    */
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (obj == null)
+         return false;
+      if (!(obj instanceof EntityTag))
+         return super.equals(obj);
+      EntityTag other = (EntityTag) obj;
+      if (value.equals(other.getValue()) && weak == other.isWeak())
+         return true;
+      return false;
+   }
+
+   /**
+    * Convert the entity tag to a string suitable for use as the value of the
+    * corresponding HTTP header.
+    *
+    * @return a stringified entity tag
+    */
+   @Override
+   public String toString()
+   {
+      return delegate.toString(this);
+   }
 }

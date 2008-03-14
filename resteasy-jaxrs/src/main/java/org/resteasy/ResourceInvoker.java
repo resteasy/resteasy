@@ -16,6 +16,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +65,7 @@ public abstract class ResourceInvoker
       for (i = 0; i < method.getParameterTypes().length; i++)
       {
          Class type = method.getParameterTypes()[i];
+         Type genericType = method.getGenericParameterTypes()[i];
          Annotation[] annotations = method.getParameterAnnotations()[i];
 
          DefaultValue defaultValue = FindAnnotation.findAnnotation(method.getParameterAnnotations()[i], DefaultValue.class);
@@ -78,23 +80,23 @@ public abstract class ResourceInvoker
 
          if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
          {
-            params[i] = new QueryParamExtractor(method, query.value(), i, defaultVal);
+            params[i] = new QueryParamExtractor(type, genericType, method, query.value(), defaultVal);
          }
          else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
          {
-            params[i] = new HeaderParamExtractor(method, header.value(), i, defaultVal);
+            params[i] = new HeaderParamExtractor(type, genericType, method, header.value(), defaultVal);
          }
          else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
          {
-            params[i] = new CookieParamExtractor(method, cookie.value(), i, defaultVal);
+            params[i] = new CookieParamExtractor(type, genericType, method, cookie.value(), defaultVal);
          }
          else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
          {
-            params[i] = new UriParamExtractor(this, method, uriParam.value(), i, defaultVal);
+            params[i] = new UriParamExtractor(this, type, genericType, method, uriParam.value(), defaultVal);
          }
          else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
          {
-            params[i] = new MatrixParamExtractor(method, matrix.value(), i, defaultVal);
+            params[i] = new MatrixParamExtractor(type, genericType, method, matrix.value(), defaultVal);
          }
          else if (FindAnnotation.findAnnotation(annotations, Context.class) != null)
          {
@@ -102,7 +104,7 @@ public abstract class ResourceInvoker
          }
          else
          {
-            params[i] = new MessageBodyParameterExtractor(type, providerFactory);
+            params[i] = new MessageBodyParameterExtractor(type, genericType, annotations, providerFactory);
          }
       }
    }
