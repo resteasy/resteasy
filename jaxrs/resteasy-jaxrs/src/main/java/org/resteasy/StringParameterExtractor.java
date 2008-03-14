@@ -2,6 +2,7 @@ package org.resteasy;
 
 import org.resteasy.util.StringToPrimitive;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -20,39 +21,38 @@ public class StringParameterExtractor
    protected Class type;
    protected Class baseType;
    protected Constructor constructor;
-   protected Method method;
    protected Method valueOf;
    protected String defaultValue;
    protected String paramName;
    protected String paramType;
    protected boolean isList;
+   protected AccessibleObject target;
 
    public StringParameterExtractor()
    {
 
    }
 
-   public StringParameterExtractor(int idx, Method method, String paramName, String paramType, String defaultValue)
+   public StringParameterExtractor(Class type, Type genericType, String paramName, String paramType, String defaultValue, AccessibleObject target)
    {
-      initialize(idx, method, paramName, paramType, defaultValue);
+      initialize(type, genericType, paramName, paramType, defaultValue, target);
    }
 
-   protected void initialize(int idx, Method method, String paramName, String paramType, String defaultValue)
+   protected void initialize(Class type, Type genericType, String paramName, String paramType, String defaultValue, AccessibleObject target)
    {
-      this.type = method.getParameterTypes()[idx];
-      this.method = method;
+      this.type = type;
       this.paramName = paramName;
       this.paramType = paramType;
       this.defaultValue = defaultValue;
+      this.target = target;
 
       baseType = type;
       if (type.isArray()) baseType = type.getComponentType();
       if (List.class.isAssignableFrom(type))
       {
-         Type pType = method.getGenericParameterTypes()[idx];
-         if (pType instanceof ParameterizedType)
+         if (genericType instanceof ParameterizedType)
          {
-            ParameterizedType zType = (ParameterizedType) pType;
+            ParameterizedType zType = (ParameterizedType) genericType;
             baseType = (Class) zType.getActualTypeArguments()[0];
          }
          else
@@ -80,7 +80,7 @@ public class StringParameterExtractor
             }
             catch (NoSuchMethodException e)
             {
-               throw new RuntimeException("Unable to find a constructor that takes a String param or a valueOf() method for " + getParamSignature() + " on " + method + " for basetype: " + baseType.getName());
+               throw new RuntimeException("Unable to find a constructor that takes a String param or a valueOf() method for " + getParamSignature() + " on " + target + " for basetype: " + baseType.getName());
             }
 
          }
@@ -149,15 +149,15 @@ public class StringParameterExtractor
          }
          catch (InstantiationException e)
          {
-            throw new RuntimeException("Unable to extract parameter from http request for " + getParamSignature() + " value is '" + strVal + "'" + " for method " + method, e);
+            throw new RuntimeException("Unable to extract parameter from http request for " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (IllegalAccessException e)
          {
-            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for method " + method, e);
+            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (InvocationTargetException e)
          {
-            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for method " + method, e.getTargetException());
+            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException());
          }
       }
       if (valueOf != null)
@@ -168,11 +168,11 @@ public class StringParameterExtractor
          }
          catch (IllegalAccessException e)
          {
-            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for method " + method, e);
+            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (InvocationTargetException e)
          {
-            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for method " + method, e.getTargetException());
+            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException());
          }
       }
       return null;

@@ -69,7 +69,7 @@ public class MediaTypeMapTest
       //ResteasyProviderFactory.initializeInstance();
       RegisterBuiltin.register(ResteasyProviderFactory.initializeInstance());
 
-      MessageBodyWriter<Integer> writer = ResteasyProviderFactory.getInstance().createMessageBodyWriter(Integer.class, new MediaType("text", "plain"));
+      MessageBodyWriter<Integer> writer = ResteasyProviderFactory.getInstance().createMessageBodyWriter(Integer.class, null, null, new MediaType("text", "plain"));
       Assert.assertNotNull(writer);
       Assert.assertEquals(writer.getClass(), DefaultTextPlain.class);
    }

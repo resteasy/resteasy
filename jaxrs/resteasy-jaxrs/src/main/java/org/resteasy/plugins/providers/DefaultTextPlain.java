@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -25,7 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 @ConsumeMime("text/plain")
 public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
-   public boolean isReadable(Class<?> type)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       if (type.isPrimitive()) return true;
       if (String.class.equals(type)) return true;
@@ -49,7 +51,7 @@ public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyW
       return false;
    }
 
-   public Object readFrom(Class<Object> type, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public Object readFrom(Class<Object> type, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       char[] buffer = new char[100];
       StringBuffer buf = new StringBuffer();
@@ -104,7 +106,7 @@ public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyW
       }
    }
 
-   public boolean isWriteable(Class<?> type)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return !type.isArray();
    }
@@ -114,7 +116,7 @@ public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyW
       return o.toString().getBytes().length;
    }
 
-   public void writeTo(Object o, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(Object o, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       entityStream.write(o.toString().getBytes());
    }

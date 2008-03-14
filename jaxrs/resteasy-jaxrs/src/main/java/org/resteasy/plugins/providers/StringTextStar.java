@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -22,12 +24,12 @@ import java.io.OutputStream;
 @ConsumeMime("*/*")
 public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
-   public boolean isReadable(Class<?> type)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return String.class.equals(type);
    }
 
-   public Object readFrom(Class<Object> type, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public Object readFrom(Class<Object> type, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       char[] buffer = new char[100];
       StringBuffer buf = new StringBuffer();
@@ -43,7 +45,7 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
       return buf.toString();
    }
 
-   public boolean isWriteable(Class<?> type)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return String.class.equals(type);
    }
@@ -53,7 +55,7 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
       return o.toString().getBytes().length;
    }
 
-   public void writeTo(Object o, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(Object o, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       entityStream.write(o.toString().getBytes());
    }

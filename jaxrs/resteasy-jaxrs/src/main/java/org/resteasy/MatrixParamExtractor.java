@@ -4,7 +4,8 @@ import org.resteasy.spi.HttpInput;
 
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.core.PathSegment;
-import java.lang.reflect.Method;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +15,9 @@ import java.util.List;
  */
 public class MatrixParamExtractor extends StringParameterExtractor implements ParameterExtractor
 {
-   public MatrixParamExtractor(Method method, String paramName, int index, String defaultValue)
+   public MatrixParamExtractor(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue)
    {
-      super(index, method, paramName, "@" + MatrixParam.class.getSimpleName(), defaultValue);
+      super(type, genericType, paramName, "@" + MatrixParam.class.getSimpleName(), defaultValue, target);
    }
 
    public Object extract(HttpInput request)

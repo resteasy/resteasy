@@ -24,7 +24,12 @@ import java.util.List;
 
 /**
  * An injectable interface that provides access to application and request
- * URI information
+ * URI information. Relative URIs are relative to the base URI of the
+ * application, see {@link #getBaseUri}.
+ * <p/>
+ * <p>All methods except {@link #getBaseUri} and
+ * {@link #getBaseUriBuilder} throw <code>java.lang.IllegalStateException</code>
+ * if called outside the scope of a request (e.g. from a provider constructor).</p>
  *
  * @see Context
  */
@@ -36,7 +41,9 @@ public interface UriInfo
     * a string. All sequences of escaped octets are decoded, equivalent to
     * <code>getPath(true)</code>.
     *
-    * @return the relative URI path.
+    * @return the relative URI path
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public String getPath();
 
@@ -46,7 +53,9 @@ public interface UriInfo
     *
     * @param decode controls whether sequences of escaped octets are decoded
     *               (true) or not (false).
-    * @return the relative URI path.
+    * @return the relative URI path
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public String getPath(boolean decode);
 
@@ -57,7 +66,10 @@ public interface UriInfo
     * present in the path. All sequences of escaped octets are decoded,
     * equivalent to <code>getPathSegments(true)</code>.
     *
-    * @return the list of {@link PathSegment}.
+    * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
+    *         map of each path segment is also unmodifiable.
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     * @see PathSegment
     */
    public List<PathSegment> getPathSegments();
@@ -70,7 +82,10 @@ public interface UriInfo
     *
     * @param decode controls whether sequences of escaped octets are decoded
     *               (true) or not (false).
-    * @return the list of {@link PathSegment}.
+    * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
+    *         map of each path segment is also unmodifiable.
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     * @see PathSegment
     */
    public List<PathSegment> getPathSegments(boolean decode);
@@ -80,13 +95,17 @@ public interface UriInfo
     * any supplied fragment.
     *
     * @return the absolute request URI
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public URI getRequestUri();
 
    /**
     * Get the absolute request URI in the form of a UriBuilder.
     *
-    * @return a UriBuilder initialized with the absolute request URI.
+    * @return a UriBuilder initialized with the absolute request URI
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public UriBuilder getRequestUriBuilder();
 
@@ -97,6 +116,8 @@ public interface UriInfo
     * <code>uriInfo.getBase().resolve(uriInfo.getPath()).</code>
     *
     * @return the absolute path of the request
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public URI getAbsolutePath();
 
@@ -105,7 +126,9 @@ public interface UriInfo
     * This includes everything preceding
     * the path (host, port etc) but excludes query parameters and fragment.
     *
-    * @return a UriBuilder initialized with the absolute path of the request.
+    * @return a UriBuilder initialized with the absolute path of the request
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public UriBuilder getAbsolutePathBuilder();
 
@@ -129,7 +152,9 @@ public interface UriInfo
     * All sequences of escaped octets are decoded,
     * equivalent to <code>getTemplateParameters(true)</code>.
     *
-    * @return a map of parameter names and values.
+    * @return an unmodifiable map of parameter names and values
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     * @see javax.ws.rs.Path
     */
    public MultivaluedMap<String, String> getTemplateParameters();
@@ -139,7 +164,9 @@ public interface UriInfo
     *
     * @param decode controls whether sequences of escaped octets are decoded
     *               (true) or not (false).
-    * @return a map of parameter names and values.
+    * @return an unmodifiable map of parameter names and values
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     * @see javax.ws.rs.Path
     */
    public MultivaluedMap<String, String> getTemplateParameters(boolean decode);
@@ -149,7 +176,9 @@ public interface UriInfo
     * All sequences of escaped octets are decoded,
     * equivalent to <code>getQueryParameters(true)</code>.
     *
-    * @return a map of query parameter names and values.
+    * @return an unmodifiable map of query parameter names and values
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public MultivaluedMap<String, String> getQueryParameters();
 
@@ -158,7 +187,64 @@ public interface UriInfo
     *
     * @param decode controls whether sequences of escaped octets are decoded
     *               (true) or not (false).
-    * @return a map of query parameter names and values.
+    * @return an unmodifiable map of query parameter names and values
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public MultivaluedMap<String, String> getQueryParameters(boolean decode);
+
+   /**
+    * Get a read-only list of URIs for ancestor resources. Each entry is a relative URI
+    * that is a partial path that matched a resource class, a sub-resource
+    * method or a sub-resource locator. Entries do not include query
+    * parameters but do include matrix parameters if present in the request URI.
+    * Entries are ordered in reverse request URI matching order, with the
+    * root resource URI last. E.g.:
+    * <p/>
+    * <pre>&#064;Path("foo")
+    * public class FooResource {
+    *  &#064;GET
+    *  public String getFoo() {...}
+    * <p/>
+    *  &#064;Path("bar")
+    *  &#064;GET
+    *  public String getFooBar() {...}
+    * }</pre>
+    * <p/>
+    * <p>A request <code>GET /foo</code> would return an empty list since
+    * <code>FooResource</code> is a root resource.</p>
+    * <p/>
+    * <p>A request <code>GET /foo/bar</code> would return a list with one
+    * entry: "foo".</p>
+    *
+    * @return a read-only list of URI paths for ancestor resources.
+    */
+   public List<String> getAncestorResourceURIs();
+
+   /**
+    * Get a read-only list of ancestor resource class instances. Each entry is a resource
+    * class instance that matched a resource class, a sub-resource method or
+    * a sub-resource locator. Entries are ordered according in reverse request URI
+    * matching order, with the root resource last. E.g.:
+    * <p/>
+    * <pre>&#064;Path("foo")
+    * public class FooResource {
+    *  &#064;GET
+    *  public String getFoo() {...}
+    * <p/>
+    *  &#064;Path("bar")
+    *  &#064;GET
+    *  public String getFooBar() {...}
+    * }</pre>
+    * <p/>
+    * <p>A request <code>GET /foo</code> would return an empty list since
+    * <code>FooResource</code> is a root resource.</p>
+    * <p/>
+    * <p>A request <code>GET /foo/bar</code> would return a list with one
+    * entry: an instance of
+    * <code>FooResource</code>.</p>
+    *
+    * @return a read-only list of ancestor resource class instances.
+    */
+   public List<Object> getAncestorResources();
 }

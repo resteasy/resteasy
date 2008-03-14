@@ -74,7 +74,7 @@ abstract public class ClientInvoker
          {
             MediaType mediaType = MediaTypeHelper.getConsumes(declaring, method);
             if (mediaType == null) mediaType = determineMediaType();
-            params[i] = new MessageBodyParameterMarshaller(mediaType, type, providerFactory);
+            params[i] = new MessageBodyParameterMarshaller(mediaType, type, method.getGenericParameterTypes()[i], method.getParameterAnnotations()[i], providerFactory);
          }
       }
       accepts = MediaTypeHelper.getProduces(declaring, method);

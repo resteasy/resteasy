@@ -6,6 +6,8 @@ import org.resteasy.MessageBodyParameterMarshaller;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -17,12 +19,16 @@ public class BodyRequestEntity implements RequestEntity
    private MessageBodyParameterMarshaller marshaller;
    private Object object;
    private MultivaluedMap<String, Object> httpHeaders;
+   private Type genericType;
+   private Annotation[] annotations;
 
-   public BodyRequestEntity(Object object, MessageBodyParameterMarshaller marshaller, MultivaluedMap<String, Object> httpHeaders)
+   public BodyRequestEntity(Object object, Type genericType, Annotation[] annotations, MessageBodyParameterMarshaller marshaller, MultivaluedMap<String, Object> httpHeaders)
    {
       this.marshaller = marshaller;
       this.object = object;
       this.httpHeaders = httpHeaders;
+      this.genericType = genericType;
+      this.annotations = annotations;
    }
 
    public boolean isRepeatable()
@@ -32,7 +38,7 @@ public class BodyRequestEntity implements RequestEntity
 
    public void writeRequest(OutputStream outputStream) throws IOException
    {
-      marshaller.getMessageBodyWriter().writeTo(object, marshaller.getMediaType(), httpHeaders, outputStream);
+      marshaller.getMessageBodyWriter().writeTo(object, genericType, annotations, marshaller.getMediaType(), httpHeaders, outputStream);
    }
 
    public long getContentLength()

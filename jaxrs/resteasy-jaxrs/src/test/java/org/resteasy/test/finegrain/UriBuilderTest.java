@@ -232,7 +232,7 @@ public class UriBuilderTest
               path("/{foo}/{bar}/{baz}/{foo}").build("x", "y", "z");
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c/x/y/z/x"), bu);
 
-      Map<String, String> m = new HashMap<String, String>();
+      Map<String, Object> m = new HashMap<String, Object>();
       m.put("foo", "x");
       m.put("bar", "y");
       m.put("baz", "z");

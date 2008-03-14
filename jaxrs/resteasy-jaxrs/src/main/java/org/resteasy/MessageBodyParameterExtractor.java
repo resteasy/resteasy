@@ -2,10 +2,14 @@ package org.resteasy;
 
 import org.resteasy.spi.HttpInput;
 import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.util.HttpResponseCodes;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,12 +18,16 @@ import java.io.IOException;
 public class MessageBodyParameterExtractor implements ParameterExtractor
 {
    private Class type;
+   private Type genericType;
+   private Annotation[] annotations;
    private ResteasyProviderFactory factory;
 
-   public MessageBodyParameterExtractor(Class type, ResteasyProviderFactory factory)
+   public MessageBodyParameterExtractor(Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       this.type = type;
       this.factory = factory;
+      this.genericType = genericType;
+      this.annotations = annotations;
    }
 
    public Object extract(HttpInput request)
@@ -27,8 +35,13 @@ public class MessageBodyParameterExtractor implements ParameterExtractor
       try
       {
          MediaType mediaType = request.getHttpHeaders().getMediaType();
-         MessageBodyReader reader = factory.createMessageBodyReader(type, mediaType);
-         return reader.readFrom(type, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
+         if (mediaType == null)
+         {
+            System.err.println("content-type was null and expecting to extract a body");
+            throw new WebApplicationException(HttpResponseCodes.SC_BAD_REQUEST);
+         }
+         MessageBodyReader reader = factory.createMessageBodyReader(type, genericType, annotations, mediaType);
+         return reader.readFrom(type, genericType, mediaType, annotations, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
       }
       catch (IOException e)
       {

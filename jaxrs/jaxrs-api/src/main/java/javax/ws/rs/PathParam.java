@@ -24,27 +24,36 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Binds a method parameter to a URI template
- * parameter value.  The value is URL decoded unless this is disabled using the Encoded
- * annotation.
- * The class of the annotated parameter 
- * must have a constructor that accepts a single String argument, or a static method 
- * named <code>valueOf</code> that accepts a single String argument
- * (see, for example, {@link Integer#valueOf(String)}).
+ * Binds a method parameter to a URI template parameter value.  The value is
+ * URL decoded unless this is disabled using the {@link Encoded} annotation.
+ * <p/>
+ * The type of the annotated parameter must either:
+ * <ul>
+ * <li>Be {@link javax.ws.rs.core.PathSegment}, the value will be a PathSegment
+ * corresponding to the path segment that contains the named template parameter.
+ * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
+ * path segments.</li>
+ * <li>Be a primitive type.</li>
+ * <li>Have a constructor that accepts a single String argument.</li>
+ * <li>Have a static method named <code>valueOf</code> that accepts a single
+ * String argument (see, for example, {@link Integer#valueOf(String)}).
+ * </ul>
  *
  * @see Encoded
+ * @see javax.ws.rs.core.PathSegment
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PathParam {
-    /**
-     * Defines the name of the URI template parameter who value will be used
-     * to initialize the value of the annotated method parameter, class field or
-     * property.
-     * 
-     * <p>E.g. a class annotated with: <code>@Path("widgets/{id}")</code>
-     * can have methods annotated with a HTTP method annotation whose arguments are annotated
-     * with <code>@PathParam("id")</code>.
-     */
-    String value();
+public @interface PathParam
+{
+   /**
+    * Defines the name of the URI template parameter who value will be used
+    * to initialize the value of the annotated method parameter, class field or
+    * property.
+    * <p/>
+    * <p>E.g. a class annotated with: <code>@Path("widgets/{id}")</code>
+    * can have methods annotated with a HTTP method annotation whose arguments are annotated
+    * with <code>@PathParam("id")</code>.
+    */
+   String value();
 }

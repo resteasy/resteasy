@@ -3,7 +3,8 @@ package org.resteasy;
 import org.resteasy.spi.HttpInput;
 
 import javax.ws.rs.HeaderParam;
-import java.lang.reflect.Method;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -13,9 +14,9 @@ import java.util.List;
 public class HeaderParamExtractor extends StringParameterExtractor implements ParameterExtractor
 {
 
-   public HeaderParamExtractor(Method method, String header, int index, String defaultValue)
+   public HeaderParamExtractor(Class type, Type genericType, AccessibleObject target, String header, String defaultValue)
    {
-      super(index, method, header, "@" + HeaderParam.class.getSimpleName(), defaultValue);
+      super(type, genericType, header, "@" + HeaderParam.class.getSimpleName(), defaultValue, target);
    }
 
    public Object extract(HttpInput request)

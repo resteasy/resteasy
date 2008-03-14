@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An injectable interface that provides access to HTTP header information
+ * An injectable interface that provides access to HTTP header information.
+ * All methods throw java.lang.IllegalStateException if called outside the scope of a request
+ * (e.g. from a provider constructor).
  *
  * @see Context
  */
@@ -33,14 +35,18 @@ public interface HttpHeaders
     * Get the values of HTTP request headers. The returned Map is case-insensitive
     * wrt keys and is read-only.
     *
-    * @return a map of header names and values.
+    * @return a read-only map of header names and values.
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public MultivaluedMap<String, String> getRequestHeaders();
 
    /**
     * Get a list of media types that are acceptable for the response.
     *
-    * @return list of requested response media types
+    * @return a read-only list of requested response media types
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public List<MediaType> getAcceptableMediaTypes();
 
@@ -48,6 +54,8 @@ public interface HttpHeaders
     * Get the media type of the request entity
     *
     * @return the media type or null if there is no request entity.
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public MediaType getMediaType();
 
@@ -55,13 +63,17 @@ public interface HttpHeaders
     * Get the language of the request entity
     *
     * @return the language of the entity or null if not specified
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public String getLanguage();
 
    /**
     * Get any cookies that accompanied the request.
     *
-    * @return a map of cookie name (String) to Cookie.
+    * @return a read-only map of cookie name (String) to Cookie.
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
     */
    public Map<String, Cookie> getCookies();
 

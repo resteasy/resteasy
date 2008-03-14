@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
  * the HTTP request entity body is of zero length.</li>
  * <li>Methods may have zero or more additional method arguments, each of which
  * must be annotated with either <code>@PathParam</code>,
- * <code>@HeaderParam</code>,
+ * <code>@HeaderParam</code>, <code>@CookieParam</code>,
  * <code>@MatrixParam</code>, <code>@QueryParam</code> or
  * <code>@Context</code></li>
  * </ul>
@@ -51,10 +51,12 @@ import java.lang.annotation.Target;
  * @see PUT
  * @see DELETE
  * @see HEAD
+ * @see javax.ws.rs.core.Context
  * @see PathParam
  * @see QueryParam
  * @see MatrixParam
  * @see HeaderParam
+ * @see CookieParam
  */
 @Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -82,11 +84,6 @@ public @interface HttpMethod
     * HTTP HEAD method
     */
    public static final String HEAD = "HEAD";
-
-   /**
-    * HTTP HEAD method
-    */
-   public static final String OPTIONS = "OPTIONS";
 
    /**
     * Specifies the name of a HTTP method. E.g. "GET".
