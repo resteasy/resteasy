@@ -21,13 +21,15 @@ public class HttpServletInputMessage implements HttpInput
    protected InputStream inputStream;
    protected UriInfo uri;
    protected MultivaluedMap<String, String> parameters;
+   protected String httpMethod;
 
-   public HttpServletInputMessage(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, MultivaluedMap<String, String> parameters)
+   public HttpServletInputMessage(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, MultivaluedMap<String, String> parameters, String httpMethod)
    {
       this.httpHeaders = httpHeaders;
       this.inputStream = inputStream;
       this.uri = uri;
       this.parameters = parameters;
+      this.httpMethod = httpMethod;
    }
 
    public HttpHeaders getHttpHeaders()
@@ -48,5 +50,10 @@ public class HttpServletInputMessage implements HttpInput
    public MultivaluedMap<String, String> getParameters()
    {
       return parameters;
+   }
+
+   public String getHttpMethod()
+   {
+      return httpMethod;
    }
 }

@@ -74,14 +74,46 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 
    public Response.ResponseBuilder variant(Variant variant)
    {
-      if (true) throw new RuntimeException("NOT SUPPORTED");
+      if (variant.getMediaType() != null) type(variant.getMediaType());
+      if (variant.getLanguage() != null) language(variant.getLanguage());
+      if (variant.getEncoding() != null) metadata.putSingle(HttpHeaderNames.CONTENT_ENCODING, variant.getEncoding());
       return this;
    }
 
    public Response.ResponseBuilder variants(List<Variant> variants)
    {
-      if (true) throw new RuntimeException("NOT SUPPORTED");
+      String vary = createVaryHeader(variants);
+      metadata.putSingle(HttpHeaderNames.VARY, vary);
+
       return this;
+   }
+
+   public static String createVaryHeader(List<Variant> variants)
+   {
+      boolean accept = false;
+      boolean acceptLanguage = false;
+      boolean acceptEncoding = false;
+
+      for (Variant variant : variants)
+      {
+         if (variant.getMediaType() != null) accept = true;
+         if (variant.getLanguage() != null) acceptLanguage = true;
+         if (variant.getEncoding() != null) acceptEncoding = true;
+      }
+
+      String vary = null;
+      if (accept) vary = HttpHeaderNames.ACCEPT;
+      if (acceptLanguage)
+      {
+         if (vary == null) vary = HttpHeaderNames.ACCEPT_LANGUAGE;
+         else vary += ", " + HttpHeaderNames.ACCEPT_LANGUAGE;
+      }
+      if (acceptEncoding)
+      {
+         if (vary == null) vary = HttpHeaderNames.ACCEPT_ENCODING;
+         else vary += ", " + HttpHeaderNames.ACCEPT_ENCODING;
+      }
+      return vary;
    }
 
    public Response.ResponseBuilder language(String language)

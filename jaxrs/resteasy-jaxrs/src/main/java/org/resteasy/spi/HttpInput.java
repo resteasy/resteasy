@@ -20,4 +20,6 @@ public interface HttpInput
    UriInfo getUri();
 
    MultivaluedMap<String, String> getParameters();
+
+   String getHttpMethod();
 }

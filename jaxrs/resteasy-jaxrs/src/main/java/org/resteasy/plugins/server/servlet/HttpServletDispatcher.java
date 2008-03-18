@@ -172,7 +172,7 @@ public class HttpServletDispatcher extends HttpServlet
       HttpInput in;
       try
       {
-         in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(absolutePath, path, request.getQueryString(), pathSegments), parameters);
+         in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(absolutePath, path, request.getQueryString(), pathSegments), parameters, httpMethod.toUpperCase());
       }
       catch (IOException e)
       {
