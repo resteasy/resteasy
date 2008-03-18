@@ -2,16 +2,19 @@ package org.resteasy.spi;
 
 import org.resteasy.MediaTypeMap;
 import org.resteasy.plugins.delegates.CookieHeaderDelegate;
+import org.resteasy.plugins.delegates.EntityTagDelegate;
 import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.resteasy.specimpl.ResponseBuilderImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
+import org.resteasy.specimpl.VariantListBuilderImpl;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -64,6 +67,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
       addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
       addHeaderDelegate(URI.class, new UriHeaderDelegate());
+      addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
    }
 
    public UriBuilder createUriBuilder()
@@ -78,7 +82,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public Variant.VariantListBuilder createVariantListBuilder()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return new VariantListBuilderImpl();
    }
 
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> tClass)
