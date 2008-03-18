@@ -11,6 +11,14 @@ public class EntityTagDelegate implements RuntimeDelegate.HeaderDelegate<EntityT
 {
    public EntityTag fromString(String value) throws IllegalArgumentException
    {
+      if (value.startsWith("\""))
+      {
+         value = value.substring(1);
+      }
+      if (value.endsWith("\""))
+      {
+         value = value.substring(0, value.length() - 1);
+      }
       if (value.startsWith("W/"))
       {
          return new EntityTag(value.substring(2), true);
@@ -23,4 +31,5 @@ public class EntityTagDelegate implements RuntimeDelegate.HeaderDelegate<EntityT
       String weak = value.isWeak() ? "W/" : "";
       return weak + value.getValue();
    }
+
 }

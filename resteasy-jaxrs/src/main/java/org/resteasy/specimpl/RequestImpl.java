@@ -1,5 +1,6 @@
 package org.resteasy.specimpl;
 
+import org.resteasy.util.AcceptableVariant;
 import org.resteasy.util.DateUtil;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
@@ -21,13 +22,12 @@ import java.util.List;
 public class RequestImpl implements Request
 {
    private HttpHeaders headers;
-   private VaryHeader vary;
+   private String varyHeader;
    private String httpMethod;
 
-   public RequestImpl(HttpHeaders headers, VaryHeader vary, String httpMethod)
+   public RequestImpl(HttpHeaders headers, String httpMethod)
    {
       this.headers = headers;
-      this.vary = vary;
       this.httpMethod = httpMethod.toUpperCase();
    }
 
@@ -41,10 +41,11 @@ public class RequestImpl implements Request
       List<String> encodings = convertString(headers.getRequestHeaders().get(HttpHeaderNames.ACCEPT_ENCODING));
 
 
-      return null;
+      varyHeader = ResponseBuilderImpl.createVaryHeader(variants);
+      return pickVariant(variants, accepts, languages, encodings);
    }
 
-   public static Variant pickVariant(List<Variant> variants, List<MediaType> accepts, List<String> languages, List<String> encodings)
+   public static Variant pickVariant(List<Variant> has, List<MediaType> accepts, List<String> languages, List<String> encodings)
    {
       VariantListBuilderImpl builder = new VariantListBuilderImpl();
 
@@ -59,8 +60,8 @@ public class RequestImpl implements Request
       for (String language : languages) builder.languages(language);
       for (String encoding : encodings) builder.encodings(encoding);
 
-      List<Variant> acceptVariants = builder.add().build();
-      return null;
+      List<Variant> wants = builder.add().build();
+      return AcceptableVariant.pick(wants, has);
 
    }
 
@@ -99,7 +100,7 @@ public class RequestImpl implements Request
       boolean match = false;
       for (EntityTag tag : ifMatch)
       {
-         if (tag.equals(eTag))
+         if (tag.equals(eTag) || tag.getValue().equals("*"))
          {
             match = true;
             break;
@@ -115,7 +116,7 @@ public class RequestImpl implements Request
       boolean match = false;
       for (EntityTag tag : ifMatch)
       {
-         if (tag.equals(eTag))
+         if (tag.equals(eTag) || tag.getValue().equals("*"))
          {
             match = true;
             break;
@@ -136,17 +137,26 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder evaluatePreconditions(EntityTag eTag)
    {
+      Response.ResponseBuilder builder = null;
       List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
       if (ifMatch != null && ifMatch.size() > 0)
       {
-         return ifMatch(convertEtag(ifMatch), eTag);
+         builder = ifMatch(convertEtag(ifMatch), eTag);
       }
-      List<String> ifNoneMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_NONE_MATCH);
-      if (ifNoneMatch != null && ifNoneMatch.size() > 0)
+      if (builder == null)
       {
-         return ifNoneMatch(convertEtag(ifMatch), eTag);
+         List<String> ifNoneMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_NONE_MATCH);
+         if (ifNoneMatch != null && ifNoneMatch.size() > 0)
+         {
+            builder = ifNoneMatch(convertEtag(ifNoneMatch), eTag);
+         }
       }
-      return null;
+      if (builder != null)
+      {
+         builder.tag(eTag);
+      }
+      if (builder != null && varyHeader != null) builder.header(HttpHeaderNames.VARY, varyHeader);
+      return builder;
    }
 
    public Response.ResponseBuilder ifModifiedSince(String strDate, Date lastModified)
@@ -175,28 +185,40 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder evaluatePreconditions(Date lastModified)
    {
+      Response.ResponseBuilder builder = null;
       String ifModifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
       if (ifModifiedSince != null)
       {
-         return ifModifiedSince(ifModifiedSince, lastModified);
+         builder = ifModifiedSince(ifModifiedSince, lastModified);
       }
-      String ifUnmodifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
-      if (ifUnmodifiedSince != null)
+      if (builder == null)
       {
-         return ifUnmodifiedSince(ifUnmodifiedSince, lastModified);
+         //System.out.println("ifModified returned null");
+         String ifUnmodifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
+         if (ifUnmodifiedSince != null)
+         {
+            builder = ifUnmodifiedSince(ifUnmodifiedSince, lastModified);
+         }
       }
+      if (builder != null && varyHeader != null) builder.header(HttpHeaderNames.VARY, varyHeader);
 
-      return null;
+      return builder;
    }
 
    public Response.ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag)
    {
-      Response.ResponseBuilder builder = evaluatePreconditions(lastModified);
-      Response.ResponseBuilder builder2 = evaluatePreconditions(eTag);
-      if (builder == null && builder2 == null) return null;
-      if (builder != null && builder2 == null) return builder;
-      if (builder == null && builder2 != null) return builder2;
-      builder.tag(eTag);
-      return builder;
+      Response.ResponseBuilder rtn = null;
+      Response.ResponseBuilder lastModifiedBuilder = evaluatePreconditions(lastModified);
+      Response.ResponseBuilder etagBuilder = evaluatePreconditions(eTag);
+      if (lastModifiedBuilder == null && etagBuilder == null) rtn = null;
+      else if (lastModifiedBuilder != null && etagBuilder == null) rtn = lastModifiedBuilder;
+      else if (lastModifiedBuilder == null && etagBuilder != null) rtn = etagBuilder;
+      else
+      {
+         rtn = lastModifiedBuilder;
+         rtn.tag(eTag);
+      }
+      if (rtn != null && varyHeader != null) rtn.header(HttpHeaderNames.VARY, varyHeader);
+      return rtn;
    }
 }

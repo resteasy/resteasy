@@ -43,8 +43,16 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
    protected void addResponseHeader(String key, Object value)
    {
       RuntimeDelegate.HeaderDelegate delegate = factory.createHeaderDelegate(value.getClass());
-      if (delegate != null) response.addHeader(key, delegate.toString(value));
-      else response.addHeader(key, value.toString());
+      if (delegate != null)
+      {
+         //System.out.println("addResponseHeader: " + key + " " + delegate.toString(value));
+         response.addHeader(key, delegate.toString(value));
+      }
+      else
+      {
+         //System.out.println("addResponseHeader: " + key + " " + value.toString());
+         response.addHeader(key, value.toString());
+      }
    }
 
    public Object getFirst(String key)
