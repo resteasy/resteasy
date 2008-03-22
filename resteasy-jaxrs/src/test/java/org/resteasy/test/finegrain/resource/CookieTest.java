@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -28,7 +28,7 @@ import java.io.IOException;
  */
 public class CookieTest
 {
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
    public static class CookieResource
    {

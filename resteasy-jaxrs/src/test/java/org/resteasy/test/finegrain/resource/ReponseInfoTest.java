@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
@@ -24,7 +24,7 @@ import java.net.URI;
  */
 public class ReponseInfoTest
 {
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception
@@ -81,18 +81,30 @@ public class ReponseInfoTest
    public void testUriInfo() throws Exception
    {
       dispatcher = EmbeddedServletContainer.start();
-      dispatcher.getRegistry().addResource(SimpleResource.class);
-      _test(new HttpClient(), "http://localhost:8081/simple");
-      EmbeddedServletContainer.stop();
+      try
+      {
+         dispatcher.getRegistry().addResource(SimpleResource.class);
+         _test(new HttpClient(), "http://localhost:8081/simple");
+      }
+      finally
+      {
+         EmbeddedServletContainer.stop();
+      }
    }
 
    @Test
    public void testUriInfo2() throws Exception
    {
       dispatcher = EmbeddedServletContainer.start("/resteasy");
-      dispatcher.getRegistry().addResource(SimpleResource.class);
-      _test(new HttpClient(), "http://localhost:8081/resteasy/simple?abs=resteasy");
-      EmbeddedServletContainer.stop();
+      try
+      {
+         dispatcher.getRegistry().addResource(SimpleResource.class);
+         _test(new HttpClient(), "http://localhost:8081/resteasy/simple?abs=resteasy");
+      }
+      finally
+      {
+         EmbeddedServletContainer.stop();
+      }
    }
 
 

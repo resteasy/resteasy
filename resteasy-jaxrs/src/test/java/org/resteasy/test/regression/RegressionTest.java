@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
  */
 public class RegressionTest
 {
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception

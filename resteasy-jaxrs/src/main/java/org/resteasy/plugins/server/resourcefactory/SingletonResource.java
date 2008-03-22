@@ -1,6 +1,6 @@
 package org.resteasy.plugins.server.resourcefactory;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.ResourceFactory;
 
 /**
@@ -18,7 +18,7 @@ public class SingletonResource implements ResourceFactory
       this.obj = obj;
    }
 
-   public Object createResource(HttpInput input)
+   public Object createResource(HttpRequest input)
    {
       return obj;
    }

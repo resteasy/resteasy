@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.core.PathSegment;
@@ -20,7 +20,7 @@ public class MatrixParamExtractor extends StringParameterExtractor implements Pa
       super(type, genericType, paramName, "@" + MatrixParam.class.getSimpleName(), defaultValue, target);
    }
 
-   public Object extract(HttpInput request)
+   public Object extract(HttpRequest request)
    {
       ArrayList<String> values = new ArrayList<String>();
       for (PathSegment segment : request.getUri().getPathSegments())

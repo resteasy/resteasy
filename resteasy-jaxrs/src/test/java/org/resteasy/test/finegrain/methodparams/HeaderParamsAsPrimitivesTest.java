@@ -6,15 +6,12 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.resteasy.mock.MockHttpServletRequest;
-import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -33,7 +30,7 @@ public class HeaderParamsAsPrimitivesTest
 {
    private static HttpClient client = new HttpClient();
 
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
    private static IResourceHeaderPrimitives resourceHeaderPrimitives;
    private static IResourceHeaderPrimitivesDefault resourceHeaderPrimitivesDefault;
    private static IResourceHeaderPrimitivesDefaultOverride resourceHeaderPrimitivesDefaultOverride;
@@ -936,29 +933,6 @@ public class HeaderParamsAsPrimitivesTest
    public void _test(String type, String value)
    {
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/");
-         request.setPathInfo("/");
-         request.addHeader(type, value);
-         request.addHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      }
-      {
          GetMethod method = new GetMethod("http://localhost:8081/");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          method.addRequestHeader(type, value);
@@ -1009,28 +983,6 @@ public class HeaderParamsAsPrimitivesTest
    public void _testDefault(String base, String type, String value)
    {
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", base + "default/null");
-         request.setPathInfo(base + "default/null");
-         request.addHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      }
-      {
          GetMethod method = new GetMethod("http://localhost:8081" + base + "default/null");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
@@ -1042,28 +994,6 @@ public class HeaderParamsAsPrimitivesTest
          {
             throw new RuntimeException(e);
          }
-      }
-      {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", base + "default");
-         request.setPathInfo(base + "default");
-         request.addHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
       }
       {
          GetMethod method = new GetMethod("http://localhost:8081" + base + "default");

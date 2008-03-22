@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -8,5 +8,5 @@ import org.resteasy.spi.HttpInput;
  */
 public interface ParameterExtractor
 {
-   Object extract(HttpInput request);
+   Object extract(HttpRequest request);
 }

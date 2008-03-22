@@ -1,7 +1,7 @@
 package org.resteasy;
 
 import org.resteasy.specimpl.ResponseImpl;
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpResponseCodes;
@@ -59,9 +59,9 @@ public class ResourceMethod extends ResourceInvoker
 
    }
 
-   public static final ThreadLocal<HttpInput> request = new ThreadLocal<HttpInput>();
+   public static final ThreadLocal<HttpRequest> request = new ThreadLocal<HttpRequest>();
 
-   public ResponseImpl invoke(HttpInput input)
+   public ResponseImpl invoke(HttpRequest input)
    {
       try
       {
@@ -74,7 +74,7 @@ public class ResourceMethod extends ResourceInvoker
       }
    }
 
-   protected ResponseImpl internalInvoke(HttpInput input)
+   protected ResponseImpl internalInvoke(HttpRequest input)
    {
       Object resource = null;
       try

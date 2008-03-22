@@ -1,11 +1,8 @@
 package org.resteasy.test;
 
-import Acme.Serve.Serve;
-import org.resteasy.plugins.providers.RegisterBuiltin;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.spi.Dispatcher;
 
-import java.util.Properties;
+import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -13,39 +10,48 @@ import java.util.Properties;
  */
 public class EmbeddedServletContainer
 {
-   private static Serve server = null;
-   private static HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+   private static Class bootstrap = TJWSServletContainer.class;
 
-   public static HttpServletDispatcher start() throws Exception
+   public static Class getBootstrap()
+   {
+      return bootstrap;
+   }
+
+   static
+   {
+      String boot = System.getProperty("org.resteasy.test.embedded.container");
+      if (boot != null)
+      {
+         try
+         {
+            bootstrap = Thread.currentThread().getContextClassLoader().loadClass(boot);
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+   }
+
+   public static void setBootstrap(Class bootstrap)
+   {
+      EmbeddedServletContainer.bootstrap = bootstrap;
+   }
+
+   public static Dispatcher start() throws Exception
    {
       return start("/");
    }
 
-
-   public static HttpServletDispatcher start(String bindPath) throws Exception
+   public static Dispatcher start(String bindPath) throws Exception
    {
-      server = new Serve();
-      Properties props = new Properties();
-      props.put("port", 8081);
-      props.setProperty(Serve.ARG_NOHUP, "nohup");
-      server.arguments = props;
-      server.addDefaultServlets(null); // optional file servlet
-      server.addServlet(bindPath, dispatcher); // optional
-      new Thread()
-      {
-         public void run()
-         {
-            server.serve();
-         }
-      }.start();
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      RegisterBuiltin.register(dispatcher.getProviderFactory());
-
-      return dispatcher;
+      Method start = bootstrap.getMethod("start", String.class);
+      return (Dispatcher) start.invoke(null, bindPath);
    }
 
    public static void stop() throws Exception
    {
-      server.notifyStop();
+      Method stop = bootstrap.getMethod("stop");
+      stop.invoke(null);
    }
 }

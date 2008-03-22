@@ -6,15 +6,11 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.resteasy.mock.MockHttpServletRequest;
-import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpResponseCodes;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,7 +23,7 @@ import java.io.IOException;
 public class UriParamAsPrimitiveTest
 {
    private static HttpClient client = new HttpClient();
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
    private static IResourceUriBoolean resourceUriBoolean;
    private static IResourceUriByte resourceUriByte;
@@ -233,27 +229,6 @@ public class UriParamAsPrimitiveTest
 
    void _test(String type, String value)
    {
-      {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/" + type + "/" + value);
-         request.setPathInfo("/" + type + "/" + value);
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      }
       {
          GetMethod method = new GetMethod("http://localhost:8081/" + type + "/" + value);
          try

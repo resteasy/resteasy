@@ -1,7 +1,7 @@
 package org.resteasy;
 
 import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.spi.HttpOutput;
+import org.resteasy.spi.ClientHttpOutput;
 
 import javax.ws.rs.core.Cookie;
 
@@ -23,7 +23,7 @@ public class CookieParamMarshaller implements ParameterMarshaller
       return cookieName;
    }
 
-   public void marshall(Object object, UriBuilderImpl uri, HttpOutput output)
+   public void marshall(Object object, UriBuilderImpl uri, ClientHttpOutput output)
    {
       Cookie cookie = null;
       if (object instanceof Cookie) cookie = (Cookie) object;

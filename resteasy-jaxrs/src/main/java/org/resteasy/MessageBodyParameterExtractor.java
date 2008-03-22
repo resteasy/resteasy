@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -30,7 +30,7 @@ public class MessageBodyParameterExtractor implements ParameterExtractor
       this.annotations = annotations;
    }
 
-   public Object extract(HttpInput request)
+   public Object extract(HttpRequest request)
    {
       try
       {

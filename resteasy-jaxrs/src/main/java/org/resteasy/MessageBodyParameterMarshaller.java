@@ -1,7 +1,7 @@
 package org.resteasy;
 
 import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.spi.HttpOutput;
+import org.resteasy.spi.ClientHttpOutput;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
@@ -31,7 +31,7 @@ public class MessageBodyParameterMarshaller implements ParameterMarshaller
       this.annotations = annotations;
    }
 
-   public void marshall(Object obj, UriBuilderImpl uri, HttpOutput output)
+   public void marshall(Object obj, UriBuilderImpl uri, ClientHttpOutput output)
    {
       try
       {

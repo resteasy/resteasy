@@ -9,7 +9,7 @@ import org.resteasy.MessageBodyParameterMarshaller;
 import org.resteasy.ParameterMarshaller;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.spi.HttpOutput;
+import org.resteasy.spi.ClientHttpOutput;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
@@ -42,7 +42,7 @@ abstract public class HttpClientInvoker extends ClientInvoker
    public Object invoke(Object[] args)
    {
       if (builder == null) throw new RuntimeException("You have not set a base URI for the client proxy");
-      HttpOutput output = new HttpOutputMessage(null);
+      ClientHttpOutput output = new HttpOutputMessage(null);
 
       UriBuilderImpl uri = (UriBuilderImpl) builder.clone();
 

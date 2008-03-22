@@ -14,10 +14,10 @@ public class MockDispatcherFactory
    public static HttpServletDispatcher createDispatcher()
    {
       HttpServletDispatcher dispatcher = new HttpServletDispatcher();
-      dispatcher.setProviderFactory(new ResteasyProviderFactory());
-      dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      RegisterBuiltin.register(dispatcher.getProviderFactory());
+      dispatcher.getDispatcher().setProviderFactory(new ResteasyProviderFactory());
+      dispatcher.getDispatcher().setRegistry(new Registry(dispatcher.getDispatcher().getProviderFactory()));
+      ResteasyProviderFactory.setInstance(dispatcher.getDispatcher().getProviderFactory());
+      RegisterBuiltin.register(dispatcher.getDispatcher().getProviderFactory());
       return dispatcher;
    }
 }

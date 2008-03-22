@@ -7,6 +7,7 @@ import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.providers.DefaultTextPlain;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
@@ -24,7 +25,9 @@ public class TestSmoke
    @Test
    public void testNoDefaultsResource() throws Exception
    {
-      HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+      HttpServletDispatcher servlet = new HttpServletDispatcher();
+      Dispatcher dispatcher = servlet.getDispatcher();
+
       dispatcher.setProviderFactory(new ResteasyProviderFactory());
       dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
       ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
@@ -39,7 +42,7 @@ public class TestSmoke
          request.setPathInfo("/basic");
          MockHttpServletResponse response = new MockHttpServletResponse();
 
-         dispatcher.invoke(request, response);
+         servlet.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -52,7 +55,7 @@ public class TestSmoke
          request.setContentType("text/plain");
          MockHttpServletResponse response = new MockHttpServletResponse();
 
-         dispatcher.invoke(request, response);
+         servlet.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -63,7 +66,7 @@ public class TestSmoke
          request.addParameter("param", "hello world");
          MockHttpServletResponse response = new MockHttpServletResponse();
 
-         dispatcher.invoke(request, response);
+         servlet.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -74,7 +77,7 @@ public class TestSmoke
          request.setPathInfo("/uriParam/1234");
          MockHttpServletResponse response = new MockHttpServletResponse();
 
-         dispatcher.invoke(request, response);
+         servlet.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -85,7 +88,8 @@ public class TestSmoke
    @Test
    public void testLocatingResource() throws Exception
    {
-      HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+      HttpServletDispatcher servlet = new HttpServletDispatcher();
+      Dispatcher dispatcher = servlet.getDispatcher();
       dispatcher.setProviderFactory(new ResteasyProviderFactory());
       dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
       ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
@@ -100,7 +104,7 @@ public class TestSmoke
          request.setPathInfo("/locating/basic");
          MockHttpServletResponse response = new MockHttpServletResponse();
 
-         dispatcher.invoke(request, response);
+         servlet.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -113,7 +117,7 @@ public class TestSmoke
          request.setContentType("text/plain");
          MockHttpServletResponse response = new MockHttpServletResponse();
 
-         dispatcher.invoke(request, response);
+         servlet.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -124,7 +128,7 @@ public class TestSmoke
          request.addParameter("param", "hello world");
          MockHttpServletResponse response = new MockHttpServletResponse();
 
-         dispatcher.invoke(request, response);
+         servlet.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -135,7 +139,7 @@ public class TestSmoke
          request.setPathInfo("/locating/uriParam/1234");
          MockHttpServletResponse response = new MockHttpServletResponse();
 
-         dispatcher.invoke(request, response);
+         servlet.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());

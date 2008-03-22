@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 
 /**
@@ -20,7 +20,7 @@ public class TestResourceWithInterface
 {
 
    private static Serve server = null;
-   private static HttpServletDispatcher dispatcher = new HttpServletDispatcher();
+   private static Dispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception

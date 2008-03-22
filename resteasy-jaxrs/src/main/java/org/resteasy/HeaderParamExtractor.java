@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.HeaderParam;
 import java.lang.reflect.AccessibleObject;
@@ -19,7 +19,7 @@ public class HeaderParamExtractor extends StringParameterExtractor implements Pa
       super(type, genericType, header, "@" + HeaderParam.class.getSimpleName(), defaultValue, target);
    }
 
-   public Object extract(HttpInput request)
+   public Object extract(HttpRequest request)
    {
       List<String> list = request.getHttpHeaders().getRequestHeaders().get(paramName);
       return extractValues(list);

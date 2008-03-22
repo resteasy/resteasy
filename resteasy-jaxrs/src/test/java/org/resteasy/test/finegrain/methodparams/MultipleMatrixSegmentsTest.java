@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.resteasy.mock.MockHttpServletRequest;
 import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.MockDispatcherFactory;
 
 import javax.servlet.ServletException;
@@ -41,7 +42,8 @@ public class MultipleMatrixSegmentsTest
    public void testMultiple() throws Exception
    {
       String path = "/;name=bill;ssn=111/children/;name=skippy;ssn=3344";
-      HttpServletDispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
+      Dispatcher dispatcher = servlet.getDispatcher();
       dispatcher.getRegistry().addResource(Resource.class);
       {
          MockHttpServletRequest request = new MockHttpServletRequest("GET", path);
@@ -50,7 +52,7 @@ public class MultipleMatrixSegmentsTest
 
          try
          {
-            dispatcher.invoke(request, response);
+            servlet.invoke(request, response);
          }
          catch (ServletException e)
          {
