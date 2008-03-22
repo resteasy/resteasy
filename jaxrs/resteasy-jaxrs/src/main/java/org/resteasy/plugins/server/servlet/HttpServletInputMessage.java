@@ -1,6 +1,6 @@
 package org.resteasy.plugins.server.servlet;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.util.HttpRequestImpl;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -15,45 +15,12 @@ import java.io.InputStream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServletInputMessage implements HttpInput
+public class HttpServletInputMessage extends HttpRequestImpl
 {
-   protected HttpHeaders httpHeaders;
-   protected InputStream inputStream;
-   protected UriInfo uri;
-   protected MultivaluedMap<String, String> parameters;
-   protected String httpMethod;
 
    public HttpServletInputMessage(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, MultivaluedMap<String, String> parameters, String httpMethod)
    {
-      this.httpHeaders = httpHeaders;
-      this.inputStream = inputStream;
-      this.uri = uri;
-      this.parameters = parameters;
-      this.httpMethod = httpMethod;
+      super(inputStream, httpHeaders, httpMethod, uri, parameters);
    }
 
-   public HttpHeaders getHttpHeaders()
-   {
-      return httpHeaders;
-   }
-
-   public InputStream getInputStream()
-   {
-      return inputStream;
-   }
-
-   public UriInfo getUri()
-   {
-      return uri;
-   }
-
-   public MultivaluedMap<String, String> getParameters()
-   {
-      return parameters;
-   }
-
-   public String getHttpMethod()
-   {
-      return httpMethod;
-   }
 }

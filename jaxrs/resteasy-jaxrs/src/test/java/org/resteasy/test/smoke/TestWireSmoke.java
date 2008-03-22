@@ -9,7 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,12 +23,13 @@ import javax.servlet.http.HttpServletResponse;
 public class TestWireSmoke
 {
 
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception
    {
       dispatcher = EmbeddedServletContainer.start();
+      System.out.println("After container start");
    }
 
    @AfterClass

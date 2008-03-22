@@ -32,6 +32,12 @@
          <id>scannotation</id>
          <url>http://scannotation.sf.net/maven2</url>
       </repository>
+      <repository>
+         <id>maven2-repository.dev.java.net</id>
+         <name>Java.net Repository for Maven</name>
+         <url>http://download.java.net/maven/2/</url>
+         <layout>default</layout>
+      </repository>
       <!--      <repository>
          <id>ibiblio mirror</id>
          <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
@@ -86,6 +92,21 @@
          <artifactId>spring</artifactId>
          <version>2.5.1</version>
          <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.sun.grizzly</groupId>
+         <artifactId>grizzly-http-webserver</artifactId>
+         <version>1.7.2</version>
+      </dependency>
+      <dependency>
+         <groupId>com.sun.grizzly</groupId>
+         <artifactId>grizzly-http-servlet</artifactId>
+         <version>1.7.2</version>
+      </dependency>
+      <dependency>
+         <groupId>com.sun.grizzly</groupId>
+         <artifactId>grizzly-comet</artifactId>
+         <version>1.7.2</version>
       </dependency>
    </dependencies>
    <build>

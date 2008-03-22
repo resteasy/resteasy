@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
@@ -29,7 +29,7 @@ public class QueryParamAsPrimitiveTest
 {
 
    private static HttpClient client = new HttpClient();
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
    private static IResourceQueryPrimitives resourceQueryPrimitives;
    private static IResourceQueryPrimitiveWrappers resourceQueryPrimitiveWrappers;

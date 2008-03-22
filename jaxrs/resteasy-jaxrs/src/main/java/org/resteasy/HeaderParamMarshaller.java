@@ -1,7 +1,7 @@
 package org.resteasy;
 
 import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.spi.HttpOutput;
+import org.resteasy.spi.ClientHttpOutput;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class HeaderParamMarshaller implements ParameterMarshaller
       this.paramName = paramName;
    }
 
-   public void marshall(Object object, UriBuilderImpl uri, HttpOutput output)
+   public void marshall(Object object, UriBuilderImpl uri, ClientHttpOutput output)
    {
       if (object == null) return;
       if (object instanceof List)

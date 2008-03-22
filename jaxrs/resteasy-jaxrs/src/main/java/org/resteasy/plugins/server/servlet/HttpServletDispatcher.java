@@ -1,14 +1,14 @@
 package org.resteasy.plugins.server.servlet;
 
-import org.resteasy.Failure;
+import org.resteasy.DefaultDispatcher;
 import org.resteasy.Headers;
-import org.resteasy.ResourceMethod;
 import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.PathSegmentImpl;
-import org.resteasy.specimpl.ResponseImpl;
 import org.resteasy.specimpl.UriInfoImpl;
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.Dispatcher;
+import org.resteasy.spi.HttpRequest;
+import org.resteasy.spi.HttpResponse;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
@@ -22,13 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,45 +40,29 @@ import java.util.Map;
  */
 public class HttpServletDispatcher extends HttpServlet
 {
+   private Dispatcher dispatcher = new DefaultDispatcher();
 
-
-   private ResteasyProviderFactory providerFactory;
-   private Registry registry;
+   public Dispatcher getDispatcher()
+   {
+      return dispatcher;
+   }
 
    public void init(ServletConfig servletConfig) throws ServletException
    {
-      this.providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
+      ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
       if (providerFactory == null)
       {
          providerFactory = new ResteasyProviderFactory();
       }
 
 
-      this.registry = (Registry) servletConfig.getServletContext().getAttribute(Registry.class.getName());
+      Registry registry = (Registry) servletConfig.getServletContext().getAttribute(Registry.class.getName());
       if (registry == null)
       {
          registry = new Registry(providerFactory);
       }
-   }
-
-   public ResteasyProviderFactory getProviderFactory()
-   {
-      return providerFactory;
-   }
-
-   public Registry getRegistry()
-   {
-      return registry;
-   }
-
-   public void setProviderFactory(ResteasyProviderFactory providerFactory)
-   {
-      this.providerFactory = providerFactory;
-   }
-
-   public void setRegistry(Registry registry)
-   {
-      this.registry = registry;
+      dispatcher.setProviderFactory(providerFactory);
+      dispatcher.setRegistry(registry);
    }
 
    protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException
@@ -109,6 +88,7 @@ public class HttpServletDispatcher extends HttpServlet
       HttpHeaders headers = extractHttpHeaders(request);
       MultivaluedMapImpl<String, String> parameters = extractParameters(request);
       String path = request.getPathInfo();
+      //System.out.println("path: " + path);
       URI absolutePath = null;
       try
       {
@@ -125,158 +105,20 @@ public class HttpServletDispatcher extends HttpServlet
       }
 
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path);
-      ResourceMethod invoker = null;
+      UriInfoImpl uriInfo = new UriInfoImpl(absolutePath, path, request.getQueryString(), pathSegments);
+
+      HttpRequest in;
       try
       {
-         invoker = registry.getResourceInvoker(httpMethod, pathSegments, headers.getMediaType(), headers.getAcceptableMediaTypes());
-      }
-      catch (Failure e)
-      {
-         try
-         {
-            response.sendError(e.getErrorCode());
-         }
-         catch (IOException e1)
-         {
-            throw new RuntimeException(e1);
-         }
-         e.printStackTrace();
-         return;
-      }
-      if (invoker == null)
-      {
-         try
-         {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-         return;
-      }
-      if (!invoker.getHttpMethods().contains(httpMethod))
-      {
-         try
-         {
-            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-         return;
-      }
-
-
-      HttpInput in;
-      try
-      {
-         in = new HttpServletInputMessage(headers, request.getInputStream(), new UriInfoImpl(absolutePath, path, request.getQueryString(), pathSegments), parameters, httpMethod.toUpperCase());
+         in = new HttpServletInputMessage(headers, request.getInputStream(), uriInfo, parameters, httpMethod.toUpperCase());
       }
       catch (IOException e)
       {
          throw new RuntimeException(e);
       }
+      HttpResponse theResponse = new HttpServletResponseWrapper(response, dispatcher.getProviderFactory());
 
-
-      try
-      {
-         ResponseImpl responseImpl = null;
-         try
-         {
-            responseImpl = invoker.invoke(in);
-         }
-         catch (Failure e)
-         {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            e.printStackTrace();
-            return;
-         }
-         HttpServletResponseHeaders outputHeaders = new HttpServletResponseHeaders(response, providerFactory);
-         if (responseImpl.getMetadata() != null && responseImpl.getMetadata().size() > 0)
-         {
-            outputHeaders.putAll(responseImpl.getMetadata());
-         }
-         for (NewCookie cookie : responseImpl.getNewCookies())
-         {
-            Cookie cook = new Cookie(cookie.getName(), cookie.getValue());
-            cook.setMaxAge(cookie.getMaxAge());
-            cook.setVersion(cookie.getVersion());
-            if (cookie.getDomain() != null) cook.setDomain(cookie.getDomain());
-            if (cookie.getPath() != null) cook.setPath(cookie.getPath());
-            cook.setSecure(cookie.isSecure());
-            if (cookie.getComment() != null) cook.setComment(cookie.getComment());
-            response.addCookie(cook);
-         }
-
-         if (responseImpl.getEntity() != null)
-         {
-            Object contentType = responseImpl.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
-            MediaType rtnType = null;
-            if (contentType != null) // if set by the response
-            {
-               //System.out.println("content type was set: " + contentType);
-               rtnType = MediaType.parse(contentType.toString());
-            }
-            else
-            {
-               //System.out.println("finding content type from @ProduceMime");
-               rtnType = invoker.matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
-            }
-            if (rtnType == null)
-            {
-               rtnType = MediaType.parse("*/*");
-            }
-
-            Class type = null;
-            if (responseImpl.getEntity() == null) type = invoker.getMethod().getReturnType();
-            else type = responseImpl.getEntity().getClass();
-
-            Type genericType = null;
-            if (!Response.class.equals(invoker.getMethod().getReturnType()))
-            {
-               genericType = invoker.getMethod().getGenericReturnType();
-            }
-
-            Annotation[] annotations = invoker.getMethod().getAnnotations();
-
-            MessageBodyWriter writer = providerFactory.createMessageBodyWriter(type, genericType, annotations, rtnType);
-            if (writer == null)
-            {
-               throw new RuntimeException("Could not find MessageBodyWriter for response object of type: " + responseImpl.getEntity().getClass() + " of media type: " + rtnType);
-            }
-            try
-            {
-               long size = writer.getSize(responseImpl.getEntity());
-               //System.out.println("Writer: " + writer.getClass().getName());
-               //System.out.println("JAX-RS Content Size: " + size);
-               response.setContentLength((int) size);
-               response.setContentType(rtnType.toString());
-               writer.writeTo(responseImpl.getEntity(), invoker.getMethod().getGenericReturnType(), invoker.getMethod().getAnnotations(), rtnType, outputHeaders, response.getOutputStream());
-               if (Response.class.equals(invoker.getMethod().getReturnType()))
-               {
-                  writer.writeTo(responseImpl.getEntity(), genericType, annotations, rtnType, outputHeaders, response.getOutputStream());
-
-               }
-               else
-               {
-               }
-            }
-            catch (IOException e)
-            {
-               throw new RuntimeException(e);
-            }
-         }
-         response.setStatus(responseImpl.getStatus());
-
-      }
-      catch (Exception e)
-      {
-         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-         e.printStackTrace();
-         return;
-      }
+      dispatcher.invoke(in, theResponse);
    }
 
    public static MultivaluedMapImpl<String, String> extractParameters(HttpServletRequest request)

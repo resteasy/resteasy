@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.QueryParam;
 import java.lang.reflect.AccessibleObject;
@@ -20,7 +20,7 @@ public class QueryParamExtractor extends StringParameterExtractor implements Par
       super(type, genericType, paramName, "@" + QueryParam.class.getSimpleName(), defaultValue, target);
    }
 
-   public Object extract(HttpInput request)
+   public Object extract(HttpRequest request)
    {
       List<String> list = request.getParameters().get(paramName);
       return extractValues(list);

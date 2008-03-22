@@ -1,7 +1,7 @@
 package org.resteasy;
 
 import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.spi.HttpOutput;
+import org.resteasy.spi.ClientHttpOutput;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -16,7 +16,7 @@ public class UriParamMarshaller implements ParameterMarshaller
       this.paramName = paramName;
    }
 
-   public void marshall(Object object, UriBuilderImpl uri, HttpOutput output)
+   public void marshall(Object object, UriBuilderImpl uri, ClientHttpOutput output)
    {
       uri.uriParam(paramName, object.toString());
    }

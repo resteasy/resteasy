@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
@@ -28,7 +28,7 @@ public class UriParamExtractor implements ParameterExtractor
       this.invoker = invoker;
    }
 
-   public Object extract(HttpInput request)
+   public Object extract(HttpRequest request)
    {
       if (extractor == null) // we are a PathSegment
       {

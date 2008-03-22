@@ -5,24 +5,21 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Assert;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
-import org.resteasy.mock.MockHttpServletRequest;
-import org.resteasy.mock.MockHttpServletResponse;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
 import javax.ws.rs.PathParam;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.ProduceMime;
 import java.io.IOException;
 
 /**
@@ -31,7 +28,7 @@ import java.io.IOException;
  */
 public class ClientErrorTest
 {
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
    @Path("/")
    public static class WebResourceUnsupportedMediaType
@@ -51,10 +48,11 @@ public class ClientErrorTest
       {
          return "content";
       }
+
       @ProduceMime("text/xml")
       @GET
       @Path("{uriparam}")
-      public String getXml(@PathParam("uriparam") String param)
+      public String getXml(@PathParam("uriparam")String param)
       {
          return "<" + param + "/>";
       }
@@ -113,28 +111,6 @@ public class ClientErrorTest
    public void testMethodNotAllowed()
    {
       HttpClient client = new HttpClient();
-      {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/");
-         request.setPathInfo("/");
-         request.addHeader(HttpHeaderNames.ACCEPT, "application/foo");
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, response.getStatus());
-      }
 
       GetMethod method = new GetMethod("http://localhost:8081");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/foo");
@@ -155,31 +131,6 @@ public class ClientErrorTest
    public void testNotAcceptable()
    {
       HttpClient client = new HttpClient();
-      {
-         MockHttpServletRequest request = new MockHttpServletRequest("POST", "/");
-         request.setPathInfo("/");
-         request.addHeader(HttpHeaderNames.ACCEPT, "application/bar");
-         request.setContent("basic".getBytes());
-         request.setContentType("application/bar");
-
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, response.getStatus());
-      }
       PostMethod method = new PostMethod("http://localhost:8081");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/bar");
       try

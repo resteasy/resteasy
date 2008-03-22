@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.resteasy.mock.MockHttpServletRequest;
 import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.MockDispatcherFactory;
 
 import javax.servlet.ServletException;
@@ -70,7 +71,8 @@ public class UriParamsWithLocator
    @Test
    public void testDoubleId() throws Exception
    {
-      HttpServletDispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
+      Dispatcher dispatcher = servlet.getDispatcher();
       dispatcher.getRegistry().addResource(Locator.class);
       {
          MockHttpServletRequest request = new MockHttpServletRequest("GET", "/1/2");
@@ -79,7 +81,7 @@ public class UriParamsWithLocator
 
          try
          {
-            dispatcher.invoke(request, response);
+            servlet.invoke(request, response);
          }
          catch (ServletException e)
          {
@@ -99,7 +101,8 @@ public class UriParamsWithLocator
    @Test
    public void testDoubleIdAsPathSegment() throws Exception
    {
-      HttpServletDispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
+      Dispatcher dispatcher = servlet.getDispatcher();
       dispatcher.getRegistry().addResource(Locator2.class);
       {
          MockHttpServletRequest request = new MockHttpServletRequest("GET", "/1/2");
@@ -108,7 +111,7 @@ public class UriParamsWithLocator
 
          try
          {
-            dispatcher.invoke(request, response);
+            servlet.invoke(request, response);
          }
          catch (ServletException e)
          {

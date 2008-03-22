@@ -6,15 +6,11 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.resteasy.mock.MockHttpServletRequest;
-import org.resteasy.mock.MockHttpServletResponse;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedServletContainer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -30,7 +26,7 @@ import java.util.List;
 public class MatrixParamAsPrimitive
 {
    private static HttpClient client = new HttpClient();
-   private static HttpServletDispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
    //private static IResourceUriBoolean resourceUriBoolean;
 
@@ -1057,29 +1053,6 @@ public class MatrixParamAsPrimitive
    {
       String param = ";" + type + "=" + value;
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/" + param);
-         request.setPathInfo("/" + param);
-         request.addHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      }
-
-      {
          GetMethod method = new GetMethod("http://localhost:8081/" + param);
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
@@ -1149,28 +1122,6 @@ public class MatrixParamAsPrimitive
          }
       }
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", base + "default");
-         request.setPathInfo(base + "default");
-         request.addHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      }
-      {
          GetMethod method = new GetMethod("http://localhost:8081" + base + "default");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
@@ -1185,28 +1136,6 @@ public class MatrixParamAsPrimitive
       }
 
       String param = ";" + type + "=" + value;
-      {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", base + "default/override" + param);
-         request.setPathInfo(base + "default/override" + param);
-         request.addHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            dispatcher.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      }
       {
          GetMethod method = new GetMethod("http://localhost:8081" + base + "default/override" + param);
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);

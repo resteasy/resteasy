@@ -1,9 +1,9 @@
-package org.resteasy.plugins.server.servlet;
+package org.resteasy.plugins.server.grizzly;
 
+import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.spi.ResteasyProviderFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.Collection;
@@ -15,14 +15,14 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServletResponseHeaders implements MultivaluedMap<String, Object>
+public class GrizzlyResponseHeaders implements MultivaluedMap<String, Object>
 {
 
    private MultivaluedMap<String, Object> cachedHeaders = new MultivaluedMapImpl<String, Object>();
-   private HttpServletResponse response;
+   private GrizzlyResponse response;
    private ResteasyProviderFactory factory;
 
-   public HttpServletResponseHeaders(HttpServletResponse response, ResteasyProviderFactory factory)
+   public GrizzlyResponseHeaders(GrizzlyResponse response, ResteasyProviderFactory factory)
    {
       this.response = response;
       this.factory = factory;
@@ -31,17 +31,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
    public void putSingle(String key, Object value)
    {
       cachedHeaders.putSingle(key, value);
-      RuntimeDelegate.HeaderDelegate delegate = factory.createHeaderDelegate(value.getClass());
-      if (delegate != null)
-      {
-         //System.out.println("addResponseHeader: " + key + " " + delegate.toString(value));
-         response.setHeader(key, delegate.toString(value));
-      }
-      else
-      {
-         //System.out.println("addResponseHeader: " + key + " " + value.toString());
-         response.setHeader(key, value.toString());
-      }
+      addResponseHeader(key, value);
    }
 
    public void add(String key, Object value)

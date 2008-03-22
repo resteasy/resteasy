@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.spi.HttpInput;
+import org.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.core.Cookie;
@@ -30,7 +30,7 @@ public class CookieParamExtractor extends StringParameterExtractor implements Pa
       }
    }
 
-   public Object extract(HttpInput request)
+   public Object extract(HttpRequest request)
    {
       Cookie cookie = request.getHttpHeaders().getCookies().get(paramName);
       if (type.equals(Cookie.class)) return cookie;
