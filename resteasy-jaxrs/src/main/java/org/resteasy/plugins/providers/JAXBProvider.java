@@ -59,7 +59,7 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
       return -1;
    }
 
-   public void writeTo(Object object, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream outputStream) throws IOException
+   public void writeTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream outputStream) throws IOException
    {
       try
       {

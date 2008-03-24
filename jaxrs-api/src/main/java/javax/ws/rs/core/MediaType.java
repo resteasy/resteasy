@@ -39,9 +39,100 @@ public class MediaType
    private Map<String, String> parameters;
 
    /**
-    * The value of a type or subtype wildcard.
+    * The value of a type or subtype wildcard: "*"
     */
    public static final String MEDIA_TYPE_WILDCARD = "*";
+
+   // Common media type constants
+   /**
+    * "application/xml"
+    */
+   public final static String APPLICATION_XML = "application/xml";
+   /**
+    * "application/xml"
+    */
+   public final static MediaType APPLICATION_XML_TYPE = new MediaType("application", "xml");
+
+   /**
+    * "application/atom+xml"
+    */
+   public final static String APPLICATION_ATOM_XML = "application/atom+xml";
+   /**
+    * "application/atom+xml"
+    */
+   public final static MediaType APPLICATION_ATOM_XML_TYPE = new MediaType("application", "atom+xml");
+
+   /**
+    * "application/xhtml+xml"
+    */
+   public final static String APPLICATION_XHTML_XML = "application/xhtml+xml";
+   /**
+    * "application/xhtml+xml"
+    */
+   public final static MediaType APPLICATION_XHTML_XML_TYPE = new MediaType("application", "xhtml+xml");
+
+   /**
+    * "application/svg+xml"
+    */
+   public final static String APPLICATION_SVG_XML = "application/svg+xml";
+   /**
+    * "application/svg+xml"
+    */
+   public final static MediaType APPLICATION_SVG_XML_TYPE = new MediaType("application", "svg+xml");
+
+   /**
+    * "application/json"
+    */
+   public final static String APPLICATION_JSON = "application/json";
+   /**
+    * "application/json"
+    */
+   public final static MediaType APPLICATION_JSON_TYPE = new MediaType("application", "json");
+
+   /**
+    * "application/x-www-form-urlencoded"
+    */
+   public final static String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
+   /**
+    * "application/x-www-form-urlencoded"
+    */
+   public final static MediaType APPLICATION_FORM_URLENCODED_TYPE = new MediaType("application", "x-www-form-urlencoded");
+
+   /**
+    * "application/octet-stream"
+    */
+   public final static String APPLICATION_OCTET_STREAM = "application/octet-stream";
+   /**
+    * "application/octet-stream"
+    */
+   public final static MediaType APPLICATION_OCTET_STREAM_TYPE = new MediaType("application", "octet-stream");
+
+   /**
+    * "text/plain"
+    */
+   public final static String TEXT_PLAIN = "text/plain";
+   /**
+    * "text/plain"
+    */
+   public final static MediaType TEXT_PLAIN_TYPE = new MediaType("text", "plain");
+
+   /**
+    * "text/xml"
+    */
+   public final static String TEXT_XML = "text/xml";
+   /**
+    * "text/xml"
+    */
+   public final static MediaType TEXT_XML_TYPE = new MediaType("text", "xml");
+
+   /**
+    * "text/html"
+    */
+   public final static String TEXT_HTML = "text/html";
+   /**
+    * "text/html"
+    */
+   public final static MediaType TEXT_HTML_TYPE = new MediaType("text", "html");
 
    /**
     * Empty immutable map used for all instances without parameters
@@ -64,7 +155,8 @@ public class MediaType
    }
 
    /**
-    * Creates a new instance of MediaType with the supplied type, subtype and parameters.
+    * Creates a new instance of MediaType with the supplied type, subtype and
+    * parameters.
     *
     * @param type       the primary type
     * @param subtype    the subtype
@@ -87,7 +179,10 @@ public class MediaType
                return o1.compareToIgnoreCase(o2);
             }
          });
-         map.putAll(parameters);
+         for (Map.Entry<String, String> e : parameters.entrySet())
+         {
+            map.put(e.getKey().toLowerCase(), e.getValue());
+         }
          this.parameters = Collections.unmodifiableMap(map);
       }
    }
@@ -100,7 +195,7 @@ public class MediaType
     */
    public MediaType(String type, String subtype)
    {
-      this(type, subtype, null);
+      this(type, subtype, emptyMap);
    }
 
    /**
@@ -152,7 +247,7 @@ public class MediaType
    }
 
    /**
-    * Getter for parameter map. Keys are case-insensitive.
+    * Getter for a read-only parameter map. Keys are case-insensitive.
     *
     * @return an immutable map of parameters.
     */
@@ -179,12 +274,16 @@ public class MediaType
       if (type.equalsIgnoreCase(other.type) && (subtype.equals(MEDIA_TYPE_WILDCARD) || other.subtype.equals(MEDIA_TYPE_WILDCARD)))
          return true;
       else
-         return this.equals(other);
+         return this.type.equalsIgnoreCase(other.type)
+                 && this.subtype.equalsIgnoreCase(other.subtype);
    }
 
    /**
     * Compares obj to this media type to see if they are the same by comparing
-    * type and subtype only - parameters are ignored.
+    * type, subtype and parameters. Note that the case-sensitivity of parameter
+    * values is dependent on the semantics of the parameter name, see
+    * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7">HTTP/1.1</a>}.
+    * This method assumes that values are case-sensitive.
     *
     * @param obj the object to compare to
     * @return true if the two media types are the same, false otherwise.
@@ -197,7 +296,9 @@ public class MediaType
       if (!(obj instanceof MediaType))
          return false;
       MediaType other = (MediaType) obj;
-      return (this.type.equalsIgnoreCase(other.type) && this.subtype.equalsIgnoreCase(other.subtype));
+      return (this.type.equalsIgnoreCase(other.type)
+              && this.subtype.equalsIgnoreCase(other.subtype)
+              && this.parameters.equals(other.parameters));
    }
 
    /**

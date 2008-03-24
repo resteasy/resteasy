@@ -55,7 +55,7 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
       return o.toString().getBytes().length;
    }
 
-   public void writeTo(Object o, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       entityStream.write(o.toString().getBytes());
    }

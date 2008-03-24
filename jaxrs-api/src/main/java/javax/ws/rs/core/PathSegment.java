@@ -20,22 +20,29 @@
 package javax.ws.rs.core;
 
 /**
- * Represents a URI path segment and any associated matrix parameters.
+ * Represents a URI path segment and any associated matrix parameters. When an
+ * instance of this type is injected with {@link javax.ws.rs.PathParam}, the
+ * value of the annotation identifies which path segment is selected.
  *
  * @see UriInfo#getPathSegments
+ * @see javax.ws.rs.PathParam
  */
-public interface PathSegment {
+public interface PathSegment
+{
 
-    /**
-     * Get the path segment.
-     * <p>
-     * @return the path segment
-     */
-    String getPath();
-    /**
-     * Get a map of the matrix parameters associated with the path segment
-     * @return the map of matrix parameters
-     */
-    MultivaluedMap<String, String> getMatrixParameters();
-    
+   /**
+    * Get the path segment.
+    * <p/>
+    *
+    * @return the path segment
+    */
+   String getPath();
+
+   /**
+    * Get a map of the matrix parameters associated with the path segment
+    *
+    * @return the map of matrix parameters
+    */
+   MultivaluedMap<String, String> getMatrixParameters();
+
 }

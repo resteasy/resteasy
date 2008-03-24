@@ -93,6 +93,19 @@ public abstract class Response
     * @param status the response status
     * @return a new ResponseBuilder
     */
+   public static ResponseBuilder status(Status status)
+   {
+      ResponseBuilder b = ResponseBuilder.newInstance();
+      b.status(status);
+      return b;
+   }
+
+   /**
+    * Create a new ResponseBuilder with the supplied status.
+    *
+    * @param status the response status
+    * @return a new ResponseBuilder
+    */
    public static ResponseBuilder status(int status)
    {
       ResponseBuilder b = ResponseBuilder.newInstance();
@@ -107,7 +120,7 @@ public abstract class Response
     */
    public static ResponseBuilder ok()
    {
-      ResponseBuilder b = status(200);
+      ResponseBuilder b = status(Status.OK);
       return b;
    }
 
@@ -176,7 +189,7 @@ public abstract class Response
     */
    public static ResponseBuilder serverError()
    {
-      ResponseBuilder b = status(500);
+      ResponseBuilder b = status(Status.INTERNAL_SERVER_ERROR);
       return b;
    }
 
@@ -191,7 +204,7 @@ public abstract class Response
     */
    public static ResponseBuilder created(URI location)
    {
-      ResponseBuilder b = status(201).location(location);
+      ResponseBuilder b = status(Status.CREATED).location(location);
       return b;
    }
 
@@ -202,7 +215,7 @@ public abstract class Response
     */
    public static ResponseBuilder noContent()
    {
-      ResponseBuilder b = status(204);
+      ResponseBuilder b = status(Status.NO_CONTENT);
       return b;
    }
 
@@ -213,7 +226,7 @@ public abstract class Response
     */
    public static ResponseBuilder notModified()
    {
-      ResponseBuilder b = status(304);
+      ResponseBuilder b = status(Status.NOT_MODIFIED);
       return b;
    }
 
@@ -258,7 +271,7 @@ public abstract class Response
     */
    public static ResponseBuilder seeOther(URI location)
    {
-      ResponseBuilder b = status(303).location(location);
+      ResponseBuilder b = status(Status.SEE_OTHER).location(location);
       return b;
    }
 
@@ -273,7 +286,7 @@ public abstract class Response
     */
    public static ResponseBuilder temporaryRedirect(URI location)
    {
-      ResponseBuilder b = status(307).location(location);
+      ResponseBuilder b = status(Status.TEMPORARY_REDIRECT).location(location);
       return b;
    }
 
@@ -285,7 +298,7 @@ public abstract class Response
     */
    public static ResponseBuilder notAcceptable(List<Variant> variants)
    {
-      ResponseBuilder b = status(406).variants(variants);
+      ResponseBuilder b = status(Status.NOT_ACCEPTABLE).variants(variants);
       return b;
    }
 
@@ -350,6 +363,19 @@ public abstract class Response
        * @return the updated ResponseBuilder
        */
       public abstract ResponseBuilder status(int status);
+
+      /**
+       * Set the status on the ResponseBuilder.
+       *
+       * @param status the response status
+       * @return the updated ResponseBuilder
+       */
+      public ResponseBuilder status(Status status)
+      {
+         return status(status.getStatusCode());
+      }
+
+      ;
 
       /**
        * Set the entity on the ResponseBuilder.
@@ -472,5 +498,176 @@ public abstract class Response
        * @return the updated ResponseBuilder
        */
       public abstract ResponseBuilder cookie(NewCookie... cookies);
+   }
+
+   public enum Status
+   {
+      /**
+       * 200 OK
+       */
+      OK(200, "OK"),
+      /**
+       * 201 Created
+       */
+      CREATED(201, "Created"),
+      /**
+       * 202 Accepted
+       */
+      ACCEPTED(202, "Accepted"),
+      /**
+       * 204 No Content
+       */
+      NO_CONTENT(204, "No Content"),
+      /**
+       * 303 See Other
+       */
+      MOVED_PERMANENTLY(301, "Moved Permanently"),
+      /**
+       * 303 See Other
+       */
+      SEE_OTHER(303, "See Other"),
+      /**
+       * 304 Not Modified
+       */
+      NOT_MODIFIED(304, "Not Modified"),
+      /**
+       * 307 Temporary Redirect
+       */
+      TEMPORARY_REDIRECT(307, "Temporary Redirect"),
+      /**
+       * 400 Bad Request
+       */
+      BAD_REQUEST(400, "Bad Request"),
+      /**
+       * 401 Unauthorized
+       */
+      UNAUTHORIZED(401, "Unauthorized"),
+      /**
+       * 403 Forbidden
+       */
+      FORBIDDEN(403, "Forbidden"),
+      /**
+       * 404 Not Found
+       */
+      NOT_FOUND(404, "Not Found"),
+      /**
+       * 406 Not Acceptable
+       */
+      NOT_ACCEPTABLE(406, "Not Acceptable"),
+      /**
+       * 409 Conflict
+       */
+      CONFLICT(409, "Conflict"),
+      /**
+       * 410 Gone
+       */
+      GONE(410, "Gone"),
+      /**
+       * 412 Precondition Failed
+       */
+      PRECONDITION_FAILED(412, "Precondition Failed"),
+      /**
+       * 415 Unsupported Media Type
+       */
+      UNSUPPORTED_MEDIA_TYPE(415, "Unsupported Media Type"),
+      /**
+       * 500 Internal Server Error
+       */
+      INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
+      /**
+       * 503 Service Unavailable
+       */
+      SERVICE_UNAVAILABLE(503, "Service Unavailable");
+
+      private final int code;
+      private final String reason;
+      private Family family;
+
+      /**
+       * An enumeration representing the class of status code. Family is used
+       * here since class is overloaded in Java.
+       */
+      public enum Family
+      {
+         INFORMATIONAL, SUCCESSFUL, REDIRECTION, CLIENT_ERROR, SERVER_ERROR, OTHER
+      }
+
+      ;
+
+      Status(final int statusCode, final String reasonPhrase)
+      {
+         this.code = statusCode;
+         this.reason = reasonPhrase;
+         switch (code / 100)
+         {
+            case 1:
+               this.family = Family.INFORMATIONAL;
+               break;
+            case 2:
+               this.family = Family.SUCCESSFUL;
+               break;
+            case 3:
+               this.family = Family.REDIRECTION;
+               break;
+            case 4:
+               this.family = Family.CLIENT_ERROR;
+               break;
+            case 5:
+               this.family = Family.SERVER_ERROR;
+               break;
+            default:
+               this.family = Family.OTHER;
+               break;
+         }
+      }
+
+      /**
+       * Get the class of status code
+       *
+       * @return the class of status code
+       */
+      public Family getFamily()
+      {
+         return family;
+      }
+
+      /**
+       * Get the associated status code
+       *
+       * @return the status code
+       */
+      public int getStatusCode()
+      {
+         return code;
+      }
+
+      /**
+       * Get the reason phrase
+       *
+       * @return the reason phrase
+       */
+      @Override
+      public String toString()
+      {
+         return reason;
+      }
+
+      /**
+       * Convert a numerical status code into the corresponding Status
+       *
+       * @param statusCode the numerical status code
+       * @return the matching Status or null is no matching Status is defined
+       */
+      public static Status fromStatusCode(final int statusCode)
+      {
+         for (Status s : Status.values())
+         {
+            if (s.code == statusCode)
+            {
+               return s;
+            }
+         }
+         return null;
+      }
    }
 }

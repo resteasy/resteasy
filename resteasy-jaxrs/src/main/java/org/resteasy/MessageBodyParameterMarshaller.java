@@ -36,7 +36,7 @@ public class MessageBodyParameterMarshaller implements ParameterMarshaller
       try
       {
          MessageBodyWriter writer = getMessageBodyWriter();
-         writer.writeTo(obj, genericType, annotations, mediaType, output.getOutputHeaders(), output.getOutputStream());
+         writer.writeTo(obj, type, genericType, annotations, mediaType, output.getOutputHeaders(), output.getOutputStream());
       }
       catch (IOException e)
       {

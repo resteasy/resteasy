@@ -42,7 +42,7 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
       return -1;
    }
 
-   public void writeTo(InputStream inputStream, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(InputStream inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       int c;
       while ((c = inputStream.read()) != -1)

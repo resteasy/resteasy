@@ -53,7 +53,7 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
       return bytes.length;
    }
 
-   public void writeTo(byte[] bytes, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(byte[] bytes, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       entityStream.write(bytes);
    }
