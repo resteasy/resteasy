@@ -75,7 +75,8 @@ public interface MessageBodyWriter<T>
     * but any changes must be made before writing to the output stream since
     * the headers will be flushed prior to writing the response body.
     *
-    * @param t            the type to write.
+    * @param t            the instance to write.
+    * @param type         the class of object that is to be written.
     * @param genericType  the type of object to be written. E.g. if the
     *                     message body is to be produced from a field, this will be
     *                     the declared type of the field as returned by
@@ -92,7 +93,7 @@ public interface MessageBodyWriter<T>
     *                     if desired.
     * @throws java.io.IOException if an IO error arises
     */
-   void writeTo(T t, Type genericType, Annotation annotations[],
+   void writeTo(T t, Class<?> type, Type genericType, Annotation annotations[],
                 MediaType mediaType,
                 MultivaluedMap<String, Object> httpHeaders,
                 OutputStream entityStream) throws IOException;

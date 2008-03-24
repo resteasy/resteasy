@@ -156,7 +156,7 @@ public class DefaultDispatcher extends HttpServlet implements Dispatcher
          //System.out.println("JAX-RS Content Size: " + size);
          response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));
          response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_TYPE, responseContentType.toString());
-         writer.writeTo(entity, genericType, invoker.getMethod().getAnnotations(), responseContentType, response.getOutputHeaders(), response.getOutputStream());
+         writer.writeTo(entity, entity.getClass(), genericType, invoker.getMethod().getAnnotations(), responseContentType, response.getOutputHeaders(), response.getOutputStream());
       }
       catch (IOException e)
       {

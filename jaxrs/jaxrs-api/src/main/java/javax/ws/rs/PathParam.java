@@ -24,8 +24,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Binds a method parameter to a URI template parameter value.  The value is
- * URL decoded unless this is disabled using the {@link Encoded} annotation.
+ * Binds a method parameter to a URI template parameter value or a path segment
+ * containing the template parameter.  The value is URL decoded unless this
+ * is disabled using the {@link Encoded} annotation.
  * <p/>
  * The type of the annotated parameter must either:
  * <ul>
@@ -41,6 +42,7 @@ import java.lang.annotation.Target;
  *
  * @see Encoded
  * @see javax.ws.rs.core.PathSegment
+ * @see javax.ws.rs.core.UriInfo
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

@@ -38,7 +38,7 @@ public class BodyRequestEntity implements RequestEntity
 
    public void writeRequest(OutputStream outputStream) throws IOException
    {
-      marshaller.getMessageBodyWriter().writeTo(object, genericType, annotations, marshaller.getMediaType(), httpHeaders, outputStream);
+      marshaller.getMessageBodyWriter().writeTo(object, object.getClass(), genericType, annotations, marshaller.getMediaType(), httpHeaders, outputStream);
    }
 
    public long getContentLength()

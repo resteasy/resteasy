@@ -22,6 +22,9 @@ import java.util.Set;
  */
 public abstract class ApplicationConfig
 {
+   private static final Set<Class<?>> emptySet = Collections.emptySet();
+   private static final Map<String, MediaType> emptyMediaMap = Collections.emptyMap();
+   private static final Map<String, String> emptyLanguageMap = Collections.emptyMap();
 
    /**
     * Get a list of root resource classes. Classes
@@ -47,11 +50,11 @@ public abstract class ApplicationConfig
     */
    public Set<Class<?>> getProviderClasses()
    {
-      return Collections.EMPTY_SET;
+      return emptySet;
    }
 
    /**
-    * Get a map of file extensions to media types. This is used to drive
+    * Get a map of file extension to media type. This is used to drive
     * URI-based content negotiation such that, e.g.:
     * <pre>GET /resource.atom</pre>
     * <p>is equivalent to:</p>
@@ -63,6 +66,22 @@ public abstract class ApplicationConfig
     */
    public Map<String, MediaType> getExtensionMappings()
    {
-      return Collections.EMPTY_MAP;
+      return emptyMediaMap;
+   }
+
+   /**
+    * Get a map of file extension to language. This is used to drive
+    * URI-based content negotiation such that, e.g.:
+    * <pre>GET /resource.english</pre>
+    * <p>is equivalent to:</p>
+    * <pre>GET /resource
+    * Accept-Language: en</pre>
+    * <p>The default implementation returns an empty map.</p>
+    *
+    * @return a map of file extension to language
+    */
+   public Map<String, String> getLanguageMappings()
+   {
+      return emptyLanguageMap;
    }
 }
