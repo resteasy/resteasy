@@ -38,10 +38,10 @@
          <url>http://download.java.net/maven/2/</url>
          <layout>default</layout>
       </repository>
-      <!--      <repository>
+      <repository>
          <id>ibiblio mirror</id>
          <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-      </repository>-->
+      </repository>
    </repositories>
    <dependencies>
       <dependency>
