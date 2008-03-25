@@ -23,7 +23,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
 
    public Object inject(HttpRequest request, HttpResponse response)
    {
-      List<String> list = request.getParameters().get(paramName);
+      List<String> list = request.getUri().getQueryParameters().get(paramName);
       return extractValues(list);
    }
 

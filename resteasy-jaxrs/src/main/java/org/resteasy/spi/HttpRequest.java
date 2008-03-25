@@ -1,7 +1,6 @@
 package org.resteasy.spi;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 
@@ -18,8 +17,6 @@ public interface HttpRequest
    InputStream getInputStream();
 
    UriInfo getUri();
-
-   MultivaluedMap<String, String> getParameters();
 
    String getHttpMethod();
 }

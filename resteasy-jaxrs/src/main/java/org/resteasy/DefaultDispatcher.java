@@ -174,6 +174,8 @@ public class DefaultDispatcher extends HttpServlet implements Dispatcher
       Annotation[] annotations = invoker.getMethod().getAnnotations();
 
       MessageBodyWriter writer = providerFactory.createMessageBodyWriter(type, genericType, annotations, responseContentType);
+      System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
+      System.out.println("Response content type: " + responseContentType);
       if (writer == null)
       {
          throw new RuntimeException("Could not find MessageBodyWriter for response object of type: " + entity.getClass() + " of media type: " + responseContentType);

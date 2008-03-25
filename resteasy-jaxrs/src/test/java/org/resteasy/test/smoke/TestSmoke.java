@@ -12,6 +12,7 @@ import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 /**
  * Simple smoke test
@@ -63,7 +64,7 @@ public class TestSmoke
       {
          MockHttpServletRequest request = new MockHttpServletRequest("GET", "/queryParam");
          request.setPathInfo("/queryParam");
-         request.addParameter("param", "hello world");
+         request.setQueryString("param=" + URLEncoder.encode("hello world", "UTF-8"));
          MockHttpServletResponse response = new MockHttpServletResponse();
 
          servlet.invoke(request, response);
@@ -125,7 +126,7 @@ public class TestSmoke
       {
          MockHttpServletRequest request = new MockHttpServletRequest("GET", "/locating/queryParam");
          request.setPathInfo("/locating/queryParam");
-         request.addParameter("param", "hello world");
+         request.setQueryString("param=" + URLEncoder.encode("hello world", "UTF-8"));
          MockHttpServletResponse response = new MockHttpServletResponse();
 
          servlet.invoke(request, response);

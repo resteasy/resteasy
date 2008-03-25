@@ -3,7 +3,6 @@ package org.resteasy.plugins.server.grizzly;
 import org.resteasy.util.HttpRequestImpl;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 
@@ -13,8 +12,8 @@ import java.io.InputStream;
  */
 public class GrizzlyHttpRequest extends HttpRequestImpl
 {
-   public GrizzlyHttpRequest(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, MultivaluedMap<String, String> parameters, String httpMethod)
+   public GrizzlyHttpRequest(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, String httpMethod)
    {
-      super(inputStream, httpHeaders, httpMethod, uri, parameters);
+      super(inputStream, httpHeaders, httpMethod, uri);
    }
 }

@@ -125,7 +125,9 @@ public class MediaTypeMap<T>
       List<Entry<T>> matches = new ArrayList<Entry<T>>();
       if (accept.isWildcardType())
       {
-         return everything;
+         ArrayList<T> copy = new ArrayList<T>();
+         copy.addAll(everything);
+         return copy;
       }
       else
       {

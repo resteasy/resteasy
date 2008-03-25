@@ -140,37 +140,41 @@ public class ResteasyBootstrap implements ServletContextListener
       if (classes == null) return;
       for (String clazz : classes)
       {
-         System.out.println("FOUND JAX-RS @Provider: " + clazz);
-         Class provider = null;
+         registerProvider(clazz);
+      }
+   }
+
+   private void registerProvider(String clazz)
+   {
+      Class provider = null;
+      try
+      {
+         provider = Thread.currentThread().getContextClassLoader().loadClass(clazz);
+      }
+      catch (ClassNotFoundException e)
+      {
+         throw new RuntimeException(e);
+      }
+      if (MessageBodyReader.class.isAssignableFrom(provider))
+      {
          try
          {
-            provider = Thread.currentThread().getContextClassLoader().loadClass(clazz);
+            factory.addMessageBodyReader(provider);
          }
-         catch (ClassNotFoundException e)
+         catch (Exception e)
          {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
          }
-         if (MessageBodyReader.class.isAssignableFrom(provider))
+      }
+      if (MessageBodyWriter.class.isAssignableFrom(provider))
+      {
+         try
          {
-            try
-            {
-               factory.addMessageBodyReader((MessageBodyReader) provider.newInstance());
-            }
-            catch (Exception e)
-            {
-               throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
-            }
+            factory.addMessageBodyWriter(provider);
          }
-         if (MessageBodyWriter.class.isAssignableFrom(provider))
+         catch (Exception e)
          {
-            try
-            {
-               factory.addMessageBodyWriter((MessageBodyWriter) provider.newInstance());
-            }
-            catch (Exception e)
-            {
-               throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
-            }
+            throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
          }
       }
    }
@@ -205,18 +209,7 @@ public class ResteasyBootstrap implements ServletContextListener
       for (String provider : p)
       {
          provider = provider.trim();
-         Object obj = null;
-         try
-         {
-            Class prov = Thread.currentThread().getContextClassLoader().loadClass(provider);
-            obj = prov.newInstance();
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-         if (obj instanceof MessageBodyReader) factory.addMessageBodyReader((MessageBodyReader) obj);
-         if (obj instanceof MessageBodyWriter) factory.addMessageBodyWriter((MessageBodyWriter) obj);
+         registerProvider(provider);
       }
    }
 
