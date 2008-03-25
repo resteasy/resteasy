@@ -46,6 +46,7 @@ public class SimpleResource
    @ProduceMime("text/plain")
    public String getQueryParam(@QueryParam("param")String param)
    {
+      System.out.println("query param: " + param);
       return param;
    }
 

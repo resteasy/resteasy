@@ -25,5 +25,10 @@ public class RegisterBuiltin
 
       factory.addMessageBodyReader(new ByteArrayProvider());
       factory.addMessageBodyWriter(new ByteArrayProvider());
+
+      factory.addMessageBodyReader(new FormUrlEncodedProvider());
+      factory.addMessageBodyWriter(new FormUrlEncodedProvider());
+
+      factory.addMessageBodyWriter(new StreamingOutputProvider());
    }
 }

@@ -3,7 +3,6 @@ package org.resteasy.plugins.server.servlet;
 import org.resteasy.util.HttpRequestImpl;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 
@@ -18,9 +17,9 @@ import java.io.InputStream;
 public class HttpServletInputMessage extends HttpRequestImpl
 {
 
-   public HttpServletInputMessage(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, MultivaluedMap<String, String> parameters, String httpMethod)
+   public HttpServletInputMessage(HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, String httpMethod)
    {
-      super(inputStream, httpHeaders, httpMethod, uri, parameters);
+      super(inputStream, httpHeaders, httpMethod, uri);
    }
 
 }

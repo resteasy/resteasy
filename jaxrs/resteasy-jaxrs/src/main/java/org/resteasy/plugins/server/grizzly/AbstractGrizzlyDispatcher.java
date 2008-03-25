@@ -124,7 +124,7 @@ abstract public class AbstractGrizzlyDispatcher
       HttpRequest in;
       try
       {
-         in = new GrizzlyHttpRequest(headers, request.getInputStream(), uriInfo, parameters, request.getMethod().toUpperCase());
+         in = new GrizzlyHttpRequest(headers, request.getInputStream(), uriInfo, request.getMethod().toUpperCase());
       }
       catch (IOException e)
       {

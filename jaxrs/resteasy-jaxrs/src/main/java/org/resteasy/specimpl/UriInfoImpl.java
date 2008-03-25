@@ -4,7 +4,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -15,6 +18,7 @@ public class UriInfoImpl implements UriInfo
 {
    private String path;
    private MultivaluedMap<String, String> queryParameters;
+   private MultivaluedMap<String, String> encodedQueryParameters;
    private MultivaluedMap<String, String> templateParameters;
    private List<PathSegment> pathSegments;
    private URI absolutePath;
@@ -23,13 +27,17 @@ public class UriInfoImpl implements UriInfo
    private MultivaluedMap<String, PathSegment> pathParamSegments = new MultivaluedMapImpl<String, PathSegment>();
    private String queryString;
 
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      String val = "http://foo.com/hello/world/dude";
-      val = val.substring(0, val.indexOf("world/dude"));
-      System.out.print(val);
+      URL url = new URL("http://localhost.com/foo bar/junk");
+      System.out.println(url.toURI());
    }
 
+   /**
+    * @param absolutePath
+    * @param path         decoded equivalent to HttpServletRequest.getPathInfo()
+    * @param queryString  encoded query string of request
+    */
    public UriInfoImpl(URI absolutePath, String path, String queryString)
    {
       this(absolutePath, path, queryString, PathSegmentImpl.parseSegments(path));
@@ -40,6 +48,8 @@ public class UriInfoImpl implements UriInfo
       this.path = path;
       this.absolutePath = absolutePath;
       this.queryParameters = new MultivaluedMapImpl<String, String>();
+      this.encodedQueryParameters = new MultivaluedMapImpl<String, String>();
+      extractParameters(queryString);
       this.templateParameters = new MultivaluedMapImpl<String, String>();
       this.pathSegments = pathSegments;
       this.queryString = queryString;
@@ -148,7 +158,8 @@ public class UriInfoImpl implements UriInfo
 
    public MultivaluedMap<String, String> getQueryParameters(boolean decode)
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      if (decode) return queryParameters;
+      else return encodedQueryParameters;
    }
 
    public List<String> getAncestorResourceURIs()
@@ -160,4 +171,43 @@ public class UriInfoImpl implements UriInfo
    {
       throw new RuntimeException("NOT IMPLEMENTED");
    }
+
+   protected void extractParameters(String queryString)
+   {
+      if (queryString == null || queryString.equals("")) return;
+
+      String[] params = queryString.split("&");
+
+      for (String param : params)
+      {
+         if (param.indexOf('=') >= 0)
+         {
+            String[] nv = param.split("=");
+            try
+            {
+               String name = URLDecoder.decode(nv[0], "UTF-8");
+               encodedQueryParameters.add(name, nv[1]);
+               queryParameters.add(name, URLDecoder.decode(nv[1], "UTF-8"));
+            }
+            catch (UnsupportedEncodingException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+         else
+         {
+            try
+            {
+               String name = URLDecoder.decode(param, "UTF-8");
+               encodedQueryParameters.add(name, "");
+               queryParameters.add(name, "");
+            }
+            catch (UnsupportedEncodingException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+   }
+
 }

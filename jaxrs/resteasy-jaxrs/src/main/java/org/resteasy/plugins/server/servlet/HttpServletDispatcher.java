@@ -86,7 +86,6 @@ public class HttpServletDispatcher extends HttpServlet
    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response)
    {
       HttpHeaders headers = extractHttpHeaders(request);
-      MultivaluedMapImpl<String, String> parameters = extractParameters(request);
       String path = request.getPathInfo();
       //System.out.println("path: " + path);
       URI absolutePath = null;
@@ -110,7 +109,7 @@ public class HttpServletDispatcher extends HttpServlet
       HttpRequest in;
       try
       {
-         in = new HttpServletInputMessage(headers, request.getInputStream(), uriInfo, parameters, httpMethod.toUpperCase());
+         in = new HttpServletInputMessage(headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase());
       }
       catch (IOException e)
       {
@@ -128,22 +127,6 @@ public class HttpServletDispatcher extends HttpServlet
       {
          ResteasyProviderFactory.clearContextData();
       }
-   }
-
-   public static MultivaluedMapImpl<String, String> extractParameters(HttpServletRequest request)
-   {
-      MultivaluedMapImpl<String, String> parameters = new MultivaluedMapImpl<String, String>();
-
-      Enumeration parameterNames = request.getParameterNames();
-      while (parameterNames.hasMoreElements())
-      {
-         String parameterName = (String) parameterNames.nextElement();
-         for (String parameterValue : request.getParameterValues(parameterName))
-         {
-            parameters.add(parameterName, parameterValue);
-         }
-      }
-      return parameters;
    }
 
    public static HttpHeaders extractHttpHeaders(HttpServletRequest request)
