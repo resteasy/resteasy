@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.resteasy.spi.Dispatcher;
-import org.resteasy.test.EmbeddedServletContainer;
+import org.resteasy.test.EmbeddedContainer;
 
 /**
  * Simple smoke test
@@ -22,13 +22,13 @@ public class TestClient
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start();
+      dispatcher = EmbeddedContainer.start();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      EmbeddedServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
    @Test

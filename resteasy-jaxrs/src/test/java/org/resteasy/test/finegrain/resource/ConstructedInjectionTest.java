@@ -8,21 +8,23 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedContainer;
-import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
 
 /**
+ * Test POJO constructor/field injection.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ReponseInfoTest
+public class ConstructedInjectionTest
 {
    private static Dispatcher dispatcher;
 
@@ -36,28 +38,39 @@ public class ReponseInfoTest
    {
    }
 
-   public static class SimpleResource
+   public static class ConstructedResource
    {
+      UriInfo myInfo;
+      String abs;
+
+      public ConstructedResource(@Context UriInfo myInfo, @QueryParam("abs")String abs)
+      {
+         this.myInfo = myInfo;
+         this.abs = abs;
+      }
+
       @Path("/simple")
       @GET
-      public String get(@QueryParam("abs")String abs)
+      public String get()
       {
          System.out.println("abs query: " + abs);
          URI base = null;
          if (abs == null)
          {
-            base = URI.create("http://localhost:8081/new/one");
+            base = URI.create("http://localhost:8081/");
          }
          else
          {
-            base = URI.create("http://localhost:8081/" + abs + "/new/one");
+            base = URI.create("http://localhost:8081/" + abs + "/");
          }
-         Response response = Response.temporaryRedirect(URI.create("new/one")).build();
-         URI uri = (URI) response.getMetadata().getFirst(HttpHeaderNames.LOCATION);
-         System.out.println("Location uri: " + uri);
-         Assert.assertEquals(base.getPath(), uri.getPath());
+
+         System.out.println("BASE URI: " + myInfo.getBaseUri());
+         System.out.println("Request URI: " + myInfo.getRequestUri());
+         Assert.assertEquals(base.getPath(), myInfo.getBaseUri().getPath());
+         Assert.assertEquals("/simple", myInfo.getPath());
          return "CONTENT";
       }
+
    }
 
    private void _test(HttpClient client, String uri)
@@ -83,7 +96,7 @@ public class ReponseInfoTest
       dispatcher = EmbeddedContainer.start();
       try
       {
-         dispatcher.getRegistry().addResource(SimpleResource.class);
+         dispatcher.getRegistry().addResource(ConstructedResource.class);
          _test(new HttpClient(), "http://localhost:8081/simple");
       }
       finally
@@ -91,21 +104,5 @@ public class ReponseInfoTest
          EmbeddedContainer.stop();
       }
    }
-
-   @Test
-   public void testUriInfo2() throws Exception
-   {
-      dispatcher = EmbeddedContainer.start("/resteasy");
-      try
-      {
-         dispatcher.getRegistry().addResource(SimpleResource.class);
-         _test(new HttpClient(), "http://localhost:8081/resteasy/simple?abs=resteasy");
-      }
-      finally
-      {
-         EmbeddedContainer.stop();
-      }
-   }
-
 
 }

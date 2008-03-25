@@ -9,7 +9,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HeaderParamMarshaller implements ParameterMarshaller
+public class HeaderParamMarshaller implements Marshaller
 {
    private String paramName;
 

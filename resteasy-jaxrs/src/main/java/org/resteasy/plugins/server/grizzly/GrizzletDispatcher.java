@@ -28,7 +28,15 @@ public class GrizzletDispatcher extends AbstractGrizzlyDispatcher implements Gri
       GrizzlyResponse response = ac.getResponse();
 
 
-      invokeJaxrs(request, response);
+      try
+      {
+         ResteasyProviderFactory.pushContext(AsyncConnection.class, ac);
+         invokeJaxrs(request, response);
+      }
+      finally
+      {
+         ResteasyProviderFactory.clearContextData();
+      }
       response.finishResponse();
    }
 

@@ -8,12 +8,5 @@ package org.resteasy.spi;
  */
 public interface ResourceFactory
 {
-   Object createResource(HttpRequest input);
-
-   /**
-    * Class to scan for jax-rs annotations
-    *
-    * @return
-    */
-   Class<?> getScannableClass();
+   Object createResource(HttpRequest input, HttpResponse response);
 }

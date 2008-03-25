@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.spi.Dispatcher;
-import org.resteasy.test.EmbeddedServletContainer;
+import org.resteasy.test.EmbeddedContainer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -33,7 +33,7 @@ public class PreconditionTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start();
+      dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addResource(LastModifiedResource.class);
       dispatcher.getRegistry().addResource(EtagResource.class);
    }
@@ -41,7 +41,7 @@ public class PreconditionTest
    @AfterClass
    public static void after() throws Exception
    {
-      EmbeddedServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
    @Path("/")
@@ -221,13 +221,100 @@ public class PreconditionTest
 
          return Response.ok("foo", "text/plain").build();
       }
+
+      @Context
+      Request myRequest;
+
+      @GET
+      @Path("/fromField")
+      public Response doGet()
+      {
+         Response.ResponseBuilder rb = myRequest.evaluatePreconditions(new EntityTag("1"));
+         if (rb != null)
+            return rb.build();
+
+         return Response.ok("foo", "text/plain").build();
+      }
+
    }
 
    @Test
    public void testIfMatchWithMatchingETag()
    {
+      testIfMatchWithMatchingETag("");
+      testIfMatchWithMatchingETag("/fromField");
+   }
+
+   @Test
+   public void testIfMatchWithoutMatchingETag()
+   {
+      testIfMatchWithoutMatchingETag("");
+      testIfMatchWithoutMatchingETag("/fromField");
+   }
+
+   @Test
+   public void testIfMatchWildCard()
+   {
+      testIfMatchWildCard("");
+      testIfMatchWildCard("/fromField");
+   }
+
+   @Test
+   public void testIfNonMatchWithMatchingETag()
+   {
+      testIfNonMatchWithMatchingETag("");
+      testIfNonMatchWithMatchingETag("/fromField");
+   }
+
+   @Test
+   public void testIfNonMatchWithoutMatchingETag()
+   {
+      testIfNonMatchWithoutMatchingETag("");
+      testIfNonMatchWithoutMatchingETag("/fromField");
+   }
+
+   @Test
+   public void testIfNonMatchWildCard()
+   {
+      testIfNonMatchWildCard("");
+      testIfNonMatchWildCard("/fromField");
+   }
+
+   @Test
+   public void testIfMatchWithMatchingETag_IfNonMatchWithMatchingETag()
+   {
+      testIfMatchWithMatchingETag_IfNonMatchWithMatchingETag("");
+      testIfMatchWithMatchingETag_IfNonMatchWithMatchingETag("/fromField");
+
+   }
+
+   @Test
+   public void testIfMatchWithMatchingETag_IfNonMatchWithoutMatchingETag()
+   {
+      testIfMatchWithMatchingETag_IfNonMatchWithoutMatchingETag("");
+      testIfMatchWithMatchingETag_IfNonMatchWithoutMatchingETag("/fromField");
+   }
+
+   @Test
+   public void testIfMatchWithoutMatchingETag_IfNonMatchWithMatchingETag()
+   {
+      testIfMatchWithoutMatchingETag_IfNonMatchWithMatchingETag("");
+      testIfMatchWithoutMatchingETag_IfNonMatchWithMatchingETag("/fromField");
+   }
+
+   @Test
+   public void testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag()
+   {
+      testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag("");
+      testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag("/fromField");
+   }
+
+////////////
+
+   public void testIfMatchWithMatchingETag(String fromField)
+   {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "\"1\"");
       try
       {
@@ -241,11 +328,10 @@ public class PreconditionTest
       method.releaseConnection();
    }
 
-   @Test
-   public void testIfMatchWithoutMatchingETag()
+   public void testIfMatchWithoutMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "\"2\"");
       try
       {
@@ -259,11 +345,10 @@ public class PreconditionTest
       method.releaseConnection();
    }
 
-   @Test
-   public void testIfMatchWildCard()
+   public void testIfMatchWildCard(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "*");
       try
       {
@@ -277,11 +362,10 @@ public class PreconditionTest
       method.releaseConnection();
    }
 
-   @Test
-   public void testIfNonMatchWithMatchingETag()
+   public void testIfNonMatchWithMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "\"1\"");
       try
       {
@@ -296,11 +380,10 @@ public class PreconditionTest
       method.releaseConnection();
    }
 
-   @Test
-   public void testIfNonMatchWithoutMatchingETag()
+   public void testIfNonMatchWithoutMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
       try
       {
@@ -314,11 +397,10 @@ public class PreconditionTest
       method.releaseConnection();
    }
 
-   @Test
-   public void testIfNonMatchWildCard()
+   public void testIfNonMatchWildCard(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "*");
       try
       {
@@ -333,11 +415,10 @@ public class PreconditionTest
       method.releaseConnection();
    }
 
-   @Test
-   public void testIfMatchWithMatchingETag_IfNonMatchWithMatchingETag()
+   public void testIfMatchWithMatchingETag_IfNonMatchWithMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "1");
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "1");
       try
@@ -353,11 +434,10 @@ public class PreconditionTest
       method.releaseConnection();
    }
 
-   @Test
-   public void testIfMatchWithMatchingETag_IfNonMatchWithoutMatchingETag()
+   public void testIfMatchWithMatchingETag_IfNonMatchWithoutMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "1");
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
       try
@@ -372,11 +452,10 @@ public class PreconditionTest
       method.releaseConnection();
    }
 
-   @Test
-   public void testIfMatchWithoutMatchingETag_IfNonMatchWithMatchingETag()
+   public void testIfMatchWithoutMatchingETag_IfNonMatchWithMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "2");
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "1");
       try
@@ -390,11 +469,10 @@ public class PreconditionTest
       }
    }
 
-   @Test
-   public void testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag()
+   public void testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag");
+      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "2");
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
       try
@@ -407,6 +485,5 @@ public class PreconditionTest
          throw new RuntimeException(e);
       }
    }
-
 
 }

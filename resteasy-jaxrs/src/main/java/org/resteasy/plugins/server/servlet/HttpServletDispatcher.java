@@ -118,7 +118,16 @@ public class HttpServletDispatcher extends HttpServlet
       }
       HttpResponse theResponse = new HttpServletResponseWrapper(response, dispatcher.getProviderFactory());
 
-      dispatcher.invoke(in, theResponse);
+      try
+      {
+         ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
+         ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+         dispatcher.invoke(in, theResponse);
+      }
+      finally
+      {
+         ResteasyProviderFactory.clearContextData();
+      }
    }
 
    public static MultivaluedMapImpl<String, String> extractParameters(HttpServletRequest request)

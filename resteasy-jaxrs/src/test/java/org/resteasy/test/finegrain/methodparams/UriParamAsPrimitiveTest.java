@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.resteasy.spi.Dispatcher;
-import org.resteasy.test.EmbeddedServletContainer;
+import org.resteasy.test.EmbeddedContainer;
 import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.GET;
@@ -32,7 +32,7 @@ public class UriParamAsPrimitiveTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start();
+      dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addResource(ResourceUriBoolean.class);
       dispatcher.getRegistry().addResource(ResourceUriByte.class);
       dispatcher.getRegistry().addResource(ResourceUriShort.class);
@@ -54,7 +54,7 @@ public class UriParamAsPrimitiveTest
    @AfterClass
    public static void after() throws Exception
    {
-      EmbeddedServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
    @Path("/boolean/{arg}")

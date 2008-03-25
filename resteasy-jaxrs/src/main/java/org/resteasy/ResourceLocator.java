@@ -1,7 +1,11 @@
 package org.resteasy;
 
 import org.resteasy.spi.HttpRequest;
+import org.resteasy.spi.HttpResponse;
+import org.resteasy.spi.InjectorFactory;
+import org.resteasy.spi.MethodInjector;
 import org.resteasy.spi.ResourceFactory;
+import org.resteasy.spi.ResourceReference;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,19 +15,28 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceLocator extends ResourceInvoker implements ResourceFactory
+public class ResourceLocator implements ResourceFactory, ResourceReference
 {
+   protected MethodInjector injector;
+   protected ResourceFactory factory;
+   protected ResteasyProviderFactory providerFactory;
+   protected Method method;
+   protected PathParamIndex index;
 
-   public ResourceLocator(String path, ResourceFactory factory, Method method, ResteasyProviderFactory providerFactory)
+   public ResourceLocator(MethodInjector injector, ResourceFactory factory, ResteasyProviderFactory providerFactory, Method method, PathParamIndex index)
    {
-      super(path, factory, method, providerFactory);
+      this.injector = injector;
+      this.factory = factory;
+      this.providerFactory = providerFactory;
+      this.method = method;
+      this.index = index;
    }
 
-   public Object createResource(HttpRequest input)
+   public Object createResource(HttpRequest input, HttpResponse response)
    {
-      Object resource = factory.createResource(input);
-      populateUriParams(input);
-      Object[] args = getArguments(input);
+      index.populateUriInfoTemplateParams(input);
+      Object resource = factory.createResource(input, response);
+      Object[] args = injector.injectArguments(input, response);
       try
       {
          return method.invoke(resource, args);
@@ -43,5 +56,8 @@ public class ResourceLocator extends ResourceInvoker implements ResourceFactory
       return method.getReturnType();
    }
 
-
+   public ResourceFactory getFactory(InjectorFactory factory)
+   {
+      return this;
+   }
 }

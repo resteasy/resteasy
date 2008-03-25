@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MessageBodyParameterMarshaller implements ParameterMarshaller
+public class MessageBodyParameterMarshaller implements Marshaller
 {
    private Class type;
    private ResteasyProviderFactory factory;

@@ -5,8 +5,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.resteasy.ClientInvoker;
+import org.resteasy.Marshaller;
 import org.resteasy.MessageBodyParameterMarshaller;
-import org.resteasy.ParameterMarshaller;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.spi.ClientHttpOutput;
@@ -48,7 +48,7 @@ abstract public class HttpClientInvoker extends ClientInvoker
 
       int i = 0;
       BodyRequestEntity body = null;
-      for (ParameterMarshaller param : params)
+      for (Marshaller param : params)
       {
          if (param instanceof MessageBodyParameterMarshaller)
          {

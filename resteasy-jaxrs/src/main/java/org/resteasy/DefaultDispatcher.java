@@ -1,6 +1,6 @@
 package org.resteasy;
 
-import org.resteasy.specimpl.ResponseImpl;
+import org.resteasy.specimpl.RequestImpl;
 import org.resteasy.spi.Dispatcher;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
@@ -10,13 +10,18 @@ import org.resteasy.util.HttpHeaderNames;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -95,10 +100,15 @@ public class DefaultDispatcher extends HttpServlet implements Dispatcher
 
       try
       {
-         ResponseImpl jaxrsResponse = null;
+         ResteasyProviderFactory.pushContext(HttpRequest.class, in);
+         ResteasyProviderFactory.pushContext(HttpResponse.class, response);
+         ResteasyProviderFactory.pushContext(HttpHeaders.class, in.getHttpHeaders());
+         ResteasyProviderFactory.pushContext(UriInfo.class, in.getUri());
+         ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(in.getHttpHeaders(), in.getHttpMethod()));
+         Response jaxrsResponse = null;
          try
          {
-            jaxrsResponse = invoker.invoke(in);
+            jaxrsResponse = invoker.invoke(in, response);
          }
          catch (Failure e)
          {
@@ -106,13 +116,28 @@ public class DefaultDispatcher extends HttpServlet implements Dispatcher
             e.printStackTrace();
             return;
          }
+         if (jaxrsResponse.getMetadata() != null)
+         {
+            List cookies = jaxrsResponse.getMetadata().get(HttpHeaderNames.SET_COOKIE);
+            if (cookies != null)
+            {
+               Iterator it = cookies.iterator();
+               while (it.hasNext())
+               {
+                  Object next = it.next();
+                  if (next instanceof NewCookie)
+                  {
+                     NewCookie cookie = (NewCookie) next;
+                     response.addNewCookie(cookie);
+                     it.remove();
+                  }
+               }
+               if (cookies.size() < 1) jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
+            }
+         }
          if (jaxrsResponse.getMetadata() != null && jaxrsResponse.getMetadata().size() > 0)
          {
             response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
-         }
-         for (NewCookie cookie : jaxrsResponse.getNewCookies())
-         {
-            response.addNewCookie(cookie);
          }
 
          if (jaxrsResponse.getEntity() != null)
@@ -128,6 +153,10 @@ public class DefaultDispatcher extends HttpServlet implements Dispatcher
          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
          e.printStackTrace();
          return;
+      }
+      finally
+      {
+         ResteasyProviderFactory.clearContextData();
       }
    }
 
@@ -164,7 +193,7 @@ public class DefaultDispatcher extends HttpServlet implements Dispatcher
       }
    }
 
-   protected MediaType resolveContentType(ResourceMethod invoker, HttpRequest in, ResponseImpl responseImpl)
+   protected MediaType resolveContentType(ResourceMethod invoker, HttpRequest in, Response responseImpl)
    {
       Object contentType = responseImpl.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
       MediaType responseContentType = null;

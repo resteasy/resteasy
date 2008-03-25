@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.spi.Dispatcher;
-import org.resteasy.test.EmbeddedServletContainer;
+import org.resteasy.test.EmbeddedContainer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -34,7 +34,7 @@ public class MatrixParamAsPrimitive
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start();
+      dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addResource(ResourceMatrixPrimitives.class);
       dispatcher.getRegistry().addResource(ResourceMatrixPrimitivesDefault.class);
       dispatcher.getRegistry().addResource(ResourceMatrixPrimitivesDefaultOverride.class);
@@ -57,7 +57,7 @@ public class MatrixParamAsPrimitive
    @AfterClass
    public static void after() throws Exception
    {
-      EmbeddedServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
    @Path("/")

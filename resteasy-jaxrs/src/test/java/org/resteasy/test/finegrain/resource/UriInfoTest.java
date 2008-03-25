@@ -6,8 +6,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.resteasy.spi.Dispatcher;
-import org.resteasy.test.EmbeddedServletContainer;
+import org.resteasy.test.EmbeddedContainer;
 import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.GET;
@@ -59,6 +60,32 @@ public class UriInfoTest
          Assert.assertEquals("/simple", info.getPath());
          return "CONTENT";
       }
+
+      @Context
+      UriInfo myInfo;
+
+      @Path("/simple/fromField")
+      @GET
+      public String get(@QueryParam("abs")String abs)
+      {
+         System.out.println("abs query: " + abs);
+         URI base = null;
+         if (abs == null)
+         {
+            base = URI.create("http://localhost:8081/");
+         }
+         else
+         {
+            base = URI.create("http://localhost:8081/" + abs + "/");
+         }
+
+         System.out.println("BASE URI: " + myInfo.getBaseUri());
+         System.out.println("Request URI: " + myInfo.getRequestUri());
+         Assert.assertEquals(base.getPath(), myInfo.getBaseUri().getPath());
+         Assert.assertEquals("/simple/fromField", myInfo.getPath());
+         return "CONTENT";
+      }
+
    }
 
    private void _test(HttpClient client, String uri)
@@ -79,24 +106,41 @@ public class UriInfoTest
    }
 
    @Test
+   public void testUriInfoWithSingleton() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      try
+      {
+         dispatcher.getRegistry().addResourceFactory(new SingletonResource(new SimpleResource()));
+         _test(new HttpClient(), "http://localhost:8081/simple/fromField");
+      }
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
+
+   }
+
+   @Test
    public void testUriInfo() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start();
+      dispatcher = EmbeddedContainer.start();
       try
       {
          dispatcher.getRegistry().addResource(SimpleResource.class);
          _test(new HttpClient(), "http://localhost:8081/simple");
+         _test(new HttpClient(), "http://localhost:8081/simple/fromField");
       }
       finally
       {
-         EmbeddedServletContainer.stop();
+         EmbeddedContainer.stop();
       }
    }
 
    @Test
    public void testUriInfo2() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start("/resteasy");
+      dispatcher = EmbeddedContainer.start("/resteasy");
       try
       {
          dispatcher.getRegistry().addResource(SimpleResource.class);
@@ -104,7 +148,7 @@ public class UriInfoTest
       }
       finally
       {
-         EmbeddedServletContainer.stop();
+         EmbeddedContainer.stop();
       }
    }
 
