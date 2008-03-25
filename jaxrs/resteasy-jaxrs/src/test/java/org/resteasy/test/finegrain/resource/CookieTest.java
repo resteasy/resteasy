@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.resteasy.spi.Dispatcher;
-import org.resteasy.test.EmbeddedServletContainer;
+import org.resteasy.test.EmbeddedContainer;
 import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.CookieParam;
@@ -39,11 +39,23 @@ public class CookieTest
          return Response.ok("content").cookie(new NewCookie("meaning", "42")).build();
       }
 
+      @Context
+      HttpHeaders myHeaders;
+
       @Path("/headers")
       @GET
       public String headers(@Context HttpHeaders headers)
       {
          String value = headers.getCookies().get("meaning").getValue();
+         Assert.assertEquals(value, "42");
+         return value;
+      }
+
+      @Path("/headers/fromField")
+      @GET
+      public String headersFromField(@Context HttpHeaders headers)
+      {
+         String value = myHeaders.getCookies().get("meaning").getValue();
          Assert.assertEquals(value, "42");
          return value;
       }
@@ -76,14 +88,14 @@ public class CookieTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start();
+      dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addResource(CookieResource.class);
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      EmbeddedServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
    private void _test(HttpClient client, String uri)
@@ -110,6 +122,7 @@ public class CookieTest
       HttpClient client = new HttpClient();
       _test(client, "http://localhost:8081/set");
       _test(client, "http://localhost:8081/headers");
+      _test(client, "http://localhost:8081/headers/fromField");
       _test(client, "http://localhost:8081/cookieparam");
       _test(client, "http://localhost:8081/param");
       _test(client, "http://localhost:8081/default");

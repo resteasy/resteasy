@@ -1,5 +1,7 @@
 package org.resteasy.spi;
 
+import org.resteasy.InjectorFactoryImpl;
+import org.resteasy.PathParamIndex;
 import org.resteasy.PathSegmentNode;
 import org.resteasy.ResourceLocator;
 import org.resteasy.ResourceMethod;
@@ -49,9 +51,9 @@ public class Registry
     *
     * @param factory
     */
-   public void addResourceFactory(ResourceFactory factory)
+   public void addResourceFactory(ResourceReference ref)
    {
-      addResourceFactory(factory, null);
+      addResourceFactory(ref, null);
    }
 
    /**
@@ -61,9 +63,9 @@ public class Registry
     * @param factory
     * @param base    base URI path for any resources provided by the factory
     */
-   public void addResourceFactory(ResourceFactory factory, String base)
+   public void addResourceFactory(ResourceReference ref, String base)
    {
-      Class<?> clazz = factory.getScannableClass();
+      Class<?> clazz = ref.getScannableClass();
       List<Class> restful = GetRestful.getRestfulClasses(clazz);
       if (restful == null)
       {
@@ -74,7 +76,7 @@ public class Registry
          }
          throw new RuntimeException(msg);
       }
-      for (Class cls : restful) addResourceFactory(factory, base, cls);
+      for (Class cls : restful) addResourceFactory(ref, base, cls);
    }
 
    /**
@@ -85,7 +87,7 @@ public class Registry
     * @param base    base URI path for any resources provided by the factory
     * @param clazz   specific class
     */
-   public void addResourceFactory(ResourceFactory factory, String base, Class<?> clazz)
+   public void addResourceFactory(ResourceReference ref, String base, Class<?> clazz)
    {
       for (Method method : clazz.getMethods())
       {
@@ -100,14 +102,18 @@ public class Registry
          String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
 
+         PathParamIndex index = new PathParamIndex(pathExpression);
+         InjectorFactory injectorFactory = new InjectorFactoryImpl(new PathParamIndex(pathExpression), providerFactory);
+         MethodInjector methodInjector = injectorFactory.createMethodInjector(method);
+         ResourceFactory resourceFactory = ref.getFactory(injectorFactory);
          if (httpMethods == null)
          {
-            ResourceLocator locator = new ResourceLocator(pathExpression, factory, method, providerFactory);
+            ResourceLocator locator = new ResourceLocator(methodInjector, resourceFactory, providerFactory, method, index);
             addResourceFactory(locator, pathExpression);
          }
          else
          {
-            ResourceMethod invoker = new ResourceMethod(pathExpression, clazz, method, factory, providerFactory, httpMethods);
+            ResourceMethod invoker = new ResourceMethod(clazz, method, methodInjector, resourceFactory, providerFactory, httpMethods, index);
             if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
             String[] paths = pathExpression.split("/");
             root.addChild(paths, 0, invoker);

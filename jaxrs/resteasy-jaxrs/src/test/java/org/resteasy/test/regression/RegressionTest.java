@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.spi.Dispatcher;
-import org.resteasy.test.EmbeddedServletContainer;
+import org.resteasy.test.EmbeddedContainer;
 import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.GET;
@@ -52,7 +52,7 @@ public class RegressionTest
    @Test
    public void test1and2() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start();
+      dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addResource(SimpleResource.class);
       {
          HttpClient client = new HttpClient();
@@ -65,7 +65,7 @@ public class RegressionTest
          Assert.assertEquals("hello world", response);
          method.releaseConnection();
       }
-      EmbeddedServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
 }

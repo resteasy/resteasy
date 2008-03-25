@@ -24,7 +24,7 @@ abstract public class ClientInvoker
 {
    protected ResteasyProviderFactory providerFactory;
    protected Method method;
-   protected ParameterMarshaller[] params;
+   protected Marshaller[] params;
    protected UriBuilderImpl builder;
    protected Class declaring;
    protected MediaType accepts;
@@ -34,7 +34,7 @@ abstract public class ClientInvoker
       this.declaring = declaring;
       this.method = method;
       this.providerFactory = providerFactory;
-      params = new ParameterMarshaller[method.getParameterTypes().length];
+      params = new Marshaller[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
          Class type = method.getParameterTypes()[i];
@@ -60,7 +60,7 @@ abstract public class ClientInvoker
          }
          else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
          {
-            params[i] = new UriParamMarshaller(uriParam.value());
+            params[i] = new PathParamMarshaller(uriParam.value());
          }
          else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
          {

@@ -9,7 +9,7 @@ import javax.ws.rs.core.Cookie;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CookieParamMarshaller implements ParameterMarshaller
+public class CookieParamMarshaller implements Marshaller
 {
    private String cookieName;
 

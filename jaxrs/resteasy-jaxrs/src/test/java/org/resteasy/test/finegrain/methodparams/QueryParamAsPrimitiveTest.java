@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.resteasy.spi.Dispatcher;
-import org.resteasy.test.EmbeddedServletContainer;
+import org.resteasy.test.EmbeddedContainer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -39,7 +39,7 @@ public class QueryParamAsPrimitiveTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedServletContainer.start();
+      dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addResource(ResourceQueryPrimitives.class);
       dispatcher.getRegistry().addResource(ResourceQueryPrimitivesDefault.class);
       dispatcher.getRegistry().addResource(ResourceQueryPrimitivesDefaultOverride.class);
@@ -81,7 +81,7 @@ public class QueryParamAsPrimitiveTest
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitiveArrayDefault.class);
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitiveArrayDefaultNull.class);
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitiveArrayDefaultOverride.class);
-      EmbeddedServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
    @Path("/")

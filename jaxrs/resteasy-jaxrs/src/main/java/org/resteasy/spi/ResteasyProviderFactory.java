@@ -43,6 +43,33 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
    private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
+   private static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
+
+   public static void pushContext(Class<?> type, Object data)
+   {
+      Map<Class<?>, Object> map = contextualData.get();
+      if (map == null)
+      {
+         map = new HashMap<Class<?>, Object>();
+         contextualData.set(map);
+      }
+      map.put(type, data);
+   }
+
+   public static <T> T getContextData(Class<T> type)
+   {
+      return (T) contextualData.get().get(type);
+   }
+
+   public static <T> T popContextData(Class<T> type)
+   {
+      return (T) contextualData.get().remove(type);
+   }
+
+   public static void clearContextData()
+   {
+      contextualData.set(null);
+   }
 
    public static void setInstance(ResteasyProviderFactory factory)
    {

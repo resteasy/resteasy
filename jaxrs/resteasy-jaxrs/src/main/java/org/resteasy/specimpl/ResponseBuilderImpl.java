@@ -1,7 +1,8 @@
 package org.resteasy.specimpl;
 
 import org.resteasy.Headers;
-import org.resteasy.ResourceMethod;
+import org.resteasy.spi.HttpRequest;
+import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
@@ -124,11 +125,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 
    public Response.ResponseBuilder location(URI location)
    {
-      if (!location.isAbsolute() && ResourceMethod.request.get() != null)
+      if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
       {
          String path = location.getPath();
          if (path.startsWith("/")) path = path.substring(1);
-         URI baseUri = ResourceMethod.request.get().getUri().getBaseUri();
+         URI baseUri = ResteasyProviderFactory.getContextData(HttpRequest.class).getUri().getBaseUri();
          location = baseUri.resolve(path);
       }
       metadata.putSingle(HttpHeaderNames.LOCATION, location);
@@ -137,11 +138,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 
    public Response.ResponseBuilder contentLocation(URI location)
    {
-      if (!location.isAbsolute() && ResourceMethod.request.get() != null)
+      if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
       {
          String path = location.getPath();
          if (path.startsWith("/")) path = path.substring(1);
-         URI baseUri = ResourceMethod.request.get().getUri().getBaseUri();
+         URI baseUri = ResteasyProviderFactory.getContextData(HttpRequest.class).getUri().getBaseUri();
          location = baseUri.resolve(path);
       }
       metadata.putSingle(HttpHeaderNames.CONTENT_LOCATION, location);
@@ -182,7 +183,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    {
       for (NewCookie cookie : cookies)
       {
-         this.cookies.add(cookie);
+         metadata.add(HttpHeaderNames.SET_COOKIE, cookie);
       }
       return this;
    }
