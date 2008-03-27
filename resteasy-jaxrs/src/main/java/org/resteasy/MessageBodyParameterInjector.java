@@ -42,6 +42,8 @@ public class MessageBodyParameterInjector implements ValueInjector
             throw new WebApplicationException(HttpResponseCodes.SC_BAD_REQUEST);
          }
          MessageBodyReader reader = factory.createMessageBodyReader(type, genericType, annotations, mediaType);
+         if (reader == null)
+            throw new Failure("Could not find message body reader for type: " + genericType + " of content type: " + mediaType, HttpResponseCodes.SC_BAD_REQUEST);
          return reader.readFrom(type, genericType, mediaType, annotations, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
       }
       catch (IOException e)
