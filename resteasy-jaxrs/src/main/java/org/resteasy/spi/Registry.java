@@ -109,7 +109,7 @@ public class Registry
          if (httpMethods == null)
          {
             ResourceLocator locator = new ResourceLocator(methodInjector, resourceFactory, providerFactory, method, index);
-            addResourceFactory(locator, pathExpression);
+            addResourceFactory(locator, pathExpression, locator.getScannableClass());
          }
          else
          {

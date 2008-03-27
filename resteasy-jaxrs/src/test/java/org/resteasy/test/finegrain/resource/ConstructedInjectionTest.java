@@ -38,6 +38,7 @@ public class ConstructedInjectionTest
    {
    }
 
+   @Path("/")
    public static class ConstructedResource
    {
       UriInfo myInfo;

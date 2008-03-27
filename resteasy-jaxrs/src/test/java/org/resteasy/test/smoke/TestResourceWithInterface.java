@@ -1,6 +1,5 @@
 package org.resteasy.test.smoke;
 
-import Acme.Serve.Serve;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -19,14 +18,12 @@ import org.resteasy.test.EmbeddedContainer;
 public class TestResourceWithInterface
 {
 
-   private static Serve server = null;
    private static Dispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      server = new Serve();
    }
 
    @AfterClass
