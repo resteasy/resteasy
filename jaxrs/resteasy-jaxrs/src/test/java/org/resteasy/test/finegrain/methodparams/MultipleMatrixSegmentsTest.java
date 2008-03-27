@@ -24,6 +24,7 @@ import java.io.IOException;
  */
 public class MultipleMatrixSegmentsTest
 {
+   @Path("/")
    public static class Resource
    {
       @GET

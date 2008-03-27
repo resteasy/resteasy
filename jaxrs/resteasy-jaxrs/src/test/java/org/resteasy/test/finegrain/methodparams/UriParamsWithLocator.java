@@ -35,6 +35,7 @@ public class UriParamsWithLocator
       }
    }
 
+   @Path("/")
    public static class Locator
    {
       @Path("/{id}")
@@ -57,6 +58,7 @@ public class UriParamsWithLocator
       }
    }
 
+   @Path("/")
    public static class Locator2
    {
       @Path("/{id}")

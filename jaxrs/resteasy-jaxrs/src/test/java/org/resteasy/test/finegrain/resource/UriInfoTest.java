@@ -37,6 +37,7 @@ public class UriInfoTest
    {
    }
 
+   @Path("/")
    public static class SimpleResource
    {
       @Path("/simple")

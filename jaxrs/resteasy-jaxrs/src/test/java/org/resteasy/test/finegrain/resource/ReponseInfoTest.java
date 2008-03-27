@@ -36,6 +36,7 @@ public class ReponseInfoTest
    {
    }
 
+   @Path("/")
    public static class SimpleResource
    {
       @Path("/simple")

@@ -32,6 +32,7 @@ public class RegressionTest
    {
    }
 
+   @Path("/")
    public static class SimpleResource
    {
       @Path("/simple")
