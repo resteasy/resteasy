@@ -65,11 +65,4 @@ public class PathSegmentImpl implements PathSegment
       return pathSegments;
    }
 
-   public static void main(String[] args)
-   {
-      String path = "path/";
-      List<PathSegment> list = parseSegments(path);
-      System.out.println(list.get(0).getPath());
-      System.out.println(list.size());
-   }
 }

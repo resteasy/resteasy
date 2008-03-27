@@ -32,20 +32,6 @@ public class PathHelper
     */
    public static final Pattern URI_TEMPLATE_PATTERN = Pattern.compile("(\\{([^}]+)\\})");
 
-   public static void main(String[] args) throws Exception
-   {
-      String path = "{param}";
-      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path);
-      if (matcher.matches())
-      {
-         System.out.println("groupCount: " + matcher.groupCount());
-         System.out.println("group: " + matcher.group(0));
-         System.out.println("group: " + matcher.group(1));
-         System.out.println("group: " + matcher.group(2));
-      }
-
-   }
-
    /**
     * Utility method to extract the URL template paramater names and map it
     * back to the group position. This Map is cached by a {@link com.damnhandy.resteasy.core.ResourceInvoker} so that

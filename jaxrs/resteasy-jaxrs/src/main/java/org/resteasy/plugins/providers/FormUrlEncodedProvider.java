@@ -37,13 +37,16 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
    {
-      if (!type.equals(MultivaluedMap.class)) return false;
-      if (genericType == null) return true;
+      if (!type.equals(MultivaluedMap.class))
+      {
+         return genericType == null && MultivaluedMap.class.isAssignableFrom(type);
+      }
+      if (genericType == null) return false;
 
       if (!(genericType instanceof ParameterizedType)) return false;
       ParameterizedType params = (ParameterizedType) genericType;
       if (params.getActualTypeArguments().length != 2) return false;
-      return params.getActualTypeArguments().equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
+      return params.getActualTypeArguments()[0].equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
    }
 
    public MultivaluedMap<String, String> readFrom(Class<MultivaluedMap<String, String>> type, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
@@ -74,14 +77,13 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
             String[] nv = param.split("=");
             try
             {
-               String name = URLDecoder.decode(nv[0], "UTF-8");
                if (encoded)
                {
-                  formData.add(name, nv[1]);
+                  formData.add(nv[0], nv[1]);
                }
                else
                {
-                  formData.add(name, URLDecoder.decode(nv[1], "UTF-8"));
+                  formData.add(URLDecoder.decode(nv[0], "UTF-8"), URLDecoder.decode(nv[1], "UTF-8"));
                }
             }
             catch (UnsupportedEncodingException e)
@@ -93,8 +95,14 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
          {
             try
             {
-               String name = URLDecoder.decode(param, "UTF-8");
-               formData.add(name, "");
+               if (encoded)
+               {
+                  formData.add(param, "");
+               }
+               else
+               {
+                  formData.add(URLDecoder.decode(param, "UTF-8"), "");
+               }
             }
             catch (UnsupportedEncodingException e)
             {
@@ -107,13 +115,16 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
-      if (!type.equals(MultivaluedMap.class)) return false;
-      if (genericType == null) return true;
+      if (!type.equals(MultivaluedMap.class))
+      {
+         return genericType == null && MultivaluedMap.class.isAssignableFrom(type);
+      }
+      if (genericType == null) return false;
 
       if (!(genericType instanceof ParameterizedType)) return false;
       ParameterizedType params = (ParameterizedType) genericType;
       if (params.getActualTypeArguments().length != 2) return false;
-      return params.getActualTypeArguments().equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
+      return params.getActualTypeArguments()[0].equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
    }
 
    public long getSize(MultivaluedMap<String, String> inputStream)
@@ -126,19 +137,25 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
       OutputStreamWriter writer = new OutputStreamWriter(entityStream, "UTF-8");
 
-      boolean first = false;
+      boolean first = true;
       for (Map.Entry<String, List<String>> entry : formData.entrySet())
       {
-         if (first) first = true;
+         if (first) first = false;
          else writer.write("&");
-         String encodedName = URLEncoder.encode(entry.getKey(), "UTF-8");
+         String encodedName = entry.getKey();
+         if (!encoded) encodedName = URLEncoder.encode(entry.getKey(), "UTF-8");
+
          for (String value : entry.getValue())
          {
-            if (!encoded) value = URLEncoder.encode(value, "UTF-8");
+            if (!encoded)
+            {
+               value = URLEncoder.encode(value, "UTF-8");
+            }
             writer.write(encodedName);
             writer.write("=");
             writer.write(value);
          }
+         writer.flush();
       }
 
    }

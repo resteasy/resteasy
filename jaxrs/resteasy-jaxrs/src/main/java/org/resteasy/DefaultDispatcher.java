@@ -169,17 +169,18 @@ public class DefaultDispatcher extends HttpServlet implements Dispatcher
       if (!Response.class.equals(invoker.getMethod().getReturnType()))
       {
          genericType = invoker.getMethod().getGenericReturnType();
+         type = invoker.getMethod().getReturnType();
       }
 
       Annotation[] annotations = invoker.getMethod().getAnnotations();
 
       MessageBodyWriter writer = providerFactory.createMessageBodyWriter(type, genericType, annotations, responseContentType);
-      System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
-      System.out.println("Response content type: " + responseContentType);
       if (writer == null)
       {
          throw new RuntimeException("Could not find MessageBodyWriter for response object of type: " + entity.getClass() + " of media type: " + responseContentType);
       }
+      //System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
+      //System.out.println("Response content type: " + responseContentType);
       try
       {
          long size = writer.getSize(entity);
@@ -187,7 +188,7 @@ public class DefaultDispatcher extends HttpServlet implements Dispatcher
          //System.out.println("JAX-RS Content Size: " + size);
          response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));
          response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_TYPE, responseContentType.toString());
-         writer.writeTo(entity, entity.getClass(), genericType, invoker.getMethod().getAnnotations(), responseContentType, response.getOutputHeaders(), response.getOutputStream());
+         writer.writeTo(entity, type, genericType, invoker.getMethod().getAnnotations(), responseContentType, response.getOutputHeaders(), response.getOutputStream());
       }
       catch (IOException e)
       {

@@ -6,7 +6,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.List;
 
@@ -26,12 +25,6 @@ public class UriInfoImpl implements UriInfo
    private URI baseURI;
    private MultivaluedMap<String, PathSegment> pathParamSegments = new MultivaluedMapImpl<String, PathSegment>();
    private String queryString;
-
-   public static void main(String[] args) throws Exception
-   {
-      URL url = new URL("http://localhost.com/foo bar/junk");
-      System.out.println(url.toURI());
-   }
 
    /**
     * @param absolutePath

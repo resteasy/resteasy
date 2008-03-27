@@ -286,7 +286,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       if (mediaType.isWildcardType()) Collections.sort(writers);
       for (MessageBodyKey<MessageBodyWriter> writer : writers)
       {
-         System.out.println("matching: " + writer.obj.getClass());
+         //System.out.println("matching: " + writer.obj.getClass());
          if (writer.obj.isWriteable(type, genericType, annotations))
          {
             return (MessageBodyWriter<T>) writer.obj;
