@@ -6,7 +6,6 @@ import org.resteasy.spi.HttpResponse;
 import org.resteasy.spi.InjectorFactory;
 import org.resteasy.spi.PropertyInjector;
 import org.resteasy.spi.ResourceFactory;
-import org.resteasy.spi.ResourceReference;
 
 import java.lang.reflect.Constructor;
 
@@ -16,34 +15,33 @@ import java.lang.reflect.Constructor;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class POJOResourceFactory implements ResourceReference
+public class POJOResourceFactory implements ResourceFactory
 {
    private Class<?> scannableClass;
+   private ConstructorInjector constructorInjector;
+   private PropertyInjector propertyInjector;
 
    public POJOResourceFactory(Class<?> scannableClass)
    {
       this.scannableClass = scannableClass;
    }
 
-   public ResourceFactory getFactory(InjectorFactory factory)
+   public void registered(InjectorFactory factory)
    {
-      if (scannableClass.getDeclaredConstructors().length > 1)
-      {
-         throw new RuntimeException("Your POJO must only have one constructor");
-      }
       Constructor constructor = scannableClass.getDeclaredConstructors()[0];
-      final ConstructorInjector constructorInjector = factory.createConstructor(constructor);
-      final PropertyInjector propertyInjector = factory.createPropertyInjector(scannableClass);
+      this.constructorInjector = factory.createConstructor(constructor);
+      this.propertyInjector = factory.createPropertyInjector(scannableClass);
+   }
 
-      return new ResourceFactory()
-      {
-         public Object createResource(HttpRequest input, HttpResponse response)
-         {
-            Object obj = constructorInjector.construct(input, response);
-            propertyInjector.inject(input, response, obj);
-            return obj;
-         }
-      };
+   public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
+   {
+      Object obj = constructorInjector.construct(request, response);
+      propertyInjector.inject(request, response, obj);
+      return obj;
+   }
+
+   public void unregistered()
+   {
    }
 
    public Class<?> getScannableClass()

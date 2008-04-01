@@ -4,7 +4,6 @@ import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
 import org.resteasy.spi.InjectorFactory;
 import org.resteasy.spi.ResourceFactory;
-import org.resteasy.spi.ResourceReference;
 
 /**
  * VERY simple implementation that just returns the instance the SingleResource was created with
@@ -12,7 +11,7 @@ import org.resteasy.spi.ResourceReference;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SingletonResource implements ResourceReference
+public class SingletonResource implements ResourceFactory
 {
    private Object obj;
    private boolean initialized = false;
@@ -22,21 +21,18 @@ public class SingletonResource implements ResourceReference
       this.obj = obj;
    }
 
-   public ResourceFactory getFactory(InjectorFactory factory)
+   public void registered(InjectorFactory factory)
    {
-      if (!initialized)
-      {
-         initialized = true;
-         factory.createPropertyInjector(obj.getClass()).inject(obj);
-      }
+      factory.createPropertyInjector(obj.getClass()).inject(obj);
+   }
 
-      return new ResourceFactory()
-      {
-         public Object createResource(HttpRequest input, HttpResponse response)
-         {
-            return obj;
-         }
-      };
+   public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
+   {
+      return obj;
+   }
+
+   public void unregistered()
+   {
    }
 
    public Class<?> getScannableClass()
