@@ -2,6 +2,7 @@ package org.resteasy;
 
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
+import org.resteasy.spi.InjectorFactory;
 import org.resteasy.spi.MethodInjector;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
@@ -24,20 +25,22 @@ public class ResourceMethod
    protected MediaType[] produces;
    protected MediaType[] consumes;
    protected Set<String> httpMethods;
-   protected MethodInjector injector;
-   protected ResourceFactory factory;
+   protected MethodInjector methodInjector;
+   protected InjectorFactory injector;
+   protected ResourceFactory resource;
    protected ResteasyProviderFactory providerFactory;
    protected PathParamIndex index;
    protected Method method;
 
-   public ResourceMethod(Class<?> clazz, Method method, MethodInjector injector, ResourceFactory factory, ResteasyProviderFactory providerFactory, Set<String> httpMethods, PathParamIndex index)
+   public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods, PathParamIndex index)
    {
       this.injector = injector;
-      this.factory = factory;
+      this.resource = resource;
       this.providerFactory = providerFactory;
       this.httpMethods = httpMethods;
       this.index = index;
       this.method = method;
+      this.methodInjector = injector.createMethodInjector(method);
 
       ProduceMime p = method.getAnnotation(ProduceMime.class);
       if (p == null) p = clazz.getAnnotation(ProduceMime.class);
@@ -73,10 +76,10 @@ public class ResourceMethod
    {
       // we have to check if its a ResourceLocator because we don't want the template params
       // to be populated with wrong information.
-      if (!(factory instanceof ResourceLocator)) index.populateUriInfoTemplateParams(request);
-      Object target = factory.createResource(request, response);
-      if (factory instanceof ResourceLocator) index.populateUriInfoTemplateParams(request);
-      return injector.invoke(request, response, target);
+      if (!(resource instanceof ResourceLocator)) index.populateUriInfoTemplateParams(request);
+      Object target = resource.createResource(request, response, injector);
+      if (resource instanceof ResourceLocator) index.populateUriInfoTemplateParams(request);
+      return methodInjector.invoke(request, response, target);
    }
 
 
