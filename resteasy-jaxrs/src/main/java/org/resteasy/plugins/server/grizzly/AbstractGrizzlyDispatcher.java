@@ -2,11 +2,10 @@ package org.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import org.resteasy.DefaultDispatcher;
+import org.resteasy.Dispatcher;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.PathSegmentImpl;
 import org.resteasy.specimpl.UriInfoImpl;
-import org.resteasy.spi.Dispatcher;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
 import org.resteasy.spi.Registry;
@@ -28,7 +27,7 @@ import java.util.List;
  */
 abstract public class AbstractGrizzlyDispatcher
 {
-   protected Dispatcher dispatcher = new DefaultDispatcher();
+   protected Dispatcher dispatcher = new Dispatcher();
    protected String contextPath;
 
    public AbstractGrizzlyDispatcher(ResteasyProviderFactory providerFactory, Registry registry, String contextPath)

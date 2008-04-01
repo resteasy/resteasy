@@ -2,10 +2,10 @@ package org.resteasy.test.finegrain.methodparams;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.resteasy.Dispatcher;
 import org.resteasy.mock.MockHttpServletRequest;
 import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.MockDispatcherFactory;
 
 import javax.servlet.ServletException;

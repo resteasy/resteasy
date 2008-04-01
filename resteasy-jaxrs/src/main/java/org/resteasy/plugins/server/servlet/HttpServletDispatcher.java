@@ -1,12 +1,11 @@
 package org.resteasy.plugins.server.servlet;
 
-import org.resteasy.DefaultDispatcher;
+import org.resteasy.Dispatcher;
 import org.resteasy.Headers;
 import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.PathSegmentImpl;
 import org.resteasy.specimpl.UriInfoImpl;
-import org.resteasy.spi.Dispatcher;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
 import org.resteasy.spi.Registry;
@@ -40,7 +39,7 @@ import java.util.Map;
  */
 public class HttpServletDispatcher extends HttpServlet
 {
-   private Dispatcher dispatcher = new DefaultDispatcher();
+   private Dispatcher dispatcher = new Dispatcher();
 
    public Dispatcher getDispatcher()
    {

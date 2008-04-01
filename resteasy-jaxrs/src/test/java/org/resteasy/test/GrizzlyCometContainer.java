@@ -1,9 +1,9 @@
 package org.resteasy.test;
 
+import org.resteasy.Dispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.plugins.server.grizzly.GrizzletDispatcher;
 import org.resteasy.plugins.server.grizzly.GrizzlyCometServer;
-import org.resteasy.spi.Dispatcher;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
