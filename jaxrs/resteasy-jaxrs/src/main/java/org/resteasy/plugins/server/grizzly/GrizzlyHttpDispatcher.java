@@ -2,8 +2,8 @@ package org.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import org.resteasy.ResourceMethodRegistry;
 import org.resteasy.spi.HttpResponse;
-import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.IOException;
@@ -14,9 +14,9 @@ import java.io.IOException;
  */
 public class GrizzlyHttpDispatcher extends AbstractGrizzlyDispatcher
 {
-   public GrizzlyHttpDispatcher(ResteasyProviderFactory providerFactory, Registry registry, String contextPath)
+   public GrizzlyHttpDispatcher(ResteasyProviderFactory providerFactory, ResourceMethodRegistry registry, String contextPath)
    {
-      super(providerFactory, registry, contextPath);
+      super(providerFactory, contextPath);
    }
 
    private static class GrizzlyResponseWrapper extends GrizzlyResponse

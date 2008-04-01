@@ -4,8 +4,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.ResourceMethod;
+import org.resteasy.ResourceMethodRegistry;
 import org.resteasy.specimpl.PathSegmentImpl;
-import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ConsumeMime;
@@ -65,7 +65,7 @@ public class AcceptTest
    @Test
    public void testAcceptGet() throws Exception
    {
-      Registry registry = new Registry(ResteasyProviderFactory.getInstance());
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addResource(WebResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
@@ -121,7 +121,7 @@ public class AcceptTest
    @Test
    public void testAcceptGetWildCard() throws Exception
    {
-      Registry registry = new Registry(ResteasyProviderFactory.getInstance());
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addResource(WebResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
@@ -153,7 +153,7 @@ public class AcceptTest
    @Test
    public void testAcceptMultiple() throws Exception
    {
-      Registry registry = new Registry(ResteasyProviderFactory.getInstance());
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addResource(MultipleResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
@@ -228,7 +228,7 @@ public class AcceptTest
    @Test
    public void testContentTypeMatching() throws Exception
    {
-      Registry registry = new Registry(ResteasyProviderFactory.getInstance());
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addResource(ConsumeResource.class);
 
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
@@ -279,7 +279,7 @@ public class AcceptTest
    @Test
    public void testComplex() throws Exception
    {
-      Registry registry = new Registry(ResteasyProviderFactory.getInstance());
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addResource(ComplexResource.class);
 
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");

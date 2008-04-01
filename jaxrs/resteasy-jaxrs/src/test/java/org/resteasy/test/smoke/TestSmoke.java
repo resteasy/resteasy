@@ -5,11 +5,9 @@ import org.junit.Test;
 import org.resteasy.Dispatcher;
 import org.resteasy.mock.MockHttpServletRequest;
 import org.resteasy.mock.MockHttpServletResponse;
-import org.resteasy.plugins.providers.DefaultTextPlain;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.Registry;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.test.MockDispatcherFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
@@ -26,14 +24,8 @@ public class TestSmoke
    @Test
    public void testNoDefaultsResource() throws Exception
    {
-      HttpServletDispatcher servlet = new HttpServletDispatcher();
+      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
       Dispatcher dispatcher = servlet.getDispatcher();
-
-      dispatcher.setProviderFactory(new ResteasyProviderFactory());
-      dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultTextPlain());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultTextPlain());
 
       POJOResourceFactory noDefaults = new POJOResourceFactory(SimpleResource.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -89,13 +81,8 @@ public class TestSmoke
    @Test
    public void testLocatingResource() throws Exception
    {
-      HttpServletDispatcher servlet = new HttpServletDispatcher();
+      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
       Dispatcher dispatcher = servlet.getDispatcher();
-      dispatcher.setProviderFactory(new ResteasyProviderFactory());
-      dispatcher.setRegistry(new Registry(dispatcher.getProviderFactory()));
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      dispatcher.getProviderFactory().addMessageBodyReader(new DefaultTextPlain());
-      dispatcher.getProviderFactory().addMessageBodyWriter(new DefaultTextPlain());
 
       POJOResourceFactory noDefaults = new POJOResourceFactory(LocatingResource.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);

@@ -8,7 +8,6 @@ import org.resteasy.specimpl.PathSegmentImpl;
 import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
-import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -27,14 +26,13 @@ import java.util.List;
  */
 abstract public class AbstractGrizzlyDispatcher
 {
-   protected Dispatcher dispatcher = new Dispatcher();
+   protected Dispatcher dispatcher;
    protected String contextPath;
 
-   public AbstractGrizzlyDispatcher(ResteasyProviderFactory providerFactory, Registry registry, String contextPath)
+   public AbstractGrizzlyDispatcher(ResteasyProviderFactory providerFactory, String contextPath)
    {
       this.contextPath = contextPath;
-      dispatcher.setProviderFactory(providerFactory);
-      dispatcher.setRegistry(registry);
+      dispatcher = new Dispatcher(providerFactory);
       if (contextPath == null) throw new RuntimeException("contextPath cannot be null");
       if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
    }

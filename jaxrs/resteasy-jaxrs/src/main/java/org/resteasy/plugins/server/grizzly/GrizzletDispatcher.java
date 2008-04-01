@@ -4,7 +4,7 @@ import com.sun.grizzly.grizzlet.AsyncConnection;
 import com.sun.grizzly.grizzlet.Grizzlet;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import org.resteasy.spi.Registry;
+import org.resteasy.ResourceMethodRegistry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.IOException;
@@ -16,9 +16,9 @@ import java.io.IOException;
 public class GrizzletDispatcher extends AbstractGrizzlyDispatcher implements Grizzlet
 {
 
-   public GrizzletDispatcher(ResteasyProviderFactory providerFactory, Registry registry, String contextPath)
+   public GrizzletDispatcher(ResteasyProviderFactory providerFactory, ResourceMethodRegistry registry, String contextPath)
    {
-      super(providerFactory, registry, contextPath);
+      super(providerFactory, contextPath);
    }
 
 

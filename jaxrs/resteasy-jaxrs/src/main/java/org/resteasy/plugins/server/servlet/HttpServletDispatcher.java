@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class HttpServletDispatcher extends HttpServlet
 {
-   private Dispatcher dispatcher = new Dispatcher();
+   private Dispatcher dispatcher;
 
    public Dispatcher getDispatcher()
    {
@@ -52,16 +52,21 @@ public class HttpServletDispatcher extends HttpServlet
       if (providerFactory == null)
       {
          providerFactory = new ResteasyProviderFactory();
+         servletConfig.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), providerFactory);
       }
 
-
-      Registry registry = (Registry) servletConfig.getServletContext().getAttribute(Registry.class.getName());
-      if (registry == null)
+      dispatcher = (Dispatcher) servletConfig.getServletContext().getAttribute(Dispatcher.class.getName());
+      if (dispatcher == null)
       {
-         registry = new Registry(providerFactory);
+         dispatcher = new Dispatcher(providerFactory);
+         servletConfig.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
+         servletConfig.getServletContext().setAttribute(Registry.class.getName(), dispatcher.getRegistry());
       }
-      dispatcher.setProviderFactory(providerFactory);
-      dispatcher.setRegistry(registry);
+   }
+
+   public void setDispatcher(Dispatcher dispatcher)
+   {
+      this.dispatcher = dispatcher;
    }
 
    protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException

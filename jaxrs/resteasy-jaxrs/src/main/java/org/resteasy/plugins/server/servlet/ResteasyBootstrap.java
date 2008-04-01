@@ -1,5 +1,6 @@
 package org.resteasy.plugins.server.servlet;
 
+import org.resteasy.Dispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
@@ -29,13 +30,17 @@ import java.util.Set;
 public class ResteasyBootstrap implements ServletContextListener
 {
    private ResteasyProviderFactory factory = new ResteasyProviderFactory();
-   private Registry registry = new Registry(factory);
+   private Registry registry;
+   private Dispatcher dispatcher;
 
    public void contextInitialized(ServletContextEvent event)
    {
       ResteasyProviderFactory.setInstance(factory);
 
       event.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), factory);
+      dispatcher = new Dispatcher(factory);
+      registry = dispatcher.getRegistry();
+      event.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
       event.getServletContext().setAttribute(Registry.class.getName(), registry);
 
       String providers = event.getServletContext().getInitParameter("resteasy.providers");
