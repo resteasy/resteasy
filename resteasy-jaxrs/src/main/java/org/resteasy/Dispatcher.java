@@ -28,7 +28,13 @@ import java.util.List;
 public class Dispatcher
 {
    protected ResteasyProviderFactory providerFactory;
-   protected Registry registry;
+   protected ResourceMethodRegistry registry;
+
+   public Dispatcher(ResteasyProviderFactory providerFactory)
+   {
+      this.providerFactory = providerFactory;
+      this.registry = new ResourceMethodRegistry(providerFactory);
+   }
 
    public ResteasyProviderFactory getProviderFactory()
    {
@@ -38,16 +44,6 @@ public class Dispatcher
    public Registry getRegistry()
    {
       return registry;
-   }
-
-   public void setProviderFactory(ResteasyProviderFactory providerFactory)
-   {
-      this.providerFactory = providerFactory;
-   }
-
-   public void setRegistry(Registry registry)
-   {
-      this.registry = registry;
    }
 
    public void invoke(HttpRequest in, HttpResponse response)

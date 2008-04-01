@@ -1,5 +1,6 @@
 package org.resteasy.plugins.server.servlet;
 
+import org.resteasy.ResourceMethodRegistry;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.BeansException;
@@ -32,7 +33,7 @@ public class SpringContextLoader extends ContextLoader
          throw new RuntimeException("RESTeasy Provider Factory is null, do you have the ResteasyBootstrap listener configured?");
 
 
-      final Registry registry = (Registry) servletContext.getAttribute(Registry.class.getName());
+      final Registry registry = (Registry) servletContext.getAttribute(ResourceMethodRegistry.class.getName());
       if (registry == null)
          throw new RuntimeException("RESTeasy Registry is null, do ou have the ResteasyBootstrap listener configured?");
 

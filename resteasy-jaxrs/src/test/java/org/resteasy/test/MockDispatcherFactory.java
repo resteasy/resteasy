@@ -1,8 +1,8 @@
 package org.resteasy.test;
 
+import org.resteasy.Dispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 /**
@@ -13,11 +13,11 @@ public class MockDispatcherFactory
 {
    public static HttpServletDispatcher createDispatcher()
    {
-      HttpServletDispatcher dispatcher = new HttpServletDispatcher();
-      dispatcher.getDispatcher().setProviderFactory(new ResteasyProviderFactory());
-      dispatcher.getDispatcher().setRegistry(new Registry(dispatcher.getDispatcher().getProviderFactory()));
-      ResteasyProviderFactory.setInstance(dispatcher.getDispatcher().getProviderFactory());
-      RegisterBuiltin.register(dispatcher.getDispatcher().getProviderFactory());
-      return dispatcher;
+      HttpServletDispatcher servlet = new HttpServletDispatcher();
+      Dispatcher dispatcher = new Dispatcher(new ResteasyProviderFactory());
+      servlet.setDispatcher(dispatcher);
+      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
+      RegisterBuiltin.register(dispatcher.getProviderFactory());
+      return servlet;
    }
 }

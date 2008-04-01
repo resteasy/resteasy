@@ -1,10 +1,10 @@
 package org.resteasy.test;
 
 import org.resteasy.Dispatcher;
+import org.resteasy.ResourceMethodRegistry;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.plugins.server.grizzly.GrizzletDispatcher;
 import org.resteasy.plugins.server.grizzly.GrizzlyCometServer;
-import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 /**
@@ -19,7 +19,7 @@ public class GrizzlyCometContainer
    public static Dispatcher start(String bindPath) throws Exception
    {
       long start = System.currentTimeMillis();
-      Registry registry = new Registry(ResteasyProviderFactory.initializeInstance());
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.initializeInstance());
       grizzlet = new GrizzletDispatcher(ResteasyProviderFactory.getInstance(), registry, bindPath);
 
       server = new GrizzlyCometServer();
