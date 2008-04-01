@@ -4,9 +4,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.resteasy.Dispatcher;
 import org.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
-import org.resteasy.spi.Dispatcher;
 import org.resteasy.test.EmbeddedContainer;
 
 /**

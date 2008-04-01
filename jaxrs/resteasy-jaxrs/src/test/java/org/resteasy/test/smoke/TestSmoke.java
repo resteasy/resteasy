@@ -2,12 +2,12 @@ package org.resteasy.test.smoke;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.resteasy.Dispatcher;
 import org.resteasy.mock.MockHttpServletRequest;
 import org.resteasy.mock.MockHttpServletResponse;
 import org.resteasy.plugins.providers.DefaultTextPlain;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.Dispatcher;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 

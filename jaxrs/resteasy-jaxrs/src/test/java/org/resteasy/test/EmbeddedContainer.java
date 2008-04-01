@@ -1,6 +1,6 @@
 package org.resteasy.test;
 
-import org.resteasy.spi.Dispatcher;
+import org.resteasy.Dispatcher;
 
 import java.lang.reflect.Method;
 

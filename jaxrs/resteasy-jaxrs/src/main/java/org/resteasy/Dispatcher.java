@@ -1,14 +1,12 @@
 package org.resteasy;
 
 import org.resteasy.specimpl.RequestImpl;
-import org.resteasy.spi.Dispatcher;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -27,7 +25,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class DefaultDispatcher extends HttpServlet implements Dispatcher
+public class Dispatcher
 {
    protected ResteasyProviderFactory providerFactory;
    protected Registry registry;
