@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -125,6 +126,7 @@ public class HttpServletDispatcher extends HttpServlet
       {
          ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
          ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+         ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
          dispatcher.invoke(in, theResponse);
       }
       finally
