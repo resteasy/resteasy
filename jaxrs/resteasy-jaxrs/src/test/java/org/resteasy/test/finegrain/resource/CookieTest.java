@@ -89,7 +89,7 @@ public class CookieTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(CookieResource.class);
+      dispatcher.getRegistry().addPerRequestResource(CookieResource.class);
    }
 
    @AfterClass

@@ -33,20 +33,20 @@ public class UriParamAsPrimitiveTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(ResourceUriBoolean.class);
-      dispatcher.getRegistry().addResource(ResourceUriByte.class);
-      dispatcher.getRegistry().addResource(ResourceUriShort.class);
-      dispatcher.getRegistry().addResource(ResourceUriInt.class);
-      dispatcher.getRegistry().addResource(ResourceUriLong.class);
-      dispatcher.getRegistry().addResource(ResourceUriFloat.class);
-      dispatcher.getRegistry().addResource(ResourceUriDouble.class);
-      dispatcher.getRegistry().addResource(ResourceUriBooleanWrapper.class);
-      dispatcher.getRegistry().addResource(ResourceUriByteWrapper.class);
-      dispatcher.getRegistry().addResource(ResourceUriShortWrapper.class);
-      dispatcher.getRegistry().addResource(ResourceUriIntWrapper.class);
-      dispatcher.getRegistry().addResource(ResourceUriLongWrapper.class);
-      dispatcher.getRegistry().addResource(ResourceUriFloatWrapper.class);
-      dispatcher.getRegistry().addResource(ResourceUriDoubleWrapper.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriBoolean.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriByte.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriShort.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriInt.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriLong.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriFloat.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriDouble.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriBooleanWrapper.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriByteWrapper.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriShortWrapper.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriIntWrapper.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriLongWrapper.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriFloatWrapper.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceUriDoubleWrapper.class);
       resourceUriBoolean = ProxyFactory.create(IResourceUriBoolean.class, "http://localhost:8081");
       resourceUriByte = ProxyFactory.create(IResourceUriByte.class, "http://localhost:8081");
    }

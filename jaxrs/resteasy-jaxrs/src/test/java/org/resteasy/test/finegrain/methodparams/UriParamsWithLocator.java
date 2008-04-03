@@ -75,7 +75,7 @@ public class UriParamsWithLocator
    {
       HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
       Dispatcher dispatcher = servlet.getDispatcher();
-      dispatcher.getRegistry().addResource(Locator.class);
+      dispatcher.getRegistry().addPerRequestResource(Locator.class);
       {
          MockHttpServletRequest request = new MockHttpServletRequest("GET", "/1/2");
          request.setPathInfo("/1/2");
@@ -105,7 +105,7 @@ public class UriParamsWithLocator
    {
       HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
       Dispatcher dispatcher = servlet.getDispatcher();
-      dispatcher.getRegistry().addResource(Locator2.class);
+      dispatcher.getRegistry().addPerRequestResource(Locator2.class);
       {
          MockHttpServletRequest request = new MockHttpServletRequest("GET", "/1/2");
          request.setPathInfo("/1/2");

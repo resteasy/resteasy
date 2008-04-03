@@ -40,22 +40,22 @@ public class QueryParamAsPrimitiveTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitives.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitivesDefault.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitivesDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitivesDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveWrappers.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveWrappersDefault.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveWrappersDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveWrappersDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveList.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveListDefault.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveListDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveListDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveArray.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveArrayDefault.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveArrayDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceQueryPrimitiveArrayDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitives.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitivesDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitivesDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitivesDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveWrappers.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveWrappersDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveWrappersDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveWrappersDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveList.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveListDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveListDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveListDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArray.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefaultOverride.class);
       resourceQueryPrimitives = ProxyFactory.create(IResourceQueryPrimitives.class, "http://localhost:8081");
       resourceQueryPrimitiveWrappers = ProxyFactory.create(IResourceQueryPrimitiveWrappers.class, "http://localhost:8081");
       resourceQueryPrimitiveList = ProxyFactory.create(IResourceQueryPrimitiveList.class, "http://localhost:8081");

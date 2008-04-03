@@ -45,7 +45,7 @@ public class MultipleMatrixSegmentsTest
       String path = "/;name=bill;ssn=111/children/;name=skippy;ssn=3344";
       HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
       Dispatcher dispatcher = servlet.getDispatcher();
-      dispatcher.getRegistry().addResource(Resource.class);
+      dispatcher.getRegistry().addPerRequestResource(Resource.class);
       {
          MockHttpServletRequest request = new MockHttpServletRequest("GET", path);
          request.setPathInfo(path);

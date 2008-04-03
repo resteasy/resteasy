@@ -1,12 +1,7 @@
 package org.resteasy.test;
 
-import Acme.Serve.Serve;
 import org.resteasy.Dispatcher;
-import org.resteasy.plugins.providers.RegisterBuiltin;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.spi.ResteasyProviderFactory;
-
-import java.util.Properties;
+import org.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,33 +9,26 @@ import java.util.Properties;
  */
 public class TJWSServletContainer
 {
-   private static Serve server = null;
-   private static HttpServletDispatcher servlet = new HttpServletDispatcher();
+   private static TJWSEmbeddedJaxrsServer tjws;
+
+   public static Dispatcher start() throws Exception
+   {
+      return start("");
+   }
 
    public static Dispatcher start(String bindPath) throws Exception
    {
-      server = new Serve();
-      Properties props = new Properties();
-      props.put("port", 8081);
-      props.setProperty(Serve.ARG_NOHUP, "nohup");
-      server.arguments = props;
-      server.addDefaultServlets(null); // optional file servlet
-      server.addServlet(bindPath, servlet); // optional
-      new Thread()
-      {
-         public void run()
-         {
-            server.serve();
-         }
-      }.start();
-
-      ResteasyProviderFactory.setInstance(servlet.getDispatcher().getProviderFactory());
-      RegisterBuiltin.register(servlet.getDispatcher().getProviderFactory());
-      return servlet.getDispatcher();
+      tjws = new TJWSEmbeddedJaxrsServer();
+      tjws.setPort(8081);
+      tjws.setRootResourcePath(bindPath);
+      tjws.start();
+      return tjws.getDispatcher();
    }
 
    public static void stop() throws Exception
    {
-      server.notifyStop();
+      tjws.stop();
+      tjws = null;
    }
+
 }

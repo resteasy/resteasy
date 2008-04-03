@@ -54,7 +54,7 @@ public class RegressionTest
    public void test1and2() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(SimpleResource.class);
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
          HttpClient client = new HttpClient();
          GetMethod method = new GetMethod("http://localhost:8081/simple");

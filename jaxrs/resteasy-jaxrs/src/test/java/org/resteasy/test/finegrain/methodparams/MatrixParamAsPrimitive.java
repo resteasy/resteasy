@@ -35,22 +35,22 @@ public class MatrixParamAsPrimitive
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitives.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitivesDefault.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitivesDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitivesDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveWrappers.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveWrappersDefault.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveWrappersDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveWrappersDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveList.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveListDefault.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveListDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveListDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveArray.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveArrayDefault.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveArrayDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceMatrixPrimitiveArrayDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitives.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitivesDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitivesDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitivesDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveWrappers.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveWrappersDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveWrappersDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveWrappersDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveList.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveListDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveListDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveListDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveArray.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveArrayDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveArrayDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveArrayDefaultOverride.class);
       //resourceUriBoolean = ProxyFactory.create(IResourceUriBoolean.class, "http://localhost:8081");
    }
 

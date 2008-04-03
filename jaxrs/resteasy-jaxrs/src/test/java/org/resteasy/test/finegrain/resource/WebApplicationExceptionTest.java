@@ -39,7 +39,7 @@ public class WebApplicationExceptionTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(WebExceptionResource.class);
+      dispatcher.getRegistry().addPerRequestResource(WebExceptionResource.class);
    }
 
    @AfterClass

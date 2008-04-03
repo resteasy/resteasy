@@ -29,7 +29,6 @@ public class TestWireSmoke
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      System.out.println("After container start");
    }
 
    @AfterClass
@@ -42,7 +41,7 @@ public class TestWireSmoke
    public void testNoDefaultsResource() throws Exception
    {
       int oldSize = dispatcher.getRegistry().getSize();
-      dispatcher.getRegistry().addResource(SimpleResource.class);
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
       HttpClient client = new HttpClient();
@@ -107,7 +106,7 @@ public class TestWireSmoke
    public void testLocatingResource() throws Exception
    {
       int oldSize = dispatcher.getRegistry().getSize();
-      dispatcher.getRegistry().addResource(LocatingResource.class);
+      dispatcher.getRegistry().addPerRequestResource(LocatingResource.class);
       Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
       HttpClient client = new HttpClient();

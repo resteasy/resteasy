@@ -128,7 +128,7 @@ public class UriInfoTest
       dispatcher = EmbeddedContainer.start();
       try
       {
-         dispatcher.getRegistry().addResource(SimpleResource.class);
+         dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
          _test(new HttpClient(), "http://localhost:8081/simple");
          _test(new HttpClient(), "http://localhost:8081/simple/fromField");
       }
@@ -144,7 +144,7 @@ public class UriInfoTest
       dispatcher = EmbeddedContainer.start("/resteasy");
       try
       {
-         dispatcher.getRegistry().addResource(SimpleResource.class);
+         dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
          _test(new HttpClient(), "http://localhost:8081/resteasy/simple?abs=resteasy");
       }
       finally

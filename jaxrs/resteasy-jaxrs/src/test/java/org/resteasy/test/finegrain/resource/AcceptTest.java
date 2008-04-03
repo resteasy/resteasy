@@ -66,7 +66,7 @@ public class AcceptTest
    public void testAcceptGet() throws Exception
    {
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
-      registry.addResource(WebResource.class);
+      registry.addPerRequestResource(WebResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
@@ -122,7 +122,7 @@ public class AcceptTest
    public void testAcceptGetWildCard() throws Exception
    {
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
-      registry.addResource(WebResource.class);
+      registry.addPerRequestResource(WebResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
@@ -154,7 +154,7 @@ public class AcceptTest
    public void testAcceptMultiple() throws Exception
    {
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
-      registry.addResource(MultipleResource.class);
+      registry.addPerRequestResource(MultipleResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
@@ -229,7 +229,7 @@ public class AcceptTest
    public void testContentTypeMatching() throws Exception
    {
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
-      registry.addResource(ConsumeResource.class);
+      registry.addPerRequestResource(ConsumeResource.class);
 
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
       ArrayList<MediaType> accepts = new ArrayList<MediaType>();
@@ -280,7 +280,7 @@ public class AcceptTest
    public void testComplex() throws Exception
    {
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
-      registry.addResource(ComplexResource.class);
+      registry.addPerRequestResource(ComplexResource.class);
 
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
       MediaType contentType = new MediaType("text", "xml");
