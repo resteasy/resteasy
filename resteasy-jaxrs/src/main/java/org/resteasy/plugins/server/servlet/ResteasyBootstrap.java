@@ -2,8 +2,6 @@ package org.resteasy.plugins.server.servlet;
 
 import org.resteasy.Dispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
-import org.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
-import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.scannotation.AnnotationDB;
@@ -118,7 +116,7 @@ public class ResteasyBootstrap implements ServletContextListener
       String[] resources = jndiResources.trim().split(",");
       for (String resource : resources)
       {
-         registry.addResourceFactory(new JndiResourceFactory(resource.trim()));
+         registry.addJndiResource(resource.trim());
       }
    }
 
@@ -130,7 +128,7 @@ public class ResteasyBootstrap implements ServletContextListener
          try
          {
             Class clazz = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
-            registry.addResource(clazz);
+            registry.addPerRequestResource(clazz);
          }
          catch (ClassNotFoundException e)
          {
@@ -204,7 +202,7 @@ public class ResteasyBootstrap implements ServletContextListener
             throw new RuntimeException(e);
          }
          if (resource.isInterface()) continue;
-         registry.addResourceFactory(new POJOResourceFactory(resource));
+         registry.addPerRequestResource(resource);
       }
    }
 

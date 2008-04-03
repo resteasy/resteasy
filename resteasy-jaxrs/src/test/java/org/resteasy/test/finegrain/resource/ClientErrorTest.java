@@ -62,7 +62,7 @@ public class ClientErrorTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(WebResourceUnsupportedMediaType.class);
+      dispatcher.getRegistry().addPerRequestResource(WebResourceUnsupportedMediaType.class);
    }
 
    @AfterClass

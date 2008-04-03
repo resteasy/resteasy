@@ -84,7 +84,7 @@ public class ReponseInfoTest
       dispatcher = EmbeddedContainer.start();
       try
       {
-         dispatcher.getRegistry().addResource(SimpleResource.class);
+         dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
          _test(new HttpClient(), "http://localhost:8081/simple");
       }
       finally
@@ -99,7 +99,7 @@ public class ReponseInfoTest
       dispatcher = EmbeddedContainer.start("/resteasy");
       try
       {
-         dispatcher.getRegistry().addResource(SimpleResource.class);
+         dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
          _test(new HttpClient(), "http://localhost:8081/resteasy/simple?abs=resteasy");
       }
       finally

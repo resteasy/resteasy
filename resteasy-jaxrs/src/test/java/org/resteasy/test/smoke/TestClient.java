@@ -35,7 +35,7 @@ public class TestClient
    public void testNoDefaultsResource() throws Exception
    {
       int oldSize = dispatcher.getRegistry().getSize();
-      dispatcher.getRegistry().addResource(SimpleResource.class);
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
       SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");

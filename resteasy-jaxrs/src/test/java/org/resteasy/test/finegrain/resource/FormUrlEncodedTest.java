@@ -36,7 +36,7 @@ public class FormUrlEncodedTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(SimpleResource.class);
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
    }
 
    @AfterClass

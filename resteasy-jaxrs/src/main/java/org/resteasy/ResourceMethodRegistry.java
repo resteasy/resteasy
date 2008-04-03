@@ -1,6 +1,8 @@
 package org.resteasy;
 
+import org.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
+import org.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.spi.InjectorFactory;
 import org.resteasy.spi.Registry;
@@ -34,12 +36,38 @@ public class ResourceMethodRegistry implements Registry
       this.providerFactory = providerFactory;
    }
 
+   public void addPerRequestResource(Class clazz, String basePath)
+   {
+      addResourceFactory(new POJOResourceFactory(clazz), basePath);
+
+   }
+
+   public void addSingletonResource(Object singleton)
+   {
+      addResourceFactory(new SingletonResource(singleton));
+   }
+
+   public void addSingletonResource(Object singleton, String basePath)
+   {
+      addResourceFactory(new SingletonResource(singleton), basePath);
+   }
+
+   public void addJndiResource(String jndiName)
+   {
+      addResourceFactory(new JndiResourceFactory(jndiName));
+   }
+
+   public void addJndiResource(String jndiName, String basePath)
+   {
+      addResourceFactory(new JndiResourceFactory(jndiName), basePath);
+   }
+
    /**
     * Register a vanilla JAX-RS resource class
     *
     * @param clazz
     */
-   public void addResource(Class clazz)
+   public void addPerRequestResource(Class clazz)
    {
       addResourceFactory(new POJOResourceFactory(clazz));
    }
@@ -86,7 +114,7 @@ public class ResourceMethodRegistry implements Registry
     * @param base    base URI path for any resources provided by the factory
     * @param clazz   specific class
     */
-   public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
+   protected void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
    {
       ref.registered(new InjectorFactoryImpl(null, providerFactory));
       for (Method method : clazz.getMethods())

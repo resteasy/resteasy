@@ -97,7 +97,7 @@ public class ConstructedInjectionTest
       dispatcher = EmbeddedContainer.start();
       try
       {
-         dispatcher.getRegistry().addResource(ConstructedResource.class);
+         dispatcher.getRegistry().addPerRequestResource(ConstructedResource.class);
          _test(new HttpClient(), "http://localhost:8081/simple");
       }
       finally

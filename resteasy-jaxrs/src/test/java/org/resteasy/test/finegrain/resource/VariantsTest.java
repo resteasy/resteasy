@@ -33,8 +33,8 @@ public class VariantsTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(LanguageVariantResource.class);
-      dispatcher.getRegistry().addResource(ComplexVariantResource.class);
+      dispatcher.getRegistry().addPerRequestResource(LanguageVariantResource.class);
+      dispatcher.getRegistry().addPerRequestResource(ComplexVariantResource.class);
    }
 
    @AfterClass

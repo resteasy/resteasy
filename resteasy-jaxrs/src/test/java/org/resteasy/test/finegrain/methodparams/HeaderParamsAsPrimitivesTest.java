@@ -52,22 +52,22 @@ public class HeaderParamsAsPrimitivesTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitives.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitivesDefault.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitivesDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitivesDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveWrappers.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveWrappersDefault.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveWrappersDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveWrappersDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveList.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveListDefault.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveListDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveListDefaultOverride.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveArray.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveArrayDefault.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveArrayDefaultNull.class);
-      dispatcher.getRegistry().addResource(ResourceHeaderPrimitiveArrayDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitives.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitivesDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitivesDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitivesDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveWrappers.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveWrappersDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveWrappersDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveWrappersDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveList.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveListDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveListDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveListDefaultOverride.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveArray.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveArrayDefault.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveArrayDefaultNull.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveArrayDefaultOverride.class);
       resourceHeaderPrimitives = ProxyFactory.create(IResourceHeaderPrimitives.class, "http://localhost:8081");
       resourceHeaderPrimitivesDefault = ProxyFactory.create(IResourceHeaderPrimitivesDefault.class, "http://localhost:8081");
       resourceHeaderPrimitivesDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitivesDefaultOverride.class, "http://localhost:8081");

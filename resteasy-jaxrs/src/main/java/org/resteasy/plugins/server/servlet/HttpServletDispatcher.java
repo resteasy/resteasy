@@ -47,6 +47,7 @@ public class HttpServletDispatcher extends HttpServlet
       return dispatcher;
    }
 
+
    public void init(ServletConfig servletConfig) throws ServletException
    {
       ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());

@@ -34,8 +34,8 @@ public class PreconditionTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addResource(LastModifiedResource.class);
-      dispatcher.getRegistry().addResource(EtagResource.class);
+      dispatcher.getRegistry().addPerRequestResource(LastModifiedResource.class);
+      dispatcher.getRegistry().addPerRequestResource(EtagResource.class);
    }
 
    @AfterClass
