@@ -13,6 +13,7 @@ import javax.ws.rs.PathParam;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Path("/")
 public interface SimpleResource
 {
    @GET

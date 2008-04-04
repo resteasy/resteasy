@@ -24,6 +24,7 @@ public class WebApplicationExceptionTest
 {
    private static Dispatcher dispatcher;
 
+   @Path("/")
    public static class WebExceptionResource
    {
       @Path("/exception")

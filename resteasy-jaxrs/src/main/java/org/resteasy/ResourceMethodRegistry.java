@@ -96,7 +96,7 @@ public class ResourceMethodRegistry implements Registry
       List<Class> restful = GetRestful.getRestfulClasses(clazz);
       if (restful == null)
       {
-         String msg = "could find no jax-rs annotations on class or public methods or interfaces of class: " + clazz.getName() + " implements: ";
+         String msg = "Class is not a root resource.  It, or one of its interfaces must be annotated with @Path: " + clazz.getName() + " implements: ";
          for (Class intf : clazz.getInterfaces())
          {
             msg += " " + intf.getName();
