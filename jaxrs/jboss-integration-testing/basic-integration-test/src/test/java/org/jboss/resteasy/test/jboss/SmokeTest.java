@@ -8,6 +8,8 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.Assert;
 import org.junit.Test;
 import org.resteasy.util.HttpResponseCodes;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 
 
 /**

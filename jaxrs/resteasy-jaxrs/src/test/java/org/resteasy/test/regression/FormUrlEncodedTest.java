@@ -31,7 +31,6 @@ public class FormUrlEncodedTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
    }
 
    @AfterClass
@@ -40,6 +39,7 @@ public class FormUrlEncodedTest
       EmbeddedContainer.stop();
    }
 
+   @Path("/")
    public static class SimpleResource
    {
       @Path("/simple")
@@ -67,6 +67,7 @@ public class FormUrlEncodedTest
    @Test
    public void testPost()
    {
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       HttpClient client = new HttpClient();
       {
          PostMethod method = new PostMethod("http://localhost:8081/simple");

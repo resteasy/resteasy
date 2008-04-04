@@ -30,6 +30,7 @@ public class CookieTest
 {
    private static Dispatcher dispatcher;
 
+   @Path("/")
    public static class CookieResource
    {
       @Path("/set")
