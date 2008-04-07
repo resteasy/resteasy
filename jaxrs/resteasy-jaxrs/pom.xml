@@ -96,16 +96,19 @@
          <groupId>com.sun.grizzly</groupId>
          <artifactId>grizzly-http-webserver</artifactId>
          <version>1.7.2</version>
+         <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>com.sun.grizzly</groupId>
          <artifactId>grizzly-http-servlet</artifactId>
          <version>1.7.2</version>
+         <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>com.sun.grizzly</groupId>
          <artifactId>grizzly-comet</artifactId>
          <version>1.7.2</version>
+         <scope>provided</scope>
       </dependency>
    </dependencies>
    <build>
