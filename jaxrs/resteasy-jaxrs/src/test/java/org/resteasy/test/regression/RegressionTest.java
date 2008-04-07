@@ -43,6 +43,16 @@ public class RegressionTest
          builder.header("CoNtEnT-type", "text/plain");
          return builder.build();
       }
+
+      @Path("/complex")
+      @GET
+      public Response getComplex()
+      {
+         Response.ResponseBuilder builder = Response.status(HttpResponseCodes.SC_FOUND).entity("hello world".getBytes());
+         builder.header("CoNtEnT-type", "text/plain");
+         return builder.build();
+      }
+
    }
 
    /**
@@ -68,5 +78,29 @@ public class RegressionTest
       }
       EmbeddedContainer.stop();
    }
+
+   /**
+    * Test JIRA bug RESTEASY-24
+    */
+   @Test
+   public void test24() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+      {
+         HttpClient client = new HttpClient();
+         GetMethod method = new GetMethod("http://localhost:8081/complex");
+         int status = client.executeMethod(method);
+         Assert.assertEquals(HttpResponseCodes.SC_FOUND, status);
+         Assert.assertEquals(method.getResponseHeader("content-type").getValue(), "text/plain");
+         byte[] responseBody = method.getResponseBody();
+         String response = new String(responseBody, "US-ASCII");
+         Assert.assertEquals("hello world", response);
+         method.releaseConnection();
+      }
+      EmbeddedContainer.stop();
+
+   }
+
 
 }
