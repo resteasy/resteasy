@@ -110,6 +110,7 @@ public class Dispatcher
             e.printStackTrace();
             return;
          }
+         response.setStatus(jaxrsResponse.getStatus());
          if (jaxrsResponse.getMetadata() != null)
          {
             List cookies = jaxrsResponse.getMetadata().get(HttpHeaderNames.SET_COOKIE);
@@ -139,7 +140,6 @@ public class Dispatcher
             MediaType responseContentType = resolveContentType(invoker, in, jaxrsResponse);
             writeResponse(response, invoker, jaxrsResponse.getEntity(), responseContentType);
          }
-         response.setStatus(jaxrsResponse.getStatus());
 
       }
       catch (Exception e)
