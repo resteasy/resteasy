@@ -34,6 +34,14 @@ public class WebApplicationExceptionTest
          throw new WebApplicationException(Response.status(HttpResponseCodes.SC_UNAUTHORIZED).build());
 
       }
+
+      @Path("/exception/entity")
+      @GET
+      public Response getEntity() throws WebApplicationException
+      {
+         throw new WebApplicationException(Response.status(HttpResponseCodes.SC_UNAUTHORIZED).entity("error").build());
+
+      }
    }
 
    @BeforeClass
@@ -70,6 +78,15 @@ public class WebApplicationExceptionTest
    public void testException()
    {
       _test(new HttpClient(), "http://localhost:8081/exception", HttpResponseCodes.SC_UNAUTHORIZED);
+   }
+
+   /**
+    * Test JIRA bug RESTEASY-24
+    */
+   @Test
+   public void testExceptionWithEntity()
+   {
+      _test(new HttpClient(), "http://localhost:8081/exception/entity", HttpResponseCodes.SC_UNAUTHORIZED);
    }
 
 
