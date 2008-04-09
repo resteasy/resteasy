@@ -12,6 +12,11 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
    public Object fromString(String type) throws IllegalArgumentException
    {
+      return parse(type);
+   }
+
+   public static MediaType parse(String type)
+   {
       String[] paths = type.split("/");
       if (paths.length != 2) throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
       int idx = paths[1].indexOf(";");
