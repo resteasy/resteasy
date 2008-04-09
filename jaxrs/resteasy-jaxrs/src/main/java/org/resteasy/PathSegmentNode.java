@@ -3,6 +3,7 @@ package org.resteasy;
 import org.resteasy.util.HttpResponseCodes;
 import org.resteasy.util.MediaTypeHelper;
 import org.resteasy.util.PathHelper;
+import org.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 import java.util.regex.Matcher;
 
 /**
@@ -171,10 +173,13 @@ public class PathSegmentNode
       return null;
    }
 
-   private ResourceMethod match(String httpMethod, MediaType contentType, List<MediaType> accepts)
+   private ResourceMethod match(String httpMethod, MediaType contentType, List<MediaType> oldaccepts)
    {
+      List<WeightedMediaType> accepts = new ArrayList<WeightedMediaType>();
+      for (MediaType accept : oldaccepts) accepts.add(WeightedMediaType.parse(accept));
+      
       List<ResourceMethod> list = new ArrayList<ResourceMethod>();
-      IdentityHashMap<MediaType, ResourceMethod> consumesMap = new IdentityHashMap<MediaType, ResourceMethod>();
+      IdentityHashMap<WeightedMediaType, ResourceMethod> consumesMap = new IdentityHashMap<WeightedMediaType, ResourceMethod>();
 
       boolean methodMatch = false;
       boolean consumeMatch = false;
@@ -195,12 +200,12 @@ public class PathSegmentNode
                   list.add(invoker);
                   if (invoker.getConsumes() == null)
                   {
-                     MediaType defaultConsumes = MediaType.parse("*/*;q=0.0");
+                     WeightedMediaType defaultConsumes = WeightedMediaType.parse("*/*;q=0.0");
                      consumesMap.put(defaultConsumes, invoker);
                   }
                   else
                   {
-                     for (MediaType consume : invoker.getConsumes())
+                     for (WeightedMediaType consume : invoker.getPreferredConsumes())
                      {
                         consumesMap.put(consume, invoker);
                      }
@@ -226,15 +231,15 @@ public class PathSegmentNode
       if (list.size() == 1) return list.get(0);
 
       list = new ArrayList<ResourceMethod>();
-      ArrayList<MediaType> consumes = new ArrayList<MediaType>();
+      ArrayList<WeightedMediaType> consumes = new ArrayList<WeightedMediaType>();
       consumes.addAll(consumesMap.keySet());
-      MediaTypeHelper.sortByWeight(consumes);
+      Collections.sort(consumes);
 
       boolean first = true;
-      MediaType current = null;
+      WeightedMediaType current = null;
 
       // pull out top choices that have equal weighting and that are the same
-      for (MediaType type : consumes)
+      for (WeightedMediaType type : consumes)
       {
          if (first)
          {
@@ -244,7 +249,7 @@ public class PathSegmentNode
          }
          else
          {
-            if (MediaTypeHelper.sameWeight(current, type))
+            if (current.compareTo(type) == 0)
             {
                list.add(consumesMap.get(type));
             }
@@ -255,32 +260,37 @@ public class PathSegmentNode
       if (list.size() == 1) return list.get(0);
 
       // make an identiy map of produced media types
-      IdentityHashMap<MediaType, ResourceMethod> producesMap = new IdentityHashMap<MediaType, ResourceMethod>();
+      IdentityHashMap<WeightedMediaType, ResourceMethod> producesMap = new IdentityHashMap<WeightedMediaType, ResourceMethod>();
       for (ResourceMethod invoker : list)
       {
          if (invoker.getProduces() == null)
          {
-            MediaType defaultProduces = MediaType.parse("*/*;q=0.0");
+            WeightedMediaType defaultProduces = WeightedMediaType.parse("*/*;q=0.0");
             producesMap.put(defaultProduces, invoker);
          }
          else
          {
-            for (MediaType produce : invoker.getProduces())
+            for (WeightedMediaType produce : invoker.getPreferredProduces())
             {
                producesMap.put(produce, invoker);
             }
          }
       }
 
-      // sort media types then get first in list and match it into identity map
-      ArrayList<MediaType> produces = new ArrayList<MediaType>();
-      produces.addAll(producesMap.keySet());
-      MediaTypeHelper.sortByWeight(produces);
-      MediaTypeHelper.sortByWeight(accepts);
-
-      for (MediaType accept : accepts)
+      if (accepts == null || accepts.size() == 0)
       {
-         for (MediaType produce : produces)
+         accepts = new ArrayList<WeightedMediaType>(1);
+         accepts.add(WeightedMediaType.parse("*/*"));
+      }
+      // sort media types then get first in list and match it into identity map
+      ArrayList<WeightedMediaType> produces = new ArrayList<WeightedMediaType>();
+      produces.addAll(producesMap.keySet());
+      Collections.sort(produces);
+      Collections.sort(accepts);
+
+      for (WeightedMediaType accept : accepts)
+      {
+         for (WeightedMediaType produce : produces)
          {
             if (accept.isCompatible(produce)) return producesMap.get(produce);
          }
@@ -288,5 +298,4 @@ public class PathSegmentNode
       }
       return null;
    }
-
 }

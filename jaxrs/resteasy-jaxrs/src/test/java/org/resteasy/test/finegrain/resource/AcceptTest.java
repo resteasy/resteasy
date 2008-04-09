@@ -12,6 +12,7 @@ import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
@@ -115,6 +116,99 @@ public class AcceptTest
          ResourceMethod method = registry.getResourceInvoker("GET", pathSegments, contentType, accepts);
          Assert.assertNotNull(method);
          Assert.assertEquals(WebResource.class.getMethod("doGetBaz"), method.getMethod());
+      }
+   }
+
+   @Path("/xml")
+   public static class XmlResource
+   {
+      @ConsumeMime("application/xml;schema=foo")
+      @PUT
+      public void putFoo(String foo) {}
+
+      @ConsumeMime("application/xml")
+      @PUT
+      public void put(String foo) {}
+
+      @ConsumeMime("application/xml;schema=bar")
+      @PUT
+      public void putBar(String foo) {}
+
+
+   }
+
+   @Test
+   public void testConsume() throws Exception
+   {
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      registry.addPerRequestResource(XmlResource.class);
+
+      MediaType contentType = MediaType.parse("application/xml;schema=bar");
+      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
+
+      {
+         ArrayList<MediaType> accepts = new ArrayList<MediaType>();
+         ResourceMethod method = registry.getResourceInvoker("PUT", pathSegments, contentType, accepts);
+         Assert.assertNotNull(method);
+         Assert.assertEquals(XmlResource.class.getMethod("putBar", String.class), method.getMethod());
+      }
+   }
+
+   @Path("/xml")
+   public static class XmlResource2
+   {
+      @ConsumeMime("application/xml;schema=foo")
+      @ProduceMime("application/xml;schema=junk")
+      @PUT
+      public String putFoo(String foo) { return "hello";}
+
+      @ConsumeMime("application/xml;schema=bar")
+      @ProduceMime("application/xml;schema=stuff")
+      @PUT
+      public String putBar(String foo) {return "hello";}
+
+      @ConsumeMime("application/xml")
+      @ProduceMime("application/xml;schema=stuff")
+      @PUT
+      public String put(String foo) {return "hello";}
+
+   }
+
+   @Test
+   public void testConsume2() throws Exception
+   {
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      registry.addPerRequestResource(XmlResource2.class);
+
+      MediaType contentType = MediaType.parse("application/xml;schema=bar");
+      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
+
+      {
+         ArrayList<MediaType> accepts = new ArrayList<MediaType>();
+         accepts.add(MediaType.parse("application/xml;schema=junk;q=1.0"));
+         accepts.add(MediaType.parse("application/xml;schema=stuff;q=0.5"));
+         ResourceMethod method = registry.getResourceInvoker("PUT", pathSegments, contentType, accepts);
+         Assert.assertNotNull(method);
+         Assert.assertEquals(XmlResource2.class.getMethod("putBar", String.class), method.getMethod());
+      }
+   }
+
+   @Test
+   public void testConsume3() throws Exception
+   {
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      registry.addPerRequestResource(XmlResource2.class);
+
+      MediaType contentType = MediaType.parse("application/xml;schema=blah");
+      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
+
+      {
+         ArrayList<MediaType> accepts = new ArrayList<MediaType>();
+         accepts.add(MediaType.parse("application/xml;schema=junk;q=1.0"));
+         accepts.add(MediaType.parse("application/xml;schema=stuff;q=0.5"));
+         ResourceMethod method = registry.getResourceInvoker("PUT", pathSegments, contentType, accepts);
+         Assert.assertNotNull(method);
+         Assert.assertEquals(XmlResource2.class.getMethod("put", String.class), method.getMethod());
       }
    }
 

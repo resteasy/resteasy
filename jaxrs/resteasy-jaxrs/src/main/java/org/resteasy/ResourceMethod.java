@@ -6,6 +6,7 @@ import org.resteasy.spi.InjectorFactory;
 import org.resteasy.spi.MethodInjector;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
@@ -14,6 +15,8 @@ import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,6 +27,8 @@ public class ResourceMethod
 
    protected MediaType[] produces;
    protected MediaType[] consumes;
+   protected List<WeightedMediaType> preferredProduces = new ArrayList<WeightedMediaType>();
+   protected List<WeightedMediaType> preferredConsumes = new ArrayList<WeightedMediaType>();
    protected Set<String> httpMethods;
    protected MethodInjector methodInjector;
    protected InjectorFactory injector;
@@ -54,6 +59,7 @@ public class ResourceMethod
          for (String mediaType : p.value())
          {
             produces[i++] = MediaType.parse(mediaType);
+            preferredProduces.add(WeightedMediaType.parse(mediaType));
          }
       }
       if (c != null)
@@ -63,8 +69,31 @@ public class ResourceMethod
          for (String mediaType : c.value())
          {
             consumes[i++] = MediaType.parse(mediaType);
+            preferredConsumes.add(WeightedMediaType.parse(mediaType));
          }
       }
+      Collections.sort(preferredProduces);
+      Collections.sort(preferredConsumes);
+   }
+
+   /**
+    * Presorted list of preferred types, 1st entry is most preferred
+    *
+    * @return
+    */
+   public List<WeightedMediaType> getPreferredProduces()
+   {
+      return preferredProduces;
+   }
+
+   /**
+    * Presorted list of preferred types, 1st entry is most preferred
+    *
+    * @return
+    */
+   public List<WeightedMediaType> getPreferredConsumes()
+   {
+      return preferredConsumes;
    }
 
    public Method getMethod()
@@ -83,7 +112,7 @@ public class ResourceMethod
    }
 
 
-   public boolean doesProduce(List<MediaType> accepts)
+   public boolean doesProduce(List<? extends MediaType> accepts)
    {
       if (accepts == null || accepts.size() == 0)
       {
@@ -98,7 +127,7 @@ public class ResourceMethod
 
       for (MediaType accept : accepts)
       {
-         for (MediaType type : produces)
+         for (MediaType type : preferredProduces)
          {
             if (type.isCompatible(accept))
             {
@@ -124,7 +153,7 @@ public class ResourceMethod
          }
          else
          {
-            for (MediaType type : consumes)
+            for (MediaType type : preferredConsumes)
             {
                if (type.isCompatible(contentType))
                {

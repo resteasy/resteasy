@@ -163,7 +163,6 @@ public class Dispatcher
       if (!Response.class.equals(invoker.getMethod().getReturnType()))
       {
          genericType = invoker.getMethod().getGenericReturnType();
-         type = invoker.getMethod().getReturnType();
       }
 
       Annotation[] annotations = invoker.getMethod().getAnnotations();

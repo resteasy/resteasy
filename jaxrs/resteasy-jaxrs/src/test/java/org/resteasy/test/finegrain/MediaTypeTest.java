@@ -6,10 +6,12 @@ import org.junit.Test;
 import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.MediaTypeHelper;
+import org.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -100,6 +102,59 @@ public class MediaTypeTest
       list.add(array[4]);
 
       MediaTypeHelper.sortByWeight(list);
+
+      Assert.assertTrue(array[2] == list.get(0));
+      Assert.assertTrue(array[1] == list.get(1));
+      Assert.assertTrue(array[4] == list.get(2));
+      Assert.assertTrue(array[3] == list.get(3));
+      Assert.assertTrue(array[0] == list.get(4));
+
+
+   }
+
+   @Test
+   public void testWeightedSort()
+   {
+      WeightedMediaType[] array = {
+              WeightedMediaType.parse("text/*"),
+              WeightedMediaType.parse("text/html"),
+              WeightedMediaType.parse("text/html;level=1"),
+              WeightedMediaType.parse("*/*")
+      };
+      List<WeightedMediaType> list = new ArrayList<WeightedMediaType>();
+      list.add(array[0]);
+      list.add(array[1]);
+      list.add(array[2]);
+      list.add(array[3]);
+
+      Collections.sort(list);
+
+      Assert.assertTrue(list.get(0).toString(), array[2] == list.get(0));
+      Assert.assertTrue(array[1] == list.get(1));
+      Assert.assertTrue(array[0] == list.get(2));
+      Assert.assertTrue(array[3] == list.get(3));
+
+
+   }
+
+   @Test
+   public void testWeightedSort2()
+   {
+      WeightedMediaType[] array = {
+              WeightedMediaType.parse("text/*;q=0.3"),
+              WeightedMediaType.parse("text/html;q=0.7"),
+              WeightedMediaType.parse("text/html;level=1"),
+              WeightedMediaType.parse("text/html;level=2;q=0.4"),
+              WeightedMediaType.parse("*/*;q=0.5")
+      };
+      List<WeightedMediaType> list = new ArrayList<WeightedMediaType>();
+      list.add(array[0]);
+      list.add(array[1]);
+      list.add(array[2]);
+      list.add(array[3]);
+      list.add(array[4]);
+
+      Collections.sort(list);
 
       Assert.assertTrue(array[2] == list.get(0));
       Assert.assertTrue(array[1] == list.get(1));
