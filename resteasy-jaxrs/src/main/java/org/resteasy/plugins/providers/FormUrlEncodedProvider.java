@@ -37,11 +37,8 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
    {
-      if (!type.equals(MultivaluedMap.class))
-      {
-         return genericType == null && MultivaluedMap.class.isAssignableFrom(type);
-      }
-      if (genericType == null) return false;
+      if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
+      if (genericType == null) return true;
 
       if (!(genericType instanceof ParameterizedType)) return false;
       ParameterizedType params = (ParameterizedType) genericType;
@@ -115,11 +112,8 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
-      if (!type.equals(MultivaluedMap.class))
-      {
-         return genericType == null && MultivaluedMap.class.isAssignableFrom(type);
-      }
-      if (genericType == null) return false;
+      if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
+      if (genericType == null) return true;
 
       if (!(genericType instanceof ParameterizedType)) return false;
       ParameterizedType params = (ParameterizedType) genericType;
