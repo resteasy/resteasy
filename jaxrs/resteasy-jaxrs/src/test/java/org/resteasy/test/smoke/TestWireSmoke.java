@@ -76,27 +76,6 @@ public class TestWireSmoke
          Assert.assertEquals("1234", method.getResponseBodyAsString());
          method.releaseConnection();
       }
-      {
-         GetMethod method = new GetMethod("http://localhost:8081/should/accept/anything");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
-      {
-         GetMethod method = new GetMethod("http://localhost:8081/basic/should/accept");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
-      {
-         GetMethod method = new GetMethod("http://localhost:8081/uriParam");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
       dispatcher.getRegistry().removeRegistrations(SimpleResource.class);
       Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }

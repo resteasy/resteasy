@@ -16,15 +16,6 @@ import javax.ws.rs.QueryParam;
 @Path("/")
 public class SimpleResource
 {
-
-   @GET
-   @Path("*")
-   @ProduceMime("text/plain")
-   public String getWild()
-   {
-      return "Wild";
-   }
-
    @GET
    @Path("basic")
    @ProduceMime("text/plain")

@@ -1,7 +1,6 @@
 package org.resteasy;
 
 import org.resteasy.util.HttpResponseCodes;
-import org.resteasy.util.MediaTypeHelper;
 import org.resteasy.util.PathHelper;
 import org.resteasy.util.WeightedMediaType;
 
@@ -9,11 +8,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 import java.util.regex.Matcher;
 
 /**
@@ -25,7 +24,6 @@ public class PathSegmentNode
    private List<ResourceMethod> invokers = new ArrayList<ResourceMethod>();
    private List<PathSegmentNode> uriParamChildren = new ArrayList<PathSegmentNode>();
    private Map<String, PathSegmentNode> children = new HashMap<String, PathSegmentNode>();
-   private PathSegmentNode wildcard;
 
    public PathSegmentNode()
    {
@@ -46,11 +44,6 @@ public class PathSegmentNode
          {
             child.addChild(path, ++pathIndex, invoker);
          }
-      }
-      else if (path[pathIndex].trim().equals("*"))
-      {
-         if (wildcard == null) wildcard = new PathSegmentNode();
-         wildcard.invokers.add(invoker);
       }
       else
       {
@@ -94,11 +87,6 @@ public class PathSegmentNode
             }
             return null;
          }
-      }
-      else if (path[pathIndex].trim().equals("*"))
-      {
-         if (wildcard == null) return null;
-         return tryRemoveInvoker(wildcard.invokers, method);
       }
       else
       {
@@ -165,10 +153,6 @@ public class PathSegmentNode
             }
          }
       }
-      if (wildcard != null)
-      {
-         return wildcard.match(httpMethod, contentType, accepts);
-      }
       if (failure != null) throw failure;
       return null;
    }
@@ -177,7 +161,7 @@ public class PathSegmentNode
    {
       List<WeightedMediaType> accepts = new ArrayList<WeightedMediaType>();
       for (MediaType accept : oldaccepts) accepts.add(WeightedMediaType.parse(accept));
-      
+
       List<ResourceMethod> list = new ArrayList<ResourceMethod>();
       IdentityHashMap<WeightedMediaType, ResourceMethod> consumesMap = new IdentityHashMap<WeightedMediaType, ResourceMethod>();
 
