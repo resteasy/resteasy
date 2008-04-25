@@ -4,6 +4,8 @@ import org.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.resteasy.specimpl.UriBuilderImpl;
+import org.resteasy.spi.HttpRequest;
+import org.resteasy.spi.HttpResponse;
 import org.resteasy.spi.InjectorFactory;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResourceFactory;
@@ -12,8 +14,6 @@ import org.resteasy.util.GetRestful;
 import org.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.PathSegment;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
@@ -26,10 +26,10 @@ import java.util.Set;
  */
 public class ResourceMethodRegistry implements Registry
 {
-   private int size;
+   protected int size;
 
-   private PathSegmentNode root = new PathSegmentNode();
-   private ResteasyProviderFactory providerFactory;
+   protected PathSegmentNode root = new PathSegmentNode();
+   protected ResteasyProviderFactory providerFactory;
 
    public ResourceMethodRegistry(ResteasyProviderFactory providerFactory)
    {
@@ -103,7 +103,7 @@ public class ResourceMethodRegistry implements Registry
          }
          throw new RuntimeException(msg);
       }
-      for (Class cls : restful) addResourceFactory(ref, base, cls);
+      for (Class cls : restful) addResourceFactory(ref, base, cls, 0);
    }
 
    /**
@@ -113,10 +113,11 @@ public class ResourceMethodRegistry implements Registry
     * @param factory
     * @param base    base URI path for any resources provided by the factory
     * @param clazz   specific class
+    * @param offset  path segment offset.  > 0 means we're within a locator.
     */
-   protected void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
+   public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz, int offset)
    {
-      ref.registered(new InjectorFactoryImpl(null, providerFactory));
+      if (ref != null) ref.registered(new InjectorFactoryImpl(null, providerFactory));
       for (Method method : clazz.getMethods())
       {
          Path path = method.getAnnotation(Path.class);
@@ -130,21 +131,21 @@ public class ResourceMethodRegistry implements Registry
          String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
 
-         PathParamIndex index = new PathParamIndex(pathExpression);
-         InjectorFactory injectorFactory = new InjectorFactoryImpl(new PathParamIndex(pathExpression), providerFactory);
+         PathParamIndex index = new PathParamIndex(pathExpression, offset);
+         InjectorFactory injectorFactory = new InjectorFactoryImpl(new PathParamIndex(pathExpression, offset), providerFactory);
+         if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
+         String[] paths = pathExpression.split("/");
          if (httpMethods == null)
          {
             ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, method, index);
-            addResourceFactory(locator, pathExpression, locator.getScannableClass());
+            root.addChild(paths, 0, locator);
          }
          else
          {
             ResourceMethod invoker = new ResourceMethod(clazz, method, injectorFactory, ref, providerFactory, httpMethods, index);
-            if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
-            String[] paths = pathExpression.split("/");
             root.addChild(paths, 0, invoker);
-            size++;
          }
+         size++;
 
       }
    }
@@ -180,14 +181,14 @@ public class ResourceMethodRegistry implements Registry
          String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
 
+         if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
+         String[] paths = pathExpression.split("/");
          if (httpMethods == null)
          {
-            removeRegistrations(method.getReturnType(), pathExpression);
+            if (root.removeLocator(paths, 0) != null) size--;
          }
          else
          {
-            if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
-            String[] paths = pathExpression.split("/");
             try
             {
                if (root.removeChild(paths, 0, method) != null) size--;
@@ -222,8 +223,23 @@ public class ResourceMethodRegistry implements Registry
     * @param accepts     accept header
     * @return
     */
-   public ResourceMethod getResourceInvoker(String httpMethod, List<PathSegment> path, MediaType contentType, List<MediaType> accepts)
+   public ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response)
    {
-      return root.findResourceInvoker(httpMethod, path, 0, contentType, accepts);
+      return root.findResourceInvoker(request, response, 0);
    }
+
+   /**
+    * Find a resource to invoke on
+    *
+    * @param httpMethod  GET, POST, PUT, OPTIONS, TRACE, etc...
+    * @param path        uri path
+    * @param contentType produced type
+    * @param accepts     accept header
+    * @return
+    */
+   public ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex)
+   {
+      return root.findResourceInvoker(request, response, pathIndex);
+   }
+
 }

@@ -18,14 +18,15 @@ public class PathParamIndex
 {
    protected String path;
    protected Map<String, List<Integer>> uriParams = new HashMap<String, List<Integer>>();
+   protected int offset;
 
-   public PathParamIndex(String path)
+   public PathParamIndex(String path, int offset)
    {
-      this.path = path;
+      this.offset = offset;
       this.path = path;
       if (path.startsWith("/")) path = path.substring(1);
       String[] paths = path.split("/");
-      int i = 0;
+      int i = offset;
       for (String p : paths)
       {
          Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(p);
@@ -61,5 +62,10 @@ public class PathParamIndex
    public Map<String, List<Integer>> getUriParams()
    {
       return uriParams;
+   }
+
+   public int getOffset()
+   {
+      return offset;
    }
 }

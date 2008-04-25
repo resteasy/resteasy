@@ -74,6 +74,12 @@ public class UriInfoImpl implements UriInfo
       }
    }
 
+   // this is here for testing purposes todo remove it!
+   public UriInfoImpl(List<PathSegment> pathSegments)
+   {
+      this.pathSegments = pathSegments;
+   }
+
    public UriInfoImpl clone()
    {
       return new UriInfoImpl(absolutePath, path, queryString, pathSegments);

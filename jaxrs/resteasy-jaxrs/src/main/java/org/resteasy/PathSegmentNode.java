@@ -1,5 +1,7 @@
 package org.resteasy;
 
+import org.resteasy.spi.HttpRequest;
+import org.resteasy.spi.HttpResponse;
 import org.resteasy.util.HttpResponseCodes;
 import org.resteasy.util.PathHelper;
 import org.resteasy.util.WeightedMediaType;
@@ -22,6 +24,7 @@ import java.util.regex.Matcher;
 public class PathSegmentNode
 {
    private List<ResourceMethod> invokers = new ArrayList<ResourceMethod>();
+   private ResourceLocator locator;
    private List<PathSegmentNode> uriParamChildren = new ArrayList<PathSegmentNode>();
    private Map<String, PathSegmentNode> children = new HashMap<String, PathSegmentNode>();
 
@@ -42,7 +45,7 @@ public class PathSegmentNode
          }
          else
          {
-            child.addChild(path, ++pathIndex, invoker);
+            child.addChild(path, pathIndex + 1, invoker);
          }
       }
       else
@@ -59,12 +62,49 @@ public class PathSegmentNode
          }
          else
          {
-            child.addChild(path, ++pathIndex, invoker);
+            child.addChild(path, pathIndex + 1, invoker);
          }
       }
    }
 
-   public ResourceMethod removeChild(String[] path, int pathIndex, Method method)
+   public void addChild(String[] path, int pathIndex, ResourceLocator locator)
+   {
+      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
+      if (matcher.matches())
+      {
+         PathSegmentNode child = new PathSegmentNode();
+         uriParamChildren.add(child);
+         if (path.length == pathIndex + 1)
+         {
+            child.locator = locator;
+            locator.setUriIndex(pathIndex + 1);
+         }
+         else
+         {
+            child.addChild(path, pathIndex + 1, locator);
+         }
+      }
+      else
+      {
+         PathSegmentNode child = children.get(path[pathIndex]);
+         if (child == null)
+         {
+            child = new PathSegmentNode();
+            children.put(path[pathIndex], child);
+         }
+         if (path.length == pathIndex + 1)
+         {
+            child.locator = locator;
+            locator.setUriIndex(pathIndex + 1);
+         }
+         else
+         {
+            child.addChild(path, pathIndex + 1, locator);
+         }
+      }
+   }
+
+   public ResourceInvoker removeChild(String[] path, int pathIndex, Method method)
    {
       Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
       if (matcher.matches())
@@ -73,7 +113,7 @@ public class PathSegmentNode
          {
             for (PathSegmentNode child : uriParamChildren)
             {
-               ResourceMethod rm = tryRemoveInvoker(child.invokers, method);
+               ResourceInvoker rm = tryRemoveInvoker(child.invokers, method);
                if (rm != null) return rm;
             }
             return null;
@@ -82,7 +122,7 @@ public class PathSegmentNode
          {
             for (PathSegmentNode child : uriParamChildren)
             {
-               ResourceMethod rm = child.removeChild(path, ++pathIndex, method);
+               ResourceInvoker rm = child.removeChild(path, pathIndex + 1, method);
                if (rm != null) return rm;
             }
             return null;
@@ -97,12 +137,56 @@ public class PathSegmentNode
          }
          else
          {
-            return child.removeChild(path, ++pathIndex, method);
+            return child.removeChild(path, pathIndex + 1, method);
          }
       }
    }
 
-   private ResourceMethod tryRemoveInvoker(List<ResourceMethod> invokers, Method method)
+   public ResourceInvoker removeLocator(String[] path, int pathIndex)
+   {
+      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
+      if (matcher.matches())
+      {
+         if (path.length == pathIndex + 1)
+         {
+            for (PathSegmentNode child : uriParamChildren)
+            {
+               if (child.locator != null)
+               {
+                  ResourceInvoker invoker = child.locator;
+                  child.locator = null;
+                  return invoker;
+               }
+            }
+            return null;
+         }
+         else
+         {
+            for (PathSegmentNode child : uriParamChildren)
+            {
+               ResourceInvoker rm = child.removeLocator(path, pathIndex + 1);
+               if (rm != null) return rm;
+            }
+            return null;
+         }
+      }
+      else
+      {
+         PathSegmentNode child = children.get(path[pathIndex]);
+         if (path.length == pathIndex + 1)
+         {
+            ResourceInvoker invoker = child.locator;
+            child.locator = null;
+            return invoker;
+         }
+         else
+         {
+            return child.removeLocator(path, pathIndex + 1);
+         }
+      }
+   }
+
+   private ResourceInvoker tryRemoveInvoker(List<ResourceMethod> invokers, Method method)
    {
       List<ResourceMethod> copy = new ArrayList<ResourceMethod>();
       copy.addAll(invokers);
@@ -114,21 +198,25 @@ public class PathSegmentNode
       return null;
    }
 
-   public ResourceMethod findResourceInvoker(String httpMethod, List<PathSegment> path, int pathIndex, MediaType contentType, List<MediaType> accepts)
+   public ResourceInvoker findResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex)
    {
-      if (pathIndex >= path.size()) return match(httpMethod, contentType, accepts);
-      else return findChild(httpMethod, path, pathIndex, contentType, accepts);
+      if (pathIndex >= request.getUri().getPathSegments().size())
+      {
+         return match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
+      }
+      else return findChild(request, response, pathIndex);
    }
 
-   private ResourceMethod findChild(String httpMethod, List<PathSegment> path, int pathIndex, MediaType contentType, List<MediaType> accepts)
+   private ResourceInvoker findChild(HttpRequest request, HttpResponse response, int pathIndex)
    {
+      List<PathSegment> path = request.getUri().getPathSegments();
       PathSegmentNode next = children.get(path.get(pathIndex).getPath());
       Failure failure = null;
       if (next != null)
       {
          try
          {
-            ResourceMethod method = next.findResourceInvoker(httpMethod, path, pathIndex + 1, contentType, accepts);
+            ResourceInvoker method = next.findResourceInvoker(request, response, pathIndex + 1);
             if (method != null) return method;
          }
          catch (Failure e)
@@ -144,7 +232,7 @@ public class PathSegmentNode
          {
             try
             {
-               ResourceMethod wildcardReturn = wildcard.findResourceInvoker(httpMethod, path, pathIndex + 1, contentType, accepts);
+               ResourceInvoker wildcardReturn = wildcard.findResourceInvoker(request, response, pathIndex + 1);
                if (wildcardReturn != null) return wildcardReturn;
             }
             catch (Failure e)
@@ -153,11 +241,12 @@ public class PathSegmentNode
             }
          }
       }
+      if (locator != null) return locator;
       if (failure != null) throw failure;
       return null;
    }
 
-   private ResourceMethod match(String httpMethod, MediaType contentType, List<MediaType> oldaccepts)
+   private ResourceInvoker match(String httpMethod, MediaType contentType, List<MediaType> oldaccepts)
    {
       List<WeightedMediaType> accepts = new ArrayList<WeightedMediaType>();
       for (MediaType accept : oldaccepts) accepts.add(WeightedMediaType.parse(accept));
