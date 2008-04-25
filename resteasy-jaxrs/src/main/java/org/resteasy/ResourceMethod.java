@@ -6,23 +6,31 @@ import org.resteasy.spi.InjectorFactory;
 import org.resteasy.spi.MethodInjector;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.WeightedMediaType;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceMethod
+public class ResourceMethod implements ResourceInvoker
 {
 
    protected MediaType[] produces;
@@ -101,16 +109,116 @@ public class ResourceMethod
       return method;
    }
 
-   public Response invoke(HttpRequest request, HttpResponse response)
+   public void invoke(HttpRequest request, HttpResponse response) throws IOException
    {
-      // we have to check if its a ResourceLocator because we don't want the template params
-      // to be populated with wrong information.
-      if (!(resource instanceof ResourceLocator)) index.populateUriInfoTemplateParams(request);
       Object target = resource.createResource(request, response, injector);
-      if (resource instanceof ResourceLocator) index.populateUriInfoTemplateParams(request);
-      return methodInjector.invoke(request, response, target);
+      invoke(request, response, target);
    }
 
+   public void invoke(HttpRequest request, HttpResponse response, Object target) throws IOException
+   {
+
+
+      Response jaxrsResponse = null;
+      try
+      {
+         index.populateUriInfoTemplateParams(request);
+         jaxrsResponse = methodInjector.invoke(request, response, target);
+      }
+      catch (Failure e)
+      {
+         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+         e.printStackTrace();
+         return;
+      }
+      response.setStatus(jaxrsResponse.getStatus());
+      if (jaxrsResponse.getMetadata() != null)
+      {
+         List cookies = jaxrsResponse.getMetadata().get(HttpHeaderNames.SET_COOKIE);
+         if (cookies != null)
+         {
+            Iterator it = cookies.iterator();
+            while (it.hasNext())
+            {
+               Object next = it.next();
+               if (next instanceof NewCookie)
+               {
+                  NewCookie cookie = (NewCookie) next;
+                  response.addNewCookie(cookie);
+                  it.remove();
+               }
+            }
+            if (cookies.size() < 1) jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
+         }
+      }
+      if (jaxrsResponse.getMetadata() != null && jaxrsResponse.getMetadata().size() > 0)
+      {
+         response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
+      }
+
+      if (jaxrsResponse.getEntity() != null)
+      {
+         MediaType responseContentType = resolveContentType(request, jaxrsResponse);
+         writeResponse(response, jaxrsResponse.getEntity(), responseContentType);
+      }
+
+   }
+
+   protected void writeResponse(HttpResponse response, Object entity, MediaType responseContentType)
+   {
+
+      Class type = entity.getClass();
+
+      Type genericType = null;
+      if (!Response.class.equals(getMethod().getReturnType()))
+      {
+         genericType = getMethod().getGenericReturnType();
+      }
+
+      Annotation[] annotations = getMethod().getAnnotations();
+
+      MessageBodyWriter writer = providerFactory.createMessageBodyWriter(type, genericType, annotations, responseContentType);
+      if (writer == null)
+      {
+         throw new RuntimeException("Could not find MessageBodyWriter for response object of type: " + entity.getClass() + " of media type: " + responseContentType);
+      }
+      //System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
+      //System.out.println("Response content type: " + responseContentType);
+      try
+      {
+         long size = writer.getSize(entity);
+         //System.out.println("Writer: " + writer.getClass().getName());
+         //System.out.println("JAX-RS Content Size: " + size);
+         response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));
+         response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_TYPE, responseContentType.toString());
+         writer.writeTo(entity, type, genericType, getMethod().getAnnotations(), responseContentType, response.getOutputHeaders(), response.getOutputStream());
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   protected MediaType resolveContentType(HttpRequest in, Response responseImpl)
+   {
+      Object contentType = responseImpl.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
+      MediaType responseContentType = null;
+      if (contentType != null) // if set by the response
+      {
+         //System.out.println("content type was set: " + contentType);
+         responseContentType = MediaType.parse(contentType.toString());
+      }
+      else
+      {
+         //System.out.println("finding content type from @ProduceMime");
+         responseContentType = matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
+      }
+      if (responseContentType == null)
+      {
+         responseContentType = MediaType.parse("*/*");
+      }
+      return responseContentType;
+   }
 
    public boolean doesProduce(List<? extends MediaType> accepts)
    {
