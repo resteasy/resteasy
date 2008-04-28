@@ -198,6 +198,11 @@ public class PathSegmentNode
       return null;
    }
 
+   public PathSegmentNode getChild(String segment)
+   {
+      return children.get(segment);
+   }
+
    public ResourceInvoker findResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex)
    {
       if (pathIndex >= request.getUri().getPathSegments().size())
@@ -210,7 +215,8 @@ public class PathSegmentNode
    private ResourceInvoker findChild(HttpRequest request, HttpResponse response, int pathIndex)
    {
       List<PathSegment> path = request.getUri().getPathSegments();
-      PathSegmentNode next = children.get(path.get(pathIndex).getPath());
+      String segment = path.get(pathIndex).getPath();
+      PathSegmentNode next = children.get(segment);
       Failure failure = null;
       if (next != null)
       {
@@ -291,6 +297,7 @@ public class PathSegmentNode
 
       if (list.size() == 0)
       {
+         if (locator != null) return locator;
          if (!methodMatch)
          {
             throw new Failure("No matching http method", HttpResponseCodes.SC_METHOD_NOT_ALLOWED);
