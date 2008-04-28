@@ -11,6 +11,7 @@ import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.GetRestful;
+import org.resteasy.util.HttpResponseCodes;
 import org.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.Path;
@@ -239,6 +240,15 @@ public class ResourceMethodRegistry implements Registry
     */
    public ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex)
    {
+      if (pathIndex >= request.getUri().getPathSegments().size())
+      {
+         PathSegmentNode empty = root.getChild("");
+         if (empty == null)
+         {
+            throw new Failure(HttpResponseCodes.SC_NOT_FOUND);
+         }
+         return empty.findResourceInvoker(request, response, pathIndex);
+      }
       return root.findResourceInvoker(request, response, pathIndex);
    }
 
