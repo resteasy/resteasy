@@ -7,6 +7,7 @@ import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -16,14 +17,16 @@ import java.util.List;
 public class UriInfoImpl implements UriInfo
 {
    private String path;
+   private String encodedPath;
    private MultivaluedMap<String, String> queryParameters;
    private MultivaluedMap<String, String> encodedQueryParameters;
    private MultivaluedMap<String, String> templateParameters;
+   private MultivaluedMap<String, String> encodedTemplateParameters;
    private List<PathSegment> pathSegments;
+   private List<PathSegment> encodedPathSegments;
    private URI absolutePath;
    private URI absolutePathWithQueryString;
    private URI baseURI;
-   private MultivaluedMap<String, PathSegment> pathParamSegments = new MultivaluedMapImpl<String, PathSegment>();
    private String queryString;
 
    /**
@@ -92,7 +95,25 @@ public class UriInfoImpl implements UriInfo
 
    public String getPath(boolean decode)
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      if (decode) return path;
+      try
+      {
+         if (encodedPath == null)
+         {
+            String tmp = path.substring(1);
+            String[] segments = tmp.split("/");
+            encodedPath = "";
+            for (String segment : segments)
+            {
+               encodedPath += "/" + URLEncoder.encode(segment, "UTF-8").replace("+", "%20");
+            }
+         }
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         throw new RuntimeException(e);
+      }
+      return encodedPath;
    }
 
    public List<PathSegment> getPathSegments()
@@ -102,7 +123,11 @@ public class UriInfoImpl implements UriInfo
 
    public List<PathSegment> getPathSegments(boolean decode)
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      if (decode) return pathSegments;
+      if (encodedPathSegments != null) return encodedPathSegments;
+      String p = getPath(false);
+      encodedPathSegments = PathSegmentImpl.parseSegments(p);
+      return encodedPathSegments;
    }
 
    public URI getRequestUri()
@@ -135,11 +160,6 @@ public class UriInfoImpl implements UriInfo
       return UriBuilder.fromUri(baseURI);
    }
 
-   public MultivaluedMap<String, PathSegment> getPathParamSegments()
-   {
-      return pathParamSegments;
-   }
-
    public MultivaluedMap<String, String> getTemplateParameters()
    {
       return templateParameters;
@@ -147,7 +167,28 @@ public class UriInfoImpl implements UriInfo
 
    public MultivaluedMap<String, String> getTemplateParameters(boolean decode)
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      if (decode) return templateParameters;
+      if (encodedTemplateParameters != null) return encodedTemplateParameters;
+
+      encodedTemplateParameters = new MultivaluedMapImpl<String, String>();
+
+      for (String key : templateParameters.keySet())
+      {
+         List<String> values = templateParameters.get(key);
+         for (String value : values)
+         {
+            try
+            {
+               encodedTemplateParameters.add(key, URLEncoder.encode(value, "UTF-8").replace("+", "%20"));
+            }
+            catch (UnsupportedEncodingException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+
+      return encodedTemplateParameters;
    }
 
    public MultivaluedMap<String, String> getQueryParameters()

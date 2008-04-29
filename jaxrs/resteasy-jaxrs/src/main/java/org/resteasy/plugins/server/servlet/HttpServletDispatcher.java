@@ -5,6 +5,7 @@ import org.resteasy.Headers;
 import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.PathSegmentImpl;
+import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
@@ -26,7 +27,6 @@ import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -98,13 +98,16 @@ public class HttpServletDispatcher extends HttpServlet
       try
       {
          URL absolute = new URL(request.getRequestURL().toString());
-         absolutePath = absolute.toURI();
+
+         UriBuilderImpl builder = new UriBuilderImpl();
+         builder.scheme(absolute.getProtocol());
+         builder.host(absolute.getHost());
+         builder.port(absolute.getPort());
+         builder.path(absolute.getPath());
+         builder.replaceQueryParams(absolute.getQuery());
+         absolutePath = builder.build();
       }
       catch (MalformedURLException e)
-      {
-         throw new RuntimeException(e);
-      }
-      catch (URISyntaxException e)
       {
          throw new RuntimeException(e);
       }
