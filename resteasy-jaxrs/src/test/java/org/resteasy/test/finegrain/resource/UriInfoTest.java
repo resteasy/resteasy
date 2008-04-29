@@ -13,11 +13,14 @@ import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -153,5 +156,75 @@ public class UriInfoTest
       }
    }
 
+   @Path("/{a}/{b}")
+   public static class EncodedTemplateResource
+   {
+      @GET
+      public String doGet(
+              @PathParam("a")String a,
+              @PathParam("b")String b,
+              @Context UriInfo info)
+      {
+         Assert.assertEquals("a b", a);
+         Assert.assertEquals("x y", b);
+         Assert.assertEquals("a b", info.getTemplateParameters().getFirst("a"));
+         Assert.assertEquals("x y", info.getTemplateParameters().getFirst("b"));
+         Assert.assertEquals("a%20b", info.getTemplateParameters(false).getFirst("a"));
+         Assert.assertEquals("x%20y", info.getTemplateParameters(false).getFirst("b"));
 
+         List<PathSegment> decoded = info.getPathSegments(true);
+         Assert.assertEquals(decoded.size(), 2);
+         Assert.assertEquals("a b", decoded.get(0).getPath());
+         Assert.assertEquals("x y", decoded.get(1).getPath());
+
+         List<PathSegment> encoded = info.getPathSegments(false);
+         Assert.assertEquals(encoded.size(), 2);
+         Assert.assertEquals("a%20b", encoded.get(0).getPath());
+         Assert.assertEquals("x%20y", encoded.get(1).getPath());
+         return "content";
+      }
+   }
+
+   @Test
+   public void testEncodedTemplateParams() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      try
+      {
+         dispatcher.getRegistry().addPerRequestResource(EncodedTemplateResource.class);
+         _test(new HttpClient(), "http://localhost:8081/a%20b/x%20y");
+      }
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
+   }
+
+   @Path("/query")
+   public static class EncodedQueryResource
+   {
+      @GET
+      public String doGet(@QueryParam("a")String a, @Context UriInfo info)
+      {
+         Assert.assertEquals("a b", a);
+         Assert.assertEquals("a b", info.getQueryParameters().getFirst("a"));
+         Assert.assertEquals("a%20b", info.getQueryParameters(false).getFirst("a"));
+         return "content";
+      }
+   }
+
+   @Test
+   public void testEncodedQueryParams() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      try
+      {
+         dispatcher.getRegistry().addPerRequestResource(EncodedQueryResource.class);
+         _test(new HttpClient(), "http://localhost:8081/query?a=a%20b");
+      }
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
+   }
 }
