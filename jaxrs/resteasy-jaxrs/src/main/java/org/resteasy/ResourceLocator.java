@@ -26,8 +26,9 @@ public class ResourceLocator implements ResourceInvoker
    protected ConcurrentHashMap<Class, ResourceMethodRegistry> cachedSubresources = new ConcurrentHashMap<Class, ResourceMethodRegistry>();
    protected int uriIndex;
    protected PathParamIndex index;
+   protected boolean limited;
 
-   public ResourceLocator(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, Method method, PathParamIndex index)
+   public ResourceLocator(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, Method method, PathParamIndex index, boolean limited)
    {
       this.resource = resource;
       this.injector = injector;
@@ -35,6 +36,7 @@ public class ResourceLocator implements ResourceInvoker
       this.method = method;
       this.methodInjector = injector.createMethodInjector(method);
       this.index = index;
+      this.limited = limited;
    }
 
    public void setUriIndex(int uriIndex)
@@ -86,10 +88,10 @@ public class ResourceLocator implements ResourceInvoker
       if (registry == null)
       {
          registry = new ResourceMethodRegistry(providerFactory);
-         registry.addResourceFactory(null, null, target.getClass(), uriIndex + index.getOffset());
+         registry.addResourceFactory(null, null, target.getClass(), uriIndex + index.getOffset(), limited);
          cachedSubresources.putIfAbsent(target.getClass(), registry);
       }
-      ResourceInvoker invoker = registry.getResourceInvoker(request, response, uriIndex + index.getOffset());
+      ResourceInvoker invoker = registry.getResourceInvoker(request, response, uriIndex + index.getOffset(), limited);
       if (invoker instanceof ResourceLocator)
       {
          ResourceLocator locator = (ResourceLocator) invoker;

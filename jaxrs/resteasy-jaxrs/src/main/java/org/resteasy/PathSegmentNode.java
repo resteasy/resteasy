@@ -27,14 +27,16 @@ public class PathSegmentNode
    private ResourceLocator locator;
    private List<PathSegmentNode> uriParamChildren = new ArrayList<PathSegmentNode>();
    private Map<String, PathSegmentNode> children = new HashMap<String, PathSegmentNode>();
+   private boolean wildcard;
 
    public PathSegmentNode()
    {
    }
 
-   public void addChild(String[] path, int pathIndex, ResourceMethod invoker)
+   public void addChild(String[] path, int pathIndex, ResourceMethod invoker, boolean wildcard)
    {
-      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
+      String segment = path[pathIndex];
+      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(segment);
       if (matcher.matches())
       {
          PathSegmentNode child = new PathSegmentNode();
@@ -42,27 +44,29 @@ public class PathSegmentNode
          if (path.length == pathIndex + 1)
          {
             child.invokers.add(invoker);
+            child.wildcard = wildcard;
          }
          else
          {
-            child.addChild(path, pathIndex + 1, invoker);
+            child.addChild(path, pathIndex + 1, invoker, wildcard);
          }
       }
       else
       {
-         PathSegmentNode child = children.get(path[pathIndex]);
+         PathSegmentNode child = children.get(segment);
          if (child == null)
          {
             child = new PathSegmentNode();
-            children.put(path[pathIndex], child);
+            children.put(segment, child);
          }
          if (path.length == pathIndex + 1)
          {
             child.invokers.add(invoker);
+            child.wildcard = wildcard;
          }
          else
          {
-            child.addChild(path, pathIndex + 1, invoker);
+            child.addChild(path, pathIndex + 1, invoker, wildcard);
          }
       }
    }
@@ -205,7 +209,7 @@ public class PathSegmentNode
 
    public ResourceInvoker findResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex)
    {
-      if (pathIndex >= request.getUri().getPathSegments().size())
+      if (pathIndex >= request.getUri().getPathSegments().size() || wildcard)
       {
          return match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -222,8 +226,15 @@ public class PathSegmentNode
       {
          try
          {
-            ResourceInvoker method = next.findResourceInvoker(request, response, pathIndex + 1);
-            if (method != null) return method;
+            if (next.wildcard)
+            {
+               return next.match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
+            }
+            else
+            {
+               ResourceInvoker method = next.findResourceInvoker(request, response, pathIndex + 1);
+               if (method != null) return method;
+            }
          }
          catch (Failure e)
          {
@@ -234,12 +245,20 @@ public class PathSegmentNode
       }
       if (uriParamChildren != null)
       {
-         for (PathSegmentNode wildcard : uriParamChildren)
+         for (PathSegmentNode uriParamChild : uriParamChildren)
          {
             try
             {
-               ResourceInvoker wildcardReturn = wildcard.findResourceInvoker(request, response, pathIndex + 1);
-               if (wildcardReturn != null) return wildcardReturn;
+               if (uriParamChild.wildcard)
+               {
+                  return uriParamChild.match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
+
+               }
+               else
+               {
+                  ResourceInvoker result = uriParamChild.findResourceInvoker(request, response, pathIndex + 1);
+                  if (result != null) return result;
+               }
             }
             catch (Failure e)
             {
