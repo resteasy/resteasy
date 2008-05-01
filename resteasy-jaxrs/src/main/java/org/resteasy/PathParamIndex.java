@@ -4,6 +4,7 @@ import org.resteasy.spi.HttpRequest;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.UriInfo;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +20,9 @@ public class PathParamIndex
    protected String path;
    protected Map<String, List<Integer>> uriParams = new HashMap<String, List<Integer>>();
    protected int offset;
+   protected String wildcardParam;
 
-   public PathParamIndex(String path, int offset)
+   public PathParamIndex(String path, int offset, boolean wildcard)
    {
       this.offset = offset;
       this.path = path;
@@ -40,8 +42,18 @@ public class PathParamIndex
                uriParams.put(uriParamName, paramIndexes);
             }
             paramIndexes.add(i);
+            if (i + 1 >= paths.length && wildcard)
+            {
+               wildcardParam = uriParamName;
+            }
          }
          i++;
+      }
+      if (wildcardParam != null)
+      {
+         List<Integer> paramIndexes = uriParams.get(wildcardParam);
+         if (paramIndexes.size() > 1)
+            throw new RuntimeException("You cannot have @Path.limited() == false and have a uri param located in multiple places within the uri");
       }
    }
 
@@ -51,10 +63,26 @@ public class PathParamIndex
       for (String paramName : uriParams.keySet())
       {
          List<Integer> indexes = uriParams.get(paramName);
-         for (int i : indexes)
+         if (paramName.equals(wildcardParam))
          {
-            String value = uriInfo.getPathSegments().get(i).getPath();
+            int index = indexes.get(0);
+            String value = "";
+            boolean first = true;
+            for (int i = index; i < uriInfo.getPathSegments().size(); i++)
+            {
+               if (first) first = false;
+               else value += "/";
+               value += uriInfo.getPathSegments().get(i).getPath();
+            }
             uriInfo.getTemplateParameters().add(paramName, value);
+         }
+         else
+         {
+            for (int i : indexes)
+            {
+               String value = uriInfo.getPathSegments().get(i).getPath();
+               uriInfo.getTemplateParameters().add(paramName, value);
+            }
          }
       }
    }
@@ -67,5 +95,10 @@ public class PathParamIndex
    public int getOffset()
    {
       return offset;
+   }
+
+   public static void main(String[] args) throws Exception
+   {
+      System.out.println(URLEncoder.encode("on/and/on", "UTF-8"));
    }
 }

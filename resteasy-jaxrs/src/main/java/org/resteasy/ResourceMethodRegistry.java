@@ -104,7 +104,7 @@ public class ResourceMethodRegistry implements Registry
          }
          throw new RuntimeException(msg);
       }
-      for (Class cls : restful) addResourceFactory(ref, base, cls, 0);
+      for (Class cls : restful) addResourceFactory(ref, base, cls, 0, true);
    }
 
    /**
@@ -116,7 +116,7 @@ public class ResourceMethodRegistry implements Registry
     * @param clazz   specific class
     * @param offset  path segment offset.  > 0 means we're within a locator.
     */
-   public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz, int offset)
+   public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz, int offset, boolean limited)
    {
       if (ref != null) ref.registered(new InjectorFactoryImpl(null, providerFactory));
       for (Method method : clazz.getMethods())
@@ -127,24 +127,34 @@ public class ResourceMethodRegistry implements Registry
 
          UriBuilderImpl builder = new UriBuilderImpl();
          builder.setPath(base);
-         if (clazz.isAnnotationPresent(Path.class)) builder.path(clazz);
-         if (path != null) builder.path(method);
+         if (clazz.isAnnotationPresent(Path.class))
+         {
+            builder.path(clazz);
+            limited = clazz.getAnnotation(Path.class).limited();
+         }
+         if (path != null)
+         {
+            if (limited == false)
+               throw new RuntimeException("It is illegal to have @Path.limited() == false on your class then use a @Path on a method too");
+            builder.path(method);
+            limited = path.limited();
+         }
          String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
 
-         PathParamIndex index = new PathParamIndex(pathExpression, offset);
-         InjectorFactory injectorFactory = new InjectorFactoryImpl(new PathParamIndex(pathExpression, offset), providerFactory);
+         PathParamIndex index = new PathParamIndex(pathExpression, offset, !limited);
+         InjectorFactory injectorFactory = new InjectorFactoryImpl(index, providerFactory);
          if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
          String[] paths = pathExpression.split("/");
          if (httpMethods == null)
          {
-            ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, method, index);
+            ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, method, index, limited);
             root.addChild(paths, 0, locator);
          }
          else
          {
             ResourceMethod invoker = new ResourceMethod(clazz, method, injectorFactory, ref, providerFactory, httpMethods, index);
-            root.addChild(paths, 0, invoker);
+            root.addChild(paths, 0, invoker, !limited);
          }
          size++;
 
@@ -238,9 +248,9 @@ public class ResourceMethodRegistry implements Registry
     * @param accepts     accept header
     * @return
     */
-   public ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex)
+   public ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex, boolean limited)
    {
-      if (pathIndex >= request.getUri().getPathSegments().size())
+      if (pathIndex >= request.getUri().getPathSegments().size() || limited == false)
       {
          PathSegmentNode empty = root.getChild("");
          if (empty == null)
