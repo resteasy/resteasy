@@ -51,27 +51,6 @@ public class SmokeTest
          Assert.assertEquals("1234", method.getResponseBodyAsString());
          method.releaseConnection();
       }
-      {
-         GetMethod method = new GetMethod("http://localhost:8080/spring-integration-test/should/accept/anything");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
-      {
-         GetMethod method = new GetMethod("http://localhost:8080/spring-integration-test/basic/should/accept");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
-      {
-         GetMethod method = new GetMethod("http://localhost:8080/spring-integration-test/uriParam");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
    }
 
    @Test

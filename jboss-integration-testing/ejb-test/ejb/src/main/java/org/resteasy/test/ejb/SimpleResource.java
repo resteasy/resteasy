@@ -17,11 +17,6 @@ import javax.ws.rs.PathParam;
 public interface SimpleResource
 {
    @GET
-   @Path("*")
-   @ProduceMime("text/plain")
-   String getWild();
-
-   @GET
    @Path("basic")
    @ProduceMime("text/plain")
    String getBasic();

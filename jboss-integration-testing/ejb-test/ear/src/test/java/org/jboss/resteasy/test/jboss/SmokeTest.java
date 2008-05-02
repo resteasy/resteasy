@@ -51,27 +51,6 @@ public class SmokeTest
          Assert.assertEquals("1234", method.getResponseBodyAsString());
          method.releaseConnection();
       }
-      {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/should/accept/anything");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
-      {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/basic/should/accept");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
-      {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/uriParam");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         Assert.assertEquals("Wild", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
    }
 
    @Test
