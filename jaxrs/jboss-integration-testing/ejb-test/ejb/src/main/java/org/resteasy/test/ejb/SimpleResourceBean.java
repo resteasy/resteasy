@@ -17,11 +17,6 @@ import javax.ejb.Stateless;
 @Stateless
 public class SimpleResourceBean implements SimpleResource
 {
-   public String getWild()
-   {
-      return "Wild";
-   }
-
    public String getBasic()
    {
       System.out.println("getBasic()");
