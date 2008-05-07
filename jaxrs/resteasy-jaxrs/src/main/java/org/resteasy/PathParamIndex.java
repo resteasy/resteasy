@@ -4,7 +4,6 @@ import org.resteasy.spi.HttpRequest;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.UriInfo;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,8 +96,4 @@ public class PathParamIndex
       return offset;
    }
 
-   public static void main(String[] args) throws Exception
-   {
-      System.out.println(URLEncoder.encode("on/and/on", "UTF-8"));
-   }
 }

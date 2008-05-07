@@ -25,7 +25,7 @@ public class PathSegmentNode
 {
    private List<ResourceMethod> invokers = new ArrayList<ResourceMethod>();
    private ResourceLocator locator;
-   private List<PathSegmentNode> uriParamChildren = new ArrayList<PathSegmentNode>();
+   private PathSegmentNode uriParamChild;
    private Map<String, PathSegmentNode> children = new HashMap<String, PathSegmentNode>();
    private boolean wildcard;
 
@@ -39,16 +39,18 @@ public class PathSegmentNode
       Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(segment);
       if (matcher.matches())
       {
-         PathSegmentNode child = new PathSegmentNode();
-         uriParamChildren.add(child);
+         if (uriParamChild == null)
+         {
+            uriParamChild = new PathSegmentNode();
+         }
          if (path.length == pathIndex + 1)
          {
-            child.invokers.add(invoker);
-            child.wildcard = wildcard;
+            uriParamChild.invokers.add(invoker);
+            uriParamChild.wildcard = wildcard;
          }
          else
          {
-            child.addChild(path, pathIndex + 1, invoker, wildcard);
+            uriParamChild.addChild(path, pathIndex + 1, invoker, wildcard);
          }
       }
       else
@@ -76,16 +78,18 @@ public class PathSegmentNode
       Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
       if (matcher.matches())
       {
-         PathSegmentNode child = new PathSegmentNode();
-         uriParamChildren.add(child);
+         if (uriParamChild == null)
+         {
+            uriParamChild = new PathSegmentNode();
+         }
          if (path.length == pathIndex + 1)
          {
-            child.locator = locator;
+            uriParamChild.locator = locator;
             locator.setUriIndex(pathIndex + 1);
          }
          else
          {
-            child.addChild(path, pathIndex + 1, locator);
+            uriParamChild.addChild(path, pathIndex + 1, locator);
          }
       }
       else
@@ -115,20 +119,14 @@ public class PathSegmentNode
       {
          if (path.length == pathIndex + 1)
          {
-            for (PathSegmentNode child : uriParamChildren)
-            {
-               ResourceInvoker rm = tryRemoveInvoker(child.invokers, method);
-               if (rm != null) return rm;
-            }
+            ResourceInvoker rm = tryRemoveInvoker(uriParamChild.invokers, method);
+            if (rm != null) return rm;
             return null;
          }
          else
          {
-            for (PathSegmentNode child : uriParamChildren)
-            {
-               ResourceInvoker rm = child.removeChild(path, pathIndex + 1, method);
-               if (rm != null) return rm;
-            }
+            ResourceInvoker rm = uriParamChild.removeChild(path, pathIndex + 1, method);
+            if (rm != null) return rm;
             return null;
          }
       }
@@ -153,24 +151,22 @@ public class PathSegmentNode
       {
          if (path.length == pathIndex + 1)
          {
-            for (PathSegmentNode child : uriParamChildren)
+            PathSegmentNode child = uriParamChild;
+            if (child == null) return null;
+            if (child.locator != null)
             {
-               if (child.locator != null)
-               {
-                  ResourceInvoker invoker = child.locator;
-                  child.locator = null;
-                  return invoker;
-               }
+               ResourceInvoker invoker = child.locator;
+               child.locator = null;
+               return invoker;
             }
             return null;
          }
          else
          {
-            for (PathSegmentNode child : uriParamChildren)
-            {
-               ResourceInvoker rm = child.removeLocator(path, pathIndex + 1);
-               if (rm != null) return rm;
-            }
+            PathSegmentNode child = uriParamChild;
+            if (child == null) return null;
+            ResourceInvoker rm = child.removeLocator(path, pathIndex + 1);
+            if (rm != null) return rm;
             return null;
          }
       }
@@ -243,27 +239,24 @@ public class PathSegmentNode
             if (path.get(pathIndex).getPath().equals("")) throw failure;
          }
       }
-      if (uriParamChildren != null)
+      if (uriParamChild != null)
       {
-         for (PathSegmentNode uriParamChild : uriParamChildren)
+         try
          {
-            try
+            if (uriParamChild.wildcard)
             {
-               if (uriParamChild.wildcard)
-               {
-                  return uriParamChild.match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
+               return uriParamChild.match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
 
-               }
-               else
-               {
-                  ResourceInvoker result = uriParamChild.findResourceInvoker(request, response, pathIndex + 1);
-                  if (result != null) return result;
-               }
             }
-            catch (Failure e)
+            else
             {
-               failure = e;
+               ResourceInvoker result = uriParamChild.findResourceInvoker(request, response, pathIndex + 1);
+               if (result != null) return result;
             }
+         }
+         catch (Failure e)
+         {
+            failure = e;
          }
       }
       if (locator != null) return locator;
