@@ -12,6 +12,7 @@ import org.resteasy.test.EmbeddedContainer;
 import org.resteasy.test.MockDispatcherFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -131,4 +132,56 @@ public class ResourceLocatorTest
       }
    }
 
+   public static class Receiver
+   {
+      @Path("/head")
+      @GET
+      public String get()
+      {
+         return this.getClass().getName();
+      }
+   }
+
+   public static class QueueReceiver extends Receiver
+   {
+
+   }
+
+   @Path("/directory")
+   public static class Directory
+   {
+      @Path("/receivers/{id}")
+      public QueueReceiver getReceiver(@PathParam("id")String id)
+      {
+         return new QueueReceiver();
+      }
+
+      @DELETE
+      @Path("/receivers/{id}")
+      public String closeReceiver(@PathParam("id")String id) throws Exception
+      {
+         return Directory.class.getName();
+      }
+   }
+
+   @Test
+   public void testSameUri() throws Exception
+   {
+
+      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
+      Dispatcher dispatcher = servlet.getDispatcher();
+
+      dispatcher.getRegistry().addPerRequestResource(Directory.class);
+      {
+         MockHttpServletRequest request = new MockHttpServletRequest("DELETE", "/directory/receivers/1");
+         request.setPathInfo("/directory/receivers/1");
+         MockHttpServletResponse response = new MockHttpServletResponse();
+
+         servlet.invoke(request, response);
+
+
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(Directory.class.getName(), response.getContentAsString());
+      }
+   }
 }
