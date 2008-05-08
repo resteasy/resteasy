@@ -9,8 +9,8 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.Assert;
 import org.junit.Test;
-import org.resteasy.mom.test.EmbeddedServlet;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.Dispatcher;
+import org.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.POST;
@@ -95,11 +95,14 @@ public class TopicTest
    @Test
    public void testtopicListener() throws Exception
    {
-      HttpServletDispatcher dispatcher = EmbeddedServlet.start();
+      TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+      server.setPort(8081);
+      server.start();
+      Dispatcher dispatcher = server.getDispatcher();
       HttpClient client = new HttpClient();
       try
       {
-         dispatcher.getRegistry().addResource(Listener.class);
+         dispatcher.getRegistry().addPerRequestResource(Listener.class);
          {
             PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/listener", "text/plain", null));
@@ -120,18 +123,21 @@ public class TopicTest
          DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
          client.executeMethod(method);
          method.releaseConnection();
-         EmbeddedServlet.stop();
+         server.stop();
       }
    }
 
    @Test
    public void testtopicListenerFailure() throws Exception
    {
-      HttpServletDispatcher dispatcher = EmbeddedServlet.start();
+      TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+      server.setPort(8081);
+      server.start();
+      Dispatcher dispatcher = server.getDispatcher();
       HttpClient client = new HttpClient();
       try
       {
-         dispatcher.getRegistry().addResource(Listener.class);
+         dispatcher.getRegistry().addPerRequestResource(Listener.class);
          {
             PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/errorTesting");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8085/listener", "text/plain", null));
@@ -152,7 +158,7 @@ public class TopicTest
             method.releaseConnection();
          }
          catch (Exception ignored) {}
-         EmbeddedServlet.stop();
+         server.stop();
       }
    }
 
@@ -175,11 +181,14 @@ public class TopicTest
    @Test
    public void testtopicListenerBigMessage() throws Exception
    {
-      HttpServletDispatcher dispatcher = EmbeddedServlet.start();
+      TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+      server.setPort(8081);
+      server.start();
+      Dispatcher dispatcher = server.getDispatcher();
       HttpClient client = new HttpClient();
       try
       {
-         dispatcher.getRegistry().addResource(BigMessageListener.class);
+         dispatcher.getRegistry().addPerRequestResource(BigMessageListener.class);
          {
             PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/biglistener", "text/plain", null));
@@ -211,7 +220,7 @@ public class TopicTest
          DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/listeners/1");
          client.executeMethod(method);
          method.releaseConnection();
-         EmbeddedServlet.stop();
+         server.stop();
       }
    }
 

@@ -9,8 +9,8 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.Assert;
 import org.junit.Test;
-import org.resteasy.mom.test.EmbeddedServlet;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.Dispatcher;
+import org.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.POST;
@@ -91,11 +91,14 @@ public class DurableTopicTest
    @Test
    public void testDurableTopicListener() throws Exception
    {
-      HttpServletDispatcher dispatcher = EmbeddedServlet.start();
+      TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+      Dispatcher dispatcher = server.getDispatcher();
+      dispatcher.getRegistry().addPerRequestResource(Listener.class);
+      server.setPort(8081);
+      server.start();
       HttpClient client = new HttpClient();
       try
       {
-         dispatcher.getRegistry().addResource(Listener.class);
          {
             PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/listener", "text/plain", null));
@@ -116,18 +119,21 @@ public class DurableTopicTest
          DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/1");
          client.executeMethod(method);
          method.releaseConnection();
-         EmbeddedServlet.stop();
+         server.stop();
       }
    }
 
    @Test
    public void testDurableTopicListenerFailure() throws Exception
    {
-      HttpServletDispatcher dispatcher = EmbeddedServlet.start();
+      TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+      Dispatcher dispatcher = server.getDispatcher();
+      dispatcher.getRegistry().addPerRequestResource(Listener.class);
+      server.setPort(8081);
+      server.start();
       HttpClient client = new HttpClient();
       try
       {
-         dispatcher.getRegistry().addResource(Listener.class);
          {
             PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/errorTesting");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8085/listener", "text/plain", null));
@@ -148,7 +154,7 @@ public class DurableTopicTest
             method.releaseConnection();
          }
          catch (Exception ignored) {}
-         EmbeddedServlet.stop();
+         server.stop();
       }
    }
 
@@ -175,11 +181,14 @@ public class DurableTopicTest
    @Test
    public void testDurableTopicListenerBigMessage() throws Exception
    {
-      HttpServletDispatcher dispatcher = EmbeddedServlet.start();
+      TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+      Dispatcher dispatcher = server.getDispatcher();
+      dispatcher.getRegistry().addPerRequestResource(BigMessageListener.class);
+      server.setPort(8081);
+      server.start();
       HttpClient client = new HttpClient();
       try
       {
-         dispatcher.getRegistry().addResource(BigMessageListener.class);
          {
             PutMethod method = new PutMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/biglistener", "text/plain", null));
@@ -211,7 +220,7 @@ public class DurableTopicTest
          DeleteMethod method = new DeleteMethod(RESTEASY_MOM_URI + "topics/testTopic/durable/listeners/1");
          client.executeMethod(method);
          method.releaseConnection();
-         EmbeddedServlet.stop();
+         server.stop();
       }
    }
 

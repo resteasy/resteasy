@@ -8,8 +8,8 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.Assert;
 import org.junit.Test;
-import org.resteasy.mom.test.EmbeddedServlet;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.Dispatcher;
+import org.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.HttpResponseCodes;
 
@@ -72,12 +72,15 @@ public class ContentNegotiationTest
    @Test
    public void testQueueListener() throws Exception
    {
-      HttpServletDispatcher dispatcher = EmbeddedServlet.start();
+      TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+      server.setPort(8081);
+      server.start();
+      Dispatcher dispatcher = server.getDispatcher();
+      dispatcher.getRegistry().addPerRequestResource(PlainTextListener.class);
+      dispatcher.getRegistry().addPerRequestResource(XmlListener.class);
       HttpClient client = new HttpClient();
       try
       {
-         dispatcher.getRegistry().addResource(PlainTextListener.class);
-         dispatcher.getRegistry().addResource(XmlListener.class);
          {
             PutMethod method = new PutMethod(RESTEASY_MOM_URI + "queues/A/listeners/1");
             method.setRequestEntity(new StringRequestEntity("http://localhost:8081/plain", "text/plain", null));
@@ -125,7 +128,7 @@ public class ContentNegotiationTest
             client.executeMethod(method);
             method.releaseConnection();
          }
-         EmbeddedServlet.stop();
+         server.stop();
       }
    }
 
