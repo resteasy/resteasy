@@ -23,19 +23,20 @@ public class Destinations
 
    private ConnectionFactory factory;
    private MessageProcessor processor;
+   private DlqProcessor dlq;
    private String queueJndiPrefix = "queue/";
    private String topicJndiPrefix = "topic/";
 
 
    public void addQueue(String name, Destination queue) throws Exception
    {
-      QueueResource res = new QueueResource(name, factory.createConnection(), queue, processor);
+      QueueResource res = new QueueResource(name, factory.createConnection(), queue, processor, dlq);
       queues.put(name, res);
    }
 
    public void addTopic(String name, Destination topic) throws Exception
    {
-      TopicResource res = new TopicResource(name, factory, factory.createConnection(), topic, processor);
+      TopicResource res = new TopicResource(name, factory, factory.createConnection(), topic, processor, dlq);
       topics.put(name, res);
    }
 
@@ -57,6 +58,11 @@ public class Destinations
    public void setProcessor(MessageProcessor processor)
    {
       this.processor = processor;
+   }
+
+   public void setDlq(DlqProcessor dlq)
+   {
+      this.dlq = dlq;
    }
 
    public void stop()
@@ -83,7 +89,7 @@ public class Destinations
             ignored.printStackTrace();
          }
       }
-      processor.close();
+      dlq.close();
    }
 
    @Path("/queues/{destination}")
@@ -116,7 +122,7 @@ public class Destinations
       {
          throw new WebApplicationException(e, HttpResponseCodes.SC_NOT_FOUND);
       }
-      queue = new QueueResource(name, factory.createConnection(), destination, processor);
+      queue = new QueueResource(name, factory.createConnection(), destination, processor, dlq);
       QueueResource tmp = queues.putIfAbsent(name, queue);
       if (tmp == null)
       {
@@ -148,7 +154,7 @@ public class Destinations
       {
          throw new WebApplicationException(e, HttpResponseCodes.SC_NOT_FOUND);
       }
-      topic = new TopicResource(name, factory, factory.createConnection(), destination, processor);
+      topic = new TopicResource(name, factory, factory.createConnection(), destination, processor, dlq);
       TopicResource tmp = topics.putIfAbsent(name, topic);
       if (tmp == null)
       {

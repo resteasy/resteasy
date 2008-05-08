@@ -28,14 +28,16 @@ public class Listener implements MessageListener
    protected HttpClient httpClient = new HttpClient();
    protected String callback;
    protected MessageProcessor processor;
+   protected DlqProcessor dlq;
 
-   public Listener(Destination destination, Connection connection, String callback, MessageProcessor processor) throws Exception
+   public Listener(Destination destination, Connection connection, String callback, MessageProcessor processor, DlqProcessor dlq) throws Exception
    {
       this.destination = destination;
       this.connection = connection;
       this.callback = callback;
       this.session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       this.processor = processor;
+      this.dlq = dlq;
    }
 
    protected boolean isDead(int status)
@@ -86,7 +88,7 @@ public class Listener implements MessageListener
             e.printStackTrace();
          }
          System.out.println("Failed sending to listener, deadlettering");
-         processor.deadletter(message);
+         dlq.deadletter(message);
       }
       catch (Throwable throwable)
       {

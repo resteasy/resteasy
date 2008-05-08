@@ -30,11 +30,13 @@ public class TopicResource extends DestinationResource
    protected Map<String, TopicReceiver> nondurableReceivers = new ConcurrentHashMap<String, TopicReceiver>();
    protected Map<String, DurableTopicListener> durableListeners = new ConcurrentHashMap<String, DurableTopicListener>();
    protected Map<String, TopicListener> nondurableListeners = new ConcurrentHashMap<String, TopicListener>();
+   protected DlqProcessor dlq;
 
-   public TopicResource(String name, ConnectionFactory factory, Connection connection, Destination destination, MessageProcessor processor) throws Exception
+   public TopicResource(String name, ConnectionFactory factory, Connection connection, Destination destination, MessageProcessor processor, DlqProcessor dlq) throws Exception
    {
       super(processor, name, connection, destination);
       this.factory = factory;
+      this.dlq = dlq;
    }
 
    public void close() throws Exception
@@ -137,7 +139,7 @@ public class TopicResource extends DestinationResource
          DurableTopicListener receiver = null;
          try
          {
-            receiver = new DurableTopicListener(id, destination, connection, callback, processor, processor.createSelector(headers));
+            receiver = new DurableTopicListener(id, destination, connection, callback, processor, dlq, processor.createSelector(headers));
          }
          catch (Exception e)
          {
@@ -208,7 +210,7 @@ public class TopicResource extends DestinationResource
       }
       else
       {
-         TopicListener listener = new TopicListener(destination, connection, uri, processor, processor.createSelector(headers));
+         TopicListener listener = new TopicListener(destination, connection, uri, processor, dlq, processor.createSelector(headers));
          nondurableListeners.put(id, listener);
          return Response.status(HttpResponseCodes.SC_CREATED).build();
       }

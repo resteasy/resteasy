@@ -1,86 +1,28 @@
 package org.resteasy.mom;
 
-import org.resteasy.util.HttpHeaderNames;
-
-import javax.jms.Connection;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.StreamMessage;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MessageProcessor
+public class StreamMessageProcessor extends MessageProcessor
 {
-   private Connection deadletterConnection;
-   private Destination dlq;
    private int bufferSize = 100;
 
-   public MessageProcessor(Connection deadletterConnection, Destination dlq, int bufferSize) throws Exception
+   public StreamMessageProcessor(int bufferSize) throws Exception
    {
-      this.deadletterConnection = deadletterConnection;
-      this.dlq = dlq;
       this.bufferSize = bufferSize;
-   }
-
-   public void close()
-   {
-      try
-      {
-         deadletterConnection.close();
-      }
-      catch (JMSException ignored)
-      {
-         ignored.printStackTrace();
-      }
-   }
-
-   public String createSelector(HttpHeaders headers)
-   {
-      StringBuffer selector = new StringBuffer();
-
-      boolean first = true;
-
-      for (MediaType type : headers.getAcceptableMediaTypes())
-      {
-         if (type.isWildcardType()) return "";
-         if (first)
-         {
-            first = false;
-         }
-         else
-         {
-            selector.append(" OR ");
-         }
-         selector.append(toJavaIdentifier(HttpHeaderNames.CONTENT_TYPE));
-         if (type.isWildcardSubtype())
-         {
-            selector.append(" LIKE '")
-                    .append(type.getType())
-                    .append("/%'");
-         }
-         else
-         {
-            selector.append(" = '")
-                    .append(type.toString())
-                    .append("'");
-         }
-      }
-      return selector.toString();
    }
 
    public Message createMessage(HttpHeaders headers, InputStream entityStream, Session session)
@@ -116,22 +58,6 @@ public class MessageProcessor
    }
 
 
-   /**
-    * Replaces '-' with '$'
-    *
-    * @param str
-    * @return
-    */
-   protected String toJavaIdentifier(String str)
-   {
-      return str.replace('-', '$').toLowerCase();
-   }
-
-   protected String toHeaderName(String str)
-   {
-      return str.replace('$', '-').toLowerCase();
-   }
-
    protected Response extractStreamResponse(StreamMessage message)
            throws JMSException
    {
@@ -153,24 +79,6 @@ public class MessageProcessor
          }
       }
       return builder.build();
-   }
-
-   public Map<String, String> extractHeaders(Message message) throws JMSException
-   {
-      Map<String, String> rtn = new HashMap<String, String>();
-
-      Enumeration en = message.getPropertyNames();
-      while (en.hasMoreElements())
-      {
-         String key = (String) en.nextElement();
-         if (!key.startsWith("JMS"))
-         {
-            String value = message.getStringProperty(key);
-            System.out.println("header: " + toHeaderName(key) + " value: " + value);
-            rtn.put(toHeaderName(key), value);
-         }
-      }
-      return rtn;
    }
 
    public byte[] extractBody(Message message)
@@ -206,33 +114,6 @@ public class MessageProcessor
       finally
       {
          stream.reset();
-      }
-   }
-
-   public void deadletter(Message message)
-   {
-      try
-      {
-         if (deadletterConnection == null || dlq == null) return;
-         System.out.println("DEAD LETTER!!!!");
-         Session session = deadletterConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-         try
-         {
-            MessageProducer producer = session.createProducer(dlq);
-            producer.send(message);
-            System.out.println("SENT DEAD LETTER");
-         }
-         catch (JMSException e)
-         {
-         }
-         finally
-         {
-            session.close();
-         }
-      }
-      catch (JMSException ignored)
-      {
-
       }
    }
 

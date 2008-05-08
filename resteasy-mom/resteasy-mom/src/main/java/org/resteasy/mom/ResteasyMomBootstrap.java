@@ -45,10 +45,13 @@ public class ResteasyMomBootstrap implements ServletContextListener
          String buffer = event.getServletContext().getInitParameter("resteasy.mom.message.buffer.size");
          if (buffer != null && !buffer.trim().equals("")) bufferSize = Integer.parseInt(buffer.trim());
 
-         MessageProcessor processor = new MessageProcessor(factory.createConnection(), dlq, bufferSize);
+         StreamMessageProcessor processor = new StreamMessageProcessor(bufferSize);
+         //ByteArrayMessageProcessor processor = new ByteArrayMessageProcessor();
+         DlqProcessor dlqProcessor = new DlqProcessor(factory.createConnection(), dlq);
 
          destinations.setFactory(factory);
          destinations.setProcessor(processor);
+         destinations.setDlq(dlqProcessor);
 
          registry.addResourceFactory(new SingletonResource(destinations));
       }

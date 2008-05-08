@@ -9,10 +9,10 @@ import javax.jms.Destination;
  */
 public class QueueListener extends Listener
 {
-   public QueueListener(Destination destination, Connection connection, String callback, MessageProcessor processor, String selector)
+   public QueueListener(Destination destination, Connection connection, String callback, MessageProcessor processor, DlqProcessor dlq, String selector)
            throws Exception
    {
-      super(destination, connection, callback, processor);
+      super(destination, connection, callback, processor, dlq);
 
       System.out.println("Callback URI: " + callback);
       System.out.println("SELECTOR : " + selector);

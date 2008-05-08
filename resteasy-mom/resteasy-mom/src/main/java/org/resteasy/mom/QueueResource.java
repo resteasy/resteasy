@@ -25,13 +25,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class QueueResource extends DestinationResource
 {
-   private QueueReceiver autoReceiver;
+   protected QueueReceiver autoReceiver;
    protected Map<String, Receiver> receivers = new ConcurrentHashMap<String, Receiver>();
    protected Map<String, Listener> listeners = new ConcurrentHashMap<String, Listener>();
+   protected DlqProcessor dlq;
 
-   public QueueResource(String name, Connection connection, Destination destination, MessageProcessor processor) throws Exception
+   public QueueResource(String name, Connection connection, Destination destination, MessageProcessor processor, DlqProcessor dlq) throws Exception
    {
       super(processor, name, connection, destination);
+      this.dlq = dlq;
    }
 
    @Path("/browser")
@@ -86,7 +88,7 @@ public class QueueResource extends DestinationResource
       }
       else
       {
-         Listener listener = new QueueListener(destination, connection, uri, processor, processor.createSelector(headers));
+         Listener listener = new QueueListener(destination, connection, uri, processor, dlq, processor.createSelector(headers));
          listeners.put(id, listener);
          return Response.status(HttpResponseCodes.SC_CREATED).build();
       }

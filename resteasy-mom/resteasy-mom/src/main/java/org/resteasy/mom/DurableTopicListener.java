@@ -13,10 +13,10 @@ public class DurableTopicListener extends Listener
 {
    private String name;
 
-   public DurableTopicListener(String name, Destination destination, Connection connection, String callback, MessageProcessor processor, String selector)
+   public DurableTopicListener(String name, Destination destination, Connection connection, String callback, MessageProcessor processor, DlqProcessor dlq, String selector)
            throws Exception
    {
-      super(destination, connection, callback, processor);
+      super(destination, connection, callback, processor, dlq);
       this.name = name;
       consumer = session.createDurableSubscriber((Topic) destination, name, selector, false);
       consumer.setMessageListener(this);
