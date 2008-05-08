@@ -1,6 +1,7 @@
 package org.resteasy.test;
 
 import org.resteasy.Dispatcher;
+import org.resteasy.plugins.server.embedded.SecurityDomain;
 import org.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 
 /**
@@ -18,9 +19,15 @@ public class TJWSServletContainer
 
    public static Dispatcher start(String bindPath) throws Exception
    {
+      return start(bindPath, null);
+   }
+
+   public static Dispatcher start(String bindPath, SecurityDomain domain) throws Exception
+   {
       tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setPort(8081);
       tjws.setRootResourcePath(bindPath);
+      tjws.setSecurityDomain(domain);
       tjws.start();
       return tjws.getDispatcher();
    }

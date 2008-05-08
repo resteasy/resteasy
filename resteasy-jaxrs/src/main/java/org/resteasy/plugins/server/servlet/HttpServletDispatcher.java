@@ -89,7 +89,7 @@ public class HttpServletDispatcher extends HttpServlet
       service(httpServletRequest, httpServletResponse);
    }
 
-   public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response)
+   public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       HttpHeaders headers = extractHttpHeaders(request);
       String path = request.getPathInfo();

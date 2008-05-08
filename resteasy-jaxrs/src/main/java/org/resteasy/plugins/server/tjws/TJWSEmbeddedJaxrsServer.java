@@ -2,8 +2,8 @@ package org.resteasy.plugins.server.tjws;
 
 import org.resteasy.Dispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
-import org.resteasy.plugins.server.EmbeddedJaxrsServer;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
+import org.resteasy.plugins.server.embedded.SecurityDomain;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
@@ -16,7 +16,7 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    protected ResteasyProviderFactory factory = new ResteasyProviderFactory();
    protected Registry registry;
    protected Dispatcher dispatcher;
-   protected HttpServletDispatcher servlet = new HttpServletDispatcher();
+   protected TJWSServletDispatcher servlet = new TJWSServletDispatcher();
 
    protected String rootResourcePath = "";
 
@@ -58,5 +58,10 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    public Dispatcher getDispatcher()
    {
       return dispatcher;
+   }
+
+   public void setSecurityDomain(SecurityDomain sc)
+   {
+      servlet.setSecurityDomain(sc);
    }
 }
