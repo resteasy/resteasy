@@ -1,4 +1,4 @@
-package org.resteasy.plugins.server;
+package org.resteasy.plugins.server.embedded;
 
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
@@ -18,4 +18,6 @@ public interface EmbeddedJaxrsServer
    ResteasyProviderFactory getFactory();
 
    Registry getRegistry();
+
+   void setSecurityDomain(SecurityDomain sc);
 }
