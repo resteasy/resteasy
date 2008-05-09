@@ -73,9 +73,9 @@ public class VariantTest
       List<Variant> variants = new ArrayList<Variant>();
 
 
-      Variant variant1 = new Variant(MediaType.parse("text/plain"), "en;q=0.3", null);
-      Variant variant2 = new Variant(MediaType.parse("text/plain"), "fr", null);
-      Variant variant3 = new Variant(MediaType.parse("text/plain"), "zh;q=0.6", null);
+      Variant variant1 = new Variant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
+      Variant variant2 = new Variant(MediaType.valueOf("text/plain"), "fr", null);
+      Variant variant3 = new Variant(MediaType.valueOf("text/plain"), "zh;q=0.6", null);
 
       variants.add(variant1);
       variants.add(variant2);
@@ -98,10 +98,10 @@ public class VariantTest
       List<Variant> variants = new ArrayList<Variant>();
 
 
-      Variant variant1 = new Variant(MediaType.parse("text/plain"), "en;q=0.3", null);
-      Variant variant2 = new Variant(MediaType.parse("text/html;q=0.4"), "fr", null);
-      Variant variant3 = new Variant(MediaType.parse("text/html"), "es", null);
-      Variant variant4 = new Variant(MediaType.parse("text/plain"), "zh;q=0.6", null);
+      Variant variant1 = new Variant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
+      Variant variant2 = new Variant(MediaType.valueOf("text/html;q=0.4"), "fr", null);
+      Variant variant3 = new Variant(MediaType.valueOf("text/html"), "es", null);
+      Variant variant4 = new Variant(MediaType.valueOf("text/plain"), "zh;q=0.6", null);
 
       variants.add(variant1);
       variants.add(variant2);
@@ -125,11 +125,11 @@ public class VariantTest
       List<Variant> variants = new ArrayList<Variant>();
 
 
-      Variant variant1 = new Variant(MediaType.parse("text/plain"), "en;q=0.3", null);
-      Variant variant2 = new Variant(MediaType.parse("text/html;q=0.4"), "fr", null);
-      Variant variant3 = new Variant(MediaType.parse("text/html"), "es", null);
+      Variant variant1 = new Variant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
+      Variant variant2 = new Variant(MediaType.valueOf("text/html;q=0.4"), "fr", null);
+      Variant variant3 = new Variant(MediaType.valueOf("text/html"), "es", null);
       Variant variant4 = new Variant(null, "zh;q=0.6", null);
-      Variant variant5 = new Variant(MediaType.parse("application/xml"), "es", "gzip");
+      Variant variant5 = new Variant(MediaType.valueOf("application/xml"), "es", "gzip");
 
 
       variants.add(variant1);
@@ -214,27 +214,27 @@ public class VariantTest
    public void testGetComplex1()
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
-              mediaTypes(MediaType.parse("image/jpeg")).add().
-              mediaTypes(MediaType.parse("application/xml")).languages("en-us").add().
-              mediaTypes(MediaType.parse("text/xml")).languages("en").add().
-              mediaTypes(MediaType.parse("text/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("image/jpeg")).add().
+              mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
               build();
 
       List<Variant> wants = Variant.VariantListBuilder.newInstance()
-              .mediaTypes(MediaType.parse("text/xml"))
-              .mediaTypes(MediaType.parse("application/xml"))
-              .mediaTypes(MediaType.parse("application/xhtml+xml"))
-              .mediaTypes(MediaType.parse("image/png"))
-              .mediaTypes(MediaType.parse("text/html;q=0.9"))
-              .mediaTypes(MediaType.parse("text/plain;q=0.8"))
-              .mediaTypes(MediaType.parse("*/*;q=0.5"))
+              .mediaTypes(MediaType.valueOf("text/xml"))
+              .mediaTypes(MediaType.valueOf("application/xml"))
+              .mediaTypes(MediaType.valueOf("application/xhtml+xml"))
+              .mediaTypes(MediaType.valueOf("image/png"))
+              .mediaTypes(MediaType.valueOf("text/html;q=0.9"))
+              .mediaTypes(MediaType.valueOf("text/plain;q=0.8"))
+              .mediaTypes(MediaType.valueOf("*/*;q=0.5"))
               .languages("en-us")
               .languages("en;q=0.5").build();
 
       Variant v = AcceptableVariant.pick(wants, has);
       Assert.assertNotNull(v);
       Assert.assertNotNull(v.getMediaType());
-      Assert.assertTrue(MediaType.parse("text/xml").equals(v.getMediaType()));
+      Assert.assertTrue(MediaType.valueOf("text/xml").equals(v.getMediaType()));
       Assert.assertNull(v.getEncoding());
       Assert.assertEquals(v.getLanguage(), "en-us");
 
@@ -244,27 +244,27 @@ public class VariantTest
    public void testGetComplex2()
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
-              mediaTypes(MediaType.parse("image/jpeg")).add().
-              mediaTypes(MediaType.parse("application/xml")).languages("en-us").add().
-              mediaTypes(MediaType.parse("text/xml")).languages("en").add().
-              mediaTypes(MediaType.parse("text/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("image/jpeg")).add().
+              mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
               build();
 
       List<Variant> wants = Variant.VariantListBuilder.newInstance()
-              .mediaTypes(MediaType.parse("text/xml"))
-              .mediaTypes(MediaType.parse("application/xml"))
-              .mediaTypes(MediaType.parse("application/xhtml+xml"))
-              .mediaTypes(MediaType.parse("image/png"))
-              .mediaTypes(MediaType.parse("text/html;q=0.9"))
-              .mediaTypes(MediaType.parse("text/plain;q=0.8"))
-              .mediaTypes(MediaType.parse("*/*;q=0.5"))
+              .mediaTypes(MediaType.valueOf("text/xml"))
+              .mediaTypes(MediaType.valueOf("application/xml"))
+              .mediaTypes(MediaType.valueOf("application/xhtml+xml"))
+              .mediaTypes(MediaType.valueOf("image/png"))
+              .mediaTypes(MediaType.valueOf("text/html;q=0.9"))
+              .mediaTypes(MediaType.valueOf("text/plain;q=0.8"))
+              .mediaTypes(MediaType.valueOf("*/*;q=0.5"))
               .languages("en")
               .languages("en-us").build();
 
       Variant v = AcceptableVariant.pick(wants, has);
       Assert.assertNotNull(v);
       Assert.assertNotNull(v.getMediaType());
-      Assert.assertTrue(MediaType.parse("text/xml").equals(v.getMediaType()));
+      Assert.assertTrue(MediaType.valueOf("text/xml").equals(v.getMediaType()));
       Assert.assertNull(v.getEncoding());
       Assert.assertEquals(v.getLanguage(), "en");
 
@@ -274,27 +274,27 @@ public class VariantTest
    public void testGetComplex3()
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
-              mediaTypes(MediaType.parse("image/jpeg")).add().
-              mediaTypes(MediaType.parse("application/xml")).languages("en-us").add().
-              mediaTypes(MediaType.parse("text/xml")).languages("en").add().
-              mediaTypes(MediaType.parse("text/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("image/jpeg")).add().
+              mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
               build();
 
       List<Variant> wants = Variant.VariantListBuilder.newInstance()
-              .mediaTypes(MediaType.parse("application/xml"))
-              .mediaTypes(MediaType.parse("text/xml"))
-              .mediaTypes(MediaType.parse("application/xhtml+xml"))
-              .mediaTypes(MediaType.parse("image/png"))
-              .mediaTypes(MediaType.parse("text/html;q=0.9"))
-              .mediaTypes(MediaType.parse("text/plain;q=0.8"))
-              .mediaTypes(MediaType.parse("*/*;q=0.5"))
+              .mediaTypes(MediaType.valueOf("application/xml"))
+              .mediaTypes(MediaType.valueOf("text/xml"))
+              .mediaTypes(MediaType.valueOf("application/xhtml+xml"))
+              .mediaTypes(MediaType.valueOf("image/png"))
+              .mediaTypes(MediaType.valueOf("text/html;q=0.9"))
+              .mediaTypes(MediaType.valueOf("text/plain;q=0.8"))
+              .mediaTypes(MediaType.valueOf("*/*;q=0.5"))
               .languages("en-us")
               .languages("en;q=0.5").build();
 
       Variant v = AcceptableVariant.pick(wants, has);
       Assert.assertNotNull(v);
       Assert.assertNotNull(v.getMediaType());
-      Assert.assertTrue(MediaType.parse("application/xml").equals(v.getMediaType()));
+      Assert.assertTrue(MediaType.valueOf("application/xml").equals(v.getMediaType()));
       Assert.assertNull(v.getEncoding());
       Assert.assertEquals(v.getLanguage(), "en-us");
 
@@ -304,14 +304,14 @@ public class VariantTest
    public void testGetComplexNotAcceptable()
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
-              mediaTypes(MediaType.parse("image/jpeg")).add().
-              mediaTypes(MediaType.parse("application/xml")).languages("en-us").add().
-              mediaTypes(MediaType.parse("text/xml")).languages("en").add().
-              mediaTypes(MediaType.parse("text/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("image/jpeg")).add().
+              mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
               build();
       {
          List<Variant> wants = Variant.VariantListBuilder.newInstance()
-                 .mediaTypes(MediaType.parse("application/atom+xml"))
+                 .mediaTypes(MediaType.valueOf("application/atom+xml"))
                  .languages("en-us")
                  .languages("en").build();
 
@@ -321,7 +321,7 @@ public class VariantTest
 
       {
          List<Variant> wants = Variant.VariantListBuilder.newInstance()
-                 .mediaTypes(MediaType.parse("application/xml"))
+                 .mediaTypes(MediaType.valueOf("application/xml"))
                  .languages("fr").build();
 
          Variant v = AcceptableVariant.pick(wants, has);

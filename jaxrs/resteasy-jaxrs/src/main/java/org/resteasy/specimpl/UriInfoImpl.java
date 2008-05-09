@@ -160,12 +160,12 @@ public class UriInfoImpl implements UriInfo
       return UriBuilder.fromUri(baseURI);
    }
 
-   public MultivaluedMap<String, String> getTemplateParameters()
+   public MultivaluedMap<String, String> getPathParameters()
    {
       return templateParameters;
    }
 
-   public MultivaluedMap<String, String> getTemplateParameters(boolean decode)
+   public MultivaluedMap<String, String> getPathParameters(boolean decode)
    {
       if (decode) return templateParameters;
       if (encodedTemplateParameters != null) return encodedTemplateParameters;
@@ -200,16 +200,6 @@ public class UriInfoImpl implements UriInfo
    {
       if (decode) return queryParameters;
       else return encodedQueryParameters;
-   }
-
-   public List<String> getAncestorResourceURIs()
-   {
-      throw new RuntimeException("NOT IMPLEMENTED");
-   }
-
-   public List<Object> getAncestorResources()
-   {
-      throw new RuntimeException("NOT IMPLEMENTED");
    }
 
    protected void extractParameters(String queryString)
@@ -250,4 +240,28 @@ public class UriInfoImpl implements UriInfo
       }
    }
 
+   public UriBuilder getPlatonicRequestUriBuilder()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
+
+   public String getPathExtension()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
+
+   public List<String> getAncestorResourceURIs(boolean decode)
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
+
+   public List<String> getAncestorResourceURIs()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
+
+   public List<Object> getAncestorResources()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
 }

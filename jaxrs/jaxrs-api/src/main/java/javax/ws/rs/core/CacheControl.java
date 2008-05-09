@@ -84,7 +84,7 @@ public class CacheControl
     * @return the newly created CacheControl
     * @throws IllegalArgumentException if the supplied string cannot be parsed
     */
-   public static CacheControl parse(String value) throws IllegalArgumentException
+   public static CacheControl valueOf(String value) throws IllegalArgumentException
    {
       return delegate.fromString(value);
    }

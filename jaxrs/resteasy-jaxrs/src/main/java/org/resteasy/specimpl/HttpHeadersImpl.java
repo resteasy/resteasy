@@ -69,4 +69,14 @@ public class HttpHeadersImpl implements HttpHeaders
    {
       this.cookies = cookies;
    }
+
+   public List<String> getRequestHeader(String name)
+   {
+      return null;
+   }
+
+   public List<String> getAcceptableLanguages()
+   {
+      return null;
+   }
 }

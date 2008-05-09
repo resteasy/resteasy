@@ -130,10 +130,10 @@ public class VariantsTest
       public Response doGet(@Context Request r)
       {
          List<Variant> vs = Variant.VariantListBuilder.newInstance().
-                 mediaTypes(MediaType.parse("image/jpeg")).add().
-                 mediaTypes(MediaType.parse("application/xml")).languages("en-us").add().
-                 mediaTypes(MediaType.parse("text/xml")).languages("en").add().
-                 mediaTypes(MediaType.parse("text/xml")).languages("en-us").add().
+                 mediaTypes(MediaType.valueOf("image/jpeg")).add().
+                 mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
+                 mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
+                 mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
                  build();
 
          Variant v = r.selectVariant(vs);

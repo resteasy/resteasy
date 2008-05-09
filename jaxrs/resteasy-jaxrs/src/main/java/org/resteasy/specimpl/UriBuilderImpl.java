@@ -376,4 +376,9 @@ public class UriBuilderImpl extends UriBuilder
    {
       this.path = path;
    }
+
+   public UriBuilder extension(String extension)
+   {
+      throw new RuntimeException("NOT IMPLEMENTED");
+   }
 }

@@ -31,7 +31,7 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
       return aClass.isAnnotationPresent(XmlRootElement.class);
    }
 
-   public Object readFrom(Class<Object> aClass, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream inputStream) throws IOException
+   public Object readFrom(Class<Object> aClass, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream inputStream) throws IOException
    {
       try
       {

@@ -66,7 +66,7 @@ public class EntityTag
     * @return the newly created EntityTag
     * @throws IllegalArgumentException if the supplied string cannot be parsed
     */
-   public static EntityTag parse(String value) throws IllegalArgumentException
+   public static EntityTag valueOf(String value) throws IllegalArgumentException
    {
       return delegate.fromString(value);
    }

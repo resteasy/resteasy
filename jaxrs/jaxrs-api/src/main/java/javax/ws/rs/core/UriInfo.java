@@ -63,7 +63,8 @@ public interface UriInfo
     * Get the path of the current request relative to the base URI as a
     * list of {@link PathSegment}. This method is useful when the
     * path needs to be parsed, particularly when matrix parameters may be
-    * present in the path. All sequences of escaped octets are decoded,
+    * present in the path. All sequences of escaped octets in path segments
+    * and matrix parmeter names and values are decoded,
     * equivalent to <code>getPathSegments(true)</code>.
     *
     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
@@ -80,8 +81,8 @@ public interface UriInfo
     * path needs to be parsed, particularly when matrix parameters may be
     * present in the path.
     *
-    * @param decode controls whether sequences of escaped octets are decoded
-    *               (true) or not (false).
+    * @param decode controls whether sequences of escaped octets in path segments
+    *               and matrix parameter names and values are decoded (true) or not (false).
     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
     *         map of each path segment is also unmodifiable.
     * @throws java.lang.IllegalStateException
@@ -108,6 +109,23 @@ public interface UriInfo
     *          if called outside the scope of a request
     */
    public UriBuilder getRequestUriBuilder();
+
+   /**
+    * Get the absolute platonic request URI in the form of a UriBuilder. The
+    * platonic request URI is the request URI minus any extensions that were
+    * removed during request pre-processing for the purposes of URI-based
+    * content negotiation. E.g. if the request URI was:
+    * <pre>http://example.com/resource.xml</pre>
+    * <p>and an applications implementation of
+    * {@link ApplicationConfig#getMediaTypeMappings} returned a map
+    * that included "xml" as a key then the platonic request URI would be:</p>
+    * <pre>http://example.com/resource</pre>
+    *
+    * @return a UriBuilder initialized with the absolute platonic request URI
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of a request
+    */
+   public UriBuilder getPlatonicRequestUriBuilder();
 
    /**
     * Get the absolute path of the request. This includes everything preceding
@@ -148,16 +166,33 @@ public interface UriInfo
    public UriBuilder getBaseUriBuilder();
 
    /**
+    * Get the request URI extension, this includes everything following the
+    * first "." in the final path segment of the URI excluding any matrix
+    * parameters that might be present after the extension). The returned
+    * string includes any extensions removed during request pre-processing for
+    * the purposes of URI-based content negotiation. E.g. if the request URI was:
+    * <pre>http://example.com/resource.xml.en</pre>
+    * <p>this method would return "xml.en" even if an applications
+    * implementation of
+    * {@link ApplicationConfig#getMediaTypeMappings} returned a map
+    * that included "xml" as a key
+    *
+    * @return the request URI extension or null if there isn't one
+    */
+   public String getPathExtension();
+
+   /**
     * Get the values of any embedded URI template parameters.
     * All sequences of escaped octets are decoded,
-    * equivalent to <code>getTemplateParameters(true)</code>.
+    * equivalent to <code>getPathParameters(true)</code>.
     *
     * @return an unmodifiable map of parameter names and values
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     * @see javax.ws.rs.Path
+    * @see javax.ws.rs.PathParam
     */
-   public MultivaluedMap<String, String> getTemplateParameters();
+   public MultivaluedMap<String, String> getPathParameters();
 
    /**
     * Get the values of any embedded URI template parameters.
@@ -168,12 +203,13 @@ public interface UriInfo
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     * @see javax.ws.rs.Path
+    * @see javax.ws.rs.PathParam
     */
-   public MultivaluedMap<String, String> getTemplateParameters(boolean decode);
+   public MultivaluedMap<String, String> getPathParameters(boolean decode);
 
    /**
     * Get the URI query parameters of the current request.
-    * All sequences of escaped octets are decoded,
+    * All sequences of escaped octets in parameter names and values are decoded,
     * equivalent to <code>getQueryParameters(true)</code>.
     *
     * @return an unmodifiable map of query parameter names and values
@@ -185,13 +221,42 @@ public interface UriInfo
    /**
     * Get the URI query parameters of the current request.
     *
-    * @param decode controls whether sequences of escaped octets are decoded
-    *               (true) or not (false).
+    * @param decode controls whether sequences of escaped octets in parameter
+    *               names and values are decoded (true) or not (false).
     * @return an unmodifiable map of query parameter names and values
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     */
    public MultivaluedMap<String, String> getQueryParameters(boolean decode);
+
+   /**
+    * Get a read-only list of URIs for ancestor resources. Each entry is a
+    * relative URI that is a partial path that matched a resource class, a
+    * sub-resource method or a sub-resource locator. All sequences of escaped
+    * octets are decoded, equivalent to <code>getAncestorResourceURIs(true)</code>.
+    * Entries do not include query parameters but do include matrix parameters
+    * if present in the request URI. Entries are ordered in reverse request
+    * URI matching order, with the root resource URI last. E.g.:
+    * <p/>
+    * <pre>&#064;Path("foo")
+    * public class FooResource {
+    *  &#064;GET
+    *  public String getFoo() {...}
+    * <p/>
+    *  &#064;Path("bar")
+    *  &#064;GET
+    *  public String getFooBar() {...}
+    * }</pre>
+    * <p/>
+    * <p>A request <code>GET /foo</code> would return an empty list since
+    * <code>FooResource</code> is a root resource.</p>
+    * <p/>
+    * <p>A request <code>GET /foo/bar</code> would return a list with one
+    * entry: "foo".</p>
+    *
+    * @return a read-only list of URI paths for ancestor resources.
+    */
+   public List<String> getAncestorResourceURIs();
 
    /**
     * Get a read-only list of URIs for ancestor resources. Each entry is a relative URI
@@ -217,9 +282,11 @@ public interface UriInfo
     * <p>A request <code>GET /foo/bar</code> would return a list with one
     * entry: "foo".</p>
     *
+    * @param decode controls whether sequences of escaped octets are decoded
+    *               (true) or not (false).
     * @return a read-only list of URI paths for ancestor resources.
     */
-   public List<String> getAncestorResourceURIs();
+   public List<String> getAncestorResourceURIs(boolean decode);
 
    /**
     * Get a read-only list of ancestor resource class instances. Each entry is a resource

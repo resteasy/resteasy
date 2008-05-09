@@ -27,7 +27,7 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
       return type.equals(InputStream.class);
    }
 
-   public InputStream readFrom(Class<InputStream> type, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public InputStream readFrom(Class<InputStream> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       return entityStream;
    }

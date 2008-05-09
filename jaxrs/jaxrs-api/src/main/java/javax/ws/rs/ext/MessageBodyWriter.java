@@ -19,6 +19,7 @@
 
 package javax.ws.rs.ext;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import java.lang.reflect.Type;
  * implementation class with <code>@Provider</code>.
  * <p/>
  * A <code>MessageBodyWriter</code> implementation may be annotated
- * with <code>@ProduceMime</code> to restrict the media types for which it will
+ * with {@link javax.ws.rs.ProduceMime} to restrict the media types for which it will
  * be considered suitable.
  *
  * @param T the type that can be written
@@ -89,12 +90,15 @@ public interface MessageBodyWriter<T>
     * @param mediaType    the media type of the HTTP entity.
     * @param httpHeaders  a mutable map of the HTTP response headers.
     * @param entityStream the {@link OutputStream} for the HTTP entity. The
-    *                     implementation is not required to close the input stream but may do so
-    *                     if desired.
+    *                     implementation should not close the input stream.
     * @throws java.io.IOException if an IO error arises
+    * @throws javax.ws.rs.WebApplicationException
+    *                             if a specific
+    *                             HTTP error response needs to be produced. Only effective if thrown prior
+    *                             to the response being committed.
     */
    void writeTo(T t, Class<?> type, Type genericType, Annotation annotations[],
                 MediaType mediaType,
                 MultivaluedMap<String, Object> httpHeaders,
-                OutputStream entityStream) throws IOException;
+                OutputStream entityStream) throws IOException, WebApplicationException;
 }

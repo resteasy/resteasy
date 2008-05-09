@@ -19,6 +19,7 @@
 
 package javax.ws.rs.ext;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import java.lang.reflect.Type;
  * implementation class with <code>@Provider</code>.
  * <p/>
  * A <code>MessageBodyReader</code> implementation may be annotated
- * with <code>@ConsumeMime</code> to restrict the media types for which it will
+ * with {@link javax.ws.rs.ConsumeMime} to restrict the media types for which it will
  * be considered suitable.
  *
  * @see Provider
@@ -72,16 +73,19 @@ public interface MessageBodyReader<T>
     *                     the annotations on that parameter returned by
     *                     <code>Class.getParameterAnnotations</code>.
     * @param mediaType    the media type of the HTTP entity.
-    * @param httpHeaders  the HTTP headers associated with HTTP entity.
+    * @param httpHeaders  the read-only HTTP headers associated with HTTP entity.
     * @param entityStream the {@link InputStream} of the HTTP entity. The
-    *                     implementation is not required to close the input stream but may do so
-    *                     if desired.
+    *                     implementation should not close the input stream.
     * @return the type that was read from the stream.
     * @throws java.io.IOException if an IO error arises
+    * @throws javax.ws.rs.WebApplicationException
+    *                             if a specific
+    *                             HTTP error response needs to be produced. Only effective if thrown prior
+    *                             to the response being committed.
     */
-   T readFrom(Class<T> type, Type genericType, MediaType mediaType,
-              Annotation annotations[],
+   T readFrom(Class<T> type, Type genericType,
+              Annotation annotations[], MediaType mediaType,
               MultivaluedMap<String, String> httpHeaders,
-              InputStream entityStream) throws IOException;
+              InputStream entityStream) throws IOException, WebApplicationException;
 
 }

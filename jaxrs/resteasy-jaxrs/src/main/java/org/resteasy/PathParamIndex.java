@@ -73,14 +73,14 @@ public class PathParamIndex
                else value += "/";
                value += uriInfo.getPathSegments().get(i).getPath();
             }
-            uriInfo.getTemplateParameters().add(paramName, value);
+            uriInfo.getPathParameters().add(paramName, value);
          }
          else
          {
             for (int i : indexes)
             {
                String value = uriInfo.getPathSegments().get(i).getPath();
-               uriInfo.getTemplateParameters().add(paramName, value);
+               uriInfo.getPathParameters().add(paramName, value);
             }
          }
       }

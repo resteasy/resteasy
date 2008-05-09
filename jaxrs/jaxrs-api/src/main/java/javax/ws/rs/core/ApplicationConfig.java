@@ -27,8 +27,9 @@ public abstract class ApplicationConfig
    private static final Map<String, String> emptyLanguageMap = Collections.emptyMap();
 
    /**
-    * Get a list of root resource classes. Classes
-    * not annotated with {@link javax.ws.rs.Path} will be ignored.
+    * Get a list of root resource classes. An implementation should warn about
+    * and ignore classes that do not conform to the requirements of root
+    * resource classes.
     *
     * @return a list of root resource classes.
     * @see javax.ws.rs.Path
@@ -36,17 +37,16 @@ public abstract class ApplicationConfig
    public abstract Set<Class<?>> getResourceClasses();
 
    /**
-    * Get a list of provider classes. Classes not implementing an extension
-    * interface (one or more of {@link javax.ws.rs.ext.MessageBodyReader},
-    * {@link javax.ws.rs.ext.MessageBodyWriter} or
-    * {@link javax.ws.rs.ext.ContextResolver}) will be ignored. The default
-    * implementation returns an empty set.
+    * Get a list of provider classes. An implementation should warn about
+    * and ignore classes that do not conform to the requirements of a
+    * provider. The default implementation returns an empty set.
     *
     * @return a set of provider classes
     * @see javax.ws.rs.ext.Provider
     * @see javax.ws.rs.ext.MessageBodyReader
     * @see javax.ws.rs.ext.MessageBodyWriter
     * @see javax.ws.rs.ext.ContextResolver
+    * @see javax.ws.rs.ext.ExceptionMapper
     */
    public Set<Class<?>> getProviderClasses()
    {
@@ -64,7 +64,7 @@ public abstract class ApplicationConfig
     *
     * @return a map of file extension to media type
     */
-   public Map<String, MediaType> getExtensionMappings()
+   public Map<String, MediaType> getMediaTypeMappings()
    {
       return emptyMediaMap;
    }

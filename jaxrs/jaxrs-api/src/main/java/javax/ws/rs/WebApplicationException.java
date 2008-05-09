@@ -16,75 +16,119 @@ import javax.ws.rs.core.Response;
 
 /**
  * Runtime exception for applications.
- * <p>
- * This acception may be thrown by a Web application if a specific HTTP error
- * response needs to be produced.
+ * <p/>
+ * This exception may be thrown by a resource method, provider or
+ * {@link javax.ws.rs.core.StreamingOutput} implementation if a specific
+ * HTTP error response needs to be produced. Only effective if thrown prior to
+ * the response being committed.
  *
  * @author Paul.Sandoz@Sun.Com
  */
-public class WebApplicationException extends RuntimeException {
+public class WebApplicationException extends RuntimeException
+{
 
-    private Response response;
+   private static final long serialVersionUID = 11660101L;
 
-    /**
-     * Construct a new instance with a blank message and default HTTP status code of 500
-     */
-    public WebApplicationException() {
-        super();
-        response = Response.serverError().build();
-    }
+   private Response response;
 
-    /**
-     * Construct a new instance with a blank message and specified HTTP status code
-     * @param response the response that will be returned to the client
-     */
-    public WebApplicationException(Response response) {
-        super();
-        this.response = response;        
-    }
-    
-    /**
-     * Construct a new instance with a blank message and specified HTTP status code
-     * @param status the HTTP status code that will be returned to the client
-     */
-    public WebApplicationException(int status) {
-        this(Response.serverError().status(status).build());
-    }
-    
-    /**
-     * Construct a new instance with a blank message and default HTTP status code of 500
-     * @param cause the underlying cause of the exception
-     */
-    public WebApplicationException(Throwable cause) {
-        super(cause);
-        response = Response.serverError().build();
-    }
-    
-    /**
-     * Construct a new instance with a blank message and specified HTTP status code
-     * @param response the response that will be returned to the client
-     * @param cause the underlying cause of the exception
-     */
-    public WebApplicationException(Throwable cause, Response response) {
-        super(cause);
-        this.response = response;
-    }
-    
-    /**
-     * Construct a new instance with a blank message and specified HTTP status code
-     * @param status the HTTP status code that will be returned to the client
-     * @param cause the underlying cause of the exception
-     */
-    public WebApplicationException(Throwable cause, int status) {
-        this(cause, Response.serverError().status(status).build());
-    }
-    
-    /**
-     * Get the HTTP response.
-     *
-     * @return the HTTP response.
-     */
-    public Response getResponse() {
-        return response;
-    }
+   /**
+    * Construct a new instance with a blank message and default HTTP status code of 500
+    */
+   public WebApplicationException()
+   {
+      this(null, Response.Status.INTERNAL_SERVER_ERROR);
+   }
+
+   /**
+    * Construct a new instance using the supplied response
+    *
+    * @param response the response that will be returned to the client, a value
+    *                 of null will be replaced with an internal server error response (status
+    *                 code 500)
+    */
+   public WebApplicationException(Response response)
+   {
+      this(null, response);
+   }
+
+   /**
+    * Construct a new instance with a blank message and specified HTTP status code
+    *
+    * @param status the HTTP status code that will be returned to the client
+    */
+   public WebApplicationException(int status)
+   {
+      this(null, status);
+   }
+
+   /**
+    * Construct a new instance with a blank message and specified HTTP status code
+    *
+    * @param status the HTTP status code that will be returned to the client
+    * @throws IllegalArgumentException if status is null
+    */
+   public WebApplicationException(Response.Status status)
+   {
+      this(null, status);
+   }
+
+   /**
+    * Construct a new instance with a blank message and default HTTP status code of 500
+    *
+    * @param cause the underlying cause of the exception
+    */
+   public WebApplicationException(Throwable cause)
+   {
+      this(cause, Response.Status.INTERNAL_SERVER_ERROR);
+   }
+
+   /**
+    * Construct a new instance using the supplied response
+    *
+    * @param response the response that will be returned to the client, a value
+    *                 of null will be replaced with an internal server error response (status
+    *                 code 500)
+    * @param cause    the underlying cause of the exception
+    */
+   public WebApplicationException(Throwable cause, Response response)
+   {
+      super(cause);
+      if (response == null)
+         response = Response.serverError().build();
+      else
+         this.response = response;
+   }
+
+   /**
+    * Construct a new instance with a blank message and specified HTTP status code
+    *
+    * @param status the HTTP status code that will be returned to the client
+    * @param cause  the underlying cause of the exception
+    */
+   public WebApplicationException(Throwable cause, int status)
+   {
+      this(cause, Response.status(status).build());
+   }
+
+   /**
+    * Construct a new instance with a blank message and specified HTTP status code
+    *
+    * @param status the HTTP status code that will be returned to the client
+    * @param cause  the underlying cause of the exception
+    * @throws IllegalArgumentException if status is null
+    */
+   public WebApplicationException(Throwable cause, Response.Status status)
+   {
+      this(cause, Response.status(status).build());
+   }
+
+   /**
+    * Get the HTTP response.
+    *
+    * @return the HTTP response.
+    */
+   public Response getResponse()
+   {
+      return response;
+   }
 }

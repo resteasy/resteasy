@@ -26,7 +26,7 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
       return type.isArray() && type.getComponentType().equals(byte.class);
    }
 
-   public byte[] readFrom(Class<byte[]> type, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public byte[] readFrom(Class<byte[]> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

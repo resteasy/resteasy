@@ -26,24 +26,35 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Binds a HTTP header to a Java method parameter. Where multiple headers of
- * the same name exist in a request, the first value is used - see
- * {@link javax.ws.rs.core.HttpHeaders} for a means of retrieving all values
- * of particular header. A default value can be specified using the
- * {@link DefaultValue} annotation.
+ * Binds the value(s) of a HTTP header to a resource method parameter,
+ * resource class field, or resource class bean property. A default value
+ * can be specified using the {@link DefaultValue} annotation.
  * <p/>
- * The type of the annotated parameter must either:
- * <ul>
+ * The type <code>T</code> of the annotated parameter, field or property
+ * must either:
+ * <ol>
  * <li>Be a primitive type</li>
- * <li>Have a constructor that accepts a single String argument</li>
+ * <li>Have a constructor that accepts a single <code>String</code> argument</li>
  * <li>Have a static method named <code>valueOf</code> that accepts a single
- * String argument (see, for example, {@link Integer#valueOf(String)})
- * </ul>
+ * <code>String</code> argument (see, for example, {@link Integer#valueOf(String)})</li>
+ * <li>Be <code>List&lt;T&gt;</code>, <code>Set&lt;T&gt;</code> or
+ * <code>SortedSet&lt;T&gt;</code>, where <code>T</code> satisfies 2 or 3 above.
+ * The resulting collection is read-only.</li>
+ * </ol>
+ * <p/>
+ * <p>If the type is not one of those listed in 4 above then the first value
+ * (lexically) of the header is used.</p>
+ * <p/>
+ * <p>Because injection occurs at object creation time, use of this annotation
+ * on resource class fields and bean properties is only supported for the
+ * default per-request resource class lifecycle. Resource classes using
+ * other lifecycles should only use this annotation on resource method
+ * parameters.</p>
  *
  * @see DefaultValue
  * @see javax.ws.rs.core.HttpHeaders
  */
-@Target({ElementType.PARAMETER})
+@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface HeaderParam
