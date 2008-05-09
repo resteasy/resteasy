@@ -16,13 +16,23 @@ public interface ResourceFactory
    Class<?> getScannableClass();
 
    /**
-    * Callback after registration has been completed.  
+    * Callback after registration has been completed.
     *
     * @param factory allows singleton factories to pre-inject things like @Context references into the singleton instance
     */
    void registered(InjectorFactory factory);
 
    Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory);
+
+
+   /**
+    * Callback when request is finished.  usable for things like @PreDestroy if the underlying factory supports it
+    *
+    * @param request
+    * @param response
+    * @param resource
+    */
+   void requestFinished(HttpRequest request, HttpResponse response, Object resource);
 
    void unregistered();
 }

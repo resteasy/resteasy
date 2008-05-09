@@ -62,4 +62,9 @@ public class JndiResourceFactory implements ResourceFactory
          throw new RuntimeException(e);
       }
    }
+
+   public void requestFinished(HttpRequest request, HttpResponse response, Object resource)
+   {
+   }
 }
+

@@ -7,14 +7,19 @@ import org.resteasy.spi.MethodInjector;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
+import org.resteasy.util.HttpResponseCodes;
 import org.resteasy.util.WeightedMediaType;
 
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -44,6 +49,8 @@ public class ResourceMethod implements ResourceInvoker
    protected ResteasyProviderFactory providerFactory;
    protected PathParamIndex index;
    protected Method method;
+   protected String[] rolesAllowed;
+   protected boolean denyAll;
 
    public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods, PathParamIndex index)
    {
@@ -82,6 +89,18 @@ public class ResourceMethod implements ResourceInvoker
       }
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
+
+      RolesAllowed allowed = clazz.getAnnotation(RolesAllowed.class);
+      RolesAllowed methodAllowed = method.getAnnotation(RolesAllowed.class);
+      if (methodAllowed != null) allowed = methodAllowed;
+      if (allowed != null)
+      {
+         rolesAllowed = allowed.value();
+      }
+
+      denyAll = (clazz.isAnnotationPresent(DenyAll.class) && method.isAnnotationPresent(RolesAllowed.class) == false && method.isAnnotationPresent(PermitAll.class) == false) || method.isAnnotationPresent(DenyAll.class);
+
+
    }
 
    /**
@@ -115,9 +134,26 @@ public class ResourceMethod implements ResourceInvoker
       invoke(request, response, target);
    }
 
+   public void checkAuthorized()
+   {
+      if (denyAll) throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
+      if (rolesAllowed == null) return;
+
+      SecurityContext context = providerFactory.getContextData(SecurityContext.class);
+      if (context != null)
+      {
+         for (String role : rolesAllowed)
+         {
+            if (context.isUserInRole(role)) return;
+         }
+         throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
+      }
+   }
+
    public void invoke(HttpRequest request, HttpResponse response, Object target) throws IOException
    {
 
+      checkAuthorized();
 
       Response jaxrsResponse = null;
       try
