@@ -291,7 +291,7 @@ public class PathSegmentNode
                   list.add(invoker);
                   if (invoker.getConsumes() == null)
                   {
-                     WeightedMediaType defaultConsumes = WeightedMediaType.parse("*/*;q=0.0");
+                     WeightedMediaType defaultConsumes = WeightedMediaType.valueOf("*/*;q=0.0");
                      consumesMap.put(defaultConsumes, invoker);
                   }
                   else
@@ -357,7 +357,7 @@ public class PathSegmentNode
       {
          if (invoker.getProduces() == null)
          {
-            WeightedMediaType defaultProduces = WeightedMediaType.parse("*/*;q=0.0");
+            WeightedMediaType defaultProduces = WeightedMediaType.valueOf("*/*;q=0.0");
             producesMap.put(defaultProduces, invoker);
          }
          else
@@ -372,7 +372,7 @@ public class PathSegmentNode
       if (accepts == null || accepts.size() == 0)
       {
          accepts = new ArrayList<WeightedMediaType>(1);
-         accepts.add(WeightedMediaType.parse("*/*"));
+         accepts.add(WeightedMediaType.valueOf("*/*"));
       }
       // sort media types then get first in list and match it into identity map
       ArrayList<WeightedMediaType> produces = new ArrayList<WeightedMediaType>();

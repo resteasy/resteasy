@@ -184,7 +184,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       {
          for (String consume : consumeMime.value())
          {
-            MediaType mime = MediaType.parse(consume);
+            MediaType mime = MediaType.valueOf(consume);
             messageBodyReaders.add(mime, key);
          }
       }
@@ -202,7 +202,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       {
          for (String consume : consumeMime.value())
          {
-            MediaType mime = MediaType.parse(consume);
+            MediaType mime = MediaType.valueOf(consume);
             messageBodyReaders.add(mime, key);
          }
       }
@@ -233,7 +233,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       {
          for (String consume : consumeMime.value())
          {
-            MediaType mime = MediaType.parse(consume);
+            MediaType mime = MediaType.valueOf(consume);
             messageBodyWriters.add(mime, key);
          }
       }
@@ -251,7 +251,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       {
          for (String consume : consumeMime.value())
          {
-            MediaType mime = MediaType.parse(consume);
+            MediaType mime = MediaType.valueOf(consume);
             messageBodyWriters.add(mime, key);
          }
       }

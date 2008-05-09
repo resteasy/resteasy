@@ -49,7 +49,7 @@ public class GrizzlyUtils
       headers.setLanguage(requestHeaders.getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
 
       String contentType = request.getContentType();
-      if (contentType != null) headers.setMediaType(MediaType.parse(contentType));
+      if (contentType != null) headers.setMediaType(MediaType.valueOf(contentType));
 
       Map<String, Cookie> cookies = extractCookies(request);
       headers.setCookies(cookies);

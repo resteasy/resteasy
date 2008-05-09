@@ -26,7 +26,7 @@ public class MediaTypeHelper
          consume = (ConsumeMime) declaring.getAnnotation(ConsumeMime.class);
       }
       if (consume == null) return null;
-      return MediaType.parse(consume.value()[0]);
+      return MediaType.valueOf(consume.value()[0]);
    }
 
    public static MediaType getProduces(Class declaring, Method method)
@@ -37,7 +37,7 @@ public class MediaTypeHelper
          consume = (ProduceMime) declaring.getAnnotation(ProduceMime.class);
       }
       if (consume == null) return null;
-      return MediaType.parse(consume.value()[0]);
+      return MediaType.valueOf(consume.value()[0]);
    }
 
    public static float getQ(MediaType type)
@@ -152,7 +152,7 @@ public class MediaTypeHelper
       String[] medias = header.split(",");
       for (int i = 0; i < medias.length; i++)
       {
-         types.add(MediaType.parse(medias[i].trim()));
+         types.add(MediaType.valueOf(medias[i].trim()));
       }
       return types;
    }

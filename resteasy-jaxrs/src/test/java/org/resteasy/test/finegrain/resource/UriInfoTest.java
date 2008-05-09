@@ -167,10 +167,10 @@ public class UriInfoTest
       {
          Assert.assertEquals("a b", a);
          Assert.assertEquals("x y", b);
-         Assert.assertEquals("a b", info.getTemplateParameters().getFirst("a"));
-         Assert.assertEquals("x y", info.getTemplateParameters().getFirst("b"));
-         Assert.assertEquals("a%20b", info.getTemplateParameters(false).getFirst("a"));
-         Assert.assertEquals("x%20y", info.getTemplateParameters(false).getFirst("b"));
+         Assert.assertEquals("a b", info.getPathParameters().getFirst("a"));
+         Assert.assertEquals("x y", info.getPathParameters().getFirst("b"));
+         Assert.assertEquals("a%20b", info.getPathParameters(false).getFirst("a"));
+         Assert.assertEquals("x%20y", info.getPathParameters(false).getFirst("b"));
 
          List<PathSegment> decoded = info.getPathSegments(true);
          Assert.assertEquals(decoded.size(), 2);

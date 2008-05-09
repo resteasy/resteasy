@@ -40,10 +40,10 @@ import java.lang.annotation.Target;
  * the contents of the HTTP request entity body. The parameter will be null if
  * the HTTP request entity body is of zero length.</li>
  * <li>Methods may have zero or more additional method arguments, each of which
- * must be annotated with either <code>@PathParam</code>,
- * <code>@HeaderParam</code>, <code>@CookieParam</code>,
- * <code>@MatrixParam</code>, <code>@QueryParam</code> or
- * <code>@Context</code></li>
+ * must be annotated with either {@link javax.ws.rs.PathParam},
+ * {@link javax.ws.rs.HeaderParam}, {@link javax.ws.rs.CookieParam},
+ * {@link javax.ws.rs.MatrixParam}, {@link javax.ws.rs.QueryParam} or
+ * {@link javax.ws.rs.core.Context}</li>
  * </ul>
  *
  * @see GET

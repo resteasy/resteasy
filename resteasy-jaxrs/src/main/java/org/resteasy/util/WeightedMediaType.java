@@ -96,7 +96,7 @@ public class WeightedMediaType extends MediaType implements Comparable<WeightedM
       return result;
    }
 
-   public static WeightedMediaType parse(String type)
+   public static WeightedMediaType valueOf(String type)
    {
       MediaType tmp = MediaTypeHeaderDelegate.parse(type);
       if (tmp.getParameters() == null || !tmp.getParameters().containsKey("q"))

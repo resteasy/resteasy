@@ -87,7 +87,7 @@ public class AcceptTest
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/foo"));
+         accepts.add(MediaType.valueOf("application/foo"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(WebResource.class.getMethod("doGetFoo"), method.getMethod());
@@ -95,7 +95,7 @@ public class AcceptTest
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/foo;q=0.1"));
+         accepts.add(MediaType.valueOf("application/foo;q=0.1"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(WebResource.class.getMethod("doGetFoo"), method.getMethod());
@@ -103,9 +103,9 @@ public class AcceptTest
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/foo"));
-         accepts.add(MediaType.parse("application/bar;q=0.4"));
-         accepts.add(MediaType.parse("application/baz;q=0.2"));
+         accepts.add(MediaType.valueOf("application/foo"));
+         accepts.add(MediaType.valueOf("application/bar;q=0.4"));
+         accepts.add(MediaType.valueOf("application/baz;q=0.2"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(WebResource.class.getMethod("doGetFoo"), method.getMethod());
@@ -113,9 +113,9 @@ public class AcceptTest
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/foo;q=0.4"));
-         accepts.add(MediaType.parse("application/bar"));
-         accepts.add(MediaType.parse("application/baz;q=0.2"));
+         accepts.add(MediaType.valueOf("application/foo;q=0.4"));
+         accepts.add(MediaType.valueOf("application/bar"));
+         accepts.add(MediaType.valueOf("application/baz;q=0.2"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(WebResource.class.getMethod("doGetBar"), method.getMethod());
@@ -123,9 +123,9 @@ public class AcceptTest
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/foo;q=0.4"));
-         accepts.add(MediaType.parse("application/bar;q=0.2"));
-         accepts.add(MediaType.parse("application/baz"));
+         accepts.add(MediaType.valueOf("application/foo;q=0.4"));
+         accepts.add(MediaType.valueOf("application/bar;q=0.2"));
+         accepts.add(MediaType.valueOf("application/baz"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(WebResource.class.getMethod("doGetBaz"), method.getMethod());
@@ -162,7 +162,7 @@ public class AcceptTest
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(XmlResource.class);
 
-      MediaType contentType = MediaType.parse("application/xml;schema=bar");
+      MediaType contentType = MediaType.valueOf("application/xml;schema=bar");
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
 
       {
@@ -208,13 +208,13 @@ public class AcceptTest
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(XmlResource2.class);
 
-      MediaType contentType = MediaType.parse("application/xml;schema=bar");
+      MediaType contentType = MediaType.valueOf("application/xml;schema=bar");
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/xml;schema=junk;q=1.0"));
-         accepts.add(MediaType.parse("application/xml;schema=stuff;q=0.5"));
+         accepts.add(MediaType.valueOf("application/xml;schema=junk;q=1.0"));
+         accepts.add(MediaType.valueOf("application/xml;schema=stuff;q=0.5"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("PUT", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(XmlResource2.class.getMethod("putBar", String.class), method.getMethod());
@@ -227,13 +227,13 @@ public class AcceptTest
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(XmlResource2.class);
 
-      MediaType contentType = MediaType.parse("application/xml;schema=blah");
+      MediaType contentType = MediaType.valueOf("application/xml;schema=blah");
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/xml;schema=junk;q=1.0"));
-         accepts.add(MediaType.parse("application/xml;schema=stuff;q=0.5"));
+         accepts.add(MediaType.valueOf("application/xml;schema=junk;q=1.0"));
+         accepts.add(MediaType.valueOf("application/xml;schema=stuff;q=0.5"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("PUT", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(XmlResource2.class.getMethod("put", String.class), method.getMethod());
@@ -251,10 +251,10 @@ public class AcceptTest
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/wildcard"));
-         accepts.add(MediaType.parse("application/foo;q=0.6"));
-         accepts.add(MediaType.parse("application/bar;q=0.4"));
-         accepts.add(MediaType.parse("application/baz;q=0.2"));
+         accepts.add(MediaType.valueOf("application/wildcard"));
+         accepts.add(MediaType.valueOf("application/foo;q=0.6"));
+         accepts.add(MediaType.valueOf("application/bar;q=0.4"));
+         accepts.add(MediaType.valueOf("application/baz;q=0.2"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(WebResource.class.getMethod("doGetWildCard"), method.getMethod());
@@ -281,8 +281,8 @@ public class AcceptTest
       MediaType contentType = new MediaType("text", "plain");
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
 
-      MediaType foo = MediaType.parse("application/foo");
-      MediaType bar = MediaType.parse("application/bar");
+      MediaType foo = MediaType.valueOf("application/foo");
+      MediaType bar = MediaType.valueOf("application/bar");
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
@@ -300,14 +300,14 @@ public class AcceptTest
       }
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("*/*"));
+         accepts.add(MediaType.valueOf("*/*"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(MultipleResource.class.getMethod("get"), method.getMethod());
       }
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-         accepts.add(MediaType.parse("application/*"));
+         accepts.add(MediaType.valueOf("application/*"));
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, contentType, accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(MultipleResource.class.getMethod("get"), method.getMethod());
@@ -357,22 +357,22 @@ public class AcceptTest
       ArrayList<MediaType> accepts = new ArrayList<MediaType>();
 
       {
-         ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, MediaType.parse("text/plain"), accepts), null);
+         ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, MediaType.valueOf("text/plain"), accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(ConsumeResource.class.getMethod("doGetWildCard"), method.getMethod());
       }
       {
-         ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, MediaType.parse("application/foo"), accepts), null);
+         ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, MediaType.valueOf("application/foo"), accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(ConsumeResource.class.getMethod("doGetFoo"), method.getMethod());
       }
       {
-         ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, MediaType.parse("application/bar"), accepts), null);
+         ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, MediaType.valueOf("application/bar"), accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(ConsumeResource.class.getMethod("doGetBar"), method.getMethod());
       }
       {
-         ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, MediaType.parse("application/baz"), accepts), null);
+         ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", pathSegments, MediaType.valueOf("application/baz"), accepts), null);
          Assert.assertNotNull(method);
          Assert.assertEquals(ConsumeResource.class.getMethod("doGetBaz"), method.getMethod());
       }

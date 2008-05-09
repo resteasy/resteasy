@@ -29,7 +29,7 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
       return String.class.equals(type);
    }
 
-   public Object readFrom(Class<Object> type, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       char[] buffer = new char[100];
       StringBuffer buf = new StringBuffer();

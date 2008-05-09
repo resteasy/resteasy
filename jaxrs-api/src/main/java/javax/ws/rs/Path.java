@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  * Identifies the URI path that a resource class or class method
  * will serve requests for. Root
- * resource classes require an @Path annotation.
+ * resource classes require an &#64;Path annotation.
  * Classes may also be annotated with
  * {@link ConsumeMime} and {@link ProduceMime} to filter the
  * requests they will receive.
@@ -44,9 +44,9 @@ public @interface Path
     * the template will be served by the annotated class or class method.
     * Embedded template variables are allowed and are of the form {name} where
     * name is the template variable name. Paths are relative to the base URI
-    * of the container.
+    * of the container and must not include matrix parameters.
     * <p/>
-    * <p>E.g.: @Path("widgets/{id}")</p>
+    * <p>E.g.: &#64;Path("widgets/{id}")</p>
     */
    String value();
 
@@ -62,9 +62,9 @@ public @interface Path
    /**
     * Controls whether a trailing template variable is limited to a single path
     * segment (<code>true</code>) or not (<code>false</code>). E.g.
-    * <code>@Path("widgets/{id}")</code> would
+    * <code>&#64;Path("widgets/{id}")</code> would
     * match widgets/foo but not widgets/foo/bar whereas
-    * <code>@Path(value="widgets/{id}", limit=false)</code> would match
+    * <code>&#64;Path(value="widgets/{id}", limit=false)</code> would match
     * both.
     */
    boolean limited() default true;

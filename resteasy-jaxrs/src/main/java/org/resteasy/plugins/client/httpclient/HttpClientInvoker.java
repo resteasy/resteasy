@@ -120,7 +120,7 @@ abstract public class HttpClientInvoker extends ClientInvoker
                   throw new RuntimeException("Unable to determine content type of response for GET " + url);
                mediaType = produce.value()[0];
             }
-            MediaType media = MediaType.parse(mediaType);
+            MediaType media = MediaType.valueOf(mediaType);
             MessageBodyReader reader = providerFactory.createMessageBodyReader(method.getReturnType(), method.getGenericReturnType(), method.getAnnotations(), media);
             if (reader == null)
                throw new RuntimeException("Unable to find a message body reader for GET " + url + " content-type: " + mediaType);
@@ -131,7 +131,7 @@ abstract public class HttpClientInvoker extends ClientInvoker
             }
             try
             {
-               return reader.readFrom(method.getReturnType(), method.getGenericReturnType(), media, method.getAnnotations(), responseHeaders, baseMethod.getResponseBodyAsStream());
+               return reader.readFrom(method.getReturnType(), method.getGenericReturnType(), method.getAnnotations(), media, responseHeaders, baseMethod.getResponseBodyAsStream());
 
             }
             catch (IOException e)

@@ -38,7 +38,7 @@ public class PathParamInjector implements ValueInjector
       }
       else
       {
-         List<String> list = request.getUri().getTemplateParameters().get(paramName);
+         List<String> list = request.getUri().getPathParameters().get(paramName);
          return extractor.extractValue(list.get(list.size() - 1));
       }
    }

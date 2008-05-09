@@ -99,7 +99,7 @@ public class Cookie
     * @return the newly created Cookie
     * @throws IllegalArgumentException if the supplied string cannot be parsed
     */
-   public static Cookie parse(String value) throws IllegalArgumentException
+   public static Cookie valueOf(String value) throws IllegalArgumentException
    {
       return delegate.fromString(value);
    }

@@ -46,7 +46,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
       return params.getActualTypeArguments()[0].equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
    }
 
-   public MultivaluedMap<String, String> readFrom(Class<MultivaluedMap<String, String>> type, Type genericType, MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public MultivaluedMap<String, String> readFrom(Class<MultivaluedMap<String, String>> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
 
       char[] buffer = new char[100];

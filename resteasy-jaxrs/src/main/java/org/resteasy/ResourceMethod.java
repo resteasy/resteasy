@@ -73,8 +73,8 @@ public class ResourceMethod implements ResourceInvoker
          int i = 0;
          for (String mediaType : p.value())
          {
-            produces[i++] = MediaType.parse(mediaType);
-            preferredProduces.add(WeightedMediaType.parse(mediaType));
+            produces[i++] = MediaType.valueOf(mediaType);
+            preferredProduces.add(WeightedMediaType.valueOf(mediaType));
          }
       }
       if (c != null)
@@ -83,8 +83,8 @@ public class ResourceMethod implements ResourceInvoker
          int i = 0;
          for (String mediaType : c.value())
          {
-            consumes[i++] = MediaType.parse(mediaType);
-            preferredConsumes.add(WeightedMediaType.parse(mediaType));
+            consumes[i++] = MediaType.valueOf(mediaType);
+            preferredConsumes.add(WeightedMediaType.valueOf(mediaType));
          }
       }
       Collections.sort(preferredProduces);
@@ -242,7 +242,7 @@ public class ResourceMethod implements ResourceInvoker
       if (contentType != null) // if set by the response
       {
          //System.out.println("content type was set: " + contentType);
-         responseContentType = MediaType.parse(contentType.toString());
+         responseContentType = MediaType.valueOf(contentType.toString());
       }
       else
       {
@@ -251,7 +251,7 @@ public class ResourceMethod implements ResourceInvoker
       }
       if (responseContentType == null)
       {
-         responseContentType = MediaType.parse("*/*");
+         responseContentType = MediaType.valueOf("*/*");
       }
       return responseContentType;
    }
@@ -314,7 +314,7 @@ public class ResourceMethod implements ResourceInvoker
    {
       if (accepts == null || accepts.size() == 0)
       {
-         if (produces == null) return MediaType.parse("*/*");
+         if (produces == null) return MediaType.valueOf("*/*");
          else return produces[0];
       }
 

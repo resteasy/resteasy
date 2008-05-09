@@ -89,7 +89,7 @@ public class RequestImpl implements Request
          String[] split = tag.split(",");
          for (String etag : split)
          {
-            result.add(EntityTag.parse(etag.trim()));
+            result.add(EntityTag.valueOf(etag.trim()));
          }
       }
       return result;
