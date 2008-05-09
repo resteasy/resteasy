@@ -39,4 +39,8 @@ public class SingletonResource implements ResourceFactory
    {
       return obj.getClass();
    }
+
+   public void requestFinished(HttpRequest request, HttpResponse response, Object resource)
+   {
+   }
 }

@@ -76,7 +76,24 @@ public class Dispatcher
          ResteasyProviderFactory.pushContext(HttpHeaders.class, in.getHttpHeaders());
          ResteasyProviderFactory.pushContext(UriInfo.class, in.getUri());
          ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(in.getHttpHeaders(), in.getHttpMethod()));
-         invoker.invoke(in, response);
+         try
+         {
+            invoker.invoke(in, response);
+         }
+         catch (Failure e)
+         {
+            try
+            {
+               response.sendError(e.getErrorCode());
+            }
+            catch (IOException e1)
+            {
+               throw new RuntimeException(e1);
+            }
+            e.printStackTrace();
+            return;
+         }
+
       }
       catch (Exception e)
       {

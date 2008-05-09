@@ -50,4 +50,7 @@ public class POJOResourceFactory implements ResourceFactory
    }
 
 
+   public void requestFinished(HttpRequest request, HttpResponse response, Object resource)
+   {
+   }
 }
