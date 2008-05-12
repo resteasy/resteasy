@@ -19,6 +19,7 @@ public class HttpHeadersImpl implements HttpHeaders
    private MediaType mediaType;
    private String language;
    private Map<String, Cookie> cookies;
+   private List<String> acceptableLanguages;
 
    public MultivaluedMap<String, String> getRequestHeaders()
    {
@@ -60,6 +61,11 @@ public class HttpHeadersImpl implements HttpHeaders
       this.language = language;
    }
 
+   public void setAcceptableLanguages(List<String> acceptableLanguages)
+   {
+      this.acceptableLanguages = acceptableLanguages;
+   }
+
    public Map<String, Cookie> getCookies()
    {
       return cookies;
@@ -72,11 +78,11 @@ public class HttpHeadersImpl implements HttpHeaders
 
    public List<String> getRequestHeader(String name)
    {
-      return null;
+      return requestHeaders.get(name);
    }
 
    public List<String> getAcceptableLanguages()
    {
-      return null;
+      return acceptableLanguages;
    }
 }

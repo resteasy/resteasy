@@ -146,7 +146,9 @@ public class HttpServletDispatcher extends HttpServlet
       MultivaluedMapImpl<String, String> requestHeaders = extractRequestHeaders(request);
       headers.setRequestHeaders(requestHeaders);
       List<MediaType> acceptableMediaTypes = extractAccepts(requestHeaders);
+      List<String> acceptableLanguages = extractLanguages(requestHeaders);
       headers.setAcceptableMediaTypes(acceptableMediaTypes);
+      headers.setAcceptableLanguages(acceptableLanguages);
       headers.setLanguage(requestHeaders.getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
 
       String contentType = request.getContentType();
@@ -183,6 +185,20 @@ public class HttpServletDispatcher extends HttpServlet
          acceptableMediaTypes.addAll(MediaTypeHelper.parseHeader(accept));
       }
       return acceptableMediaTypes;
+   }
+
+   public static List<String> extractLanguages(MultivaluedMapImpl<String, String> requestHeaders)
+   {
+      List<String> acceptable = new ArrayList<String>();
+      List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT_LANGUAGE);
+      if (accepts == null) return acceptable;
+
+      for (String accept : accepts)
+      {
+         String[] splits = accept.split(",");
+         for (String split : splits) acceptable.add(split.trim());
+      }
+      return acceptable;
    }
 
    public static MultivaluedMapImpl<String, String> extractRequestHeaders(HttpServletRequest request)

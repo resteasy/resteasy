@@ -3,8 +3,10 @@ package org.resteasy.util;
 import org.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -16,6 +18,7 @@ public class HttpRequestImpl implements HttpRequest
    protected InputStream inputStream;
    protected UriInfo uri;
    protected String httpMethod;
+   protected List<PathSegment> preProcessedSegments;
 
    public HttpRequestImpl(InputStream inputStream, HttpHeaders httpHeaders, String httpMethod, UriInfo uri)
    {
@@ -23,6 +26,7 @@ public class HttpRequestImpl implements HttpRequest
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
       this.uri = uri;
+      this.preProcessedSegments = uri.getPathSegments();
    }
 
    public HttpHeaders getHttpHeaders()
@@ -43,5 +47,15 @@ public class HttpRequestImpl implements HttpRequest
    public String getHttpMethod()
    {
       return httpMethod;
+   }
+
+   public List<PathSegment> getPreProcessedSegments()
+   {
+      return preProcessedSegments;
+   }
+
+   public void setPreProcessedSegments(List<PathSegment> segments)
+   {
+      this.preProcessedSegments = segments;
    }
 }
