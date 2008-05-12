@@ -37,7 +37,7 @@ public class RequestImpl implements Request
       if (variants == null || variants.size() == 0) throw new IllegalArgumentException("Variant list must not be zero");
 
       List<MediaType> accepts = headers.getAcceptableMediaTypes();
-      List<String> languages = convertString(headers.getRequestHeaders().get(HttpHeaderNames.ACCEPT_LANGUAGE));
+      List<String> languages = headers.getAcceptableLanguages();
       List<String> encodings = convertString(headers.getRequestHeaders().get(HttpHeaderNames.ACCEPT_ENCODING));
 
 

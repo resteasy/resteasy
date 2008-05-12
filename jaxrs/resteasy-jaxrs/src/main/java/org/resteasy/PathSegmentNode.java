@@ -205,7 +205,7 @@ public class PathSegmentNode
 
    public ResourceInvoker findResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex)
    {
-      if (pathIndex >= request.getUri().getPathSegments().size() || wildcard)
+      if (pathIndex >= request.getPreProcessedSegments().size() || wildcard)
       {
          return match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -214,7 +214,7 @@ public class PathSegmentNode
 
    private ResourceInvoker findChild(HttpRequest request, HttpResponse response, int pathIndex)
    {
-      List<PathSegment> path = request.getUri().getPathSegments();
+      List<PathSegment> path = request.getPreProcessedSegments();
       String segment = path.get(pathIndex).getPath();
       PathSegmentNode next = children.get(segment);
       Failure failure = null;

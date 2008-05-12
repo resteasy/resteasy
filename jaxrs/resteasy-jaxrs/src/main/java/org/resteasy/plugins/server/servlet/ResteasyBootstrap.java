@@ -11,12 +11,16 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -109,6 +113,66 @@ public class ResteasyBootstrap implements ServletContextListener
       {
          processResources(resources);
       }
+
+      String mimeExtentions = event.getServletContext().getInitParameter("resteasy.media.type.mappings");
+      if (mimeExtentions != null)
+      {
+         Map<String, String> map = parseMap(mimeExtentions);
+         Map<String, MediaType> extMap = new HashMap<String, MediaType>();
+         for (String ext : map.keySet())
+         {
+            String value = map.get(ext);
+            extMap.put(ext, MediaType.valueOf(value));
+         }
+         dispatcher.setMimeExtensions(extMap);
+      }
+
+      String languageExtensions = event.getServletContext().getInitParameter("resteasy.language.mappings");
+      if (languageExtensions != null)
+      {
+         Map<String, String> map = parseMap(languageExtensions);
+         dispatcher.setLanguageExtensions(map);
+      }
+
+      String applicationConfig = event.getServletContext().getInitParameter(ApplicationConfig.class.getName());
+      if (applicationConfig != null)
+      {
+         try
+         {
+            Class configClass = Thread.currentThread().getContextClassLoader().loadClass(applicationConfig.trim());
+            ApplicationConfig config = (ApplicationConfig) configClass.newInstance();
+            dispatcher.setLanguageExtensions(config.getLanguageMappings());
+            dispatcher.setMimeExtensions(config.getMediaTypeMappings());
+            for (Class clazz : config.getResourceClasses()) registry.addPerRequestResource(clazz);
+            for (Class clazz : config.getProviderClasses()) registerProvider(clazz);
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (InstantiationException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (IllegalAccessException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+
+   }
+
+   protected Map<String, String> parseMap(String map)
+   {
+      Map<String, String> parsed = new HashMap<String, String>();
+      String[] entries = map.trim().split(",");
+      for (String entry : entries)
+      {
+         String[] split = entry.trim().split(":");
+         parsed.put(split[0].trim(), split[1].trim());
+
+      }
+      return parsed;
    }
 
    protected void processJndiResources(String jndiResources)
@@ -158,6 +222,11 @@ public class ResteasyBootstrap implements ServletContextListener
       {
          throw new RuntimeException(e);
       }
+      registerProvider(provider);
+   }
+
+   protected void registerProvider(Class provider)
+   {
       if (MessageBodyReader.class.isAssignableFrom(provider))
       {
          try
@@ -192,18 +261,23 @@ public class ResteasyBootstrap implements ServletContextListener
       for (String clazz : classes)
       {
          System.out.println("FOUND JAX-RS resource: " + clazz);
-         Class resource = null;
-         try
-         {
-            resource = Thread.currentThread().getContextClassLoader().loadClass(clazz);
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
-         }
-         if (resource.isInterface()) continue;
-         registry.addPerRequestResource(resource);
+         processResource(clazz);
       }
+   }
+
+   protected void processResource(String clazz)
+   {
+      Class resource = null;
+      try
+      {
+         resource = Thread.currentThread().getContextClassLoader().loadClass(clazz);
+      }
+      catch (ClassNotFoundException e)
+      {
+         throw new RuntimeException(e);
+      }
+      if (resource.isInterface()) return;
+      registry.addPerRequestResource(resource);
    }
 
    protected void setProviders(String providers)
