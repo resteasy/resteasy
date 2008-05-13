@@ -7,6 +7,10 @@ import org.resteasy.plugins.server.embedded.SecurityDomain;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 
+import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -63,5 +67,41 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    public void setSecurityDomain(SecurityDomain sc)
    {
       servlet.setSecurityDomain(sc);
+   }
+
+   public void addApplicationConfig(ApplicationConfig config)
+   {
+      dispatcher.setLanguageMappings(config.getLanguageMappings());
+      dispatcher.setMediaTypeMappings(config.getMediaTypeMappings());
+      if (config.getResourceClasses() != null)
+         for (Class clazz : config.getResourceClasses()) registry.addPerRequestResource(clazz);
+      if (config.getProviderClasses() != null)
+      {
+         for (Class provider : config.getProviderClasses())
+         {
+            if (MessageBodyReader.class.isAssignableFrom(provider))
+            {
+               try
+               {
+                  factory.addMessageBodyReader(provider);
+               }
+               catch (Exception e)
+               {
+                  throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
+               }
+            }
+            if (MessageBodyWriter.class.isAssignableFrom(provider))
+            {
+               try
+               {
+                  factory.addMessageBodyWriter(provider);
+               }
+               catch (Exception e)
+               {
+                  throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
+               }
+            }
+         }
+      }
    }
 }

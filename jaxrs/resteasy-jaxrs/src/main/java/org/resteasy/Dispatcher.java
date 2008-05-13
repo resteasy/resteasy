@@ -26,8 +26,8 @@ public class Dispatcher
 {
    protected ResteasyProviderFactory providerFactory;
    protected ResourceMethodRegistry registry;
-   protected Map<String, MediaType> mimeExtensions;
-   protected Map<String, String> languageExtensions;
+   protected Map<String, MediaType> mediaTypeMappings;
+   protected Map<String, String> languageMappings;
 
    public Dispatcher(ResteasyProviderFactory providerFactory)
    {
@@ -45,19 +45,29 @@ public class Dispatcher
       return registry;
    }
 
-   public void setMimeExtensions(Map<String, MediaType> mimeExtensions)
+   public void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings)
    {
-      this.mimeExtensions = mimeExtensions;
+      this.mediaTypeMappings = mediaTypeMappings;
    }
 
-   public void setLanguageExtensions(Map<String, String> languageExtensions)
+   public void setLanguageMappings(Map<String, String> languageMappings)
    {
-      this.languageExtensions = languageExtensions;
+      this.languageMappings = languageMappings;
+   }
+
+   public Map<String, MediaType> getMediaTypeMappings()
+   {
+      return mediaTypeMappings;
+   }
+
+   public Map<String, String> getLanguageMappings()
+   {
+      return languageMappings;
    }
 
    protected void preprocess(HttpRequest in)
    {
-      if (mimeExtensions == null && languageExtensions == null) return;
+      if (mediaTypeMappings == null && languageMappings == null) return;
       List<PathSegment> segments = in.getUri().getPathSegments();
       PathSegment last = segments.get(segments.size() - 1);
       int index;
@@ -70,9 +80,9 @@ public class Dispatcher
       String rebuilt = last.getPath().substring(0, index);
       for (String ext : extensions)
       {
-         if (mimeExtensions != null)
+         if (mediaTypeMappings != null)
          {
-            MediaType match = mimeExtensions.get(ext);
+            MediaType match = mediaTypeMappings.get(ext);
             if (match != null)
             {
                in.getHttpHeaders().getAcceptableMediaTypes().add(match);
@@ -80,9 +90,9 @@ public class Dispatcher
                continue;
             }
          }
-         if (languageExtensions != null)
+         if (languageMappings != null)
          {
-            String match = languageExtensions.get(ext);
+            String match = languageMappings.get(ext);
             if (match != null)
             {
                in.getHttpHeaders().getAcceptableLanguages().add(match);

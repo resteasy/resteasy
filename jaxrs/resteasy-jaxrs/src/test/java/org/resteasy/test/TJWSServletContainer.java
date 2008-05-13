@@ -10,7 +10,7 @@ import org.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
  */
 public class TJWSServletContainer
 {
-   private static TJWSEmbeddedJaxrsServer tjws;
+   public static TJWSEmbeddedJaxrsServer tjws;
 
    public static Dispatcher start() throws Exception
    {

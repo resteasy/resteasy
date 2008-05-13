@@ -124,14 +124,16 @@ public class ResteasyBootstrap implements ServletContextListener
             String value = map.get(ext);
             extMap.put(ext, MediaType.valueOf(value));
          }
-         dispatcher.setMimeExtensions(extMap);
+         if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
+         else dispatcher.setMediaTypeMappings(extMap);
       }
 
       String languageExtensions = event.getServletContext().getInitParameter("resteasy.language.mappings");
       if (languageExtensions != null)
       {
          Map<String, String> map = parseMap(languageExtensions);
-         dispatcher.setLanguageExtensions(map);
+         if (dispatcher.getLanguageMappings() != null) dispatcher.getLanguageMappings().putAll(map);
+         else dispatcher.setLanguageMappings(map);
       }
 
       String applicationConfig = event.getServletContext().getInitParameter(ApplicationConfig.class.getName());
@@ -139,12 +141,25 @@ public class ResteasyBootstrap implements ServletContextListener
       {
          try
          {
+            //System.out.println("application config: " + applicationConfig.trim());
             Class configClass = Thread.currentThread().getContextClassLoader().loadClass(applicationConfig.trim());
             ApplicationConfig config = (ApplicationConfig) configClass.newInstance();
-            dispatcher.setLanguageExtensions(config.getLanguageMappings());
-            dispatcher.setMimeExtensions(config.getMediaTypeMappings());
-            for (Class clazz : config.getResourceClasses()) registry.addPerRequestResource(clazz);
-            for (Class clazz : config.getProviderClasses()) registerProvider(clazz);
+            if (config.getLanguageMappings() != null)
+            {
+               if (dispatcher.getLanguageMappings() != null)
+                  dispatcher.getLanguageMappings().putAll(config.getLanguageMappings());
+               else dispatcher.setLanguageMappings(config.getLanguageMappings());
+            }
+            if (config.getMediaTypeMappings() != null)
+            {
+               if (dispatcher.getMediaTypeMappings() != null)
+                  dispatcher.getMediaTypeMappings().putAll(config.getMediaTypeMappings());
+               else dispatcher.setMediaTypeMappings(config.getMediaTypeMappings());
+            }
+            if (config.getResourceClasses() != null)
+               for (Class clazz : config.getResourceClasses()) registry.addPerRequestResource(clazz);
+            if (config.getProviderClasses() != null)
+               for (Class clazz : config.getProviderClasses()) registerProvider(clazz);
          }
          catch (ClassNotFoundException e)
          {

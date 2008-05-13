@@ -82,8 +82,8 @@ public class ExtensionTest
       mimeMap.put("txt", MediaType.valueOf("text/plain"));
       Map<String, String> languageMap = new HashMap<String, String>();
       languageMap.put("en", "en-US");
-      dispatcher.setMimeExtensions(mimeMap);
-      dispatcher.setLanguageExtensions(languageMap);
+      dispatcher.setMediaTypeMappings(mimeMap);
+      dispatcher.setLanguageMappings(languageMap);
       dispatcher.getRegistry().addPerRequestResource(ExtensionResource.class);
    }
 
