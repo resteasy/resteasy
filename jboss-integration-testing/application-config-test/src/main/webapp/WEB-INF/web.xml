@@ -1,0 +1,68 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+   <display-name>Archetype Created Web Application</display-name>
+   <context-param>
+      <param-name>resteasy.scan</param-name>
+      <param-value>false</param-value>
+   </context-param>
+
+   <context-param>
+      <param-name>javax.ws.rs.core.ApplicationConfig</param-name>
+      <param-value>org.jboss.resteasy.test.smoke.MyApplicationConfig</param-value>
+   </context-param>
+
+   <context-param>
+      <param-name>resteasy.media.type.mappings</param-name>
+      <param-value>
+         xml : application/xml,
+         html : text/html,
+         txt : text/plain
+      </param-value>
+   </context-param>
+
+   <context-param>
+      <param-name>resteasy.language.mappings</param-name>
+      <param-value>
+         en : en-US
+      </param-value>
+   </context-param>
+
+   <listener>
+      <listener-class>org.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+   </listener>
+
+   <servlet>
+      <servlet-name>Resteasy</servlet-name>
+      <servlet-class>org.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+   </servlet>
+
+   <servlet-mapping>
+      <servlet-name>Resteasy</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+
+   <security-constraint>
+      <web-resource-collection>
+         <web-resource-name>Resteasy</web-resource-name>
+         <url-pattern>/security</url-pattern>
+         <http-method>GET</http-method>
+         <http-method>POST</http-method>
+      </web-resource-collection>
+      <auth-constraint>
+         <role-name>admin</role-name>
+      </auth-constraint>
+   </security-constraint>
+
+   <login-config>
+      <auth-method>BASIC</auth-method>
+      <realm-name>Test</realm-name>
+   </login-config>
+
+   <security-role>
+      <role-name>admin</role-name>
+   </security-role>
+
+</web-app>
