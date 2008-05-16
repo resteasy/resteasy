@@ -4,6 +4,7 @@ import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
 import org.resteasy.util.HttpResponseCodes;
 import org.resteasy.util.PathHelper;
+import org.resteasy.util.SegmentInfo;
 import org.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.core.MediaType;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.PathSegment;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -25,32 +27,45 @@ public class PathSegmentNode
 {
    private List<ResourceMethod> invokers = new ArrayList<ResourceMethod>();
    private ResourceLocator locator;
-   private PathSegmentNode uriParamChild;
    private Map<String, PathSegmentNode> children = new HashMap<String, PathSegmentNode>();
+   private Map<String, PathSegmentNode> uriParamChildren = new HashMap<String, PathSegmentNode>();
+   private List<PathSegmentNode> sortedUriParamChildren = new ArrayList<PathSegmentNode>();
+   private SegmentInfo uriParamPattern;
    private boolean wildcard;
 
-   public PathSegmentNode()
+
+   private static class SortUriParamChild implements Comparator<PathSegmentNode>
    {
+      public int compare(PathSegmentNode pathSegmentNode, PathSegmentNode pathSegmentNode1)
+      {
+         return pathSegmentNode.uriParamPattern.compareTo(pathSegmentNode1.uriParamPattern);
+      }
    }
 
    public void addChild(String[] path, int pathIndex, ResourceMethod invoker, boolean wildcard)
    {
       String segment = path[pathIndex];
       Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(segment);
-      if (matcher.matches())
+      if (matcher.find())
       {
-         if (uriParamChild == null)
+         SegmentInfo info = new SegmentInfo(segment);
+         PathSegmentNode child = uriParamChildren.get(info.getExpression());
+         if (child == null)
          {
-            uriParamChild = new PathSegmentNode();
+            child = new PathSegmentNode();
+            uriParamChildren.put(info.getExpression(), child);
+            child.uriParamPattern = info;
+            sortedUriParamChildren.add(child);
+            Collections.sort(sortedUriParamChildren, new SortUriParamChild());
          }
          if (path.length == pathIndex + 1)
          {
-            uriParamChild.invokers.add(invoker);
-            uriParamChild.wildcard = wildcard;
+            child.invokers.add(invoker);
+            child.wildcard = wildcard;
          }
          else
          {
-            uriParamChild.addChild(path, pathIndex + 1, invoker, wildcard);
+            child.addChild(path, pathIndex + 1, invoker, wildcard);
          }
       }
       else
@@ -75,21 +90,28 @@ public class PathSegmentNode
 
    public void addChild(String[] path, int pathIndex, ResourceLocator locator)
    {
-      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
-      if (matcher.matches())
+      String segment = path[pathIndex];
+      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(segment);
+      if (matcher.find())
       {
-         if (uriParamChild == null)
+         SegmentInfo info = new SegmentInfo(segment);
+         PathSegmentNode child = uriParamChildren.get(info.getExpression());
+         if (child == null)
          {
-            uriParamChild = new PathSegmentNode();
+            child = new PathSegmentNode();
+            uriParamChildren.put(info.getExpression(), child);
+            child.uriParamPattern = info;
+            sortedUriParamChildren.add(child);
+            Collections.sort(sortedUriParamChildren, new SortUriParamChild());
          }
          if (path.length == pathIndex + 1)
          {
-            uriParamChild.locator = locator;
-            locator.setUriIndex(pathIndex + 1);
+            child.locator = locator;
+            locator.setUriIndex((pathIndex + 1));
          }
          else
          {
-            uriParamChild.addChild(path, pathIndex + 1, locator);
+            child.addChild(path, pathIndex + 1, locator);
          }
       }
       else
@@ -114,25 +136,29 @@ public class PathSegmentNode
 
    public ResourceInvoker removeChild(String[] path, int pathIndex, Method method)
    {
+      String segment = path[pathIndex];
       Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
-      if (matcher.matches())
+      if (matcher.find())
       {
+         String regex = PathHelper.createRegularExpressionFromPathExpression(segment);
+         PathSegmentNode child = uriParamChildren.get(regex);
+         if (child == null) return null;
          if (path.length == pathIndex + 1)
          {
-            ResourceInvoker rm = tryRemoveInvoker(uriParamChild.invokers, method);
+            ResourceInvoker rm = tryRemoveInvoker(child.invokers, method);
             if (rm != null) return rm;
             return null;
          }
          else
          {
-            ResourceInvoker rm = uriParamChild.removeChild(path, pathIndex + 1, method);
+            ResourceInvoker rm = child.removeChild(path, pathIndex + 1, method);
             if (rm != null) return rm;
             return null;
          }
       }
       else
       {
-         PathSegmentNode child = children.get(path[pathIndex]);
+         PathSegmentNode child = children.get(segment);
          if (path.length == pathIndex + 1)
          {
             return tryRemoveInvoker(child.invokers, method);
@@ -146,12 +172,14 @@ public class PathSegmentNode
 
    public ResourceInvoker removeLocator(String[] path, int pathIndex)
    {
-      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path[pathIndex]);
+      String segment = path[pathIndex];
+      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(segment);
       if (matcher.matches())
       {
+         String regex = PathHelper.createRegularExpressionFromPathExpression(segment);
+         PathSegmentNode child = uriParamChildren.get(regex);
          if (path.length == pathIndex + 1)
          {
-            PathSegmentNode child = uriParamChild;
             if (child == null) return null;
             if (child.locator != null)
             {
@@ -163,7 +191,6 @@ public class PathSegmentNode
          }
          else
          {
-            PathSegmentNode child = uriParamChild;
             if (child == null) return null;
             ResourceInvoker rm = child.removeLocator(path, pathIndex + 1);
             if (rm != null) return rm;
@@ -239,8 +266,10 @@ public class PathSegmentNode
             if (path.get(pathIndex).getPath().equals("")) throw failure;
          }
       }
-      if (uriParamChild != null)
+      for (PathSegmentNode uriParamChild : sortedUriParamChildren)
       {
+         if (!uriParamChild.uriParamPattern.getPattern().matcher(segment).matches()) continue;
+
          try
          {
             if (uriParamChild.wildcard)
