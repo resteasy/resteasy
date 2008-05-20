@@ -94,10 +94,10 @@ public class HttpServletDispatcher extends HttpServlet
    {
       HttpHeaders headers = extractHttpHeaders(request);
       String path = PathHelper.getEncodedPathInfo(request.getRequestURI(), request.getContextPath());
-      System.out.println("contextPath: " + request.getContextPath());
-      System.out.println("path: " + path);
-      System.out.println("getRequestURI: " + request.getRequestURI());
-      System.out.println("getRequestURL: " + request.getRequestURL());
+//      System.out.println("contextPath: " + request.getContextPath());
+//      System.out.println("path: " + path);
+//      System.out.println("getRequestURI: " + request.getRequestURI());
+//      System.out.println("getRequestURL: " + request.getRequestURL());
       URI absolutePath = null;
       try
       {

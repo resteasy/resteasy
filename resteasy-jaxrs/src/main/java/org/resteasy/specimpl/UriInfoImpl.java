@@ -50,8 +50,8 @@ public class UriInfoImpl implements UriInfo
       {
          throw new RuntimeException(e);
       }
-      System.out.println("path: " + path);
-      System.out.println("encodedPath: " + encodedPath);
+      //System.out.println("path: " + path);
+      //System.out.println("encodedPath: " + encodedPath);
       this.absolutePath = absolutePath;
       this.queryParameters = new MultivaluedMapImpl<String, String>();
       this.encodedQueryParameters = new MultivaluedMapImpl<String, String>();

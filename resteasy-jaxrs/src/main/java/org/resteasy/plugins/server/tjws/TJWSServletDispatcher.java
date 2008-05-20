@@ -51,7 +51,7 @@ public class TJWSServletDispatcher extends HttpServletDispatcher
                String cookie = auth.substring(6);
                cookie = new String(Base64.decodeBase64(cookie.getBytes()));
                String[] split = cookie.split(":");
-               System.out.println("Authenticating user: " + split[0] + " passwd: " + split[1]);
+               //System.out.println("Authenticating user: " + split[0] + " passwd: " + split[1]);
                Principal user = null;
                try
                {

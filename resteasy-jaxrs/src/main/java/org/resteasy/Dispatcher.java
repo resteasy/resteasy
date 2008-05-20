@@ -187,10 +187,4 @@ public class Dispatcher
       }
    }
 
-   public static void main(String[] args) throws Exception
-   {
-      String[] split = "xml.en".split("\\.");
-      System.out.println(split.length);
-   }
-
 }

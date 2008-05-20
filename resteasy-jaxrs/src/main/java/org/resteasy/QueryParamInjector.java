@@ -4,8 +4,10 @@ import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
 
 import javax.ws.rs.QueryParam;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -14,17 +16,36 @@ import java.util.List;
  */
 public class QueryParamInjector extends StringParameterInjector implements ValueInjector
 {
+   private boolean encode;
+   private String encodedName;
 
-
-   public QueryParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue)
+   public QueryParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, boolean encodeName)
    {
       super(type, genericType, paramName, "@" + QueryParam.class.getSimpleName(), defaultValue, target);
+      this.encode = encode;
+      try
+      {
+         if (encodeName) this.encodedName = URLDecoder.decode(paramName, "UTF-8");
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    public Object inject(HttpRequest request, HttpResponse response)
    {
-      List<String> list = request.getUri().getQueryParameters().get(paramName);
-      return extractValues(list);
+      if (encode)
+      {
+         List<String> list = request.getUri().getQueryParameters(false).get(encodedName);
+         return extractValues(list);
+      }
+      else
+      {
+         List<String> list = request.getUri().getQueryParameters().get(paramName);
+         return extractValues(list);
+
+      }
    }
 
    public Object inject()

@@ -55,12 +55,4 @@ public class Encode
       return result;
    }
 
-   public static void main(String[] args)
-   {
-      System.out.println(encodeSegment("hello/world"));
-      System.out.println(encodePath("foo"));
-      System.out.println(encodePath("foo/bar.txt"));
-      System.out.println(encodePath("foo/bar/"));
-      System.out.println(encodePath("/foo/bar;stuff=blah"));
-   }
 }
