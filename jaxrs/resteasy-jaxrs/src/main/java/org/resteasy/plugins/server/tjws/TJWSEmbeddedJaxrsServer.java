@@ -46,6 +46,7 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
       server.setAttribute(Registry.class.getName(), registry);
       server.setAttribute(Dispatcher.class.getName(), dispatcher);
       addServlet(rootResourcePath, servlet);
+      servlet.setContextPath(rootResourcePath);
       super.start();
    }
 

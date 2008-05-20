@@ -18,6 +18,7 @@ import java.security.Principal;
 public class TJWSServletDispatcher extends HttpServletDispatcher
 {
    private SecurityDomain domain;
+   private String contextPath = "";
 
    public TJWSServletDispatcher()
    {
@@ -26,6 +27,13 @@ public class TJWSServletDispatcher extends HttpServletDispatcher
    public TJWSServletDispatcher(SecurityDomain domain)
    {
       this.domain = domain;
+   }
+
+   public void setContextPath(String contextPath)
+   {
+      if (contextPath == null) contextPath = "";
+      else if (contextPath.equals("/")) contextPath = "";
+      this.contextPath = contextPath;
    }
 
    @Override
@@ -54,9 +62,14 @@ public class TJWSServletDispatcher extends HttpServletDispatcher
                   response.sendError(HttpResponseCodes.SC_UNAUTHORIZED);
                   return;
                }
-               request = new AuthenticatedHttpServletRequest(request, domain, user, "BASIC");
+               request = new AuthenticatedHttpServletRequest(request, domain, user, "BASIC", contextPath);
             }
          }
+      }
+      else
+      {
+         // fix bug in non-encoded getRequestURI and URL
+         request = new PatchedHttpServletRequest(request, contextPath);
       }
       super.service(httpMethod, request, response);
    }

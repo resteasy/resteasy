@@ -43,39 +43,14 @@ public class PathHelper
 
    }
 
-
-   public static void main(String[] args) throws Exception
+   public static String getEncodedPathInfo(String path, String contextPath)
    {
+      if (contextPath != null && !"".equals(contextPath))
       {
-         String path = "{foo},{bar}";
-         String exp = createRegularExpressionFromPathExpression(path);
-         System.out.println(exp);
-         Pattern pattern = Pattern.compile(exp);
-         String stuff = "blahttt,yyyhhh";
-         Matcher matcher = pattern.matcher(stuff);
-//      matcher.matches();
-         for (int i = 1; i <= matcher.groupCount(); i++) System.out.println(matcher.group(i));
+         path = path.substring(contextPath.length());
       }
-      {
-         String path = "blah{foo},{bar}hhh";
-         String exp = createRegularExpressionFromPathExpression(path);
-         System.out.println(exp);
-         Pattern pattern = Pattern.compile(exp);
-         String stuff = "blahttt,yyyhhh";
-         Matcher matcher = pattern.matcher(stuff);
-//      matcher.matches();
-         for (int i = 1; i <= matcher.groupCount(); i++) System.out.println(matcher.group(i));
-      }
-      {
-         String path = "{foo}";
-         String exp = createRegularExpressionFromPathExpression(path);
-         System.out.println(exp);
-         Pattern pattern = Pattern.compile(exp);
-         String stuff = "blahttt,yyyhhh";
-         Matcher matcher = pattern.matcher(stuff);
-//      matcher.matches();
-         for (int i = 1; i <= matcher.groupCount(); i++) System.out.println(matcher.group(i));
-      }
+      return path;
+
    }
 
 

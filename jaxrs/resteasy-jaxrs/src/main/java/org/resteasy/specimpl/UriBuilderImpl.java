@@ -1,5 +1,6 @@
 package org.resteasy.specimpl;
 
+import org.resteasy.util.Encode;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.Path;
@@ -7,7 +8,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +25,7 @@ public class UriBuilderImpl extends UriBuilder
    private int port = -1;
 
    // todo need to implement encoding
-   private boolean encode;
+   private boolean encode = true;
 
    private String userInfo;
    private String path;
@@ -61,8 +61,8 @@ public class UriBuilderImpl extends UriBuilder
       if (uri.getHost() != null) host = uri.getHost();
       if (uri.getScheme() != null) scheme = uri.getScheme();
       if (uri.getHost() != null) port = uri.getPort();
-      if (uri.getUserInfo() != null) userInfo = uri.getUserInfo();
-      if (uri.getPath() != null && !uri.getPath().equals("")) path = uri.getPath();
+      if (uri.getUserInfo() != null) userInfo = uri.getRawUserInfo();
+      if (uri.getPath() != null && !uri.getPath().equals("")) path = uri.getRawPath();
       if (path != null)
       {
          int idx = path.indexOf(';');
@@ -72,8 +72,8 @@ public class UriBuilderImpl extends UriBuilder
             path = path.substring(0, idx);
          }
       }
-      if (uri.getFragment() != null) fragment = uri.getFragment();
-      if (uri.getQuery() != null) query = uri.getQuery();
+      if (uri.getFragment() != null) fragment = uri.getRawFragment();
+      if (uri.getQuery() != null) query = uri.getRawQuery();
       return this;
    }
 
@@ -85,16 +85,14 @@ public class UriBuilderImpl extends UriBuilder
 
    public UriBuilder schemeSpecificPart(String ssp) throws IllegalArgumentException
    {
-      URI uri = null;
-      try
+      StringBuffer uriStr = new StringBuffer();
+      if (scheme != null) uriStr.append(scheme).append(":");
+      uriStr.append(ssp);
+      if (fragment != null)
       {
-         uri = new URI(scheme, ssp, fragment);
+         uriStr.append("#").append(fragment);
       }
-      catch (URISyntaxException e)
-      {
-         throw new RuntimeException(e);
-      }
-      return uri(uri);
+      return uri(URI.create(uriStr.toString()));
    }
 
    public UriBuilder userInfo(String ui) throws IllegalArgumentException
@@ -117,11 +115,11 @@ public class UriBuilderImpl extends UriBuilder
 
    public UriBuilder replacePath(String... segments) throws IllegalArgumentException
    {
-      this.path = paths(null, segments);
+      this.path = paths(isEncode(), null, segments);
       return this;
    }
 
-   protected static String paths(String basePath, String... segments)
+   protected static String paths(boolean encode, String basePath, String... segments)
    {
       String path = basePath;
       if (path == null) path = "";
@@ -131,21 +129,27 @@ public class UriBuilderImpl extends UriBuilder
          if (!path.endsWith("/")) path += "/";
          if (segment.equals("/")) continue;
          if (segment.startsWith("/")) segment = segment.substring(1);
+         if (encode) segment = Encode.encodePath(segment);
          path += segment;
+
       }
       return path;
    }
 
    public UriBuilder path(String... segments) throws IllegalArgumentException
    {
-      path = paths(path, segments);
+      path = paths(isEncode(), path, segments);
       return this;
    }
 
    public UriBuilder path(Class resource) throws IllegalArgumentException
    {
       Path ann = (Path) resource.getAnnotation(Path.class);
-      if (ann != null) path(ann.value());
+      if (ann != null)
+      {
+         String[] segments = new String[]{ann.value()};
+         path = paths(ann.encode(), path, segments);
+      }
       return this;
    }
 
@@ -166,7 +170,11 @@ public class UriBuilderImpl extends UriBuilder
       for (Method method : methods)
       {
          Path ann = method.getAnnotation(Path.class);
-         if (ann != null) path(ann.value());
+         if (ann != null)
+         {
+            String[] segments = new String[]{ann.value()};
+            path = paths(ann.encode(), path, segments);
+         }
       }
       return this;
    }
@@ -192,16 +200,22 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
+   protected String encodeString(String value)
+   {
+      if (!isEncode()) return value;
+      return Encode.encodeSegment(value);
+   }
+
    public UriBuilder queryParam(String name, String value) throws IllegalArgumentException
    {
-      if (query == null) query = name + "=" + value;
-      else query += "&" + name + "=" + value;
+      if (query == null) query = encodeString(name) + "=" + encodeString(value);
+      else query += "&" + encodeString(name) + "=" + encodeString(value);
       return this;
    }
 
    public UriBuilder fragment(String fragment) throws IllegalArgumentException
    {
-      this.fragment = fragment;
+      this.fragment = encodeString(fragment);
       return this;
    }
 
@@ -247,21 +261,37 @@ public class UriBuilderImpl extends UriBuilder
 
    protected URI build(String tmpPath) throws UriBuilderException
    {
+      if (matrix != null)
+      {
+         if (tmpPath == null) tmpPath = "";
+         if (!matrix.startsWith(";")) tmpPath += ";";
+         tmpPath += matrix;
+      }
+      StringBuffer buffer = new StringBuffer();
+      if (scheme != null) buffer.append(scheme).append("://");
+      if (userInfo != null) buffer.append(userInfo).append("@");
+      if (host != null) buffer.append(host);
+      if (port != -1 && port != 80) buffer.append(":").append(Integer.toString(port));
+      if (tmpPath != null) buffer.append(tmpPath);
+      if (query != null) buffer.append("?").append(query);
+      if (fragment != null) buffer.append("#").append(fragment);
+      String buf = buffer.toString();
       try
       {
-         if (matrix != null)
-         {
-            if (!matrix.startsWith(";")) tmpPath += ";";
-            tmpPath += matrix;
-         }
-         return new URI(scheme, userInfo, host, port, tmpPath, query, fragment);
+         return URI.create(buf);
       }
-      catch (URISyntaxException e)
+      catch (Exception e)
       {
-         throw new UriBuilderException(e);
+         throw new RuntimeException("Failed to create URI: " + buf, e);
       }
    }
 
+
+   private String encodeSegment(String value)
+   {
+      if (isEncode()) return Encode.encodeSegment(value);
+      return value;
+   }
 
    public URI build(Map<String, Object> values) throws IllegalArgumentException, UriBuilderException
    {
@@ -278,11 +308,11 @@ public class UriBuilderImpl extends UriBuilder
             Object value = values.get(uriParamName);
             if (value == null)
                throw new IllegalArgumentException("uri parameter {" + uriParamName + "} does not exist as a value");
-            paths[i] = value.toString();
+            paths[i] = encodeSegment(value.toString());
          }
          i++;
       }
-      String tmpPath = paths(null, paths);
+      String tmpPath = paths(isEncode(), null, paths);
       return build(tmpPath);
    }
 
@@ -374,11 +404,22 @@ public class UriBuilderImpl extends UriBuilder
     */
    public void setPath(String path)
    {
-      this.path = path;
+      if (isEncode() && path != null) this.path = Encode.encodePath(path);
+      else this.path = path;
    }
 
    public UriBuilder extension(String extension)
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      if (isEncode()) Encode.encodeSegment(extension);
+      if (path == null)
+      {
+         path = "." + extension;
+      }
+      else
+      {
+         if (!path.endsWith(".")) path += ".";
+         path += extension;
+      }
+      return this;
    }
 }

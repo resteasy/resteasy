@@ -7,7 +7,7 @@ import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,15 +39,40 @@ public class UriInfoImpl implements UriInfo
       this(absolutePath, path, queryString, PathSegmentImpl.parseSegments(path));
    }
 
-   public UriInfoImpl(URI absolutePath, String path, String queryString, List<PathSegment> pathSegments)
+   public UriInfoImpl(URI absolutePath, String encodedPath, String queryString, List<PathSegment> encodedPathSegments)
    {
-      this.path = path;
+      this.encodedPath = encodedPath;
+      try
+      {
+         this.path = URLDecoder.decode(encodedPath, "UTF-8");
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         throw new RuntimeException(e);
+      }
+      System.out.println("path: " + path);
+      System.out.println("encodedPath: " + encodedPath);
       this.absolutePath = absolutePath;
       this.queryParameters = new MultivaluedMapImpl<String, String>();
       this.encodedQueryParameters = new MultivaluedMapImpl<String, String>();
       extractParameters(queryString);
+      this.encodedTemplateParameters = new MultivaluedMapImpl<String, String>();
       this.templateParameters = new MultivaluedMapImpl<String, String>();
-      this.pathSegments = pathSegments;
+      this.encodedPathSegments = encodedPathSegments;
+      this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
+      for (PathSegment segment : encodedPathSegments)
+      {
+         try
+         {
+            pathSegments.add(new PathSegmentImpl(URLDecoder.decode(((PathSegmentImpl) segment).getOriginal(), "UTF-8")));
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+
+
       this.queryString = queryString;
 
 
@@ -56,36 +81,37 @@ public class UriInfoImpl implements UriInfo
       {
          this.absolutePathWithQueryString = URI.create(absolutePath.toString() + "?" + queryString);
       }
-      if (path.trim().equals("")) baseURI = absolutePath;
+      if (encodedPath.trim().equals("")) baseURI = absolutePath;
       else
       {
          String abs = absolutePath.getPath();
-         abs = abs.substring(0, abs.indexOf(path));
+         abs = abs.substring(0, abs.indexOf(encodedPath));
          if (!abs.endsWith("/")) abs += "/";
 //         System.out.println("abs: " + abs);
 //         System.out.println("absolutePath: " + absolutePath);
-//         System.out.println("path: " + path);
+//         System.out.println("encodedPath: " + encodedPath);
          try
          {
-            baseURI = UriBuilder.fromUri(absolutePath).replacePath(abs).build();
+            baseURI = UriBuilder.fromUri(absolutePath).encode(false).replacePath(abs).build();
 
          }
          catch (Exception e)
          {
-            throw new RuntimeException("URI value was: " + abs + " path: " + path, e);
+            throw new RuntimeException("URI value was: " + abs + " encodedPath: " + encodedPath, e);
          }
       }
    }
 
-   // this is here for testing purposes todo remove it!
+   // this is here for our TESTSUITE, do not invoke or use this method
    public UriInfoImpl(List<PathSegment> pathSegments)
    {
       this.pathSegments = pathSegments;
+      this.encodedPathSegments = pathSegments;
    }
 
    public UriInfoImpl clone()
    {
-      return new UriInfoImpl(absolutePath, path, queryString, pathSegments);
+      return new UriInfoImpl(absolutePath, encodedPath, queryString, encodedPathSegments);
    }
 
    public String getPath()
@@ -95,38 +121,20 @@ public class UriInfoImpl implements UriInfo
 
    public String getPath(boolean decode)
    {
-      if (decode) return path;
-      try
-      {
-         if (encodedPath == null)
-         {
-            String tmp = path.substring(1);
-            String[] segments = tmp.split("/");
-            encodedPath = "";
-            for (String segment : segments)
-            {
-               encodedPath += "/" + URLEncoder.encode(segment, "UTF-8").replace("+", "%20");
-            }
-         }
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      if (decode) return getPath();
       return encodedPath;
    }
 
    public List<PathSegment> getPathSegments()
    {
+      if (pathSegments != null) return pathSegments;
+      pathSegments = PathSegmentImpl.parseSegments(getPath());
       return pathSegments;
    }
 
    public List<PathSegment> getPathSegments(boolean decode)
    {
-      if (decode) return pathSegments;
-      if (encodedPathSegments != null) return encodedPathSegments;
-      String p = getPath(false);
-      encodedPathSegments = PathSegmentImpl.parseSegments(p);
+      if (decode) return getPathSegments();
       return encodedPathSegments;
    }
 
@@ -165,29 +173,22 @@ public class UriInfoImpl implements UriInfo
       return templateParameters;
    }
 
+   public void addEncodedPathParameter(String name, String value)
+   {
+      encodedTemplateParameters.add(name, value);
+      try
+      {
+         templateParameters.add(name, URLDecoder.decode(value, "UTF-8"));
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
    public MultivaluedMap<String, String> getPathParameters(boolean decode)
    {
-      if (decode) return templateParameters;
-      if (encodedTemplateParameters != null) return encodedTemplateParameters;
-
-      encodedTemplateParameters = new MultivaluedMapImpl<String, String>();
-
-      for (String key : templateParameters.keySet())
-      {
-         List<String> values = templateParameters.get(key);
-         for (String value : values)
-         {
-            try
-            {
-               encodedTemplateParameters.add(key, URLEncoder.encode(value, "UTF-8").replace("+", "%20"));
-            }
-            catch (UnsupportedEncodingException e)
-            {
-               throw new RuntimeException(e);
-            }
-         }
-      }
-
+      if (decode) return getPathParameters();
       return encodedTemplateParameters;
    }
 

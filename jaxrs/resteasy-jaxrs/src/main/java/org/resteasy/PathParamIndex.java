@@ -1,11 +1,13 @@
 package org.resteasy;
 
+import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.util.HttpResponseCodes;
 import org.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.UriInfo;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,8 +69,8 @@ public class PathParamIndex
 
    public void populateUriInfoTemplateParams(HttpRequest input)
    {
-      UriInfo uriInfo = input.getUri();
-      List<PathSegment> pathSegments = input.getUri().getPathSegments();
+      UriInfoImpl uriInfo = (UriInfoImpl) input.getUri();
+      List<PathSegment> pathSegments = input.getUri().getPathSegments(false);
       int i = offset;
       String lastName = null;
       String lastValue = null;
@@ -91,7 +93,7 @@ public class PathParamIndex
          {
             String name = segment.pathParams.get(pathParamsIndex++);
             String value = matcher.group(g);
-            uriInfo.getPathParameters().add(name, value);
+            uriInfo.addEncodedPathParameter(name, value);
             lastName = name;
             lastValue = value;
          }
@@ -105,8 +107,21 @@ public class PathParamIndex
             PathSegment pathSegment = pathSegments.get(i);
             lastValue += "/" + pathSegment.getPath();
          }
-         List<String> values = uriInfo.getPathParameters().get(lastName);
-         values.set(values.size() - 1, lastValue);
+         {
+            List<String> values = uriInfo.getPathParameters(false).get(lastName);
+            values.set(values.size() - 1, lastValue);
+         }
+         {
+            List<String> values = uriInfo.getPathParameters().get(lastName);
+            try
+            {
+               values.set(values.size() - 1, URLDecoder.decode(lastValue, "UTF-8"));
+            }
+            catch (UnsupportedEncodingException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
       }
    }
 

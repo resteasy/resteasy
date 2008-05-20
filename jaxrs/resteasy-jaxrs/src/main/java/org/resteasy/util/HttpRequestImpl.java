@@ -26,7 +26,7 @@ public class HttpRequestImpl implements HttpRequest
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
       this.uri = uri;
-      this.preProcessedSegments = uri.getPathSegments();
+      this.preProcessedSegments = uri.getPathSegments(false);
    }
 
    public HttpHeaders getHttpHeaders()

@@ -96,16 +96,11 @@ public class ComplexPathParamTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addPerRequestResource(ExtensionResource.class);
-      dispatcher.getRegistry().addPerRequestResource(TrickyResource.class);
-      dispatcher.getRegistry().addPerRequestResource(UnlimitedResource.class);
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      EmbeddedContainer.stop();
    }
 
    @Test
@@ -139,14 +134,26 @@ public class ComplexPathParamTest
 
 
    @Test
-   public void testIt()
+   public void testIt() throws Exception
    {
-      HttpClient client = new HttpClient();
-      _test(client, "http://localhost:8081/1,2/3/blah4-5ttt", "hello");
-      _test(client, "http://localhost:8081/tricky/1,2", "2Groups");
-      _test(client, "http://localhost:8081/tricky/h1", "prefixed");
-      _test(client, "http://localhost:8081/tricky/1", "hello");
-      _test(client, "http://localhost:8081/unlimited/1-on/and/on", "ok");
+      dispatcher = EmbeddedContainer.start();
+      try
+      {
+         dispatcher.getRegistry().addPerRequestResource(ExtensionResource.class);
+         dispatcher.getRegistry().addPerRequestResource(TrickyResource.class);
+         dispatcher.getRegistry().addPerRequestResource(UnlimitedResource.class);
+         HttpClient client = new HttpClient();
+         _test(client, "http://localhost:8081/1,2/3/blah4-5ttt", "hello");
+         _test(client, "http://localhost:8081/tricky/1,2", "2Groups");
+         _test(client, "http://localhost:8081/tricky/h1", "prefixed");
+         _test(client, "http://localhost:8081/tricky/1", "hello");
+         _test(client, "http://localhost:8081/unlimited/1-on/and/on", "ok");
+      }
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
+
    }
 
 }
