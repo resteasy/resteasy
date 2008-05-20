@@ -68,7 +68,7 @@ public class Dispatcher
    protected void preprocess(HttpRequest in)
    {
       if (mediaTypeMappings == null && languageMappings == null) return;
-      List<PathSegment> segments = in.getUri().getPathSegments();
+      List<PathSegment> segments = in.getUri().getPathSegments(false);
       PathSegment last = segments.get(segments.size() - 1);
       int index;
       if ((index = last.getPath().indexOf('.')) == -1) return;

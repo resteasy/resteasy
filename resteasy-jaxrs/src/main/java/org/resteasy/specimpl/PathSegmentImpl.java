@@ -12,10 +12,15 @@ import java.util.List;
 public class PathSegmentImpl implements PathSegment
 {
    private String path;
+   private String original;
    private MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
 
+   /**
+    * @param path decode path segment
+    */
    public PathSegmentImpl(String path)
    {
+      this.original = path;
       this.path = path;
       int semicolon = path.indexOf(';');
       if (semicolon >= 0)
@@ -39,6 +44,11 @@ public class PathSegmentImpl implements PathSegment
             }
          }
       }
+   }
+
+   public String getOriginal()
+   {
+      return original;
    }
 
    public PathSegmentImpl(String path, MultivaluedMap<String, String> matrixParameters)

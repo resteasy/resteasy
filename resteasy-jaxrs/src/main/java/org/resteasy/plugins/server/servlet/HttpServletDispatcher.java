@@ -13,6 +13,7 @@ import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
 import org.resteasy.util.MediaTypeHelper;
+import org.resteasy.util.PathHelper;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -92,8 +93,11 @@ public class HttpServletDispatcher extends HttpServlet
    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       HttpHeaders headers = extractHttpHeaders(request);
-      String path = request.getPathInfo();
-      //System.out.println("path: " + path);
+      String path = PathHelper.getEncodedPathInfo(request.getRequestURI(), request.getContextPath());
+      System.out.println("contextPath: " + request.getContextPath());
+      System.out.println("path: " + path);
+      System.out.println("getRequestURI: " + request.getRequestURI());
+      System.out.println("getRequestURL: " + request.getRequestURL());
       URI absolutePath = null;
       try
       {
