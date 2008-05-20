@@ -52,16 +52,16 @@ public class SimpleSecurityDomain implements SecurityDomain
 
    public boolean isUserInRoll(Principal username, String role)
    {
-      System.out.println("Is user in role: " + username.getName() + " for role " + role);
+      //System.out.println("Is user in role: " + username.getName() + " for role " + role);
       Set<String> users = roles.get(role);
       if (users == null)
       {
-         System.out.println("No user of that name");
+         //System.out.println("No user of that name");
          return false;
       }
 
       boolean result = users.contains(username.getName());
-      System.out.println("Result is: " + result);
+      //System.out.println("Result is: " + result);
       return result;
    }
 }

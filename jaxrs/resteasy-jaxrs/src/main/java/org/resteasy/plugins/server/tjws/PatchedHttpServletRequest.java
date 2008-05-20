@@ -84,10 +84,4 @@ public class PatchedHttpServletRequest extends HttpServletRequestDelegate
       return new StringBuffer(encodedURL.toString());
    }
 
-   public static void main(String[] args) throws Exception
-   {
-      URL url = new URL("http://localhost/hello world#shit");
-      System.out.println(url.getRef());
-      System.out.println(extractURI(url));
-   }
 }

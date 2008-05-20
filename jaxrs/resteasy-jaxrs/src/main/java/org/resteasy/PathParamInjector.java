@@ -18,8 +18,9 @@ public class PathParamInjector implements ValueInjector
    private PathParamIndex index;
    private StringParameterInjector extractor;
    private String paramName;
+   private boolean encode;
 
-   public PathParamInjector(PathParamIndex index, Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue)
+   public PathParamInjector(PathParamIndex index, Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode)
    {
       if (type.equals(PathSegment.class) == false)
       {
@@ -27,6 +28,7 @@ public class PathParamInjector implements ValueInjector
       }
       this.paramName = paramName;
       this.index = index;
+      this.encode = encode;
    }
 
    public Object inject(HttpRequest request, HttpResponse response)
@@ -34,11 +36,11 @@ public class PathParamInjector implements ValueInjector
       if (extractor == null) // we are a PathSegment
       {
          List<Integer> list = index.getUriParams().get(paramName);
-         return request.getUri().getPathSegments().get(list.get(list.size() - 1));
+         return request.getUri().getPathSegments(!encode).get(list.get(list.size() - 1));
       }
       else
       {
-         List<String> list = request.getUri().getPathParameters().get(paramName);
+         List<String> list = request.getUri().getPathParameters(!encode).get(paramName);
          return extractor.extractValue(list.get(list.size() - 1));
       }
    }

@@ -9,6 +9,7 @@ import org.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Encoded;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
@@ -55,6 +56,7 @@ public class InjectorFactoryImpl implements InjectorFactory
    {
 
       DefaultValue defaultValue = FindAnnotation.findAnnotation(annotations, DefaultValue.class);
+      boolean encode = FindAnnotation.findAnnotation(annotations, Encoded.class) != null || target.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
       String defaultVal = null;
       if (defaultValue != null) defaultVal = defaultValue.value();
 
@@ -66,7 +68,7 @@ public class InjectorFactoryImpl implements InjectorFactory
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
       {
-         return new QueryParamInjector(type, genericType, target, query.value(), defaultVal);
+         return new QueryParamInjector(type, genericType, target, query.value(), defaultVal, encode, query.encode());
       }
       else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
       {
@@ -78,7 +80,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
       {
-         return new PathParamInjector(index, type, genericType, target, uriParam.value(), defaultVal);
+         return new PathParamInjector(index, type, genericType, target, uriParam.value(), defaultVal, encode);
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
       {
