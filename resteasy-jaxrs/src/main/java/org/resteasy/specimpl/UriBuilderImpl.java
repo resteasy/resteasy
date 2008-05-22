@@ -410,7 +410,17 @@ public class UriBuilderImpl extends UriBuilder
 
    public UriBuilder extension(String extension)
    {
-      if (isEncode()) Encode.encodeSegment(extension);
+      if (path != null)
+      {
+         int lastPath = path.lastIndexOf('/');
+         if (lastPath < 0) lastPath = 0;
+         int index = path.indexOf('.', lastPath);
+         if (index > -1) path = path.substring(0, index);
+      }
+      if (extension == null) return this;
+
+      if (extension.startsWith(".")) extension = extension.substring(1);
+      if (isEncode()) extension = Encode.encodeSegment(extension);
       if (path == null)
       {
          path = "." + extension;
@@ -421,5 +431,31 @@ public class UriBuilderImpl extends UriBuilder
          path += extension;
       }
       return this;
+   }
+
+   public static void main(String[] args) throws Exception
+   {
+      String path = "/foo.txt/hello.html";
+
+      path = removeDot(path);
+
+      System.out.println(path);
+
+      path = "foo/bar";
+
+      path = removeDot(path);
+
+      System.out.println(path);
+
+
+   }
+
+   private static String removeDot(String path)
+   {
+      int lastPath = path.lastIndexOf('/');
+      if (lastPath < 0) lastPath = 0;
+      int index = path.indexOf('.', lastPath);
+      if (index > -1) path = path.substring(0, index);
+      return path;
    }
 }
