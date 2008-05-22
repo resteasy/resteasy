@@ -33,7 +33,7 @@ public class SpringBeanProcessor implements BeanPostProcessor
 
    public Object postProcessAfterInitialization(Object bean, String name) throws BeansException
    {
-      if (GetRestful.isRestful(bean.getClass()))
+      if (GetRestful.isRootResource(bean.getClass()))
       {
          registry.addResourceFactory(new SingletonResource(bean));
       }

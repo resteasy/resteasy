@@ -17,30 +17,15 @@
       <module>resteasy-jaxrs-war</module>
       <module>distribution</module>
    </modules>
-   <!--
-  <build>
-     <plugins>
-        <plugin>
-           <artifactId>maven-assembly-plugin</artifactId>
-           <version>2.2-beta-1</version>
-           <executions>
-              <execution>
-                 <id>assemble</id>
-                 <phase>install</phase>
-                 <goals>
-                    <goal>attached</goal>
-                 </goals>
-                 <configuration>
-                    <descriptors>
-                       <descriptor>assembly/all.xml</descriptor>
-                    </descriptors>
-                    <outputDirectory>target/distribution</outputDirectory>
-                    <workDirectory>target/assembly/work</workDirectory>
-                 </configuration>
-              </execution>
-           </executions>
-        </plugin>
-     </plugins>
-  </build> -->
-
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <configuration>
+               <createChecksum>true</createChecksum>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
 </project>

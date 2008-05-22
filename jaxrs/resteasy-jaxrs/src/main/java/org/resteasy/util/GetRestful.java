@@ -1,8 +1,9 @@
 package org.resteasy.util;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -16,13 +17,12 @@ public class GetRestful
     * @param clazz
     * @return list of class and intertfaces that have jax-rs annotations
     */
-   public static List<Class> getRestfulClasses(Class clazz)
+   public static Class getRootResourceClass(Class clazz)
    {
-      List<Class> rtn = new ArrayList<Class>();
       if (clazz.isAnnotationPresent(Path.class))
       {
-         rtn.add(clazz);
-         return rtn;
+
+         return clazz;
       }
       // ok, no @Path or @HttpMethods so look in interfaces.
       Class[] intfs = clazz.getInterfaces();
@@ -30,17 +30,54 @@ public class GetRestful
       {
          if (intf.isAnnotationPresent(Path.class))
          {
-            rtn.add(intf);
-            return rtn;
+            return intf;
          }
       }
-      if (rtn.size() == 0) return null;
-      return rtn;
+      return null;
    }
 
-   public static boolean isRestful(Class clazz)
+   /**
+    * Given a class, search itself and implemented interfaces for jax-rs annotations.
+    *
+    * @param clazz
+    * @return list of class and intertfaces that have jax-rs annotations
+    */
+   public static Class getSubResourceClass(Class clazz)
    {
-      List<Class> clazzes = getRestfulClasses(clazz);
-      return clazzes != null && clazzes.size() > 0;
+      if (clazz.isAnnotationPresent(Path.class))
+      {
+         return clazz;
+      }
+      for (Method method : clazz.getMethods())
+      {
+         if (method.isAnnotationPresent(Path.class)) return clazz;
+         for (Annotation ann : method.getAnnotations())
+         {
+            if (ann.annotationType().isAnnotationPresent(HttpMethod.class)) return clazz;
+         }
+      }
+      // ok, no @Path or @HttpMethods so look in interfaces.
+      Class[] intfs = clazz.getInterfaces();
+      for (Class intf : intfs)
+      {
+         if (intf.isAnnotationPresent(Path.class))
+         {
+            return intf;
+         }
+         for (Method method : intf.getMethods())
+         {
+            if (method.isAnnotationPresent(Path.class)) return intf;
+            for (Annotation ann : method.getAnnotations())
+            {
+               if (ann.annotationType().isAnnotationPresent(HttpMethod.class)) return intf;
+            }
+         }
+      }
+      return null;
+   }
+
+   public static boolean isRootResource(Class clazz)
+   {
+      return getRootResourceClass(clazz) != null;
    }
 }
