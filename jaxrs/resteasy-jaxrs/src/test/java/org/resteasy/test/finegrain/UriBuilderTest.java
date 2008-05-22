@@ -94,6 +94,23 @@ public class UriBuilderTest
    }
 
    @Test
+   public void testExtension()
+   {
+      URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c").
+              extension("html").build();
+      Assert.assertEquals(URI.create("http://localhost:8080/a/b/c.html"), bu);
+      bu = UriBuilder.fromUri("http://localhost:8080/a/b/c.xml").
+              extension(null).build();
+      Assert.assertEquals(URI.create("http://localhost:8080/a/b/c"), bu);
+      bu = UriBuilder.fromUri("http://localhost:8080/a/b.html/c.xml").
+              extension(null).build();
+      Assert.assertEquals(URI.create("http://localhost:8080/a/b.html/c"), bu);
+      bu = UriBuilder.fromUri("http://localhost:8080/a/b.html/c.xml").
+              extension(".html").build();
+      Assert.assertEquals(URI.create("http://localhost:8080/a/b.html/c.html"), bu);
+   }
+
+   @Test
    public void testReplaceUri()
    {
       URI u = URI.create("http://bob@localhost:8080/a/b/c?a=x&b=y#frag");
