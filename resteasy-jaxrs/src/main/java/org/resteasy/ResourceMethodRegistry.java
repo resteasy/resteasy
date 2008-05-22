@@ -16,7 +16,6 @@ import org.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -94,7 +93,7 @@ public class ResourceMethodRegistry implements Registry
    public void addResourceFactory(ResourceFactory ref, String base)
    {
       Class<?> clazz = ref.getScannableClass();
-      List<Class> restful = GetRestful.getRestfulClasses(clazz);
+      Class restful = GetRestful.getRootResourceClass(clazz);
       if (restful == null)
       {
          String msg = "Class is not a root resource.  It, or one of its interfaces must be annotated with @Path: " + clazz.getName() + " implements: ";
@@ -104,7 +103,7 @@ public class ResourceMethodRegistry implements Registry
          }
          throw new RuntimeException(msg);
       }
-      for (Class cls : restful) addResourceFactory(ref, base, cls, 0, true);
+      addResourceFactory(ref, base, restful, 0, true);
    }
 
    /**
@@ -173,8 +172,8 @@ public class ResourceMethodRegistry implements Registry
 
    public void removeRegistrations(Class clazz, String base)
    {
-      List<Class> restful = GetRestful.getRestfulClasses(clazz);
-      for (Class cls : restful) removeRegistration(base, cls);
+      Class restful = GetRestful.getRootResourceClass(clazz);
+      removeRegistration(base, restful);
    }
 
    private void removeRegistration(String base, Class<?> clazz)

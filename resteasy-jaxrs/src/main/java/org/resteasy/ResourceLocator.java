@@ -6,6 +6,8 @@ import org.resteasy.spi.InjectorFactory;
 import org.resteasy.spi.MethodInjector;
 import org.resteasy.spi.ResourceFactory;
 import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.util.GetRestful;
+import org.resteasy.util.HttpResponseCodes;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -88,7 +90,13 @@ public class ResourceLocator implements ResourceInvoker
       if (registry == null)
       {
          registry = new ResourceMethodRegistry(providerFactory);
-         registry.addResourceFactory(null, null, target.getClass(), uriIndex + index.getOffset(), limited);
+         Class subResourceClass = GetRestful.getSubResourceClass(target.getClass());
+         if (subResourceClass == null)
+         {
+            String msg = "Subresource class has no jax-rs annotations.: " + subResourceClass.getName();
+            throw new Failure(msg, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+         }
+         registry.addResourceFactory(null, null, subResourceClass, uriIndex + index.getOffset(), limited);
          cachedSubresources.putIfAbsent(target.getClass(), registry);
       }
       ResourceInvoker invoker = registry.getResourceInvoker(request, response, uriIndex + index.getOffset(), limited);
