@@ -28,6 +28,9 @@ public class UriInfoImpl implements UriInfo
    private URI absolutePathWithQueryString;
    private URI baseURI;
    private String queryString;
+   private List<String> ancestorUris;
+   private List<String> encodedAncestorUris;
+   private List<Object> ancestors;
 
    /**
     * @param absolutePath
@@ -253,16 +256,62 @@ public class UriInfoImpl implements UriInfo
 
    public List<String> getAncestorResourceURIs(boolean decode)
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      if (decode)
+      {
+         if (ancestorUris == null) ancestorUris = new ArrayList<String>();
+         return ancestorUris;
+      }
+      else
+      {
+         if (encodedAncestorUris == null) encodedAncestorUris = new ArrayList<String>();
+         return ancestorUris;
+      }
    }
 
    public List<String> getAncestorResourceURIs()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      return getAncestorResourceURIs(true);
    }
 
    public List<Object> getAncestorResources()
    {
-      throw new RuntimeException("NOT IMPLEMENTED");
+      if (ancestors == null) ancestors = new ArrayList<Object>();
+      return ancestors;
+   }
+
+
+   public void pushCurrentResource(Object resource)
+   {
+      if (ancestors == null) ancestors = new ArrayList<Object>();
+      ancestors.add(0, resource);
+   }
+
+   public void popCurrentResource()
+   {
+      if (ancestors != null && ancestors.size() > 0)
+      {
+         ancestors.remove(0);
+      }
+   }
+
+   public void pushAncestorURI(String encoded, String decoded)
+   {
+      if (encodedAncestorUris == null) encodedAncestorUris = new ArrayList<String>();
+      encodedAncestorUris.add(0, encoded);
+
+      if (ancestorUris == null) ancestorUris = new ArrayList<String>();
+      ancestorUris.add(0, decoded);
+   }
+
+   public void popAncestorURI()
+   {
+      if (encodedAncestorUris != null && encodedAncestorUris.size() > 0)
+      {
+         encodedAncestorUris.remove(0);
+      }
+      if (ancestorUris != null && ancestorUris.size() > 0)
+      {
+         ancestorUris.remove(0);
+      }
    }
 }

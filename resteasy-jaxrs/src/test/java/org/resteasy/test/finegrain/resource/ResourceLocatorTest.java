@@ -16,6 +16,8 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,8 +47,20 @@ public class ResourceLocatorTest
    {
       @GET
       @Path("stuff/{param}/bar")
-      public String doGet(@PathParam("param")String param)
+      public String doGet(@PathParam("param")String param, @Context UriInfo uri)
       {
+         System.out.println("Uri Ancesstors for Subresource2.doGet():");
+         Assert.assertEquals(2, uri.getAncestorResourceURIs().size());
+         Assert.assertEquals("subresource2", uri.getAncestorResourceURIs().get(0));
+         Assert.assertEquals("base/1/resources", uri.getAncestorResourceURIs().get(1));
+         for (String ancestor : uri.getAncestorResourceURIs()) System.out.println("   " + ancestor);
+
+
+         System.out.println("Uri Ancesstors Object for Subresource2.doGet():");
+         Assert.assertEquals(2, uri.getAncestorResources().size());
+         Assert.assertEquals(Subresource.class, uri.getAncestorResources().get(0).getClass());
+         Assert.assertEquals(BaseResource.class, uri.getAncestorResources().get(1).getClass());
+         for (Object ancestor : uri.getAncestorResources()) System.out.println("   " + ancestor.getClass().getName());
          Assert.assertEquals("2", param);
          return this.getClass().getName() + "-" + param;
       }
@@ -57,14 +71,32 @@ public class ResourceLocatorTest
    {
 
       @GET
-      public String doGet()
+      public String doGet(@Context UriInfo uri)
       {
+         System.out.println("Uri Ancesstors for Subresource.doGet():");
+         Assert.assertEquals(1, uri.getAncestorResourceURIs().size());
+         Assert.assertEquals("base/1/resources", uri.getAncestorResourceURIs().get(0));
+         for (String ancestor : uri.getAncestorResourceURIs()) System.out.println("   " + ancestor);
+
+         System.out.println("Uri Ancesstors Object for Subresource.doGet():");
+         Assert.assertEquals(1, uri.getAncestorResources().size());
+         Assert.assertEquals(BaseResource.class, uri.getAncestorResources().get(0).getClass());
+         for (Object ancestor : uri.getAncestorResources()) System.out.println("   " + ancestor.getClass().getName());
          return this.getClass().getName();
       }
 
       @Path("/subresource2")
-      public Object getSubresource2()
+      public Object getSubresource2(@Context UriInfo uri)
       {
+         System.out.println("Uri Ancesstors for Subresource.getSubresource2():");
+         Assert.assertEquals(1, uri.getAncestorResourceURIs().size());
+         Assert.assertEquals("base/1/resources", uri.getAncestorResourceURIs().get(0));
+         for (String ancestor : uri.getAncestorResourceURIs()) System.out.println("   " + ancestor);
+
+         System.out.println("Uri Ancesstors Object for Subresource.getSubresource2():");
+         Assert.assertEquals(1, uri.getAncestorResources().size());
+         Assert.assertEquals(BaseResource.class, uri.getAncestorResources().get(0).getClass());
+         for (Object ancestor : uri.getAncestorResources()) System.out.println("   " + ancestor.getClass().getName());
          return new Subresource2();
       }
    }

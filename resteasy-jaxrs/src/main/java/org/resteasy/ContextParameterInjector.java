@@ -1,5 +1,6 @@
 package org.resteasy;
 
+import org.resteasy.specimpl.MessageBodyWorkersImpl;
 import org.resteasy.specimpl.RequestImpl;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
@@ -8,6 +9,7 @@ import org.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.MessageBodyWorkers;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,6 +36,7 @@ public class ContextParameterInjector implements ValueInjector
       if (type.equals(UriInfo.class)) return request.getUri();
       if (type.equals(Request.class)) return new RequestImpl(request.getHttpHeaders(), request.getHttpMethod());
       if (type.equals(HttpRequest.class)) return request;
+      if (type.equals(MessageBodyWorkers.class)) return new MessageBodyWorkersImpl();
       else return factory.getContextData(type);
    }
 
@@ -65,6 +68,8 @@ public class ContextParameterInjector implements ValueInjector
 
    public Object inject()
    {
+      if (type.equals(MessageBodyWorkers.class)) return new MessageBodyWorkersImpl();
+
       if (!type.isInterface()) throw new RuntimeException("Illegal to inject a non-interface type into a singleton");
 
       Class[] intfs = {type};
