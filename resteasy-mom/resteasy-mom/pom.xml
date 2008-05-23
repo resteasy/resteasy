@@ -10,7 +10,7 @@
    <artifactId>resteasy-mom</artifactId>
    <packaging>jar</packaging>
    <version>${resteasy-mom-version}</version>
-   <name>Basic Integration Test</name>
+   <name>Resteasy MOM</name>
    <url>http://maven.apache.org</url>
    <repositories>
       <repository>
@@ -26,7 +26,7 @@
       <dependency>
          <groupId>org.resteasy</groupId>
          <artifactId>resteasy-jaxrs</artifactId>
-         <version>[1.0-beta-3,)</version>
+         <version>1.0-beta-4</version>
       </dependency>
       <dependency>
          <groupId>tjws</groupId>

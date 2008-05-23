@@ -3,7 +3,7 @@
    <properties>
       <resteasy-mom-version>1.0-beta-2</resteasy-mom-version>
    </properties>
-   <name>Resteasy JAX-RS</name>
+   <name>Resteasy MOM Parent POM</name>
    <url>http://www.attainware.com/</url>
    <modelVersion>4.0.0</modelVersion>
 
