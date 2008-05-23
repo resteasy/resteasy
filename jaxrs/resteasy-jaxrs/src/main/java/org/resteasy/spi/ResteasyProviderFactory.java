@@ -1,6 +1,7 @@
 package org.resteasy.spi;
 
 import org.resteasy.MediaTypeMap;
+import org.resteasy.PropertyInjectorImpl;
 import org.resteasy.plugins.delegates.CacheControlDelegate;
 import org.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.resteasy.plugins.delegates.EntityTagDelegate;
@@ -182,23 +183,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       {
          throw new RuntimeException(e);
       }
-      MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(provider, reader);
-      if (consumeMime != null)
-      {
-         for (String consume : consumeMime.value())
-         {
-            MediaType mime = MediaType.valueOf(consume);
-            messageBodyReaders.add(mime, key);
-         }
-      }
-      else
-      {
-         messageBodyReaders.add(new MediaType("*", "*"), key);
-      }
+      addMessageBodyReader(reader);
    }
 
    public void addMessageBodyReader(MessageBodyReader provider)
    {
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
+      injector.inject(provider);
       ConsumeMime consumeMime = provider.getClass().getAnnotation(ConsumeMime.class);
       MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(provider.getClass(), provider);
       if (consumeMime != null)
@@ -217,6 +208,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider)
    {
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
+      injector.inject(provider);
       ProduceMime consumeMime = provider.getAnnotation(ProduceMime.class);
       MessageBodyWriter writer = null;
       try
@@ -231,19 +224,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       {
          throw new RuntimeException(e);
       }
-      MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(provider, writer);
-      if (consumeMime != null)
-      {
-         for (String consume : consumeMime.value())
-         {
-            MediaType mime = MediaType.valueOf(consume);
-            messageBodyWriters.add(mime, key);
-         }
-      }
-      else
-      {
-         messageBodyWriters.add(new MediaType("*", "*"), key);
-      }
+      addMessageBodyWriter(writer);
    }
 
    public void addMessageBodyWriter(MessageBodyWriter provider)

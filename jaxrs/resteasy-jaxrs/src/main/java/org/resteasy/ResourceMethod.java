@@ -197,7 +197,6 @@ public class ResourceMethod implements ResourceInvoker
          MediaType responseContentType = resolveContentType(request, jaxrsResponse);
          writeResponse(response, jaxrsResponse.getEntity(), responseContentType);
       }
-
    }
 
    protected void writeResponse(HttpResponse response, Object entity, MediaType responseContentType)

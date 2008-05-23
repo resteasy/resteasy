@@ -1,5 +1,7 @@
 package org.resteasy;
 
+import org.resteasy.specimpl.PathSegmentImpl;
+import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
 import org.resteasy.spi.InjectorFactory;
@@ -10,8 +12,10 @@ import org.resteasy.util.GetRestful;
 import org.resteasy.util.HttpResponseCodes;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -53,13 +57,17 @@ public class ResourceLocator implements ResourceInvoker
 
    }
 
-   protected Object createResource(HttpRequest request, HttpResponse response, Object resource)
+   protected Object createResource(HttpRequest request, HttpResponse response, Object locator)
    {
+      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       index.populateUriInfoTemplateParams(request);
       Object[] args = methodInjector.injectArguments(request, response);
       try
       {
-         return method.invoke(resource, args);
+         Object subResource = method.invoke(locator, args);
+         uriInfo.pushCurrentResource(locator);
+         return subResource;
+
       }
       catch (IllegalAccessException e)
       {
@@ -71,17 +79,62 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
+   public void setAncestorUri(UriInfoImpl uriInfo)
+   {
+      StringBuffer encoded = new StringBuffer();
+      boolean first = true;
+      for (int i = index.getOffset(); i < uriIndex + index.getOffset(); i++)
+      {
+         if (first) first = false;
+         else
+         {
+            encoded.append("/");
+         }
+         PathSegmentImpl encodedSegment = (PathSegmentImpl) uriInfo.getPathSegments(false).get(i);
+         encoded.append(encodedSegment.getOriginal());
+      }
+      String encodedUri = encoded.toString();
+      try
+      {
+         String decodedUri = URLDecoder.decode(encodedUri, "UTF-8");
+         uriInfo.pushAncestorURI(encodedUri, decodedUri);
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
    public void invoke(HttpRequest request, HttpResponse response) throws IOException
    {
-      Object target = createResource(request, response);
-      invokeOnTargetObject(request, response, target);
+      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      try
+      {
+         Object target = createResource(request, response);
+         setAncestorUri(uriInfo);
+         invokeOnTargetObject(request, response, target);
+      }
+      finally
+      {
+         uriInfo.popCurrentResource();
+         uriInfo.popAncestorURI();
+      }
    }
 
    public void invoke(HttpRequest request, HttpResponse response, Object locator) throws IOException
    {
-      Object target = createResource(request, response, locator);
-      invokeOnTargetObject(request, response, target);
-
+      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      try
+      {
+         Object target = createResource(request, response, locator);
+         setAncestorUri(uriInfo);
+         invokeOnTargetObject(request, response, target);
+      }
+      finally
+      {
+         uriInfo.popCurrentResource();
+         uriInfo.popAncestorURI();
+      }
    }
 
    protected void invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target) throws IOException
