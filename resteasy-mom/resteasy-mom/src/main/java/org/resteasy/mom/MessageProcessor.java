@@ -90,7 +90,7 @@ public abstract class MessageProcessor
          if (!key.startsWith("JMS"))
          {
             String value = message.getStringProperty(key);
-            System.out.println("header: " + toHeaderName(key) + " value: " + value);
+            //System.out.println("header: " + toHeaderName(key) + " value: " + value);
             rtn.put(toHeaderName(key), value);
          }
       }

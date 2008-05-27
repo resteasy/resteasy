@@ -55,7 +55,7 @@ public abstract class Receiver
          try
          {
             createConsumer();
-            System.out.println("COnnection started");
+            //System.out.println("COnnection started");
             getConnection().start();
          }
          catch (Exception ex)
@@ -94,7 +94,7 @@ public abstract class Receiver
 
    protected Message getMessage(long wait) throws Exception
    {
-      System.out.println("wait time: " + wait);
+      //System.out.println("wait time: " + wait);
       Message message = null;
       if (wait < 0) message = getConsumer().receiveNoWait();
       else message = getConsumer().receive(wait);
@@ -107,7 +107,7 @@ public abstract class Receiver
    @Path("/head")
    public synchronized Response get(@QueryParam("wait") @DefaultValue("-1")long wait) throws Exception
    {
-      System.out.println("getHead");
+      //System.out.println("getHead");
       if (currentMessage == null)
       {
          currentMessage = getMessage(wait);

@@ -36,7 +36,7 @@ public class ByteArrayMessageProcessor extends MessageProcessor
          wasRead = entityStream.read(buffer);
          if (wasRead > 0)
          {
-            System.out.println("SENT " + wasRead + " bytes!");
+            //System.out.println("SENT " + wasRead + " bytes!");
             baos.write(buffer, 0, wasRead);
          }
       } while (wasRead > -1);
@@ -68,7 +68,7 @@ public class ByteArrayMessageProcessor extends MessageProcessor
       byte[] body = extractBody(message);
 
 
-      System.out.println("RECEIVED body length: " + body.length);
+      //System.out.println("RECEIVED body length: " + body.length);
       Response.ResponseBuilder builder = Response.ok(body);
 
       Enumeration en = message.getPropertyNames();
@@ -78,7 +78,7 @@ public class ByteArrayMessageProcessor extends MessageProcessor
          if (!key.startsWith("JMS"))
          {
             String value = message.getStringProperty(key);
-            System.out.println("header: " + toHeaderName(key) + " value: " + value);
+            //System.out.println("header: " + toHeaderName(key) + " value: " + value);
             builder.header(toHeaderName(key), value);
          }
       }
@@ -90,7 +90,7 @@ public class ByteArrayMessageProcessor extends MessageProcessor
    {
       // todo need to use OutputStream when available
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      System.out.println("Extracting body");
+      //System.out.println("Extracting body");
 
       BytesMessage stream = (BytesMessage) message;
       int size = message.getIntProperty("httpMessageSize");

@@ -39,13 +39,13 @@ public class DlqProcessor
       try
       {
          if (deadletterConnection == null || dlq == null) return;
-         System.out.println("DEAD LETTER!!!!");
+         //System.out.println("DEAD LETTER!!!!");
          Session session = deadletterConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
          try
          {
             MessageProducer producer = session.createProducer(dlq);
             producer.send(message);
-            System.out.println("SENT DEAD LETTER");
+            //System.out.println("SENT DEAD LETTER");
          }
          catch (JMSException e)
          {

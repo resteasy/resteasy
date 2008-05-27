@@ -72,7 +72,7 @@ public class QueueResource extends DestinationResource
    @Path("/receivers/{id}")
    public QueueReceiver getReceiver(@PathParam("id")String id)
    {
-      System.out.println("getReceiver: " + id);
+      //System.out.println("getReceiver: " + id);
       QueueReceiver receiver = (QueueReceiver) receivers.get(id);
       if (receiver == null) throw new WebApplicationException(HttpResponseCodes.SC_NOT_FOUND);
       return receiver;

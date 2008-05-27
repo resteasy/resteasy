@@ -14,8 +14,8 @@ public class TopicListener extends Listener
    {
       super(destination, connection, callback, processor, dlq);
 
-      System.out.println("Callback URI: " + callback);
-      System.out.println("SELECTOR : " + selector);
+      //System.out.println("Callback URI: " + callback);
+      //System.out.println("SELECTOR : " + selector);
       consumer = session.createConsumer(destination, selector);
       consumer.setMessageListener(this);
       connection.start();

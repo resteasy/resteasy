@@ -36,7 +36,7 @@ public class StreamMessageProcessor extends MessageProcessor
          wasRead = entityStream.read(buffer);
          if (wasRead > 0)
          {
-            System.out.println("SENT " + wasRead + " bytes!");
+            //System.out.println("SENT " + wasRead + " bytes!");
             message.writeBytes(buffer, 0, wasRead);
          }
       } while (wasRead > -1);
@@ -64,7 +64,7 @@ public class StreamMessageProcessor extends MessageProcessor
       byte[] body = extractBody(message);
 
 
-      System.out.println("RECEIVED body length: " + body.length);
+      //System.out.println("RECEIVED body length: " + body.length);
       Response.ResponseBuilder builder = Response.ok(body);
 
       Enumeration en = message.getPropertyNames();
@@ -74,7 +74,7 @@ public class StreamMessageProcessor extends MessageProcessor
          if (!key.startsWith("JMS"))
          {
             String value = message.getStringProperty(key);
-            System.out.println("header: " + toHeaderName(key) + " value: " + value);
+            //System.out.println("header: " + toHeaderName(key) + " value: " + value);
             builder.header(toHeaderName(key), value);
          }
       }
@@ -86,7 +86,7 @@ public class StreamMessageProcessor extends MessageProcessor
    {
       // todo need to use OutputStream when available
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      System.out.println("Extracting body");
+      //System.out.println("Extracting body");
 
       StreamMessage stream = (StreamMessage) message;
       byte[] buffer = new byte[bufferSize];
@@ -96,16 +96,16 @@ public class StreamMessageProcessor extends MessageProcessor
          int wasRead = 0;
          do
          {
-            System.out.println("LOOP!");
+            //System.out.println("LOOP!");
             wasRead = stream.readBytes(buffer);
             if (wasRead > 0)
             {
-               System.out.println("EXTRACTED: " + wasRead);
+               //System.out.println("EXTRACTED: " + wasRead);
                baos.write(buffer, 0, wasRead);
             }
             else
             {
-               System.out.println("Nothing extracted, wasRead: " + wasRead);
+               //System.out.println("Nothing extracted, wasRead: " + wasRead);
             }
          } while (wasRead == bufferSize || wasRead == -1);
          byte[] body = baos.toByteArray();

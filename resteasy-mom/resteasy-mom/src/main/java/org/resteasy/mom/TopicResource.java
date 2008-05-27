@@ -71,7 +71,7 @@ public class TopicResource extends DestinationResource
    public DurableTopicReceiver getDurableReceiver(@PathParam("id")String id)
    {
       id = "durable/receivers/" + id;
-      System.out.println("getDurableReceiver: " + id);
+      //System.out.println("getDurableReceiver: " + id);
       DurableTopicReceiver receiver = durableReceivers.get(id);
       if (receiver == null) throw new WebApplicationException(HttpResponseCodes.SC_NOT_FOUND);
       return receiver;
@@ -89,7 +89,7 @@ public class TopicResource extends DestinationResource
       }
       else
       {
-         System.out.println("Creating durable receiver: " + id);
+         //System.out.println("Creating durable receiver: " + id);
          Connection connection = factory.createConnection();
          connection.setClientID(id);
          DurableTopicReceiver receiver = null;
@@ -132,7 +132,7 @@ public class TopicResource extends DestinationResource
       }
       else
       {
-         System.out.println("Creating durable listener: " + id + " callback uri: " + callback);
+         //System.out.println("Creating durable listener: " + id + " callback uri: " + callback);
 
          Connection connection = factory.createConnection();
          connection.setClientID(id);
@@ -193,7 +193,7 @@ public class TopicResource extends DestinationResource
    @Path("/receivers/{id}")
    public TopicReceiver getReceiver(@PathParam("id")String id)
    {
-      System.out.println("getTopicReceiver: " + id);
+      //System.out.println("getTopicReceiver: " + id);
       TopicReceiver receiver = (TopicReceiver) nondurableReceivers.get(id);
       if (receiver == null) throw new WebApplicationException(HttpResponseCodes.SC_NOT_FOUND);
       return receiver;

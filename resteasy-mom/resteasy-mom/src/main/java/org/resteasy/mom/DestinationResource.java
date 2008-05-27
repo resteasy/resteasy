@@ -48,7 +48,7 @@ public class DestinationResource
                     @QueryParam("timeToLive") @DefaultValue("0")long timeToLive,
                     InputStream entityStream) throws Exception
    {
-      System.out.println("SENDING MESSAGE!");
+      //System.out.println("SENDING MESSAGE!");
       Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
       try

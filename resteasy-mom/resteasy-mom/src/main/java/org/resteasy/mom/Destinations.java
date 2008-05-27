@@ -126,7 +126,7 @@ public class Destinations
       QueueResource tmp = queues.putIfAbsent(name, queue);
       if (tmp == null)
       {
-         System.out.println("created Queue Resource:" + name);
+         //System.out.println("created Queue Resource:" + name);
          return queue;
       }
       else
@@ -158,7 +158,7 @@ public class Destinations
       TopicResource tmp = topics.putIfAbsent(name, topic);
       if (tmp == null)
       {
-         System.out.println("created Topic Resource:" + name);
+         //System.out.println("created Topic Resource:" + name);
          return topic;
       }
       else

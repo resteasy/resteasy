@@ -59,12 +59,12 @@ public class Listener implements MessageListener
    {
       try
       {
-         System.out.println("****** ON MESSAGE");
+         //System.out.println("****** ON MESSAGE");
          byte[] body = processor.extractBody(message);
-         System.out.println("LISTENER RECEIVED body length: " + body.length);
+         //System.out.println("LISTENER RECEIVED body length: " + body.length);
          Map<String, String> headers = processor.extractHeaders(message);
 
-         System.out.println("setting up PostMethod to: " + callback);
+         //System.out.println("setting up PostMethod to: " + callback);
          PostMethod method = new PostMethod(callback);
          for (String key : headers.keySet())
          {
@@ -79,7 +79,7 @@ public class Listener implements MessageListener
             int status = httpClient.executeMethod(method);
             if (status == HttpResponseCodes.SC_OK)
             {
-               System.out.println("message sent to listener: " + callback);
+               //System.out.println("message sent to listener: " + callback);
                return;
             }
          }
@@ -87,7 +87,7 @@ public class Listener implements MessageListener
          {
             e.printStackTrace();
          }
-         System.out.println("Failed sending to listener, deadlettering");
+         //System.out.println("Failed sending to listener, deadlettering");
          dlq.deadletter(message);
       }
       catch (Throwable throwable)
@@ -98,7 +98,7 @@ public class Listener implements MessageListener
       {
          try
          {
-            System.out.println("ACKNOWLEDGING!!!!!");
+            //System.out.println("ACKNOWLEDGING!!!!!");
             message.acknowledge();
          }
          catch (JMSException ignored)
