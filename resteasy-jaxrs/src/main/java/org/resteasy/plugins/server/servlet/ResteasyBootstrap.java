@@ -4,12 +4,12 @@ import org.resteasy.Dispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
+import org.resteasy.util.GetRestful;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MediaType;
@@ -271,11 +271,8 @@ public class ResteasyBootstrap implements ServletContextListener
       Set<String> classes = new HashSet<String>();
       Set<String> paths = db.getAnnotationIndex().get(Path.class.getName());
       if (paths != null) classes.addAll(paths);
-      paths = db.getAnnotationIndex().get(HttpMethod.class.getName());
-      if (paths != null) classes.addAll(paths);
       for (String clazz : classes)
       {
-         System.out.println("FOUND JAX-RS resource: " + clazz);
          processResource(clazz);
       }
    }
@@ -292,6 +289,9 @@ public class ResteasyBootstrap implements ServletContextListener
          throw new RuntimeException(e);
       }
       if (resource.isInterface()) return;
+      if (GetRestful.isRootResource(resource) == false) return;
+
+      System.out.println("FOUND JAX-RS resource: " + clazz);
       registry.addPerRequestResource(resource);
    }
 
