@@ -10,16 +10,20 @@ import org.resteasy.MessageBodyParameterMarshaller;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.spi.ClientHttpOutput;
+import org.resteasy.spi.ClientResponse;
 import org.resteasy.spi.ResteasyProviderFactory;
 import org.resteasy.util.HttpHeaderNames;
-import org.resteasy.util.HttpResponseCodes;
+import org.resteasy.util.Types;
 
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.util.List;
 
@@ -87,15 +91,10 @@ abstract public class HttpClientInvoker extends ClientInvoker
 
       if (body != null) ((EntityEnclosingMethod) baseMethod).setRequestEntity(body);
 
+      int status = 0;
       try
       {
-         int status = client.executeMethod(baseMethod);
-         if (status != HttpResponseCodes.SC_OK)
-         {
-            // todo better semantics/api for handling keep alive and such
-            baseMethod.releaseConnection();
-            throw new RuntimeException("Execution of Get " + url + " was unsuccessful with status code: " + status);
-         }
+         status = client.executeMethod(baseMethod);
       }
       catch (IOException e)
       {
@@ -104,40 +103,21 @@ abstract public class HttpClientInvoker extends ClientInvoker
 
       try
       {
-         if (method.getReturnType() != null && !method.getReturnType().equals(void.class))
+         if (method.getReturnType().equals(Response.Status.class))
          {
-            Header contentType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
-            if (contentType == null)
-            {
-               throw new RuntimeException("Unable to determine content type of resource: " + url);
-            }
-            String mediaType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue();
-            if (mediaType == null)
-            {
-               ProduceMime produce = method.getAnnotation(ProduceMime.class);
-               if (produce == null) produce = (ProduceMime) declaring.getAnnotation(ProduceMime.class);
-               if (produce == null)
-                  throw new RuntimeException("Unable to determine content type of response for GET " + url);
-               mediaType = produce.value()[0];
-            }
-            MediaType media = MediaType.valueOf(mediaType);
-            MessageBodyReader reader = providerFactory.createMessageBodyReader(method.getReturnType(), method.getGenericReturnType(), method.getAnnotations(), media);
-            if (reader == null)
-               throw new RuntimeException("Unable to find a message body reader for GET " + url + " content-type: " + mediaType);
-            MultivaluedMap<String, String> responseHeaders = new MultivaluedMapImpl<String, String>();
-            for (Header header : baseMethod.getResponseHeaders())
-            {
-               responseHeaders.add(header.getName(), header.getValue());
-            }
-            try
-            {
-               return reader.readFrom(method.getReturnType(), method.getGenericReturnType(), method.getAnnotations(), media, responseHeaders, baseMethod.getResponseBodyAsStream());
+            return Response.Status.fromStatusCode(status);
+         }
+         if (ClientResponse.class.isAssignableFrom(method.getReturnType()))
+         {
+            ParameterizedType zType = (ParameterizedType) method.getGenericReturnType();
+            Type genericReturnType = zType.getActualTypeArguments()[0];
+            Class returnType = Types.getRawType(genericReturnType);
 
-            }
-            catch (IOException e)
-            {
-               throw new RuntimeException("Unable to unmarshall response from GET " + url + " content-type: " + mediaType, e);
-            }
+            return extractClientResponse(baseMethod, status, genericReturnType, returnType);
+         }
+         else if (method.getReturnType() != null && !method.getReturnType().equals(void.class))
+         {
+            return extractClientResponse(baseMethod, status, method.getGenericReturnType(), method.getReturnType()).getEntity();
          }
          else
          {
@@ -151,4 +131,133 @@ abstract public class HttpClientInvoker extends ClientInvoker
          baseMethod.releaseConnection();
       }
    }
+
+   protected ClientResponse extractClientResponse(HttpMethodBase baseMethod, int status, Type genericReturnType, Class returnType)
+   {
+      final MultivaluedMap<String, String> headers = new MultivaluedMapImpl<String, String>();
+      final int theStatus = status;
+
+
+      for (Header header : baseMethod.getResponseHeaders())
+      {
+         headers.add(header.getName(), header.getValue());
+      }
+
+      Header contentType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
+      if (contentType == null)
+      {
+         return new ClientResponse()
+         {
+            public Object getEntity()
+            {
+               return null;
+            }
+
+            public MultivaluedMap getHeaders()
+            {
+               return headers;
+            }
+
+            public int getStatus()
+            {
+               return theStatus;
+            }
+         };
+      }
+
+
+      String mediaType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue();
+      if (mediaType == null)
+      {
+         ProduceMime produce = method.getAnnotation(ProduceMime.class);
+         if (produce == null) produce = (ProduceMime) declaring.getAnnotation(ProduceMime.class);
+         if (produce == null)
+         {
+            return new ClientResponse()
+            {
+               public Object getEntity()
+               {
+                  throw new RuntimeException("Unable to determine content type of response for " + method.toString());
+               }
+
+               public MultivaluedMap getHeaders()
+               {
+                  return headers;
+               }
+
+               public int getStatus()
+               {
+                  return theStatus;
+               }
+            };
+         }
+         mediaType = produce.value()[0];
+      }
+      MediaType media = MediaType.valueOf(mediaType);
+      MessageBodyReader reader = providerFactory.createMessageBodyReader(returnType, genericReturnType, method.getAnnotations(), media);
+      if (reader == null)
+      {
+         final String theMediaType = mediaType;
+         return new ClientResponse()
+         {
+            public Object getEntity()
+            {
+               throw new RuntimeException("Unable to find a MessageBodyReader of content-type " + theMediaType + " for response of " + method.toString());
+            }
+
+            public MultivaluedMap getHeaders()
+            {
+               return headers;
+            }
+
+            public int getStatus()
+            {
+               return theStatus;
+            }
+         };
+      }
+      try
+      {
+         final Object response = reader.readFrom(returnType, genericReturnType, method.getAnnotations(), media, headers, baseMethod.getResponseBodyAsStream());
+         return new ClientResponse()
+         {
+            public Object getEntity()
+            {
+               return response;
+            }
+
+            public MultivaluedMap getHeaders()
+            {
+               return headers;
+            }
+
+            public int getStatus()
+            {
+               return theStatus;
+            }
+         };
+
+      }
+      catch (final IOException e)
+      {
+         return new ClientResponse()
+         {
+            public Object getEntity()
+            {
+               throw new RuntimeException("Unable to unmarshall response for " + method.toString(), e);
+            }
+
+            public MultivaluedMap getHeaders()
+            {
+               return headers;
+            }
+
+            public int getStatus()
+            {
+               return theStatus;
+            }
+         };
+      }
+   }
+
 }
