@@ -67,16 +67,23 @@ public class MethodInjectorImpl implements MethodInjector
       try
       {
          Object rtn = method.invoke(resource, args);
-         if (method.getReturnType().equals(void.class)) return new ResponseImpl();
+         if (method.getReturnType().equals(void.class))
+         {
+            ResponseImpl response = new ResponseImpl();
+            if (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST"))
+               response.setStatus(HttpResponseCodes.SC_NO_CONTENT);
+
+         }
          if (method.getReturnType().equals(Response.class))
          {
             return (Response) rtn;
          }
 
-
          ResponseImpl response = new ResponseImpl();
          response.setEntity(rtn);
-         response.setStatus(HttpResponseCodes.SC_OK);
+         if (rtn == null && (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST")))
+            response.setStatus(HttpResponseCodes.SC_NO_CONTENT);
+         else response.setStatus(HttpResponseCodes.SC_OK);
          return response;
       }
       catch (IllegalAccessException e)
