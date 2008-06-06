@@ -1,5 +1,6 @@
 package org.resteasy.plugins.providers;
 
+import org.resteasy.plugins.providers.json.jettison.JettisonProvider;
 import org.resteasy.spi.ResteasyProviderFactory;
 
 /**
@@ -14,8 +15,9 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(new DefaultTextPlain());
 
 
-      factory.addMessageBodyReader(new JAXBProvider());
-      factory.addMessageBodyWriter(new JAXBProvider());
+      JAXBProvider jaxb = new JAXBProvider();
+      factory.addMessageBodyReader(jaxb);
+      factory.addMessageBodyWriter(jaxb);
 
       factory.addMessageBodyReader(new StringTextStar());
       factory.addMessageBodyWriter(new StringTextStar());
@@ -30,5 +32,10 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(new FormUrlEncodedProvider());
 
       factory.addMessageBodyWriter(new StreamingOutputProvider());
+
+      JettisonProvider jettison = new JettisonProvider();
+      factory.addMessageBodyReader(jettison);
+      factory.addMessageBodyWriter(jettison);
+
    }
 }

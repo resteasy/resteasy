@@ -16,8 +16,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Reader/Writer for JAXB annotated classes
+ *
  * @author <a href="mailto:hbraun@redhat.com">Heiko Braun</a>
  * @version $Revision: 1 $
  */
@@ -26,6 +29,34 @@ import java.lang.reflect.Type;
 @ConsumeMime({"text/xml", "application/xml"})
 public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
+   private ConcurrentHashMap<Class<?>, JAXBContext> cache = new ConcurrentHashMap<Class<?>, JAXBContext>();
+
+   /**
+    * Lookup.  Will create context if it doesn't exist.  Might be useful for prepopulating cache.
+    *
+    * @param clazz
+    * @return
+    * @throws JAXBException
+    */
+   public JAXBContext getContext(Class<?> clazz) throws JAXBException
+   {
+      JAXBContext context = cache.get(clazz);
+      if (context == null)
+      {
+         context = JAXBContext.newInstance(clazz);
+         cache.putIfAbsent(clazz, context);
+      }
+      return context;
+   }
+
+   /**
+    * Clear JAXBContext cache
+    */
+   public void clearCache()
+   {
+      cache.clear();
+   }
+
    public boolean isReadable(Class<?> aClass, Type genericType, Annotation[] annotations)
    {
       return aClass.isAnnotationPresent(XmlRootElement.class);
@@ -35,7 +66,7 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
    {
       try
       {
-         JAXBContext jaxb = JAXBContext.newInstance(aClass);
+         JAXBContext jaxb = getContext(aClass);
          Object obj = jaxb.createUnmarshaller().unmarshal(inputStream);
 
          if (obj instanceof JAXBElement)
@@ -63,7 +94,7 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
    {
       try
       {
-         JAXBContext jaxb = JAXBContext.newInstance(object.getClass());
+         JAXBContext jaxb = getContext(type);
          jaxb.createMarshaller().marshal(object, outputStream);
       }
       catch (JAXBException e)
