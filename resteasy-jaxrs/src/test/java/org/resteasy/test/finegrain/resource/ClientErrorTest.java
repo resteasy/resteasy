@@ -1,6 +1,7 @@
 package org.resteasy.test.finegrain.resource;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -15,6 +16,7 @@ import org.resteasy.util.HttpResponseCodes;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -55,6 +57,19 @@ public class ClientErrorTest
       public String getXml(@PathParam("uriparam")String param)
       {
          return "<" + param + "/>";
+      }
+
+      @DELETE
+      public void delete()
+      {
+
+      }
+
+      @Path("/nocontent")
+      @POST
+      public void noreturn(String entity)
+      {
+
       }
    }
 
@@ -138,6 +153,43 @@ public class ClientErrorTest
          method.setRequestEntity(new StringRequestEntity("content", "application/bar", null));
          int status = client.executeMethod(method);
          Assert.assertEquals(status, HttpResponseCodes.SC_NOT_ACCEPTABLE);
+      }
+      catch (IOException e)
+      {
+         method.releaseConnection();
+         throw new RuntimeException(e);
+      }
+      method.releaseConnection();
+   }
+
+   @Test
+   public void testNoContentPost()
+   {
+      HttpClient client = new HttpClient();
+      PostMethod method = new PostMethod("http://localhost:8081/nocontent");
+      try
+      {
+         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpResponseCodes.SC_NO_CONTENT);
+      }
+      catch (IOException e)
+      {
+         method.releaseConnection();
+         throw new RuntimeException(e);
+      }
+      method.releaseConnection();
+   }
+
+   @Test
+   public void testNoContent()
+   {
+      HttpClient client = new HttpClient();
+      DeleteMethod method = new DeleteMethod("http://localhost:8081");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpResponseCodes.SC_NO_CONTENT);
       }
       catch (IOException e)
       {
