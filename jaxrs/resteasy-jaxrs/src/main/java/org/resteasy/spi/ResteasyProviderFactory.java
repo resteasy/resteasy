@@ -11,6 +11,7 @@ import org.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.resteasy.specimpl.ResponseBuilderImpl;
 import org.resteasy.specimpl.UriBuilderImpl;
 import org.resteasy.specimpl.VariantListBuilderImpl;
+import org.resteasy.util.Types;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
@@ -23,6 +24,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
+import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
@@ -84,6 +86,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    private MediaTypeMap<MessageBodyKey<MessageBodyReader>> messageBodyReaders = new MediaTypeMap<MessageBodyKey<MessageBodyReader>>();
    private MediaTypeMap<MessageBodyKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<MessageBodyKey<MessageBodyWriter>>();
+   private Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
    private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
@@ -169,7 +172,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public void addMessageBodyReader(Class<? extends MessageBodyReader> provider)
    {
-      ConsumeMime consumeMime = provider.getAnnotation(ConsumeMime.class);
       MessageBodyReader reader = null;
       try
       {
@@ -208,9 +210,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider)
    {
-      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
-      injector.inject(provider);
-      ProduceMime consumeMime = provider.getAnnotation(ProduceMime.class);
       MessageBodyWriter writer = null;
       try
       {
@@ -229,6 +228,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public void addMessageBodyWriter(MessageBodyWriter provider)
    {
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
+      injector.inject(provider);
       ProduceMime consumeMime = provider.getClass().getAnnotation(ProduceMime.class);
       MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(provider.getClass(), provider);
       if (consumeMime != null)
@@ -262,6 +263,122 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       return null;
    }
 
+   public void addExceptionMapper(Class<? extends ExceptionMapper> provider)
+   {
+      ExceptionMapper writer = null;
+      try
+      {
+         writer = provider.newInstance();
+      }
+      catch (InstantiationException e)
+      {
+         throw new RuntimeException(e);
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new RuntimeException(e);
+      }
+      addExceptionMapper(writer);
+   }
+
+   public void addExceptionMapper(ExceptionMapper provider)
+   {
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
+      injector.inject(provider);
+      Type[] intfs = provider.getClass().getGenericInterfaces();
+      for (Type type : intfs)
+      {
+         if (type instanceof ParameterizedType)
+         {
+            ParameterizedType pt = (ParameterizedType) type;
+            if (pt.getRawType().equals(ExceptionMapper.class))
+            {
+               exceptionMappers.put(Types.getRawType(pt.getActualTypeArguments()[0]), provider);
+            }
+         }
+      }
+
+   }
+
+   public void registerProvider(Class provider)
+   {
+      if (MessageBodyReader.class.isAssignableFrom(provider))
+      {
+         try
+         {
+            addMessageBodyReader(provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
+         }
+      }
+      if (MessageBodyWriter.class.isAssignableFrom(provider))
+      {
+         try
+         {
+            addMessageBodyWriter(provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
+         }
+      }
+      if (ExceptionMapper.class.isAssignableFrom(provider))
+      {
+         try
+         {
+            addExceptionMapper(provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+         }
+      }
+   }
+
+   public void registerProviderInstance(Object provider)
+   {
+      if (provider instanceof MessageBodyReader)
+      {
+         try
+         {
+            addMessageBodyReader((MessageBodyReader) provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
+         }
+      }
+      if (provider instanceof MessageBodyWriter)
+      {
+         try
+         {
+            addMessageBodyWriter((MessageBodyWriter) provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
+         }
+      }
+      if (provider instanceof ExceptionMapper)
+      {
+         try
+         {
+            addExceptionMapper((ExceptionMapper) provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+         }
+      }
+   }
+
+   public <T> ExceptionMapper<T> createExceptionMapper(Class<T> type)
+   {
+      return exceptionMappers.get(type);
+   }
+
    public <T> MessageBodyWriter<T> createMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<MessageBodyKey<MessageBodyWriter>> writers = messageBodyWriters.getPossible(mediaType);
@@ -281,6 +398,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public <T> T createEndpoint(ApplicationConfig applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
    {
-      return null;
+      throw new RuntimeException("NOT USABLE IN RESTEASY");
    }
 }

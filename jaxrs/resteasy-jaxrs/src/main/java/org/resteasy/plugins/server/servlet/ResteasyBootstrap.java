@@ -13,8 +13,6 @@ import javax.servlet.ServletContextListener;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.net.URL;
@@ -48,7 +46,9 @@ public class ResteasyBootstrap implements ServletContextListener
       String providers = event.getServletContext().getInitParameter("resteasy.providers");
 
       if (providers != null) setProviders(providers);
-      else RegisterBuiltin.register(factory);
+
+      String builtin = event.getServletContext().getInitParameter("resteasy.use.builtin.providers");
+      if (builtin == null || Boolean.valueOf(builtin.trim())) RegisterBuiltin.register(factory);
 
       boolean scanProviders = false;
       boolean scanResources = false;
@@ -159,7 +159,7 @@ public class ResteasyBootstrap implements ServletContextListener
             if (config.getResourceClasses() != null)
                for (Class clazz : config.getResourceClasses()) registry.addPerRequestResource(clazz);
             if (config.getProviderClasses() != null)
-               for (Class clazz : config.getProviderClasses()) registerProvider(clazz);
+               for (Class clazz : config.getProviderClasses()) factory.registerProvider(clazz);
          }
          catch (ClassNotFoundException e)
          {
@@ -237,33 +237,7 @@ public class ResteasyBootstrap implements ServletContextListener
       {
          throw new RuntimeException(e);
       }
-      registerProvider(provider);
-   }
-
-   protected void registerProvider(Class provider)
-   {
-      if (MessageBodyReader.class.isAssignableFrom(provider))
-      {
-         try
-         {
-            factory.addMessageBodyReader(provider);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
-         }
-      }
-      if (MessageBodyWriter.class.isAssignableFrom(provider))
-      {
-         try
-         {
-            factory.addMessageBodyWriter(provider);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
-         }
-      }
+      factory.registerProvider(provider);
    }
 
    protected void processResources(AnnotationDB db)

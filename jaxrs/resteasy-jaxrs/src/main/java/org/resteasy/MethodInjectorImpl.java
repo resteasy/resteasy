@@ -9,6 +9,7 @@ import org.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,11 +24,13 @@ public class MethodInjectorImpl implements MethodInjector
    protected Method method;
    protected ValueInjector[] params;
    protected PathParamIndex index;
+   protected ResteasyProviderFactory factory;
 
    public MethodInjectorImpl(Method method, PathParamIndex index, ResteasyProviderFactory factory)
    {
       this.method = method;
       this.index = index;
+      this.factory = factory;
       params = new ValueInjector[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
@@ -102,7 +105,9 @@ public class MethodInjectorImpl implements MethodInjector
                return wae.getResponse();
             }
          }
-         throw new RuntimeException("Failed processing " + method.toString(), e.getCause());
+         ExceptionMapper mapper = factory.createExceptionMapper(cause.getClass());
+         if (mapper == null) throw new RuntimeException("Failed processing " + method.toString(), e.getCause());
+         return mapper.toResponse(cause);
       }
       catch (IllegalArgumentException e)
       {
