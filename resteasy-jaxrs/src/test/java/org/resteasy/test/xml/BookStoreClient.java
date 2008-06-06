@@ -29,4 +29,19 @@ public interface BookStoreClient
    @Path("books")
    @ProduceMime("text/xml")
    Collection<Book> getAllBooks();
+
+   @GET
+   @Path("books/{isbn}")
+   @ProduceMime("application/json")
+   Book getBookByISBNJson(@PathParam("isbn")String isbn);
+
+   @PUT
+   @Path("books")
+   @ConsumeMime("application/json")
+   void addBookJson(Book book);
+
+   @GET
+   @Path("books")
+   @ProduceMime("application/json")
+   Collection<Book> getAllBooksJson();
 }

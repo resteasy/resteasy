@@ -27,7 +27,7 @@ public class BookStore
 
    @GET
    @Path("books/{isbn}")
-   @ProduceMime("text/xml")
+   @ProduceMime({"text/xml", "application/json"})
    public Book getBookByISBN(@PathParam("isbn")String isbn)
    {
       return availableBooks.get(isbn);
@@ -35,7 +35,7 @@ public class BookStore
 
    @PUT
    @Path("books")
-   @ConsumeMime("text/xml")
+   @ConsumeMime({"text/xml", "application/json"})
    public void addBook(Book book)
    {
       availableBooks.put(book.getISBN(), book);
@@ -43,9 +43,11 @@ public class BookStore
 
    @GET
    @Path("books")
-   @ProduceMime("text/xml")
+   @ProduceMime({"text/xml", "application/json"})
    public Collection<Book> getAllBooks()
    {
       return availableBooks.values();
    }
+
+
 }
