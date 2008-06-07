@@ -16,10 +16,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Reader/Writer for JAXB annotated classes
+ * Reader/Writer for JAXB annotated classes.
  *
  * @author <a href="mailto:hbraun@redhat.com">Heiko Braun</a>
  * @version $Revision: 1 $
@@ -50,11 +51,14 @@ public class JAXBProvider implements MessageBodyReader<Object>, MessageBodyWrite
    }
 
    /**
-    * Clear JAXBContext cache
+    * This provider caches JAXBContext's on a per class basis.  You can use this method to clear, prune, or prepopulate
+    * the cache with your own JAXBContext instances.
+    * <p/>
+    * You can obtain an instance of this class by doing ResteasyProviderFactory.getProvider(JAXBProvider.class);
     */
-   public void clearCache()
+   public Map<Class<?>, JAXBContext> getCache()
    {
-      cache.clear();
+      return cache;
    }
 
    public boolean isReadable(Class<?> aClass, Type genericType, Annotation[] annotations)

@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Supports Badger or Mapped convention.  Badger is the default convention.  You can override this default by
  * using the @Mapped/@Badged annotation on the JAXB class or parameter you are (un)marshalling.  Putting it on a parameter
  * will always override any annotation on the class.
+ * <p/>
+ * This class creates and caches separate class specific badger and mapped JAXBContexts.
  *
  * @author <a href="mailto:bburke@redhat.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -44,6 +47,28 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
    public void setMappedNamespaceConvention(MappedNamespaceConvention mappedNamespaceConvention)
    {
       this.mappedNamespaceConvention = mappedNamespaceConvention;
+   }
+
+   /**
+    * This provider caches JAXBContext's on a per class basis.  You can use this method to clear, prune, or prepopulate
+    * the cache with your own JAXBContext instances.
+    * <p/>
+    * You can obtain an instance of this class by doing ResteasyProviderFactory.getProvider(JettisonProvider.class);
+    */
+   public Map<Class<?>, JAXBContext> getBadgerCache()
+   {
+      return badgerCache;
+   }
+
+   /**
+    * This provider caches JAXBContext's on a per class basis.  You can use this method to clear, prune, or prepopulate
+    * the cache with your own JAXBContext instances.
+    * <p/>
+    * You can obtain an instance of this class by doing ResteasyProviderFactory.getProvider(JettisonProvider.class);
+    */
+   public Map<Class<?>, JAXBContext> getMappedCache()
+   {
+      return badgerCache;
    }
 
    /**

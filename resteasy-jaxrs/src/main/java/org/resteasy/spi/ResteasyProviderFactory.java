@@ -87,6 +87,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    private MediaTypeMap<MessageBodyKey<MessageBodyReader>> messageBodyReaders = new MediaTypeMap<MessageBodyKey<MessageBodyReader>>();
    private MediaTypeMap<MessageBodyKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<MessageBodyKey<MessageBodyWriter>>();
    private Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
+   private Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
+
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
    private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
@@ -192,6 +194,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    {
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
       injector.inject(provider);
+      providers.put(provider.getClass(), provider);
       ConsumeMime consumeMime = provider.getClass().getAnnotation(ConsumeMime.class);
       MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(provider.getClass(), provider);
       if (consumeMime != null)
@@ -229,6 +232,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    public void addMessageBodyWriter(MessageBodyWriter provider)
    {
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
+      providers.put(provider.getClass(), provider);
       injector.inject(provider);
       ProduceMime consumeMime = provider.getClass().getAnnotation(ProduceMime.class);
       MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(provider.getClass(), provider);
@@ -283,6 +287,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public void addExceptionMapper(ExceptionMapper provider)
    {
+      providers.put(provider.getClass(), provider);
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
       injector.inject(provider);
       Type[] intfs = provider.getClass().getGenericInterfaces();
@@ -300,6 +305,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    }
 
+   /**
+    * Register a @Provider class.  Can be a MessageBodyReader/Writer or ExceptionMapper.
+    *
+    * @param provider
+    */
    public void registerProvider(Class provider)
    {
       if (MessageBodyReader.class.isAssignableFrom(provider))
@@ -337,6 +347,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       }
    }
 
+   /**
+    * Register a @Provider object.  Can be a MessageBodyReader/Writer or ExceptionMapper.
+    *
+    * @param provider
+    */
    public void registerProviderInstance(Object provider)
    {
       if (provider instanceof MessageBodyReader)
@@ -374,6 +389,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       }
    }
 
+   /**
+    * Obtain a registered @Provider instance keyed by class.  This can get you access to any @Provider:
+    * MessageBodyReader/Writer or ExceptionMapper
+    */
+   public Object getProvider(Class<?> providerClass)
+   {
+      return providers.get(providerClass);
+   }
+
    public <T> ExceptionMapper<T> createExceptionMapper(Class<T> type)
    {
       return exceptionMappers.get(type);
@@ -396,6 +420,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       return null;
    }
 
+   /**
+    * this is a spec method that is unsupported.  it is an optional method anyways.
+    *
+    * @param applicationConfig
+    * @param endpointType
+    * @return
+    * @throws IllegalArgumentException
+    * @throws UnsupportedOperationException
+    */
    public <T> T createEndpoint(ApplicationConfig applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
    {
       throw new RuntimeException("NOT USABLE IN RESTEASY");
