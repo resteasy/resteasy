@@ -393,9 +393,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate
     * Obtain a registered @Provider instance keyed by class.  This can get you access to any @Provider:
     * MessageBodyReader/Writer or ExceptionMapper
     */
-   public Object getProvider(Class<?> providerClass)
+   public <T> T getProvider(Class<T> providerClass)
    {
-      return providers.get(providerClass);
+      return (T) providers.get(providerClass);
    }
 
    public <T> ExceptionMapper<T> createExceptionMapper(Class<T> type)

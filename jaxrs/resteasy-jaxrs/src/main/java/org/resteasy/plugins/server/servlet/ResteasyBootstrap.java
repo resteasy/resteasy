@@ -237,6 +237,7 @@ public class ResteasyBootstrap implements ServletContextListener
       {
          throw new RuntimeException(e);
       }
+      System.out.println("FOUND JAX-RS @Provider: " + clazz);
       factory.registerProvider(provider);
    }
 

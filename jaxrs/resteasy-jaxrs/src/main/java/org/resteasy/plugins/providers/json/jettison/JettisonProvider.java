@@ -1,8 +1,5 @@
 package org.resteasy.plugins.providers.json.jettison;
 
-import org.codehaus.jettison.mapped.MappedNamespaceConvention;
-import org.resteasy.util.FindAnnotation;
-
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
@@ -39,15 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ConsumeMime("application/json")
 public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
-   private ConcurrentHashMap<Class<?>, JAXBContext> badgerCache = new ConcurrentHashMap<Class<?>, JAXBContext>();
-   private ConcurrentHashMap<Class<?>, JAXBContext> mappedCache = new ConcurrentHashMap<Class<?>, JAXBContext>();
-
-   private MappedNamespaceConvention mappedNamespaceConvention;
-
-   public void setMappedNamespaceConvention(MappedNamespaceConvention mappedNamespaceConvention)
-   {
-      this.mappedNamespaceConvention = mappedNamespaceConvention;
-   }
+   private ConcurrentHashMap<Class<?>, JAXBContext> cache = new ConcurrentHashMap<Class<?>, JAXBContext>();
 
    /**
     * This provider caches JAXBContext's on a per class basis.  You can use this method to clear, prune, or prepopulate
@@ -55,20 +44,9 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
     * <p/>
     * You can obtain an instance of this class by doing ResteasyProviderFactory.getProvider(JettisonProvider.class);
     */
-   public Map<Class<?>, JAXBContext> getBadgerCache()
+   public Map<Class<?>, JAXBContext> getCache()
    {
-      return badgerCache;
-   }
-
-   /**
-    * This provider caches JAXBContext's on a per class basis.  You can use this method to clear, prune, or prepopulate
-    * the cache with your own JAXBContext instances.
-    * <p/>
-    * You can obtain an instance of this class by doing ResteasyProviderFactory.getProvider(JettisonProvider.class);
-    */
-   public Map<Class<?>, JAXBContext> getMappedCache()
-   {
-      return badgerCache;
+      return cache;
    }
 
    /**
@@ -78,43 +56,15 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
     * @return
     * @throws javax.xml.bind.JAXBException
     */
-   public JAXBContext getBadgerContext(Class<?> clazz) throws JAXBException
+   public JAXBContext getContext(Class<?> clazz) throws JAXBException
    {
-      JAXBContext context = badgerCache.get(clazz);
+      JAXBContext context = cache.get(clazz);
       if (context == null)
       {
          context = new BadgerContext(clazz);
-         badgerCache.putIfAbsent(clazz, context);
+         cache.putIfAbsent(clazz, context);
       }
       return context;
-   }
-
-   /**
-    * Lookup.  Will create context if it doesn't exist.  Might be useful for prepopulating cache.
-    *
-    * @param clazz
-    * @return
-    * @throws javax.xml.bind.JAXBException
-    */
-   public JAXBContext getMappedContext(Class<?> clazz) throws JAXBException
-   {
-      JAXBContext context = mappedCache.get(clazz);
-      if (context == null)
-      {
-         if (mappedNamespaceConvention != null) context = new JettisonMappedContext(mappedNamespaceConvention, clazz);
-         else context = new JettisonMappedContext(clazz);
-         mappedCache.putIfAbsent(clazz, context);
-      }
-      return context;
-   }
-
-   protected JAXBContext findContext(Class<?> clazz, Annotation[] annotations) throws JAXBException
-   {
-      if (FindAnnotation.findAnnotation(annotations, Badger.class) != null) return getBadgerContext(clazz);
-      if (FindAnnotation.findAnnotation(annotations, Mapped.class) != null) return getMappedContext(clazz);
-      if (clazz.isAnnotationPresent(Badger.class)) return getBadgerContext(clazz);
-      if (clazz.isAnnotationPresent(Mapped.class)) return getMappedContext(clazz);
-      return getBadgerContext(clazz);
    }
 
    /**
@@ -122,8 +72,7 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
     */
    public void clearCache()
    {
-      badgerCache.clear();
-      mappedCache.clear();
+      cache.clear();
    }
 
    public boolean isReadable(Class<?> aClass, Type genericType, Annotation[] annotations)
@@ -135,7 +84,7 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
    {
       try
       {
-         JAXBContext jaxb = findContext(aClass, annotations);
+         JAXBContext jaxb = getContext(aClass);
          Object obj = jaxb.createUnmarshaller().unmarshal(inputStream);
 
          if (obj instanceof JAXBElement)
@@ -163,7 +112,7 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
    {
       try
       {
-         JAXBContext jaxb = findContext(type, annotations);
+         JAXBContext jaxb = getContext(type);
          jaxb.createMarshaller().marshal(object, outputStream);
       }
       catch (JAXBException e)
