@@ -3,7 +3,7 @@
    <url>http://www.attainware.com/</url>
    <modelVersion>4.0.0</modelVersion>
    <properties>
-      <resteasy-version>1.0-beta-4</resteasy-version>
+      <resteasy-version>1.0-beta-5</resteasy-version>
    </properties>
 
    <groupId>org.resteasy</groupId>
