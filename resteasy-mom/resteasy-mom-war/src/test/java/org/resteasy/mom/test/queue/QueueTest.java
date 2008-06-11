@@ -219,7 +219,7 @@ public class QueueTest
          PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
          method.setRequestEntity(new StringRequestEntity(BigMessageListener.compareTo, "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
          method.releaseConnection();
          Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
 
@@ -275,7 +275,7 @@ public class QueueTest
    {
       DeleteMethod method = new DeleteMethod(RECEIVER_1 + "/head");
       int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
       method.releaseConnection();
    }
 
@@ -330,7 +330,7 @@ public class QueueTest
       PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
       method.setRequestEntity(new StringRequestEntity("2nd stupid message", "text/plain", null));
       int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
       method.releaseConnection();
    }
 
@@ -340,7 +340,7 @@ public class QueueTest
       PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
       method.setRequestEntity(new StringRequestEntity("stupid message", "text/plain", null));
       int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
       method.releaseConnection();
    }
 
@@ -350,7 +350,7 @@ public class QueueTest
       PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
       method.setRequestEntity(new StringRequestEntity("<project><target>Hello World</target></project>", "application/xml", null));
       int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
       method.releaseConnection();
    }
 }

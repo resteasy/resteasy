@@ -209,7 +209,7 @@ public class DurableTopicTest
          PostMethod method = new PostMethod(RESTEASY_MOM_URI + "topics/testTopic");
          method.setRequestEntity(new StringRequestEntity(BigMessageListener.compareTo, "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
          method.releaseConnection();
          Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
 
@@ -265,7 +265,7 @@ public class DurableTopicTest
    {
       DeleteMethod method = new DeleteMethod(RECEIVER_1 + "/head");
       int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
       method.releaseConnection();
    }
 
@@ -305,7 +305,7 @@ public class DurableTopicTest
       PostMethod method = new PostMethod(RESTEASY_MOM_URI + "topics/testTopic");
       method.setRequestEntity(new StringRequestEntity("2nd stupid message", "text/plain", null));
       int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
       method.releaseConnection();
    }
 
@@ -315,7 +315,7 @@ public class DurableTopicTest
       PostMethod method = new PostMethod(RESTEASY_MOM_URI + "topics/testTopic");
       method.setRequestEntity(new StringRequestEntity("stupid message", "text/plain", null));
       int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
       method.releaseConnection();
    }
 

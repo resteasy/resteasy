@@ -1,7 +1,7 @@
 <!-- test -->
 <project>
    <properties>
-      <resteasy-mom-version>1.0-beta-2</resteasy-mom-version>
+      <resteasy-mom-version>1.0</resteasy-mom-version>
    </properties>
    <name>Resteasy MOM Parent POM</name>
    <url>http://www.attainware.com/</url>

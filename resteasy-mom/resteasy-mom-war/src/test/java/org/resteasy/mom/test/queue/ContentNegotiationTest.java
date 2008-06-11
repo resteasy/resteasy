@@ -211,7 +211,7 @@ public class ContentNegotiationTest
       PostMethod method = new PostMethod(RESTEASY_MOM_URI + "queues/A");
       method.setRequestEntity(new StringRequestEntity(content, mediaType, null));
       int status = client.executeMethod(method);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, status);
       method.releaseConnection();
    }
 }
