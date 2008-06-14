@@ -121,7 +121,7 @@ public abstract class Receiver
    @Path("/head")
    public synchronized void acknowledge() throws Exception
    {
-      if (currentMessage == null) throw new WebApplicationException(HttpResponseCodes.SC_NOT_FOUND);
+      if (currentMessage == null) return;
       currentMessage.acknowledge();
       currentMessage = null;
    }
