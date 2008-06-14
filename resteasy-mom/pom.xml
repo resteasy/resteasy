@@ -15,5 +15,6 @@
    <modules>
       <module>resteasy-mom</module>
       <module>resteasy-mom-war</module>
+      <module>distribution</module>
    </modules>
 </project>
