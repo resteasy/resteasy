@@ -6,7 +6,7 @@
       <version>1.0</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
-   <groupId>org.resteasy</groupId>
+   <groupId>org.resteasy.mom</groupId>
    <artifactId>resteasy-mom-war</artifactId>
    <packaging>war</packaging>
    <version>${resteasy-mom-version}</version>
