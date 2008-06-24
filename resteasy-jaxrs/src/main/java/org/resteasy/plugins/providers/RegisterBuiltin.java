@@ -7,35 +7,42 @@ import org.resteasy.spi.ResteasyProviderFactory;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class RegisterBuiltin
-{
-   public static void register(ResteasyProviderFactory factory)
-   {
-      factory.addMessageBodyReader(new DefaultTextPlain());
-      factory.addMessageBodyWriter(new DefaultTextPlain());
+public class RegisterBuiltin {
+    public static void register(ResteasyProviderFactory factory) {
+	factory.addMessageBodyReader(new MultipartEntityProvider());
 
+	MimeMultipartProvider multipartProvider = new MimeMultipartProvider();
+	factory.addMessageBodyReader(multipartProvider);
+	factory.addMessageBodyWriter(multipartProvider);
 
-      JAXBProvider jaxb = new JAXBProvider();
-      factory.addMessageBodyReader(jaxb);
-      factory.addMessageBodyWriter(jaxb);
+	DataSourceProvider dataSourceProvider = new DataSourceProvider();
+	factory.addMessageBodyReader(dataSourceProvider);
+	factory.addMessageBodyWriter(dataSourceProvider);
+	
+	factory.addMessageBodyReader(new DefaultTextPlain());
+	factory.addMessageBodyWriter(new DefaultTextPlain());
 
-      factory.addMessageBodyReader(new StringTextStar());
-      factory.addMessageBodyWriter(new StringTextStar());
+	JAXBProvider jaxb = new JAXBProvider();
+	factory.addMessageBodyReader(jaxb);
+	factory.addMessageBodyWriter(jaxb);
 
-      factory.addMessageBodyReader(new InputStreamProvider());
-      factory.addMessageBodyWriter(new InputStreamProvider());
+	factory.addMessageBodyReader(new StringTextStar());
+	factory.addMessageBodyWriter(new StringTextStar());
 
-      factory.addMessageBodyReader(new ByteArrayProvider());
-      factory.addMessageBodyWriter(new ByteArrayProvider());
+	factory.addMessageBodyReader(new InputStreamProvider());
+	factory.addMessageBodyWriter(new InputStreamProvider());
 
-      factory.addMessageBodyReader(new FormUrlEncodedProvider());
-      factory.addMessageBodyWriter(new FormUrlEncodedProvider());
+	factory.addMessageBodyReader(new ByteArrayProvider());
+	factory.addMessageBodyWriter(new ByteArrayProvider());
 
-      factory.addMessageBodyWriter(new StreamingOutputProvider());
+	factory.addMessageBodyReader(new FormUrlEncodedProvider());
+	factory.addMessageBodyWriter(new FormUrlEncodedProvider());
 
-      JettisonProvider jettison = new JettisonProvider();
-      factory.addMessageBodyReader(jettison);
-      factory.addMessageBodyWriter(jettison);
+	factory.addMessageBodyWriter(new StreamingOutputProvider());
 
-   }
+	JettisonProvider jettison = new JettisonProvider();
+	factory.addMessageBodyReader(jettison);
+	factory.addMessageBodyWriter(jettison);
+
+    }
 }
