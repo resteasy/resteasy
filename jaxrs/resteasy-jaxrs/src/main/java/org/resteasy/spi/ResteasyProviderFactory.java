@@ -62,10 +62,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       {
          this.readerClass = readerClass;
          this.obj = reader;
-         Type impls = readerClass.getGenericInterfaces()[0];
-         if (impls instanceof ParameterizedType)
+         // check the super class for the generic type 1st
+         Type impl = readerClass.getGenericSuperclass();
+         // if it's null or object, check the interfaces
+         // TODO: we may need more refinement here.
+         if(impl == null || impl == Object.class) {
+             Type[] impls = readerClass.getGenericInterfaces();
+             if (impls.length > 0) {
+        	 impl = impls[0];
+             }
+         }
+         
+         if (impl != null && (impl instanceof ParameterizedType))
          {
-            ParameterizedType param = (ParameterizedType) impls;
+            ParameterizedType param = (ParameterizedType) impl;
             if (param.getActualTypeArguments()[0].equals(Object.class)) isGeneric = true;
          }
          else
