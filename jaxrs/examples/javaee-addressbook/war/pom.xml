@@ -1,0 +1,19 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+	<groupId>org.resteasy.examples</groupId>
+            <artifactId>javaee-addressbook-war</artifactId>
+   <packaging>war</packaging>
+   <version>1.0</version>
+   <name>RESTEasy Contact Book Example WAR Assembly</name>
+   <parent>
+		<groupId>org.resteasy.examples</groupId>
+        <artifactId>javaee-addressbook</artifactId>
+      <version>1.0</version>
+   </parent>
+  	<dependencies>
+		<dependency>
+			<groupId>org.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+		</dependency>
+	</dependencies>
+</project>
