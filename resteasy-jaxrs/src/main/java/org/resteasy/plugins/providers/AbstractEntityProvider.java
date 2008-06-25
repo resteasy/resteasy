@@ -9,10 +9,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.Variant.VariantListBuilder;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
@@ -45,6 +50,38 @@ public abstract class AbstractEntityProvider<T> implements
 	return builder.toString();
     }
     
+    /**
+     * 
+     * @param mediaTypes
+     * @return
+     */
+    public List<MediaType> getAvailableMediaTypes(String[] mediaTypes) {
+	List<MediaType> types = new ArrayList<MediaType>();
+	for(String mediaType : mediaTypes) {
+	    types.add(MediaType.valueOf(mediaType));
+	}
+	return types;
+    }
+    
+    /**
+     * 
+     * @param mediaTypes
+     * @return
+     */
+    public List<Variant> getAvailableVariants(String[] mediaTypes) {
+	return getAvailableVariants(getAvailableMediaTypes(mediaTypes));
+    }
+    /**
+     * 
+     * @param mediaTypes
+     * @return
+     */
+    public List<Variant> getAvailableVariants(List<MediaType> mediaTypes) {
+	VariantListBuilder builder = Variant.VariantListBuilder.newInstance();
+	MediaType[] types = mediaTypes.toArray(new MediaType[mediaTypes.size()]);
+	builder.mediaTypes(types);
+	return builder.build();
+    }
     /**
      * 
      * @param in
