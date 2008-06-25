@@ -10,7 +10,12 @@ import org.resteasy.spi.ResteasyProviderFactory;
 public class RegisterBuiltin {
     public static void register(ResteasyProviderFactory factory) {
 	factory.addMessageBodyReader(new MultipartEntityProvider());
-
+	
+	IIOImageProvider imageProvider = new IIOImageProvider();
+	factory.addMessageBodyReader(imageProvider);
+	factory.addMessageBodyWriter(imageProvider);
+	
+	
 	MimeMultipartProvider multipartProvider = new MimeMultipartProvider();
 	factory.addMessageBodyReader(multipartProvider);
 	factory.addMessageBodyWriter(multipartProvider);
