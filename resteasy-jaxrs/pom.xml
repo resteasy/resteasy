@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 	<version>${resteasy-version}</version>
 	<name>Resteasy JAX-RS Implementation</name>
-	<url>http://maven.apache.org</url>
+	<url>http://wiki.jboss.org/wiki/Wiki.jsp?page=RESTeasyJAXRS</url>
 	<licenses>
 		<license>
 			<name>GNU LESSER GENERAL PUBLIC LICENSE</name>
@@ -20,6 +20,17 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<scm>
+		<connection>
+			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs
+		</connection>
+		<developerConnection>
+			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs
+		</developerConnection>
+		<url>
+			http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs/resteasy-jaxrs
+		</url>
+	</scm>
 	<repositories>
 		<repository>
 			<id>jakarta</id>
@@ -156,25 +167,11 @@
 					<createChecksum>true</createChecksum>
 				</configuration>
 			</plugin>
+			
 		</plugins>
+
 	</build>
 	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>
-					maven-project-info-reports-plugin
-				</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				
-			</plugin>
-		</plugins>
+		
 	</reporting>
 </project>
