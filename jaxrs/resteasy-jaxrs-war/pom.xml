@@ -12,6 +12,17 @@
    <version>${resteasy-version}</version>
    <name>Resteasy JAX-RS Template Webapp</name>
    <url>http://maven.apache.org</url>
+   <scm>
+		<connection>
+			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs-war
+		</connection>
+		<developerConnection>
+			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs-war
+		</developerConnection>
+		<url>
+			http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs/resteasy-jaxrs-war
+		</url>
+	</scm>
    <repositories>
       <repository>
          <id>jboss</id>

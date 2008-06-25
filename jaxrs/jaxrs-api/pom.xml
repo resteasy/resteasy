@@ -14,6 +14,17 @@
    <url>http://maven.apache.org</url>
    <dependencies>
    </dependencies>
+   <scm>
+		<connection>
+			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/jaxrs-api
+		</connection>
+		<developerConnection>
+			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/jaxrs-api
+		</developerConnection>
+		<url>
+			http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs/jaxrs-api
+		</url>
+	</scm>
    <build>
       <plugins>
          <plugin>
