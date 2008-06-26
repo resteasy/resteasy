@@ -3,15 +3,6 @@
  */
 package org.resteasy.test.providers.iioimage;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.FileRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -19,6 +10,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.resteasy.test.BaseResourceTest;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a> Jun 23,

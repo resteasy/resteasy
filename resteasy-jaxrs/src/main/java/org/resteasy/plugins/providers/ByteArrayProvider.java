@@ -1,12 +1,13 @@
 package org.resteasy.plugins.providers;
 
+import org.resteasy.util.ReadFromStream;
+
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,19 +29,7 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
 
    public byte[] readFrom(Class<byte[]> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-      byte[] buffer = new byte[100];
-      int wasRead = 0;
-      do
-      {
-         wasRead = entityStream.read(buffer);
-         if (wasRead > 0)
-         {
-            baos.write(buffer, 0, wasRead);
-         }
-      } while (wasRead > -1);
-      return baos.toByteArray();
+      return ReadFromStream.readFromStream(1024, entityStream);
    }
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)

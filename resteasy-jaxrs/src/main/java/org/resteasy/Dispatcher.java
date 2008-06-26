@@ -65,7 +65,7 @@ public class Dispatcher
       return languageMappings;
    }
 
-   protected void preprocess(HttpRequest in)
+   public void preprocess(HttpRequest in)
    {
       if (mediaTypeMappings == null && languageMappings == null) return;
       List<PathSegment> segments = in.getUri().getPathSegments(false);
@@ -149,6 +149,11 @@ public class Dispatcher
          }
          return;
       }
+      invoke(in, response, invoker);
+   }
+
+   public void invoke(HttpRequest in, HttpResponse response, ResourceInvoker invoker)
+   {
       try
       {
          ResteasyProviderFactory.pushContext(HttpRequest.class, in);
