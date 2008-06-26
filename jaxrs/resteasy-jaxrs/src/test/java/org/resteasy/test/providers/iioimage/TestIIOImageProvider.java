@@ -10,14 +10,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.resteasy.test.BaseResourceTest;
+import org.resteasy.test.LocateTestData;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a> Jun 23,
@@ -59,7 +62,8 @@ public class TestIIOImageProvider extends BaseResourceTest
    public void testPostJPEGIMage() throws Exception
    {
       HttpClient client = new HttpClient();
-      File file = new File(SRC_ROOT + "harper.jpg");
+      //File file = new File(SRC_ROOT + "harper.jpg");
+      File file = LocateTestData.getTestData("harper.jpg");
       Assert.assertTrue(file.exists());
       PostMethod method = new PostMethod(TEST_URI);
       method.setRequestEntity(new FileRequestEntity(file, "image/jpeg"));
@@ -70,11 +74,18 @@ public class TestIIOImageProvider extends BaseResourceTest
       String contentType = method.getResponseHeader("content-type")
               .getValue();
       Assert.assertEquals("image/png", contentType);
-      File outFile = new File(OUTPUT_ROOT + "harper.png");
-      FileOutputStream out = new FileOutputStream(outFile);
-      writeTo(in, out);
-      Assert.assertTrue(outFile.exists());
+
+      ByteArrayOutputStream fromServer = new ByteArrayOutputStream();
+      writeTo(in, fromServer);
       method.releaseConnection();
+
+      File savedPng = LocateTestData.getTestData("harper.png");
+      FileInputStream fis = new FileInputStream(savedPng);
+
+      ByteArrayOutputStream fromTestData = new ByteArrayOutputStream();
+      writeTo(fis, fromTestData);
+
+      Assert.assertTrue(Arrays.equals(fromServer.toByteArray(), fromTestData.toByteArray()));
    }
 
    /**
@@ -89,7 +100,8 @@ public class TestIIOImageProvider extends BaseResourceTest
    public void testPostUnsupportedImage() throws Exception
    {
       HttpClient client = new HttpClient();
-      File file = new File(SRC_ROOT + "harper.wdp");
+      //File file = new File(SRC_ROOT + "harper.wdp");
+      File file = LocateTestData.getTestData("harper.wdp");
       Assert.assertTrue(file.exists());
       PostMethod method = new PostMethod(TEST_URI);
       method.setRequestEntity(new FileRequestEntity(file, "image/vnd.ms-photo"));
