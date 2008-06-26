@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.resteasy.test.BaseResourceTest;
+import org.resteasy.test.LocateTestData;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -37,7 +38,8 @@ public class TestDataSourceProvider extends BaseResourceTest
    public void testPostDataSource() throws Exception
    {
       HttpClient client = new HttpClient();
-      File file = new File("./src/test/test-data/harper.jpg");
+      //File file = new File("./src/test/test-data/harper.jpg");
+      File file = LocateTestData.getTestData("harper.jpg");
       Assert.assertTrue(file.exists());
       PostMethod method = new PostMethod(TEST_URI);
       method.setRequestEntity(new FileRequestEntity(file, "image/jpeg"));

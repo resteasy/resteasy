@@ -15,12 +15,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.resteasy.test.BaseResourceTest;
+import org.resteasy.test.LocateTestData;
 
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class TestMimeMultipartProvider extends BaseResourceTest
       List<Part> partsList = new ArrayList<Part>();
       partsList.add(new StringPart("part1", "This is Value 1"));
       partsList.add(new StringPart("part2", "This is Value 2"));
-      partsList.add(new FilePart("pom.xml", new File("./pom.xml")));
+      partsList.add(new FilePart("data.txt", LocateTestData.getTestData("data.txt")));
       Part[] parts = partsList.toArray(new Part[partsList.size()]);
       PutMethod method = new PutMethod(TEST_URI);
       RequestEntity entity = new MultipartRequestEntity(parts, method.getParams());
