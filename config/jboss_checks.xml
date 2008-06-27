@@ -15,6 +15,7 @@
             <property name="scope" value="public"/>
             <property name="allowUndeclaredRTE" value="true"/>
             <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingThrowsTags" value="true"/>
             <property name="allowMissingReturnTag" value="true"/>
             <property name="allowMissingPropertyJavadoc" value="true"/>
         </module>
