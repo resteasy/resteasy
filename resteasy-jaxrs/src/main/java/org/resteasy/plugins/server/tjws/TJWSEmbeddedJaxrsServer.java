@@ -1,6 +1,7 @@
 package org.resteasy.plugins.server.tjws;
 
 import org.resteasy.Dispatcher;
+import org.resteasy.SynchronousDispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.resteasy.plugins.server.embedded.SecurityDomain;
@@ -31,7 +32,7 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    {
       ResteasyProviderFactory.setInstance(factory);
 
-      dispatcher = new Dispatcher(factory);
+      dispatcher = new SynchronousDispatcher(factory);
       registry = dispatcher.getRegistry();
       ResteasyProviderFactory.setInstance(factory);
       RegisterBuiltin.register(factory);
@@ -42,7 +43,7 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    {
       server.setAttribute(ResteasyProviderFactory.class.getName(), factory);
       server.setAttribute(Registry.class.getName(), registry);
-      server.setAttribute(Dispatcher.class.getName(), dispatcher);
+      server.setAttribute(SynchronousDispatcher.class.getName(), dispatcher);
       addServlet(rootResourcePath, servlet);
       servlet.setContextPath(rootResourcePath);
       super.start();

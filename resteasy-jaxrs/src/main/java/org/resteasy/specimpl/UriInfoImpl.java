@@ -32,6 +32,7 @@ public class UriInfoImpl implements UriInfo
    private List<String> encodedAncestorUris;
    private List<Object> ancestors;
 
+
    /**
     * @param absolutePath
     * @param path         decoded equivalent to HttpServletRequest.getPathInfo()

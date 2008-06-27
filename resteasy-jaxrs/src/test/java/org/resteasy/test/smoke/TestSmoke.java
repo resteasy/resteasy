@@ -3,11 +3,10 @@ package org.resteasy.test.smoke;
 import org.junit.Assert;
 import org.junit.Test;
 import org.resteasy.Dispatcher;
-import org.resteasy.mock.MockHttpServletRequest;
-import org.resteasy.mock.MockHttpServletResponse;
+import org.resteasy.mock.MockDispatcherFactory;
+import org.resteasy.mock.MockHttpRequest;
+import org.resteasy.mock.MockHttpResponse;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.test.MockDispatcherFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
@@ -24,53 +23,47 @@ public class TestSmoke
    @Test
    public void testNoDefaultsResource() throws Exception
    {
-      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
-      Dispatcher dispatcher = servlet.getDispatcher();
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
 
       POJOResourceFactory noDefaults = new POJOResourceFactory(SimpleResource.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/basic");
-         request.setPathInfo("/basic");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.get("/basic");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("basic", response.getContentAsString());
       }
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "/basic");
-         request.setPathInfo("/basic");
-         request.setContent("basic".getBytes());
-         request.setContentType("text/plain");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.put("/basic");
+         request.content("basic".getBytes());
+         request.contentType("text/plain");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
       }
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/queryParam");
-         request.setPathInfo("/queryParam");
-         request.setQueryString("param=" + URLEncoder.encode("hello world", "UTF-8"));
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.get("/queryParam?" + "param=" + URLEncoder.encode("hello world", "UTF-8"));
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("hello world", response.getContentAsString());
       }
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/uriParam/1234");
-         request.setPathInfo("/uriParam/1234");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.get("/uriParam/1234");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -81,53 +74,47 @@ public class TestSmoke
    @Test
    public void testLocatingResource() throws Exception
    {
-      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
-      Dispatcher dispatcher = servlet.getDispatcher();
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
 
       POJOResourceFactory noDefaults = new POJOResourceFactory(LocatingResource.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/locating/basic");
-         request.setPathInfo("/locating/basic");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.get("/locating/basic");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("basic", response.getContentAsString());
       }
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "/locating/basic");
-         request.setPathInfo("/locating/basic");
-         request.setContent("basic".getBytes());
-         request.setContentType("text/plain");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.put("/locating/basic");
+         request.content("basic".getBytes());
+         request.contentType("text/plain");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
       }
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/locating/queryParam");
-         request.setPathInfo("/locating/queryParam");
-         request.setQueryString("param=" + URLEncoder.encode("hello world", "UTF-8"));
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.get("/locating/queryParam?" + "param=" + URLEncoder.encode("hello world", "UTF-8"));
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("hello world", response.getContentAsString());
       }
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/locating/uriParam/1234");
-         request.setPathInfo("/locating/uriParam/1234");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.get("/locating/uriParam/1234");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());

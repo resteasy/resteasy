@@ -1,6 +1,7 @@
 package org.resteasy.plugins.server.servlet;
 
 import org.resteasy.Dispatcher;
+import org.resteasy.SynchronousDispatcher;
 import org.resteasy.plugins.providers.RegisterBuiltin;
 import org.resteasy.spi.Registry;
 import org.resteasy.spi.ResteasyProviderFactory;
@@ -38,7 +39,7 @@ public class ResteasyBootstrap implements ServletContextListener
       ResteasyProviderFactory.setInstance(factory);
 
       event.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), factory);
-      dispatcher = new Dispatcher(factory);
+      dispatcher = new SynchronousDispatcher(factory);
       registry = dispatcher.getRegistry();
       event.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
       event.getServletContext().setAttribute(Registry.class.getName(), registry);

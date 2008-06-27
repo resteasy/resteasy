@@ -3,6 +3,7 @@ package org.resteasy.plugins.server.grizzly;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import org.resteasy.Dispatcher;
+import org.resteasy.SynchronousDispatcher;
 import org.resteasy.specimpl.MultivaluedMapImpl;
 import org.resteasy.specimpl.PathSegmentImpl;
 import org.resteasy.specimpl.UriInfoImpl;
@@ -32,7 +33,7 @@ abstract public class AbstractGrizzlyDispatcher
    public AbstractGrizzlyDispatcher(ResteasyProviderFactory providerFactory, String contextPath)
    {
       this.contextPath = contextPath;
-      dispatcher = new Dispatcher(providerFactory);
+      dispatcher = new SynchronousDispatcher(providerFactory);
       if (contextPath == null) throw new RuntimeException("contextPath cannot be null");
       if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
    }

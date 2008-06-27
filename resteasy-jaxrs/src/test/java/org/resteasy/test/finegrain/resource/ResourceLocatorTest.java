@@ -5,11 +5,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.resteasy.Dispatcher;
-import org.resteasy.mock.MockHttpServletRequest;
-import org.resteasy.mock.MockHttpServletResponse;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.mock.MockDispatcherFactory;
+import org.resteasy.mock.MockHttpRequest;
+import org.resteasy.mock.MockHttpResponse;
 import org.resteasy.test.EmbeddedContainer;
-import org.resteasy.test.MockDispatcherFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
@@ -117,17 +116,14 @@ public class ResourceLocatorTest
    @Test
    public void testSubresource() throws Exception
    {
-
-      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
-      Dispatcher dispatcher = servlet.getDispatcher();
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
 
       dispatcher.getRegistry().addPerRequestResource(BaseResource.class);
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/base/1/resources");
-         request.setPathInfo("/base/1/resources");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.get("/base/1/resources");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -152,11 +148,10 @@ public class ResourceLocatorTest
       */
 
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/base/1/resources/subresource2/stuff/2/bar");
-         request.setPathInfo("/base/1/resources/subresource2/stuff/2/bar");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.get("/base/1/resources/subresource2/stuff/2/bar");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -199,21 +194,18 @@ public class ResourceLocatorTest
    @Test
    public void testSameUri() throws Exception
    {
-
-      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
-      Dispatcher dispatcher = servlet.getDispatcher();
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
 
       dispatcher.getRegistry().addPerRequestResource(Directory.class);
       {
-         MockHttpServletRequest request = new MockHttpServletRequest("DELETE", "/directory/receivers/1");
-         request.setPathInfo("/directory/receivers/1");
-         MockHttpServletResponse response = new MockHttpServletResponse();
+         MockHttpRequest request = MockHttpRequest.delete("/directory/receivers/1");
+         MockHttpResponse response = new MockHttpResponse();
 
-         servlet.invoke(request, response);
+         dispatcher.invoke(request, response);
 
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         Assert.assertEquals(Directory.class.getName(), response.getContentAsString());
+         Assert.assertEquals(Directory.class.getName(), new String(response.getOutput()));
       }
    }
 }
