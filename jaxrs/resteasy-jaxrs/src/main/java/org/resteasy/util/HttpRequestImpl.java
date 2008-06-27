@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
+ * Http request abstraction implementation
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

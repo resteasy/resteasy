@@ -1,6 +1,7 @@
 package org.resteasy.plugins.server.servlet;
 
 import org.resteasy.Dispatcher;
+import org.resteasy.SynchronousDispatcher;
 import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
@@ -39,11 +40,11 @@ public class HttpServletDispatcher extends HttpServlet
          servletConfig.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), providerFactory);
       }
 
-      dispatcher = (Dispatcher) servletConfig.getServletContext().getAttribute(Dispatcher.class.getName());
+      dispatcher = (Dispatcher) servletConfig.getServletContext().getAttribute(SynchronousDispatcher.class.getName());
       if (dispatcher == null)
       {
-         dispatcher = new Dispatcher(providerFactory);
-         servletConfig.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
+         dispatcher = new SynchronousDispatcher(providerFactory);
+         servletConfig.getServletContext().setAttribute(SynchronousDispatcher.class.getName(), dispatcher);
          servletConfig.getServletContext().setAttribute(Registry.class.getName(), dispatcher.getRegistry());
       }
    }

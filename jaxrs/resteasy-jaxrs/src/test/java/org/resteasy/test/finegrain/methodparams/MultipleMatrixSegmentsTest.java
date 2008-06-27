@@ -3,18 +3,15 @@ package org.resteasy.test.finegrain.methodparams;
 import org.junit.Assert;
 import org.junit.Test;
 import org.resteasy.Dispatcher;
-import org.resteasy.mock.MockHttpServletRequest;
-import org.resteasy.mock.MockHttpServletResponse;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.test.MockDispatcherFactory;
+import org.resteasy.mock.MockDispatcherFactory;
+import org.resteasy.mock.MockHttpRequest;
+import org.resteasy.mock.MockHttpResponse;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
-import java.io.IOException;
 
 /**
  * Test that a locator and resource with same path params work
@@ -43,31 +40,12 @@ public class MultipleMatrixSegmentsTest
    public void testMultiple() throws Exception
    {
       String path = "/;name=bill;ssn=111/children/;name=skippy;ssn=3344";
-      HttpServletDispatcher servlet = MockDispatcherFactory.createDispatcher();
-      Dispatcher dispatcher = servlet.getDispatcher();
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
       dispatcher.getRegistry().addPerRequestResource(Resource.class);
-      {
-         MockHttpServletRequest request = new MockHttpServletRequest("GET", path);
-         request.setPathInfo(path);
-         MockHttpServletResponse response = new MockHttpServletResponse();
-
-         try
-         {
-            servlet.invoke(request, response);
-         }
-         catch (ServletException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      }
-
+      MockHttpRequest request = MockHttpRequest.get(path);
+      MockHttpResponse response = new MockHttpResponse();
+      dispatcher.invoke(request, response);
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
    }
 
 }
