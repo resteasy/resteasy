@@ -1,0 +1,65 @@
+Example of using ReastEasy with:
+- Hibernate
+- Hibernate Annotations
+- Spring
+- Jetty (embedded)
+- In memory HSQLDB 
+- MySQL as a possible replacement to HSQLDB
+
+Building the project:
+====================
+
+mvn clean install
+
+Running the project and manually testing it:
+===========================================
+
+cd services
+mvn jetty6:run-exploded
+
+Open a browser at the following URL:
+
+List all available contacts in database:
+http://localhost:9095/services/contactservice/contacts
+
+List a contact by Id (among the list of the previously returned list):
+http://localhost:9095/services/contactservice/contacts/1
+OR
+http://localhost:9095/services/contactservice/contacts/2
+OR
+http://localhost:9095/services/contactservice/contacts/3
+
+List the contacts of contacts:
+http://localhost:9095/services/contactservice/contacts/1/contacts
+OR
+http://localhost:9095/services/contactservice/contacts/2/contacts
+OR
+http://localhost:9095/services/contactservice/contacts/3/contacts
+
+(Optional) Switch HSQLDB to MySQL:
+==================================
+
+MySQL must be installed and accessible.
+The maven 2 build process creates and initializes a new database instance.
+As privileges must be given to do so, the following files MUST be changed prior building the project with the command: mvn install
+
+- persistence/src/main/sql/mysql/initialize.bat: 
+
+Replace <MYSQL_USER> with the MySQL user that has privileges to create a database
+        <MYSQL_PASSWORD> with the user's associated password
+The file contains the following lines:
+	mysql -u<MYSQL_USER> -p<MYSQL_PASSWORD> < dbschema.sql
+	mysql -u<MYSQL_USER> -p<MYSQL_PASSWORD> < data.sql
+
+
+- persistence/src/main/resources/db.properties
+
+Replace <MYSQL_USER> with the MySQL user that has privileges to create a database
+        <MYSQL_PASSWORD> with the user's associated password
+Possibly the database URL if the MySQL instance has been configured on a different machine:
+
+The file contains the following lines:
+	mzt.db.username=<MYSQL_USER>
+	mzt.db.password=<MYSQL_PASSWORD>
+	mzt.db.driver=com.mysql.jdbc.Driver
+	mzt.db.url=jdbc:mysql://localhost/contact?useUnicode=true&characterEncoding=UTF-8
