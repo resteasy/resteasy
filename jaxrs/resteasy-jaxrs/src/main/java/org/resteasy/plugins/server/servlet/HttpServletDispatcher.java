@@ -40,11 +40,11 @@ public class HttpServletDispatcher extends HttpServlet
          servletConfig.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), providerFactory);
       }
 
-      dispatcher = (Dispatcher) servletConfig.getServletContext().getAttribute(SynchronousDispatcher.class.getName());
+      dispatcher = (Dispatcher) servletConfig.getServletContext().getAttribute(Dispatcher.class.getName());
       if (dispatcher == null)
       {
          dispatcher = new SynchronousDispatcher(providerFactory);
-         servletConfig.getServletContext().setAttribute(SynchronousDispatcher.class.getName(), dispatcher);
+         servletConfig.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
          servletConfig.getServletContext().setAttribute(Registry.class.getName(), dispatcher.getRegistry());
       }
    }
@@ -57,19 +57,6 @@ public class HttpServletDispatcher extends HttpServlet
    protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException
    {
       service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
-   }
-
-   /**
-    * wrapper around service so we can test easily
-    *
-    * @param httpServletRequest
-    * @param httpServletResponse
-    * @throws ServletException
-    * @throws IOException
-    */
-   public void invoke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException
-   {
-      service(httpServletRequest, httpServletResponse);
    }
 
    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException

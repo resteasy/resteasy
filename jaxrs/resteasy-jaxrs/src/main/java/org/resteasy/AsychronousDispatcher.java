@@ -1,5 +1,6 @@
 package org.resteasy;
 
+import org.resteasy.mock.MockHttpRequest;
 import org.resteasy.mock.MockHttpResponse;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.spi.HttpResponse;
@@ -10,15 +11,18 @@ import org.resteasy.util.HttpResponseCodes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,14 +32,60 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version $Revision: 1 $
  */
 @Path("/")
-public class AsychronousDispatcher
+public class AsychronousDispatcher extends SynchronousDispatcher
 {
    protected ExecutorService executor;
+   private int threadPoolSize = 1000;
    private Hashtable<String, Future<MockHttpResponse>> jobs = new Hashtable<String, Future<MockHttpResponse>>();
-   private Dispatcher dispatcher;
-   private String basePath;
+   private String basePath = "/asynch/jobs";
    private AtomicLong counter = new AtomicLong(0);
 
+
+   public AsychronousDispatcher(ResteasyProviderFactory providerFactory)
+   {
+      super(providerFactory);
+      registry.addSingletonResource(this, basePath);
+   }
+
+   /**
+    * Set the base path to find jobs
+    *
+    * @param basePath
+    */
+   public void setBasePath(String basePath)
+   {
+      this.basePath = basePath;
+   }
+
+   /**
+    * Fixed thread pool size of asynchronous delivery
+    *
+    * @param threadPoolSize
+    */
+   public void setThreadPoolSize(int threadPoolSize)
+   {
+      this.threadPoolSize = threadPoolSize;
+   }
+
+   /**
+    * Plug in your own executor to process requests
+    *
+    * @param executor
+    */
+   public void setExecutor(ExecutorService executor)
+   {
+      this.executor = executor;
+   }
+
+   public void start()
+   {
+      if (executor == null) executor = Executors.newFixedThreadPool(threadPoolSize);
+   }
+
+   public void stop()
+   {
+      executor.shutdown();
+   }
 
    @Path("{job-id}")
    @DELETE
@@ -45,14 +95,32 @@ public class AsychronousDispatcher
    }
 
    @Path("{job-id}")
+   @POST
+   public Response readAndRemove(@QueryParam("wait") @DefaultValue("-1")long wait,
+                                 @QueryParam("nowait") @DefaultValue("false")boolean nowait,
+                                 @PathParam("job-id")String jobId)
+   {
+      return process(wait, nowait, jobId, true);
+   }
+
+   @Path("{job-id}")
    @GET
    public Response get(@QueryParam("wait") @DefaultValue("-1")long wait,
                        @QueryParam("nowait") @DefaultValue("false")boolean nowait,
                        @PathParam("job-id")String jobId)
    {
+      return process(wait, nowait, jobId, false);
+   }
+
+   protected Response process(long wait, boolean nowait, String jobId, boolean eatJob)
+   {
       Future<MockHttpResponse> job = jobs.get(jobId);
       if (job == null) return Response.status(Response.Status.GONE).build();
       MockHttpResponse response = null;
+
+      // I don't want to wait forever!
+      if (wait <= 0) nowait = true;
+
       if (nowait)
       {
          if (job.isDone())
@@ -65,17 +133,6 @@ public class AsychronousDispatcher
             {
                return Response.serverError().build();
             }
-         }
-      }
-      if (wait == -1)
-      {
-         try
-         {
-            response = job.get();
-         }
-         catch (Exception e)
-         {
-            return Response.serverError().build();
          }
       }
       else
@@ -103,11 +160,42 @@ public class AsychronousDispatcher
             builder.header(name, value);
          }
       }
+      if (eatJob) jobs.remove(jobId);
       return builder.build();
    }
 
-   public void postJob(final HttpRequest request, final HttpResponse response)
+   public void invokeSuper(HttpRequest request, HttpResponse response)
    {
+      super.invoke(request, response);
+   }
+
+   public void invoke(HttpRequest in, HttpResponse response)
+   {
+      if (in.getUri().getQueryParameters().get("asynch") != null)
+      {
+         postJob(in, response);
+      }
+      else if (in.getUri().getQueryParameters().get("oneway") != null)
+      {
+         oneway(in, response);
+      }
+      else
+      {
+         super.invoke(in, response);
+      }
+   }
+
+   public void postJob(HttpRequest request, HttpResponse response)
+   {
+      final MockHttpRequest in;
+      try
+      {
+         in = MockHttpRequest.deepCopy(request);
+      }
+      catch (IOException e)
+      {
+         throw new Failure(e, 500);
+      }
       Callable<MockHttpResponse> callable = new Callable<MockHttpResponse>()
       {
 
@@ -115,10 +203,9 @@ public class AsychronousDispatcher
          {
             MockHttpResponse theResponse = new MockHttpResponse();
 
-
             try
             {
-               dispatcher.invoke(request, theResponse);
+               invokeSuper(in, theResponse);
             }
             finally
             {
@@ -136,8 +223,17 @@ public class AsychronousDispatcher
       response.getOutputHeaders().add(HttpHeaderNames.LOCATION, uri);
    }
 
-   public void oneway(final HttpRequest request, final HttpResponse response)
+   public void oneway(HttpRequest request, HttpResponse response)
    {
+      final MockHttpRequest in;
+      try
+      {
+         in = MockHttpRequest.deepCopy(request);
+      }
+      catch (IOException e)
+      {
+         throw new Failure(e, 500);
+      }
       Runnable runnable = new Runnable()
       {
 
@@ -148,7 +244,7 @@ public class AsychronousDispatcher
 
             try
             {
-               dispatcher.invoke(request, theResponse);
+               invokeSuper(in, theResponse);
             }
             catch (Exception ignored) {}
             finally
