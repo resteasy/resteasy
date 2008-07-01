@@ -5,6 +5,7 @@ import org.resteasy.specimpl.HttpHeadersImpl;
 import org.resteasy.specimpl.UriInfoImpl;
 import org.resteasy.spi.HttpRequest;
 import org.resteasy.util.HttpHeaderNames;
+import org.resteasy.util.ReadFromStream;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -85,6 +87,17 @@ public class MockHttpRequest implements HttpRequest
       request.httpMethod = "HEAD";
       return request;
    }
+
+   public static MockHttpRequest deepCopy(HttpRequest request) throws IOException
+   {
+      MockHttpRequest mock = new MockHttpRequest();
+      mock.uri = request.getUri();
+      mock.httpHeaders = (HttpHeadersImpl) request.getHttpHeaders();
+      mock.httpMethod = request.getHttpMethod();
+      mock.inputStream = new ByteArrayInputStream(ReadFromStream.readFromStream(1024, request.getInputStream()));
+      return mock;
+   }
+
 
    public MockHttpRequest header(String name, String value)
    {
