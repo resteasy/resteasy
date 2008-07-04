@@ -1,20 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <parent>
-      <groupId>org.resteasy</groupId>
-      <artifactId>resteasy-jaxrs-all</artifactId>
-      <version>1.0</version>
-   </parent>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>org.resteasy</groupId>
-   <artifactId>jaxrs-api</artifactId>
-   <packaging>jar</packaging>
-   <version>${resteasy-version}</version>
-   <name>JAX-RS Core API</name>
-   <url>http://maven.apache.org</url>
-   <dependencies>
-   </dependencies>
-   <scm>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.jboss.resteasy</groupId>
+		<artifactId>resteasy-jaxrs-all</artifactId>
+		<version>${resteasy.version}</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.jboss.resteasy</groupId>
+	<artifactId>jaxrs-api</artifactId>
+	<packaging>jar</packaging>
+	<version>${resteasy.version}</version>
+	<name>JAX-RS Core API</name>
+	<dependencies></dependencies>
+	<scm>
 		<connection>
 			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/jaxrs-api
 		</connection>
@@ -25,31 +24,5 @@
 			http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs/jaxrs-api
 		</url>
 	</scm>
-   <build>
-      <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-               <source>1.5</source>
-               <target>1.5</target>
-            </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-install-plugin</artifactId>
-            <configuration>
-               <createChecksum>true</createChecksum>
-            </configuration>
-         </plugin>
-      </plugins>
-   </build>
-   <reporting>
-      <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-         </plugin>
-      </plugins>
-   </reporting>
+
 </project>
