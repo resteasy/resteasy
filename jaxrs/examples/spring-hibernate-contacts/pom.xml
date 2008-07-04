@@ -48,7 +48,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.resteasy</groupId>
+			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
 			<version>${resteasy.version}</version>
 		</dependency>
