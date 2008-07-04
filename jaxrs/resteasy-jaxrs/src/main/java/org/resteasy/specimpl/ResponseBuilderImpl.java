@@ -1,9 +1,9 @@
-package org.resteasy.specimpl;
+package org.jboss.resteasy.specimpl;
 
-import org.resteasy.Headers;
-import org.resteasy.spi.HttpRequest;
-import org.resteasy.spi.ResteasyProviderFactory;
-import org.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.EntityTag;

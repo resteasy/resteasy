@@ -1,9 +1,9 @@
-package org.resteasy.plugins.client.httpclient;
+package org.jboss.resteasy.plugins.client.httpclient;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.PutMethod;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.lang.reflect.Method;
 

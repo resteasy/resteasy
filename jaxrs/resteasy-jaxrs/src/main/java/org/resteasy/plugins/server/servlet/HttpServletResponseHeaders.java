@@ -1,7 +1,7 @@
-package org.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.server.servlet;
 
-import org.resteasy.specimpl.MultivaluedMapImpl;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;

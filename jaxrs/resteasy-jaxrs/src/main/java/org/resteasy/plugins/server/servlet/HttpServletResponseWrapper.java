@@ -1,7 +1,7 @@
-package org.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.server.servlet;
 
-import org.resteasy.spi.HttpResponse;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;

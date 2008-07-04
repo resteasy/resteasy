@@ -1,4 +1,4 @@
-package org.resteasy.spi;
+package org.jboss.resteasy.spi;
 
 /**
  * Implementations of this interface are registered through the Registry class.

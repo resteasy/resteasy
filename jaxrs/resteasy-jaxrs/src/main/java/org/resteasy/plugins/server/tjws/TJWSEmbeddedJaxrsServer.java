@@ -1,12 +1,12 @@
-package org.resteasy.plugins.server.tjws;
+package org.jboss.resteasy.plugins.server.tjws;
 
-import org.resteasy.Dispatcher;
-import org.resteasy.SynchronousDispatcher;
-import org.resteasy.plugins.providers.RegisterBuiltin;
-import org.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
-import org.resteasy.plugins.server.embedded.SecurityDomain;
-import org.resteasy.spi.Registry;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
+import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.ApplicationConfig;
 

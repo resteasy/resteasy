@@ -1,19 +1,19 @@
-package org.resteasy.plugins.client.httpclient;
+package org.jboss.resteasy.plugins.client.httpclient;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.resteasy.ClientInvoker;
-import org.resteasy.Marshaller;
-import org.resteasy.MessageBodyParameterMarshaller;
-import org.resteasy.specimpl.MultivaluedMapImpl;
-import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.spi.ClientHttpOutput;
-import org.resteasy.spi.ClientResponse;
-import org.resteasy.spi.ResteasyProviderFactory;
-import org.resteasy.util.HttpHeaderNames;
-import org.resteasy.util.Types;
+import org.jboss.resteasy.core.ClientInvoker;
+import org.jboss.resteasy.core.Marshaller;
+import org.jboss.resteasy.core.MessageBodyParameterMarshaller;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.spi.ClientHttpOutput;
+import org.jboss.resteasy.spi.ClientResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;

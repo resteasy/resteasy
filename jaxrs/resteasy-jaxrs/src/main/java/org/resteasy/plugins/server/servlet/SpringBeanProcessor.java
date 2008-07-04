@@ -1,9 +1,9 @@
-package org.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.server.servlet;
 
-import org.resteasy.plugins.server.resourcefactory.SingletonResource;
-import org.resteasy.spi.Registry;
-import org.resteasy.spi.ResteasyProviderFactory;
-import org.resteasy.util.GetRestful;
+import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.GetRestful;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 

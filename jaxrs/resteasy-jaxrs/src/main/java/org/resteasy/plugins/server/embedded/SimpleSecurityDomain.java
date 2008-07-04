@@ -1,4 +1,4 @@
-package org.resteasy.plugins.server.embedded;
+package org.jboss.resteasy.plugins.server.embedded;
 
 import java.security.Principal;
 import java.util.Set;

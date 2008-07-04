@@ -1,7 +1,7 @@
-package org.resteasy.specimpl;
+package org.jboss.resteasy.specimpl;
 
-import org.resteasy.util.Encode;
-import org.resteasy.util.PathHelper;
+import org.jboss.resteasy.util.Encode;
+import org.jboss.resteasy.util.PathHelper;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;

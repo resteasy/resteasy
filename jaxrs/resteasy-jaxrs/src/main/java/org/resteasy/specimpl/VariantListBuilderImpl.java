@@ -1,4 +1,4 @@
-package org.resteasy.specimpl;
+package org.jboss.resteasy.specimpl;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;

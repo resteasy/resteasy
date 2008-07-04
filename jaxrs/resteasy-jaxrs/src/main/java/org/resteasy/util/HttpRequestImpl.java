@@ -1,6 +1,6 @@
-package org.resteasy.util;
+package org.jboss.resteasy.util;
 
-import org.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.PathSegment;

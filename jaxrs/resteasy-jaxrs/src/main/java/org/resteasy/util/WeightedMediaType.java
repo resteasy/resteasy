@@ -1,7 +1,7 @@
-package org.resteasy.util;
+package org.jboss.resteasy.util;
 
-import org.resteasy.Failure;
-import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.jboss.resteasy.core.Failure;
+import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 
 import javax.ws.rs.core.MediaType;
 import java.util.HashMap;

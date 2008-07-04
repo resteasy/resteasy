@@ -1,4 +1,4 @@
-package org.resteasy.util;
+package org.jboss.resteasy.util;
 
 import java.util.HashMap;
 import java.util.Map;

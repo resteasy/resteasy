@@ -1,4 +1,4 @@
-package org.resteasy.util;
+package org.jboss.resteasy.util;
 
 import java.io.InputStream;
 import java.io.IOException;

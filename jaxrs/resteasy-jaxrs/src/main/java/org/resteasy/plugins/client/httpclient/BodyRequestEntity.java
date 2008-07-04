@@ -1,7 +1,7 @@
-package org.resteasy.plugins.client.httpclient;
+package org.jboss.resteasy.plugins.client.httpclient;
 
 import org.apache.commons.httpclient.methods.RequestEntity;
-import org.resteasy.MessageBodyParameterMarshaller;
+import org.jboss.resteasy.core.MessageBodyParameterMarshaller;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;

@@ -1,7 +1,7 @@
-package org.resteasy.specimpl;
+package org.jboss.resteasy.specimpl;
 
-import org.resteasy.Headers;
-import org.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;

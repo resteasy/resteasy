@@ -1,4 +1,4 @@
-package org.resteasy.spi;
+package org.jboss.resteasy.spi;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.OutputStream;

@@ -1,9 +1,9 @@
-package org.resteasy.mock;
+package org.jboss.resteasy.mock;
 
-import org.resteasy.Dispatcher;
-import org.resteasy.SynchronousDispatcher;
-import org.resteasy.plugins.providers.RegisterBuiltin;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
  * Creates a mock Dispatcher that you can invoke on locally

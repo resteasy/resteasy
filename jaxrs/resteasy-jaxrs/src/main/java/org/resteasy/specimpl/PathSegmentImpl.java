@@ -1,4 +1,4 @@
-package org.resteasy.specimpl;
+package org.jboss.resteasy.specimpl;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;

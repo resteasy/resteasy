@@ -1,6 +1,6 @@
-package org.resteasy.specimpl;
+package org.jboss.resteasy.specimpl;
 
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;

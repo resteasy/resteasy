@@ -1,6 +1,6 @@
-package org.resteasy.plugins.server.tjws;
+package org.jboss.resteasy.plugins.server.tjws;
 
-import org.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;

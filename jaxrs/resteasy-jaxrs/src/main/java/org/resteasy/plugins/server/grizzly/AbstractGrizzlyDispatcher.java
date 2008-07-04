@@ -1,16 +1,17 @@
-package org.resteasy.plugins.server.grizzly;
+package org.jboss.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import org.resteasy.Dispatcher;
-import org.resteasy.SynchronousDispatcher;
-import org.resteasy.specimpl.MultivaluedMapImpl;
-import org.resteasy.specimpl.PathSegmentImpl;
-import org.resteasy.specimpl.UriInfoImpl;
-import org.resteasy.spi.HttpRequest;
-import org.resteasy.spi.HttpResponse;
-import org.resteasy.spi.ResteasyProviderFactory;
-import org.resteasy.util.HttpResponseCodes;
+
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.specimpl.PathSegmentImpl;
+import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.PathSegment;

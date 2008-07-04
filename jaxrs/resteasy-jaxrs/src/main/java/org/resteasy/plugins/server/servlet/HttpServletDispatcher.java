@@ -1,12 +1,12 @@
-package org.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.server.servlet;
 
-import org.resteasy.Dispatcher;
-import org.resteasy.SynchronousDispatcher;
-import org.resteasy.specimpl.UriInfoImpl;
-import org.resteasy.spi.HttpRequest;
-import org.resteasy.spi.HttpResponse;
-import org.resteasy.spi.Registry;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

@@ -1,7 +1,7 @@
-package org.resteasy.mock;
+package org.jboss.resteasy.mock;
 
-import org.resteasy.specimpl.MultivaluedMapImpl;
-import org.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.HttpResponse;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
