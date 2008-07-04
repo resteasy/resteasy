@@ -1,4 +1,8 @@
-<project>
+<project  
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.resteasy.examples</groupId>
 	<version>1.0</version>
@@ -13,7 +17,8 @@
 	<repositories>
 		<repository>
 			<id>jboss</id>
-			<url>http://repository.jboss.org/maven2</url>
+			<url>http://repository.jboss.org/maven2
+			</url>
 		</repository>
 	</repositories>
 	<build>
@@ -21,11 +26,17 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.5</source>
+						<target>1.5</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<configuration>
-						<unzipCommand>
-							/usr/bin/unzip -o > err.txt
-						</unzipCommand>
+						<unzipCommand> /usr/bin/unzip -o > err.txt</unzipCommand>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -34,47 +45,48 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.resteasy</groupId>
+				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jaxrs</artifactId>
-				<version>1.0-beta-4</version>
+				<version>1.0-beta-5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.resteasy.examples</groupId>
-				<artifactId>javaee-addressbook-war</artifactId>
+				<artifactId>javaee-addressbook-war
+				</artifactId>
 				<version>1.0</version>
 				<type>war</type>
 			</dependency>
 			<dependency>
 				<groupId>org.resteasy.examples</groupId>
-				<artifactId>javaee-addressbook-ejb</artifactId>
+				<artifactId>javaee-addressbook-ejb
+				</artifactId>
 				<version>1.0</version>
 				<type>ejb</type>
 			</dependency>
 			<dependency>
-            	<groupId>org.testng</groupId>
-            	<artifactId>testng</artifactId>
-            	<version>5.6</version>
-            	<scope>test</scope>
-            	<classifier>jdk15</classifier>
-        	</dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>5.6</version>
+				<scope>test</scope>
+				<classifier>jdk15</classifier>
+			</dependency>
 			<dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-entitymanager</artifactId>
-                <version>3.3.1.GA</version>
-            </dependency>
-           
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>3.0.0.GA</version>
-            </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.5</version>
-                <scope>test</scope>
-            </dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager
+				</artifactId>
+				<version>3.3.1.GA</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>3.0.0.GA</version>
+			</dependency>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.5</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
 </project>
