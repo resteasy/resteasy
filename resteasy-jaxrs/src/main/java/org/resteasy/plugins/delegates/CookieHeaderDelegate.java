@@ -1,4 +1,4 @@
-package org.resteasy.plugins.delegates;
+package org.jboss.resteasy.plugins.delegates;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.ext.RuntimeDelegate;

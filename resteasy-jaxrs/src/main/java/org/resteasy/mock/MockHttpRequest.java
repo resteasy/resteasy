@@ -1,11 +1,11 @@
-package org.resteasy.mock;
+package org.jboss.resteasy.mock;
 
-import org.resteasy.Headers;
-import org.resteasy.specimpl.HttpHeadersImpl;
-import org.resteasy.specimpl.UriInfoImpl;
-import org.resteasy.spi.HttpRequest;
-import org.resteasy.util.HttpHeaderNames;
-import org.resteasy.util.ReadFromStream;
+import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.specimpl.HttpHeadersImpl;
+import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.ReadFromStream;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;

@@ -1,14 +1,14 @@
-package org.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.server.servlet;
 
-import org.resteasy.specimpl.UriInfoImpl;
-import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.specimpl.PathSegmentImpl;
-import org.resteasy.specimpl.HttpHeadersImpl;
-import org.resteasy.specimpl.MultivaluedMapImpl;
-import org.resteasy.util.PathHelper;
-import org.resteasy.util.HttpHeaderNames;
-import org.resteasy.util.MediaTypeHelper;
-import org.resteasy.Headers;
+import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.specimpl.HttpHeadersImpl;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.specimpl.PathSegmentImpl;
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.MediaTypeHelper;
+import org.jboss.resteasy.util.PathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.PathSegment;

@@ -1,10 +1,10 @@
-package org.resteasy.plugins.server.tjws;
+package org.jboss.resteasy.plugins.server.tjws;
 
 import org.apache.commons.codec.binary.Base64;
-import org.resteasy.plugins.server.embedded.SecurityDomain;
-import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.resteasy.util.HttpHeaderNames;
-import org.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

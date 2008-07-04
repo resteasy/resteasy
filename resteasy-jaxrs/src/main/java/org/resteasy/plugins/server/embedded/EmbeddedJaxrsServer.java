@@ -1,7 +1,7 @@
-package org.resteasy.plugins.server.embedded;
+package org.jboss.resteasy.plugins.server.embedded;
 
-import org.resteasy.spi.Registry;
-import org.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.ApplicationConfig;
 

@@ -1,4 +1,4 @@
-package org.resteasy.plugins.delegates;
+package org.jboss.resteasy.plugins.delegates;
 
 import java.io.Serializable;
 import java.text.DateFormat;

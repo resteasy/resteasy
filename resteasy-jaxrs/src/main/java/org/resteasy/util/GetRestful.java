@@ -1,4 +1,4 @@
-package org.resteasy.util;
+package org.jboss.resteasy.util;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;

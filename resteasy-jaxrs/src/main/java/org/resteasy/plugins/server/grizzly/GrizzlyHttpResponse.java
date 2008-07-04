@@ -1,9 +1,10 @@
-package org.resteasy.plugins.server.grizzly;
+package org.jboss.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.Cookie;
-import org.resteasy.spi.HttpResponse;
-import org.resteasy.spi.ResteasyProviderFactory;
+
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;

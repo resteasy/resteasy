@@ -1,8 +1,9 @@
-package org.resteasy.plugins.server.grizzly;
+package org.jboss.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import org.resteasy.specimpl.MultivaluedMapImpl;
-import org.resteasy.spi.ResteasyProviderFactory;
+
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.RuntimeDelegate;

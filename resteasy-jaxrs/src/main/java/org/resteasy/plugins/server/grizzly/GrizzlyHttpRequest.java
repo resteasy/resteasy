@@ -1,6 +1,6 @@
-package org.resteasy.plugins.server.grizzly;
+package org.jboss.resteasy.plugins.server.grizzly;
 
-import org.resteasy.util.HttpRequestImpl;
+import org.jboss.resteasy.util.HttpRequestImpl;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;

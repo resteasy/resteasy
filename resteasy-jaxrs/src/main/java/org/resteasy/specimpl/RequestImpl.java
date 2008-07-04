@@ -1,9 +1,9 @@
-package org.resteasy.specimpl;
+package org.jboss.resteasy.specimpl;
 
-import org.resteasy.util.AcceptableVariant;
-import org.resteasy.util.DateUtil;
-import org.resteasy.util.HttpHeaderNames;
-import org.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.util.AcceptableVariant;
+import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;

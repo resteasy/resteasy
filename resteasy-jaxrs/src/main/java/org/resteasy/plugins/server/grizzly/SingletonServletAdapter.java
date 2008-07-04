@@ -1,4 +1,4 @@
-package org.resteasy.plugins.server.grizzly;
+package org.jboss.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.http.servlet.CookieWrapper;
 import com.sun.grizzly.http.servlet.HttpServletRequestImpl;

@@ -1,4 +1,4 @@
-package org.resteasy.util;
+package org.jboss.resteasy.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

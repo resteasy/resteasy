@@ -1,7 +1,7 @@
-package org.resteasy.plugins.server.tjws;
+package org.jboss.resteasy.plugins.server.tjws;
 
-import org.resteasy.util.Encode;
-import org.resteasy.util.HttpServletRequestDelegate;
+import org.jboss.resteasy.util.Encode;
+import org.jboss.resteasy.util.HttpServletRequestDelegate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;

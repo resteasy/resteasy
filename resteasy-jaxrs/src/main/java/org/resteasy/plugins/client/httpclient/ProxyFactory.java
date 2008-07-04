@@ -1,10 +1,10 @@
-package org.resteasy.plugins.client.httpclient;
+package org.jboss.resteasy.plugins.client.httpclient;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.resteasy.ClientInvoker;
-import org.resteasy.ClientProxy;
-import org.resteasy.spi.ResteasyProviderFactory;
-import org.resteasy.util.IsHttpMethod;
+import org.jboss.resteasy.core.ClientInvoker;
+import org.jboss.resteasy.core.ClientProxy;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;

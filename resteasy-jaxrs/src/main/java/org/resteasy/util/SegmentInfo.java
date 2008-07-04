@@ -1,4 +1,4 @@
-package org.resteasy.util;
+package org.jboss.resteasy.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

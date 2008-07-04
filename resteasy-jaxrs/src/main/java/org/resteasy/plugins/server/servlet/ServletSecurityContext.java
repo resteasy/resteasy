@@ -1,4 +1,4 @@
-package org.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.server.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.SecurityContext;

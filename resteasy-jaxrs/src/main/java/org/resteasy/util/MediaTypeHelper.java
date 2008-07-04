@@ -1,6 +1,6 @@
-package org.resteasy.util;
+package org.jboss.resteasy.util;
 
-import org.resteasy.Failure;
+import org.jboss.resteasy.core.Failure;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;

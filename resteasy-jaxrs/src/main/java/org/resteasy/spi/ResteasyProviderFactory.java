@@ -1,17 +1,17 @@
-package org.resteasy.spi;
+package org.jboss.resteasy.spi;
 
-import org.resteasy.MediaTypeMap;
-import org.resteasy.PropertyInjectorImpl;
-import org.resteasy.plugins.delegates.CacheControlDelegate;
-import org.resteasy.plugins.delegates.CookieHeaderDelegate;
-import org.resteasy.plugins.delegates.EntityTagDelegate;
-import org.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
-import org.resteasy.plugins.delegates.NewCookieHeaderDelegate;
-import org.resteasy.plugins.delegates.UriHeaderDelegate;
-import org.resteasy.specimpl.ResponseBuilderImpl;
-import org.resteasy.specimpl.UriBuilderImpl;
-import org.resteasy.specimpl.VariantListBuilderImpl;
-import org.resteasy.util.Types;
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
+import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
+import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
+import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;

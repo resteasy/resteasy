@@ -1,4 +1,4 @@
-package org.resteasy.plugins.server.tjws;
+package org.jboss.resteasy.plugins.server.tjws;
 
 import Acme.Serve.SSLAcceptor;
 import Acme.Serve.Serve;

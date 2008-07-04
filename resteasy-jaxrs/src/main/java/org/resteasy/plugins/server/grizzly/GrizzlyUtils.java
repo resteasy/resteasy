@@ -1,11 +1,12 @@
-package org.resteasy.plugins.server.grizzly;
+package org.jboss.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import org.resteasy.Headers;
-import org.resteasy.specimpl.HttpHeadersImpl;
-import org.resteasy.specimpl.MultivaluedMapImpl;
-import org.resteasy.util.HttpHeaderNames;
-import org.resteasy.util.MediaTypeHelper;
+
+import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.specimpl.HttpHeadersImpl;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;

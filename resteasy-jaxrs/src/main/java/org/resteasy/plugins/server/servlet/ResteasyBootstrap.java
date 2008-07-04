@@ -1,11 +1,11 @@
-package org.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.server.servlet;
 
-import org.resteasy.Dispatcher;
-import org.resteasy.SynchronousDispatcher;
-import org.resteasy.plugins.providers.RegisterBuiltin;
-import org.resteasy.spi.Registry;
-import org.resteasy.spi.ResteasyProviderFactory;
-import org.resteasy.util.GetRestful;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.GetRestful;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 
@@ -77,7 +77,7 @@ public class ResteasyBootstrap implements ServletContextListener
          URL[] urls = WarUrlFinder.findWebInfLibClasspaths(event);
          URL url = WarUrlFinder.findWebInfClassesPath(event);
          AnnotationDB db = new AnnotationDB();
-         String[] ignoredPackages = {"org.resteasy.plugins", "javax.ws.rs"};
+         String[] ignoredPackages = {"org.jboss.resteasy.core.plugins", "javax.ws.rs"};
          db.setIgnoredPackages(ignoredPackages);
          try
          {

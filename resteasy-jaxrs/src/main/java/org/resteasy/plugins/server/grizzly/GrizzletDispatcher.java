@@ -1,11 +1,12 @@
-package org.resteasy.plugins.server.grizzly;
+package org.jboss.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.grizzlet.AsyncConnection;
 import com.sun.grizzly.grizzlet.Grizzlet;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import org.resteasy.ResourceMethodRegistry;
-import org.resteasy.spi.ResteasyProviderFactory;
+
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.IOException;
 

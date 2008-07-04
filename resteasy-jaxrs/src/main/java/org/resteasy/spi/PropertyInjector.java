@@ -1,6 +1,6 @@
-package org.resteasy.spi;
+package org.jboss.resteasy.spi;
 
-import org.resteasy.Failure;
+import org.jboss.resteasy.core.Failure;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

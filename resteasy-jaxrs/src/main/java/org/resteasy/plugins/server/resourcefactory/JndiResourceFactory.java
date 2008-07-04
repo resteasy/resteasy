@@ -1,9 +1,9 @@
-package org.resteasy.plugins.server.resourcefactory;
+package org.jboss.resteasy.plugins.server.resourcefactory;
 
-import org.resteasy.spi.HttpRequest;
-import org.resteasy.spi.HttpResponse;
-import org.resteasy.spi.InjectorFactory;
-import org.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.ResourceFactory;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
