@@ -8,16 +8,20 @@
 
    <fileSets>
       <fileSet>
-         <directory>../resteasy-jaxrs/target/site/apidocs</directory>
+         <directory>../resteasy-jaxrs/target/apidocs</directory>
          <outputDirectory>docs/resteasy-jaxrs</outputDirectory>
       </fileSet>
       <fileSet>
-         <directory>../jaxrs-api/target/site/apidocs</directory>
+         <directory>../jaxrs-api/target/apidocs</directory>
          <outputDirectory>docs/jaxrs-api</outputDirectory>
       </fileSet>
       <fileSet>
+         <directory>../resteasy-jaxrs/target/resteasy-jaxrs</directory>
+         <outputDirectory>webapp/resteasy-jaxrs.war</outputDirectory>
+      </fileSet>
+      <fileSet>
          <directory>../resteasy-jaxrs-war/target/resteasy-jaxrs</directory>
-         <outputDirectory>resteasy-jaxrs.war</outputDirectory>
+         <outputDirectory>webapp/resteasy-jaxrs.war</outputDirectory>
       </fileSet>
    </fileSets>
 </assembly>

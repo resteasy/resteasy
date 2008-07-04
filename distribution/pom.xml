@@ -1,15 +1,14 @@
 <project>
 	<parent>
-		<groupId>org.resteasy</groupId>
+		<groupId>org.jboss.resteasy</groupId>
 		<artifactId>resteasy-jaxrs-all</artifactId>
-		<version>1.0</version>
+		<version>${resteasy.version}</version>
 	</parent>
 	<name>Resteasy JAX-RS Distribution</name>
-	<url>http://www.attainware.com/</url>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.resteasy</groupId>
+	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-jaxrs-dist</artifactId>
-	<version>${resteasy-version}</version>
+	<version>${resteasy.version}</version>
 	<packaging>pom</packaging>
 	<scm>
 		<connection>
@@ -26,7 +25,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2-beta-1</version>
+				<version>2.2-beta-2</version>
 				<executions>
 					<execution>
 						<id>assemble</id>
@@ -45,7 +44,7 @@
 								target/assembly/work
 							</workDirectory>
 							<finalName>
-								resteasy-jaxrs-${resteasy-version}
+								resteasy-jaxrs-${resteasy.version}
 							</finalName>
 						</configuration>
 					</execution>
