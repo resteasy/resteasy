@@ -47,7 +47,7 @@
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jaxrs</artifactId>
-				<version>1.0-beta-5</version>
+				<version>1.0-beta-6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.resteasy.examples</groupId>
