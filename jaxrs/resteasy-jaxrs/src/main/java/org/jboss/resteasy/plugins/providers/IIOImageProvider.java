@@ -3,6 +3,16 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -17,28 +27,28 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+
+import org.jboss.resteasy.annotations.providers.ImageWriterParams;
+import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.util.FindAnnotation;
+import org.slf4j.Logger;
 
 /**
- * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a> Jun 24,
- *         2008
+ * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
+ * @version $Revision:$
  */
 @Provider
 @ConsumeMime("image/*")
 @ProduceMime("image/*")
 public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
 {
+   /**
+    * 
+    */
+   private static final Logger logger = LoggerCategories.getProviderLogger();
 
    /**
     * @param type
@@ -48,8 +58,7 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class,
     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
     */
-   public boolean isReadable(Class<?> type, Type genericType,
-                             Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return IIOImage.class.equals(type);
    }
@@ -69,14 +78,15 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
     *      java.io.InputStream)
     */
-   public IIOImage readFrom(Class<IIOImage> type, Type genericType,
-                            Annotation[] annotations, MediaType mediaType,
-                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-           throws IOException, WebApplicationException
+   public IIOImage readFrom(Class<IIOImage> type, 
+                            Type genericType, 
+                            Annotation[] annotations, 
+                            MediaType mediaType,
+                            MultivaluedMap<String, String> httpHeaders, 
+                            InputStream entityStream) throws IOException
    {
 
-      Iterator<ImageReader> readers = ImageIO
-              .getImageReadersByMIMEType(mediaType.toString());
+      Iterator<ImageReader> readers = ImageIO.getImageReadersByMIMEType(mediaType.toString());
 
       ImageReader reader = null;
       while (readers.hasNext())
@@ -93,10 +103,12 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
       }
       else
       {
+         
          String[] availableTypes = ImageIO.getReaderMIMETypes();
-         List<Variant> variants = getAvailableVariants(availableTypes);
-         Response response = Response.notAcceptable(variants)
-                 .status(Status.NOT_ACCEPTABLE).build();
+         logger.warn("A reader for {} was not found. This provider is currently configured"
+               + "to handle only {}", mediaType, availableTypes);
+         List<Variant> variants = ProviderHelper.getAvailableVariants(availableTypes);
+         Response response = Response.notAcceptable(variants).status(Status.NOT_ACCEPTABLE).build();
          throw new WebApplicationException(response);
       }
    }
@@ -109,8 +121,7 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class,
     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
     */
-   public boolean isWriteable(Class<?> type, Type genericType,
-                              Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return IIOImage.class.equals(type);
    }
@@ -130,14 +141,15 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
     */
-   public void writeTo(IIOImage t, Class<?> type, Type genericType,
-                       Annotation[] annotations, MediaType mediaType,
-                       MultivaluedMap<String, Object> httpHeaders,
-                       OutputStream entityStream) throws IOException,
-           WebApplicationException
+   public void writeTo(IIOImage t, 
+                       Class<?> type, 
+                       Type genericType, 
+                       Annotation[] annotations, 
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) 
+   throws IOException
    {
-      Iterator<ImageWriter> writers = ImageIO
-              .getImageWritersByMIMEType(mediaType.toString());
+      Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType(mediaType.toString());
       ImageWriter writer = writers.next();
       if (writer == null)
       {
@@ -158,7 +170,17 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
       * If the image output type supports compression, set it to the highest
       * maximum
       */
-      if (param.canWriteCompressed())
+      ImageWriterParams writerParams = 
+         FindAnnotation.findAnnotation(annotations, ImageWriterParams.class);
+      if (writerParams != null)
+      {
+         if (param.canWriteCompressed())
+         {
+            param.setCompressionMode(writerParams.compressionMode());
+            param.setCompressionQuality(writerParams.compressionQuality());
+         }
+      }
+      else if (param.canWriteCompressed())
       {
          param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
          param.setCompressionQuality(1.0f);
