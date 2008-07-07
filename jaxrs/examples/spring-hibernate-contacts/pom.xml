@@ -48,7 +48,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
+			<groupId>org.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
 			<version>${resteasy.version}</version>
 		</dependency>
@@ -85,5 +85,6 @@
 		<module>core</module>
 		<module>services</module>
 		<module>persistence</module>
+		<module>client</module>
 	</modules>
 </project>
