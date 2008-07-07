@@ -1,13 +1,11 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.GetRestful;
-import org.scannotation.AnnotationDB;
-import org.scannotation.WarUrlFinder;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -15,12 +13,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.GetRestful;
+import org.scannotation.AnnotationDB;
+import org.scannotation.WarUrlFinder;
+import org.slf4j.Logger;
 
 /**
  * This is a ServletContextListener that creates the registry for resteasy and stuffs it as a servlet context attribute
@@ -30,6 +33,8 @@ import java.util.Set;
  */
 public class ResteasyBootstrap implements ServletContextListener
 {
+   private static final Logger logger = LoggerCategories.getServerLogger();
+   
    private ResteasyProviderFactory factory = new ResteasyProviderFactory();
    private Registry registry;
    private Dispatcher dispatcher;
@@ -238,7 +243,7 @@ public class ResteasyBootstrap implements ServletContextListener
       {
          throw new RuntimeException(e);
       }
-      System.out.println("FOUND JAX-RS @Provider: " + clazz);
+      logger.info("FOUND JAX-RS @Provider: {}", clazz);
       factory.registerProvider(provider);
    }
 
@@ -267,7 +272,7 @@ public class ResteasyBootstrap implements ServletContextListener
       if (resource.isInterface()) return;
       if (GetRestful.isRootResource(resource) == false) return;
 
-      System.out.println("FOUND JAX-RS resource: " + clazz);
+      logger.info("FOUND JAX-RS resource: {}", clazz);
       registry.addPerRequestResource(resource);
    }
 
