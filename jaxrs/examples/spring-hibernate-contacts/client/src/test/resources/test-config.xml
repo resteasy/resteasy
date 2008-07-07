@@ -1,0 +1,39 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean name="webAppContext"
+		class="org.mortbay.jetty.webapp.WebAppContext"
+		p:contextPath="/services"
+		p:war="../services/target/resteasy-service.war" />
+
+	<bean name="defaultHandler"
+		class="org.mortbay.jetty.handler.DefaultHandler" />
+
+	<bean name="handlerCollection"
+		class="org.mortbay.jetty.handler.HandlerCollection">
+		<property name="handlers">
+			<list>
+				<ref bean="webAppContext" />
+				<ref bean="defaultHandler" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean name="connector" class="org.mortbay.jetty.nio.SelectChannelConnector"
+		p:host="localhost" p:port="9095" p:maxIdleTime="60000"/>
+
+	<bean name="servletContainer" class="org.mortbay.jetty.Server"
+		p:handler-ref="handlerCollection">
+		<property name="connectors">
+			<list>
+				<ref bean="connector" />
+			</list>
+		</property>
+	</bean>
+	
+</beans>
