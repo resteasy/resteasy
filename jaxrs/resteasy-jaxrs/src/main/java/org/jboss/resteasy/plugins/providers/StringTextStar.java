@@ -1,5 +1,11 @@
 package org.jboss.resteasy.plugins.providers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
@@ -7,13 +13,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,22 +28,17 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
       return String.class.equals(type);
    }
 
-   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public Object readFrom(Class<Object> type,
+                          Type genericType,
+                          Annotation[] annotations,
+                          MediaType mediaType,
+                          MultivaluedMap<String, String> httpHeaders,
+                          InputStream entityStream) throws IOException
    {
-      char[] buffer = new char[100];
-      StringBuffer buf = new StringBuffer();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream));
-
-      int wasRead = 0;
-      do
-      {
-         wasRead = reader.read(buffer, 0, 100);
-         if (wasRead > 0) buf.append(buffer, 0, wasRead);
-      } while (wasRead > -1);
-
-      return buf.toString();
+      return ProviderHelper.readString(entityStream);
    }
 
+   
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return String.class.equals(type);
@@ -55,7 +49,13 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
       return o.toString().getBytes().length;
    }
 
-   public void writeTo(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(Object o,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       entityStream.write(o.toString().getBytes());
    }

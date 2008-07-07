@@ -25,7 +25,8 @@ import java.lang.reflect.Type;
  * <p/>
  * <code>
  * @POST
- * @ConsumeMime("multipart/form-data") public void postData(MimeMultipart multipart) {
+ * @ConsumeMime("multipart/form-data") 
+ * public void postData(MimeMultipart multipart) {
  * ...
  * </code>
  * <p/>
@@ -45,8 +46,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @param annotations
     * @return
     */
-   public boolean isReadable(Class<?> type, Type genericType,
-                             Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return MimeMultipart.class.equals(type);
    }
@@ -57,8 +57,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @param annotations
     * @return
     */
-   public boolean isWriteable(Class<?> type, Type genericType,
-                              Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return MimeMultipart.class.equals(type);
    }
@@ -72,22 +71,30 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
       return -1;
    }
 
-   /*
-   * (non-Javadoc)
-   *
-   * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-   *      java.lang.reflect.Type, java.lang.annotation.Annotation[],
-   *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-   *      java.io.InputStream)
-   */
-   public MimeMultipart readFrom(Class<MimeMultipart> type, Type genericType,
-                                 Annotation[] annotations, MediaType mediaType,
-                                 MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-           throws IOException, WebApplicationException
+   /**
+    * FIXME Comment this
+    * 
+    * @param type
+    * @param genericType
+    * @param annotations
+    * @param mediaType
+    * @param httpHeaders
+    * @param entityStream
+    * @return
+    * @throws IOException
+    * @throws WebApplicationException
+    * @see @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+    */
+   public MimeMultipart readFrom(Class<MimeMultipart> type,
+                                 Type genericType,
+                                 Annotation[] annotations,
+                                 MediaType mediaType,
+                                 MultivaluedMap<String, String> httpHeaders,
+                                 InputStream entityStream) throws IOException
    {
       try
       {
-         DataSource ds = readDataSource(entityStream, mediaType);
+         DataSource ds = ProviderHelper.readDataSource(entityStream, mediaType);
          return new MimeMultipart(ds);
       }
       catch (MessagingException e)
@@ -96,26 +103,32 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
       }
    }
 
-   /*
-   * (non-Javadoc)
-   *
-   * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-   *      java.lang.Class, java.lang.reflect.Type,
-   *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
-   *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
-   */
-   public void writeTo(MimeMultipart mimeMultipart, Class<?> type,
-                       Type genericType, Annotation[] annotations, MediaType mediaType,
+   /**
+    * FIXME Comment this
+    * 
+    * @param mimeMultipart
+    * @param type
+    * @param genericType
+    * @param annotations
+    * @param mediaType
+    * @param httpHeaders
+    * @param entityStream
+    * @throws IOException
+    * @see @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+    */
+   public void writeTo(MimeMultipart mimeMultipart,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
                        MultivaluedMap<String, Object> httpHeaders,
-                       OutputStream entityStream) throws IOException,
-           WebApplicationException
+                       OutputStream entityStream) throws IOException
    {
       try
       {
          // replace the Content-Type header to include the boundry
          // information
-         httpHeaders.putSingle("Content-Type", MediaType
-                 .valueOf(mimeMultipart.getContentType()));
+         httpHeaders.putSingle("Content-Type", MediaType.valueOf(mimeMultipart.getContentType()));
          mimeMultipart.writeTo(entityStream);
       }
       catch (MessagingException e)

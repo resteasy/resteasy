@@ -18,7 +18,7 @@ import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
- *         Jun 23, 2008
+ * @version $Revision:$
  */
 @Provider
 @ConsumeMime("*/*")
@@ -26,50 +26,90 @@ import java.lang.reflect.Type;
 public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 {
 
-   /* (non-Javadoc)
-   * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
-   */
-   public boolean isReadable(Class<?> type, Type genericType,
+   
+   /**
+    * FIXME Comment this
+    * 
+    * @param type
+    * @param genericType
+    * @param annotations
+    * @return
+    * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
+    */
+   public boolean isReadable(Class<?> type, 
+                             Type genericType, 
                              Annotation[] annotations)
    {
       return DataSource.class.isAssignableFrom(type);
    }
 
-   /* (non-Javadoc)
-   * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
-   */
-   public DataSource readFrom(Class<DataSource> type, Type genericType,
-                              Annotation[] annotations, MediaType mediaType,
-                              MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-           throws IOException, WebApplicationException
+
+   /**
+    * FIXME Comment this
+    * 
+    * @param type
+    * @param genericType
+    * @param annotations
+    * @param mediaType
+    * @param httpHeaders
+    * @param entityStream
+    * @return
+    * @throws IOException
+    * @throws WebApplicationException
+    * @see @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+    */
+   public DataSource readFrom(Class<DataSource> type, 
+                              Type genericType, 
+                              Annotation[] annotations, 
+                              MediaType mediaType,
+                              MultivaluedMap<String, String> httpHeaders, 
+                              InputStream entityStream) throws IOException
    {
 
-      return readDataSource(entityStream, mediaType);
+      return ProviderHelper.readDataSource(entityStream, mediaType);
    }
 
-   /* (non-Javadoc)
-   * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
-   */
-   public boolean isWriteable(Class<?> type, Type genericType,
-                              Annotation[] annotations)
+
+   /**
+    * FIXME Comment this
+    * 
+    * @param type
+    * @param genericType
+    * @param annotations
+    * @return
+    * @see @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
+    */
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
       return DataSource.class.isAssignableFrom(type);
    }
 
-
-   public void writeTo(DataSource dataSource,
-                       Class<?> type,
-                       Type genericType,
+   /**
+    * FIXME Comment this
+    * 
+    * @param dataSource
+    * @param type
+    * @param genericType
+    * @param annotations
+    * @param mediaType
+    * @param httpHeaders
+    * @param entityStream
+    * @throws IOException
+    * @throws WebApplicationException
+    * @see @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+    */
+   public void writeTo(DataSource dataSource, 
+                       Class<?> type, 
+                       Type genericType, 
                        Annotation[] annotations,
-                       MediaType mediaType,
-                       MultivaluedMap<String, Object> httpHeaders,
-                       OutputStream entityStream) throws IOException,
-           WebApplicationException
+                       MediaType mediaType, 
+                       MultivaluedMap<String, Object> httpHeaders, 
+                       OutputStream entityStream) throws IOException
    {
       InputStream in = dataSource.getInputStream();
       try
       {
-         writeTo(in, entityStream);
+         ProviderHelper.writeTo(in, entityStream);
       }
       finally
       {
@@ -77,6 +117,5 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       }
 
    }
-
 
 }
