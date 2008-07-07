@@ -1,11 +1,5 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.util.Encode;
-import org.jboss.resteasy.util.PathHelper;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
@@ -14,12 +8,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import javax.ws.rs.Path;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
+
+import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.util.Encode;
+import org.jboss.resteasy.util.PathHelper;
+import org.slf4j.Logger;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class UriBuilderImpl extends UriBuilder
 {
+   private static final Logger logger = LoggerCategories.getSpecImplLogger();
+   
    private String host;
    private String scheme;
    private int port = -1;
@@ -439,13 +444,13 @@ public class UriBuilderImpl extends UriBuilder
 
       path = removeDot(path);
 
-      System.out.println(path);
+      logger.trace(path);
 
       path = "foo/bar";
 
       path = removeDot(path);
 
-      System.out.println(path);
+      logger.trace(path);
 
 
    }
