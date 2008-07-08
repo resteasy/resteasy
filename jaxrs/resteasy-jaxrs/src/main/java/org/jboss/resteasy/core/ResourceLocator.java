@@ -139,6 +139,10 @@ public class ResourceLocator implements ResourceInvoker
 
    protected void invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target) throws IOException
    {
+      if ( target == null )
+      {
+         throw new Failure("Null subresource for path: "+request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
+      }
       ResourceMethodRegistry registry = cachedSubresources.get(target.getClass());
       if (registry == null)
       {
@@ -153,7 +157,11 @@ public class ResourceLocator implements ResourceInvoker
          cachedSubresources.putIfAbsent(target.getClass(), registry);
       }
       ResourceInvoker invoker = registry.getResourceInvoker(request, response, uriIndex + index.getOffset(), limited);
-      if (invoker instanceof ResourceLocator)
+      if (invoker == null)
+      {
+         throw new Failure("No path match in subresource for: "+request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
+      }
+      else if (invoker instanceof ResourceLocator)
       {
          ResourceLocator locator = (ResourceLocator) invoker;
          locator.invoke(request, response, target);

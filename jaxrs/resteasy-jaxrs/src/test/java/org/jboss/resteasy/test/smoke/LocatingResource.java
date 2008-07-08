@@ -15,4 +15,12 @@ public class LocatingResource
       System.out.println("LOCATING...");
       return new SimpleResource();
    }
+   
+   @Path("notlocating")
+   public SimpleResource getNotLocating()
+   {
+      System.out.println("NOT LOCATING... i.e. returning null");
+      return null;
+   }
+   
 }
