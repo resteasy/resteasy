@@ -1,6 +1,5 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.util.HttpResponseCodes;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -8,7 +7,8 @@ import org.jboss.resteasy.util.HttpResponseCodes;
  */
 public class Failure extends RuntimeException
 {
-   private int errorCode = HttpResponseCodes.SC_INTERNAL_SERVER_ERROR;
+   
+   private int errorCode = -1;
 
    public Failure(int errorCode)
    {

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.StringToPrimitive;
 
 import java.lang.reflect.AccessibleObject;
@@ -153,11 +154,11 @@ public class StringParameterInjector
          }
          catch (IllegalAccessException e)
          {
-            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throw new RuntimeException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (InvocationTargetException e)
          {
-            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException());
+            throw new Failure("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException(), HttpResponseCodes.SC_NOT_FOUND);
          }
       }
       if (valueOf != null)
@@ -168,11 +169,11 @@ public class StringParameterInjector
          }
          catch (IllegalAccessException e)
          {
-            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throw new RuntimeException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (InvocationTargetException e)
          {
-            throw new RuntimeException("Unable to extra parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException());
+            throw new Failure("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException(), HttpResponseCodes.SC_NOT_FOUND);
          }
       }
       return null;
