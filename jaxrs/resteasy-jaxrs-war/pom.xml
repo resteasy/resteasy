@@ -4,13 +4,12 @@
 	<parent>
 		<groupId>org.jboss.resteasy</groupId>
 		<artifactId>resteasy-jaxrs-all</artifactId>
-		<version>${resteasy.version}</version>
+	  <version>1.0-beta-6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-jaxrs-war</artifactId>
 	<packaging>war</packaging>
-	<version>${resteasy.version}</version>
 	<name>Resteasy JAX-RS Template Webapp</name>
 
 	<scm>
@@ -34,7 +33,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
-			<version>${resteasy.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

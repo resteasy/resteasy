@@ -4,13 +4,12 @@
 	<parent>
 		<groupId>org.jboss.resteasy</groupId>
 		<artifactId>resteasy-jaxrs-all</artifactId>
-		<version>${resteasy.version}</version>
+	  <version>1.0-beta-6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>jaxrs-api</artifactId>
 	<packaging>jar</packaging>
-	<version>${resteasy.version}</version>
 	<name>JAX-RS Core API</name>
 	<dependencies></dependencies>
 	<scm>

@@ -4,15 +4,13 @@
 	<parent>
 		<groupId>org.jboss.resteasy</groupId>
 		<artifactId>resteasy-jaxrs-all</artifactId>
-		<version>${resteasy.version}</version>
+	  <version>1.0-beta-6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-jaxrs</artifactId>
 	<name>RESTEasy JAX-RS Implementation</name>
 	<packaging>jar</packaging>
-	<version>${resteasy.version}</version>
-
 	<scm>
 		<connection>
 			scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs
@@ -29,7 +27,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-common</artifactId>
-			<version>${resteasy.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -38,6 +36,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
+      <optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
