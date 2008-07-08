@@ -43,30 +43,36 @@ public class MethodInjectorImpl implements MethodInjector
 
    public Object[] injectArguments(HttpRequest input, HttpResponse response)
    {
-      Object[] args = null;
-      if (params != null && params.length > 0)
-      {
-         args = new Object[params.length];
-         int i = 0;
-         for (ValueInjector extractor : params)
-         {
-            args[i++] = extractor.inject(input, response);
-         }
-      }
-      return args;
-   }
-
-   public Response invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure
-   {
-      Object[] args = null;
       try
       {
-         args = injectArguments(request, httpResponse);
+         Object[] args = null;
+         if (params != null && params.length > 0)
+         {
+            args = new Object[params.length];
+            int i = 0;
+            for (ValueInjector extractor : params)
+            {
+               args[i++] = extractor.inject(input, response);
+            }
+         }
+         return args;
+      }
+      catch (Failure f)
+      {
+         throw f;
+      }
+      catch (NumberFormatException nfe) {
+         throw new Failure("Failed processing arguments of " + method.toString(), nfe, HttpResponseCodes.SC_NOT_FOUND);
       }
       catch (Exception e)
       {
          throw new Failure("Failed processing arguments of " + method.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
       }
+   }
+
+   public Response invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure
+   {
+      Object[] args = injectArguments(request, httpResponse);
       try
       {
          Object rtn = method.invoke(resource, args);

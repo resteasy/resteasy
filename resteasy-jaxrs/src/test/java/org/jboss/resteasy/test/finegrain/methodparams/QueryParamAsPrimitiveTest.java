@@ -1083,7 +1083,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          }
          catch (IOException e)
          {
@@ -1112,7 +1112,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          }
          catch (IOException e)
          {
@@ -1143,7 +1143,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          }
          catch (IOException e)
          {
@@ -1156,7 +1156,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          }
          catch (IOException e)
          {
@@ -1171,7 +1171,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          }
          catch (IOException e)
          {
@@ -1408,7 +1408,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, 400);
+            Assert.assertEquals(404, status);
          }
          catch (IOException e)
          {
@@ -1427,7 +1427,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, 400);
+            Assert.assertEquals(404, status);
          }
          catch (IOException e)
          {
@@ -1446,7 +1446,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, 400);
+            Assert.assertEquals(404, status);
          }
          catch (IOException e)
          {
