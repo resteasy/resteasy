@@ -7,21 +7,21 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
 @Path("/test")
-public class TestResource
+public class DummyResource
 {
 
    @POST
    @ConsumeMime("application/octet-stream")
-   public void testConsume(TestDummy foo)
+   public void testConsume(DummyObject foo)
    {
    }
 
 
    @GET
    @ProduceMime("application/octet-stream")
-   public TestDummy testProduce()
+   public DummyObject testProduce()
    {
-      return new TestDummy();
+      return new DummyObject();
    }
    
 }
