@@ -12,21 +12,21 @@
 
 	<listener>
 		<listener-class>
-			org.resteasy.plugins.server.servlet.ResteasyBootstrap
+			org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
 		</listener-class>
 	</listener>
 
 	<!-- Any beans annotated with JAX-RS are automatically loaded (@Path...) -->
 	<listener>
 		<listener-class>
-			org.resteasy.plugins.server.servlet.SpringContextLoaderListener
+			org.jboss.resteasy.plugins.server.servlet.SpringContextLoaderListener
 		</listener-class>
 	</listener>
 
 	<servlet>
 		<servlet-name>Resteasy</servlet-name>
 		<servlet-class>
-			org.resteasy.plugins.server.servlet.HttpServletDispatcher
+			org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
 		</servlet-class>
 	</servlet>
 
