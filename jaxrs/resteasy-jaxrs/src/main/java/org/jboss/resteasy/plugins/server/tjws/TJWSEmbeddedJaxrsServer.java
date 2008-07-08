@@ -16,7 +16,7 @@ import javax.ws.rs.core.ApplicationConfig;
  */
 public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements EmbeddedJaxrsServer
 {
-   protected ResteasyProviderFactory factory = new ResteasyProviderFactory();
+   protected ResteasyProviderFactory factory;
    protected Registry registry;
    protected Dispatcher dispatcher;
    protected TJWSServletDispatcher servlet = new TJWSServletDispatcher();
@@ -30,37 +30,53 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
 
    public TJWSEmbeddedJaxrsServer()
    {
-      ResteasyProviderFactory.setInstance(factory);
-
-      dispatcher = new SynchronousDispatcher(factory);
-      registry = dispatcher.getRegistry();
-      ResteasyProviderFactory.setInstance(factory);
-      RegisterBuiltin.register(factory);
    }
 
    @Override
    public void start()
    {
-      server.setAttribute(ResteasyProviderFactory.class.getName(), factory);
-      server.setAttribute(Registry.class.getName(), registry);
-      server.setAttribute(Dispatcher.class.getName(), dispatcher);
+      server.setAttribute(ResteasyProviderFactory.class.getName(), getFactory());
+      server.setAttribute(Registry.class.getName(), getRegistry());
+      server.setAttribute(Dispatcher.class.getName(), getDispatcher());
       addServlet(rootResourcePath, servlet);
       servlet.setContextPath(rootResourcePath);
       super.start();
    }
 
+   public void setDispatcher(Dispatcher dispatcher)
+   {
+      this.dispatcher = dispatcher;
+   }
+
+   public void setFactory(ResteasyProviderFactory factory)
+   {
+      this.factory = factory;
+   }
+
    public ResteasyProviderFactory getFactory()
    {
+      if (factory == null)
+      {
+         factory = new ResteasyProviderFactory();
+         ResteasyProviderFactory.setInstance(factory);
+         RegisterBuiltin.register(factory);
+      }
       return factory;
    }
 
    public Registry getRegistry()
    {
-      return registry;
+      return getDispatcher().getRegistry();
    }
 
    public Dispatcher getDispatcher()
    {
+      if (dispatcher == null)
+      {
+         dispatcher = new SynchronousDispatcher();
+         dispatcher.setProviderFactory(getFactory());
+         registry = dispatcher.getRegistry();
+      }
       return dispatcher;
    }
 
@@ -71,10 +87,10 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
 
    public void addApplicationConfig(ApplicationConfig config)
    {
-      dispatcher.setLanguageMappings(config.getLanguageMappings());
-      dispatcher.setMediaTypeMappings(config.getMediaTypeMappings());
+      getDispatcher().setLanguageMappings(config.getLanguageMappings());
+      getDispatcher().setMediaTypeMappings(config.getMediaTypeMappings());
       if (config.getResourceClasses() != null)
-         for (Class clazz : config.getResourceClasses()) registry.addPerRequestResource(clazz);
+         for (Class clazz : config.getResourceClasses()) getRegistry().addPerRequestResource(clazz);
       if (config.getProviderClasses() != null)
       {
          for (Class provider : config.getProviderClasses())

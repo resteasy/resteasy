@@ -31,12 +31,12 @@
    </context-param>
 
    <listener>
-      <listener-class>org.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+      <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
    </listener>
 
    <servlet>
       <servlet-name>Resteasy</servlet-name>
-      <servlet-class>org.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+      <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
    </servlet>
 
    <servlet-mapping>

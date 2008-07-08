@@ -29,7 +29,7 @@ public class EmbeddedContainer
 
    static
    {
-      String boot = System.getProperty("org.jboss.resteasy.core.test.embedded.container");
+      String boot = System.getProperty("org.resteasy.test.embedded.container");
       if (boot != null)
       {
          try
@@ -51,6 +51,13 @@ public class EmbeddedContainer
    public static Dispatcher start() throws Exception
    {
       return start("/");
+   }
+
+   public static void start(Dispatcher dispatcher) throws Exception
+   {
+      Method start = bootstrap.getMethod("start", Dispatcher.class);
+      start.invoke(null, dispatcher);
+
    }
 
    public static Dispatcher start(String bindPath) throws Exception

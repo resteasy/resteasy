@@ -1,17 +1,10 @@
 package org.jboss.resteasy.plugins.server.grizzly;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.PathSegment;
-
+import com.sun.grizzly.tcp.http11.GrizzlyRequest;
+import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -19,8 +12,14 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.PathSegment;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -34,7 +33,8 @@ abstract public class AbstractGrizzlyDispatcher
    public AbstractGrizzlyDispatcher(ResteasyProviderFactory providerFactory, String contextPath)
    {
       this.contextPath = contextPath;
-      dispatcher = new SynchronousDispatcher(providerFactory);
+      dispatcher = new SynchronousDispatcher();
+      dispatcher.setProviderFactory(providerFactory);
       if (contextPath == null) throw new RuntimeException("contextPath cannot be null");
       if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
    }
@@ -99,6 +99,7 @@ abstract public class AbstractGrizzlyDispatcher
            throws IOException
    {
       HttpHeaders headers = GrizzlyUtils.extractHttpHeaders(request);
+      MultivaluedMapImpl<String, String> parameters = GrizzlyUtils.extractParameters(request);
       String path = getPathInfo(request);
       //System.out.println("path: " + path);
       URI absolutePath = null;

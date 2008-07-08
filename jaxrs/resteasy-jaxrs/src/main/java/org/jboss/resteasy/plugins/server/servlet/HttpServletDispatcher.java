@@ -43,7 +43,8 @@ public class HttpServletDispatcher extends HttpServlet
       dispatcher = (Dispatcher) servletConfig.getServletContext().getAttribute(Dispatcher.class.getName());
       if (dispatcher == null)
       {
-         dispatcher = new SynchronousDispatcher(providerFactory);
+         dispatcher = new SynchronousDispatcher();
+         dispatcher.setProviderFactory(providerFactory);
          servletConfig.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
          servletConfig.getServletContext().setAttribute(Registry.class.getName(), dispatcher.getRegistry());
       }
