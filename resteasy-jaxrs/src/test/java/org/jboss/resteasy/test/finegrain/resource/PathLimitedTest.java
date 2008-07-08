@@ -132,6 +132,7 @@ public class PathLimitedTest
 
    }
 
+   @SuppressWarnings("unused")
    private void _testPut(HttpClient client, String uri)
    {
       {

@@ -31,8 +31,6 @@ public class TestIIOImageProvider extends BaseResourceTest
 
    private static final String TEST_URI = "http://localhost:8081/image";
 
-   private static final String SRC_ROOT = "./src/test/test-data/";
-
    private static final String OUTPUT_ROOT = "./target/test-data/";
 
    /**

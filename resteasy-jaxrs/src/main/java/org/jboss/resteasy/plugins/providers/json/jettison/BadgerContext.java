@@ -10,6 +10,7 @@ import javax.xml.bind.Validator;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("deprecation")
 public class BadgerContext extends JAXBContext
 {
    private JAXBContext context;

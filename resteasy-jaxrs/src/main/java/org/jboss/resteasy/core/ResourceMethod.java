@@ -139,7 +139,7 @@ public class ResourceMethod implements ResourceInvoker
       if (denyAll) throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
       if (rolesAllowed == null) return;
 
-      SecurityContext context = providerFactory.getContextData(SecurityContext.class);
+      SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
       if (context != null)
       {
          for (String role : rolesAllowed)

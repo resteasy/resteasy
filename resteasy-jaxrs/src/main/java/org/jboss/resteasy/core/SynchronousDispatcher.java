@@ -103,7 +103,6 @@ public class SynchronousDispatcher implements Dispatcher
          rebuilt += "." + ext;
       }
       if (!preprocessed) return;
-      String newPath = last.getPath().substring(0, index) + rebuilt;
 
       List<PathSegment> newSegments = new ArrayList<PathSegment>(segments.size());
       for (PathSegment segment : segments)

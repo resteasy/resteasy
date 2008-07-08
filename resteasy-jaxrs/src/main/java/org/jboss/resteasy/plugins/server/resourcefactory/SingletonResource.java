@@ -14,7 +14,6 @@ import org.jboss.resteasy.spi.ResourceFactory;
 public class SingletonResource implements ResourceFactory
 {
    private Object obj;
-   private boolean initialized = false;
 
    public SingletonResource(Object obj)
    {

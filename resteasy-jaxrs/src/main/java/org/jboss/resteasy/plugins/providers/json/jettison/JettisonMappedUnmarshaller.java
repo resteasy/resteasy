@@ -172,12 +172,14 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
       return unmarshaller.getUnmarshallerHandler();
    }
 
+   @SuppressWarnings("deprecation")
    public void setValidating(boolean b)
            throws JAXBException
    {
       unmarshaller.setValidating(b);
    }
 
+   @SuppressWarnings("deprecation")
    public boolean isValidating()
            throws JAXBException
    {

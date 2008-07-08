@@ -43,7 +43,9 @@ public class ExtensionTest
       @ProduceMime("application/xml")
       public String getXml(@Context HttpHeaders headers)
       {
+         @SuppressWarnings("unused")
          List<String> languages = headers.getAcceptableLanguages();
+         @SuppressWarnings("unused")
          List<MediaType> mediaTypes = headers.getAcceptableMediaTypes();
          return "xml";
       }
