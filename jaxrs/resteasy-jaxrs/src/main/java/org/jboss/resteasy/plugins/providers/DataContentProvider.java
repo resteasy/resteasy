@@ -61,6 +61,7 @@ public class DataContentProvider implements MessageBodyReader<Object>,
       ByteArrayDataSource ds = new ByteArrayDataSource(
               new BufferedInputStream(entityStream), mediaType.toString());
       DataHandler dh = new DataHandler(ds);
+      @SuppressWarnings("unused")
       DataFlavor df[] = dh.getTransferDataFlavors();
       //DataFlavor flava = findMatchingFlavor(type, df);
       return null;

@@ -146,7 +146,7 @@ public class ResourceLocator implements ResourceInvoker
          Class subResourceClass = GetRestful.getSubResourceClass(target.getClass());
          if (subResourceClass == null)
          {
-            String msg = "Subresource class has no jax-rs annotations.: " + subResourceClass.getName();
+            String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
             throw new Failure(msg, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
          }
          registry.addResourceFactory(null, null, subResourceClass, uriIndex + index.getOffset(), limited);

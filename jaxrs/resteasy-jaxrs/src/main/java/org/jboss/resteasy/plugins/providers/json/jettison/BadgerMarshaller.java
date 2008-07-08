@@ -34,7 +34,7 @@ public class BadgerMarshaller implements Marshaller
    public BadgerMarshaller(JAXBContext context) throws JAXBException
    {
       this.context = context;
-      marshaller = context.createMarshaller();
+      marshaller = this.context.createMarshaller();
    }
 
    public void marshal(Object o, Result result)

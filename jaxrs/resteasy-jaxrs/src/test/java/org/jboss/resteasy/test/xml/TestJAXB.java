@@ -1,6 +1,14 @@
 package org.jboss.resteasy.test.xml;
 
-import Acme.Serve.Serve;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
@@ -13,14 +21,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Simple smoke test
  *
@@ -30,7 +30,6 @@ import java.util.List;
 public class TestJAXB
 {
 
-   private static Serve server = null;
    private static Dispatcher dispatcher;
 
    @BeforeClass

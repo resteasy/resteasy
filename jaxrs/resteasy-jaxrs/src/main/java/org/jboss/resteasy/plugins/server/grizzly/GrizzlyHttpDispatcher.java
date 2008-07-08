@@ -20,9 +20,10 @@ public class GrizzlyHttpDispatcher extends AbstractGrizzlyDispatcher
       super(providerFactory, contextPath);
    }
 
+   @SuppressWarnings("unused")
    private static class GrizzlyResponseWrapper extends GrizzlyResponse
    {
-      private GrizzlyResponse wrapper;
+      // private GrizzlyResponse wrapper;
 
    }
 

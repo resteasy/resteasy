@@ -101,7 +101,7 @@ public class TypeConverterTest
    @Test(expected = IllegalArgumentException.class)
    public void testDate() 
    {
-      Date date = TypeConverter.getType(Date.class, "07/04/2008");
+      TypeConverter.getType(Date.class, "07/04/2008");
    }
 
 }

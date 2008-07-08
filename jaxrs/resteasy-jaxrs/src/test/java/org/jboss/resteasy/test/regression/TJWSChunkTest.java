@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.regression;
 
-import Acme.Serve.Serve;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -21,7 +20,6 @@ import org.junit.Test;
  */
 public class TJWSChunkTest
 {
-   private static Serve server = null;
    private static Dispatcher dispatcher;
 
    @BeforeClass
@@ -58,7 +56,7 @@ public class TJWSChunkTest
       {
          PutMethod method = new PutMethod("http://localhost:8081/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
-         int status = httpClient.executeMethod(method);
+         httpClient.executeMethod(method);
       }
       // TJWS does not support chunk encodings so I need to kill kept alive connections
       //httpClient.getHttpConnectionManager().closeIdleConnections(0);

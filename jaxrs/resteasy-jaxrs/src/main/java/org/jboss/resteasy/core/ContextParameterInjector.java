@@ -22,6 +22,7 @@ import java.lang.reflect.Proxy;
 public class ContextParameterInjector implements ValueInjector
 {
    private Class type;
+   @SuppressWarnings("unused")
    private ResteasyProviderFactory factory;
 
    public ContextParameterInjector(Class type, ResteasyProviderFactory factory)
@@ -37,7 +38,7 @@ public class ContextParameterInjector implements ValueInjector
       if (type.equals(Request.class)) return new RequestImpl(request.getHttpHeaders(), request.getHttpMethod());
       if (type.equals(HttpRequest.class)) return request;
       if (type.equals(MessageBodyWorkers.class)) return new MessageBodyWorkersImpl();
-      else return factory.getContextData(type);
+      else return ResteasyProviderFactory.getContextData(type);
    }
 
    private class GenericDelegatingProxy implements InvocationHandler
@@ -46,7 +47,7 @@ public class ContextParameterInjector implements ValueInjector
       {
          try
          {
-            Object delegate = factory.getContextData(type);
+            Object delegate = ResteasyProviderFactory.getContextData(type);
             if (delegate == null)
                throw new RuntimeException("Unable to inject contextual data of type: " + type.getName());
             return method.invoke(delegate, objects);
