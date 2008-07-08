@@ -143,5 +143,46 @@ public class TestSmoke
 
    }
 
+   
+   @Test
+   public void testNotLocating() throws Exception
+   {
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+
+      POJOResourceFactory noDefaults = new POJOResourceFactory(LocatingResource.class);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+
+      {
+         MockHttpRequest request = MockHttpRequest.get("/notlocating");
+         MockHttpResponse response = new MockHttpResponse();
+
+         dispatcher.invoke(request, response);
+
+         Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+         Assert.assertEquals("", response.getContentAsString());
+      }
+
+   }
+
+   
+   @Test
+   public void testNotMappedInSubresource() throws Exception
+   {
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+
+      POJOResourceFactory noDefaults = new POJOResourceFactory(LocatingResource.class);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+
+      {
+         MockHttpRequest request = MockHttpRequest.get("/locating/notmatching");
+         MockHttpResponse response = new MockHttpResponse();
+
+         dispatcher.invoke(request, response);
+
+         Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+         Assert.assertEquals("", response.getContentAsString());
+      }
+
+   }
 
 }
