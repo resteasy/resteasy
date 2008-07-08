@@ -16,7 +16,8 @@ public class MockDispatcherFactory
 
    public static Dispatcher createDispatcher()
    {
-      Dispatcher dispatcher = new SynchronousDispatcher(new ResteasyProviderFactory());
+      Dispatcher dispatcher = new SynchronousDispatcher();
+      dispatcher.setProviderFactory(new ResteasyProviderFactory());
       ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
       RegisterBuiltin.register(dispatcher.getProviderFactory());
       return dispatcher;

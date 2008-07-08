@@ -29,7 +29,11 @@ public class SynchronousDispatcher implements Dispatcher
    protected Map<String, MediaType> mediaTypeMappings;
    protected Map<String, String> languageMappings;
 
-   public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
+   public SynchronousDispatcher()
+   {
+   }
+
+   public void setProviderFactory(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
@@ -103,6 +107,7 @@ public class SynchronousDispatcher implements Dispatcher
          rebuilt += "." + ext;
       }
       if (!preprocessed) return;
+      String newPath = last.getPath().substring(0, index) + rebuilt;
 
       List<PathSegment> newSegments = new ArrayList<PathSegment>(segments.size());
       for (PathSegment segment : segments)

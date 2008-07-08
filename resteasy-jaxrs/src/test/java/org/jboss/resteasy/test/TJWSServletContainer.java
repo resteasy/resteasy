@@ -22,6 +22,16 @@ public class TJWSServletContainer
       return start(bindPath, null);
    }
 
+   public static void start(Dispatcher dispatcher) throws Exception
+   {
+      tjws = new TJWSEmbeddedJaxrsServer();
+      tjws.setDispatcher(dispatcher);
+      tjws.setPort(8081);
+      tjws.setRootResourcePath("");
+      tjws.setSecurityDomain(null);
+      tjws.start();
+   }
+
    public static Dispatcher start(String bindPath, SecurityDomain domain) throws Exception
    {
       tjws = new TJWSEmbeddedJaxrsServer();
