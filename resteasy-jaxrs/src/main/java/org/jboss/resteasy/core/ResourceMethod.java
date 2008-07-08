@@ -15,6 +15,7 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -161,6 +162,12 @@ public class ResourceMethod implements ResourceInvoker
          index.populateUriInfoTemplateParams(request);
          jaxrsResponse = methodInjector.invoke(request, response, target);
       }
+      catch (WebApplicationException we)
+      {
+         response.sendError(we.getResponse().getStatus());
+         we.printStackTrace();
+         return;
+      }
       catch (Failure e)
       {
          response.sendError(e.getErrorCode());
@@ -195,7 +202,22 @@ public class ResourceMethod implements ResourceInvoker
       if (jaxrsResponse.getEntity() != null)
       {
          MediaType responseContentType = resolveContentType(request, jaxrsResponse);
-         writeResponse(response, jaxrsResponse.getEntity(), responseContentType);
+         try
+         {
+            writeResponse(response, jaxrsResponse.getEntity(), responseContentType);
+         }
+         catch (WebApplicationException we)
+         {
+            response.sendError(we.getResponse().getStatus());
+            we.printStackTrace();
+            return;
+         }
+         catch (Failure e)
+         {
+            response.sendError(e.getErrorCode());
+            e.printStackTrace();
+            return;
+         }
       }
    }
 
