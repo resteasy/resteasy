@@ -3,18 +3,17 @@
 	<parent>
 		<artifactId>resteasy-jaxrs-all</artifactId>
 		<groupId>org.jboss.resteasy</groupId>
-		<version>${resteasy.version}</version>
+	  <version>1.0-beta-6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-client</artifactId>
 	<name>RESTEast JAX-RS Client</name>
-	<version>${resteasy.version}</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-common</artifactId>
-			<version>${resteasy.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

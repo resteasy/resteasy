@@ -2,13 +2,12 @@
 	<parent>
 		<groupId>org.jboss.resteasy</groupId>
 		<artifactId>resteasy-jaxrs-all</artifactId>
-		<version>${resteasy.version}</version>
+	  <version>1.0-beta-6</version>
 	</parent>
 	<name>Resteasy JAX-RS Distribution</name>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-jaxrs-dist</artifactId>
-	<version>${resteasy.version}</version>
 	<packaging>pom</packaging>
 	<scm>
 		<connection>
@@ -44,7 +43,7 @@
 								target/assembly/work
 							</workDirectory>
 							<finalName>
-								resteasy-jaxrs-${resteasy.version}
+								resteasy-jaxrs-${project.version}
 							</finalName>
 						</configuration>
 					</execution>

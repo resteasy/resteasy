@@ -3,13 +3,12 @@
 	<parent>
 		<artifactId>resteasy-jaxrs-all</artifactId>
 		<groupId>org.jboss.resteasy</groupId>
-		<version>${resteasy.version}</version>
+	  <version>1.0-beta-6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-common</artifactId>
 	<name>RESTEasy JAX-RS Common Implementation</name>
-	<version>${resteasy.version}</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
