@@ -57,6 +57,10 @@ public class MethodInjectorImpl implements MethodInjector
          }
          return args;
       }
+      catch (WebApplicationException we) 
+      {
+         throw we;
+      }
       catch (Failure f)
       {
          throw f;

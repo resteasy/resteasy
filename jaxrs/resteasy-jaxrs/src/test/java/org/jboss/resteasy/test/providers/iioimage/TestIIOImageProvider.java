@@ -104,8 +104,7 @@ public class TestIIOImageProvider extends BaseResourceTest
       PostMethod method = new PostMethod(TEST_URI);
       method.setRequestEntity(new FileRequestEntity(file, "image/vnd.ms-photo"));
       int status = client.executeMethod(method);
-      //Assert.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, status);
-      Assert.assertEquals(HttpServletResponse.SC_BAD_REQUEST, status);
+      Assert.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, status);
    }
 
    public void writeTo(final InputStream in, final OutputStream out)
