@@ -1,7 +1,11 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.plugins.providers.json.jettison.JettisonProvider;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -9,18 +13,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  */
 public class RegisterBuiltin
 {
+
+   private final static Logger logger = LoggerFactory.getLogger(RegisterBuiltin.class);
+
    public static void register(ResteasyProviderFactory factory)
    {
-      //factory.addMessageBodyReader(new MultipartEntityProvider());
 
-      IIOImageProvider imageProvider = new IIOImageProvider();
-      factory.addMessageBodyReader(imageProvider);
-      factory.addMessageBodyWriter(imageProvider);
+      // Spec required providers.
 
-
-      MimeMultipartProvider multipartProvider = new MimeMultipartProvider();
-      factory.addMessageBodyReader(multipartProvider);
-      factory.addMessageBodyWriter(multipartProvider);
+      logger.debug("Registering standard providers");
 
       DataSourceProvider dataSourceProvider = new DataSourceProvider();
       factory.addMessageBodyReader(dataSourceProvider);
@@ -47,9 +48,64 @@ public class RegisterBuiltin
 
       factory.addMessageBodyWriter(new StreamingOutputProvider());
 
-      JettisonProvider jettison = new JettisonProvider();
-      factory.addMessageBodyReader(jettison);
-      factory.addMessageBodyWriter(jettison);
+      // optional providers.
+
+      if (isAvailable("javax.imageio.IIOImage"))
+      {
+         // javax.imageio is part of standard java, hence we
+         // could really just add it. However anyone relying on this
+         // provider would become jax-rs implementation dependent.
+         logger.info("Adding IIOImageProvider");
+         Object provider = instantiate("org.jboss.resteasy.plugins.providers.IIOImageProvider");
+         factory.addMessageBodyReader((MessageBodyReader) provider);
+         factory.addMessageBodyWriter((MessageBodyWriter) provider);
+      }
+         
+      if (isAvailable("org.codehaus.jettison.json.JSONObject"))
+      {
+         logger.info("Adding JettisonProvider");
+         Object provider = instantiate("org.jboss.resteasy.plugins.providers.json.jettison.JettisonProvider");
+         factory.addMessageBodyReader((MessageBodyReader) provider);
+         factory.addMessageBodyWriter((MessageBodyWriter) provider);
+      }
+
+      if (isAvailable("javax.mail.internet.MimeMultipart"))
+      {
+         logger.info("Adding MimeMultipartProvider");
+         Object provider = instantiate("org.jboss.resteasy.plugins.providers.MimeMultipartProvider");
+         factory.addMessageBodyReader((MessageBodyReader) provider);
+         factory.addMessageBodyWriter((MessageBodyWriter) provider);
+      }
 
    }
+
+   private static boolean isAvailable(String className)
+   {
+
+      try
+      {
+         Thread.currentThread().getContextClassLoader().loadClass(className);
+         return true;
+      }
+      catch (ClassNotFoundException cnfe)
+      {
+         return false;
+      }
+
+   }
+
+   private static Object instantiate(String className)
+   {
+      try
+      {
+         Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(className);
+         return cl.newInstance();
+      }
+      catch (Exception e)
+      {
+         logger.error("Failed to load: " + className, e);
+         return null;
+      }
+   }
+
 }
