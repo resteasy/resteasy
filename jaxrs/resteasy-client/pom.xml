@@ -1,24 +1,21 @@
 <?xml version="1.0"?>
 <project>
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>resteasy-jaxrs-all</artifactId>
     <groupId>org.jboss.resteasy</groupId>
-    <version>1.0-beta-6</version>
+    <version>1.0-beta-6-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jboss.resteasy</groupId>
+
   <artifactId>resteasy-client</artifactId>
-  <name>RESTEast JAX-RS Client</name>
+  <name>RESTEasy JAX-RS Client</name>
+
   <dependencies>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-common</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
+
 </project>

@@ -1,25 +1,37 @@
 <project>
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>1.0-beta-6</version>
+    <version>1.0-beta-6-SNAPSHOT</version>
   </parent>
-  <name>Resteasy JAX-RS Distribution</name>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jboss.resteasy</groupId>
+
   <artifactId>resteasy-jaxrs-dist</artifactId>
   <packaging>pom</packaging>
-  <scm>
-    <connection>
-      scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/distribution
-    </connection>
-    <developerConnection>
-      scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/distribution
-    </developerConnection>
-    <url>
-      http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs/distribution
-    </url>
-  </scm>
+  <name>Resteasy JAX-RS Distribution</name>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs-war</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>jaxrs-api</artifactId>
+    </dependency>
+    
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -58,5 +70,5 @@
       </plugin>
     </plugins>
   </build>
-
+  
 </project>
