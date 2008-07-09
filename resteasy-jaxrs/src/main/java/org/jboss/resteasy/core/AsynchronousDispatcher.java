@@ -20,8 +20,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,16 +38,61 @@ import java.util.concurrent.atomic.AtomicLong;
 @Path("/")
 public class AsynchronousDispatcher extends SynchronousDispatcher
 {
+   private static class Cache extends LinkedHashMap<String, Future<MockHttpResponse>>
+   {
+      private int maxSize = 100;
+
+      public Cache(int maxSize)
+      {
+         this.maxSize = maxSize;
+      }
+
+      @Override
+      protected boolean removeEldestEntry(Map.Entry<String, Future<MockHttpResponse>> stringFutureEntry)
+      {
+         return size() > maxSize;
+      }
+
+      public void setMaxSize(int maxSize)
+      {
+         this.maxSize = maxSize;
+      }
+   }
+
    protected ExecutorService executor;
    private int threadPoolSize = 1000;
-   private Hashtable<String, Future<MockHttpResponse>> jobs = new Hashtable<String, Future<MockHttpResponse>>();
+   private Map<String, Future<MockHttpResponse>> jobs;
+   private Cache cache;
    private String basePath = "/asynch/jobs";
    private AtomicLong counter = new AtomicLong(0);
    private final static Logger logger = LoggerFactory.getLogger(AsynchronousDispatcher.class);
+   private long maxWaitMilliSeconds = 300000;
+   private int maxCacheSize = 100;
 
 
    public AsynchronousDispatcher()
    {
+   }
+
+   /**
+    * Max response cache size default is 100
+    *
+    * @param maxCacheSize
+    */
+   public void setMaxCacheSize(int maxCacheSize)
+   {
+      this.maxCacheSize = maxCacheSize;
+      if (cache != null) cache.setMaxSize(maxCacheSize);
+   }
+
+   /**
+    * Maximum wait time.  This overrides any wait query parameter
+    *
+    * @param maxWaitMilliSeconds
+    */
+   public void setMaxWaitMilliSeconds(long maxWaitMilliSeconds)
+   {
+      this.maxWaitMilliSeconds = maxWaitMilliSeconds;
    }
 
    /**
@@ -80,6 +127,8 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
    public void start()
    {
+      cache = new Cache(maxCacheSize);
+      jobs = Collections.synchronizedMap(cache);
       if (executor == null) executor = Executors.newFixedThreadPool(threadPoolSize);
       registry.addSingletonResource(this, basePath);
    }
@@ -141,6 +190,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       {
          try
          {
+            if (wait > maxWaitMilliSeconds) wait = maxWaitMilliSeconds;
             response = job.get(wait, TimeUnit.MILLISECONDS);
          }
          catch (Exception e)
