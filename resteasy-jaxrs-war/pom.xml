@@ -14,11 +14,37 @@
   <name>RESTEasy JAX-RS Template Webapp</name>
 
   <dependencies>
+
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- These dependencies are declared as <optiona>true</optional> in the
+         resteasy-jaxrs jar. We redeclare them as not optional to build the
+         "full" war. -->
+    <dependency>
+      <groupId>org.codehaus.jettison</groupId>
+      <artifactId>jettison</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
