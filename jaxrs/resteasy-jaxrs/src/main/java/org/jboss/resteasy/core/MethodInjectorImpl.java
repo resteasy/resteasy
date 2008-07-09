@@ -65,9 +65,6 @@ public class MethodInjectorImpl implements MethodInjector
       {
          throw f;
       }
-      catch (NumberFormatException nfe) {
-         throw new Failure("Failed processing arguments of " + method.toString(), nfe, HttpResponseCodes.SC_NOT_FOUND);
-      }
       catch (Exception e)
       {
          throw new Failure("Failed processing arguments of " + method.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
