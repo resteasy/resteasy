@@ -7,6 +7,8 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -39,6 +41,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    private Hashtable<String, Future<MockHttpResponse>> jobs = new Hashtable<String, Future<MockHttpResponse>>();
    private String basePath = "/asynch/jobs";
    private AtomicLong counter = new AtomicLong(0);
+   private final static Logger logger = LoggerFactory.getLogger(AsynchronousDispatcher.class);
 
 
    public AsynchronousDispatcher()
@@ -224,6 +227,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
    public void oneway(HttpRequest request, HttpResponse response)
    {
+      logger.debug("IN ONE WAY!!!!!");
       final MockHttpRequest in;
       try
       {
@@ -238,6 +242,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
          public void run()
          {
+            logger.debug("RUNNING JOB!!!!");
             MockHttpResponse theResponse = new MockHttpResponse();
 
 
@@ -245,7 +250,10 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
             {
                invokeSuper(in, theResponse);
             }
-            catch (Exception ignored) {}
+            catch (Exception ignored)
+            {
+               logger.error("Failed to invoke asynchronously", ignored);
+            }
             finally
             {
                ResteasyProviderFactory.clearContextData();
