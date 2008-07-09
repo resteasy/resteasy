@@ -43,7 +43,7 @@ public class AsychronousDispatcher extends SynchronousDispatcher
 
    public AsychronousDispatcher(ResteasyProviderFactory providerFactory)
    {
-      super(providerFactory);
+      setProviderFactory(providerFactory);
       registry.addSingletonResource(this, basePath);
    }
 

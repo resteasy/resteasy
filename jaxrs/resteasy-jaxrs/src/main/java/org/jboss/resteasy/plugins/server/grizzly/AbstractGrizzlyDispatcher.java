@@ -99,6 +99,7 @@ abstract public class AbstractGrizzlyDispatcher
            throws IOException
    {
       HttpHeaders headers = GrizzlyUtils.extractHttpHeaders(request);
+      @SuppressWarnings("unused")
       MultivaluedMapImpl<String, String> parameters = GrizzlyUtils.extractParameters(request);
       String path = getPathInfo(request);
       //System.out.println("path: " + path);
