@@ -1266,7 +1266,7 @@ public class HeaderParamsAsPrimitivesTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(404, status);
+            Assert.assertEquals(400, status);
          }
          catch (IOException e)
          {
@@ -1285,7 +1285,7 @@ public class HeaderParamsAsPrimitivesTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(404, status);
+            Assert.assertEquals(400, status);
          }
          catch (IOException e)
          {
@@ -1306,7 +1306,7 @@ public class HeaderParamsAsPrimitivesTest
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(404, status);
+            Assert.assertEquals(400, status);
          }
          catch (IOException e)
          {

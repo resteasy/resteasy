@@ -158,7 +158,7 @@ public class StringParameterInjector
          }
          catch (InvocationTargetException e)
          {
-            throw new Failure("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException(), HttpResponseCodes.SC_NOT_FOUND);
+            throw new RuntimeException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
       }
       if (valueOf != null)
