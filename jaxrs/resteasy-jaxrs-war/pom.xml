@@ -11,7 +11,7 @@
 
   <artifactId>resteasy-jaxrs-war</artifactId>
   <packaging>war</packaging>
-  <name>Resteasy JAX-RS Template Webapp</name>
+  <name>RESTEasy JAX-RS Template Webapp</name>
 
   <dependencies>
     <dependency>

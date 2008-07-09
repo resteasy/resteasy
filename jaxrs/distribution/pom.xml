@@ -8,7 +8,7 @@
 
   <artifactId>resteasy-jaxrs-dist</artifactId>
   <packaging>pom</packaging>
-  <name>Resteasy JAX-RS Distribution</name>
+  <name>RESTEasy JAX-RS Distribution</name>
 
   <dependencies>
 
