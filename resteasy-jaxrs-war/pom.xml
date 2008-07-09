@@ -1,34 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>1.0-beta-6</version>
+    <version>1.0-beta-6-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jboss.resteasy</groupId>
+
   <artifactId>resteasy-jaxrs-war</artifactId>
   <packaging>war</packaging>
   <name>Resteasy JAX-RS Template Webapp</name>
 
-  <scm>
-    <connection>
-      scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs-war
-    </connection>
-    <developerConnection>
-      scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs-war
-    </developerConnection>
-    <url>
-      http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs/resteasy-jaxrs-war
-    </url>
-  </scm>
-  <repositories>
-    <repository>
-      <id>jboss</id>
-      <url>http://repository.jboss.org/maven2</url>
-    </repository>
-  </repositories>
   <dependencies>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
@@ -36,24 +20,23 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+
   <build>
-    <finalName>resteasy-jaxrs</finalName>
+
+<!--
+    XXX Doesn't work with classpath scanning.
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-install-plugin</artifactId>
-        <configuration>
-          <createChecksum>true</createChecksum>
+          <scanIntervalSeconds>3</scanIntervalSeconds>
+          <contextPath>/</contextPath>
         </configuration>
       </plugin>
     </plugins>
+-->
+
   </build>
+
 </project>

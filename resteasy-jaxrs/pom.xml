@@ -1,109 +1,111 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>1.0-beta-6</version>
+    <version>1.0-beta-6-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jboss.resteasy</groupId>
+
   <artifactId>resteasy-jaxrs</artifactId>
   <name>RESTEasy JAX-RS Implementation</name>
   <packaging>jar</packaging>
-  <scm>
-    <connection>
-      scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs
-    </connection>
-    <developerConnection>
-      scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs/resteasy-jaxrs
-    </developerConnection>
-    <url>
-      http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs/resteasy-jaxrs
-    </url>
-  </scm>
 
   <dependencies>
+
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-common</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jettison</groupId>
-      <artifactId>jettison</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>jsr250-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>tjws</groupId>
-      <artifactId>webserver</artifactId>
-    </dependency>
+    
+    <!-- Scans classes on cp for annotations and builds quick 
+         lookup database of them. -->
     <dependency>
       <groupId>org.scannotation</groupId>
       <artifactId>scannotation</artifactId>
     </dependency>
+
+    <!-- Needed for javax.annotation.security.* which is part of javaee 6
+         XXX should this dependency be <scope>provided</scope> and 
+         only used if detected runtime? -->
     <dependency>
-      <groupId>javassist</groupId>
-      <artifactId>javassist</artifactId>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
     </dependency>
+
+    <!-- javax.activation.DataSource provider is required by spec -->
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+    </dependency>
+
+    <!-- javax.xml.bind.JAXBElement provider is required by spec -->
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+    </dependency>
+
+    <!-- Used for org.jboss.resteasy.plugins.client.httpclient.* -->
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- Used for optional JSON provider. Provider is activated by
+         adding this jar to classpath -->
+    <dependency>
+      <groupId>org.codehaus.jettison</groupId>
+      <artifactId>jettison</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- Used by optional MimeMultipartProvider. Drop in jar on classpath
+         to activate provider.-->
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- Used for org.jboss.resteasy.plugins.server.servlet.SpringXXX -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
-      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- Used by org.jboss.resteasy.plugins.server.grizzly.* -->
+    <dependency>
+      <groupId>com.sun.grizzly</groupId>
+      <artifactId>grizzly-http-servlet</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>com.sun.grizzly</groupId>
       <artifactId>grizzly-http-webserver</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.grizzly</groupId>
-      <artifactId>grizzly-http-servlet</artifactId>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>com.sun.grizzly</groupId>
       <artifactId>grizzly-comet</artifactId>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
+
+    <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <scope>provided</scope>
+      <groupId>tjws</groupId>
+      <artifactId>webserver</artifactId>
+      <optional>true</optional>
     </dependency>
+
   </dependencies>
 </project>
