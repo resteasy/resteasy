@@ -14,6 +14,7 @@ import org.jboss.resteasy.spi.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
@@ -69,6 +70,7 @@ abstract public class HttpClientInvoker extends ClientInvoker
       {
          url = uri.build().toURL().toString();
          baseMethod = createBaseMethod(url);
+         if (ClientResponse.class.isAssignableFrom(method.getReturnType())) baseMethod.setFollowRedirects(false);
       }
       catch (MalformedURLException e)
       {
@@ -109,9 +111,15 @@ abstract public class HttpClientInvoker extends ClientInvoker
          }
          if (ClientResponse.class.isAssignableFrom(method.getReturnType()))
          {
-            ParameterizedType zType = (ParameterizedType) method.getGenericReturnType();
-            Type genericReturnType = zType.getActualTypeArguments()[0];
-            Class returnType = Types.getRawType(genericReturnType);
+            Type genericReturnType = null;
+            Class returnType = null;
+            if (method.getGenericReturnType() instanceof ParameterizedType)
+            {
+               ParameterizedType zType = (ParameterizedType) method.getGenericReturnType();
+               genericReturnType = zType.getActualTypeArguments()[0];
+               returnType = Types.getRawType(genericReturnType);
+
+            }
 
             return extractClientResponse(baseMethod, status, genericReturnType, returnType);
          }
@@ -134,7 +142,7 @@ abstract public class HttpClientInvoker extends ClientInvoker
 
    protected ClientResponse extractClientResponse(HttpMethodBase baseMethod, int status, Type genericReturnType, Class returnType)
    {
-      final MultivaluedMap<String, String> headers = new MultivaluedMapImpl<String, String>();
+      final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
       final int theStatus = status;
 
 
@@ -192,6 +200,10 @@ abstract public class HttpClientInvoker extends ClientInvoker
             };
          }
          mediaType = produce.value()[0];
+      }
+      if (returnType == null)
+      {
+         returnType = byte[].class;
       }
       MediaType media = MediaType.valueOf(mediaType);
       MessageBodyReader reader = providerFactory.createMessageBodyReader(returnType, genericReturnType, method.getAnnotations(), media);

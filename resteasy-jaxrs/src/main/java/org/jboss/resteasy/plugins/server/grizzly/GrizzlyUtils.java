@@ -11,6 +11,7 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class GrizzlyUtils
    {
       HttpHeadersImpl headers = new HttpHeadersImpl();
 
-      MultivaluedMapImpl<String, String> requestHeaders = extractRequestHeaders(request);
+      MultivaluedMap<String, String> requestHeaders = extractRequestHeaders(request);
       headers.setRequestHeaders(requestHeaders);
       List<MediaType> acceptableMediaTypes = extractAccepts(requestHeaders);
       headers.setAcceptableMediaTypes(acceptableMediaTypes);
@@ -72,7 +73,7 @@ public class GrizzlyUtils
       return cookies;
    }
 
-   public static List<MediaType> extractAccepts(MultivaluedMapImpl<String, String> requestHeaders)
+   public static List<MediaType> extractAccepts(MultivaluedMap<String, String> requestHeaders)
    {
       List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
       List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT);
@@ -85,7 +86,7 @@ public class GrizzlyUtils
       return acceptableMediaTypes;
    }
 
-   public static MultivaluedMapImpl<String, String> extractRequestHeaders(GrizzlyRequest request)
+   public static MultivaluedMap<String, String> extractRequestHeaders(GrizzlyRequest request)
    {
       Headers<String> requestHeaders = new Headers<String>();
 

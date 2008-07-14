@@ -17,29 +17,48 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    public static MediaType parse(String type)
    {
-      String[] paths = type.split("/");
-      if (paths.length != 2) throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
-      int idx = paths[1].indexOf(";");
-      if (idx < 0)
+      String params = null;
+      int idx = type.indexOf(";");
+      if (idx > -1)
       {
-         return new MediaType(paths[0], paths[1]);
+         params = type.substring(idx + 1);
+         type = type.substring(0, idx);
       }
-      else
+      String major = null;
+      String subtype = null;
+      String[] paths = type.split("/");
+      if (paths.length < 2 && type.equals("*"))
       {
-         String major = paths[0];
-         String params = paths[1].substring(idx + 1);
-         String subtype = paths[1].substring(0, idx);
+         major = "*";
+         subtype = "*";
+
+      }
+      else if (paths.length != 2)
+      {
+         throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
+      }
+      else if (paths.length == 2)
+      {
+         major = paths[0];
+         subtype = paths[1];
+      }
+      if (params != null)
+      {
          HashMap<String, String> typeParams = new HashMap<String, String>();
          if (params.startsWith(";")) params = params.substring(1);
          String[] array = params.split(";");
          for (String param : array)
          {
             int pidx = param.indexOf("=");
-            String name = param.substring(0, pidx);
-            String val = param.substring(pidx + 1);
+            String name = param.substring(0, pidx).trim();
+            String val = param.substring(pidx + 1).trim();
             typeParams.put(name, val);
          }
          return new MediaType(major, subtype, typeParams);
+      }
+      else
+      {
+         return new MediaType(major, subtype);
       }
    }
 

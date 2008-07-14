@@ -13,6 +13,8 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.net.URL;
+import java.net.HttpURLConnection;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -78,6 +80,25 @@ public class RegressionTest
       }
       EmbeddedContainer.stop();
    }
+
+   /**
+    * Test JIRA bugs RESTEASY-61
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testJdkURLConnection() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+      {
+         URL url = new URL("http://localhost:8081/simple");
+         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+         Object obj = conn.getContent();
+      }
+      EmbeddedContainer.stop();
+   }
+
 
    /**
     * Test JIRA bug RESTEASY-24

@@ -6,6 +6,8 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
@@ -28,6 +30,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected ResourceMethodRegistry registry;
    protected Map<String, MediaType> mediaTypeMappings;
    protected Map<String, String> languageMappings;
+   private final static Logger logger = LoggerFactory.getLogger(SynchronousDispatcher.class);
 
    public SynchronousDispatcher()
    {
@@ -123,6 +126,7 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void invoke(HttpRequest in, HttpResponse response)
    {
+      logger.debug("PathInfo: " + in.getUri().getPath());
       preprocess(in);
       ResourceInvoker invoker = null;
       try

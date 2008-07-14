@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
@@ -18,7 +19,7 @@ import java.util.Set;
 public class HttpServletResponseHeaders implements MultivaluedMap<String, Object>
 {
 
-   private MultivaluedMap<String, Object> cachedHeaders = new MultivaluedMapImpl<String, Object>();
+   private CaseInsensitiveMap cachedHeaders = new CaseInsensitiveMap();
    private HttpServletResponse response;
    private ResteasyProviderFactory factory;
 
