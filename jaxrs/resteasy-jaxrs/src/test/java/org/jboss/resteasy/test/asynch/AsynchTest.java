@@ -100,6 +100,7 @@ public class AsynchTest
          method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
          long start = System.currentTimeMillis();
          int status = client.executeMethod(method);
+         @SuppressWarnings("unused")
          long end = System.currentTimeMillis() - start;
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
          String jobUrl = method.getResponseHeader(HttpHeaders.LOCATION).getValue();
