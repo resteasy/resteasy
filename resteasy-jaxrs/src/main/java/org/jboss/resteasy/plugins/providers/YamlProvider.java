@@ -84,8 +84,17 @@ public class YamlProvider extends AbstractEntityProvider<Object>
          WebApplicationException
    {
 
-      Yaml.dump(t, entityStream);
+      try {
+         
+        Yaml.dump(t, entityStream);
    
+      } catch ( Exception e ) {
+         
+         logger.debug("Failed to encode yaml for object: {}", t.toString());
+         throw new WebApplicationException(e, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+         
+      }
+      
    }
    
 }
