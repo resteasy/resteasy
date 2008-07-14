@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.finegrain.client;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.jboss.resteasy.spi.ClientResponse;
@@ -19,6 +21,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.HttpURLConnection;
+import java.util.Map;
 
 /**
  * Simple smoke test
@@ -99,6 +106,70 @@ public class ClientResponseTest
       catch (Exception e)
       {
          Assert.assertTrue(e.getMessage().startsWith("Unable to find a MessageBodyReader of content-type"));
+      }
+
+   }
+
+   @Path("/redirect")
+   public static class RedirectResource
+   {
+      @GET
+      public Response get()
+      {
+         try
+         {
+            return Response.seeOther(new URI("http://localhost:8081/redirect/data")).build();
+         }
+         catch (URISyntaxException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+
+      @GET
+      @Path("data")
+      public String getData()
+      {
+         return "data";
+      }
+   }
+
+   @Path("/redirect")
+   public static interface RedirectClient
+   {
+      @GET
+      ClientResponse get();
+   }
+
+   @Test
+   public void testRedirect() throws Exception
+   {
+      dispatcher.getRegistry().addPerRequestResource(RedirectResource.class);
+      {
+         RedirectClient client = ProxyFactory.create(RedirectClient.class, "http://localhost:8081");
+         ClientResponse response = client.get();
+         System.out.println("size: " + response.getHeaders().size());
+         for (Object name : response.getHeaders().keySet())
+         {
+            System.out.print(name);
+            System.out.println(":" + response.getHeaders().getFirst(name.toString()));
+         }
+         String uri = (String) response.getHeaders().getFirst("location");
+         Assert.assertEquals(uri, "http://localhost:8081/redirect/data");
+      }
+      System.out.println("*****");
+      {
+         URL url = new URL("http://localhost:8081/redirect");
+         //HttpURLConnection.setFollowRedirects(false);
+         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+         conn.setInstanceFollowRedirects(false);
+         conn.setRequestMethod("GET");
+         Map headers = conn.getHeaderFields();
+         for (Object name : headers.keySet())
+         {
+            System.out.println(name);
+         }
+         System.out.println(conn.getResponseCode());
       }
 
    }

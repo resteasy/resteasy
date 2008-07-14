@@ -2,6 +2,7 @@ package org.jboss.resteasy.mock;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
@@ -21,7 +22,7 @@ public class MockHttpResponse implements HttpResponse
 {
    protected int status;
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
-   protected MultivaluedMap<String, Object> outputHeaders = new MultivaluedMapImpl<String, Object>();
+   protected CaseInsensitiveMap outputHeaders = new CaseInsensitiveMap();
    protected List<NewCookie> newCookies = new ArrayList<NewCookie>();
    protected String errorMessage;
    protected boolean sentError = false;

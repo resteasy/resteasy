@@ -15,6 +15,7 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MultivaluedMap;
 import java.net.URI;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -60,7 +61,7 @@ public class ServletUtil
    {
       HttpHeadersImpl headers = new HttpHeadersImpl();
 
-      MultivaluedMapImpl<String, String> requestHeaders = extractRequestHeaders(request);
+      MultivaluedMap<String, String> requestHeaders = extractRequestHeaders(request);
       headers.setRequestHeaders(requestHeaders);
       List<MediaType> acceptableMediaTypes = extractAccepts(requestHeaders);
       List<String> acceptableLanguages = extractLanguages(requestHeaders);
@@ -91,7 +92,7 @@ public class ServletUtil
       return cookies;
    }
 
-   public static List<MediaType> extractAccepts(MultivaluedMapImpl<String, String> requestHeaders)
+   public static List<MediaType> extractAccepts(MultivaluedMap<String, String> requestHeaders)
    {
       List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
       List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT);
@@ -104,7 +105,7 @@ public class ServletUtil
       return acceptableMediaTypes;
    }
 
-   public static List<String> extractLanguages(MultivaluedMapImpl<String, String> requestHeaders)
+   public static List<String> extractLanguages(MultivaluedMap<String, String> requestHeaders)
    {
       List<String> acceptable = new ArrayList<String>();
       List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT_LANGUAGE);
@@ -118,7 +119,7 @@ public class ServletUtil
       return acceptable;
    }
 
-   public static MultivaluedMapImpl<String, String> extractRequestHeaders(HttpServletRequest request)
+   public static MultivaluedMap<String, String> extractRequestHeaders(HttpServletRequest request)
    {
       Headers<String> requestHeaders = new Headers<String>();
 
