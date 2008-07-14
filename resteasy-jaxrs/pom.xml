@@ -107,5 +107,12 @@
       <optional>true</optional>
     </dependency>
 
+    <!-- Used by org.jboss.resteasy.plugins.providers.YamlProvider -->
+    <dependency>
+      <groupId>org.jyaml</groupId>
+      <artifactId>jyaml</artifactId>
+      <optional>true</optional>
+    </dependency>
+
   </dependencies>
 </project>

@@ -77,6 +77,14 @@ public class RegisterBuiltin
          factory.addMessageBodyWriter((MessageBodyWriter) provider);
       }
 
+      if (isAvailable("org.ho.yaml.Yaml"))
+      {
+         logger.info("Adding YamlProvider");
+         Object provider = instantiate("org.jboss.resteasy.plugins.providers.YamlProvider");
+         factory.addMessageBodyReader((MessageBodyReader) provider);
+         factory.addMessageBodyWriter((MessageBodyWriter) provider);
+      }
+
    }
 
    private static boolean isAvailable(String className)
