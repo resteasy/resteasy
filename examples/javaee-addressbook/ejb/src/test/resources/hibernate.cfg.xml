@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<!-- Generated file - Do not edit! -->
+
+<hibernate-configuration>
+
+	<!-- a SessionFactory instance listed as /jndi/name -->
+	<session-factory>
+
+		<!-- properties -->
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password">m00f00</property>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/addressbook</property>
+		<property name="hibernate.show_sql">false</property>
+		<property name="hibernate.use_outer_join">true</property>
+		<property name="hibernate.format_sql">true</property>
+		<property name="hibernate.order_updates">true</property>
+		<property name="hibernate.use_sql_comments">true</property>
+		<property name="hibernate.jdbc.fetch_size">25</property>
+		<property name="hibernate.default_batch_fetch_size">16</property>
+		<property name="hibernate.jdbc.batch_size">50</property>
+		<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+		<property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property>
+		<property name="hibernate.cache.use_second_level_cache">false</property>
+		<property name="hibernate.cache.use_query_cache">false</property>
+		<property name="hibernate.generate_statistics">true</property>
+		
+		
+		<mapping class="org.jboss.resteasy.examples.addressbook.Contact"/>
+		<mapping class="org.jboss.resteasy.examples.addressbook.Address"/>
+		<mapping class="org.jboss.resteasy.examples.addressbook.EmailAddress"/>
+		<mapping class="org.jboss.resteasy.examples.addressbook.PhoneNumber"/>
+		
+		
+	</session-factory>
+
+</hibernate-configuration>

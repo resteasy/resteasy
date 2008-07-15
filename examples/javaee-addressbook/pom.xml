@@ -1,14 +1,13 @@
-<project  
-	xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.resteasy.examples</groupId>
+	<groupId>org.jboss.resteasy.examples</groupId>
 	<version>1.0</version>
 	<artifactId>javaee-addressbook</artifactId>
 	<packaging>pom</packaging>
-	<name>project</name>
+	<name>RESTEasy Java EE Address Book Example</name>
 	<modules>
 		<module>war</module>
 		<module>ejb</module>
@@ -17,8 +16,7 @@
 	<repositories>
 		<repository>
 			<id>jboss</id>
-			<url>http://repository.jboss.org/maven2
-			</url>
+			<url>http://repository.jboss.org/maven2</url>
 		</repository>
 	</repositories>
 	<build>
@@ -36,7 +34,72 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<configuration>
-						<unzipCommand> /usr/bin/unzip -o > err.txt</unzipCommand>
+						<unzipCommand>
+							/usr/bin/unzip -o > err.txt
+						</unzipCommand>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.0.1</version>
+					<configuration>
+
+						<warSourceExcludes>
+							WEB-INF/lib/*.jar
+						</warSourceExcludes>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<artifactId>maven-ejb-plugin</artifactId>
+					<configuration>
+						<ejbVersion>3.0</ejbVersion>
+					</configuration>
+				</plugin>
+				<plugin>
+					<artifactId>maven-ear-plugin</artifactId>
+					<configuration>
+						<jboss>
+							<version>4.2</version>
+
+						</jboss>
+						<displayName>
+							JBoss RESTEasy Addres Book Example
+						</displayName>
+						<description>
+							JBoss RESTEasy Addres Book Example
+						</description>
+						<finalName>javaee-addressbook</finalName>
+						<defaultJavaBundleDir>
+							/lib
+						</defaultJavaBundleDir>
+
+						<modules>
+							<webModule>
+								<groupId>
+									org.jboss.resteasy.examples
+								</groupId>
+								<artifactId>
+									javaee-addressbook-war
+								</artifactId>
+								<contextRoot>/addressbook</contextRoot>
+							</webModule>
+
+							<jarModule>
+								<groupId>org.jboss.seam</groupId>
+								<artifactId>jboss-seam</artifactId>
+								<includeInApplicationXml>
+									true
+								</includeInApplicationXml>
+							</jarModule>
+						</modules>
+
 					</configuration>
 				</plugin>
 			</plugins>
@@ -46,20 +109,33 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>jaxrs-api</artifactId>
+				<version>0.8</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jaxrs</artifactId>
 				<version>1.0-beta-6</version>
 			</dependency>
 			<dependency>
-				<groupId>org.resteasy.examples</groupId>
-				<artifactId>javaee-addressbook-war
-				</artifactId>
+				<groupId>org.jboss.resteasy.examples</groupId>
+				<artifactId>javaee-addressbook-war</artifactId>
 				<version>1.0</version>
 				<type>war</type>
 			</dependency>
 			<dependency>
-				<groupId>org.resteasy.examples</groupId>
-				<artifactId>javaee-addressbook-ejb
-				</artifactId>
+				<groupId>org.jboss.seam</groupId>
+				<artifactId>jboss-seam</artifactId>
+				<version>2.0.2.SP1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.seam</groupId>
+				<artifactId>jboss-seam-remoting</artifactId>
+				<version>2.0.2.SP1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy.examples</groupId>
+				<artifactId>javaee-addressbook-ejb</artifactId>
 				<version>1.0</version>
 				<type>ejb</type>
 			</dependency>
@@ -71,15 +147,30 @@
 				<classifier>jdk15</classifier>
 			</dependency>
 			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.5.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.5.2</version>
+			</dependency>
+			<dependency>
 				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-entitymanager
-				</artifactId>
+				<artifactId>hibernate-entitymanager</artifactId>
 				<version>3.3.1.GA</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>3.0.0.GA</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.ejb</groupId>
+				<artifactId>ejb-api</artifactId>
+				<version>3.0</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>mysql</groupId>
