@@ -1,0 +1,8 @@
+<jboss-web>  
+  <class-loading java2ClassLoadingCompliance="false">
+    <loader-repository>
+      resteasy.jboss.org:loader=jboss-resteasy-seam
+      <loader-repository-config>java2ParentDelegation=false</loader-repository-config>
+    </loader-repository>
+  </class-loading>
+</jboss-web>
