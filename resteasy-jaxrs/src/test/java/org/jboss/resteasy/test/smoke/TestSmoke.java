@@ -198,7 +198,7 @@ public class TestSmoke
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
       {
-         MockHttpRequest request = MockHttpRequest.get("/subresource/subresource/basic");
+         MockHttpRequest request = MockHttpRequest.get("/subresource/subresource/subresource/basic");
          MockHttpResponse response = new MockHttpResponse();
 
          dispatcher.invoke(request, response);
