@@ -188,4 +188,26 @@ public class TestSmoke
 
    }
 
+   
+   @Test
+   public void testSubSubresource() throws Exception
+   {
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+
+      POJOResourceFactory noDefaults = new POJOResourceFactory(LocatingResource.class);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+
+      {
+         MockHttpRequest request = MockHttpRequest.get("/subresource/subresource/basic");
+         MockHttpResponse response = new MockHttpResponse();
+
+         dispatcher.invoke(request, response);
+
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("basic", response.getContentAsString());
+      }
+
+   }
+
+   
 }
