@@ -272,12 +272,12 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
          entrySet.clear();
       }
 
-      private class EntryWrapper<V> implements Entry<CaseInsensitiveKey, V>
+      private class EntryWrapper<T> implements Entry<CaseInsensitiveKey, T>
       {
          private CaseInsensitiveKey key;
-         private V value;
+         private T value;
 
-         public EntryWrapper(Entry<String, V> entry)
+         public EntryWrapper(Entry<String, T> entry)
          {
             key = new CaseInsensitiveKey(entry.getKey());
             value = entry.getValue();
@@ -288,24 +288,24 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
             return key;
          }
 
-         public V getValue()
+         public T getValue()
          {
             return value;
          }
 
-         public V setValue(V v)
+         public T setValue(T v)
          {
-            V tmp = value;
+            T tmp = value;
             value = v;
             return tmp;
          }
       }
 
-      private class EntryDelegate<V> implements Entry<String, V>
+      private class EntryDelegate<T> implements Entry<String, T>
       {
-         private Entry<CaseInsensitiveKey, V> entry;
+         private Entry<CaseInsensitiveKey, T> entry;
 
-         private EntryDelegate(Entry<CaseInsensitiveKey, V> entry)
+         private EntryDelegate(Entry<CaseInsensitiveKey, T> entry)
          {
             this.entry = entry;
          }
@@ -315,12 +315,12 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
             return entry.getKey().key;
          }
 
-         public V getValue()
+         public T getValue()
          {
             return entry.getValue();
          }
 
-         public V setValue(V v)
+         public T setValue(T v)
          {
             return entry.setValue(v);
          }
