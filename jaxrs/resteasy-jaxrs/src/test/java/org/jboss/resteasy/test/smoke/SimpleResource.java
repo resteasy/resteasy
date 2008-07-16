@@ -58,9 +58,4 @@ public class SimpleResource
       return param;
    }
 
-   @Path("subresource")
-   public SimpleResource getSubresource() {
-      return new SimpleResource();
-   }
-
 }
