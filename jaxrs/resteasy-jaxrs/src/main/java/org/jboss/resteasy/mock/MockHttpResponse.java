@@ -1,16 +1,16 @@
 package org.jboss.resteasy.mock;
 
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.util.CaseInsensitiveMap;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
+
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 /**
  * Acts as a bridge between asynchronous message and reply

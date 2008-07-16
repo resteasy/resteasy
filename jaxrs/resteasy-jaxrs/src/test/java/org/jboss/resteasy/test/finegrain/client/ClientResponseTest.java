@@ -1,7 +1,20 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.params.HttpClientParams;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Map;
+
+import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.ProduceMime;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.jboss.resteasy.spi.ClientResponse;
@@ -12,20 +25,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.HttpURLConnection;
-import java.util.Map;
 
 /**
  * Simple smoke test

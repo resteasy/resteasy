@@ -94,6 +94,7 @@ public class RegressionTest
       {
          URL url = new URL("http://localhost:8081/simple");
          HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+         @SuppressWarnings("unused")
          Object obj = conn.getContent();
       }
       EmbeddedContainer.stop();
