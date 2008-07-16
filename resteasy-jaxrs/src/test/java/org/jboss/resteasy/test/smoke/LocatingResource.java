@@ -15,6 +15,15 @@ public class LocatingResource
       System.out.println("LOCATING...");
       return new SimpleResource();
    }
+
+   
+   @Path("subresource")
+   public SimpleSubresource getSubresource()
+   {
+      System.out.println("Subresource");
+      return new SimpleSubresource();
+   }
+
    
    @Path("notlocating")
    public SimpleResource getNotLocating()
