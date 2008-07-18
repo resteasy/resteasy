@@ -1,5 +1,14 @@
 package org.jboss.resteasy.core;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URLDecoder;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -8,15 +17,11 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.HttpResponseCodes;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
-import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,6 +29,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ResourceLocator implements ResourceInvoker
 {
+
+   final static Logger logger = LoggerFactory.getLogger(ResourceLocator.class);
+   
    protected InjectorFactory injector;
    protected MethodInjector methodInjector;
    protected ResourceFactory resource;
@@ -66,6 +74,9 @@ public class ResourceLocator implements ResourceInvoker
       {
          Object subResource = method.invoke(locator, args);
          uriInfo.pushCurrentResource(locator);
+
+         warnIfJaxRSAnnotatedFields(subResource);
+         
          return subResource;
 
       }
@@ -172,4 +183,36 @@ public class ResourceLocator implements ResourceInvoker
          method.invoke(request, response, target);
       }
    }
+   
+   
+   private void warnIfJaxRSAnnotatedFields( Object obj )
+   {
+      
+      if ( obj == null ) return;
+      
+      Class<?> clazz = obj.getClass();
+      
+      while( clazz != Object.class )
+      {
+         
+         Field[] fields = clazz.getDeclaredFields();
+         
+         for ( Field field : fields )
+         {
+
+            Class<? extends Annotation>[] annotations =
+               FindAnnotation.findJaxRSAnnotations(field.getDeclaredAnnotations());
+      
+            if ( annotations.length != 0 )
+               logger.warn( "Field {} of subresource {} will not be injected " +
+               		"according to spec", field.getName(), obj.getClass().getName() );
+            
+         }
+         
+         clazz = clazz.getSuperclass();
+         
+      }
+      
+   }
+   
 }

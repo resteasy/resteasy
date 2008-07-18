@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 public class TestSmoke
 {
 
+   
    @Test
    public void testNoDefaultsResource() throws Exception
    {
@@ -205,6 +206,30 @@ public class TestSmoke
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("basic", response.getContentAsString());
+      }
+
+   }
+
+   
+   
+   @Test
+   public void testContextParam() throws Exception
+   {
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+
+      POJOResourceFactory noDefaults = new POJOResourceFactory(LocatingResource.class);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+
+      {
+         
+         System.out.println( "Expect to see WARN about not injecting in subresources" );
+         
+         MockHttpRequest request = MockHttpRequest.get("/subresource/testContextParam");
+         MockHttpResponse response = new MockHttpResponse();
+
+         dispatcher.invoke(request, response);
+
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
       }
 
    }
