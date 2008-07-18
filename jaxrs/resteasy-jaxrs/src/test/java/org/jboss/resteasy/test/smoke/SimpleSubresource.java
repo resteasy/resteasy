@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.smoke;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -10,6 +12,10 @@ import javax.ws.rs.ProduceMime;
  */
 public class SimpleSubresource
 {
+   
+   @Context
+   private UriInfo uriInfo;
+   
    @GET
    @Path("basic")
    @ProduceMime("text/plain")
@@ -22,6 +28,13 @@ public class SimpleSubresource
    public SimpleSubresource getSubresource() {
       System.out.println("Subsubresource");
       return new SimpleSubresource();
+   }
+   
+   @GET
+   @Path("testContextParam")
+   public void testContextParam() {
+      if ( uriInfo != null )
+         throw new IllegalStateException("uriInfo is supposed to be null");
    }
 
 }
