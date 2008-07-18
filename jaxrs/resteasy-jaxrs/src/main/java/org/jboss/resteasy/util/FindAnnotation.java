@@ -35,6 +35,9 @@ public class FindAnnotation
          Context.class
    };
    
+   private final static Class[] findJaxRSAnnotations_TYPE = 
+      new Class[]{};
+   
    public static Class<? extends Annotation>[] findJaxRSAnnotations(Annotation[] searchList)
    {
   
@@ -48,7 +51,7 @@ public class FindAnnotation
          
       }
 
-      return result.toArray(JAXRS_ANNOTATIONS);
+      return result.toArray(findJaxRSAnnotations_TYPE);
       
    }
    

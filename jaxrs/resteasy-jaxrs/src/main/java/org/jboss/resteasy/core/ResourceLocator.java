@@ -203,10 +203,11 @@ public class ResourceLocator implements ResourceInvoker
             Class<? extends Annotation>[] annotations =
                FindAnnotation.findJaxRSAnnotations(field.getDeclaredAnnotations());
       
-            if ( annotations.length != 0 )
-               logger.warn( "Field {} of subresource {} will not be injected " +
+            if ( annotations.length != 0 ) {
+               logger.warn( "Field '{}' of subresource '{}' will not be injected " +
                		"according to spec", field.getName(), obj.getClass().getName() );
-            
+            }
+               
          }
          
          clazz = clazz.getSuperclass();

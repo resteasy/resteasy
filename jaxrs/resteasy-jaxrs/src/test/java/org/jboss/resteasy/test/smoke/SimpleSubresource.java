@@ -13,6 +13,9 @@ import javax.ws.rs.core.UriInfo;
 public class SimpleSubresource
 {
    
+   @SuppressWarnings("unused")
+   private String foo;
+   
    @Context
    private UriInfo uriInfo;
    
