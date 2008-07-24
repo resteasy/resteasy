@@ -22,6 +22,14 @@ public interface ResourceFactory
     */
    void registered(InjectorFactory factory);
 
+   /**
+    * Called per request to obtain a resource instance to invoke http request on.
+    *
+    * @param request
+    * @param response
+    * @param factory
+    * @return
+    */
    Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory);
 
 
