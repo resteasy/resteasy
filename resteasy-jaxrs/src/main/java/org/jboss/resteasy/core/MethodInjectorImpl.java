@@ -57,7 +57,7 @@ public class MethodInjectorImpl implements MethodInjector
          }
          return args;
       }
-      catch (WebApplicationException we) 
+      catch (WebApplicationException we)
       {
          throw we;
       }
@@ -106,11 +106,7 @@ public class MethodInjectorImpl implements MethodInjector
          if (cause instanceof WebApplicationException)
          {
             WebApplicationException wae = (WebApplicationException) cause;
-            if (wae.getResponse() != null)
-            {
-               cause.printStackTrace();
-               return wae.getResponse();
-            }
+            return wae.getResponse();
          }
          ExceptionMapper mapper = factory.createExceptionMapper(cause.getClass());
          if (mapper == null) throw new RuntimeException("Failed processing " + method.toString(), e.getCause());

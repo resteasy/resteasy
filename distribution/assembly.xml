@@ -1,10 +1,10 @@
 <assembly>
-  <id>all</id>
+   <id>all</id>
 
-  <formats>
-    <format>zip</format>
-  </formats>
-     <includeBaseDirectory>true</includeBaseDirectory>
+   <formats>
+      <format>zip</format>
+   </formats>
+   <includeBaseDirectory>true</includeBaseDirectory>
 
    <fileSets>
       <fileSet>
@@ -15,13 +15,14 @@
          <directory>../jaxrs-api/target/apidocs</directory>
          <outputDirectory>docs/jaxrs-api</outputDirectory>
       </fileSet>
-      <fileSet>
-         <directory>../resteasy-jaxrs/target/resteasy-jaxrs</directory>
-         <outputDirectory>webapp/resteasy-jaxrs.war</outputDirectory>
-      </fileSet>
-      <fileSet>
-         <directory>../resteasy-jaxrs-war/target/resteasy-jaxrs</directory>
-         <outputDirectory>webapp/resteasy-jaxrs.war</outputDirectory>
-      </fileSet>
    </fileSets>
+   <dependencySets>
+      <dependencySet>
+         <unpack>true</unpack>
+         <includes>
+            <include>org.jboss.resteasy:resteasy-jaxrs-war</include>
+         </includes>
+         <outputDirectory>resteasy-jaxrs.war</outputDirectory>
+      </dependencySet>
+   </dependencySets>
 </assembly>

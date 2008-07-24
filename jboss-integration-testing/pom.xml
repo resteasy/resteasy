@@ -1,15 +1,14 @@
 <project>
    <parent>
-      <groupId>org.resteasy</groupId>
+      <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs-all</artifactId>
-      <version>1.0</version>
+      <version>1.0-beta-6-SNAPSHOT</version>
    </parent>
    <name>Resteasy JAX-RS JBoss Integration Testing</name>
    <url>http://www.attainware.com/</url>
    <modelVersion>4.0.0</modelVersion>
 
-   <groupId>org.resteasy</groupId>
-   <version>1.0</version>
+   <groupId>org.jboss.resteasy</groupId>
    <artifactId>resteasy-jaxrs-jboss-integration-testing</artifactId>
    <packaging>pom</packaging>
 
