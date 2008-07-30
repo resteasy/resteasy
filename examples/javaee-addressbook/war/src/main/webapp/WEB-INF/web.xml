@@ -13,6 +13,14 @@
 			javaee-addressbook/ContactServiceBean/local
 		</param-value>
 	</context-param>
+		<context-param>
+		<param-name>resteasy.providers</param-name>
+		<param-value>
+			org.jboss.resteasy.examples.addressbook.exception.EJBExceptionMapper,
+			org.jboss.resteasy.examples.addressbook.exception.OptimisticLockExceptionMapper,
+			org.jboss.resteasy.examples.addressbook.exception.ObjectDeletedExceptionMapper
+		</param-value>
+	</context-param>
 	<filter>
 		<filter-name>Seam Filter</filter-name>
 		<filter-class>org.jboss.seam.servlet.SeamFilter</filter-class>

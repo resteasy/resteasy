@@ -23,5 +23,10 @@
 			<artifactId>javaee-addressbook-ejb</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
