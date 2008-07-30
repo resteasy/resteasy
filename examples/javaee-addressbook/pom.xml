@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -12,13 +13,50 @@
 		<module>war</module>
 		<module>ejb</module>
 		<module>ear</module>
+		<module>javaee-addressbook-client</module>
+		<module>javaee-addressbook-client-ui</module>
+		<module>javaee-addressbook-jaxb</module>
 	</modules>
 	<repositories>
 		<repository>
 			<id>jboss</id>
 			<url>http://repository.jboss.org/maven2</url>
 		</repository>
+		<repository>
+			<id>sun</id>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+		<repository>
+			<id>java.net</id>
+			<name>java.net Maven Repository</name>
+			<url>
+				https://maven-repository.dev.java.net/nonav/repository
+			</url>
+			<layout>legacy</layout>
+		</repository>
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Maven 2 Repository</name>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
 	</repositories>
+	<pluginRepositories>
+
+		<pluginRepository>
+			<id>java.net</id>
+			<name>java.net Maven Repository</name>
+			<url>
+				https://maven-repository.dev.java.net/nonav/repository
+			</url>
+			<layout>legacy</layout>
+		</pluginRepository>
+		<pluginRepository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Maven 2 Repository</name>
+			<url>http://download.java.net/maven/2</url>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -35,7 +73,7 @@
 					<artifactId>maven-site-plugin</artifactId>
 					<configuration>
 						<unzipCommand>
-							/usr/bin/unzip -o > err.txt
+							/usr/bin/unzip -o &gt; err.txt
 						</unzipCommand>
 					</configuration>
 				</plugin>
@@ -102,20 +140,107 @@
 
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.jvnet.jaxb2.maven2</groupId>
+					<artifactId>maven-jaxb2-plugin</artifactId>
+					<executions>
+						<execution>
+							<goals>
+								<goal>generate</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<args>
+							<arg>-XtoString</arg>
+							<arg>-Xinject-listener-code</arg>
+							
+							<!-- <arg>-Xcollection-setter-injector</arg>
+								 <arg>-Xfluent-api</arg> -->
+						</args>
+						<plugins>
+							<plugin>
+								<groupId>
+									org.jvnet.jaxb2_commons
+								</groupId>
+								<artifactId>basic</artifactId>
+								<version>0.4.1</version>
+							</plugin>
+							<plugin>
+								<groupId>
+									org.jvnet.jaxb2-commons
+								</groupId>
+								<artifactId>
+									property-listener-injector
+								</artifactId>
+								<version>1.0</version>
+							</plugin>
+							<!-- 
+							<plugin>
+								<groupId>
+									net.java.dev.jaxb2-commons
+								</groupId>
+								<artifactId>jaxb-fluent-api</artifactId>
+								<version>2.0.1</version>
+							</plugin>
+							 -->
+						</plugins>
+						<generatePackage>
+							org.jboss.resteasy.examples.addressbook.client.entity
+						</generatePackage>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>net.java.dev.jaxb2-commons</groupId>
+				<artifactId>jaxb-fluent-api</artifactId>
+				<version>2.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>5.6</version>
+				<scope>test</scope>
+				<classifier>jdk15</classifier>
+			</dependency>
+			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>jaxrs-api</artifactId>
 				<version>0.8</version>
 			</dependency>
 			<dependency>
+				<groupId>net.java.dev.jaxb2-commons</groupId>
+				<artifactId>jaxb-fluent-api</artifactId>
+				<version>2.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jaxb2-commons</groupId>
+				<artifactId>property-listener-injector</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>runtime</artifactId>
+				<version>0.4.1</version>
+			</dependency>
+			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jaxrs</artifactId>
-				<version>1.0-beta-6</version>
+				<version>1.0-beta-6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-httpclient</groupId>
+				<artifactId>commons-httpclient</artifactId>
+				<version>3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>2.1.7</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.resteasy.examples</groupId>
@@ -177,6 +302,16 @@
 				<artifactId>mysql-connector-java</artifactId>
 				<version>5.1.5</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.jgoodies</groupId>
+				<artifactId>binding</artifactId>
+				<version>2.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jgoodies</groupId>
+				<artifactId>forms</artifactId>
+				<version>1.2.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
