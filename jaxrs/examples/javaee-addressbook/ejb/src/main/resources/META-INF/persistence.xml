@@ -7,7 +7,7 @@
 		<jta-data-source>java:/RESTEasyDS</jta-data-source>
 		<properties>
 			<property name="hibernate.session_factory_name" value="SessionFactory" />
-			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
 			<property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup" />
 			<property name="hibernate.use_outer_join" value="true" />
 			<property name="hibernate.format_sql" value="true" />
@@ -16,7 +16,7 @@
 			<property name="hibernate.jdbc.fetch_size" value="25" />
 			<property name="hibernate.default_batch_fetch_size" value="16" />
 			<property name="hibernate.jdbc.batch_size" value="50" />
-			<property name=" hibernate.transaction.flush_before_completion" value="true" />
+			<property name="hibernate.transaction.flush_before_completion" value="true" />
 			<property name="jboss.entity.manager.factory.jndi.name" value="java:/EntityManagerFactories/addressBook"/>
 		</properties>
 	</persistence-unit>

@@ -57,6 +57,10 @@
 			<artifactId>ejb-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>5.6</version>
+		</dependency>
 	</dependencies>
-
 </project>

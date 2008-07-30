@@ -25,6 +25,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -40,7 +41,8 @@ import javax.xml.bind.annotation.XmlType;
 @Entity
 @Table(name = "phone_number")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "phoneNumber")
+@XmlType(name = "phoneNumber", propOrder =
+{"extention", "number"})
 public class PhoneNumber extends AbstractContactItem
 {
 
@@ -58,13 +60,8 @@ public class PhoneNumber extends AbstractContactItem
    @Column(name = "extention")
    private String extention;
 
-   @Column(name = "label")
-   @XmlAttribute
-   private String label;
-
    @Column(name = "number", nullable = false)
    private String number;
-
 
    /** Creates a new instance of PhoneNumber */
    public PhoneNumber()
@@ -102,16 +99,6 @@ public class PhoneNumber extends AbstractContactItem
       this.extention = extention;
    }
 
-   public String getLabel()
-   {
-      return this.label;
-   }
-
-   public void setLabel(String label)
-   {
-      this.label = label;
-   }
-
    public String getNumber()
    {
       return this.number;
@@ -122,6 +109,16 @@ public class PhoneNumber extends AbstractContactItem
       this.number = number;
    }
 
- 
-
+   /**
+    * JAXB Callback method used to reassociate the item with the owning contact.
+    * JAXB doesn't seem to read this method from a super class and it must 
+    * therefore be placed on any subclass.
+    * 
+    * @param unmarshaller the JAXB {@link Unmarshaller}.
+    * @param parent the owning {@link Contact} instance.
+    */
+   public void afterUnmarshal(Unmarshaller unmarshaller, Object parent)
+   {
+      super.afterUnmarshal(unmarshaller, parent);
+   }
 }

@@ -24,7 +24,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -40,6 +43,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @Table(name = "email_address")
+@NamedQueries({
+   @NamedQuery(name = "EmailAddress.findByContactId",
+               query = "from EmailAddress where contact.id = :contactId")
+})
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "emailAddress")
@@ -59,12 +66,7 @@ public class EmailAddress extends AbstractContactItem
 
    @Column(name = "email_address", nullable = false)
    private String emailAddress;
-
-   @Column(name = "label", nullable = false)
-   @XmlAttribute
-   private String label;
-
-
+   
    /** Creates a new instance of EmailAddress */
    public EmailAddress()
    {
@@ -90,15 +92,17 @@ public class EmailAddress extends AbstractContactItem
       this.emailAddress = emailAddress;
    }
 
-   public String getLabel()
+   /**
+    * JAXB Callback method used to reassociate the item with the owning contact.
+    * JAXB doesn't seem to read this method from a super class and it must 
+    * therefore be placed on any subclass.
+    * 
+    * @param unmarshaller the JAXB {@link Unmarshaller}.
+    * @param parent the owning {@link Contact} instance.
+    */
+   public void afterUnmarshal(Unmarshaller unmarshaller, Object parent)
    {
-      return this.label;
+      super.afterUnmarshal(unmarshaller, parent);
    }
-
-   public void setLabel(String label)
-   {
-      this.label = label;
-   }
-
-
+   
 }

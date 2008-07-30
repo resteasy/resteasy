@@ -30,7 +30,9 @@
 		<property name="hibernate.generate_statistics">true</property>
 		
 		
+		
 		<mapping class="org.jboss.resteasy.examples.addressbook.Contact"/>
+		<mapping class="org.jboss.resteasy.examples.addressbook.ContactInfo"/>
 		<mapping class="org.jboss.resteasy.examples.addressbook.Address"/>
 		<mapping class="org.jboss.resteasy.examples.addressbook.EmailAddress"/>
 		<mapping class="org.jboss.resteasy.examples.addressbook.PhoneNumber"/>
