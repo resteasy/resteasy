@@ -6,13 +6,15 @@
  */
 package org.jboss.resteasy.examples.addressbook.service;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.examples.addressbook.entity.Contact;
 import org.jboss.resteasy.examples.addressbook.entity.Contacts;
@@ -33,8 +35,6 @@ public class ContactServiceBean implements ContactService
    @In
    private EntityManager entityManager;
 
-   @Context
-   private UriInfo uriInfo;
    /**
     * FIXME Comment this
     * 
@@ -43,39 +43,65 @@ public class ContactServiceBean implements ContactService
    @SuppressWarnings("unchecked")
    public Contacts findContacts()
    {
-      Query query = entityManager.createNamedQuery("Contact.findAll");
-      query.setFirstResult(0);
-      query.setMaxResults(10);
-      return new Contacts(query.getResultList());
+      Query query = entityManager.createNamedQuery("ContactInfo.findAll");
+      List results = query.getResultList();
+      return new Contacts(results);
    }
-   
+
    /**
     * FIXME Comment this
     * 
     * @param id
     * @return
     */
-   public Contact findContactById(Long id) {
-      return entityManager.find(Contact.class, id);
+   public Contact findContactById(Long id)
+   {
+      Contact contact = entityManager.find(Contact.class, id);
+      if(contact == null) {
+         Response response = Response.status(Status.NOT_FOUND).entity(
+         "The requested ID was not found.").type("text/plain").build();
+         throw new WebApplicationException(response);
+      }
+      return contact;
    }
-   
+
+  
+
+   /**
+    * FIXME Comment this
+    * 
+    * @param id
+    * @param contact
+    */
+   public Contact updateContact(Long id, Contact contact)
+   {
+      if (!id.equals(contact.getId()))
+      {
+         Response response = Response.status(Status.CONFLICT).entity(
+               "The requested ID does not match the entity body.").type("text/plain").build();
+         throw new WebApplicationException(response);
+      }
+      return entityManager.merge(contact);
+   }
+
    /**
     * FIXME Comment this
     * 
     * @param contact
     * @return
     */
-   public Response createContact(Contact contact) {
+   public Response createContact(Contact contact)
+   {
       entityManager.persist(contact);
-      UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-      uriBuilder.path(contact.getId().toString());
-      Response response = Response.created(uriBuilder.build()).build();
+      UriBuilder path = UriBuilder.fromResource(ContactService.class);
+      path.path(contact.getId().toString());
+      Response response = Response.created(path.build()).build();
       return response;
    }
-   
 
-   public void deleteContact(Long id, 
-                             Contact contact) {
+   public void deleteContact(Long id)
+   {
+      Contact contact = entityManager.find(Contact.class, id);
       entityManager.remove(contact);
    }
 }

@@ -11,6 +11,7 @@ import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
@@ -45,6 +46,7 @@ public interface ContactService
    @Path("/{contactId}")
    Contact findContactById(@PathParam("contactId") Long id);
 
+
    /**
     * FIXME Comment this
     * 
@@ -59,9 +61,19 @@ public interface ContactService
     * 
     * @param id
     * @param contact
+    * @return
+    */
+   @PUT
+   @Path("/{contactId}")
+   public Contact updateContact(@PathParam("contactId") Long id, Contact contact);
+   /**
+    * FIXME Comment this
+    * 
+    * @param id
+    * @param contact
     */
    @DELETE
    @Path("/{contactId}")
-   void deleteContact(@PathParam("contactId") Long id, Contact contact);
+   void deleteContact(@PathParam("contactId") Long id);
 
 }

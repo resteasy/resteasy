@@ -20,9 +20,9 @@ import javax.xml.bind.annotation.XmlType;
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
+@XmlRootElement(name = "contacts")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
-@XmlType(name = "contactsType")
+@XmlType(name = "contacts")
 public class Contacts implements Serializable
 {
 
@@ -31,24 +31,24 @@ public class Contacts implements Serializable
     */
    private static final long serialVersionUID = 4755743806205758274L;
 
-   @XmlElement(name = "contact", required = true, nillable = true)
-   private List<Contact> contacts = new ArrayList<Contact>();
+   @XmlElement(name = "contactInfo", required = true, nillable = true)
+   private List<ContactInfo> contacts = new ArrayList<ContactInfo>();
 
    public Contacts()
    {
    }
 
-   public Contacts(List<Contact> contacts)
+   public Contacts(List<ContactInfo> contacts)
    {
       this.setContacts(contacts);
    }
 
-   public List<Contact> getContacts()
+   public List<ContactInfo> getContacts()
    {
       return contacts;
    }
 
-   public void setContacts(List<Contact> contacts)
+   public void setContacts(List<ContactInfo> contacts)
    {
       this.contacts = contacts;
    }
