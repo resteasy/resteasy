@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="javaee-addressbook-client">
+  <test verbose="2" name="org.jboss.resteasy.examples.addressbook.client.AddressBookTest" annotations="JDK">
+    <classes>
+      <class name="org.jboss.resteasy.examples.addressbook.client.AddressBookTest"/>
+    </classes>
+  </test>
+</suite>
