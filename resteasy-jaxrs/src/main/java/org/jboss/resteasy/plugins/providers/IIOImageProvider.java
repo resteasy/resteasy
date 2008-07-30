@@ -9,8 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
 import javax.imageio.IIOImage;
@@ -19,16 +17,12 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
-import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.ImageWriterParams;
@@ -78,39 +72,25 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
     *      java.io.InputStream)
     */
-   public IIOImage readFrom(Class<IIOImage> type, 
-                            Type genericType, 
-                            Annotation[] annotations, 
+   public IIOImage readFrom(Class<IIOImage> type,
+                            Type genericType,
+                            Annotation[] annotations,
                             MediaType mediaType,
-                            MultivaluedMap<String, String> httpHeaders, 
+                            MultivaluedMap<String, String> httpHeaders,
                             InputStream entityStream) throws IOException
    {
 
-      Iterator<ImageReader> readers = ImageIO.getImageReadersByMIMEType(mediaType.toString());
-
-      ImageReader reader = null;
-      while (readers.hasNext())
+      ImageReader reader = IIOImageProviderHelper.getImageReaderByMediaType(mediaType);
+      try
       {
-         reader = (ImageReader) readers.next();
-      }
-
-      if (reader != null)
-      {
-         ImageInputStream iis = ImageIO.createImageInputStream(entityStream);
-         reader.setInput(iis, false);
-         IIOImage image = reader.readAll(0, null);
+         IIOImage image = IIOImageProviderHelper.readImage(entityStream, reader, 0);
          return image;
       }
-      else
+      finally
       {
-         
-         String[] availableTypes = ImageIO.getReaderMIMETypes();
-         logger.warn("A reader for {} was not found. This provider is currently configured"
-               + "to handle only {}", mediaType, availableTypes);
-         List<Variant> variants = ProviderHelper.getAvailableVariants(availableTypes);
-         Response response = Response.notAcceptable(variants).status(Status.NOT_ACCEPTABLE).build();
-         throw new WebApplicationException(response);
+         reader.dispose();
       }
+
    }
 
    /**
@@ -141,21 +121,15 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
     */
-   public void writeTo(IIOImage t, 
-                       Class<?> type, 
-                       Type genericType, 
-                       Annotation[] annotations, 
+   public void writeTo(IIOImage t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
                        MediaType mediaType,
-                       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) 
-   throws IOException
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
-      Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType(mediaType.toString());
-      ImageWriter writer = writers.next();
-      if (writer == null)
-      {
-         Response response = Response.serverError().build();
-         throw new WebApplicationException(response);
-      }
+      ImageWriter writer = IIOImageProviderHelper.getImageWriterByMediaType(mediaType);
       ImageWriteParam param;
       if (mediaType.equals(MediaType.valueOf("image/jpeg")))
       {
@@ -170,8 +144,8 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
       * If the image output type supports compression, set it to the highest
       * maximum
       */
-      ImageWriterParams writerParams = 
-         FindAnnotation.findAnnotation(annotations, ImageWriterParams.class);
+      ImageWriterParams writerParams = FindAnnotation.findAnnotation(annotations,
+            ImageWriterParams.class);
       if (writerParams != null)
       {
          if (param.canWriteCompressed())

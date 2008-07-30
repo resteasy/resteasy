@@ -44,13 +44,13 @@ public final class ProviderHelper
     */
    static String readString(InputStream in) throws IOException
    {
-      char[] buffer = new char[100];
+      char[] buffer = new char[1024];
       StringBuilder builder = new StringBuilder();
       BufferedReader reader = new BufferedReader(new InputStreamReader(in));
       int wasRead = 0;
       do
       {
-         wasRead = reader.read(buffer, 0, 100);
+         wasRead = reader.read(buffer, 0, 1024);
          if (wasRead > 0)
          {
             builder.append(buffer, 0, wasRead);

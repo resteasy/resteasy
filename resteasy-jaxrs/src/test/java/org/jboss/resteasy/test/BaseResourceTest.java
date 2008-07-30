@@ -3,6 +3,11 @@
  */
 package org.jboss.resteasy.test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.jboss.resteasy.core.Dispatcher;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,5 +39,24 @@ public abstract class BaseResourceTest
    public void addPerRequestResource(Class<?> resource)
    {
       dispatcher.getRegistry().addPerRequestResource(resource);
+   }
+   
+   public String readString(InputStream in) throws IOException
+   {
+      char[] buffer = new char[1024];
+      StringBuilder builder = new StringBuilder();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      int wasRead = 0;
+      do
+      {
+         wasRead = reader.read(buffer, 0, 1024);
+         if (wasRead > 0)
+         {
+            builder.append(buffer, 0, wasRead);
+         }
+      }
+      while (wasRead > -1);
+
+      return builder.toString();
    }
 }

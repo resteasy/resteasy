@@ -16,13 +16,15 @@ import org.slf4j.Logger;
 
 /**
  * 
- * A utility class uses to return a String value as a typed object. 
+ * A utility class that can convert a String value as a typed object. 
  * 
  * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
  * @version $Revision: $
  */
 public final class TypeConverter
 {
+   private static final String VALUE_OF_METHOD = "valueOf";
+
    private static final Logger logger = LoggerCategories.getCoreLogger();
 
    /**
@@ -30,7 +32,8 @@ public final class TypeConverter
     */
    private static final Map<Class<?>, Class<?>> PRIMITIVES;
 
-   static {
+   static
+   {
       PRIMITIVES = new HashMap<Class<?>, Class<?>>();
       PRIMITIVES.put(int.class, Integer.class);
       PRIMITIVES.put(double.class, Double.class);
@@ -54,6 +57,11 @@ public final class TypeConverter
     */
    public static <T> T getType(final Class<T> targetType, final String source)
    {
+      // just return that source if it's a String
+      if (String.class.equals(targetType)) 
+      {
+         return targetType.cast(source);
+      }
       /*
        * Dates are too complicated for this class.
        */
@@ -62,6 +70,7 @@ public final class TypeConverter
          throw new IllegalArgumentException("Date instances are not supported by this class.");
       }
       T result;
+      // boolean types need special handling
       if (Boolean.class.equals(targetType) || boolean.class.equals(targetType))
       {
          return targetType.cast(getBooleanValue(source));
@@ -77,6 +86,44 @@ public final class TypeConverter
          result = getTypeViaStringConstructor(source, targetType);
       }
       return result;
+   }
+
+   /**
+    * Tests if the class can safely be converted from a String to the 
+    * specified type.
+    * 
+    * @param targetType the type to convert to
+    * @return true if the class possesses either a "valueOf()" method or a constructor with a String
+    * parameter.
+    */
+   public static boolean isConvertable(final Class<?> targetType)
+   {
+      if (Boolean.class.equals(targetType))
+      {
+         return true;
+      }
+      if (targetType.isPrimitive())
+      {
+         return true;
+      }
+      try
+      {
+         targetType.getDeclaredMethod(VALUE_OF_METHOD, String.class);
+         return true;
+      }
+      catch (NoSuchMethodException e)
+      {
+         try
+         {
+            targetType.getDeclaredConstructor(String.class);
+            return true;
+         }
+
+         catch (NoSuchMethodException e1)
+         {
+            return false;
+         }
+      }
    }
 
    /**
@@ -143,8 +190,7 @@ public final class TypeConverter
       try
       {
          // if the type has a static "valueOf()" method, try and create the instance that way
-         Method valueOf = actualTarget.getDeclaredMethod("valueOf", new Class[]
-         {String.class});
+         Method valueOf = actualTarget.getDeclaredMethod(VALUE_OF_METHOD, String.class);
          Object value = valueOf.invoke(null, source);
          if (actualTarget.equals(targetType) && targetType.isInstance(value))
          {
@@ -188,8 +234,7 @@ public final class TypeConverter
 
       try
       {
-         c = targetType.getDeclaredConstructor(new Class[]
-         {String.class});
+         c = targetType.getDeclaredConstructor(String.class);
       }
       catch (NoSuchMethodException e)
       {
@@ -197,10 +242,10 @@ public final class TypeConverter
                " has no String constructor").toString();
          throw new IllegalArgumentException(msg, e);
       }
-      
+
       try
       {
-         result = c.newInstance(new Object[] {source});
+         result = c.newInstance(source);
       }
       catch (InstantiationException e)
       {
