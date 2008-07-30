@@ -1355,7 +1355,7 @@ public class MatrixParamAsPrimitive
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, 404);
+            Assert.assertEquals(status, 400);
          }
          catch (IOException e)
          {
@@ -1373,7 +1373,7 @@ public class MatrixParamAsPrimitive
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, 404);
+            Assert.assertEquals(status, 400);
          }
          catch (IOException e)
          {
@@ -1391,7 +1391,7 @@ public class MatrixParamAsPrimitive
          try
          {
             int status = client.executeMethod(method);
-            Assert.assertEquals(status, 404);
+            Assert.assertEquals(status, 400);
          }
          catch (IOException e)
          {

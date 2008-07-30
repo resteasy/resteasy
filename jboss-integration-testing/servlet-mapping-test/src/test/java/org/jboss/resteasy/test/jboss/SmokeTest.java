@@ -24,7 +24,7 @@ public class SmokeTest
       HttpClient client = new HttpClient();
 
       {
-         GetMethod method = new GetMethod("http://localhost:8080/resteasy/basic");
+         GetMethod method = new GetMethod("http://localhost:8080/resteasy/rest/basic");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals("basic", method.getResponseBodyAsString());
