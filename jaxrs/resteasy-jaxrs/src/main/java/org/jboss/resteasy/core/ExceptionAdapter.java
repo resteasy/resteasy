@@ -36,7 +36,12 @@ public class ExceptionAdapter extends RuntimeException
     */
    public ExceptionAdapter(Exception e)
    {
-      super(e.toString());
+      this(e.getMessage(), e);
+   }
+   
+   public ExceptionAdapter(String message, Exception e)
+   {
+      super(new StringBuilder(message).append(" : ").append(e.getMessage()).toString());
       originalException = e;
       StringWriter sw = new StringWriter();
       e.printStackTrace(new PrintWriter(sw));
@@ -63,7 +68,7 @@ public class ExceptionAdapter extends RuntimeException
    {
       synchronized (s)
       {
-         s.print(getClass().getName() + ": ");
+         s.printf("%s: ", getClass().getName());
          s.print(stackTrace);
       }
    }
