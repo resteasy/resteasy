@@ -7,6 +7,8 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -24,6 +26,8 @@ import java.io.IOException;
 public class HttpServletDispatcher extends HttpServlet
 {
    protected Dispatcher dispatcher;
+   private final static Logger logger = LoggerFactory.getLogger(HttpServletDispatcher.class);
+   private String servletMappingPrefix = "";
 
    public Dispatcher getDispatcher()
    {

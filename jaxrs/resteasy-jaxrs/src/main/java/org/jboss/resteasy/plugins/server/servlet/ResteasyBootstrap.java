@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.Registry;
@@ -42,6 +43,8 @@ public class ResteasyBootstrap implements ServletContextListener
       dispatcher = new SynchronousDispatcher();
       dispatcher.setProviderFactory(factory);
       registry = dispatcher.getRegistry();
+      String rootPath = event.getServletContext().getInitParameter("resteasy.servlet.mapping.prefix");
+      if (rootPath != null) ((ResourceMethodRegistry) registry).setRootPath(rootPath.trim());
       event.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
       event.getServletContext().setAttribute(Registry.class.getName(), registry);
 

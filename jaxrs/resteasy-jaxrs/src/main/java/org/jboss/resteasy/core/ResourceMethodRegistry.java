@@ -30,10 +30,21 @@ public class ResourceMethodRegistry implements Registry
 
    protected PathSegmentNode root = new PathSegmentNode();
    protected ResteasyProviderFactory providerFactory;
+   protected String rootPath = "";
 
    public ResourceMethodRegistry(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
+   }
+
+   /**
+    * Set a base root path that all mappings will be based on
+    *
+    * @param rootPath
+    */
+   public void setRootPath(String rootPath)
+   {
+      this.rootPath = rootPath;
    }
 
    public void addPerRequestResource(Class clazz, String basePath)
@@ -88,7 +99,7 @@ public class ResourceMethodRegistry implements Registry
     * for JAX-RS annotations.    The class and any implemented interfaces are scanned for annotations.
     *
     * @param factory
-    * @param base    base URI path for any resources provided by the factory
+    * @param base    base URI path for any resources provided by the factory, in addition to rootPath
     */
    public void addResourceFactory(ResourceFactory ref, String base)
    {
@@ -111,7 +122,7 @@ public class ResourceMethodRegistry implements Registry
     * of the clazz parameter.
     *
     * @param factory
-    * @param base    base URI path for any resources provided by the factory
+    * @param base    base URI path for any resources provided by the factory, in addition to rootPath
     * @param clazz   specific class
     * @param offset  path segment offset.  > 0 means we're within a locator.
     */
@@ -125,7 +136,8 @@ public class ResourceMethodRegistry implements Registry
          if (path == null && httpMethods == null) continue;
 
          UriBuilderImpl builder = new UriBuilderImpl();
-         builder.setPath(base);
+         if (rootPath != null) builder.path(rootPath);
+         if (base != null) builder.path(base);
          if (clazz.isAnnotationPresent(Path.class))
          {
             builder.path(clazz);
