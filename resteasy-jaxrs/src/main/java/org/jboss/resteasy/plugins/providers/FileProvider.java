@@ -1,13 +1,12 @@
 package org.jboss.resteasy.plugins.providers;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -25,110 +24,110 @@ import java.lang.reflect.Type;
  */
 
 @Provider
-@ProduceMime("*/*")
-@ConsumeMime("*/*")
+@Produces("*/*")
+@Consumes("*/*")
 public class FileProvider implements MessageBodyReader<Object>,
         MessageBodyWriter<Object>
 {
-    private static final String PREFIX = "pfx";
+   private static final String PREFIX = "pfx";
 
-    private static final String SUFFIX = "sfx";
+   private static final String SUFFIX = "sfx";
 
-    private String _downloadDirectory = null; // by default temp dir, but
-                                                // consider allowing it to be
-                                                // defined at runtime
+   private String _downloadDirectory = null; // by default temp dir, but
+   // consider allowing it to be
+   // defined at runtime
 
-    public boolean isReadable (Class<?> type, Type genericType,
-            Annotation[] annotations)
-    {
-        return File.class == type;
-    }
+   public boolean isReadable(Class<?> type, Type genericType,
+                             Annotation[] annotations)
+   {
+      return File.class == type;
+   }
 
-    public Object readFrom (Class<Object> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException
-    {
-        File downloadedFile = null;
+   public Object readFrom(Class<Object> type, Type genericType,
+                          Annotation[] annotations, MediaType mediaType,
+                          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+           throws IOException
+   {
+      File downloadedFile = null;
 
-        if (_downloadDirectory != null)
-        {
-            try
-            {
-                downloadedFile = File.createTempFile(PREFIX, SUFFIX, new File(
-                        _downloadDirectory));
-            }
-            catch (final IOException ex)
-            {
-                // could make this configurable, so we fail on fault rather than
-                // default.
+      if (_downloadDirectory != null)
+      {
+         try
+         {
+            downloadedFile = File.createTempFile(PREFIX, SUFFIX, new File(
+                    _downloadDirectory));
+         }
+         catch (final IOException ex)
+         {
+            // could make this configurable, so we fail on fault rather than
+            // default.
 
-                System.err
-                        .println("Could not bind to specified download directory "
-                                + _downloadDirectory + " so will use temp dir.");
-            }
-        }
-
-        if (downloadedFile == null)
-            downloadedFile = File.createTempFile(PREFIX, SUFFIX);
-
-        OutputStream output = new BufferedOutputStream(new FileOutputStream(
-                downloadedFile));
-
-        try
-        {
-            ProviderHelper.writeTo(entityStream, output);
-        }
-        finally
-        {
-            output.close();
-        }
-
-        return downloadedFile;
-    }
-
-    public boolean isWriteable (Class<?> type, Type genericType,
-            Annotation[] annotations)
-    {
-        return File.class.isAssignableFrom(type); // catch subtypes
-    }
-
-    public long getSize (Object o)
-    {
-        if (o instanceof File)
-        {
-            return ((File) o).length();
-        }
-        else
-        {
             System.err
-                    .println("FileProvider.getSize - something went wrong, as parameter is not a File!");
+                    .println("Could not bind to specified download directory "
+                            + _downloadDirectory + " so will use temp dir.");
+         }
+      }
 
-            return -1;
-        }
-    }
+      if (downloadedFile == null)
+         downloadedFile = File.createTempFile(PREFIX, SUFFIX);
 
-    public void writeTo (Object o, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException
-    {
-        if (o instanceof File)
-        {
-            File uploadFile = (File) o;
-            InputStream inputStream = new BufferedInputStream(new FileInputStream(uploadFile));
-            
-            try
-            {
-                ProviderHelper.writeTo(inputStream, entityStream);
-            }
-            finally
-            {
-                inputStream.close();
-            }
-        }
-        else
-            System.err
-                    .println("FileProvider.writeTo - parameter is not a File!");
-    }
+      OutputStream output = new BufferedOutputStream(new FileOutputStream(
+              downloadedFile));
+
+      try
+      {
+         ProviderHelper.writeTo(entityStream, output);
+      }
+      finally
+      {
+         output.close();
+      }
+
+      return downloadedFile;
+   }
+
+   public boolean isWriteable(Class<?> type, Type genericType,
+                              Annotation[] annotations)
+   {
+      return File.class.isAssignableFrom(type); // catch subtypes
+   }
+
+   public long getSize(Object o)
+   {
+      if (o instanceof File)
+      {
+         return ((File) o).length();
+      }
+      else
+      {
+         System.err
+                 .println("FileProvider.getSize - something went wrong, as parameter is not a File!");
+
+         return -1;
+      }
+   }
+
+   public void writeTo(Object o, Class<?> type, Type genericType,
+                       Annotation[] annotations, MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
+   {
+      if (o instanceof File)
+      {
+         File uploadFile = (File) o;
+         InputStream inputStream = new BufferedInputStream(new FileInputStream(uploadFile));
+
+         try
+         {
+            ProviderHelper.writeTo(inputStream, entityStream);
+         }
+         finally
+         {
+            inputStream.close();
+         }
+      }
+      else
+         System.err
+                 .println("FileProvider.writeTo - parameter is not a File!");
+   }
 }

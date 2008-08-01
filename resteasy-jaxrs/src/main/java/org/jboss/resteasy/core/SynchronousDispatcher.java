@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.LocaleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +75,11 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void preprocess(HttpRequest in)
    {
+      preprocessExtensions(in);
+   }
+
+   protected void preprocessExtensions(HttpRequest in)
+   {
       if (mediaTypeMappings == null && languageMappings == null) return;
       List<PathSegment> segments = in.getUri().getPathSegments(false);
       PathSegment last = segments.get(segments.size() - 1);
@@ -102,7 +108,7 @@ public class SynchronousDispatcher implements Dispatcher
             String match = languageMappings.get(ext);
             if (match != null)
             {
-               in.getHttpHeaders().getAcceptableLanguages().add(match);
+               in.getHttpHeaders().getAcceptableLanguages().add(LocaleHelper.extractLocale(match));
                preprocessed = true;
                continue;
             }
@@ -169,7 +175,7 @@ public class SynchronousDispatcher implements Dispatcher
          ResteasyProviderFactory.pushContext(HttpResponse.class, response);
          ResteasyProviderFactory.pushContext(HttpHeaders.class, in.getHttpHeaders());
          ResteasyProviderFactory.pushContext(UriInfo.class, in.getUri());
-         ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(in.getHttpHeaders(), in.getHttpMethod()));
+         ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(in));
          try
          {
             invoker.invoke(in, response);

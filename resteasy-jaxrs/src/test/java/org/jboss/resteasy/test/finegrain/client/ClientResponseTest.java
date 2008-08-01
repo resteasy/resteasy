@@ -1,20 +1,5 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Map;
-
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.jboss.resteasy.spi.ClientResponse;
@@ -25,6 +10,20 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Map;
 
 /**
  * Simple smoke test
@@ -42,27 +41,27 @@ public class ClientResponseTest
    {
       @GET
       @Path("basic")
-      @ProduceMime("text/plain")
+      @Produces("text/plain")
       ClientResponse<String> getBasic();
 
       @PUT
       @Path("basic")
-      @ConsumeMime("text/plain")
+      @Consumes("text/plain")
       void putBasic(String body);
 
       @PUT
       @Path("basic")
-      @ConsumeMime("text/plain")
+      @Consumes("text/plain")
       Response.Status putBasicReturnCode(String body);
 
       @GET
       @Path("queryParam")
-      @ProduceMime("text/plain")
+      @Produces("text/plain")
       ClientResponse<String> getQueryParam(@QueryParam("param")String param);
 
       @GET
       @Path("uriParam/{param}")
-      @ProduceMime("text/plain")
+      @Produces("text/plain")
       ClientResponse<Integer> getUriParam(@PathParam("param")int param);
    }
 
@@ -160,7 +159,7 @@ public class ClientResponseTest
       {
          URL url = new URL("http://localhost:8081/redirect");
          //HttpURLConnection.setFollowRedirects(false);
-         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
          conn.setInstanceFollowRedirects(false);
          conn.setRequestMethod("GET");
          Map headers = conn.getHeaderFields();

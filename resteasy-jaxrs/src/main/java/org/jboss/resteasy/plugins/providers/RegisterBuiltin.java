@@ -1,8 +1,5 @@
 package org.jboss.resteasy.plugins.providers;
 
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-
 import org.jboss.resteasy.core.LoggerCategories;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
@@ -10,6 +7,9 @@ import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.XmlRootElementFastinfoSetProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
+
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,12 +46,12 @@ public class RegisterBuiltin
       factory.addMessageBodyReader(elementProvider);
       factory.addMessageBodyWriter(elementProvider);
       logger.info("Added {}", elementProvider.getClass().getSimpleName());
-      
+
       JAXBXmlTypeProvider xmlType = new JAXBXmlTypeProvider();
       factory.addMessageBodyReader(xmlType);
       factory.addMessageBodyWriter(xmlType);
       logger.info("Added {}", xmlType.getClass().getSimpleName());
-      
+
       XmlRootElementFastinfoSetProvider fast = new XmlRootElementFastinfoSetProvider();
       factory.addMessageBodyReader((MessageBodyReader<?>) fast);
       factory.addMessageBodyWriter((MessageBodyWriter<?>) fast);
@@ -68,7 +68,7 @@ public class RegisterBuiltin
       StringTextStar stringTextStar = new StringTextStar();
       factory.addMessageBodyReader(stringTextStar);
       factory.addMessageBodyWriter(stringTextStar);
-      
+
 
       InputStreamProvider inputStreamProvider = new InputStreamProvider();
       factory.addMessageBodyReader(inputStreamProvider);
@@ -82,11 +82,6 @@ public class RegisterBuiltin
       factory.addMessageBodyReader(formProvider);
       factory.addMessageBodyWriter(formProvider);
 
-      FormUrlEncodedObjectProvider formObject = new FormUrlEncodedObjectProvider();
-      factory.addMessageBodyReader(formObject);
-      factory.addMessageBodyWriter(formObject);
-      
-      
       factory.addMessageBodyWriter(new StreamingOutputProvider());
 
       // optional providers.

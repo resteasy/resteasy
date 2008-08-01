@@ -6,16 +6,12 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
+import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import org.jboss.resteasy.core.ExceptionAdapter;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -24,26 +20,28 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-
-import org.jboss.resteasy.core.ExceptionAdapter;
-
-import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
-import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * A XmlRootElementFastinfoSetProvider.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Provider
-@ProduceMime("application/fastinfoset")
-@ConsumeMime("application/fastinfoset")
+@Produces("application/fastinfoset")
+@Consumes("application/fastinfoset")
 public class XmlRootElementFastinfoSetProvider extends JAXBXmlRootElementProvider
 {
 
    /**
-    * 
+    *
     */
    @Override
    public Object readFrom(Class<Object> type,
@@ -67,7 +65,7 @@ public class XmlRootElementFastinfoSetProvider extends JAXBXmlRootElementProvide
    }
 
    /**
-    * 
+    *
     */
    @Override
    public void writeTo(Object t,

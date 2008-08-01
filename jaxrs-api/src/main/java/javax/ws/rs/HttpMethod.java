@@ -28,35 +28,15 @@ import java.lang.annotation.Target;
 /**
  * Associates the name of a HTTP method with an annotation. A Java method annotated
  * with a runtime annotation that is itself annotated with this annotation will
- * be used to handle HTTP requests of the indicated HTTP method.
- * Such Java methods must satisfy the following constraints:
- * <ul>
- * <li>Methods must have a return type of <code>void</code>,
- * <code>Response</code> or <code>T</code>. Return values will be serialized
- * in the HTTP response. A <code>Response</code> return allows the application
- * to supply additional metadata that will accompany the response entity.
- * <li>Methods may have a single optional parameter
- * that is not annotated. The parameter provides access to
- * the contents of the HTTP request entity body. The parameter will be null if
- * the HTTP request entity body is of zero length.</li>
- * <li>Methods may have zero or more additional method arguments, each of which
- * must be annotated with either {@link javax.ws.rs.PathParam},
- * {@link javax.ws.rs.HeaderParam}, {@link javax.ws.rs.CookieParam},
- * {@link javax.ws.rs.MatrixParam}, {@link javax.ws.rs.QueryParam} or
- * {@link javax.ws.rs.core.Context}</li>
- * </ul>
+ * be used to handle HTTP requests of the indicated HTTP method. It is an error
+ * for a method to be annotated with more than one annotation that is annotated
+ * with {@code HttpMethod}.
  *
  * @see GET
  * @see POST
  * @see PUT
  * @see DELETE
  * @see HEAD
- * @see javax.ws.rs.core.Context
- * @see PathParam
- * @see QueryParam
- * @see MatrixParam
- * @see HeaderParam
- * @see CookieParam
  */
 @Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

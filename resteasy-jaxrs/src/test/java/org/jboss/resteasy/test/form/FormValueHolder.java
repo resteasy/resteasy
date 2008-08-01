@@ -4,25 +4,29 @@
  * Distributable under LGPL license.
  * See terms of license at gnu.org.
  */
-package org.jboss.resteasy.test.providers.form;
+package org.jboss.resteasy.test.form;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import java.io.Serializable;
 
-import org.jboss.resteasy.annotations.FormParam;
-import org.jboss.resteasy.annotations.FormValues;
 
 /**
  * A FormValueHolder.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
-@FormValues
 public class FormValueHolder implements Serializable
 {
 
 
-   /** The serialVersionUID */
+   /**
+    * The serialVersionUID
+    */
    private static final long serialVersionUID = 1L;
 
    @FormParam("booleanValue")
@@ -39,13 +43,59 @@ public class FormValueHolder implements Serializable
 
    @FormParam("integerValue")
    private Integer integerValue;
-   
+
    @FormParam("shortValue")
    private Short shortValue;
 
+   @QueryParam("defaultValue")
+   @DefaultValue("42")
+   public int defaultValue;
+
+   private int headerParam;
+   private int id;
+   private int queryParam;
+
+   public int getDefaultValue()
+   {
+      return defaultValue;
+   }
+
+   public int getHeaderParam()
+   {
+      return headerParam;
+   }
+
+   @HeaderParam("custom-header")
+   public void setHeaderParam(int headerParam)
+   {
+      this.headerParam = headerParam;
+   }
+
+   public int getId()
+   {
+      return id;
+   }
+
+   @PathParam("id")
+   public void setId(int id)
+   {
+      this.id = id;
+   }
+
+   public int getQueryParam()
+   {
+      return queryParam;
+   }
+
+   @QueryParam("query")
+   public void setQueryParam(int queryParam)
+   {
+      this.queryParam = queryParam;
+   }
+
    /**
     * Get the booleanValue.
-    * 
+    *
     * @return the booleanValue.
     */
    public Boolean getBooleanValue()
@@ -55,7 +105,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Set the booleanValue.
-    * 
+    *
     * @param booleanValue The booleanValue to set.
     */
    public void setBooleanValue(Boolean booleanValue)
@@ -65,7 +115,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Get the name.
-    * 
+    *
     * @return the name.
     */
    public String getName()
@@ -75,7 +125,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Set the name.
-    * 
+    *
     * @param name The name to set.
     */
    public void setName(String name)
@@ -85,7 +135,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Get the doubleValue.
-    * 
+    *
     * @return the doubleValue.
     */
    public Double getDoubleValue()
@@ -95,7 +145,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Set the doubleValue.
-    * 
+    *
     * @param doubleValue The doubleValue to set.
     */
    public void setDoubleValue(Double doubleValue)
@@ -105,7 +155,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Get the longValue.
-    * 
+    *
     * @return the longValue.
     */
    public Long getLongValue()
@@ -115,7 +165,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Set the longValue.
-    * 
+    *
     * @param longValue The longValue to set.
     */
    public void setLongValue(Long longValue)
@@ -125,7 +175,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Get the integerValue.
-    * 
+    *
     * @return the integerValue.
     */
    public Integer getIntegerValue()
@@ -135,7 +185,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Set the integerValue.
-    * 
+    *
     * @param integerValue The integerValue to set.
     */
    public void setIntegerValue(Integer integerValue)
@@ -145,7 +195,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Get the shortValue.
-    * 
+    *
     * @return the shortValue.
     */
    public Short getShortValue()
@@ -155,7 +205,7 @@ public class FormValueHolder implements Serializable
 
    /**
     * Set the shortValue.
-    * 
+    *
     * @param shortValue The shortValue to set.
     */
    public void setShortValue(Short shortValue)

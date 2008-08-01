@@ -46,10 +46,6 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
                result.getPrivateFields().add(val);
             }
          }
-         else if ("public".equals(lowercase))
-         {
-            result.setPublic(true);
-         }
          else if ("no-store".equals(lowercase))
          {
             result.setNoStore(true);
@@ -98,7 +94,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
    public String toString(CacheControl value)
    {
       StringBuffer buffer = new StringBuffer();
-      if (value.isPublic()) buffer.append("public");
+      if (!value.isPrivate()) buffer.append("public");
       if (value.isMustRevalidate()) addDirective("must-revalidate", buffer);
       if (value.isNoTransform()) addDirective("no-transform", buffer);
       if (value.isNoStore()) addDirective("no-store", buffer);

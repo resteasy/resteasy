@@ -3,8 +3,8 @@ package org.jboss.resteasy.plugins.providers;
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -25,8 +25,7 @@ import java.lang.reflect.Type;
  * <p/>
  * <code>
  * @POST
- * @ConsumeMime("multipart/form-data") 
- * public void postData(MimeMultipart multipart) {
+ * @ConsumeMime("multipart/form-data") public void postData(MimeMultipart multipart) {
  * ...
  * </code>
  * <p/>
@@ -35,8 +34,8 @@ import java.lang.reflect.Type;
  */
 
 @Provider
-@ProduceMime("multipart/mixed")
-@ConsumeMime({"multipart/mixed", "multipart/form-data"})
+@Produces("multipart/mixed")
+@Consumes({"multipart/mixed", "multipart/form-data"})
 public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
 {
 
@@ -73,7 +72,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param type
     * @param genericType
     * @param annotations
@@ -105,7 +104,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param mimeMultipart
     * @param type
     * @param genericType

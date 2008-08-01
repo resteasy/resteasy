@@ -15,6 +15,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,6 +28,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    private Headers<Object> metadata = new Headers<Object>();
    private List<NewCookie> cookies = new ArrayList<NewCookie>();
 
+   @Override
    public Response build()
    {
       NewCookie[] newCookies = null;
@@ -49,30 +51,35 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return impl;
    }
 
+   @Override
    public Response.ResponseBuilder status(int status)
    {
       this.status = status;
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder entity(Object entity)
    {
       this.entity = entity;
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder type(MediaType type)
    {
       metadata.putSingle(HttpHeaderNames.CONTENT_TYPE, type);
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder type(String type)
    {
       metadata.putSingle(HttpHeaderNames.CONTENT_TYPE, type);
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder variant(Variant variant)
    {
       if (variant.getMediaType() != null) type(variant.getMediaType());
@@ -81,6 +88,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder variants(List<Variant> variants)
    {
       String vary = createVaryHeader(variants);
@@ -117,12 +125,14 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return vary;
    }
 
+   @Override
    public Response.ResponseBuilder language(String language)
    {
       metadata.putSingle(HttpHeaderNames.CONTENT_LANGUAGE, language);
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder location(URI location)
    {
       if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
@@ -136,6 +146,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder contentLocation(URI location)
    {
       if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
@@ -149,36 +160,42 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder tag(EntityTag tag)
    {
       metadata.putSingle(HttpHeaderNames.ETAG, tag);
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder tag(String tag)
    {
       metadata.putSingle(HttpHeaderNames.ETAG, tag);
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder lastModified(Date lastModified)
    {
       metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, lastModified);
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder cacheControl(CacheControl cacheControl)
    {
       metadata.putSingle(HttpHeaderNames.CACHE_CONTROL, cacheControl);
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder header(String name, Object value)
    {
       metadata.putSingle(name, value);
       return this;
    }
 
+   @Override
    public Response.ResponseBuilder cookie(NewCookie... cookies)
    {
       for (NewCookie cookie : cookies)
@@ -188,4 +205,9 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return this;
    }
 
+   public Response.ResponseBuilder language(Locale language)
+   {
+      metadata.putSingle(HttpHeaderNames.CONTENT_LANGUAGE, language);
+      return this;
+   }
 }

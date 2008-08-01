@@ -11,7 +11,7 @@
  */
 
 /*
- * ProduceMime.java
+ * Produces.java
  *
  * Created on September 15, 2006, 2:40 PM
  *
@@ -34,10 +34,10 @@ import java.lang.annotation.Target;
  * one of the MIME types requested in the HTTP request. If no such method is
  * available the container must respond with a HTTP "406 Not Acceptable" as
  * specified by RFC 2616.
- *
- * <p>A method for which there is a single-valued <code>ProduceMime</code>
+ * <p/>
+ * <p>A method for which there is a single-valued <code>Produces</code>
  * is not required to set the media type of representations that it produces:
- * the container will use the value of the <code>ProduceMime</code> when
+ * the container will use the value of the <code>Produces</code> when
  * sending a response.</p>
  *
  * @see javax.ws.rs.ext.MessageBodyWriter
@@ -45,9 +45,10 @@ import java.lang.annotation.Target;
 @Inherited
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ProduceMime {
-    /**
-     * A list of MIME types. E.g. "image/jpeg,image/gif"
-     */
-    String[] value() default "*/*";    
+public @interface Produces
+{
+   /**
+    * A list of MIME types. E.g. "image/jpeg,image/gif"
+    */
+   String[] value() default "*/*";
 }

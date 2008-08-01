@@ -2,8 +2,8 @@ package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.core.Failure;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,10 +20,10 @@ public class MediaTypeHelper
 {
    public static MediaType getConsumes(Class declaring, Method method)
    {
-      ConsumeMime consume = method.getAnnotation(ConsumeMime.class);
+      Consumes consume = method.getAnnotation(Consumes.class);
       if (consume == null)
       {
-         consume = (ConsumeMime) declaring.getAnnotation(ConsumeMime.class);
+         consume = (Consumes) declaring.getAnnotation(Consumes.class);
       }
       if (consume == null) return null;
       return MediaType.valueOf(consume.value()[0]);
@@ -31,10 +31,10 @@ public class MediaTypeHelper
 
    public static MediaType getProduces(Class declaring, Method method)
    {
-      ProduceMime consume = method.getAnnotation(ProduceMime.class);
+      Produces consume = method.getAnnotation(Produces.class);
       if (consume == null)
       {
-         consume = (ProduceMime) declaring.getAnnotation(ProduceMime.class);
+         consume = (Produces) declaring.getAnnotation(Produces.class);
       }
       if (consume == null) return null;
       return MediaType.valueOf(consume.value()[0]);

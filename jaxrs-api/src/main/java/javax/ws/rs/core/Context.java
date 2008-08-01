@@ -33,8 +33,7 @@ import java.lang.annotation.Target;
  * @see Request
  * @see HttpHeaders
  * @see SecurityContext
- * @see javax.ws.rs.ext.ContextResolver
- * @see javax.ws.rs.ext.MessageBodyWorkers
+ * @see javax.ws.rs.ext.Providers
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

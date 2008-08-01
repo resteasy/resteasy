@@ -34,8 +34,21 @@ import java.lang.annotation.Target;
  * <p/>
  * The type of the annotated parameter, field or property must either:
  * <ul>
- * <li>Be {@link javax.ws.rs.core.PathSegment}, the value will be a PathSegment
- * corresponding to the path segment that contains the named template parameter.
+ * <li>Be {@link javax.ws.rs.core.PathSegment}, the value will be a
+ * {@code PathSegment} corresponding to the path segment that contains the named
+ * template parameter. If the template parameter has
+ * {@link Path#limited()}{@code =false} then the path segment will be the final
+ * segment of the matching part of the path.
+ * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
+ * path segments.</li>
+ * <li>Be {@code List<}{@link javax.ws.rs.core.PathSegment}{@code >}, the
+ * value will be a list of {@code PathSegment} corresponding to the path
+ * segment that contains the named template parameter.
+ * If the template parameter has {@link Path#limited()}{@code =false} then
+ * the list will contain an entry for each path segment within the matching part
+ * of the path. If the template parameter has
+ * {@link Path#limited()}{@code =true} then the list will contain a single entry
+ * corresponding to the path segment that contains the URI template parameter.
  * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
  * path segments.</li>
  * <li>Be a primitive type.</li>
@@ -43,6 +56,12 @@ import java.lang.annotation.Target;
  * <li>Have a static method named <code>valueOf</code> that accepts a single
  * String argument (see, for example, {@link Integer#valueOf(String)}).
  * </ul>
+ * <p/>
+ * <p>The injected value corresponds to the latest use (in terms of scope) of
+ * the path parameter. E.g. if a class and a sub-resource method are both
+ * annotated with a {@link Path} containing the same URI template parameter, use
+ * of {@code PathParam} on a subresource method parameter will bind the value
+ * matching URI template parameter in the method's {@link Path} annotation.</p>
  * <p/>
  * <p>Because injection occurs at object creation time, use of this annotation
  * on resource class fields and bean properties is only supported for the

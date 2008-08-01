@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.json.jettison;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -32,8 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Revision: 1 $
  */
 @Provider
-@ProduceMime("application/json")
-@ConsumeMime("application/json")
+@Produces("application/json")
+@Consumes("application/json")
 public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
    private ConcurrentHashMap<Class<?>, JAXBContext> cache = new ConcurrentHashMap<Class<?>, JAXBContext>();

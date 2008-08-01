@@ -5,6 +5,7 @@ import org.jboss.resteasy.core.PropertyInjectorImpl;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
+import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
@@ -13,8 +14,8 @@ import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
 import org.jboss.resteasy.util.Types;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
@@ -35,6 +36,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -66,13 +68,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate
          Type impl = readerClass.getGenericSuperclass();
          // if it's null or object, check the interfaces
          // TODO: we may need more refinement here.
-         if(impl == null || impl == Object.class) {
-             Type[] impls = readerClass.getGenericInterfaces();
-             if (impls.length > 0) {
-        	 impl = impls[0];
-             }
+         if (impl == null || impl == Object.class)
+         {
+            Type[] impls = readerClass.getGenericInterfaces();
+            if (impls.length > 0)
+            {
+               impl = impls[0];
+            }
          }
-         
+
          if (impl != null && (impl instanceof ParameterizedType))
          {
             ParameterizedType param = (ParameterizedType) impl;
@@ -155,6 +159,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       addHeaderDelegate(URI.class, new UriHeaderDelegate());
       addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
+      addHeaderDelegate(Locale.class, new LocaleDelegate());
    }
 
    public UriBuilder createUriBuilder()
@@ -205,7 +210,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
       injector.inject(provider);
       providers.put(provider.getClass(), provider);
-      ConsumeMime consumeMime = provider.getClass().getAnnotation(ConsumeMime.class);
+      Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
       MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(provider.getClass(), provider);
       if (consumeMime != null)
       {
@@ -244,7 +249,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
       providers.put(provider.getClass(), provider);
       injector.inject(provider);
-      ProduceMime consumeMime = provider.getClass().getAnnotation(ProduceMime.class);
+      Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
       MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(provider.getClass(), provider);
       if (consumeMime != null)
       {

@@ -4,15 +4,7 @@
  * Distributable under LGPL license.
  * See terms of license at gnu.org.
  */
-package org.jboss.resteasy.test.providers.form;
-
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
+package org.jboss.resteasy.test.form;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -23,9 +15,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A TestFormResource.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -43,13 +42,14 @@ public class TestFormResource extends BaseResourceTest
 
    private static final String BOOLEAN_VALUE_FIELD = "booleanValue";
 
-   private static final String TEST_URI = "http://localhost:8081/form";
+   private static final String TEST_URI = "http://localhost:8081/form/42?query=42";
 
    private static final Logger logger = LoggerFactory
-         .getLogger(TestFormResource.class);
+           .getLogger(TestFormResource.class);
 
-   /** FIXME Comment this
-    * 
+   /**
+    * FIXME Comment this
+    *
     * @throws java.lang.Exception
     */
    @Before
@@ -57,12 +57,13 @@ public class TestFormResource extends BaseResourceTest
    {
       addPerRequestResource(FormResource.class);
    }
-   
+
    @Test
-   public void testFormResource() throws Exception 
+   public void testFormResource() throws Exception
    {
       HttpClient client = new HttpClient();
       PostMethod method = new PostMethod(TEST_URI);
+      method.addRequestHeader("custom-header", "42");
       method.addParameter(BOOLEAN_VALUE_FIELD, "true");
       method.addParameter(NAME_FIELD, "This is My Name");
       method.addParameter(DOUBLE_VALUE_FIELD, "123.45");
@@ -87,8 +88,8 @@ public class TestFormResource extends BaseResourceTest
          }
          else if (index > 0)
          {
-            values.put(URLDecoder.decode(pair.substring(0, index), "UTF-8"), 
-                       URLDecoder.decode(pair.substring(index + 1), "UTF-8"));
+            values.put(URLDecoder.decode(pair.substring(0, index), "UTF-8"),
+                    URLDecoder.decode(pair.substring(index + 1), "UTF-8"));
          }
       }
       Assert.assertEquals(values.get(BOOLEAN_VALUE_FIELD), "true");

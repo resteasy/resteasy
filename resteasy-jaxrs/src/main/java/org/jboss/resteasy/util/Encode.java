@@ -1,7 +1,12 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -53,6 +58,54 @@ public class Encode
       if (value.endsWith("/")) result += "/";
       if (params) result = result.replace("%7B", "{").replace("%7D", "}");
       return result;
+   }
+
+   /**
+    * decode an encoded map
+    *
+    * @param map
+    * @return
+    */
+   public static MultivaluedMap<String, String> decode(MultivaluedMap<String, String> map)
+   {
+      MultivaluedMapImpl<String, String> decoded = new MultivaluedMapImpl<String, String>();
+      for (String key : map.keySet())
+      {
+         List<String> values = map.get(key);
+         for (String value : values)
+         {
+            try
+            {
+               decoded.add(URLDecoder.decode(key, "UTF-8"), URLDecoder.decode(value, "UTF-8"));
+            }
+            catch (UnsupportedEncodingException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+      return decoded;
+   }
+
+   public static MultivaluedMap<String, String> encode(MultivaluedMap<String, String> map)
+   {
+      MultivaluedMapImpl<String, String> decoded = new MultivaluedMapImpl<String, String>();
+      for (String key : map.keySet())
+      {
+         List<String> values = map.get(key);
+         for (String value : values)
+         {
+            try
+            {
+               decoded.add(URLEncoder.encode(key, "UTF-8"), URLEncoder.encode(value, "UTF-8"));
+            }
+            catch (UnsupportedEncodingException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+      return decoded;
    }
 
 }

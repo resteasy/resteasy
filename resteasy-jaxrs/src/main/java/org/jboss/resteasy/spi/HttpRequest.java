@@ -1,6 +1,7 @@
 package org.jboss.resteasy.spi;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
@@ -31,4 +32,16 @@ public interface HttpRequest
 
 
    void setPreProcessedSegments(List<PathSegment> segments);
+
+   /**
+    * application/x-www-form-urlencoded parameters
+    * <p/>
+    * This is here because @FormParam needs it and Request needs it
+    *
+    * @return null if no parameters, this is encoded map
+    */
+   MultivaluedMap<String, String> getFormParameters();
+
+   MultivaluedMap<String, String> getDecodedFormParameters();
+
 }

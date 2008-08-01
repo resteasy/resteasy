@@ -38,7 +38,7 @@ public interface MessageBodyWorkers
     * Get a message body reader that matches a set of criteria.
     *
     * @param mediaType   the media type of the data that will be read, this will
-    *                    be compared to the values of {@link javax.ws.rs.ConsumeMime} for
+    *                    be compared to the values of {@link javax.ws.rs.Consumes} for
     *                    each candidate reader and only matching readers will be queried.
     * @param type        the class of object to be produced.
     * @param genericType the type of object to be produced. E.g. if the
@@ -60,7 +60,7 @@ public interface MessageBodyWorkers
     * Get a message body writer that matches a set of criteria.
     *
     * @param mediaType   the media type of the data that will be written, this will
-    *                    be compared to the values of {@link javax.ws.rs.ProduceMime} for
+    *                    be compared to the values of {@link javax.ws.rs.Produces} for
     *                    each candidate writer and only matching writers will be queried.
     * @param type        the class of object that is to be written.
     * @param genericType the type of object to be written. E.g. if the

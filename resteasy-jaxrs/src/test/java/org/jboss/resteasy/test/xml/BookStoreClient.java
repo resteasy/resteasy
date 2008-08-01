@@ -1,11 +1,11 @@
 package org.jboss.resteasy.test.xml;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import java.util.Collection;
 
 /**
@@ -17,31 +17,31 @@ public interface BookStoreClient
 {
    @GET
    @Path("books/{isbn}")
-   @ProduceMime("text/xml")
+   @Produces("text/xml")
    Book getBookByISBN(@PathParam("isbn")String isbn);
 
    @PUT
    @Path("books")
-   @ConsumeMime("text/xml")
+   @Consumes("text/xml")
    void addBook(Book book);
 
    @GET
    @Path("books")
-   @ProduceMime("text/xml")
+   @Produces("text/xml")
    Collection<Book> getAllBooks();
 
    @GET
    @Path("books/{isbn}")
-   @ProduceMime("application/json")
+   @Produces("application/json")
    Book getBookByISBNJson(@PathParam("isbn")String isbn);
 
    @PUT
    @Path("books")
-   @ConsumeMime("application/json")
+   @Consumes("application/json")
    void addBookJson(Book book);
 
    @GET
    @Path("books")
-   @ProduceMime("application/json")
+   @Produces("application/json")
    Collection<Book> getAllBooksJson();
 }

@@ -23,12 +23,21 @@ public class AcceptableVariant implements Comparable<AcceptableVariant>
       this.type = variant.getMediaType();
       if (variant.getLanguage() != null)
       {
-         language = QualifiedStringHeader.parse(variant.getLanguage());
+         language = new QualifiedStringHeader(LocaleHelper.toLanguageString(variant.getLanguage()));
       }
       if (variant.getEncoding() != null)
       {
          encoding = QualifiedStringHeader.parse(variant.getEncoding());
       }
+   }
+
+   public AcceptableVariant(MediaType type, String language, String encoding)
+   {
+      this.variant = new Variant(type, LocaleHelper.extractLocale(language.toLowerCase()), encoding);
+      this.type = type;
+      if (language != null) this.language = QualifiedStringHeader.parse(language);
+      if (encoding != null) this.encoding = QualifiedStringHeader.parse(encoding);
+
    }
 
    public int compareTo(AcceptableVariant acceptableVariant)
@@ -80,10 +89,8 @@ public class AcceptableVariant implements Comparable<AcceptableVariant>
       return encoding;
    }
 
-   public static List<Variant> sort(List<Variant> variants)
+   public static List<Variant> sort(List<AcceptableVariant> acceptable)
    {
-      ArrayList<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
-      for (Variant v : variants) acceptable.add(new AcceptableVariant(v));
       Collections.sort(acceptable);
       List<Variant> sorted = new ArrayList<Variant>();
       for (AcceptableVariant v : acceptable)
@@ -93,10 +100,8 @@ public class AcceptableVariant implements Comparable<AcceptableVariant>
       return sorted;
    }
 
-   public static Variant pick(List<Variant> wants, List<Variant> has)
+   public static Variant pick(List<Variant> has, List<AcceptableVariant> acceptable)
    {
-      ArrayList<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
-      for (Variant v : wants) acceptable.add(new AcceptableVariant(v));
       Collections.sort(acceptable);
 
       ArrayList<AcceptableVariant> produces = new ArrayList<AcceptableVariant>();

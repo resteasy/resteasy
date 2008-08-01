@@ -12,11 +12,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
@@ -38,28 +38,28 @@ public class AcceptTest
    @Path("/")
    public static class WebResource
    {
-      @ProduceMime("application/foo")
+      @Produces("application/foo")
       @GET
       public String doGetFoo()
       {
          return "foo";
       }
 
-      @ProduceMime("application/bar")
+      @Produces("application/bar")
       @GET
       public String doGetBar()
       {
          return "bar";
       }
 
-      @ProduceMime("application/baz")
+      @Produces("application/baz")
       @GET
       public String doGetBaz()
       {
          return "baz";
       }
 
-      @ProduceMime("*/*")
+      @Produces("*/*")
       @GET
       public Response doGetWildCard()
       {
@@ -135,19 +135,19 @@ public class AcceptTest
    @Path("/xml")
    public static class XmlResource
    {
-      @ConsumeMime("application/xml;schema=foo")
+      @Consumes("application/xml;schema=foo")
       @PUT
       public void putFoo(String foo)
       {
       }
 
-      @ConsumeMime("application/xml")
+      @Consumes("application/xml")
       @PUT
       public void put(String foo)
       {
       }
 
-      @ConsumeMime("application/xml;schema=bar")
+      @Consumes("application/xml;schema=bar")
       @PUT
       public void putBar(String foo)
       {
@@ -176,24 +176,24 @@ public class AcceptTest
    @Path("/xml")
    public static class XmlResource2
    {
-      @ConsumeMime("application/xml;schema=foo")
-      @ProduceMime("application/xml;schema=junk")
+      @Consumes("application/xml;schema=foo")
+      @Produces("application/xml;schema=junk")
       @PUT
       public String putFoo(String foo)
       {
          return "hello";
       }
 
-      @ConsumeMime("application/xml;schema=bar")
-      @ProduceMime("application/xml;schema=stuff")
+      @Consumes("application/xml;schema=bar")
+      @Produces("application/xml;schema=stuff")
       @PUT
       public String putBar(String foo)
       {
          return "hello";
       }
 
-      @ConsumeMime("application/xml")
-      @ProduceMime("application/xml;schema=stuff")
+      @Consumes("application/xml")
+      @Produces("application/xml;schema=stuff")
       @PUT
       public String put(String foo)
       {
@@ -264,7 +264,7 @@ public class AcceptTest
    @Path("/")
    public static class MultipleResource
    {
-      @ProduceMime({"application/foo", "application/bar"})
+      @Produces({"application/foo", "application/bar"})
       @GET
       public String get()
       {
@@ -317,28 +317,28 @@ public class AcceptTest
    @Path("/")
    public static class ConsumeResource
    {
-      @ConsumeMime("application/foo")
+      @Consumes("application/foo")
       @GET
       public String doGetFoo()
       {
          return "foo";
       }
 
-      @ConsumeMime("application/bar")
+      @Consumes("application/bar")
       @GET
       public String doGetBar()
       {
          return "bar";
       }
 
-      @ConsumeMime("application/baz")
+      @Consumes("application/baz")
       @GET
       public String doGetBaz()
       {
          return "baz";
       }
 
-      @ConsumeMime("*/*")
+      @Consumes("*/*")
       @GET
       public Response doGetWildCard()
       {
@@ -381,16 +381,16 @@ public class AcceptTest
    @Path("/")
    public static class ComplexResource
    {
-      @ConsumeMime("text/*")
-      @ProduceMime("text/html")
+      @Consumes("text/*")
+      @Produces("text/html")
       @GET
       public String method1()
       {
          return null;
       }
 
-      @ConsumeMime("text/xml")
-      @ProduceMime("text/json")
+      @Consumes("text/xml")
+      @Produces("text/json")
       @GET
       public String method2()
       {

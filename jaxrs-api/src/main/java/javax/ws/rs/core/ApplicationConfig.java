@@ -27,7 +27,9 @@ public abstract class ApplicationConfig
    private static final Map<String, String> emptyLanguageMap = Collections.emptyMap();
 
    /**
-    * Get a list of root resource classes. An implementation should warn about
+    * Get a list of root resource classes. Resource classes are not required
+    * to implement any specific interface so the return type is necessarily
+    * loose, nevertheless, implementations should warn about
     * and ignore classes that do not conform to the requirements of root
     * resource classes.
     *
@@ -37,7 +39,9 @@ public abstract class ApplicationConfig
    public abstract Set<Class<?>> getResourceClasses();
 
    /**
-    * Get a list of provider classes. An implementation should warn about
+    * Get a list of provider classes. There is no common base class or
+    * interface for providers so the return type is necessarily
+    * loose, nevertheless, implementations should warn about
     * and ignore classes that do not conform to the requirements of a
     * provider. The default implementation returns an empty set.
     *

@@ -2,8 +2,8 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.util.ReadFromStream;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -18,8 +18,8 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@ProduceMime("*/*")
-@ConsumeMime("*/*")
+@Produces("*/*")
+@Consumes("*/*")
 public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBodyWriter<byte[]>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)

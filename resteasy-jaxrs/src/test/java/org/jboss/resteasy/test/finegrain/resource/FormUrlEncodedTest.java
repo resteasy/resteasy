@@ -13,10 +13,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.StreamingOutput;
@@ -70,8 +70,8 @@ public class FormUrlEncodedTest
 
       @Path("/form")
       @POST
-      @ProduceMime("application/x-www-form-urlencoded")
-      @ConsumeMime("application/x-www-form-urlencoded")
+      @Produces("application/x-www-form-urlencoded")
+      @Consumes("application/x-www-form-urlencoded")
       public MultivaluedMap<String, String> post(MultivaluedMap<String, String> form)
       {
          Assert.assertEquals("world", form.getFirst("hello"));
@@ -80,8 +80,8 @@ public class FormUrlEncodedTest
 
       @Path("/form/twoparams")
       @POST
-      @ProduceMime("application/x-www-form-urlencoded")
-      @ConsumeMime("application/x-www-form-urlencoded")
+      @Produces("application/x-www-form-urlencoded")
+      @Consumes("application/x-www-form-urlencoded")
       public MultivaluedMap<String, String> post2Parameters(MultivaluedMap<String, String> form)
       {
          Assert.assertEquals(2, form.size());
@@ -166,14 +166,14 @@ public class FormUrlEncodedTest
    {
       @Path("/form")
       @POST
-      @ProduceMime("application/x-www-form-urlencoded")
-      @ConsumeMime("application/x-www-form-urlencoded")
+      @Produces("application/x-www-form-urlencoded")
+      @Consumes("application/x-www-form-urlencoded")
       public String post(MultivaluedMap<String, String> form);
 
       @Path("/form")
       @POST
-      @ProduceMime("application/x-www-form-urlencoded")
-      @ConsumeMime("application/x-www-form-urlencoded")
+      @Produces("application/x-www-form-urlencoded")
+      @Consumes("application/x-www-form-urlencoded")
       public MultivaluedMap<String, String> post2(MultivaluedMap<String, String> form);
    }
 

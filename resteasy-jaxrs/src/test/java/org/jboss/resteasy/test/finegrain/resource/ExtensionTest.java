@@ -12,13 +12,14 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -33,42 +34,42 @@ public class ExtensionTest
    public static class ExtensionResource
    {
       @GET
-      @ProduceMime("*/*")
+      @Produces("*/*")
       public String getDefault()
       {
          return "default";
       }
 
       @GET
-      @ProduceMime("application/xml")
+      @Produces("application/xml")
       public String getXml(@Context HttpHeaders headers)
       {
          @SuppressWarnings("unused")
-         List<String> languages = headers.getAcceptableLanguages();
+         List<Locale> languages = headers.getAcceptableLanguages();
          @SuppressWarnings("unused")
          List<MediaType> mediaTypes = headers.getAcceptableMediaTypes();
          return "xml";
       }
 
       @GET
-      @ProduceMime("text/html")
+      @Produces("text/html")
       public String getXmlTwo(@Context HttpHeaders headers)
       {
-         List<String> languages = headers.getAcceptableLanguages();
+         List<Locale> languages = headers.getAcceptableLanguages();
          Assert.assertEquals(1, languages.size());
-         Assert.assertEquals("en-US", languages.get(0));
+         Assert.assertEquals(new Locale("en", "us"), languages.get(0));
          Assert.assertEquals(MediaType.valueOf("text/html"), headers.getAcceptableMediaTypes().get(0));
          return "html";
       }
 
       @GET
       @Path("/stuff.old")
-      @ProduceMime("text/plain")
+      @Produces("text/plain")
       public String getJson(@Context HttpHeaders headers)
       {
-         List<String> languages = headers.getAcceptableLanguages();
+         List<Locale> languages = headers.getAcceptableLanguages();
          Assert.assertEquals(1, languages.size());
-         Assert.assertEquals("en-US", languages.get(0));
+         Assert.assertEquals(new Locale("en", "us"), languages.get(0));
          Assert.assertEquals(MediaType.valueOf("text/plain"), headers.getAcceptableMediaTypes().get(0));
          return "plain";
       }
@@ -83,7 +84,7 @@ public class ExtensionTest
       mimeMap.put("html", MediaType.valueOf("text/html"));
       mimeMap.put("txt", MediaType.valueOf("text/plain"));
       Map<String, String> languageMap = new HashMap<String, String>();
-      languageMap.put("en", "en-US");
+      languageMap.put("en", "en-us");
       dispatcher.setMediaTypeMappings(mimeMap);
       dispatcher.setLanguageMappings(languageMap);
       dispatcher.getRegistry().addPerRequestResource(ExtensionResource.class);

@@ -19,6 +19,7 @@
 package javax.ws.rs.core;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -68,7 +69,7 @@ public interface HttpHeaders
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     */
-   public List<String> getAcceptableLanguages();
+   public List<Locale> getAcceptableLanguages();
 
    /**
     * Get the media type of the request entity
@@ -86,7 +87,7 @@ public interface HttpHeaders
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     */
-   public String getLanguage();
+   public Locale getLanguage();
 
    /**
     * Get any cookies that accompanied the request.

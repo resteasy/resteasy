@@ -138,7 +138,7 @@ public class PropertyInjectorImpl implements PropertyInjector
          Type genericType = field.getGenericType();
 
          ValueInjector extractor = InjectorFactoryImpl.getParameterExtractor(index, type, genericType, annotations, field, factory);
-         if (!(extractor instanceof MessageBodyParameterInjector))
+         if (extractor != null && !(extractor instanceof MessageBodyParameterInjector))
          {
             if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
             fieldMap.put(field, extractor);
@@ -156,7 +156,7 @@ public class PropertyInjectorImpl implements PropertyInjector
          Type genericType = method.getGenericParameterTypes()[0];
 
          ValueInjector extractor = InjectorFactoryImpl.getParameterExtractor(index, type, genericType, annotations, method, factory);
-         if (!(extractor instanceof MessageBodyParameterInjector))
+         if (extractor != null && !(extractor instanceof MessageBodyParameterInjector))
          {
             long hash = 0;
             try

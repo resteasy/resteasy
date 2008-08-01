@@ -30,8 +30,16 @@ import java.util.List;
  * <p>All methods except {@link #getBaseUri} and
  * {@link #getBaseUriBuilder} throw <code>java.lang.IllegalStateException</code>
  * if called outside the scope of a request (e.g. from a provider constructor).</p>
+ * <p/>
+ * <p>Note that the URIs obtained from the methods of this interface provide
+ * access to request URIs after URI-based content negotiation preprocessing. E.g.
+ * if the request URI is "foo.xml" and {@link ApplicationConfig#getMediaTypeMappings()}
+ * includes a mapping for "xml", then {@link #getPath()} will return "foo", not
+ * "foo.xml". The removed "xml" extension is available via {@link #getConnegExtension}.</p>
  *
  * @see Context
+ * @see ApplicationConfig#getLanguageMappings()
+ * @see ApplicationConfig#getMediaTypeMappings()
  */
 public interface UriInfo
 {
@@ -72,6 +80,7 @@ public interface UriInfo
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     * @see PathSegment
+    * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
     */
    public List<PathSegment> getPathSegments();
 
@@ -88,6 +97,7 @@ public interface UriInfo
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     * @see PathSegment
+    * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
     */
    public List<PathSegment> getPathSegments(boolean decode);
 
@@ -102,30 +112,16 @@ public interface UriInfo
    public URI getRequestUri();
 
    /**
-    * Get the absolute request URI in the form of a UriBuilder.
+    * Get the absolute request URI in the form of a UriBuilder. The returned
+    * builder will have its extension initialized with
+    * <code>extension(getConnegExtension())</code>.
     *
     * @return a UriBuilder initialized with the absolute request URI
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
+    * @see UriBuilder#extension(java.lang.String)
     */
    public UriBuilder getRequestUriBuilder();
-
-   /**
-    * Get the absolute platonic request URI in the form of a UriBuilder. The
-    * platonic request URI is the request URI minus any extensions that were
-    * removed during request pre-processing for the purposes of URI-based
-    * content negotiation. E.g. if the request URI was:
-    * <pre>http://example.com/resource.xml</pre>
-    * <p>and an applications implementation of
-    * {@link ApplicationConfig#getMediaTypeMappings} returned a map
-    * that included "xml" as a key then the platonic request URI would be:</p>
-    * <pre>http://example.com/resource</pre>
-    *
-    * @return a UriBuilder initialized with the absolute platonic request URI
-    * @throws java.lang.IllegalStateException
-    *          if called outside the scope of a request
-    */
-   public UriBuilder getPlatonicRequestUriBuilder();
 
    /**
     * Get the absolute path of the request. This includes everything preceding
@@ -141,12 +137,14 @@ public interface UriInfo
 
    /**
     * Get the absolute path of the request in the form of a UriBuilder.
-    * This includes everything preceding
-    * the path (host, port etc) but excludes query parameters and fragment.
+    * This includes everything preceding the path (host, port etc) but excludes
+    * query parameters and fragment. The returned builder will have its
+    * extension initialized with <code>extension(getConnegExtension())</code>.
     *
     * @return a UriBuilder initialized with the absolute path of the request
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
+    * @see UriBuilder#extension(java.lang.String)
     */
    public UriBuilder getAbsolutePathBuilder();
 
@@ -159,27 +157,29 @@ public interface UriInfo
    public URI getBaseUri();
 
    /**
-    * Get the base URI of the application in the form of a UriBuilder.
+    * Get the base URI of the application in the form of a UriBuilder. If
+    * called within the scope of a request, the builder will have its extension
+    * initialized with <code>extension(getConnegExtension())</code>.
     *
     * @return a UriBuilder initialized with the base URI of the application.
+    * @see UriBuilder#extension(java.lang.String)
     */
    public UriBuilder getBaseUriBuilder();
 
    /**
-    * Get the request URI extension, this includes everything following the
-    * first "." in the final path segment of the URI excluding any matrix
-    * parameters that might be present after the extension). The returned
-    * string includes any extensions removed during request pre-processing for
-    * the purposes of URI-based content negotiation. E.g. if the request URI was:
-    * <pre>http://example.com/resource.xml.en</pre>
-    * <p>this method would return "xml.en" even if an applications
-    * implementation of
-    * {@link ApplicationConfig#getMediaTypeMappings} returned a map
-    * that included "xml" as a key
+    * Get the request URI extension that was removed during URI-based content
+    * negotiation preprocessing. The extension does not include the leading "."
+    * nor any matrix parameters that might be present after the extension.
+    * E.g. if the request URI is "foo.xml" and
+    * {@link ApplicationConfig#getMediaTypeMappings()} includes a mapping for
+    * "xml", then this method will return "xml". Note that the extension might
+    * include both a media type and language extension, e.g. "xml.en", if
+    * both are in use.
     *
-    * @return the request URI extension or null if there isn't one
+    * @return the URI extension that was removed during URI-based content
+    *         negotiation preprocessing or null if nothing was removed
     */
-   public String getPathExtension();
+   public String getConnegExtension();
 
    /**
     * Get the values of any embedded URI template parameters.

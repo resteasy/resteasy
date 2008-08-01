@@ -45,6 +45,7 @@ public interface PathSegment
     * Get a map of the matrix parameters associated with the path segment
     *
     * @return the map of matrix parameters
+    * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
     */
    MultivaluedMap<String, String> getMatrixParameters();
 

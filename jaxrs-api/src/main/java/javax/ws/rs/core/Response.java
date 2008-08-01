@@ -23,6 +23,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Defines the contract between a returned instance and the runtime when
@@ -39,8 +40,19 @@ public abstract class Response
 {
 
    /**
-    * Return the entity for the response. The response will be serialized using a
-    * MessageBodyWriter for the class of the entity.
+    * Protected constructor, use one of the static methods to obtain a
+    * {@link ResponseBuilder} instance and obtain a Response from that.
+    */
+   protected Response()
+   {
+   }
+
+
+   /**
+    * Return the response entity. Entities of type {@link GenericEntity}
+    * will be unwrapped. The response will be serialized using a
+    * MessageBodyWriter for either the class of the entity or, in the case of
+    * {@link GenericEntity}, the value of {@link GenericEntity#getRawType()}.
     *
     * @return an object instance or null if there is no entity
     * @see javax.ws.rs.ext.MessageBodyWriter
@@ -126,7 +138,9 @@ public abstract class Response
    }
 
    /**
-    * Create a new ResponseBuilder that contains a representation.
+    * Create a new ResponseBuilder that contains a representation. Wrap the
+    * actual entity with {@link GenericEntity} if the generic type should be
+    * preserved.
     *
     * @param entity the representation entity data
     * @return a new ResponseBuilder
@@ -139,7 +153,9 @@ public abstract class Response
    }
 
    /**
-    * Create a new ResponseBuilder that contains a representation.
+    * Create a new ResponseBuilder that contains a representation. If
+    * required, wrap the actual entity with {@link GenericEntity} to preserve
+    * the generic type.
     *
     * @param entity the representation entity data
     * @param type   the media type of the entity
@@ -154,7 +170,9 @@ public abstract class Response
    }
 
    /**
-    * Create a new ResponseBuilder that contains a representation.
+    * Create a new ResponseBuilder that contains a representation. If
+    * required, wrap the actual entity with {@link GenericEntity} to preserve
+    * the generic type.
     *
     * @param entity the representation entity data
     * @param type   the media type of the entity
@@ -169,7 +187,9 @@ public abstract class Response
    }
 
    /**
-    * Create a new ResponseBuilder that contains a representation.
+    * Create a new ResponseBuilder that contains a representation. If
+    * required, wrap the actual entity with {@link GenericEntity} to preserve
+    * the generic type.
     *
     * @param entity  the representation entity data
     * @param variant representation metadata
@@ -316,8 +336,12 @@ public abstract class Response
     *   return Response.created(widgetId).build();
     * }</pre>
     * <p/>
-    * Several methods have parameters of type URI, {@link UriBuilder} provides
-    * convenient methods to create such values as does <code>URI.create()</code>.
+    * <p>Several methods have parameters of type URI, {@link UriBuilder} provides
+    * convenient methods to create such values as does <code>URI.create()</code>.</p>
+    * <p/>
+    * <p>Where multiple variants of the same method are provided, the type of
+    * the supplied parameter is retained in the metadata of the built
+    * {@code Response}.</p>
     */
    public static abstract class ResponseBuilder
    {
@@ -382,7 +406,8 @@ public abstract class Response
       ;
 
       /**
-       * Set the entity on the ResponseBuilder.
+       * Set the entity on the ResponseBuilder. If required, wrap the actual
+       * entity with {@link GenericEntity} to preserve the generic type.
        *
        * @param entity the response entity
        * @return the updated ResponseBuilder
@@ -429,6 +454,14 @@ public abstract class Response
        * @return the updated ResponseBuilder
        */
       public abstract ResponseBuilder language(String language);
+
+      /**
+       * Set the language on the ResponseBuilder.
+       *
+       * @param language the language of the response entity
+       * @return the updated ResponseBuilder
+       */
+      public abstract ResponseBuilder language(Locale language);
 
       /**
        * Set the location on the ResponseBuilder.
@@ -485,25 +518,32 @@ public abstract class Response
       public abstract ResponseBuilder cacheControl(CacheControl cacheControl);
 
       /**
-       * Set the value of a specific header on the ResponseBuilder.
+       * Add a header to the ResponseBuilder.
        *
        * @param name  the name of the header
        * @param value the value of the header, the header will be serialized
-       *              using its toString method
+       *              using its toString method. If null then all current headers of the
+       *              same name will be removed.
        * @return the updated ResponseBuilder
        */
       public abstract ResponseBuilder header(String name, Object value);
 
       /**
        * Add cookies to the ResponseBuilder. If more than one cookie with
-       * the same is supplied, later ones overwrite earlier ones.
+       * the same name is supplied, later ones overwrite earlier ones.
        *
-       * @param cookies new cookies that will accompany the response.
+       * @param cookies new cookies that will accompany the response. A null
+       *                value will remove all cookies.
        * @return the updated ResponseBuilder
        */
       public abstract ResponseBuilder cookie(NewCookie... cookies);
    }
 
+   /**
+    * Commonly used status codes defined by HTTP, see
+    * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10">HTTP/1.1 documentation</a>}
+    * for the complete list.
+    */
    public enum Status
    {
       /**

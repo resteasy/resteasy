@@ -13,8 +13,8 @@ import org.jboss.resteasy.util.WeightedMediaType;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
@@ -62,10 +62,10 @@ public class ResourceMethod implements ResourceInvoker
       this.method = method;
       this.methodInjector = injector.createMethodInjector(method);
 
-      ProduceMime p = method.getAnnotation(ProduceMime.class);
-      if (p == null) p = clazz.getAnnotation(ProduceMime.class);
-      ConsumeMime c = method.getAnnotation(ConsumeMime.class);
-      if (c == null) c = clazz.getAnnotation(ConsumeMime.class);
+      Produces p = method.getAnnotation(Produces.class);
+      if (p == null) p = clazz.getAnnotation(Produces.class);
+      Consumes c = method.getAnnotation(Consumes.class);
+      if (c == null) c = clazz.getAnnotation(Consumes.class);
 
       if (p != null)
       {

@@ -245,16 +245,6 @@ public class UriInfoImpl implements UriInfo
       }
    }
 
-   public UriBuilder getPlatonicRequestUriBuilder()
-   {
-      throw new RuntimeException("NOT IMPLEMENTED");
-   }
-
-   public String getPathExtension()
-   {
-      throw new RuntimeException("NOT IMPLEMENTED");
-   }
-
    public List<String> getAncestorResourceURIs(boolean decode)
    {
       if (decode)
@@ -314,5 +304,10 @@ public class UriInfoImpl implements UriInfo
       {
          ancestorUris.remove(0);
       }
+   }
+
+   public String getConnegExtension()
+   {
+      throw new RuntimeException("NOT IMPLEMENTED YET");
    }
 }

@@ -94,7 +94,7 @@ public class WebApplicationException extends RuntimeException
    {
       super(cause);
       if (response == null)
-         response = Response.serverError().build();
+         this.response = Response.serverError().build();
       else
          this.response = response;
    }

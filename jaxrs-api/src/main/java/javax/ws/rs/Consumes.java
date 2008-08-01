@@ -11,7 +11,7 @@
  */
 
 /*
- * ConsumeMime.java
+ * Consumes.java
  *
  * Created on September 15, 2006, 2:40 PM
  *
@@ -34,15 +34,16 @@ import java.lang.annotation.Target;
  * the media type of the HTTP request entity body. If no such method is
  * available the container must respond with a HTTP "415 Unsupported Media Type"
  * as specified by RFC 2616.
- * 
+ *
  * @see javax.ws.rs.ext.MessageBodyReader
  */
 @Inherited
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConsumeMime {
-    /**
-     * A list of MIME types. E.g. {"image/jpeg","image/gif"}
-     */
-    String[] value() default "*/*";
+public @interface Consumes
+{
+   /**
+    * A list of MIME types. E.g. {"image/jpeg","image/gif"}
+    */
+   String[] value() default "*/*";
 }

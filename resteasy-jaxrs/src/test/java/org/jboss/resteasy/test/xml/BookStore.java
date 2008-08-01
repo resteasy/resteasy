@@ -1,11 +1,11 @@
 package org.jboss.resteasy.test.xml;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class BookStore
 
    @GET
    @Path("books/{isbn}")
-   @ProduceMime({"text/xml", "application/json"})
+   @Produces({"text/xml", "application/json"})
    public Book getBookByISBN(@PathParam("isbn")String isbn)
    {
       return availableBooks.get(isbn);
@@ -35,7 +35,7 @@ public class BookStore
 
    @PUT
    @Path("books")
-   @ConsumeMime({"text/xml", "application/json"})
+   @Consumes({"text/xml", "application/json"})
    public void addBook(Book book)
    {
       availableBooks.put(book.getISBN(), book);
@@ -43,7 +43,7 @@ public class BookStore
 
    @GET
    @Path("books")
-   @ProduceMime({"text/xml", "application/json"})
+   @Produces({"text/xml", "application/json"})
    public Collection<Book> getAllBooks()
    {
       return availableBooks.values();

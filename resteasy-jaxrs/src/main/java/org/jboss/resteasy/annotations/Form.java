@@ -13,22 +13,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A FormParam.
- * 
+ * This can be used as a value object for incoming application/x-www-form-urlencoded
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(
-{ElementType.METHOD, ElementType.FIELD})
-public @interface FormParam 
+@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
+public @interface Form
 {
 
-   /**
-    * The name of the request parameter.
-    * 
-    * @return
-    */
-   String value();
 }

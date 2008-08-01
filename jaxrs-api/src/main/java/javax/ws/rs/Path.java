@@ -25,28 +25,49 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies the URI path that a resource class or class method
- * will serve requests for. Root
- * resource classes require an &#64;Path annotation.
- * Classes may also be annotated with
- * {@link ConsumeMime} and {@link ProduceMime} to filter the
- * requests they will receive.
+ * Identifies the URI path that a resource class or class method will serve
+ * requests for. Embedded template variables are allowed and are of the form
+ * {name} where name is the template variable name. Values of template
+ * variables may be extracted using {@link PathParam}.
+ * <p/>
+ * <p>Paths are relative. For an annotated class the base URI is the
+ * application context. For an annotated method the base URI is the
+ * effective URI of the containing class. For the purposes of absolutizing a
+ * path against the base URI , a leading '/' in a path is
+ * ignored and base URIs are treated as if they ended in '/'. E.g.:</p>
+ * <p/>
+ * <pre>&#64;Path("widgets")
+ * public class WidgetsResource {
+ *  &#64;GET
+ *  String getList() {...}
+ * <p/>
+ *  &#64;GET &#64;Path("{id}")
+ *  String getWidget(&#64;PathParam("id") String id) {...}
+ * }</pre>
+ * <p/>
+ * <p>In the above, if the application context is
+ * <code>http://example.com/catalogue</code>, then <code>GET</code> reguests for
+ * <code>http://example.com/catalogue/widgets</code> will be handled by the
+ * <code>getList</code> method while reguests for
+ * <code>http://example.com/catalogue/widgets/<i>nnn</i></code> (where
+ * <code><i>nnn</i></code> is some value) will be handled by the
+ * <code>getWidget</code> method. The same would apply if the value of either
+ * <code>&#64;Path</code> annotation started with '/'.
+ * <p/>
+ * <p>Classes may also be annotated with {@link Consumes} and
+ * {@link Produces} to filter the requests they will receive.</p>
  *
- * @see ConsumeMime
- * @see ProduceMime
+ * @see Consumes
+ * @see Produces
+ * @see PathParam
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Path
 {
    /**
-    * Defines a URI template for the resource. Requests to URIs that match
-    * the template will be served by the annotated class or class method.
-    * Embedded template variables are allowed and are of the form {name} where
-    * name is the template variable name. Paths are relative to the base URI
-    * of the container and must not include matrix parameters.
-    * <p/>
-    * <p>E.g.: &#64;Path("widgets/{id}")</p>
+    * Defines a URI template for the resource class or method, must not
+    * include matrix parameters.
     */
    String value();
 

@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -31,7 +31,7 @@ public class ProviderInjectionTest
       ResteasyProviderFactory.setInstance(new ResteasyProviderFactory());
    }
 
-   @ConsumeMime("not/real")
+   @Consumes("not/real")
    public static class MyProviderReader implements MessageBodyReader
    {
       @Context

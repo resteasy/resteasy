@@ -4,6 +4,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -12,7 +13,7 @@ import java.util.List;
 public class VariantListBuilderImpl extends Variant.VariantListBuilder
 {
    private ArrayList<Variant> variants = new ArrayList<Variant>();
-   private ArrayList<String> currentLanguages = new ArrayList<String>();
+   private ArrayList<Locale> currentLanguages = new ArrayList<Locale>();
    private ArrayList<String> currentEncodings = new ArrayList<String>();
    private ArrayList<MediaType> currentTypes = new ArrayList<MediaType>();
 
@@ -50,7 +51,7 @@ public class VariantListBuilderImpl extends Variant.VariantListBuilder
             int k = 0;
             do
             {
-               String language = null;
+               Locale language = null;
                if (k < langSize) language = currentLanguages.get(k);
                variants.add(new Variant(type, language, encoding));
                k++;
@@ -67,18 +68,20 @@ public class VariantListBuilderImpl extends Variant.VariantListBuilder
       return this;
    }
 
-   public Variant.VariantListBuilder languages(String... languages)
+   public Variant.VariantListBuilder languages(Locale... languages)
    {
-      for (String language : languages) currentLanguages.add(language);
+      for (Locale language : languages) currentLanguages.add(language);
       return this;
    }
 
+   @Override
    public Variant.VariantListBuilder encodings(String... encodings)
    {
       for (String encoding : encodings) currentEncodings.add(encoding);
       return this;
    }
 
+   @Override
    public Variant.VariantListBuilder mediaTypes(MediaType... mediaTypes)
    {
       for (MediaType type : mediaTypes) currentTypes.add(type);

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -18,8 +18,8 @@ import java.lang.reflect.Type;
  * @version $Revision: 1 $
  */
 @Provider
-@ProduceMime("*/*")
-@ConsumeMime("*/*")
+@Produces("*/*")
+@Consumes("*/*")
 public class InputStreamProvider implements MessageBodyReader<InputStream>, MessageBodyWriter<InputStream>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
