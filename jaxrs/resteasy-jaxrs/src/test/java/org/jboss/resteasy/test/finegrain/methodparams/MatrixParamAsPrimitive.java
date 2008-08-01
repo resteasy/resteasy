@@ -15,7 +15,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitives
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@MatrixParam("boolean")boolean v)
       {
          Assert.assertEquals(true, v);
@@ -72,7 +72,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@MatrixParam("byte")byte v)
       {
          Assert.assertTrue((byte) 127 == v);
@@ -80,7 +80,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@MatrixParam("short")short v)
       {
          Assert.assertTrue((short) 32767 == v);
@@ -88,7 +88,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@MatrixParam("int")int v)
       {
          Assert.assertEquals(2147483647, v);
@@ -96,7 +96,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@MatrixParam("long")long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
@@ -104,7 +104,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@MatrixParam("float")float v)
       {
          Assert.assertEquals(3.14159265f, v);
@@ -112,7 +112,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@MatrixParam("double")double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
@@ -124,7 +124,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitivesDefaultNull
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@MatrixParam("boolean")boolean v)
       {
          Assert.assertEquals(false, v);
@@ -132,7 +132,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@MatrixParam("byte")byte v)
       {
          Assert.assertTrue(0 == v);
@@ -140,7 +140,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@MatrixParam("short")short v)
       {
          Assert.assertTrue(0 == v);
@@ -148,7 +148,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@MatrixParam("int")int v)
       {
          Assert.assertEquals(0, v);
@@ -156,7 +156,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@MatrixParam("long")long v)
       {
          Assert.assertEquals(0l, v);
@@ -164,7 +164,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@MatrixParam("float")float v)
       {
          Assert.assertEquals(0.0f, v);
@@ -172,7 +172,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@MatrixParam("double")double v)
       {
          Assert.assertEquals(0.0d, v);
@@ -184,7 +184,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitivesDefault
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@MatrixParam("boolean") @DefaultValue("true")boolean v)
       {
          Assert.assertEquals(true, v);
@@ -192,7 +192,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@MatrixParam("byte") @DefaultValue("127")byte v)
       {
          Assert.assertTrue((byte) 127 == v);
@@ -200,7 +200,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@MatrixParam("short") @DefaultValue("32767")short v)
       {
          Assert.assertTrue((short) 32767 == v);
@@ -208,7 +208,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@MatrixParam("int") @DefaultValue("2147483647")int v)
       {
          Assert.assertEquals(2147483647, v);
@@ -216,7 +216,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@MatrixParam("long") @DefaultValue("9223372036854775807")long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
@@ -224,7 +224,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@MatrixParam("float") @DefaultValue("3.14159265")float v)
       {
          Assert.assertEquals(3.14159265f, v);
@@ -232,7 +232,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@MatrixParam("double") @DefaultValue("3.14159265358979")double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
@@ -244,7 +244,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitivesDefaultOverride
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@MatrixParam("boolean") @DefaultValue("false")boolean v)
       {
          Assert.assertEquals(true, v);
@@ -252,7 +252,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@MatrixParam("byte") @DefaultValue("1")byte v)
       {
          Assert.assertTrue((byte) 127 == v);
@@ -260,7 +260,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@MatrixParam("short") @DefaultValue("1")short v)
       {
          Assert.assertTrue((short) 32767 == v);
@@ -268,7 +268,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@MatrixParam("int") @DefaultValue("1")int v)
       {
          Assert.assertEquals(2147483647, v);
@@ -276,7 +276,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@MatrixParam("long") @DefaultValue("1")long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
@@ -284,7 +284,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@MatrixParam("float") @DefaultValue("0.0")float v)
       {
          Assert.assertEquals(3.14159265f, v);
@@ -292,7 +292,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@MatrixParam("double") @DefaultValue("0.0")double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
@@ -304,7 +304,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveWrappers
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@MatrixParam("boolean")Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
@@ -312,7 +312,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@MatrixParam("byte")Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
@@ -320,7 +320,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@MatrixParam("short")Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
@@ -328,7 +328,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@MatrixParam("int")Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
@@ -336,7 +336,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@MatrixParam("long")Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
@@ -344,7 +344,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@MatrixParam("float")Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
@@ -352,7 +352,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@MatrixParam("double")Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
@@ -364,7 +364,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveWrappersDefaultNull
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@MatrixParam("boolean")Boolean v)
       {
          Assert.assertEquals(null, v);
@@ -372,7 +372,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@MatrixParam("byte")Byte v)
       {
          Assert.assertEquals(null, v);
@@ -380,7 +380,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@MatrixParam("short")Short v)
       {
          Assert.assertEquals(null, v);
@@ -388,7 +388,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@MatrixParam("int")Integer v)
       {
          Assert.assertEquals(null, v);
@@ -396,7 +396,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@MatrixParam("long")Long v)
       {
          Assert.assertEquals(null, v);
@@ -404,7 +404,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@MatrixParam("float")Float v)
       {
          Assert.assertEquals(null, v);
@@ -412,7 +412,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@MatrixParam("double")Double v)
       {
          Assert.assertEquals(null, v);
@@ -424,7 +424,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveWrappersDefault
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@MatrixParam("boolean") @DefaultValue("true")Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
@@ -432,7 +432,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@MatrixParam("byte") @DefaultValue("127")Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
@@ -440,7 +440,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@MatrixParam("short") @DefaultValue("32767")Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
@@ -448,7 +448,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@MatrixParam("int") @DefaultValue("2147483647")Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
@@ -456,7 +456,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@MatrixParam("long") @DefaultValue("9223372036854775807")Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
@@ -464,7 +464,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@MatrixParam("float") @DefaultValue("3.14159265")Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
@@ -472,7 +472,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@MatrixParam("double") @DefaultValue("3.14159265358979")Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
@@ -484,7 +484,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveWrappersDefaultOverride
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@MatrixParam("boolean") @DefaultValue("false")Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
@@ -492,7 +492,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@MatrixParam("byte") @DefaultValue("1")Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
@@ -500,7 +500,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@MatrixParam("short") @DefaultValue("1")Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
@@ -508,7 +508,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@MatrixParam("int") @DefaultValue("1")Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
@@ -516,7 +516,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@MatrixParam("long") @DefaultValue("1")Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
@@ -524,7 +524,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@MatrixParam("float") @DefaultValue("0.0")Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
@@ -532,7 +532,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@MatrixParam("double") @DefaultValue("0.0")Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
@@ -544,7 +544,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveList
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean")List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
@@ -554,7 +554,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte")List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
@@ -564,7 +564,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@MatrixParam("short")List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
@@ -574,7 +574,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@MatrixParam("int")List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
@@ -584,7 +584,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@MatrixParam("long")List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
@@ -594,7 +594,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@MatrixParam("float")List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
@@ -604,7 +604,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@MatrixParam("double")List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
@@ -618,7 +618,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveListDefaultNull
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean")List<Boolean> v)
       {
          Assert.assertEquals(null, v);
@@ -626,7 +626,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte")List<Byte> v)
       {
          Assert.assertEquals(null, v);
@@ -634,7 +634,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@MatrixParam("short")List<Short> v)
       {
          Assert.assertEquals(null, v);
@@ -642,7 +642,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@MatrixParam("int")List<Integer> v)
       {
          Assert.assertEquals(null, v);
@@ -650,7 +650,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@MatrixParam("long")List<Long> v)
       {
          Assert.assertEquals(null, v);
@@ -658,7 +658,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@MatrixParam("float")List<Float> v)
       {
          Assert.assertEquals(null, v);
@@ -666,7 +666,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@MatrixParam("double")List<Double> v)
       {
          Assert.assertEquals(null, v);
@@ -678,7 +678,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveListDefault
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("true")List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
@@ -686,7 +686,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte") @DefaultValue("127")List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
@@ -694,7 +694,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@MatrixParam("short") @DefaultValue("32767")List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
@@ -702,7 +702,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@MatrixParam("int") @DefaultValue("2147483647")List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
@@ -710,7 +710,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@MatrixParam("long") @DefaultValue("9223372036854775807")List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
@@ -718,7 +718,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") @DefaultValue("3.14159265")List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
@@ -726,7 +726,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") @DefaultValue("3.14159265358979")List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
@@ -738,7 +738,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveListDefaultOverride
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("false")List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
@@ -746,7 +746,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte") @DefaultValue("0")List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
@@ -754,7 +754,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@MatrixParam("short") @DefaultValue("0")List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
@@ -762,7 +762,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@MatrixParam("int") @DefaultValue("0")List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
@@ -770,7 +770,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@MatrixParam("long") @DefaultValue("0")List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
@@ -778,7 +778,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") @DefaultValue("0.0")List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
@@ -786,7 +786,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") @DefaultValue("0.0")List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
@@ -798,7 +798,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveArray
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean")boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
@@ -808,7 +808,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte")byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
@@ -818,7 +818,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@MatrixParam("short")short[] v)
       {
          Assert.assertTrue(32767 == v[0]);
@@ -828,7 +828,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@MatrixParam("int")int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
@@ -838,7 +838,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@MatrixParam("long")long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
@@ -848,7 +848,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@MatrixParam("float")float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
@@ -858,7 +858,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@MatrixParam("double")double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);
@@ -872,7 +872,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveArrayDefaultNull
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean")boolean[] v)
       {
          Assert.assertEquals(null, v);
@@ -880,7 +880,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte")byte[] v)
       {
          Assert.assertEquals(null, v);
@@ -888,7 +888,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@MatrixParam("short")short[] v)
       {
          Assert.assertEquals(null, v);
@@ -896,7 +896,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@MatrixParam("int")int[] v)
       {
          Assert.assertEquals(null, v);
@@ -904,7 +904,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@MatrixParam("long")long[] v)
       {
          Assert.assertEquals(null, v);
@@ -912,7 +912,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@MatrixParam("float")float[] v)
       {
          Assert.assertEquals(null, v);
@@ -920,7 +920,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@MatrixParam("double")double[] v)
       {
          Assert.assertEquals(null, v);
@@ -932,7 +932,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveArrayDefault
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("true")boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
@@ -940,7 +940,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte") @DefaultValue("127")byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
@@ -948,7 +948,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@MatrixParam("short") @DefaultValue("32767")short[] v)
       {
          Assert.assertTrue((short) 32767 == v[0]);
@@ -956,7 +956,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@MatrixParam("int") @DefaultValue("2147483647")int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
@@ -964,7 +964,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@MatrixParam("long") @DefaultValue("9223372036854775807")long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
@@ -972,7 +972,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") @DefaultValue("3.14159265")float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
@@ -980,7 +980,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") @DefaultValue("3.14159265358979")double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);
@@ -992,7 +992,7 @@ public class MatrixParamAsPrimitive
    public static class ResourceMatrixPrimitiveArrayDefaultOverride
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("false")boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
@@ -1000,7 +1000,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte") @DefaultValue("0")byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
@@ -1008,7 +1008,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@MatrixParam("short") @DefaultValue("0")short[] v)
       {
          Assert.assertTrue((short) 32767 == v[0]);
@@ -1016,7 +1016,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@MatrixParam("int") @DefaultValue("0")int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
@@ -1024,7 +1024,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@MatrixParam("long") @DefaultValue("0")long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
@@ -1032,7 +1032,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") @DefaultValue("0.0")float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
@@ -1040,7 +1040,7 @@ public class MatrixParamAsPrimitive
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") @DefaultValue("0.0")double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);

@@ -11,9 +11,9 @@
  */
 
 /*
- * MatrixParam.java
+ * FormParam.java
  *
- * Created on January 24, 2007, 2:40 PM
+ * Created on November 16, 2006, 2:04 PM
  *
  */
 
@@ -25,11 +25,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Binds the value(s) of a URI matrix parameter to a resource method parameter,
- * resource class field, or resource class bean property.
- * Values are URL decoded unless this is disabled using the {@link Encoded}
- * annotation. A default value can be specified using the {@link DefaultValue}
+ * Binds the value(s) of a form parameter contained within a request entity body
+ * to a resource method parameter, resource class field, or resource class bean
+ * property.
+ * A default value can be specified using the {@link DefaultValue}
  * annotation.
+ * If the request entity body is absent or is of any media type other than
+ * application/x-www-form-urlencoded, the default value is used.
  * <p/>
  * The type <code>T</code> of the annotated parameter, field or property must
  * either:
@@ -53,25 +55,16 @@ import java.lang.annotation.Target;
  * parameters.</p>
  *
  * @see DefaultValue
- * @see Encoded
- * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
+ * @see javax.ws.rs.core.Request#getFormParameters
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MatrixParam
+public @interface FormParam
 {
    /**
-    * Defines the name of the URI matrix parameter whose value will be used
+    * Defines the name of the form parameter whose value will be used
     * to initialize the value of the annotated method argument, class field or
     * bean property.
     */
    String value();
-
-   /**
-    * Controls whether the the supplied matrix parameter name is URL encoded.
-    * If true, any characters in the matrix parameter name that are not valid
-    * URI characters will be automatically encoded. If false then all
-    * characters in the supplied name must be valid URI characters.
-    */
-   boolean encode() default true;
 }

@@ -33,12 +33,12 @@ import java.lang.reflect.Type;
  * implementation class with <code>@Provider</code>.
  * <p/>
  * A <code>MessageBodyWriter</code> implementation may be annotated
- * with {@link javax.ws.rs.ProduceMime} to restrict the media types for which it will
+ * with {@link javax.ws.rs.Produces} to restrict the media types for which it will
  * be considered suitable.
  *
  * @param T the type that can be written
  * @see Provider
- * @see javax.ws.rs.ProduceMime
+ * @see javax.ws.rs.Produces
  */
 public interface MessageBodyWriter<T>
 {
@@ -47,10 +47,10 @@ public interface MessageBodyWriter<T>
     * Ascertain if the MessageBodyWriter supports a particular type.
     *
     * @param type        the class of object that is to be written.
-    * @param genericType the type of object to be written. E.g. if the
-    *                    message body is to be produced from a field, this will be
-    *                    the declared type of the field as returned by
-    *                    <code>Field.getGenericType</code>.
+    * @param genericType the type of object to be written, obtained either
+    *                    by reflection of a resource method return type or via inspection
+    *                    of the returned instance. {@link javax.ws.rs.core.GenericEntity}
+    *                    provides a way to specify this information at runtime.
     * @param annotations an array of the annotations on the declaration of the
     *                    artifact that will be written. E.g. if the
     *                    message body is to be produced from a field, this will be
@@ -65,7 +65,7 @@ public interface MessageBodyWriter<T>
     * the serialized form of <code>t</code>. A non-negative return value is
     * used in a HTTP <code>Content-Length</code> header.
     *
-    * @param t the type
+    * @param t the instance to write
     * @return length in bytes or -1 if the length cannot be determined in
     *         advance
     */
@@ -78,10 +78,10 @@ public interface MessageBodyWriter<T>
     *
     * @param t            the instance to write.
     * @param type         the class of object that is to be written.
-    * @param genericType  the type of object to be written. E.g. if the
-    *                     message body is to be produced from a field, this will be
-    *                     the declared type of the field as returned by
-    *                     <code>Field.getGenericType</code>.
+    * @param genericType  the type of object to be written, obtained either
+    *                     by reflection of a resource method return type or by inspection
+    *                     of the returned instance. {@link javax.ws.rs.core.GenericEntity}
+    *                     provides a way to specify this information at runtime.
     * @param annotations  an array of the annotations on the declaration of the
     *                     artifact that will be written. E.g. if the
     *                     message body is to be produced from a field, this will be
@@ -90,7 +90,7 @@ public interface MessageBodyWriter<T>
     * @param mediaType    the media type of the HTTP entity.
     * @param httpHeaders  a mutable map of the HTTP response headers.
     * @param entityStream the {@link OutputStream} for the HTTP entity. The
-    *                     implementation should not close the input stream.
+    *                     implementation should not close the output stream.
     * @throws java.io.IOException if an IO error arises
     * @throws javax.ws.rs.WebApplicationException
     *                             if a specific

@@ -15,13 +15,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import java.io.IOException;
 
 /**
@@ -35,15 +35,15 @@ public class ClientErrorTest
    @Path("/")
    public static class WebResourceUnsupportedMediaType
    {
-      @ConsumeMime("application/bar")
-      @ProduceMime("application/foo")
+      @Consumes("application/bar")
+      @Produces("application/foo")
       @POST
       public String doPost(String entity)
       {
          return "content";
       }
 
-      @ProduceMime("text/plain")
+      @Produces("text/plain")
       @GET
       @Path("match")
       public String get()
@@ -51,7 +51,7 @@ public class ClientErrorTest
          return "content";
       }
 
-      @ProduceMime("text/xml")
+      @Produces("text/xml")
       @GET
       @Path("{uriparam}")
       public String getXml(@PathParam("uriparam")String param)

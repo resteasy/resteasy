@@ -5,8 +5,8 @@ package org.jboss.resteasy.plugins.providers;
 
 import javax.activation.DataHandler;
 import javax.mail.util.ByteArrayDataSource;
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -26,8 +26,8 @@ import java.lang.reflect.Type;
  *         2008
  */
 @Provider
-@ProduceMime("*/*")
-@ConsumeMime("*/*")
+@Produces("*/*")
+@Consumes("*/*")
 public class DataContentProvider implements MessageBodyReader<Object>,
         MessageBodyWriter<Object>
 {

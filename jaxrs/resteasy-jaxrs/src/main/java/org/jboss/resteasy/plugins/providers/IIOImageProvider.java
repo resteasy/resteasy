@@ -3,13 +3,10 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Locale;
+import org.jboss.resteasy.annotations.providers.ImageWriterParams;
+import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.util.FindAnnotation;
+import org.slf4j.Logger;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -18,29 +15,31 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageOutputStream;
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-
-import org.jboss.resteasy.annotations.providers.ImageWriterParams;
-import org.jboss.resteasy.core.LoggerCategories;
-import org.jboss.resteasy.util.FindAnnotation;
-import org.slf4j.Logger;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Provider
-@ConsumeMime("image/*")
-@ProduceMime("image/*")
+@Consumes("image/*")
+@Produces("image/*")
 public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
 {
    /**
-    * 
+    *
     */
    private static final Logger logger = LoggerCategories.getProviderLogger();
 
@@ -145,7 +144,7 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
       * maximum
       */
       ImageWriterParams writerParams = FindAnnotation.findAnnotation(annotations,
-            ImageWriterParams.class);
+              ImageWriterParams.class);
       if (writerParams != null)
       {
          if (param.canWriteCompressed())

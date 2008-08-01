@@ -1,5 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
+import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.AcceptableVariant;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -8,6 +10,7 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
@@ -24,20 +27,31 @@ public class RequestImpl implements Request
    private HttpHeaders headers;
    private String varyHeader;
    private String httpMethod;
+   private HttpRequest request;
 
-   public RequestImpl(HttpHeaders headers, String httpMethod)
+   public RequestImpl(HttpRequest request)
    {
-      this.headers = headers;
-      this.httpMethod = httpMethod.toUpperCase();
+      this.headers = request.getHttpHeaders();
+      this.httpMethod = request.getHttpMethod().toUpperCase();
+      this.request = request;
    }
 
+   public String getMethod()
+   {
+      return httpMethod;
+   }
+
+   public MultivaluedMap<String, String> getFormParameters()
+   {
+      return request.getDecodedFormParameters();
+   }
 
    public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
    {
       if (variants == null || variants.size() == 0) throw new IllegalArgumentException("Variant list must not be zero");
 
       List<MediaType> accepts = headers.getAcceptableMediaTypes();
-      List<String> languages = headers.getAcceptableLanguages();
+      List<String> languages = ServletUtil.extractLanguages(headers.getRequestHeaders());
       List<String> encodings = convertString(headers.getRequestHeaders().get(HttpHeaderNames.ACCEPT_ENCODING));
 
 
@@ -47,21 +61,41 @@ public class RequestImpl implements Request
 
    public static Variant pickVariant(List<Variant> has, List<MediaType> accepts, List<String> languages, List<String> encodings)
    {
-      VariantListBuilderImpl builder = new VariantListBuilderImpl();
+      List<AcceptableVariant> wants = new ArrayList<AcceptableVariant>();
 
-      if (accepts != null)
+      int langSize = languages.size();
+      int encodingSize = encodings.size();
+      int typeSize = accepts.size();
+
+      int i = 0;
+
+      if (langSize > 0 || encodingSize > 0 || typeSize > 0)
       {
-         for (MediaType accept : accepts)
+         do
          {
-            builder.mediaTypes(accept);
-         }
+            MediaType type = null;
+            if (i < typeSize) type = accepts.get(i);
+            int j = 0;
+            do
+            {
+               String encoding = null;
+               if (j < encodingSize) encoding = encodings.get(j);
+               int k = 0;
+               do
+               {
+                  String language = null;
+                  if (k < langSize) language = languages.get(k);
+                  wants.add(new AcceptableVariant(type, language, encoding));
+                  k++;
+               } while (k < langSize);
+               j++;
+            } while (j < encodingSize);
+            i++;
+         } while (i < typeSize);
       }
 
-      for (String language : languages) builder.languages(language);
-      for (String encoding : encodings) builder.encodings(encoding);
 
-      List<Variant> wants = builder.add().build();
-      return AcceptableVariant.pick(wants, has);
+      return AcceptableVariant.pick(has, wants);
 
    }
 

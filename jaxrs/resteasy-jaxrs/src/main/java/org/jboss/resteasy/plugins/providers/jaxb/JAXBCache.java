@@ -6,14 +6,13 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A JAXBCache.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -23,11 +22,11 @@ public final class JAXBCache
    private static JAXBCache instance = new JAXBCache();
 
    /**
-    * 
+    *
     */
    private ConcurrentHashMap<Class<?>, JAXBContext> contextCache =
-      new ConcurrentHashMap<Class<?>, JAXBContext>();
-   
+           new ConcurrentHashMap<Class<?>, JAXBContext>();
+
 
    private JAXBCache()
    {
@@ -36,7 +35,7 @@ public final class JAXBCache
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @return
     */
    public static JAXBCache instance()
@@ -45,14 +44,14 @@ public final class JAXBCache
    }
 
    /**
-    * Lookup.  Will create context if it doesn't exist.  
+    * Lookup.  Will create context if it doesn't exist.
     * Might be useful for prepopulating contextCache.
     *
     * @param clazz
     * @return
     * @throws JAXBException
     */
-   protected JAXBContext getJAXBContext(Class<?> clazz) throws JAXBException
+   public JAXBContext getJAXBContext(Class<?> clazz) throws JAXBException
    {
       JAXBContext context = contextCache.get(clazz);
       if (context == null)
@@ -61,5 +60,16 @@ public final class JAXBCache
          contextCache.putIfAbsent(clazz, context);
       }
       return context;
+   }
+
+   /**
+    * Prepopulate the JAXBContext cache
+    *
+    * @param clazz   key to cache
+    * @param context
+    */
+   public void putJAXBContext(Class<?> clazz, JAXBContext context)
+   {
+      contextCache.put(clazz, context);
    }
 }

@@ -200,7 +200,8 @@ public abstract class RuntimeDelegate
        *
        * @param value the string value
        * @return the newly created instance of <code>T</code>
-       * @throws IllegalArgumentException if the supplied string cannot be parsed
+       * @throws IllegalArgumentException if the supplied string cannot be
+       *                                  parsed or is null
        */
       public T fromString(String value) throws IllegalArgumentException;
 
@@ -209,7 +210,8 @@ public abstract class RuntimeDelegate
        *
        * @param value the value of type <code>T</code>
        * @return a String representation of the value
-       * @throws IllegalArgumentException if the supplied object cannot be serialized
+       * @throws IllegalArgumentException if the supplied object cannot be
+       *                                  serialized or is null
        */
       public String toString(T value);
    }

@@ -1,15 +1,20 @@
 package org.jboss.resteasy.mock;
 
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
@@ -32,6 +37,8 @@ public class MockHttpRequest implements HttpRequest
    protected UriInfo uri;
    protected String httpMethod;
    protected List<PathSegment> preProcessedSegments;
+   protected MultivaluedMap<String, String> formParameters;
+   protected MultivaluedMap<String, String> decodedFormParameters;
 
 
    protected MockHttpRequest()
@@ -116,7 +123,7 @@ public class MockHttpRequest implements HttpRequest
    public MockHttpRequest language(String language)
    {
       httpHeaders.getRequestHeaders().add(HttpHeaderNames.ACCEPT_LANGUAGE, language);
-      httpHeaders.getAcceptableLanguages().add(language);
+      httpHeaders.getAcceptableLanguages().add(LocaleHelper.extractLocale(language));
       return this;
    }
 
@@ -143,6 +150,24 @@ public class MockHttpRequest implements HttpRequest
    public MockHttpRequest content(InputStream stream)
    {
       inputStream = stream;
+      return this;
+   }
+
+   /**
+    * Set CONTENT-TYPE to ""application/x-www-form-urlencoded"
+    *
+    * @param name
+    * @param value
+    * @return
+    */
+   public MockHttpRequest addFormHeader(String name, String value)
+   {
+      if (decodedFormParameters == null)
+      {
+         decodedFormParameters = new MultivaluedMapImpl<String, String>();
+         contentType("application/x-www-form-urlencoded");
+      }
+      decodedFormParameters.add(name, value);
       return this;
    }
 
@@ -176,4 +201,37 @@ public class MockHttpRequest implements HttpRequest
       this.preProcessedSegments = segments;
    }
 
+   public MultivaluedMap<String, String> getFormParameters()
+   {
+      if (formParameters != null) return formParameters;
+      if (decodedFormParameters != null)
+      {
+         formParameters = Encode.encode(decodedFormParameters);
+         return formParameters;
+      }
+
+      if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
+      {
+         try
+         {
+            formParameters = FormUrlEncodedProvider.parseForm(getInputStream());
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      else
+      {
+         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
+      }
+      return formParameters;
+   }
+
+   public MultivaluedMap<String, String> getDecodedFormParameters()
+   {
+      if (decodedFormParameters != null) return decodedFormParameters;
+      decodedFormParameters = Encode.decode(getFormParameters());
+      return decodedFormParameters;
+   }
 }

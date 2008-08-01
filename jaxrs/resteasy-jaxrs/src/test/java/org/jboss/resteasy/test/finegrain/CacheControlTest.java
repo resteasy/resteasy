@@ -28,7 +28,7 @@ public class CacheControlTest
       Assert.assertEquals(first.isNoTransform(), second.isNoTransform());
       Assert.assertEquals(first.isPrivate(), second.isPrivate());
       Assert.assertEquals(first.isProxyRevalidate(), second.isProxyRevalidate());
-      Assert.assertEquals(first.isPublic(), second.isPublic());
+      Assert.assertEquals(first.isPrivate(), second.isPrivate());
       Assert.assertEquals(first.getMaxAge(), second.getMaxAge());
       Assert.assertEquals(first.getSMaxAge(), second.getSMaxAge());
       Assert.assertEquals(first.getNoCacheFields().size(), second.getNoCacheFields().size());
@@ -51,7 +51,6 @@ public class CacheControlTest
 
       {
          CacheControl cc = new CacheControl();
-         cc.setPublic(true);
          cc.setNoCache(true);
          cc.setNoTransform(true);
          cc.setPrivate(true);

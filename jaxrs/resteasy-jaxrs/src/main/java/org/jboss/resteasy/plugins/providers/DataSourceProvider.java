@@ -4,8 +4,8 @@
 package org.jboss.resteasy.plugins.providers;
 
 import javax.activation.DataSource;
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -21,23 +21,23 @@ import java.lang.reflect.Type;
  * @version $Revision:$
  */
 @Provider
-@ConsumeMime("*/*")
-@ProduceMime("*/*")
+@Consumes("*/*")
+@Produces("*/*")
 public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 {
 
-   
+
    /**
     * FIXME Comment this
-    * 
+    *
     * @param type
     * @param genericType
     * @param annotations
     * @return
     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
     */
-   public boolean isReadable(Class<?> type, 
-                             Type genericType, 
+   public boolean isReadable(Class<?> type,
+                             Type genericType,
                              Annotation[] annotations)
    {
       return DataSource.class.isAssignableFrom(type);
@@ -46,7 +46,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param type
     * @param genericType
     * @param annotations
@@ -58,11 +58,11 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @throws WebApplicationException
     * @see @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
     */
-   public DataSource readFrom(Class<DataSource> type, 
-                              Type genericType, 
-                              Annotation[] annotations, 
+   public DataSource readFrom(Class<DataSource> type,
+                              Type genericType,
+                              Annotation[] annotations,
                               MediaType mediaType,
-                              MultivaluedMap<String, String> httpHeaders, 
+                              MultivaluedMap<String, String> httpHeaders,
                               InputStream entityStream) throws IOException
    {
 
@@ -72,7 +72,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param type
     * @param genericType
     * @param annotations
@@ -86,7 +86,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param dataSource
     * @param type
     * @param genericType
@@ -98,12 +98,12 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @throws WebApplicationException
     * @see @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
     */
-   public void writeTo(DataSource dataSource, 
-                       Class<?> type, 
-                       Type genericType, 
+   public void writeTo(DataSource dataSource,
+                       Class<?> type,
+                       Type genericType,
                        Annotation[] annotations,
-                       MediaType mediaType, 
-                       MultivaluedMap<String, Object> httpHeaders, 
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException
    {
       InputStream in = dataSource.getInputStream();

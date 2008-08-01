@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
@@ -10,6 +11,7 @@ import org.jboss.resteasy.util.FindAnnotation;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
@@ -65,6 +67,9 @@ public class InjectorFactoryImpl implements InjectorFactory
       MatrixParam matrix;
       PathParam uriParam;
       CookieParam cookie;
+      FormParam formParam;
+      Form form;
+
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
       {
@@ -74,6 +79,10 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new HeaderParamInjector(type, genericType, target, header.value(), defaultVal);
       }
+      else if ((formParam = FindAnnotation.findAnnotation(annotations, FormParam.class)) != null)
+      {
+         return new FormParamInjector(type, genericType, target, formParam.value(), defaultVal);
+      }
       else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
       {
          return new CookieParamInjector(type, genericType, target, cookie.value(), defaultVal);
@@ -81,6 +90,10 @@ public class InjectorFactoryImpl implements InjectorFactory
       else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
       {
          return new PathParamInjector(index, type, genericType, target, uriParam.value(), defaultVal, encode);
+      }
+      else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
+      {
+         return new FormInjector(type, providerFactory, index);
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
       {

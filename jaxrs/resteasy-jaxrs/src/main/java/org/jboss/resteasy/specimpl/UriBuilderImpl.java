@@ -1,5 +1,13 @@
 package org.jboss.resteasy.specimpl;
 
+import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.util.Encode;
+import org.jboss.resteasy.util.PathHelper;
+import org.slf4j.Logger;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
@@ -8,15 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
-
-import org.jboss.resteasy.core.LoggerCategories;
-import org.jboss.resteasy.util.Encode;
-import org.jboss.resteasy.util.PathHelper;
-import org.slf4j.Logger;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -24,7 +23,7 @@ import org.slf4j.Logger;
 public class UriBuilderImpl extends UriBuilder
 {
    private static final Logger logger = LoggerCategories.getSpecImplLogger();
-   
+
    private String host;
    private String scheme;
    private int port = -1;
@@ -34,7 +33,6 @@ public class UriBuilderImpl extends UriBuilder
 
    private String userInfo;
    private String path;
-   private String matrix;
    private String query;
    private String fragment;
 
@@ -48,19 +46,20 @@ public class UriBuilderImpl extends UriBuilder
       impl.encode = encode;
       impl.userInfo = userInfo;
       impl.path = path;
-      impl.matrix = matrix;
       impl.query = query;
       impl.fragment = fragment;
 
       return impl;
    }
 
+   @Override
    public UriBuilder encode(boolean enable)
    {
       encode = enable;
       return this;
    }
 
+   @Override
    public UriBuilder uri(URI uri) throws IllegalArgumentException
    {
       if (uri.getHost() != null) host = uri.getHost();
@@ -68,26 +67,19 @@ public class UriBuilderImpl extends UriBuilder
       if (uri.getHost() != null) port = uri.getPort();
       if (uri.getUserInfo() != null) userInfo = uri.getRawUserInfo();
       if (uri.getPath() != null && !uri.getPath().equals("")) path = uri.getRawPath();
-      if (path != null)
-      {
-         int idx = path.indexOf(';');
-         if (idx > -1)
-         {
-            matrix = path.substring(idx);
-            path = path.substring(0, idx);
-         }
-      }
       if (uri.getFragment() != null) fragment = uri.getRawFragment();
       if (uri.getQuery() != null) query = uri.getRawQuery();
       return this;
    }
 
+   @Override
    public UriBuilder scheme(String scheme) throws IllegalArgumentException
    {
       this.scheme = scheme;
       return this;
    }
 
+   @Override
    public UriBuilder schemeSpecificPart(String ssp) throws IllegalArgumentException
    {
       StringBuffer uriStr = new StringBuffer();
@@ -100,24 +92,28 @@ public class UriBuilderImpl extends UriBuilder
       return uri(URI.create(uriStr.toString()));
    }
 
+   @Override
    public UriBuilder userInfo(String ui) throws IllegalArgumentException
    {
       this.userInfo = ui;
       return this;
    }
 
+   @Override
    public UriBuilder host(String host) throws IllegalArgumentException
    {
       this.host = host;
       return this;
    }
 
+   @Override
    public UriBuilder port(int port) throws IllegalArgumentException
    {
       this.port = port;
       return this;
    }
 
+   @Override
    public UriBuilder replacePath(String... segments) throws IllegalArgumentException
    {
       this.path = paths(isEncode(), null, segments);
@@ -141,12 +137,14 @@ public class UriBuilderImpl extends UriBuilder
       return path;
    }
 
+   @Override
    public UriBuilder path(String... segments) throws IllegalArgumentException
    {
       path = paths(isEncode(), path, segments);
       return this;
    }
 
+   @Override
    public UriBuilder path(Class resource) throws IllegalArgumentException
    {
       Path ann = (Path) resource.getAnnotation(Path.class);
@@ -158,6 +156,7 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
+   @Override
    public UriBuilder path(Class resource, String method) throws IllegalArgumentException
    {
       for (Method m : resource.getMethods())
@@ -170,6 +169,7 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
+   @Override
    public UriBuilder path(Method... methods) throws IllegalArgumentException
    {
       for (Method method : methods)
@@ -184,21 +184,28 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
+   @Override
    public UriBuilder replaceMatrixParams(String matrix) throws IllegalArgumentException
    {
-      this.matrix = matrix;
+
+      if (!matrix.startsWith(";")) matrix = ";" + matrix;
+      if (path == null)
+      {
+         path = matrix;
+      }
+      else
+      {
+         int start = path.lastIndexOf('/');
+         if (start < 0) start = 0;
+         int matrixIndex = path.indexOf(';', start);
+         if (matrixIndex > -1) path = path.substring(0, matrixIndex) + matrix;
+         else path += matrix;
+
+      }
       return this;
    }
 
-   public UriBuilder matrixParam(String name, String value) throws IllegalArgumentException
-   {
-      if (this.matrix == null) matrix = "";
-      StringBuilder tmp = new StringBuilder(this.matrix);
-      tmp.append(";").append(name).append("=").append(value);
-      matrix = tmp.toString();
-      return this;
-   }
-
+   @Override
    public UriBuilder replaceQueryParams(String query) throws IllegalArgumentException
    {
       this.query = query;
@@ -211,13 +218,7 @@ public class UriBuilderImpl extends UriBuilder
       return Encode.encodeSegment(value);
    }
 
-   public UriBuilder queryParam(String name, String value) throws IllegalArgumentException
-   {
-      if (query == null) query = encodeString(name) + "=" + encodeString(value);
-      else query += "&" + encodeString(name) + "=" + encodeString(value);
-      return this;
-   }
-
+   @Override
    public UriBuilder fragment(String fragment) throws IllegalArgumentException
    {
       this.fragment = encodeString(fragment);
@@ -259,6 +260,7 @@ public class UriBuilderImpl extends UriBuilder
    }
 
 
+   @Override
    public URI build() throws UriBuilderException
    {
       return build(path);
@@ -266,12 +268,6 @@ public class UriBuilderImpl extends UriBuilder
 
    protected URI build(String tmpPath) throws UriBuilderException
    {
-      if (matrix != null)
-      {
-         if (tmpPath == null) tmpPath = "";
-         if (!matrix.startsWith(";")) tmpPath += ";";
-         tmpPath += matrix;
-      }
       StringBuffer buffer = new StringBuffer();
       if (scheme != null) buffer.append(scheme).append("://");
       if (userInfo != null) buffer.append(userInfo).append("@");
@@ -298,6 +294,7 @@ public class UriBuilderImpl extends UriBuilder
       return value;
    }
 
+   @Override
    public URI build(Map<String, Object> values) throws IllegalArgumentException, UriBuilderException
    {
       if (values.size() <= 0 || path == null) return build();
@@ -338,6 +335,7 @@ public class UriBuilderImpl extends UriBuilder
       return params;
    }
 
+   @Override
    public URI build(Object... values) throws IllegalArgumentException, UriBuilderException
    {
       if (values.length <= 0) return build();
@@ -358,6 +356,116 @@ public class UriBuilderImpl extends UriBuilder
       return build(pathParams);
    }
 
+   @Override
+   public String getExtension()
+   {
+      return null;
+   }
+
+   @Override
+   public UriBuilder matrixParam(String name, Object... values) throws IllegalArgumentException
+   {
+      if (path == null) path = "";
+      for (Object val : values)
+      {
+         path += ";" + encodeSegment(name) + "=" + encodeSegment(val.toString());
+      }
+      return this;
+   }
+
+   @Override
+   public UriBuilder replaceMatrixParam(String name, Object... values) throws IllegalArgumentException
+   {
+      if (path == null) return matrixParam(name, values);
+      int start = path.lastIndexOf('/');
+      if (start < 0) start = 0;
+      int matrixIndex = path.indexOf(';', start);
+      if (matrixIndex > -1) return matrixParam(name, values);
+
+      String matrixParams = path.substring(matrixIndex + 1);
+      path = path.substring(0, matrixIndex);
+      MultivaluedMapImpl<String, String> map = new MultivaluedMapImpl<String, String>();
+
+      String[] params = matrixParams.split(";");
+      for (String param : params)
+      {
+         String[] namevalue = param.split("=");
+         if (namevalue != null && namevalue.length > 0)
+         {
+            String theName = namevalue[0];
+            String value = "";
+            if (namevalue.length > 1)
+            {
+               value = namevalue[1];
+            }
+            map.add(theName, value);
+         }
+      }
+      map.remove(name);
+      for (String theName : map.keySet())
+      {
+         List<String> vals = map.get(theName);
+         for (Object val : vals)
+         {
+            path += ";" + name + "=" + val.toString();
+         }
+      }
+      return matrixParam(name, values);
+   }
+
+   public UriBuilder queryParam(String name, String value) throws IllegalArgumentException
+   {
+      if (query == null) query = encodeString(name) + "=" + encodeString(value);
+      else query += "&" + encodeString(name) + "=" + encodeString(value);
+      return this;
+   }
+
+   @Override
+   public UriBuilder queryParam(String name, Object... values) throws IllegalArgumentException
+   {
+
+      for (Object value : values)
+      {
+         if (query == null) query = "";
+         else query += "&";
+         query += encodeString(name) + "=" + encodeString(value.toString());
+      }
+      return this;
+   }
+
+   @Override
+   public UriBuilder replaceQueryParam(String name, Object... values) throws IllegalArgumentException
+   {
+      if (query == null || query.equals("")) return queryParam(name, values);
+
+      String[] params = query.split("&");
+      query = null;
+
+      String replacedName = encodeString(name);
+
+      for (String param : params)
+      {
+         if (param.indexOf('=') >= 0)
+         {
+            String[] nv = param.split("=");
+            String paramName = nv[0];
+            if (paramName.equals(replacedName)) continue;
+
+            if (query == null) query = "";
+            else query += "&";
+            query += nv[0] + "=" + nv[1];
+         }
+         else
+         {
+            if (param.equals(replacedName)) continue;
+
+            if (query == null) query = "";
+            else query += "&";
+            query += param;
+         }
+      }
+      return queryParam(name, values);
+   }
 
    public String getHost()
    {
@@ -389,11 +497,6 @@ public class UriBuilderImpl extends UriBuilder
       return path;
    }
 
-   public String getMatrix()
-   {
-      return matrix;
-   }
-
    public String getQuery()
    {
       return query;
@@ -413,6 +516,7 @@ public class UriBuilderImpl extends UriBuilder
       else this.path = path;
    }
 
+   @Override
    public UriBuilder extension(String extension)
    {
       if (path != null)

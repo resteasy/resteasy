@@ -31,6 +31,7 @@ import java.lang.annotation.Target;
  * {@link javax.ws.rs.QueryParam},
  * {@link javax.ws.rs.MatrixParam},
  * {@link javax.ws.rs.CookieParam},
+ * {@link javax.ws.rs.FormParam},
  * or {@link javax.ws.rs.HeaderParam}.
  * The default value is used if the corresponding metadata is not present in the
  * request.
@@ -47,6 +48,7 @@ import java.lang.annotation.Target;
  *
  * @see PathParam
  * @see QueryParam
+ * @see FormParam
  * @see HeaderParam
  * @see MatrixParam
  * @see CookieParam

@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -32,7 +33,7 @@ public class VariantTest
 
       Variant.VariantListBuilder builder = Variant.VariantListBuilder.newInstance();
 
-      builder.languages("en", "fr");
+      builder.languages(new Locale("en"), new Locale("fr"));
 
       builder.add();
       List<Variant> variants = builder.build();
@@ -43,7 +44,7 @@ public class VariantTest
 
       System.out.println("--------");
 
-      builder.languages("en").encodings("gzip", "octet").mediaTypes(applicationXml);
+      builder.languages(new Locale("en")).encodings("gzip", "octet").mediaTypes(applicationXml);
       variants = builder.build();
 
       Assert.assertEquals(2, variants.size());
@@ -52,7 +53,7 @@ public class VariantTest
 
       System.out.println("--------");
 
-      builder.languages("en", "es").mediaTypes(applicationXml, textPlain, textHtml);
+      builder.languages(new Locale("en"), new Locale("es")).mediaTypes(applicationXml, textPlain, textHtml);
       variants = builder.build();
 
       Assert.assertEquals(6, variants.size());
@@ -60,7 +61,7 @@ public class VariantTest
 
       System.out.println("--------");
 
-      builder.languages("en", "es").mediaTypes(applicationXml, textPlain, textHtml).encodings("zip");
+      builder.languages(new Locale("en"), new Locale("es")).mediaTypes(applicationXml, textPlain, textHtml).encodings("zip");
       variants = builder.build();
 
       Assert.assertEquals(6, variants.size());
@@ -70,23 +71,23 @@ public class VariantTest
    @Test
    public void testVariantSorting()
    {
-      List<Variant> variants = new ArrayList<Variant>();
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
 
 
-      Variant variant1 = new Variant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
-      Variant variant2 = new Variant(MediaType.valueOf("text/plain"), "fr", null);
-      Variant variant3 = new Variant(MediaType.valueOf("text/plain"), "zh;q=0.6", null);
+      AcceptableVariant variant1 = new AcceptableVariant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
+      AcceptableVariant variant2 = new AcceptableVariant(MediaType.valueOf("text/plain"), "fr", null);
+      AcceptableVariant variant3 = new AcceptableVariant(MediaType.valueOf("text/plain"), "zh;q=0.6", null);
 
-      variants.add(variant1);
-      variants.add(variant2);
-      variants.add(variant3);
+      acceptable.add(variant1);
+      acceptable.add(variant2);
+      acceptable.add(variant3);
 
-      variants = AcceptableVariant.sort(variants);
+      List<Variant> variants = AcceptableVariant.sort(acceptable);
       VariantTest.printVariants(variants);
 
-      Assert.assertTrue(variants.get(0) == variant2);
-      Assert.assertTrue(variants.get(1) == variant3);
-      Assert.assertTrue(variants.get(2) == variant1);
+      Assert.assertTrue(acceptable.get(0) == variant2);
+      Assert.assertTrue(acceptable.get(1) == variant3);
+      Assert.assertTrue(acceptable.get(2) == variant1);
 
 
       System.out.println("--------");
@@ -95,26 +96,26 @@ public class VariantTest
    @Test
    public void testVariantSorting2()
    {
-      List<Variant> variants = new ArrayList<Variant>();
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
 
 
-      Variant variant1 = new Variant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
-      Variant variant2 = new Variant(MediaType.valueOf("text/html;q=0.4"), "fr", null);
-      Variant variant3 = new Variant(MediaType.valueOf("text/html"), "es", null);
-      Variant variant4 = new Variant(MediaType.valueOf("text/plain"), "zh;q=0.6", null);
+      AcceptableVariant variant1 = new AcceptableVariant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
+      AcceptableVariant variant2 = new AcceptableVariant(MediaType.valueOf("text/html;q=0.4"), "fr", null);
+      AcceptableVariant variant3 = new AcceptableVariant(MediaType.valueOf("text/html"), "es", null);
+      AcceptableVariant variant4 = new AcceptableVariant(MediaType.valueOf("text/plain"), "zh;q=0.6", null);
 
-      variants.add(variant1);
-      variants.add(variant2);
-      variants.add(variant3);
-      variants.add(variant4);
+      acceptable.add(variant1);
+      acceptable.add(variant2);
+      acceptable.add(variant3);
+      acceptable.add(variant4);
 
-      variants = AcceptableVariant.sort(variants);
+      List<Variant> variants = AcceptableVariant.sort(acceptable);
       VariantTest.printVariants(variants);
 
-      Assert.assertTrue(variants.get(0) == variant3);
-      Assert.assertTrue(variants.get(1) == variant4);
-      Assert.assertTrue(variants.get(2) == variant1);
-      Assert.assertTrue(variants.get(3) == variant2);
+      Assert.assertTrue(acceptable.get(0) == variant3);
+      Assert.assertTrue(acceptable.get(1) == variant4);
+      Assert.assertTrue(acceptable.get(2) == variant1);
+      Assert.assertTrue(acceptable.get(3) == variant2);
 
       System.out.println("--------");
    }
@@ -122,30 +123,30 @@ public class VariantTest
    @Test
    public void testVariantSorting3()
    {
-      List<Variant> variants = new ArrayList<Variant>();
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
 
 
-      Variant variant1 = new Variant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
-      Variant variant2 = new Variant(MediaType.valueOf("text/html;q=0.4"), "fr", null);
-      Variant variant3 = new Variant(MediaType.valueOf("text/html"), "es", null);
-      Variant variant4 = new Variant(null, "zh;q=0.6", null);
-      Variant variant5 = new Variant(MediaType.valueOf("application/xml"), "es", "gzip");
+      AcceptableVariant variant1 = new AcceptableVariant(MediaType.valueOf("text/plain"), "en;q=0.3", null);
+      AcceptableVariant variant2 = new AcceptableVariant(MediaType.valueOf("text/html;q=0.4"), "fr", null);
+      AcceptableVariant variant3 = new AcceptableVariant(MediaType.valueOf("text/html"), "es", null);
+      AcceptableVariant variant4 = new AcceptableVariant(null, "zh;q=0.6", null);
+      AcceptableVariant variant5 = new AcceptableVariant(MediaType.valueOf("application/xml"), "es", "gzip");
 
 
-      variants.add(variant1);
-      variants.add(variant2);
-      variants.add(variant3);
-      variants.add(variant4);
-      variants.add(variant5);
+      acceptable.add(variant1);
+      acceptable.add(variant2);
+      acceptable.add(variant3);
+      acceptable.add(variant4);
+      acceptable.add(variant5);
 
-      variants = AcceptableVariant.sort(variants);
+      List<Variant> variants = AcceptableVariant.sort(acceptable);
       VariantTest.printVariants(variants);
 
-      Assert.assertTrue(variants.get(0) == variant5);
-      Assert.assertTrue(variants.get(1) == variant3);
-      Assert.assertTrue(variants.get(2) == variant1);
-      Assert.assertTrue(variants.get(3) == variant2);
-      Assert.assertTrue(variants.get(4) == variant4);
+      Assert.assertTrue(acceptable.get(0) == variant5);
+      Assert.assertTrue(acceptable.get(1) == variant3);
+      Assert.assertTrue(acceptable.get(2) == variant1);
+      Assert.assertTrue(acceptable.get(3) == variant2);
+      Assert.assertTrue(acceptable.get(4) == variant4);
 
       System.out.println("--------");
    }
@@ -154,59 +155,59 @@ public class VariantTest
    public void testGetLanguageEn()
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
-              languages("zh").
-              languages("fr").
-              languages("en").add().
+              languages(new Locale("zh")).
+              languages(new Locale("fr")).
+              languages(new Locale("en")).add().
               build();
 
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
+      acceptable.add(new AcceptableVariant(null, "en", null));
 
-      List<Variant> wants = Variant.VariantListBuilder.newInstance().languages("en").build();
-
-      Variant v = AcceptableVariant.pick(wants, has);
+      Variant v = AcceptableVariant.pick(has, acceptable);
       Assert.assertNotNull(v);
       Assert.assertNull(v.getMediaType());
       Assert.assertNull(v.getEncoding());
-      Assert.assertEquals(v.getLanguage(), "en");
+      Assert.assertEquals(v.getLanguage(), new Locale("en"));
    }
 
    @Test
    public void testGetLanguageZh()
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
-              languages("zh").
-              languages("fr").
-              languages("en").add().
+              languages(new Locale("zh")).
+              languages(new Locale("fr")).
+              languages(new Locale("en")).add().
               build();
 
-      List<Variant> wants = Variant.VariantListBuilder.newInstance()
-              .languages("zh").build();
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
+      acceptable.add(new AcceptableVariant(null, "zh", null));
 
-      Variant v = AcceptableVariant.pick(wants, has);
+      Variant v = AcceptableVariant.pick(has, acceptable);
       Assert.assertNotNull(v);
       Assert.assertNull(v.getMediaType());
       Assert.assertNull(v.getEncoding());
-      Assert.assertEquals(v.getLanguage(), "zh");
+      Assert.assertEquals(v.getLanguage(), new Locale("zh"));
    }
 
    @Test
    public void testGetLanguageMultiple()
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
-              languages("zh").
-              languages("fr").
-              languages("en").add().
+              languages(new Locale("zh")).
+              languages(new Locale("fr")).
+              languages(new Locale("en")).add().
               build();
 
-      List<Variant> wants = Variant.VariantListBuilder.newInstance()
-              .languages("zh;q=0.4")
-              .languages("en;q=0.3")
-              .languages("fr").build();
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
+      acceptable.add(new AcceptableVariant(null, "zh;q=0.4", null));
+      acceptable.add(new AcceptableVariant(null, "en;q=0.3", null));
+      acceptable.add(new AcceptableVariant(null, "fr", null));
 
-      Variant v = AcceptableVariant.pick(wants, has);
+      Variant v = AcceptableVariant.pick(has, acceptable);
       Assert.assertNotNull(v);
       Assert.assertNull(v.getMediaType());
       Assert.assertNull(v.getEncoding());
-      Assert.assertEquals(v.getLanguage(), "fr");
+      Assert.assertEquals(v.getLanguage(), new Locale("fr"));
 
    }
 
@@ -215,28 +216,34 @@ public class VariantTest
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
               mediaTypes(MediaType.valueOf("image/jpeg")).add().
-              mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
-              mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
-              mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en")).add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().
               build();
 
-      List<Variant> wants = Variant.VariantListBuilder.newInstance()
-              .mediaTypes(MediaType.valueOf("text/xml"))
-              .mediaTypes(MediaType.valueOf("application/xml"))
-              .mediaTypes(MediaType.valueOf("application/xhtml+xml"))
-              .mediaTypes(MediaType.valueOf("image/png"))
-              .mediaTypes(MediaType.valueOf("text/html;q=0.9"))
-              .mediaTypes(MediaType.valueOf("text/plain;q=0.8"))
-              .mediaTypes(MediaType.valueOf("*/*;q=0.5"))
-              .languages("en-us")
-              .languages("en;q=0.5").build();
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xhtml+xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("image/png"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/html;q=0.9"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/plain;q=0.8"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("*/*;q=0.5"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/xml"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xml"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xhtml+xml"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("image/png"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/html;q=0.9"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/plain;q=0.8"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("*/*;q=0.5"), "en;q=0.5", null));
 
-      Variant v = AcceptableVariant.pick(wants, has);
+
+      Variant v = AcceptableVariant.pick(has, acceptable);
       Assert.assertNotNull(v);
       Assert.assertNotNull(v.getMediaType());
       Assert.assertTrue(MediaType.valueOf("text/xml").equals(v.getMediaType()));
       Assert.assertNull(v.getEncoding());
-      Assert.assertEquals(v.getLanguage(), "en-us");
+      Assert.assertEquals(v.getLanguage(), new Locale("en", "us"));
 
    }
 
@@ -245,28 +252,33 @@ public class VariantTest
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
               mediaTypes(MediaType.valueOf("image/jpeg")).add().
-              mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
-              mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
-              mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en")).add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().
               build();
 
-      List<Variant> wants = Variant.VariantListBuilder.newInstance()
-              .mediaTypes(MediaType.valueOf("text/xml"))
-              .mediaTypes(MediaType.valueOf("application/xml"))
-              .mediaTypes(MediaType.valueOf("application/xhtml+xml"))
-              .mediaTypes(MediaType.valueOf("image/png"))
-              .mediaTypes(MediaType.valueOf("text/html;q=0.9"))
-              .mediaTypes(MediaType.valueOf("text/plain;q=0.8"))
-              .mediaTypes(MediaType.valueOf("*/*;q=0.5"))
-              .languages("en")
-              .languages("en-us").build();
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/xml"), "en", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xml"), "en", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xhtml+xml"), "en", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("image/png"), "en", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/html;q=0.9"), "en", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/plain;q=0.8"), "en", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("*/*;q=0.5"), "en", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xhtml+xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("image/png"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/html;q=0.9"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/plain;q=0.8"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("*/*;q=0.5"), "en-us", null));
 
-      Variant v = AcceptableVariant.pick(wants, has);
+      Variant v = AcceptableVariant.pick(has, acceptable);
       Assert.assertNotNull(v);
       Assert.assertNotNull(v.getMediaType());
       Assert.assertTrue(MediaType.valueOf("text/xml").equals(v.getMediaType()));
       Assert.assertNull(v.getEncoding());
-      Assert.assertEquals(v.getLanguage(), "en");
+      Assert.assertEquals(v.getLanguage(), new Locale("en"));
 
    }
 
@@ -275,28 +287,33 @@ public class VariantTest
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
               mediaTypes(MediaType.valueOf("image/jpeg")).add().
-              mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
-              mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
-              mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en")).add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().
               build();
 
-      List<Variant> wants = Variant.VariantListBuilder.newInstance()
-              .mediaTypes(MediaType.valueOf("application/xml"))
-              .mediaTypes(MediaType.valueOf("text/xml"))
-              .mediaTypes(MediaType.valueOf("application/xhtml+xml"))
-              .mediaTypes(MediaType.valueOf("image/png"))
-              .mediaTypes(MediaType.valueOf("text/html;q=0.9"))
-              .mediaTypes(MediaType.valueOf("text/plain;q=0.8"))
-              .mediaTypes(MediaType.valueOf("*/*;q=0.5"))
-              .languages("en-us")
-              .languages("en;q=0.5").build();
+      List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xhtml+xml"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("image/png"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/html;q=0.9"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/plain;q=0.8"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("*/*;q=0.5"), "en-us", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xml"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/xml"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xhtml+xml"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("image/png"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/html;q=0.9"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("text/plain;q=0.8"), "en;q=0.5", null));
+      acceptable.add(new AcceptableVariant(MediaType.valueOf("*/*;q=0.5"), "en;q=0.5", null));
 
-      Variant v = AcceptableVariant.pick(wants, has);
+      Variant v = AcceptableVariant.pick(has, acceptable);
       Assert.assertNotNull(v);
       Assert.assertNotNull(v.getMediaType());
-      Assert.assertTrue(MediaType.valueOf("application/xml").equals(v.getMediaType()));
+      Assert.assertEquals(MediaType.valueOf("application/xml"), v.getMediaType());
       Assert.assertNull(v.getEncoding());
-      Assert.assertEquals(v.getLanguage(), "en-us");
+      Assert.assertEquals(v.getLanguage(), new Locale("en", "us"));
 
    }
 
@@ -305,26 +322,23 @@ public class VariantTest
    {
       List<Variant> has = Variant.VariantListBuilder.newInstance().
               mediaTypes(MediaType.valueOf("image/jpeg")).add().
-              mediaTypes(MediaType.valueOf("application/xml")).languages("en-us").add().
-              mediaTypes(MediaType.valueOf("text/xml")).languages("en").add().
-              mediaTypes(MediaType.valueOf("text/xml")).languages("en-us").add().
+              mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en")).add().
+              mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().
               build();
       {
-         List<Variant> wants = Variant.VariantListBuilder.newInstance()
-                 .mediaTypes(MediaType.valueOf("application/atom+xml"))
-                 .languages("en-us")
-                 .languages("en").build();
+         List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
+         acceptable.add(new AcceptableVariant(MediaType.valueOf("application/atom+xml"), "en-us", null));
+         acceptable.add(new AcceptableVariant(MediaType.valueOf("application/atom+xml"), "en", null));
 
-         Variant v = AcceptableVariant.pick(wants, has);
+         Variant v = AcceptableVariant.pick(has, acceptable);
          Assert.assertNull(v);
       }
 
       {
-         List<Variant> wants = Variant.VariantListBuilder.newInstance()
-                 .mediaTypes(MediaType.valueOf("application/xml"))
-                 .languages("fr").build();
-
-         Variant v = AcceptableVariant.pick(wants, has);
+         List<AcceptableVariant> acceptable = new ArrayList<AcceptableVariant>();
+         acceptable.add(new AcceptableVariant(MediaType.valueOf("application/xml"), "fr", null));
+         Variant v = AcceptableVariant.pick(has, acceptable);
          Assert.assertNull(v);
       }
 

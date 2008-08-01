@@ -3,23 +3,21 @@
  */
 package org.jboss.resteasy.test.providers.multipart;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import java.io.IOException;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
- * 
  */
 @Path("/mime")
 public class SimpleMimeMultipartResource
@@ -32,8 +30,8 @@ public class SimpleMimeMultipartResource
     * @return
     */
    @PUT
-   @ConsumeMime("multipart/form-data")
-   @ProduceMime("text/plain")
+   @Consumes("multipart/form-data")
+   @Produces("text/plain")
    public String putData(MimeMultipart multipart)
    {
       StringBuilder b = new StringBuilder("Count: ");
@@ -76,7 +74,7 @@ public class SimpleMimeMultipartResource
     * @return
     */
    @GET
-   @ProduceMime("multipart/mixed")
+   @Produces("multipart/mixed")
    public MimeMultipart getMimeMultipart() throws MessagingException
    {
       MimeMultipart multipart = new MimeMultipart("mixed");

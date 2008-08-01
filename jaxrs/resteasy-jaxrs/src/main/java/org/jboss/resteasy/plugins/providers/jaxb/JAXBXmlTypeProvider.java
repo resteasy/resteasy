@@ -6,15 +6,10 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import org.jboss.resteasy.core.ExceptionAdapter;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -22,8 +17,12 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.jboss.resteasy.core.ExceptionAdapter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 /**
  * <p>
@@ -32,7 +31,7 @@ import org.jboss.resteasy.core.ExceptionAdapter;
  * contain this annotation, In order for these classes to marshalled, they
  * must be wrapped within a {@link JAXBElement} instance. This is typically
  * accomplished by invoking a method on the class which serves as the
- * {@link XmlRegistry} and is named ObjectFactory. 
+ * {@link XmlRegistry} and is named ObjectFactory.
  * </p>
  * <p>
  * This provider is selected when the class is annotated with an {@link XmlType} annotation
@@ -48,22 +47,22 @@ import org.jboss.resteasy.core.ExceptionAdapter;
  * <code>
  * public JAXBElement<Contact> createContact(Contact value);
  * </code>
-
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Provider
-@ProduceMime(
-{"text/xml", "application/xml"})
-@ConsumeMime(
-{"text/xml", "application/xml"})
+@Produces(
+        {"text/xml", "application/xml"})
+@Consumes(
+        {"text/xml", "application/xml"})
 public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 {
 
    protected static final String OBJECT_FACTORY_NAME = ".ObjectFactory";
+
    /**
-    * 
+    *
     */
    @Override
    public void writeTo(Object t,
@@ -79,21 +78,21 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    }
 
    /**
-    * 
+    *
     */
    @Override
    protected boolean isReadWritable(Class<?> type, Type genericType, Annotation[] annotations)
    {
-      return (!type.isAnnotationPresent(XmlRootElement.class) 
-            && type.isAnnotationPresent(XmlType.class));
+      return (!type.isAnnotationPresent(XmlRootElement.class)
+              && type.isAnnotationPresent(XmlType.class));
    }
-   
+
    /**
     * Attempts to locate {@link XmlRegistry} for the XML type. Usually,
     * a class named ObjectFactory is located in the same package as the
-    * type we're trying to marshall. This method simply locates this 
+    * type we're trying to marshall. This method simply locates this
     * class and instantiates it if found.
-    * 
+    *
     * @param t
     * @param type
     * @return
@@ -131,10 +130,10 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    }
 
    /**
-    * If this object is managed by an XmlRegistry, this method will 
-    * invoke the registry and wrap the object in a JAXBElement so 
+    * If this object is managed by an XmlRegistry, this method will
+    * invoke the registry and wrap the object in a JAXBElement so
     * that it can be marshalled.
-    * 
+    *
     * @param t
     * @param type
     * @return
@@ -149,8 +148,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          {
             Method current = method[i];
             if (current.getParameterTypes().length == 1
-                  && current.getParameterTypes()[0].equals(type)
-                  && current.getName().startsWith("create"))
+                    && current.getParameterTypes()[0].equals(type)
+                    && current.getName().startsWith("create"))
             {
                Object result = current.invoke(factory, new Object[]{t});
                return JAXBElement.class.cast(result);
@@ -158,7 +157,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
             else
             {
                throw new RuntimeException(String.format("The method create%s() "
-                     + "was not found in the object Factory!", type));
+                       + "was not found in the object Factory!", type));
             }
          }
       }

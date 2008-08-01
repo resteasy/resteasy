@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.StreamingOutput;
@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@ProduceMime("*/*")
+@Produces("*/*")
 public class StreamingOutputProvider implements MessageBodyWriter<StreamingOutput>
 {
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)

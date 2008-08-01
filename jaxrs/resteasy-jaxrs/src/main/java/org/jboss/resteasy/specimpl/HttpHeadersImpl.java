@@ -1,10 +1,14 @@
 package org.jboss.resteasy.specimpl;
 
+import org.jboss.resteasy.util.LocaleHelper;
+
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -17,9 +21,9 @@ public class HttpHeadersImpl implements HttpHeaders
    private MultivaluedMap<String, String> requestHeaders;
    private List<MediaType> acceptableMediaTypes;
    private MediaType mediaType;
-   private String language;
+   private Locale language;
    private Map<String, Cookie> cookies;
-   private List<String> acceptableLanguages;
+   private List<Locale> acceptableLanguages;
 
    public MultivaluedMap<String, String> getRequestHeaders()
    {
@@ -51,19 +55,22 @@ public class HttpHeadersImpl implements HttpHeaders
       this.mediaType = mediaType;
    }
 
-   public String getLanguage()
+   public Locale getLanguage()
    {
       return language;
    }
 
    public void setLanguage(String language)
    {
-      this.language = language;
+      if (language == null) return;
+      this.language = LocaleHelper.extractLocale(language);
    }
 
    public void setAcceptableLanguages(List<String> acceptableLanguages)
    {
-      this.acceptableLanguages = acceptableLanguages;
+      if (acceptableLanguages == null) this.acceptableLanguages = null;
+      this.acceptableLanguages = new ArrayList<Locale>(acceptableLanguages.size());
+      for (String lang : acceptableLanguages) this.acceptableLanguages.add(LocaleHelper.extractLocale(lang));
    }
 
    public Map<String, Cookie> getCookies()
@@ -81,8 +88,9 @@ public class HttpHeadersImpl implements HttpHeaders
       return requestHeaders.get(name);
    }
 
-   public List<String> getAcceptableLanguages()
+   public List<Locale> getAcceptableLanguages()
    {
+      if (acceptableLanguages == null) acceptableLanguages = new ArrayList<Locale>();
       return acceptableLanguages;
    }
 }

@@ -6,11 +6,8 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.util.TypeConverter;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -22,14 +19,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-
-import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.util.TypeConverter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
- * 
  * A AbstractJAXBProvider.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  * @param <T>
@@ -39,12 +37,12 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 
    /**
     * An HTTP Header than can be passed in order to have the XML response
-    * formatted. 
+    * formatted.
     */
    public static final String FORMAT_XML_HEADER = "X-Xml-Formatted";
 
    /**
-    * 
+    *
     */
    public long getSize(T type)
    {
@@ -53,7 +51,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param type
     * @param genericType
     * @param annotations
@@ -69,7 +67,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
-         JAXBContext jaxb = JAXBCache.instance().getJAXBContext(type);
+         JAXBContext jaxb = findJAXBContext(type);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          return unmarshaller;
       }
@@ -82,23 +80,30 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param type
     * @param entityStream
     * @return
     * @throws JAXBException
     */
    protected JAXBElement<?> unmarshall(Class<?> type, InputStream entityStream)
-         throws JAXBException
+           throws JAXBException
    {
-      JAXBContext jaxb = JAXBCache.instance().getJAXBContext(type);
+      JAXBContext jaxb = findJAXBContext(type);
       Unmarshaller unmarshaller = jaxb.createUnmarshaller();
       JAXBElement<?> e = unmarshaller.unmarshal(new StreamSource(entityStream), type);
       return e;
    }
 
+   protected JAXBContext findJAXBContext(Class<?> type)
+           throws JAXBException
+   {
+      JAXBContext jaxb = JAXBCache.instance().getJAXBContext(type);
+      return jaxb;
+   }
+
    /**
-    * 
+    *
     */
    public T readFrom(Class<T> type,
                      Type genericType,
@@ -109,7 +114,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
-         JAXBContext jaxb = JAXBCache.instance().getJAXBContext(type);
+         JAXBContext jaxb = findJAXBContext(type);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          JAXBElement<T> e = unmarshaller.unmarshal(new StreamSource(entityStream), type);
          return e.getValue();
@@ -122,7 +127,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    }
 
    /**
-    * 
+    *
     */
    public void writeTo(T t,
                        Class<?> type,
@@ -146,7 +151,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param type
     * @param mediaType
     * @param httpHeaders
@@ -158,7 +163,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
-         JAXBContext jaxb = JAXBCache.instance().getJAXBContext(type);
+         JAXBContext jaxb = findJAXBContext(type);
          Marshaller marshaller = jaxb.createMarshaller();
          String charset = getCharset(mediaType);
          // specify the character encoding if it is set on the media type
@@ -184,7 +189,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param type
     * @param genericType
     * @param annotations
@@ -195,7 +200,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
                                              Annotation[] annotations);
 
    /**
-    * 
+    *
     */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
    {
@@ -203,7 +208,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    }
 
    /**
-    * 
+    *
     */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
    {
@@ -212,7 +217,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param mediaType
     * @return
     */

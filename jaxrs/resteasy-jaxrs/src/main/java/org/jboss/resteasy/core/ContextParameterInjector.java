@@ -35,7 +35,7 @@ public class ContextParameterInjector implements ValueInjector
    {
       if (type.equals(HttpHeaders.class)) return request.getHttpHeaders();
       if (type.equals(UriInfo.class)) return request.getUri();
-      if (type.equals(Request.class)) return new RequestImpl(request.getHttpHeaders(), request.getHttpMethod());
+      if (type.equals(Request.class)) return new RequestImpl(request);
       if (type.equals(HttpRequest.class)) return request;
       if (type.equals(MessageBodyWorkers.class)) return new MessageBodyWorkersImpl();
       else return ResteasyProviderFactory.getContextData(type);

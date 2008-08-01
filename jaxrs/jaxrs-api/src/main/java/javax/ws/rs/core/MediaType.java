@@ -53,6 +53,15 @@ public class MediaType
 
    // Common media type constants
    /**
+    * "*&#47;*"
+    */
+   public final static String WILDCARD = "*/*";
+   /**
+    * "*&#47;*"
+    */
+   public final static MediaType WILDCARD_TYPE = new MediaType();
+
+   /**
     * "application/xml"
     */
    public final static String APPLICATION_XML = "application/xml";
@@ -148,6 +157,7 @@ public class MediaType
     * @param type the media type string
     * @return the newly created MediaType
     * @throws IllegalArgumentException if the supplied string cannot be parsed
+    *                                  or is null
     */
    public static MediaType valueOf(String type) throws IllegalArgumentException
    {
@@ -164,8 +174,8 @@ public class MediaType
     */
    public MediaType(String type, String subtype, Map<String, String> parameters)
    {
-      this.type = type;
-      this.subtype = subtype;
+      this.type = type == null ? MEDIA_TYPE_WILDCARD : type;
+      this.subtype = subtype == null ? MEDIA_TYPE_WILDCARD : subtype;
       if (parameters == null)
       {
          this.parameters = emptyMap;
@@ -200,6 +210,7 @@ public class MediaType
 
    /**
     * Creates a new instance of MediaType, both type and subtype are wildcards.
+    * Consider using the constant {@link #WILDCARD_TYPE} instead.
     */
    public MediaType()
    {
@@ -309,7 +320,7 @@ public class MediaType
    @Override
    public int hashCode()
    {
-      return (this.type.toLowerCase() + this.subtype.toLowerCase()).hashCode();
+      return (this.type.toLowerCase() + this.subtype.toLowerCase()).hashCode() + this.parameters.hashCode();
    }
 
    /**

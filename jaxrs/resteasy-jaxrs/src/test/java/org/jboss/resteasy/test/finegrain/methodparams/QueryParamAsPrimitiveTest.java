@@ -15,7 +15,7 @@ import org.junit.Test;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitives implements IResourceQueryPrimitives
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@QueryParam("boolean")boolean v)
       {
          Assert.assertEquals(true, v);
@@ -96,7 +96,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@QueryParam("byte")byte v)
       {
          Assert.assertTrue((byte) 127 == v);
@@ -104,7 +104,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@QueryParam("short")short v)
       {
          Assert.assertTrue((short) 32767 == v);
@@ -112,7 +112,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@QueryParam("int")int v)
       {
          Assert.assertEquals(2147483647, v);
@@ -120,7 +120,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@QueryParam("long")long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
@@ -128,7 +128,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@QueryParam("float")float v)
       {
          Assert.assertEquals(3.14159265f, v);
@@ -136,7 +136,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@QueryParam("double")double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
@@ -148,7 +148,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitivesDefaultNull
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@QueryParam("boolean")boolean v)
       {
          Assert.assertEquals(false, v);
@@ -156,7 +156,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@QueryParam("byte")byte v)
       {
          Assert.assertTrue(0 == v);
@@ -164,7 +164,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@QueryParam("short")short v)
       {
          Assert.assertTrue(0 == v);
@@ -172,7 +172,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@QueryParam("int")int v)
       {
          Assert.assertEquals(0, v);
@@ -180,7 +180,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@QueryParam("long")long v)
       {
          Assert.assertEquals(0l, v);
@@ -188,7 +188,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@QueryParam("float")float v)
       {
          Assert.assertEquals(0.0f, v);
@@ -196,7 +196,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@QueryParam("double")double v)
       {
          Assert.assertEquals(0.0d, v);
@@ -208,7 +208,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitivesDefault
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@QueryParam("boolean") @DefaultValue("true")boolean v)
       {
          Assert.assertEquals(true, v);
@@ -216,7 +216,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@QueryParam("byte") @DefaultValue("127")byte v)
       {
          Assert.assertTrue((byte) 127 == v);
@@ -224,7 +224,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@QueryParam("short") @DefaultValue("32767")short v)
       {
          Assert.assertTrue((short) 32767 == v);
@@ -232,7 +232,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@QueryParam("int") @DefaultValue("2147483647")int v)
       {
          Assert.assertEquals(2147483647, v);
@@ -240,7 +240,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@QueryParam("long") @DefaultValue("9223372036854775807")long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
@@ -248,7 +248,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@QueryParam("float") @DefaultValue("3.14159265")float v)
       {
          Assert.assertEquals(3.14159265f, v);
@@ -256,7 +256,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@QueryParam("double") @DefaultValue("3.14159265358979")double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
@@ -268,7 +268,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitivesDefaultOverride
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@QueryParam("boolean") @DefaultValue("false")boolean v)
       {
          Assert.assertEquals(true, v);
@@ -276,7 +276,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@QueryParam("byte") @DefaultValue("1")byte v)
       {
          Assert.assertTrue((byte) 127 == v);
@@ -284,7 +284,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@QueryParam("short") @DefaultValue("1")short v)
       {
          Assert.assertTrue((short) 32767 == v);
@@ -292,7 +292,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@QueryParam("int") @DefaultValue("1")int v)
       {
          Assert.assertEquals(2147483647, v);
@@ -300,7 +300,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@QueryParam("long") @DefaultValue("1")long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
@@ -308,7 +308,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@QueryParam("float") @DefaultValue("0.0")float v)
       {
          Assert.assertEquals(3.14159265f, v);
@@ -316,7 +316,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@QueryParam("double") @DefaultValue("0.0")double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
@@ -328,7 +328,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveWrappers implements IResourceQueryPrimitiveWrappers
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@QueryParam("boolean")Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
@@ -336,7 +336,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@QueryParam("byte")Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
@@ -344,7 +344,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@QueryParam("short")Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
@@ -352,7 +352,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@QueryParam("int")Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
@@ -360,7 +360,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@QueryParam("long")Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
@@ -368,7 +368,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@QueryParam("float")Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
@@ -376,7 +376,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@QueryParam("double")Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
@@ -388,7 +388,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveWrappersDefaultNull
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@QueryParam("boolean")Boolean v)
       {
          Assert.assertEquals(null, v);
@@ -396,7 +396,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@QueryParam("byte")Byte v)
       {
          Assert.assertEquals(null, v);
@@ -404,7 +404,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@QueryParam("short")Short v)
       {
          Assert.assertEquals(null, v);
@@ -412,7 +412,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@QueryParam("int")Integer v)
       {
          Assert.assertEquals(null, v);
@@ -420,7 +420,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@QueryParam("long")Long v)
       {
          Assert.assertEquals(null, v);
@@ -428,7 +428,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@QueryParam("float")Float v)
       {
          Assert.assertEquals(null, v);
@@ -436,7 +436,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@QueryParam("double")Double v)
       {
          Assert.assertEquals(null, v);
@@ -448,7 +448,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveWrappersDefault
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@QueryParam("boolean") @DefaultValue("true")Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
@@ -456,7 +456,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@QueryParam("byte") @DefaultValue("127")Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
@@ -464,7 +464,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@QueryParam("short") @DefaultValue("32767")Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
@@ -472,7 +472,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@QueryParam("int") @DefaultValue("2147483647")Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
@@ -480,7 +480,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@QueryParam("long") @DefaultValue("9223372036854775807")Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
@@ -488,7 +488,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@QueryParam("float") @DefaultValue("3.14159265")Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
@@ -496,7 +496,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@QueryParam("double") @DefaultValue("3.14159265358979")Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
@@ -508,7 +508,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveWrappersDefaultOverride
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGet(@QueryParam("boolean") @DefaultValue("false")Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
@@ -516,7 +516,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGet(@QueryParam("byte") @DefaultValue("1")Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
@@ -524,7 +524,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGet(@QueryParam("short") @DefaultValue("1")Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
@@ -532,7 +532,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGet(@QueryParam("int") @DefaultValue("1")Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
@@ -540,7 +540,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGet(@QueryParam("long") @DefaultValue("1")Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
@@ -548,7 +548,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGet(@QueryParam("float") @DefaultValue("0.0")Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
@@ -556,7 +556,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGet(@QueryParam("double") @DefaultValue("0.0")Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
@@ -568,7 +568,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveList implements IResourceQueryPrimitiveList
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean")List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
@@ -578,7 +578,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@QueryParam("byte")List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
@@ -588,7 +588,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@QueryParam("short")List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
@@ -598,7 +598,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@QueryParam("int")List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
@@ -608,7 +608,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@QueryParam("long")List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
@@ -618,7 +618,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@QueryParam("float")List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
@@ -628,7 +628,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@QueryParam("double")List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
@@ -642,7 +642,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveListDefaultNull
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean")List<Boolean> v)
       {
          Assert.assertEquals(null, v);
@@ -650,7 +650,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@QueryParam("byte")List<Byte> v)
       {
          Assert.assertEquals(null, v);
@@ -658,7 +658,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@QueryParam("short")List<Short> v)
       {
          Assert.assertEquals(null, v);
@@ -666,7 +666,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@QueryParam("int")List<Integer> v)
       {
          Assert.assertEquals(null, v);
@@ -674,7 +674,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@QueryParam("long")List<Long> v)
       {
          Assert.assertEquals(null, v);
@@ -682,7 +682,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@QueryParam("float")List<Float> v)
       {
          Assert.assertEquals(null, v);
@@ -690,7 +690,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@QueryParam("double")List<Double> v)
       {
          Assert.assertEquals(null, v);
@@ -702,7 +702,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveListDefault
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean") @DefaultValue("true")List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
@@ -710,7 +710,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@QueryParam("byte") @DefaultValue("127")List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
@@ -718,7 +718,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@QueryParam("short") @DefaultValue("32767")List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
@@ -726,7 +726,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@QueryParam("int") @DefaultValue("2147483647")List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
@@ -734,7 +734,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@QueryParam("long") @DefaultValue("9223372036854775807")List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
@@ -742,7 +742,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@QueryParam("float") @DefaultValue("3.14159265")List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
@@ -750,7 +750,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@QueryParam("double") @DefaultValue("3.14159265358979")List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
@@ -762,7 +762,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveListDefaultOverride
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean") @DefaultValue("false")List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
@@ -770,7 +770,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@QueryParam("byte") @DefaultValue("0")List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
@@ -778,7 +778,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@QueryParam("short") @DefaultValue("0")List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
@@ -786,7 +786,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@QueryParam("int") @DefaultValue("0")List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
@@ -794,7 +794,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@QueryParam("long") @DefaultValue("0")List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
@@ -802,7 +802,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@QueryParam("float") @DefaultValue("0.0")List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
@@ -810,7 +810,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@QueryParam("double") @DefaultValue("0.0")List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
@@ -822,7 +822,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveArray implements IResourceQueryPrimitiveArray
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean")boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
@@ -832,7 +832,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@QueryParam("byte")byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
@@ -842,7 +842,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@QueryParam("short")short[] v)
       {
          Assert.assertTrue((short) 32767 == v[0]);
@@ -852,7 +852,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@QueryParam("int")int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
@@ -862,7 +862,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@QueryParam("long")long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
@@ -872,7 +872,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@QueryParam("float")float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
@@ -882,7 +882,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@QueryParam("double")double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);
@@ -896,7 +896,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveArrayDefaultNull
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean")boolean[] v)
       {
          Assert.assertEquals(null, v);
@@ -904,7 +904,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@QueryParam("byte")byte[] v)
       {
          Assert.assertEquals(null, v);
@@ -912,7 +912,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@QueryParam("short")short[] v)
       {
          Assert.assertEquals(null, v);
@@ -920,7 +920,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@QueryParam("int")int[] v)
       {
          Assert.assertEquals(null, v);
@@ -928,7 +928,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@QueryParam("long")long[] v)
       {
          Assert.assertEquals(null, v);
@@ -936,7 +936,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@QueryParam("float")float[] v)
       {
          Assert.assertEquals(null, v);
@@ -944,7 +944,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@QueryParam("double")double[] v)
       {
          Assert.assertEquals(null, v);
@@ -956,7 +956,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveArrayDefault
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean") @DefaultValue("true")boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
@@ -964,7 +964,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@QueryParam("byte") @DefaultValue("127")byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
@@ -972,7 +972,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@QueryParam("short") @DefaultValue("32767")short[] v)
       {
          Assert.assertTrue((short) 32767 == v[0]);
@@ -980,7 +980,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@QueryParam("int") @DefaultValue("2147483647")int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
@@ -988,7 +988,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@QueryParam("long") @DefaultValue("9223372036854775807")long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
@@ -996,7 +996,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@QueryParam("float") @DefaultValue("3.14159265")float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
@@ -1004,7 +1004,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@QueryParam("double") @DefaultValue("3.14159265358979")double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);
@@ -1016,7 +1016,7 @@ public class QueryParamAsPrimitiveTest
    public static class ResourceQueryPrimitiveArrayDefaultOverride
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean") @DefaultValue("false")boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
@@ -1024,7 +1024,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       public String doGetByte(@QueryParam("byte") @DefaultValue("0")byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
@@ -1032,7 +1032,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       public String doGetShort(@QueryParam("short") @DefaultValue("0")short[] v)
       {
          Assert.assertTrue((short) 32767 == v[0]);
@@ -1040,7 +1040,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       public String doGetInteger(@QueryParam("int") @DefaultValue("0")int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
@@ -1048,7 +1048,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       public String doGetLong(@QueryParam("long") @DefaultValue("0")long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
@@ -1056,7 +1056,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       public String doGetFloat(@QueryParam("float") @DefaultValue("0.0")float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
@@ -1064,7 +1064,7 @@ public class QueryParamAsPrimitiveTest
       }
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       public String doGetDouble(@QueryParam("double") @DefaultValue("0.0")double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);
@@ -1459,31 +1459,31 @@ public class QueryParamAsPrimitiveTest
    public static interface IResourceQueryPrimitives
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       String doGet(@QueryParam("boolean")boolean v);
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       String doGet(@QueryParam("byte")byte v);
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       String doGet(@QueryParam("short")short v);
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       String doGet(@QueryParam("int")int v);
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       String doGet(@QueryParam("long")long v);
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       String doGet(@QueryParam("float")float v);
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       String doGet(@QueryParam("double")double v);
    }
 
@@ -1491,31 +1491,31 @@ public class QueryParamAsPrimitiveTest
    public static interface IResourceQueryPrimitiveWrappers
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       String doGet(@QueryParam("boolean")Boolean v);
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       String doGet(@QueryParam("byte")Byte v);
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       String doGet(@QueryParam("short")Short v);
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       String doGet(@QueryParam("int")Integer v);
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       String doGet(@QueryParam("long")Long v);
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       String doGet(@QueryParam("float")Float v);
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       String doGet(@QueryParam("double")Double v);
    }
 
@@ -1523,31 +1523,31 @@ public class QueryParamAsPrimitiveTest
    public static interface IResourceQueryPrimitiveList
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       String doGetBoolean(@QueryParam("boolean")List<Boolean> v);
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       String doGetByte(@QueryParam("byte")List<Byte> v);
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       String doGetShort(@QueryParam("short")List<Short> v);
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       String doGetInteger(@QueryParam("int")List<Integer> v);
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       String doGetLong(@QueryParam("long")List<Long> v);
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       String doGetFloat(@QueryParam("float")List<Float> v);
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       String doGetDouble(@QueryParam("double")List<Double> v);
    }
 
@@ -1555,31 +1555,31 @@ public class QueryParamAsPrimitiveTest
    public static interface IResourceQueryPrimitiveArray
    {
       @GET
-      @ProduceMime("application/boolean")
+      @Produces("application/boolean")
       String doGetBoolean(@QueryParam("boolean")boolean[] v);
 
       @GET
-      @ProduceMime("application/byte")
+      @Produces("application/byte")
       String doGetByte(@QueryParam("byte")byte[] v);
 
       @GET
-      @ProduceMime("application/short")
+      @Produces("application/short")
       String doGetShort(@QueryParam("short")short[] v);
 
       @GET
-      @ProduceMime("application/int")
+      @Produces("application/int")
       String doGetInteger(@QueryParam("int")int[] v);
 
       @GET
-      @ProduceMime("application/long")
+      @Produces("application/long")
       String doGetLong(@QueryParam("long")long[] v);
 
       @GET
-      @ProduceMime("application/float")
+      @Produces("application/float")
       String doGetFloat(@QueryParam("float")float[] v);
 
       @GET
-      @ProduceMime("application/double")
+      @Produces("application/double")
       String doGetDouble(@QueryParam("double")double[] v);
    }
 }

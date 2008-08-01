@@ -33,11 +33,11 @@ import java.lang.reflect.Type;
  * implementation class with <code>@Provider</code>.
  * <p/>
  * A <code>MessageBodyReader</code> implementation may be annotated
- * with {@link javax.ws.rs.ConsumeMime} to restrict the media types for which it will
+ * with {@link javax.ws.rs.Consumes} to restrict the media types for which it will
  * be considered suitable.
  *
  * @see Provider
- * @see javax.ws.rs.ConsumeMime
+ * @see javax.ws.rs.Consumes
  */
 public interface MessageBodyReader<T>
 {

@@ -6,6 +6,15 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.resteasy.core.ExceptionAdapter;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,43 +22,32 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-
-import org.jboss.resteasy.core.ExceptionAdapter;
-
 /**
  * <p>
  * A JAXB Provider which handles parameter and return types of {@link JAXBElement}. This
  * provider will be select when the resource is declared as:
  * </p>
  * <code>
- * @POST
- * @ConsumeMime\("applictaion/xml")
- * @ProduceMime\("applictaion/xml")
- * public JAXBElement&lt;Contact&gt; getContact(JAXBElement&lt;Contact&gt; value);
- * </code>
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
+ * @POST
+ * @ConsumeMime\("applictaion/xml")
+ * @ProduceMime\("applictaion/xml") public JAXBElement&lt;Contact&gt; getContact(JAXBElement&lt;Contact&gt; value);
+ * </code>
  */
 @Provider
-@ProduceMime(
-{"text/xml", "application/xml"})
-@ConsumeMime(
-{"text/xml", "application/xml"})
+@Produces(
+        {"text/xml", "application/xml"})
+@Consumes(
+        {"text/xml", "application/xml"})
 public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
-{ 
+{
 
    @Override
    protected boolean isReadWritable(Class<?> type, Type genericType, Annotation[] annotations)
    {
-     
+
       return JAXBElement.class.equals(type);
    }
 
@@ -87,7 +85,6 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       Class<?> typeArg = (Class<?>) parameterizedType.getActualTypeArguments()[0];
       super.writeTo(t, typeArg, genericType, annotations, mediaType, httpHeaders, outputStream);
    }
-   
-   
+
 
 }
