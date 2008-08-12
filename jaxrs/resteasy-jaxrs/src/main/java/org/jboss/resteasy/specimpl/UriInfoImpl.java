@@ -20,16 +20,19 @@ public class UriInfoImpl implements UriInfo
    private String encodedPath;
    private MultivaluedMap<String, String> queryParameters;
    private MultivaluedMap<String, String> encodedQueryParameters;
-   private MultivaluedMap<String, String> templateParameters;
-   private MultivaluedMap<String, String> encodedTemplateParameters;
+   private MultivaluedMap<String, String> pathParameters;
+   private MultivaluedMap<String, String> encodedPathParameters;
+   private MultivaluedMap<String, PathSegment> pathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment>();
+   private MultivaluedMap<String, PathSegment> encodedPathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment>();
+   ;
    private List<PathSegment> pathSegments;
    private List<PathSegment> encodedPathSegments;
    private URI absolutePath;
    private URI absolutePathWithQueryString;
    private URI baseURI;
    private String queryString;
-   private List<String> ancestorUris;
-   private List<String> encodedAncestorUris;
+   private List<String> matchedUris;
+   private List<String> encodedMatchedUris;
    private List<Object> ancestors;
 
 
@@ -60,8 +63,8 @@ public class UriInfoImpl implements UriInfo
       this.queryParameters = new MultivaluedMapImpl<String, String>();
       this.encodedQueryParameters = new MultivaluedMapImpl<String, String>();
       extractParameters(queryString);
-      this.encodedTemplateParameters = new MultivaluedMapImpl<String, String>();
-      this.templateParameters = new MultivaluedMapImpl<String, String>();
+      this.encodedPathParameters = new MultivaluedMapImpl<String, String>();
+      this.pathParameters = new MultivaluedMapImpl<String, String>();
       this.encodedPathSegments = encodedPathSegments;
       this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
       for (PathSegment segment : encodedPathSegments)
@@ -88,7 +91,7 @@ public class UriInfoImpl implements UriInfo
       if (encodedPath.trim().equals("")) baseURI = absolutePath;
       else
       {
-         String abs = absolutePath.getPath();
+         String abs = absolutePath.getRawPath();
          abs = abs.substring(0, abs.indexOf(encodedPath));
          if (!abs.endsWith("/")) abs += "/";
 //         System.out.println("abs: " + abs);
@@ -96,7 +99,7 @@ public class UriInfoImpl implements UriInfo
 //         System.out.println("encodedPath: " + encodedPath);
          try
          {
-            baseURI = UriBuilder.fromUri(absolutePath).encode(false).replacePath(abs).build();
+            baseURI = UriBuilder.fromUri(absolutePath).replacePath(abs).build();
 
          }
          catch (Exception e)
@@ -104,13 +107,6 @@ public class UriInfoImpl implements UriInfo
             throw new RuntimeException("URI value was: " + abs + " encodedPath: " + encodedPath, e);
          }
       }
-   }
-
-   // this is here for our TESTSUITE, do not invoke or use this method
-   public UriInfoImpl(List<PathSegment> pathSegments)
-   {
-      this.pathSegments = pathSegments;
-      this.encodedPathSegments = pathSegments;
    }
 
    public UriInfoImpl clone()
@@ -174,15 +170,15 @@ public class UriInfoImpl implements UriInfo
 
    public MultivaluedMap<String, String> getPathParameters()
    {
-      return templateParameters;
+      return pathParameters;
    }
 
    public void addEncodedPathParameter(String name, String value)
    {
-      encodedTemplateParameters.add(name, value);
+      encodedPathParameters.add(name, value);
       try
       {
-         templateParameters.add(name, URLDecoder.decode(value, "UTF-8"));
+         pathParameters.add(name, URLDecoder.decode(value, "UTF-8"));
       }
       catch (UnsupportedEncodingException e)
       {
@@ -190,10 +186,20 @@ public class UriInfoImpl implements UriInfo
       }
    }
 
+   public MultivaluedMap<String, PathSegment> getEncodedPathParameterPathSegments()
+   {
+      return encodedPathParameterPathSegments;
+   }
+
+   public MultivaluedMap<String, PathSegment> getPathParameterPathSegments()
+   {
+      return pathParameterPathSegments;
+   }
+
    public MultivaluedMap<String, String> getPathParameters(boolean decode)
    {
       if (decode) return getPathParameters();
-      return encodedTemplateParameters;
+      return encodedPathParameters;
    }
 
    public MultivaluedMap<String, String> getQueryParameters()
@@ -245,26 +251,26 @@ public class UriInfoImpl implements UriInfo
       }
    }
 
-   public List<String> getAncestorResourceURIs(boolean decode)
+   public List<String> getMatchedURIs(boolean decode)
    {
       if (decode)
       {
-         if (ancestorUris == null) ancestorUris = new ArrayList<String>();
-         return ancestorUris;
+         if (matchedUris == null) matchedUris = new ArrayList<String>();
+         return matchedUris;
       }
       else
       {
-         if (encodedAncestorUris == null) encodedAncestorUris = new ArrayList<String>();
-         return ancestorUris;
+         if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
+         return matchedUris;
       }
    }
 
-   public List<String> getAncestorResourceURIs()
+   public List<String> getMatchedURIs()
    {
-      return getAncestorResourceURIs(true);
+      return getMatchedURIs(true);
    }
 
-   public List<Object> getAncestorResources()
+   public List<Object> getMatchedResources()
    {
       if (ancestors == null) ancestors = new ArrayList<Object>();
       return ancestors;
@@ -285,24 +291,24 @@ public class UriInfoImpl implements UriInfo
       }
    }
 
-   public void pushAncestorURI(String encoded, String decoded)
+   public void pushMatchedURI(String encoded, String decoded)
    {
-      if (encodedAncestorUris == null) encodedAncestorUris = new ArrayList<String>();
-      encodedAncestorUris.add(0, encoded);
+      if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
+      encodedMatchedUris.add(0, encoded);
 
-      if (ancestorUris == null) ancestorUris = new ArrayList<String>();
-      ancestorUris.add(0, decoded);
+      if (matchedUris == null) matchedUris = new ArrayList<String>();
+      matchedUris.add(0, decoded);
    }
 
-   public void popAncestorURI()
+   public void popMatchedURI()
    {
-      if (encodedAncestorUris != null && encodedAncestorUris.size() > 0)
+      if (encodedMatchedUris != null && encodedMatchedUris.size() > 0)
       {
-         encodedAncestorUris.remove(0);
+         encodedMatchedUris.remove(0);
       }
-      if (ancestorUris != null && ancestorUris.size() > 0)
+      if (matchedUris != null && matchedUris.size() > 0)
       {
-         ancestorUris.remove(0);
+         matchedUris.remove(0);
       }
    }
 

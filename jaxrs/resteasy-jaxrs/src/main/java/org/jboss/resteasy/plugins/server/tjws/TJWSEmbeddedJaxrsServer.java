@@ -8,7 +8,8 @@ import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -86,17 +87,23 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
       servlet.setSecurityDomain(sc);
    }
 
-   public void addApplicationConfig(ApplicationConfig config)
+   public void addApplicationConfig(Application config)
    {
       getDispatcher().setLanguageMappings(config.getLanguageMappings());
       getDispatcher().setMediaTypeMappings(config.getMediaTypeMappings());
-      if (config.getResourceClasses() != null)
-         for (Class clazz : config.getResourceClasses()) getRegistry().addPerRequestResource(clazz);
-      if (config.getProviderClasses() != null)
+      if (config.getClasses() != null)
       {
-         for (Class provider : config.getProviderClasses())
+         for (Class clazz : config.getClasses())
          {
-            factory.registerProvider(provider);
+            if (clazz.isAnnotationPresent(Path.class)) getRegistry().addPerRequestResource(clazz);
+            else factory.registerProvider(clazz);
+         }
+      }
+      if (config.getSingletons() != null)
+      {
+         for (Object obj : config.getSingletons())
+         {
+            if (obj.getClass().isAnnotationPresent(Path.class)) getRegistry().addSingletonResource(obj);
          }
       }
    }

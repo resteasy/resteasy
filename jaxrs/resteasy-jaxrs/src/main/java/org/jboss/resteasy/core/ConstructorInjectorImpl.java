@@ -20,19 +20,17 @@ public class ConstructorInjectorImpl implements ConstructorInjector
 {
    protected Constructor constructor;
    protected ValueInjector[] params;
-   protected PathParamIndex index;
 
-   public ConstructorInjectorImpl(Constructor constructor, PathParamIndex index, ResteasyProviderFactory factory)
+   public ConstructorInjectorImpl(Constructor constructor, ResteasyProviderFactory factory)
    {
       this.constructor = constructor;
-      this.index = index;
       params = new ValueInjector[constructor.getParameterTypes().length];
       for (int i = 0; i < constructor.getParameterTypes().length; i++)
       {
          Class type = constructor.getParameterTypes()[i];
          Type genericType = constructor.getGenericParameterTypes()[i];
          Annotation[] annotations = constructor.getParameterAnnotations()[i];
-         params[i] = InjectorFactoryImpl.getParameterExtractor(index, type, genericType, annotations, constructor, factory);
+         params[i] = InjectorFactoryImpl.getParameterExtractor(type, genericType, annotations, constructor, factory);
       }
    }
 

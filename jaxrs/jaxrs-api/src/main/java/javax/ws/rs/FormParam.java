@@ -26,15 +26,13 @@ import java.lang.annotation.Target;
 
 /**
  * Binds the value(s) of a form parameter contained within a request entity body
- * to a resource method parameter, resource class field, or resource class bean
- * property.
- * A default value can be specified using the {@link DefaultValue}
- * annotation.
+ * to a resource method parameter. Values are URL decoded unless this is
+ * disabled using the {@link Encoded} annotation. A default value can be
+ * specified using the {@link DefaultValue} annotation.
  * If the request entity body is absent or is of any media type other than
  * application/x-www-form-urlencoded, the default value is used.
  * <p/>
- * The type <code>T</code> of the annotated parameter, field or property must
- * either:
+ * The type <code>T</code> of the annotated parameter must either:
  * <ol>
  * <li>Be a primitive type</li>
  * <li>Have a constructor that accepts a single <code>String</code> argument</li>
@@ -47,24 +45,21 @@ import java.lang.annotation.Target;
  * <p/>
  * <p>If the type is not one of those listed in 4 above then the first value
  * (lexically) of the parameter is used.</p>
- * <p/>
- * <p>Because injection occurs at object creation time, use of this annotation
- * on resource class fields and bean properties is only supported for the
- * default per-request resource class lifecycle. Resource classes using
- * other lifecycles should only use this annotation on resource method
- * parameters.</p>
  *
  * @see DefaultValue
- * @see javax.ws.rs.core.Request#getFormParameters
+ * @see Encoded
  */
-@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FormParam
 {
    /**
     * Defines the name of the form parameter whose value will be used
-    * to initialize the value of the annotated method argument, class field or
-    * bean property.
+    * to initialize the value of the annotated method argument.
+    * <p/>
+    * <p>The supplied value is automatically percent encoded. Note that percent
+    * encoded values are allowed in the value, an implementation will recognize
+    * such values and will not double encode the '%' character.</p>
     */
    String value();
 }

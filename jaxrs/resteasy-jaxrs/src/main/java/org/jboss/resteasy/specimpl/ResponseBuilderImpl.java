@@ -12,6 +12,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -208,6 +209,14 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    public Response.ResponseBuilder language(Locale language)
    {
       metadata.putSingle(HttpHeaderNames.CONTENT_LANGUAGE, language);
+      return this;
+   }
+
+   private static final SimpleDateFormat dateFormatRFC822 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+
+   public Response.ResponseBuilder expires(Date expires)
+   {
+      metadata.putSingle(HttpHeaderNames.EXPIRES, dateFormatRFC822.format(expires));
       return this;
    }
 }

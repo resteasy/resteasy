@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 
@@ -15,19 +16,17 @@ import java.util.List;
  */
 public class PathParamInjector implements ValueInjector
 {
-   private PathParamIndex index;
    private StringParameterInjector extractor;
    private String paramName;
    private boolean encode;
 
-   public PathParamInjector(PathParamIndex index, Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode)
+   public PathParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode)
    {
       if (type.equals(PathSegment.class) == false)
       {
          extractor = new StringParameterInjector(type, genericType, paramName, "@" + PathParam.class.getSimpleName(), defaultValue, target);
       }
       this.paramName = paramName;
-      this.index = index;
       this.encode = encode;
    }
 
@@ -35,8 +34,17 @@ public class PathParamInjector implements ValueInjector
    {
       if (extractor == null) // we are a PathSegment
       {
-         List<Integer> list = index.getUriParams().get(paramName);
-         return request.getUri().getPathSegments(!encode).get(list.get(list.size() - 1));
+         UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+         if (encode)
+         {
+            List<PathSegment> list = uriInfo.getEncodedPathParameterPathSegments().get(paramName);
+            return list.get(list.size() - 1);
+         }
+         else
+         {
+            List<PathSegment> list = uriInfo.getPathParameterPathSegments().get(paramName);
+            return list.get(list.size() - 1);
+         }
       }
       else
       {

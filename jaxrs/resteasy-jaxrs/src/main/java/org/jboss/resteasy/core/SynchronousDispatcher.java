@@ -17,7 +17,6 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -80,54 +79,63 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void preprocessExtensions(HttpRequest in)
    {
-      if (mediaTypeMappings == null && languageMappings == null) return;
-      List<PathSegment> segments = in.getUri().getPathSegments(false);
-      PathSegment last = segments.get(segments.size() - 1);
-      int index;
-      if ((index = last.getPath().indexOf('.')) == -1) return;
-      String extension = last.getPath().substring(index + 1);
-      String[] extensions = extension.split("\\.");
 
-      boolean preprocessed = false;
-
-      String rebuilt = last.getPath().substring(0, index);
-      for (String ext : extensions)
+      List<PathSegment> segments = null;
+      if (mediaTypeMappings != null || languageMappings != null)
       {
-         if (mediaTypeMappings != null)
-         {
-            MediaType match = mediaTypeMappings.get(ext);
-            if (match != null)
-            {
-               in.getHttpHeaders().getAcceptableMediaTypes().add(match);
-               preprocessed = true;
-               continue;
-            }
-         }
-         if (languageMappings != null)
-         {
-            String match = languageMappings.get(ext);
-            if (match != null)
-            {
-               in.getHttpHeaders().getAcceptableLanguages().add(LocaleHelper.extractLocale(match));
-               preprocessed = true;
-               continue;
-            }
-         }
-         rebuilt += "." + ext;
-      }
-      if (!preprocessed) return;
-      @SuppressWarnings("unused")
-      String newPath = last.getPath().substring(0, index) + rebuilt;
 
-      List<PathSegment> newSegments = new ArrayList<PathSegment>(segments.size());
-      for (PathSegment segment : segments)
+         String path = in.getUri().getPath(false);
+         int lastSegment = path.lastIndexOf('/');
+         if (lastSegment < 0) lastSegment = 0;
+         int index = path.indexOf('.', lastSegment);
+         if (index < 0) return;
+
+         boolean preprocessed = false;
+
+         String extension = path.substring(index + 1);
+         String[] extensions = extension.split("\\.");
+
+         String rebuilt = path.substring(0, index);
+         for (String ext : extensions)
+         {
+            if (mediaTypeMappings != null)
+            {
+               MediaType match = mediaTypeMappings.get(ext);
+               if (match != null)
+               {
+                  in.getHttpHeaders().getAcceptableMediaTypes().add(match);
+                  preprocessed = true;
+                  continue;
+               }
+            }
+            if (languageMappings != null)
+            {
+               String match = languageMappings.get(ext);
+               if (match != null)
+               {
+                  in.getHttpHeaders().getAcceptableLanguages().add(LocaleHelper.extractLocale(match));
+                  preprocessed = true;
+                  continue;
+               }
+            }
+            rebuilt += "." + ext;
+         }
+         if (preprocessed) segments = PathSegmentImpl.parseSegments(rebuilt);
+         else segments = in.getUri().getPathSegments(false);
+      }
+      else
       {
-         newSegments.add(segment);
+         segments = in.getUri().getPathSegments(false);
       }
 
-      PathSegmentImpl newSegment = new PathSegmentImpl(rebuilt, last.getMatrixParameters());
-      newSegments.set(newSegments.size() - 1, newSegment);
-      in.setPreProcessedSegments(newSegments);
+      // finally strip out matrix parameters
+
+      StringBuffer preprocessedPath = new StringBuffer();
+      for (PathSegment pathSegment : segments)
+      {
+         preprocessedPath.append("/").append(pathSegment.getPath());
+      }
+      in.setPreprocessedPath(preprocessedPath.toString());
    }
 
    public void invoke(HttpRequest in, HttpResponse response)

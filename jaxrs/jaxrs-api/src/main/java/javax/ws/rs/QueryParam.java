@@ -64,14 +64,10 @@ public @interface QueryParam
     * Defines the name of the HTTP query parameter whose value will be used
     * to initialize the value of the annotated method argument, class field or
     * bean property.
+    * <p/>
+    * <p>The supplied value is automatically percent encoded. Note that percent
+    * encoded values are allowed in the value, an implementation will recognize
+    * such values and will not double encode the '%' character.</p>
     */
    String value();
-
-   /**
-    * Controls whether the the supplied query parameter name is URL encoded.
-    * If true, any characters in the query parameter name that are not valid
-    * URI characters will be automatically encoded. If false then all
-    * characters in the supplied name must be valid URI characters.
-    */
-   boolean encode() default true;
 }

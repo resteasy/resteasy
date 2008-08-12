@@ -30,16 +30,10 @@ import java.util.List;
  * <p>All methods except {@link #getBaseUri} and
  * {@link #getBaseUriBuilder} throw <code>java.lang.IllegalStateException</code>
  * if called outside the scope of a request (e.g. from a provider constructor).</p>
- * <p/>
- * <p>Note that the URIs obtained from the methods of this interface provide
- * access to request URIs after URI-based content negotiation preprocessing. E.g.
- * if the request URI is "foo.xml" and {@link ApplicationConfig#getMediaTypeMappings()}
- * includes a mapping for "xml", then {@link #getPath()} will return "foo", not
- * "foo.xml". The removed "xml" extension is available via {@link #getConnegExtension}.</p>
  *
  * @see Context
- * @see ApplicationConfig#getLanguageMappings()
- * @see ApplicationConfig#getMediaTypeMappings()
+ * @see Application#getLanguageMappings()
+ * @see Application#getMediaTypeMappings()
  */
 public interface UriInfo
 {
@@ -112,14 +106,11 @@ public interface UriInfo
    public URI getRequestUri();
 
    /**
-    * Get the absolute request URI in the form of a UriBuilder. The returned
-    * builder will have its extension initialized with
-    * <code>extension(getConnegExtension())</code>.
+    * Get the absolute request URI in the form of a UriBuilder.
     *
     * @return a UriBuilder initialized with the absolute request URI
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
-    * @see UriBuilder#extension(java.lang.String)
     */
    public UriBuilder getRequestUriBuilder();
 
@@ -138,18 +129,16 @@ public interface UriInfo
    /**
     * Get the absolute path of the request in the form of a UriBuilder.
     * This includes everything preceding the path (host, port etc) but excludes
-    * query parameters and fragment. The returned builder will have its
-    * extension initialized with <code>extension(getConnegExtension())</code>.
+    * query parameters and fragment.
     *
     * @return a UriBuilder initialized with the absolute path of the request
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
-    * @see UriBuilder#extension(java.lang.String)
     */
    public UriBuilder getAbsolutePathBuilder();
 
    /**
-    * Get the base URI of the application. URIs of resource beans
+    * Get the base URI of the application. URIs of root resource classes
     * are all relative to this base URI.
     *
     * @return the base URI of the application
@@ -157,29 +146,11 @@ public interface UriInfo
    public URI getBaseUri();
 
    /**
-    * Get the base URI of the application in the form of a UriBuilder. If
-    * called within the scope of a request, the builder will have its extension
-    * initialized with <code>extension(getConnegExtension())</code>.
+    * Get the base URI of the application in the form of a UriBuilder.
     *
     * @return a UriBuilder initialized with the base URI of the application.
-    * @see UriBuilder#extension(java.lang.String)
     */
    public UriBuilder getBaseUriBuilder();
-
-   /**
-    * Get the request URI extension that was removed during URI-based content
-    * negotiation preprocessing. The extension does not include the leading "."
-    * nor any matrix parameters that might be present after the extension.
-    * E.g. if the request URI is "foo.xml" and
-    * {@link ApplicationConfig#getMediaTypeMappings()} includes a mapping for
-    * "xml", then this method will return "xml". Note that the extension might
-    * include both a media type and language extension, e.g. "xml.en", if
-    * both are in use.
-    *
-    * @return the URI extension that was removed during URI-based content
-    *         negotiation preprocessing or null if nothing was removed
-    */
-   public String getConnegExtension();
 
    /**
     * Get the values of any embedded URI template parameters.
@@ -230,13 +201,14 @@ public interface UriInfo
    public MultivaluedMap<String, String> getQueryParameters(boolean decode);
 
    /**
-    * Get a read-only list of URIs for ancestor resources. Each entry is a
-    * relative URI that is a partial path that matched a resource class, a
+    * Get a read-only list of URIs for matched resources. Each entry is a
+    * relative URI that matched a resource class, a
     * sub-resource method or a sub-resource locator. All sequences of escaped
-    * octets are decoded, equivalent to <code>getAncestorResourceURIs(true)</code>.
+    * octets are decoded, equivalent to {@code getMatchedURIs(true)}.
     * Entries do not include query parameters but do include matrix parameters
     * if present in the request URI. Entries are ordered in reverse request
-    * URI matching order, with the root resource URI last. E.g.:
+    * URI matching order, with the current resource URI first.  E.g. given the
+    * following resource classes:
     * <p/>
     * <pre>&#064;Path("foo")
     * public class FooResource {
@@ -244,55 +216,67 @@ public interface UriInfo
     *  public String getFoo() {...}
     * <p/>
     *  &#064;Path("bar")
+    *  public BarResource getBarResource() {...}
+    * }
+    * <p/>
+    * public class BarResource {
     *  &#064;GET
-    *  public String getFooBar() {...}
-    * }</pre>
+    *  public String getBar() {...}
+    * }
+    * </pre>
     * <p/>
-    * <p>A request <code>GET /foo</code> would return an empty list since
-    * <code>FooResource</code> is a root resource.</p>
+    * <p>The values returned by this method based on request uri and where
+    * the method is called from are:</p>
     * <p/>
-    * <p>A request <code>GET /foo/bar</code> would return a list with one
-    * entry: "foo".</p>
+    * <table border="1">
+    * <tr>
+    * <th>Request</th>
+    * <th>Called from</th>
+    * <th>Value(s)</th>
+    * </tr>
+    * <tr>
+    * <td>GET /foo</td>
+    * <td>FooResource.getFoo</td>
+    * <td>foo</td>
+    * </tr>
+    * <tr>
+    * <td>GET /foo/bar</td>
+    * <td>FooResource.getBarResource</td>
+    * <td>foo/bar, foo</td>
+    * </tr>
+    * <tr>
+    * <td>GET /foo/bar</td>
+    * <td>BarResource.getBar</td>
+    * <td>foo/bar, foo</td>
+    * </tr>
+    * </table>
     *
-    * @return a read-only list of URI paths for ancestor resources.
+    * @return a read-only list of URI paths for matched resources.
     */
-   public List<String> getAncestorResourceURIs();
+   public List<String> getMatchedURIs();
 
    /**
-    * Get a read-only list of URIs for ancestor resources. Each entry is a relative URI
-    * that is a partial path that matched a resource class, a sub-resource
+    * Get a read-only list of URIs for matched resources. Each entry is a
+    * relative URI that matched a resource class, a sub-resource
     * method or a sub-resource locator. Entries do not include query
     * parameters but do include matrix parameters if present in the request URI.
     * Entries are ordered in reverse request URI matching order, with the
-    * root resource URI last. E.g.:
-    * <p/>
-    * <pre>&#064;Path("foo")
-    * public class FooResource {
-    *  &#064;GET
-    *  public String getFoo() {...}
-    * <p/>
-    *  &#064;Path("bar")
-    *  &#064;GET
-    *  public String getFooBar() {...}
-    * }</pre>
-    * <p/>
-    * <p>A request <code>GET /foo</code> would return an empty list since
-    * <code>FooResource</code> is a root resource.</p>
-    * <p/>
-    * <p>A request <code>GET /foo/bar</code> would return a list with one
-    * entry: "foo".</p>
+    * current resource URI first. See {@link #getMatchedURIs()} for an
+    * example.
     *
     * @param decode controls whether sequences of escaped octets are decoded
     *               (true) or not (false).
-    * @return a read-only list of URI paths for ancestor resources.
+    * @return a read-only list of URI paths for matched resources.
     */
-   public List<String> getAncestorResourceURIs(boolean decode);
+   public List<String> getMatchedURIs(boolean decode);
 
    /**
-    * Get a read-only list of ancestor resource class instances. Each entry is a resource
-    * class instance that matched a resource class, a sub-resource method or
-    * a sub-resource locator. Entries are ordered according in reverse request URI
-    * matching order, with the root resource last. E.g.:
+    * Get a read-only list of the currently matched resource class instances.
+    * Each entry is a resource class instance that matched the request URI
+    * either directly or via a sub-resource method or a sub-resource locator.
+    * Entries are ordered according to reverse request URI matching order,
+    * with the current resource first. E.g. given the following resource
+    * classes:
     * <p/>
     * <pre>&#064;Path("foo")
     * public class FooResource {
@@ -300,18 +284,42 @@ public interface UriInfo
     *  public String getFoo() {...}
     * <p/>
     *  &#064;Path("bar")
+    *  public BarResource getBarResource() {...}
+    * }
+    * <p/>
+    * public class BarResource {
     *  &#064;GET
-    *  public String getFooBar() {...}
-    * }</pre>
+    *  public String getBar() {...}
+    * }
+    * </pre>
     * <p/>
-    * <p>A request <code>GET /foo</code> would return an empty list since
-    * <code>FooResource</code> is a root resource.</p>
+    * <p>The values returned by this method based on request uri and where
+    * the method is called from are:</p>
     * <p/>
-    * <p>A request <code>GET /foo/bar</code> would return a list with one
-    * entry: an instance of
-    * <code>FooResource</code>.</p>
+    * <table border="1">
+    * <tr>
+    * <th>Request</th>
+    * <th>Called from</th>
+    * <th>Value(s)</th>
+    * </tr>
+    * <tr>
+    * <td>GET /foo</td>
+    * <td>FooResource.getFoo</td>
+    * <td>FooResource</td>
+    * </tr>
+    * <tr>
+    * <td>GET /foo/bar</td>
+    * <td>FooResource.getBarResource</td>
+    * <td>FooResource</td>
+    * </tr>
+    * <tr>
+    * <td>GET /foo/bar</td>
+    * <td>BarResource.getBar</td>
+    * <td>BarResource, FooResource</td>
+    * </tr>
+    * </table>
     *
-    * @return a read-only list of ancestor resource class instances.
+    * @return a read-only list of matched resource class instances.
     */
-   public List<Object> getAncestorResources();
+   public List<Object> getMatchedResources();
 }

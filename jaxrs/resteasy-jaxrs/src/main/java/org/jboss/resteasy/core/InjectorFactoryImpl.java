@@ -29,32 +29,30 @@ import java.lang.reflect.Type;
  */
 public class InjectorFactoryImpl implements InjectorFactory
 {
-   private PathParamIndex index;
    private ResteasyProviderFactory factory;
 
 
-   public InjectorFactoryImpl(PathParamIndex index, ResteasyProviderFactory factory)
+   public InjectorFactoryImpl(ResteasyProviderFactory factory)
    {
-      this.index = index;
       this.factory = factory;
    }
 
    public ConstructorInjector createConstructor(Constructor constructor)
    {
-      return new ConstructorInjectorImpl(constructor, index, factory);
+      return new ConstructorInjectorImpl(constructor, factory);
    }
 
    public PropertyInjector createPropertyInjector(Class resourceClass)
    {
-      return new PropertyInjectorImpl(resourceClass, index, factory);
+      return new PropertyInjectorImpl(resourceClass, factory);
    }
 
    public MethodInjector createMethodInjector(Method method)
    {
-      return new MethodInjectorImpl(method, index, factory);
+      return new MethodInjectorImpl(method, factory);
    }
 
-   public static ValueInjector getParameterExtractor(PathParamIndex index, Class type, Type genericType, Annotation[] annotations, AccessibleObject target, ResteasyProviderFactory providerFactory)
+   public static ValueInjector getParameterExtractor(Class type, Type genericType, Annotation[] annotations, AccessibleObject target, ResteasyProviderFactory providerFactory)
    {
 
       DefaultValue defaultValue = FindAnnotation.findAnnotation(annotations, DefaultValue.class);
@@ -73,7 +71,7 @@ public class InjectorFactoryImpl implements InjectorFactory
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
       {
-         return new QueryParamInjector(type, genericType, target, query.value(), defaultVal, encode, query.encode());
+         return new QueryParamInjector(type, genericType, target, query.value(), defaultVal, encode);
       }
       else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
       {
@@ -89,11 +87,11 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
       {
-         return new PathParamInjector(index, type, genericType, target, uriParam.value(), defaultVal, encode);
+         return new PathParamInjector(type, genericType, target, uriParam.value(), defaultVal, encode);
       }
       else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
       {
-         return new FormInjector(type, providerFactory, index);
+         return new FormInjector(type, providerFactory);
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
       {

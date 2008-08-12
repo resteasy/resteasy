@@ -6,11 +6,9 @@ import org.jboss.resteasy.spi.HttpRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * Http request abstraction implementation
@@ -24,7 +22,7 @@ public class HttpRequestImpl implements HttpRequest
    protected InputStream inputStream;
    protected UriInfo uri;
    protected String httpMethod;
-   protected List<PathSegment> preProcessedSegments;
+   protected String preProcessedPath;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
 
@@ -34,7 +32,7 @@ public class HttpRequestImpl implements HttpRequest
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
       this.uri = uri;
-      this.preProcessedSegments = uri.getPathSegments(false);
+      this.preProcessedPath = uri.getPath(false);
    }
 
    public HttpHeaders getHttpHeaders()
@@ -57,14 +55,14 @@ public class HttpRequestImpl implements HttpRequest
       return httpMethod;
    }
 
-   public List<PathSegment> getPreProcessedSegments()
+   public String getPreprocessedPath()
    {
-      return preProcessedSegments;
+      return preProcessedPath;
    }
 
-   public void setPreProcessedSegments(List<PathSegment> segments)
+   public void setPreprocessedPath(String path)
    {
-      this.preProcessedSegments = segments;
+      preProcessedPath = path;
    }
 
    public MultivaluedMap<String, String> getFormParameters()
@@ -94,4 +92,5 @@ public class HttpRequestImpl implements HttpRequest
       decodedFormParameters = Encode.decode(getFormParameters());
       return decodedFormParameters;
    }
+
 }

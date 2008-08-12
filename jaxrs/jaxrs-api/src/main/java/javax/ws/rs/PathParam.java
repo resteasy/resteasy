@@ -34,21 +34,13 @@ import java.lang.annotation.Target;
  * <p/>
  * The type of the annotated parameter, field or property must either:
  * <ul>
- * <li>Be {@link javax.ws.rs.core.PathSegment}, the value will be a
- * {@code PathSegment} corresponding to the path segment that contains the named
- * template parameter. If the template parameter has
- * {@link Path#limited()}{@code =false} then the path segment will be the final
+ * <li>Be {@link javax.ws.rs.core.PathSegment}, the value will be the final
  * segment of the matching part of the path.
  * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
  * path segments.</li>
  * <li>Be {@code List<}{@link javax.ws.rs.core.PathSegment}{@code >}, the
  * value will be a list of {@code PathSegment} corresponding to the path
- * segment that contains the named template parameter.
- * If the template parameter has {@link Path#limited()}{@code =false} then
- * the list will contain an entry for each path segment within the matching part
- * of the path. If the template parameter has
- * {@link Path#limited()}{@code =true} then the list will contain a single entry
- * corresponding to the path segment that contains the URI template parameter.
+ * segment(s) that matched the named template parameter.
  * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
  * path segments.</li>
  * <li>Be a primitive type.</li>

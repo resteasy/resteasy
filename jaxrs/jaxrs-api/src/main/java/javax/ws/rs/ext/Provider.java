@@ -26,9 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks an implementation of {@link ExceptionMapper}, {@link ContextResolver},
- * {@link MessageBodyReader} or {@link MessageBodyWriter}. An annotated class
- * MUST implement one or more of these interfaces.
+ * Marks an implementation of an extension interface.
  *
  * @see MessageBodyReader
  * @see MessageBodyWriter

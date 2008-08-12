@@ -2,10 +2,8 @@ package org.jboss.resteasy.spi;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * Bridge interface between the base Resteasy JAX-RS implementation and the actual HTTP transport (i.e. a servlet container)
@@ -24,14 +22,13 @@ public interface HttpRequest
    String getHttpMethod();
 
    /**
-    * Path segments minus any preprocessed extensions
+    * Encoded preprocessed path with extension mappings and matrix parameters removed
     *
     * @return
     */
-   List<PathSegment> getPreProcessedSegments();
+   String getPreprocessedPath();
 
-
-   void setPreProcessedSegments(List<PathSegment> segments);
+   public void setPreprocessedPath(String path);
 
    /**
     * application/x-www-form-urlencoded parameters

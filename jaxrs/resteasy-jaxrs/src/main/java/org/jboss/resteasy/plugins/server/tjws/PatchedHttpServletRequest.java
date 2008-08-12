@@ -61,7 +61,7 @@ public class PatchedHttpServletRequest extends HttpServletRequestDelegate
       if (url.getPath() != null)
          buffer.append(Encode.encodePath(url.getPath(), false).replace("%3B", ";").replace("%3D", "="));
       if (url.getQuery() != null) buffer.append("?").append(url.getQuery());
-      if (url.getRef() != null) buffer.append("#").append(Encode.encodeSegment(url.getRef()));
+      if (url.getRef() != null) buffer.append("#").append(Encode.encodeSegment(url.getRef(), false));
       String buf = buffer.toString();
       return buf;
    }

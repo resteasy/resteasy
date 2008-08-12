@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -47,18 +48,16 @@ public class ResourceMethod implements ResourceInvoker
    protected InjectorFactory injector;
    protected ResourceFactory resource;
    protected ResteasyProviderFactory providerFactory;
-   protected PathParamIndex index;
    protected Method method;
    protected String[] rolesAllowed;
    protected boolean denyAll;
 
-   public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods, PathParamIndex index)
+   public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods)
    {
       this.injector = injector;
       this.resource = resource;
       this.providerFactory = providerFactory;
       this.httpMethods = httpMethods;
-      this.index = index;
       this.method = method;
       this.methodInjector = injector.createMethodInjector(method);
 
@@ -156,24 +155,32 @@ public class ResourceMethod implements ResourceInvoker
       checkAuthorized();
 
       Response jaxrsResponse = null;
+      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      uriInfo.pushCurrentResource(target);
       try
       {
-         index.populateUriInfoTemplateParams(request);
-         jaxrsResponse = methodInjector.invoke(request, response, target);
+         try
+         {
+            jaxrsResponse = methodInjector.invoke(request, response, target);
+         }
+         catch (WebApplicationException we)
+         {
+            response.sendError(we.getResponse().getStatus());
+            we.printStackTrace();
+            return;
+         }
+         catch (Failure e)
+         {
+            response.sendError(e.getErrorCode());
+            e.printStackTrace();
+            return;
+         }
+         writeJaxrsResponse(request, response, jaxrsResponse);
       }
-      catch (WebApplicationException we)
+      finally
       {
-         response.sendError(we.getResponse().getStatus());
-         we.printStackTrace();
-         return;
+         uriInfo.popCurrentResource();
       }
-      catch (Failure e)
-      {
-         response.sendError(e.getErrorCode());
-         e.printStackTrace();
-         return;
-      }
-      writeJaxrsResponse(request, response, jaxrsResponse);
    }
 
    protected void writeJaxrsResponse(HttpRequest request, HttpResponse response, Response jaxrsResponse)

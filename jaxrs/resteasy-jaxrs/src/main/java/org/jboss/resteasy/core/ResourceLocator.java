@@ -1,15 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -23,6 +13,13 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -31,31 +28,21 @@ public class ResourceLocator implements ResourceInvoker
 {
 
    final static Logger logger = LoggerFactory.getLogger(ResourceLocator.class);
-   
+
    protected InjectorFactory injector;
    protected MethodInjector methodInjector;
    protected ResourceFactory resource;
    protected ResteasyProviderFactory providerFactory;
    protected Method method;
    protected ConcurrentHashMap<Class, ResourceMethodRegistry> cachedSubresources = new ConcurrentHashMap<Class, ResourceMethodRegistry>();
-   protected int uriIndex;
-   protected PathParamIndex index;
-   protected boolean limited;
 
-   public ResourceLocator(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, Method method, PathParamIndex index, boolean limited)
+   public ResourceLocator(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, Method method)
    {
       this.resource = resource;
       this.injector = injector;
       this.providerFactory = providerFactory;
       this.method = method;
       this.methodInjector = injector.createMethodInjector(method);
-      this.index = index;
-      this.limited = limited;
-   }
-
-   public void setUriIndex(int uriIndex)
-   {
-      this.uriIndex = uriIndex;
    }
 
    protected Object createResource(HttpRequest request, HttpResponse response)
@@ -68,15 +55,13 @@ public class ResourceLocator implements ResourceInvoker
    protected Object createResource(HttpRequest request, HttpResponse response, Object locator)
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
-      index.populateUriInfoTemplateParams(request);
       Object[] args = methodInjector.injectArguments(request, response);
       try
       {
-         Object subResource = method.invoke(locator, args);
          uriInfo.pushCurrentResource(locator);
-
+         Object subResource = method.invoke(locator, args);
          warnIfJaxRSAnnotatedFields(subResource);
-         
+
          return subResource;
 
       }
@@ -90,30 +75,9 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   public void setAncestorUri(UriInfoImpl uriInfo)
+   public Method getMethod()
    {
-      StringBuffer encoded = new StringBuffer();
-      boolean first = true;
-      for (int i = index.getOffset(); i < uriIndex + index.getOffset(); i++)
-      {
-         if (first) first = false;
-         else
-         {
-            encoded.append("/");
-         }
-         PathSegmentImpl encodedSegment = (PathSegmentImpl) uriInfo.getPathSegments(false).get(i);
-         encoded.append(encodedSegment.getOriginal());
-      }
-      String encodedUri = encoded.toString();
-      try
-      {
-         String decodedUri = URLDecoder.decode(encodedUri, "UTF-8");
-         uriInfo.pushAncestorURI(encodedUri, decodedUri);
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      return method;
    }
 
    public void invoke(HttpRequest request, HttpResponse response) throws IOException
@@ -122,13 +86,12 @@ public class ResourceLocator implements ResourceInvoker
       try
       {
          Object target = createResource(request, response);
-         setAncestorUri(uriInfo);
          invokeOnTargetObject(request, response, target);
       }
       finally
       {
          uriInfo.popCurrentResource();
-         uriInfo.popAncestorURI();
+         uriInfo.popMatchedURI();
       }
    }
 
@@ -138,21 +101,20 @@ public class ResourceLocator implements ResourceInvoker
       try
       {
          Object target = createResource(request, response, locator);
-         setAncestorUri(uriInfo);
          invokeOnTargetObject(request, response, target);
       }
       finally
       {
          uriInfo.popCurrentResource();
-         uriInfo.popAncestorURI();
+         uriInfo.popMatchedURI();
       }
    }
 
    protected void invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target) throws IOException
    {
-      if ( target == null )
+      if (target == null)
       {
-         throw new Failure("Null subresource for path: "+request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
+         throw new Failure("Null subresource for path: " + request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
       }
       ResourceMethodRegistry registry = cachedSubresources.get(target.getClass());
       if (registry == null)
@@ -164,13 +126,13 @@ public class ResourceLocator implements ResourceInvoker
             String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
             throw new Failure(msg, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
          }
-         registry.addResourceFactory(null, null, subResourceClass, uriIndex + index.getOffset(), limited);
+         registry.addResourceFactory(null, null, subResourceClass);
          cachedSubresources.putIfAbsent(target.getClass(), registry);
       }
-      ResourceInvoker invoker = registry.getResourceInvoker(request, response, uriIndex + index.getOffset(), limited);
+      ResourceInvoker invoker = registry.getResourceInvoker(request, response);
       if (invoker == null)
       {
-         throw new Failure("No path match in subresource for: "+request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
+         throw new Failure("No path match in subresource for: " + request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
       }
       else if (invoker instanceof ResourceLocator)
       {
@@ -183,37 +145,38 @@ public class ResourceLocator implements ResourceInvoker
          method.invoke(request, response, target);
       }
    }
-   
-   
-   private void warnIfJaxRSAnnotatedFields( Object obj )
+
+
+   private void warnIfJaxRSAnnotatedFields(Object obj)
    {
-      
-      if ( obj == null ) return;
-      
+
+      if (obj == null) return;
+
       Class<?> clazz = obj.getClass();
-      
-      while( clazz != Object.class )
+
+      while (clazz != Object.class)
       {
-         
+
          Field[] fields = clazz.getDeclaredFields();
-         
-         for ( Field field : fields )
+
+         for (Field field : fields)
          {
 
             Class<? extends Annotation>[] annotations =
-               FindAnnotation.findJaxRSAnnotations(field.getDeclaredAnnotations());
-      
-            if ( annotations.length != 0 ) {
-               logger.warn( "Field '{}' of subresource '{}' will not be injected " +
-               		"according to spec", field.getName(), obj.getClass().getName() );
+                    FindAnnotation.findJaxRSAnnotations(field.getDeclaredAnnotations());
+
+            if (annotations.length != 0)
+            {
+               logger.warn("Field '{}' of subresource '{}' will not be injected " +
+                       "according to spec", field.getName(), obj.getClass().getName());
             }
-               
+
          }
-         
+
          clazz = clazz.getSuperclass();
-         
+
       }
-      
+
    }
-   
+
 }

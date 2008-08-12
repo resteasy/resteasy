@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.registry.RootSegment;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
@@ -11,11 +12,11 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,9 +29,9 @@ public class ResourceMethodRegistry implements Registry
 {
    protected int size;
 
-   protected PathSegmentNode root = new PathSegmentNode();
    protected ResteasyProviderFactory providerFactory;
    protected String rootPath = "";
+   protected RootSegment rootSegment = new RootSegment();
 
    public ResourceMethodRegistry(ResteasyProviderFactory providerFactory)
    {
@@ -114,7 +115,7 @@ public class ResourceMethodRegistry implements Registry
          }
          throw new RuntimeException(msg);
       }
-      addResourceFactory(ref, base, restful, 0, true);
+      addResourceFactory(ref, base, restful);
    }
 
    /**
@@ -126,9 +127,9 @@ public class ResourceMethodRegistry implements Registry
     * @param clazz   specific class
     * @param offset  path segment offset.  > 0 means we're within a locator.
     */
-   public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz, int offset, boolean limited)
+   public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
    {
-      if (ref != null) ref.registered(new InjectorFactoryImpl(null, providerFactory));
+      if (ref != null) ref.registered(new InjectorFactoryImpl(providerFactory));
       for (Method method : clazz.getMethods())
       {
          Path path = method.getAnnotation(Path.class);
@@ -141,31 +142,24 @@ public class ResourceMethodRegistry implements Registry
          if (clazz.isAnnotationPresent(Path.class))
          {
             builder.path(clazz);
-            limited = clazz.getAnnotation(Path.class).limited();
          }
          if (path != null)
          {
-            if (limited == false)
-               throw new RuntimeException("It is illegal to have @Path.limited() == false on your class then use a @Path on a method too");
             builder.path(method);
-            limited = path.limited();
          }
          String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
 
-         PathParamIndex index = new PathParamIndex(pathExpression, offset, !limited);
-         InjectorFactory injectorFactory = new InjectorFactoryImpl(index, providerFactory);
-         if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
-         String[] paths = pathExpression.split("/");
+         InjectorFactory injectorFactory = new InjectorFactoryImpl(providerFactory);
          if (httpMethods == null)
          {
-            ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, method, index, limited);
-            root.addChild(paths, 0, locator);
+            ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, method);
+            rootSegment.addPath(pathExpression, locator);
          }
          else
          {
-            ResourceMethod invoker = new ResourceMethod(clazz, method, injectorFactory, ref, providerFactory, httpMethods, index);
-            root.addChild(paths, 0, invoker, !limited);
+            ResourceMethod invoker = new ResourceMethod(clazz, method, injectorFactory, ref, providerFactory, httpMethods);
+            rootSegment.addPath(pathExpression, invoker);
          }
          size++;
 
@@ -197,31 +191,13 @@ public class ResourceMethodRegistry implements Registry
          if (path == null && httpMethods == null) continue;
 
          UriBuilderImpl builder = new UriBuilderImpl();
-         builder.setPath(base);
+         if (base != null) builder.path(base);
          if (clazz.isAnnotationPresent(Path.class)) builder.path(clazz);
          if (path != null) builder.path(method);
          String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
 
-         if (pathExpression.startsWith("/")) pathExpression = pathExpression.substring(1);
-         String[] paths = pathExpression.split("/");
-         if (httpMethods == null)
-         {
-            if (root.removeLocator(paths, 0) != null) size--;
-         }
-         else
-         {
-            try
-            {
-               if (root.removeChild(paths, 0, method) != null) size--;
-            }
-            catch (Exception e)
-            {
-               throw new RuntimeException("pathExpression: " + pathExpression, e);
-            }
-
-         }
-
+         if (rootSegment.removePath(pathExpression, method) != null) size--;
       }
    }
 
@@ -247,30 +223,10 @@ public class ResourceMethodRegistry implements Registry
     */
    public ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response)
    {
-      return root.findResourceInvoker(request, response, 0);
+      List<String> matchedUris = request.getUri().getMatchedURIs(false);
+      if (matchedUris == null || matchedUris.size() == 0) return rootSegment.matchRoot(request);
+      // resource location 
+      String currentUri = request.getUri().getMatchedURIs().get(0);
+      return rootSegment.matchChildren(request, request.getPreprocessedPath(), currentUri.length());
    }
-
-   /**
-    * Find a resource to invoke on
-    *
-    * @param httpMethod  GET, POST, PUT, OPTIONS, TRACE, etc...
-    * @param path        uri path
-    * @param contentType produced type
-    * @param accepts     accept header
-    * @return
-    */
-   public ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex, boolean limited)
-   {
-      if (pathIndex >= request.getUri().getPathSegments().size() || limited == false)
-      {
-         PathSegmentNode empty = root.getChild("");
-         if (empty == null)
-         {
-            throw new Failure(HttpResponseCodes.SC_NOT_FOUND);
-         }
-         return empty.findResourceInvoker(request, response, pathIndex);
-      }
-      return root.findResourceInvoker(request, response, pathIndex);
-   }
-
 }

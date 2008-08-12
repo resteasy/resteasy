@@ -1,9 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.core.LoggerCategories;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
-import org.slf4j.Logger;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
@@ -12,9 +10,11 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -22,14 +22,10 @@ import java.util.regex.Matcher;
  */
 public class UriBuilderImpl extends UriBuilder
 {
-   private static final Logger logger = LoggerCategories.getSpecImplLogger();
 
    private String host;
    private String scheme;
    private int port = -1;
-
-   // todo need to implement encoding
-   private boolean encode = true;
 
    private String userInfo;
    private String path;
@@ -43,20 +39,12 @@ public class UriBuilderImpl extends UriBuilder
       impl.host = host;
       impl.scheme = scheme;
       impl.port = port;
-      impl.encode = encode;
       impl.userInfo = userInfo;
       impl.path = path;
       impl.query = query;
       impl.fragment = fragment;
 
       return impl;
-   }
-
-   @Override
-   public UriBuilder encode(boolean enable)
-   {
-      encode = enable;
-      return this;
    }
 
    @Override
@@ -113,13 +101,6 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
-   @Override
-   public UriBuilder replacePath(String... segments) throws IllegalArgumentException
-   {
-      this.path = paths(isEncode(), null, segments);
-      return this;
-   }
-
    protected static String paths(boolean encode, String basePath, String... segments)
    {
       String path = basePath;
@@ -130,7 +111,7 @@ public class UriBuilderImpl extends UriBuilder
          if (!path.endsWith("/")) path += "/";
          if (segment.equals("/")) continue;
          if (segment.startsWith("/")) segment = segment.substring(1);
-         if (encode) segment = Encode.encodePath(segment);
+         if (encode) segment = Encode.encodePath(segment, true);
          path += segment;
 
       }
@@ -138,9 +119,9 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    @Override
-   public UriBuilder path(String... segments) throws IllegalArgumentException
+   public UriBuilder path(String segment) throws IllegalArgumentException
    {
-      path = paths(isEncode(), path, segments);
+      path = paths(true, path, segment);
       return this;
    }
 
@@ -151,7 +132,7 @@ public class UriBuilderImpl extends UriBuilder
       if (ann != null)
       {
          String[] segments = new String[]{ann.value()};
-         path = paths(ann.encode(), path, segments);
+         path = paths(true, path, segments);
       }
       return this;
    }
@@ -170,22 +151,19 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    @Override
-   public UriBuilder path(Method... methods) throws IllegalArgumentException
+   public UriBuilder path(Method method) throws IllegalArgumentException
    {
-      for (Method method : methods)
+      Path ann = method.getAnnotation(Path.class);
+      if (ann != null)
       {
-         Path ann = method.getAnnotation(Path.class);
-         if (ann != null)
-         {
-            String[] segments = new String[]{ann.value()};
-            path = paths(ann.encode(), path, segments);
-         }
+         String[] segments = new String[]{ann.value()};
+         path = paths(true, path, segments);
       }
       return this;
    }
 
    @Override
-   public UriBuilder replaceMatrixParams(String matrix) throws IllegalArgumentException
+   public UriBuilder replaceMatrix(String matrix) throws IllegalArgumentException
    {
 
       if (!matrix.startsWith(";")) matrix = ";" + matrix;
@@ -206,76 +184,58 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    @Override
-   public UriBuilder replaceQueryParams(String query) throws IllegalArgumentException
+   public UriBuilder replaceQuery(String query) throws IllegalArgumentException
    {
       this.query = query;
       return this;
    }
 
-   protected String encodeString(String value)
-   {
-      if (!isEncode()) return value;
-      return Encode.encodeSegment(value);
-   }
-
    @Override
    public UriBuilder fragment(String fragment) throws IllegalArgumentException
    {
-      this.fragment = encodeString(fragment);
+      this.fragment = Encode.encodeSegment(fragment, true);
       return this;
    }
 
    /**
-    * Replace first found uri parameter of name with give value
+    * Only replace path params in path of URI.  This changes state of URIBuilder.
     *
     * @param name
     * @param value
+    * @param isEncoded
     * @return
-    * @throws IllegalArgumentException if name or value is null or
-    *                                  if automatic encoding is disabled the paramter value contains illegal characters
     */
-   public UriBuilder uriParam(String name, String value) throws IllegalArgumentException
+   public UriBuilder substitutePathParam(String name, Object value, boolean isEncoded)
    {
-      if (path == null) return this;
-      if (path.startsWith("/")) path = path.substring(1);
-      String[] paths = path.split("/");
-      int i = 0;
-      for (String p : paths)
+      if (path != null)
       {
-         Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(p);
-         if (matcher.matches())
-         {
-            String uriParamName = matcher.group(2);
-            if (uriParamName.equals(name))
-            {
-               paths[i] = value;
-               break;
-            }
-         }
-         i++;
+         StringBuffer buffer = new StringBuffer();
+         replaceParameter(name, value.toString(), isEncoded, path, buffer);
+         path = buffer.toString();
       }
-      path = null;
-      path(paths);
       return this;
    }
 
-
    @Override
-   public URI build() throws UriBuilderException
-   {
-      return build(path);
-   }
-
-   protected URI build(String tmpPath) throws UriBuilderException
+   public URI buildFromMap(Map<String, ? extends Object> paramMap, boolean isEncoded) throws IllegalArgumentException, UriBuilderException
    {
       StringBuffer buffer = new StringBuffer();
-      if (scheme != null) buffer.append(scheme).append("://");
-      if (userInfo != null) buffer.append(userInfo).append("@");
-      if (host != null) buffer.append(host);
+
+      if (scheme != null) replaceParameter(paramMap, isEncoded, scheme, buffer).append("://");
+      if (userInfo != null) replaceParameter(paramMap, isEncoded, userInfo, buffer).append("@");
+      if (host != null) replaceParameter(paramMap, isEncoded, host, buffer);
       if (port != -1 && port != 80) buffer.append(":").append(Integer.toString(port));
-      if (tmpPath != null) buffer.append(tmpPath);
-      if (query != null) buffer.append("?").append(query);
-      if (fragment != null) buffer.append("#").append(fragment);
+      if (path != null) replaceParameter(paramMap, isEncoded, path, buffer);
+      if (query != null)
+      {
+         buffer.append("?");
+         replaceParameter(paramMap, isEncoded, query, buffer);
+      }
+      if (fragment != null)
+      {
+         buffer.append("#");
+         replaceParameter(paramMap, isEncoded, fragment, buffer);
+      }
       String buf = buffer.toString();
       try
       {
@@ -287,60 +247,91 @@ public class UriBuilderImpl extends UriBuilder
       }
    }
 
-
-   private String encodeSegment(String value)
+   protected StringBuffer replaceParameter(String name, String value, boolean isEncoded, String string, StringBuffer buffer)
    {
-      if (isEncode()) return Encode.encodeSegment(value);
-      return value;
-   }
-
-   @Override
-   public URI build(Map<String, Object> values) throws IllegalArgumentException, UriBuilderException
-   {
-      if (values.size() <= 0 || path == null) return build();
-      if (path.startsWith("/")) path = path.substring(1);
-      String[] paths = path.split("/");
-      int i = 0;
-      for (String p : paths)
+      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(string);
+      while (matcher.find())
       {
-         Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(p);
-         if (matcher.matches())
-         {
-            String uriParamName = matcher.group(2);
-            Object value = values.get(uriParamName);
-            if (value == null)
-               throw new IllegalArgumentException("uri parameter {" + uriParamName + "} does not exist as a value");
-            paths[i] = encodeSegment(value.toString());
-         }
-         i++;
+         String param = matcher.group(1);
+         if (!param.equals(name)) continue;
+         value = Encode.encodeSegment(value, false);
+         if (!isEncoded) value = value.replace("%", "%25");
+         else Encode.encodeNonCodes(value);
+         matcher.appendReplacement(buffer, value);
       }
-      String tmpPath = paths(isEncode(), null, paths);
-      return build(tmpPath);
+      matcher.appendTail(buffer);
+      return buffer;
    }
 
-   protected List<String> getUriParamNamesInDeclarationOrder()
+   protected StringBuffer replaceParameter(Map<String, ? extends Object> paramMap, boolean isEncoded, String string, StringBuffer buffer)
+   {
+      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(string);
+      while (matcher.find())
+      {
+         String param = matcher.group(1);
+         String value = paramMap.get(param).toString();
+         if (value != null)
+         {
+            value = Encode.encodeSegment(value, false);
+            if (!isEncoded) value = value.replace("%", "%25");
+            else Encode.encodeNonCodes(value);
+            matcher.appendReplacement(buffer, value);
+         }
+         else
+         {
+            throw new IllegalArgumentException("path param " + param + " has not been provided by the parameter map");
+         }
+      }
+      matcher.appendTail(buffer);
+      return buffer;
+   }
+
+   /**
+    * Return a unique order list of path params
+    *
+    * @return
+    */
+   protected List<String> getPathParamNamesInDeclarationOrder()
    {
       List<String> params = new ArrayList<String>();
-      if (path == null) return params;
-      if (path.startsWith("/")) path = path.substring(1);
-      String[] paths = path.split("/");
-      for (String p : paths)
+      HashSet<String> set = new HashSet<String>();
+      if (scheme != null) addToPathParamList(params, set, scheme);
+      if (userInfo != null) addToPathParamList(params, set, userInfo);
+      if (host != null) addToPathParamList(params, set, host);
+      if (path != null) addToPathParamList(params, set, path);
+      if (query != null) addToPathParamList(params, set, query);
+      if (fragment != null) addToPathParamList(params, set, fragment);
+
+      return params;
+   }
+
+   private void addToPathParamList(List<String> params, HashSet<String> set, String string)
+   {
+      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(string);
+      while (matcher.find())
       {
-         Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(p);
-         if (matcher.matches())
+         String param = matcher.group(1);
+         if (set.contains(param)) continue;
+         else
          {
-            params.add(matcher.group(2));
+            set.add(param);
+            params.add(param);
          }
       }
-      return params;
    }
 
    @Override
    public URI build(Object... values) throws IllegalArgumentException, UriBuilderException
    {
-      if (values.length <= 0) return build();
-      List<String> params = getUriParamNamesInDeclarationOrder();
-      if (params.size() == 0) throw new IllegalArgumentException("There are no @PathParams");
+      return buildFromValues(false, values);
+   }
+
+   protected URI buildFromValues(boolean encoded, Object... values)
+   {
+      List<String> params = getPathParamNamesInDeclarationOrder();
+      if (values.length < params.size())
+         throw new IllegalArgumentException("You did not supply enough values to fill path parameters");
+      if (values.length > params.size()) throw new IllegalArgumentException("You provided too many values");
 
       Map<String, Object> pathParams = new HashMap<String, Object>();
 
@@ -348,18 +339,11 @@ public class UriBuilderImpl extends UriBuilder
 
       for (Object val : values)
       {
+         if (val == null) throw new IllegalArgumentException("A value was null");
          String pathParam = params.get(i++);
-         if (pathParams.containsKey(pathParam))
-            throw new IllegalArgumentException("More values passed in than there are @PathParams");
          pathParams.put(pathParam, val.toString());
       }
-      return build(pathParams);
-   }
-
-   @Override
-   public String getExtension()
-   {
-      return null;
+      return buildFromMap(pathParams, encoded);
    }
 
    @Override
@@ -368,67 +352,97 @@ public class UriBuilderImpl extends UriBuilder
       if (path == null) path = "";
       for (Object val : values)
       {
-         path += ";" + encodeSegment(name) + "=" + encodeSegment(val.toString());
+         path += ";" + Encode.encodeSegment(name, false) + "=" + Encode.encodeSegment(val.toString(), true);
       }
       return this;
    }
+
+   private static final Pattern PARAM_REPLACEMENT = Pattern.compile("_resteasy_uri_parameter");
 
    @Override
    public UriBuilder replaceMatrixParam(String name, Object... values) throws IllegalArgumentException
    {
       if (path == null) return matrixParam(name, values);
+
+      // remove all path param expressions so we don't accidentally start replacing within a regular expression
+      ArrayList<String> pathParams = new ArrayList<String>();
+      boolean foundParam = false;
+
+      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path);
+      StringBuffer newSegment = new StringBuffer();
+      while (matcher.find())
+      {
+         foundParam = true;
+         String group = matcher.group();
+         pathParams.add(group);
+         matcher.appendReplacement(newSegment, "_resteasy_uri_parameter");
+      }
+      matcher.appendTail(newSegment);
+      path = newSegment.toString();
+
+      // Find last path segment
       int start = path.lastIndexOf('/');
       if (start < 0) start = 0;
+
       int matrixIndex = path.indexOf(';', start);
-      if (matrixIndex > -1) return matrixParam(name, values);
-
-      String matrixParams = path.substring(matrixIndex + 1);
-      path = path.substring(0, matrixIndex);
-      MultivaluedMapImpl<String, String> map = new MultivaluedMapImpl<String, String>();
-
-      String[] params = matrixParams.split(";");
-      for (String param : params)
+      if (matrixIndex > -1)
       {
-         String[] namevalue = param.split("=");
-         if (namevalue != null && namevalue.length > 0)
+
+         String matrixParams = path.substring(matrixIndex + 1);
+         path = path.substring(0, matrixIndex);
+         MultivaluedMapImpl<String, String> map = new MultivaluedMapImpl<String, String>();
+
+         String[] params = matrixParams.split(";");
+         for (String param : params)
          {
-            String theName = namevalue[0];
-            String value = "";
-            if (namevalue.length > 1)
+            String[] namevalue = param.split("=");
+            if (namevalue != null && namevalue.length > 0)
             {
-               value = namevalue[1];
+               String theName = namevalue[0];
+               String value = "";
+               if (namevalue.length > 1)
+               {
+                  value = namevalue[1];
+               }
+               map.add(theName, value);
             }
-            map.add(theName, value);
          }
-      }
-      map.remove(name);
-      for (String theName : map.keySet())
-      {
-         List<String> vals = map.get(theName);
-         for (Object val : vals)
+         map.remove(name);
+         for (String theName : map.keySet())
          {
-            path += ";" + name + "=" + val.toString();
+            List<String> vals = map.get(theName);
+            for (Object val : vals)
+            {
+               path += ";" + name + "=" + val.toString();
+            }
          }
       }
-      return matrixParam(name, values);
-   }
+      matrixParam(name, values);
 
-   public UriBuilder queryParam(String name, String value) throws IllegalArgumentException
-   {
-      if (query == null) query = encodeString(name) + "=" + encodeString(value);
-      else query += "&" + encodeString(name) + "=" + encodeString(value);
+      // put back all path param expressions
+      if (foundParam)
+      {
+         matcher = PARAM_REPLACEMENT.matcher(path);
+         newSegment = new StringBuffer();
+         int i = 0;
+         while (matcher.find())
+         {
+            matcher.appendReplacement(newSegment, pathParams.get(i++));
+         }
+         matcher.appendTail(newSegment);
+         path = newSegment.toString();
+      }
       return this;
    }
 
    @Override
    public UriBuilder queryParam(String name, Object... values) throws IllegalArgumentException
    {
-
       for (Object value : values)
       {
          if (query == null) query = "";
          else query += "&";
-         query += encodeString(name) + "=" + encodeString(value.toString());
+         query += Encode.encodeSegment(name, false) + "=" + Encode.encodeSegment(value.toString(), true);
       }
       return this;
    }
@@ -441,7 +455,7 @@ public class UriBuilderImpl extends UriBuilder
       String[] params = query.split("&");
       query = null;
 
-      String replacedName = encodeString(name);
+      String replacedName = Encode.encodeSegment(name, false);
 
       for (String param : params)
       {
@@ -482,11 +496,6 @@ public class UriBuilderImpl extends UriBuilder
       return port;
    }
 
-   public boolean isEncode()
-   {
-      return encode;
-   }
-
    public String getUserInfo()
    {
       return userInfo;
@@ -507,64 +516,27 @@ public class UriBuilderImpl extends UriBuilder
       return fragment;
    }
 
-   /**
-    * nullable
-    */
-   public void setPath(String path)
-   {
-      if (isEncode() && path != null) this.path = Encode.encodePath(path);
-      else this.path = path;
-   }
-
    @Override
-   public UriBuilder extension(String extension)
+   public UriBuilder segment(String... segments) throws IllegalArgumentException
    {
-      if (path != null)
+      for (String segment : segments)
       {
-         int lastPath = path.lastIndexOf('/');
-         if (lastPath < 0) lastPath = 0;
-         int index = path.indexOf('.', lastPath);
-         if (index > -1) path = path.substring(0, index);
-      }
-      if (extension == null) return this;
-
-      if (extension.startsWith(".")) extension = extension.substring(1);
-      if (isEncode()) extension = Encode.encodeSegment(extension);
-      if (path == null)
-      {
-         path = "." + extension;
-      }
-      else
-      {
-         if (!path.endsWith(".")) path += ".";
-         path += extension;
+         path(Encode.encodeSegment(segment, true));
       }
       return this;
    }
 
-   public static void main(String[] args) throws Exception
+   @Override
+   public URI buildFromEncoded(Object... values) throws IllegalArgumentException, UriBuilderException
    {
-      String path = "/foo.txt/hello.html";
-
-      path = removeDot(path);
-
-      logger.trace(path);
-
-      path = "foo/bar";
-
-      path = removeDot(path);
-
-      logger.trace(path);
-
-
+      return buildFromValues(true, values);
    }
 
-   private static String removeDot(String path)
+   @Override
+   public UriBuilder replacePath(String path)
    {
-      int lastPath = path.lastIndexOf('/');
-      if (lastPath < 0) lastPath = 0;
-      int index = path.indexOf('.', lastPath);
-      if (index > -1) path = path.substring(0, index);
-      return path;
+      this.path = Encode.encodePath(path, true);
+      return this;
    }
+
 }
