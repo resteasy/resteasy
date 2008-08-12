@@ -45,7 +45,7 @@ public class ClientErrorTest
 
       @Produces("text/plain")
       @GET
-      @Path("match")
+      @Path("complex/match")
       public String get()
       {
          return "content";
@@ -53,7 +53,7 @@ public class ClientErrorTest
 
       @Produces("text/xml")
       @GET
-      @Path("{uriparam}")
+      @Path("complex/{uriparam: [^/]+}")
       public String getXml(@PathParam("uriparam")String param)
       {
          return "<" + param + "/>";
@@ -90,7 +90,7 @@ public class ClientErrorTest
    public void testComplex()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/match");
+      GetMethod method = new GetMethod("http://localhost:8081/complex/match");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/xml");
       try
       {

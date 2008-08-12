@@ -12,16 +12,12 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 public class FormInjector implements ValueInjector
 {
    private Class type;
-   private ResteasyProviderFactory factory;
-   private PathParamIndex index;
    private PropertyInjector injector;
 
-   public FormInjector(Class type, ResteasyProviderFactory factory, PathParamIndex index)
+   public FormInjector(Class type, ResteasyProviderFactory factory)
    {
       this.type = type;
-      this.factory = factory;
-      this.index = index;
-      injector = new PropertyInjectorImpl(type, index, factory);
+      injector = new PropertyInjectorImpl(type, factory);
 
    }
 

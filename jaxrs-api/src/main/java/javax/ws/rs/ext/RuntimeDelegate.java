@@ -19,7 +19,7 @@
 
 package javax.ws.rs.ext;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
@@ -163,8 +163,8 @@ public abstract class RuntimeDelegate
     * returned endpoint instance is published is dependent on the type of
     * endpoint.
     *
-    * @param applicationConfig the application configuration
-    * @param endpointType      the type of endpoint instance to be created.
+    * @param application  the application configuration
+    * @param endpointType the type of endpoint instance to be created.
     * @return a configured instance of the requested type.
     * @throws java.lang.IllegalArgumentException
     *          if the requested endpoint
@@ -173,13 +173,13 @@ public abstract class RuntimeDelegate
     *          if the implementation
     *          supports no endpoint types.
     */
-   public abstract <T> T createEndpoint(ApplicationConfig applicationConfig,
+   public abstract <T> T createEndpoint(Application application,
                                         Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException;
 
    /**
     * Obtain an instance of a HeaderDelegate for the supplied class. An
     * implementation is required to support the following values for type:
-    * Cookie, CacheControl, EntityTag, NewCookie, MediaType.
+    * Cookie, CacheControl, EntityTag, NewCookie, MediaType, Date.
     *
     * @param type the class of the header
     * @return an instance of HeaderDelegate for the supplied type

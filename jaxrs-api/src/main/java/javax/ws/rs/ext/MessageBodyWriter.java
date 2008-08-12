@@ -51,11 +51,8 @@ public interface MessageBodyWriter<T>
     *                    by reflection of a resource method return type or via inspection
     *                    of the returned instance. {@link javax.ws.rs.core.GenericEntity}
     *                    provides a way to specify this information at runtime.
-    * @param annotations an array of the annotations on the declaration of the
-    *                    artifact that will be written. E.g. if the
-    *                    message body is to be produced from a field, this will be
-    *                    the annotations on that field returned by
-    *                    <code>Field.getDeclaredAnnotations</code>.
+    * @param annotations an array of the annotations on the resource
+    *                    method that returns the object.
     * @return true if the type is supported, otherwise false.
     */
    boolean isWriteable(Class<?> type, Type genericType, Annotation annotations[]);
@@ -82,11 +79,8 @@ public interface MessageBodyWriter<T>
     *                     by reflection of a resource method return type or by inspection
     *                     of the returned instance. {@link javax.ws.rs.core.GenericEntity}
     *                     provides a way to specify this information at runtime.
-    * @param annotations  an array of the annotations on the declaration of the
-    *                     artifact that will be written. E.g. if the
-    *                     message body is to be produced from a field, this will be
-    *                     the annotations on that field returned by
-    *                     <code>Field.getDeclaredAnnotations</code>.
+    * @param annotations  an array of the annotations on the resource
+    *                     method that returns the object.
     * @param mediaType    the media type of the HTTP entity.
     * @param httpHeaders  a mutable map of the HTTP response headers.
     * @param entityStream the {@link OutputStream} for the HTTP entity. The

@@ -15,7 +15,6 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -36,7 +34,7 @@ public class MockHttpRequest implements HttpRequest
    protected InputStream inputStream;
    protected UriInfo uri;
    protected String httpMethod;
-   protected List<PathSegment> preProcessedSegments;
+   protected String preprocessedPath;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
 
@@ -55,7 +53,7 @@ public class MockHttpRequest implements HttpRequest
       request.httpHeaders.setCookies(new HashMap<String, Cookie>());
       request.httpHeaders.setRequestHeaders(new Headers<String>());
       request.uri = new UriInfoImpl(absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery());
-      request.preProcessedSegments = request.uri.getPathSegments(false);
+      request.preprocessedPath = request.uri.getPath(false);
       return request;
 
    }
@@ -102,7 +100,7 @@ public class MockHttpRequest implements HttpRequest
       mock.httpHeaders = (HttpHeadersImpl) request.getHttpHeaders();
       mock.httpMethod = request.getHttpMethod();
       mock.inputStream = new ByteArrayInputStream(ReadFromStream.readFromStream(1024, request.getInputStream()));
-      mock.preProcessedSegments = request.getPreProcessedSegments();
+      mock.preprocessedPath = request.getPreprocessedPath();
       return mock;
    }
 
@@ -191,16 +189,6 @@ public class MockHttpRequest implements HttpRequest
       return httpMethod;
    }
 
-   public List<PathSegment> getPreProcessedSegments()
-   {
-      return preProcessedSegments;
-   }
-
-   public void setPreProcessedSegments(List<PathSegment> segments)
-   {
-      this.preProcessedSegments = segments;
-   }
-
    public MultivaluedMap<String, String> getFormParameters()
    {
       if (formParameters != null) return formParameters;
@@ -233,5 +221,15 @@ public class MockHttpRequest implements HttpRequest
       if (decodedFormParameters != null) return decodedFormParameters;
       decodedFormParameters = Encode.decode(getFormParameters());
       return decodedFormParameters;
+   }
+
+   public String getPreprocessedPath()
+   {
+      return preprocessedPath;
+   }
+
+   public void setPreprocessedPath(String path)
+   {
+      preprocessedPath = path;
    }
 }

@@ -44,11 +44,11 @@ public class PropertyInjectorImpl implements PropertyInjector
    protected HashMap<Long, Method> setterhashes = new HashMap<Long, Method>();
    protected Class clazz;
 
-   public PropertyInjectorImpl(Class clazz, PathParamIndex index, ResteasyProviderFactory factory)
+   public PropertyInjectorImpl(Class clazz, ResteasyProviderFactory factory)
    {
       this.clazz = clazz;
 
-      populateMap(clazz, index, factory);
+      populateMap(clazz, factory);
    }
 
    public static long methodHash(Method method)
@@ -128,7 +128,7 @@ public class PropertyInjectorImpl implements PropertyInjector
       }
    }
 
-   protected void populateMap(Class clazz, PathParamIndex index, ResteasyProviderFactory factory)
+   protected void populateMap(Class clazz, ResteasyProviderFactory factory)
    {
       for (Field field : clazz.getDeclaredFields())
       {
@@ -137,7 +137,7 @@ public class PropertyInjectorImpl implements PropertyInjector
          Class type = field.getType();
          Type genericType = field.getGenericType();
 
-         ValueInjector extractor = InjectorFactoryImpl.getParameterExtractor(index, type, genericType, annotations, field, factory);
+         ValueInjector extractor = InjectorFactoryImpl.getParameterExtractor(type, genericType, annotations, field, factory);
          if (extractor != null && !(extractor instanceof MessageBodyParameterInjector))
          {
             if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
@@ -155,7 +155,7 @@ public class PropertyInjectorImpl implements PropertyInjector
          Class type = method.getParameterTypes()[0];
          Type genericType = method.getGenericParameterTypes()[0];
 
-         ValueInjector extractor = InjectorFactoryImpl.getParameterExtractor(index, type, genericType, annotations, method, factory);
+         ValueInjector extractor = InjectorFactoryImpl.getParameterExtractor(type, genericType, annotations, method, factory);
          if (extractor != null && !(extractor instanceof MessageBodyParameterInjector))
          {
             long hash = 0;
@@ -180,7 +180,7 @@ public class PropertyInjectorImpl implements PropertyInjector
 
       }
       if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class))
-         populateMap(clazz.getSuperclass(), index, factory);
+         populateMap(clazz.getSuperclass(), factory);
 
 
    }

@@ -53,17 +53,6 @@ public interface Request
    String getMethod();
 
    /**
-    * Get the values of form parameters contained within a request entity body
-    * as a map. Not that the same map can be obtained by including an
-    * unannotated parameter of the same type in a resource method.
-    *
-    * @return a map of parameter name to list of values
-    * @throws IllegalStateException if the request entity body was not of type
-    *                               application/x-www-form-urlencoded.
-    */
-   MultivaluedMap<String, String> getFormParameters();
-
-   /**
     * Select the representation variant that best matches the request. More
     * explicit variants are chosen ahead of less explicit ones. A vary header
     * is computed from the supplied list and automatically added to the

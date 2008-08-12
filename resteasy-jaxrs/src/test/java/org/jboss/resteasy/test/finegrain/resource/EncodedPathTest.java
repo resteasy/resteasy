@@ -43,7 +43,7 @@ public class EncodedPathTest
          return "HELLO";
       }
 
-      @Path(value = "/goodbye%7Bworld", encode = false)
+      @Path("/goodbye%7Bworld")
       @GET
       public String goodbye()
       {

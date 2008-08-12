@@ -75,7 +75,8 @@ public interface MessageBodyReader<T>
     * @param mediaType    the media type of the HTTP entity.
     * @param httpHeaders  the read-only HTTP headers associated with HTTP entity.
     * @param entityStream the {@link InputStream} of the HTTP entity. The
-    *                     implementation should not close the input stream.
+    *                     caller is responsible for ensuring that the input stream ends when the
+    *                     entity has been consumed. The implementation should not close the input stream.
     * @return the type that was read from the stream.
     * @throws java.io.IOException if an IO error arises
     * @throws javax.ws.rs.WebApplicationException

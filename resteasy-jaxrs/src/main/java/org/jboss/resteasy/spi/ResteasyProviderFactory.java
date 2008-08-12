@@ -16,7 +16,7 @@ import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
@@ -207,7 +207,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public void addMessageBodyReader(MessageBodyReader provider)
    {
-      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
       injector.inject(provider);
       providers.put(provider.getClass(), provider);
       Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
@@ -246,7 +246,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    public void addMessageBodyWriter(MessageBodyWriter provider)
    {
-      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
       providers.put(provider.getClass(), provider);
       injector.inject(provider);
       Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
@@ -303,7 +303,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    public void addExceptionMapper(ExceptionMapper provider)
    {
       providers.put(provider.getClass(), provider);
-      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), null, this);
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
       injector.inject(provider);
       Type[] intfs = provider.getClass().getGenericInterfaces();
       for (Type type : intfs)
@@ -444,7 +444,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
     * @throws IllegalArgumentException
     * @throws UnsupportedOperationException
     */
-   public <T> T createEndpoint(ApplicationConfig applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
+   public <T> T createEndpoint(Application applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
    {
       throw new RuntimeException("NOT USABLE IN RESTEASY");
    }

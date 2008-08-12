@@ -10,14 +10,16 @@ import org.jboss.resteasy.spi.ClientHttpOutput;
 public class PathParamMarshaller implements Marshaller
 {
    private String paramName;
+   private boolean encoded;
 
-   public PathParamMarshaller(String paramName)
+   public PathParamMarshaller(String paramName, boolean encoded)
    {
       this.paramName = paramName;
+      this.encoded = encoded;
    }
 
    public void marshall(Object object, UriBuilderImpl uri, ClientHttpOutput output)
    {
-      uri.uriParam(paramName, object.toString());
+      uri.substitutePathParam(paramName, object, encoded);
    }
 }

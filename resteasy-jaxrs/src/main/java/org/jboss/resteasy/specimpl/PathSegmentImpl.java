@@ -67,12 +67,28 @@ public class PathSegmentImpl implements PathSegment
       return matrixParameters;
    }
 
+   public String toString()
+   {
+      StringBuffer buf = new StringBuffer();
+      if (path != null) buf.append(path);
+      if (matrixParameters != null)
+      {
+         for (String name : matrixParameters.keySet())
+         {
+            for (String value : matrixParameters.get(name))
+            {
+               buf.append(";").append(name).append("=").append(value);
+            }
+         }
+      }
+      return buf.toString();
+   }
+
    public static List<PathSegment> parseSegments(String path)
    {
       List<PathSegment> pathSegments = new ArrayList<PathSegment>();
 
       if (path.startsWith("/")) path = path.substring(1);
-      if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
       String[] paths = path.split("/");
       for (String p : paths)
       {

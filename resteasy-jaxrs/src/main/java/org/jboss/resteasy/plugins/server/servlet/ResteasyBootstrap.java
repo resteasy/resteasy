@@ -13,7 +13,7 @@ import org.scannotation.WarUrlFinder;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
@@ -47,6 +47,7 @@ public class ResteasyBootstrap implements ServletContextListener
       if (rootPath != null) ((ResourceMethodRegistry) registry).setRootPath(rootPath.trim());
       event.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
       event.getServletContext().setAttribute(Registry.class.getName(), registry);
+      String applicationConfig = event.getServletContext().getInitParameter(Application.class.getName());
 
       String providers = event.getServletContext().getInitParameter("resteasy.providers");
 
@@ -78,6 +79,9 @@ public class ResteasyBootstrap implements ServletContextListener
 
       if (scanProviders || scanResources)
       {
+         if (applicationConfig != null)
+            throw new RuntimeException("You cannot deploy a javax.ws.rs.core.Application and have scanning on as this may create errors");
+
          URL[] urls = WarUrlFinder.findWebInfLibClasspaths(event);
          URL url = WarUrlFinder.findWebInfClassesPath(event);
          AnnotationDB db = new AnnotationDB();
@@ -141,14 +145,13 @@ public class ResteasyBootstrap implements ServletContextListener
          else dispatcher.setLanguageMappings(map);
       }
 
-      String applicationConfig = event.getServletContext().getInitParameter(ApplicationConfig.class.getName());
       if (applicationConfig != null)
       {
          try
          {
             //System.out.println("application config: " + applicationConfig.trim());
             Class configClass = Thread.currentThread().getContextClassLoader().loadClass(applicationConfig.trim());
-            ApplicationConfig config = (ApplicationConfig) configClass.newInstance();
+            Application config = (Application) configClass.newInstance();
             if (config.getLanguageMappings() != null)
             {
                if (dispatcher.getLanguageMappings() != null)
@@ -161,10 +164,21 @@ public class ResteasyBootstrap implements ServletContextListener
                   dispatcher.getMediaTypeMappings().putAll(config.getMediaTypeMappings());
                else dispatcher.setMediaTypeMappings(config.getMediaTypeMappings());
             }
-            if (config.getResourceClasses() != null)
-               for (Class clazz : config.getResourceClasses()) registry.addPerRequestResource(clazz);
-            if (config.getProviderClasses() != null)
-               for (Class clazz : config.getProviderClasses()) factory.registerProvider(clazz);
+            if (config.getClasses() != null)
+            {
+               for (Class clazz : config.getClasses())
+               {
+                  if (clazz.isAnnotationPresent(Path.class)) registry.addPerRequestResource(clazz);
+                  else factory.registerProvider(clazz);
+               }
+            }
+            if (config.getSingletons() != null)
+            {
+               for (Object obj : config.getSingletons())
+               {
+                  if (obj.getClass().isAnnotationPresent(Path.class)) registry.addSingletonResource(obj);
+               }
+            }
          }
          catch (ClassNotFoundException e)
          {

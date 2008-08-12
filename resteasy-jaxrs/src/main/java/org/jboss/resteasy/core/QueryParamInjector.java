@@ -19,13 +19,13 @@ public class QueryParamInjector extends StringParameterInjector implements Value
    private boolean encode;
    private String encodedName;
 
-   public QueryParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, boolean encodeName)
+   public QueryParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode)
    {
       super(type, genericType, paramName, "@" + QueryParam.class.getSimpleName(), defaultValue, target);
       this.encode = encode;
       try
       {
-         if (encodeName) this.encodedName = URLDecoder.decode(paramName, "UTF-8");
+         this.encodedName = URLDecoder.decode(paramName, "UTF-8");
       }
       catch (UnsupportedEncodingException e)
       {

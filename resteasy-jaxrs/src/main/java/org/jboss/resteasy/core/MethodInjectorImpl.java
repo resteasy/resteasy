@@ -23,13 +23,11 @@ public class MethodInjectorImpl implements MethodInjector
 {
    protected Method method;
    protected ValueInjector[] params;
-   protected PathParamIndex index;
    protected ResteasyProviderFactory factory;
 
-   public MethodInjectorImpl(Method method, PathParamIndex index, ResteasyProviderFactory factory)
+   public MethodInjectorImpl(Method method, ResteasyProviderFactory factory)
    {
       this.method = method;
-      this.index = index;
       this.factory = factory;
       params = new ValueInjector[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
@@ -37,7 +35,7 @@ public class MethodInjectorImpl implements MethodInjector
          Class type = method.getParameterTypes()[i];
          Type genericType = method.getGenericParameterTypes()[i];
          Annotation[] annotations = method.getParameterAnnotations()[i];
-         params[i] = InjectorFactoryImpl.getParameterExtractor(index, type, genericType, annotations, method, factory);
+         params[i] = InjectorFactoryImpl.getParameterExtractor(type, genericType, annotations, method, factory);
       }
    }
 

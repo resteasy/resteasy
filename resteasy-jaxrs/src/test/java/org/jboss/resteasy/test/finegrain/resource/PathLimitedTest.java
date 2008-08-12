@@ -25,7 +25,7 @@ public class PathLimitedTest
 {
    private static Dispatcher dispatcher;
 
-   @Path(value = "/unlimited", limited = false)
+   @Path("/unlimited{param:.*}")
    public static class UnlimitedOnPathResource
    {
       @GET
@@ -38,14 +38,14 @@ public class PathLimitedTest
    @Path("/")
    public static class UnlimitedResource
    {
-      @Path(value = "/unlimited2", limited = false)
+      @Path("/unlimited2/{p:.*}")
       @GET
       public String hello()
       {
          return "hello world";
       }
 
-      @Path(value = "/uriparam/{param}", limited = false)
+      @Path(value = "/uriparam/{param:.*}")
       @GET
       public String get(@PathParam("param")String param, @QueryParam("expected")String expected)
       {
@@ -58,13 +58,13 @@ public class PathLimitedTest
    @Path("/")
    public static class LocatorResource
    {
-      @Path(value = "/locator", limited = false)
+      @Path(value = "/locator{p:.*}")
       public Object get()
       {
          return new Resource();
       }
 
-      @Path(value = "/locator2/{param}", limited = false)
+      @Path(value = "/locator2/{param:.*}")
       public Object get(@PathParam("param")String param, @QueryParam("expected")String expected)
       {
          Assert.assertEquals(param, expected);

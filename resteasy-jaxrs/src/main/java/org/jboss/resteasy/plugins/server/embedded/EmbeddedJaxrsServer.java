@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.server.embedded;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -23,5 +23,5 @@ public interface EmbeddedJaxrsServer
 
    void setSecurityDomain(SecurityDomain sc);
 
-   void addApplicationConfig(ApplicationConfig config);
+   void addApplicationConfig(Application config);
 }

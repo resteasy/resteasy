@@ -271,7 +271,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       String id = "" + System.currentTimeMillis() + "-" + counter.incrementAndGet();
       jobs.put(id, future);
       response.setStatus(HttpResponseCodes.SC_ACCEPTED);
-      URI uri = request.getUri().getBaseUriBuilder().path(basePath, id).build();
+      URI uri = request.getUri().getBaseUriBuilder().path(basePath).path(id).build();
       response.getOutputHeaders().add(HttpHeaderNames.LOCATION, uri);
    }
 

@@ -107,7 +107,7 @@ public class PathSegmentNode
          if (path.length == pathIndex + 1)
          {
             child.locator = locator;
-            locator.setUriIndex((pathIndex + 1));
+            //locator.setUriIndex((pathIndex + 1));
          }
          else
          {
@@ -125,7 +125,7 @@ public class PathSegmentNode
          if (path.length == pathIndex + 1)
          {
             child.locator = locator;
-            locator.setUriIndex(pathIndex + 1);
+            //locator.setUriIndex(pathIndex + 1);
          }
          else
          {
@@ -232,16 +232,17 @@ public class PathSegmentNode
 
    public ResourceInvoker findResourceInvoker(HttpRequest request, HttpResponse response, int pathIndex)
    {
-      if (pathIndex >= request.getPreProcessedSegments().size() || wildcard)
+      /*if (pathIndex >= request.getPreProcessedSegments().size() || wildcard)
       {
          return match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
       }
-      else return findChild(request, response, pathIndex);
+      else */
+      return findChild(request, response, pathIndex);
    }
 
    private ResourceInvoker findChild(HttpRequest request, HttpResponse response, int pathIndex)
    {
-      List<PathSegment> path = request.getPreProcessedSegments();
+      List<PathSegment> path = null; //request.getPreProcessedSegments();
       String segment = path.get(pathIndex).getPath();
       PathSegmentNode next = children.get(segment);
       Failure failure = null;

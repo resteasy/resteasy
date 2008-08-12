@@ -82,7 +82,7 @@ public class ComplexPathParamTest
    @Path("/unlimited")
    public static class UnlimitedResource
    {
-      @Path(value = "{1}-{rest}", limited = false)
+      @Path("{1}-{rest:.*}")
       @GET
       public String get(@PathParam("1")int one,
                         @PathParam("rest")String rest)

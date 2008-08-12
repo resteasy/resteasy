@@ -6,6 +6,7 @@ import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.Encoded;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
@@ -46,6 +47,8 @@ abstract public class ClientInvoker
          PathParam uriParam;
          CookieParam cookie;
 
+         boolean isEncoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
+
          if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
          {
             params[i] = new QueryParamMarshaller(query.value());
@@ -60,7 +63,7 @@ abstract public class ClientInvoker
          }
          else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
          {
-            params[i] = new PathParamMarshaller(uriParam.value());
+            params[i] = new PathParamMarshaller(uriParam.value(), isEncoded);
          }
          else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
          {

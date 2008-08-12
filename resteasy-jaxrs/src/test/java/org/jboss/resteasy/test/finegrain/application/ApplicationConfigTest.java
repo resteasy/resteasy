@@ -13,7 +13,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -65,30 +65,24 @@ public class ApplicationConfigTest
       }
    }
 
-   public static class MyApplicationConfig extends ApplicationConfig
+   public static class MyApplicationConfig extends Application
    {
-      private Set<Class<?>> resourceClasses = new HashSet<Class<?>>();
-      private Set<Class<?>> providerClasses = new HashSet<Class<?>>();
+      private Set<Class<?>> classes = new HashSet<Class<?>>();
       private Map<String, MediaType> mediaTypeMappings = new HashMap<String, MediaType>();
       private Map<String, String> languageMappings = new HashMap<String, String>();
 
       public MyApplicationConfig()
       {
-         resourceClasses.add(MyResource.class);
-         providerClasses.add(QuotedTextWriter.class);
+         classes.add(MyResource.class);
+         classes.add(QuotedTextWriter.class);
          mediaTypeMappings.put("quoted", MediaType.valueOf("text/quoted"));
          languageMappings.put("en", "en_US");
       }
 
-      public Set<Class<?>> getResourceClasses()
-      {
-         return resourceClasses;
-      }
-
       @Override
-      public Set<Class<?>> getProviderClasses()
+      public Set<Class<?>> getClasses()
       {
-         return providerClasses;
+         return classes;
       }
 
       @Override

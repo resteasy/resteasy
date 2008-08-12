@@ -73,7 +73,7 @@ public class UriBuilderTest
    public void testReplaceMatrixParam()
    {
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").
-              replaceMatrixParams("x=a;y=b").build();
+              replaceMatrix("x=a;y=b").build();
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c;x=a;y=b"), bu);
    }
 
@@ -81,7 +81,7 @@ public class UriBuilderTest
    public void testReplaceQueryParams()
    {
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c?a=x&b=y").
-              replaceQueryParams("x=a&y=b").build();
+              replaceQuery("x=a&y=b").build();
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c?x=a&y=b"), bu);
    }
 
@@ -93,6 +93,7 @@ public class UriBuilderTest
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c?a=x&b=y#ment"), bu);
    }
 
+   /*
    @Test
    public void testExtension()
    {
@@ -109,6 +110,7 @@ public class UriBuilderTest
               extension(".html").build();
       Assert.assertEquals(URI.create("http://localhost:8080/a/b.html/c.html"), bu);
    }
+   */
 
    @Test
    public void testReplaceUri()
@@ -238,7 +240,7 @@ public class UriBuilderTest
       Method get = Resource.class.getMethod("get");
       Method locator = Resource.class.getMethod("locator");
       ub = UriBuilder.fromUri("http://localhost:8080/base").
-              path(get, locator).build();
+              path(get).path(locator).build();
       Assert.assertEquals(URI.create("http://localhost:8080/base/method/locator"), ub);
    }
 
@@ -254,7 +256,7 @@ public class UriBuilderTest
       m.put("bar", "y");
       m.put("baz", "z");
       bu = UriBuilder.fromUri("http://localhost:8080/a/b/c").
-              path("/{foo}/{bar}/{baz}/{foo}").build(m);
+              path("/{foo}/{bar}/{baz}/{foo}").buildFromMap(m, false);
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c/x/y/z/x"), bu);
    }
 
