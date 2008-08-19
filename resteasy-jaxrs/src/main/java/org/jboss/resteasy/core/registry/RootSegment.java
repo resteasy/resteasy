@@ -235,20 +235,18 @@ public class RootSegment extends Segment
       return removePath(segments, 0, method);
    }
 
-   public ResourceInvoker matchChildren(HttpRequest request, String path, int start)
+   protected ResourceInvoker matchChildren(HttpRequest request, String path, int start)
    {
       String simpleSegment = null;
-      int simpleStartIndex = start;
       if (start == path.length())
       {
          simpleSegment = "";
       }
       else
       {
-         if (path.charAt(start) == '/') simpleStartIndex++;
-         int endOfSegmentIndex = path.indexOf('/', simpleStartIndex);
-         if (endOfSegmentIndex > -1) simpleSegment = path.substring(simpleStartIndex, endOfSegmentIndex);
-         else simpleSegment = path.substring(simpleStartIndex);
+         int endOfSegmentIndex = path.indexOf('/', start);
+         if (endOfSegmentIndex > -1) simpleSegment = path.substring(start, endOfSegmentIndex);
+         else simpleSegment = path.substring(start);
       }
 
       Failure lastFailure = null;
@@ -258,7 +256,7 @@ public class RootSegment extends Segment
       {
          try
          {
-            return segment.matchSimple(request, path, simpleStartIndex);
+            return segment.matchSimple(request, path, start);
          }
          catch (Failure e)
          {
@@ -295,10 +293,17 @@ public class RootSegment extends Segment
 
    public ResourceInvoker matchRoot(HttpRequest request)
    {
-      String path = request.getPreprocessedPath();
-      //if (path.startsWith("/")) path = path.substring(1);
-      return matchChildren(request, path, 0);
+      int start = 0;
+      return matchRoot(request, start);
    }
+
+   public ResourceInvoker matchRoot(HttpRequest request, int start)
+   {
+      String path = request.getPreprocessedPath();
+      if (start < path.length() && path.charAt(start) == '/') start++;
+      return matchChildren(request, path, start);
+   }
+
 
    private static StringBuffer pullPathParamExpressions(String path, MultivaluedMapImpl<String, String> pathParamExpr)
    {

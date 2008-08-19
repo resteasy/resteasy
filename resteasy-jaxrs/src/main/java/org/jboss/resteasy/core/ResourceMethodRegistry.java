@@ -227,6 +227,6 @@ public class ResourceMethodRegistry implements Registry
       if (matchedUris == null || matchedUris.size() == 0) return rootSegment.matchRoot(request);
       // resource location 
       String currentUri = request.getUri().getMatchedURIs().get(0);
-      return rootSegment.matchChildren(request, request.getPreprocessedPath(), currentUri.length());
+      return rootSegment.matchRoot(request, currentUri.length());
    }
 }
