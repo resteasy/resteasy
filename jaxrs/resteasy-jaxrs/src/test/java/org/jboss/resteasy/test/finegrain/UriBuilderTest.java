@@ -270,4 +270,15 @@ public class UriBuilderTest
       Assert.assertEquals(URI.create("http://user@localhost:8080/a?query#fragment"), base);
       Assert.assertEquals(URI.create("http://user@localhost:8080/a/b?query#fragment"), full);
    }
+
+   /**
+    * Regression test for RESTEASY-102
+    */
+   @Test
+   public void testResteasy102()
+   {
+      UriBuilder ub = UriBuilder.fromPath("foo+bar");
+      Assert.assertEquals("foo%2Bbar", ub.build().toString());
+
+   }
 }
