@@ -95,7 +95,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
             WebApplicationException wae = (WebApplicationException) cause;
             if (wae.getResponse() != null)
             {
-               cause.printStackTrace();
+               // FYI never log exception here as this should be done by user.
                return wae.getResponse();
             }
          }

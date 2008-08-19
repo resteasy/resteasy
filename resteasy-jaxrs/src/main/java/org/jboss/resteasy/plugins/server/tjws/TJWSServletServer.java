@@ -2,6 +2,8 @@ package org.jboss.resteasy.plugins.server.tjws;
 
 import Acme.Serve.SSLAcceptor;
 import Acme.Serve.Serve;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
@@ -23,6 +25,7 @@ public class TJWSServletServer
 {
    protected Serve server = new Serve();
    protected Properties props = new Properties();
+   private final static Logger logger = LoggerFactory.getLogger(TJWSServletServer.class);
 
    public void addServlet(String bindPath, HttpServlet servlet)
    {
@@ -126,7 +129,7 @@ public class TJWSServletServer
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               logger.error("Failure in TJWS server", e);
             }
          }
       }.start();
