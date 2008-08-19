@@ -165,15 +165,7 @@ public class ResourceMethod implements ResourceInvoker
          }
          catch (WebApplicationException we)
          {
-            response.sendError(we.getResponse().getStatus());
-            we.printStackTrace();
-            return;
-         }
-         catch (Failure e)
-         {
-            response.sendError(e.getErrorCode());
-            e.printStackTrace();
-            return;
+            jaxrsResponse = we.getResponse();
          }
          writeJaxrsResponse(request, response, jaxrsResponse);
       }
@@ -221,13 +213,6 @@ public class ResourceMethod implements ResourceInvoker
          catch (WebApplicationException we)
          {
             response.sendError(we.getResponse().getStatus());
-            we.printStackTrace();
-            return;
-         }
-         catch (Failure e)
-         {
-            response.sendError(e.getErrorCode());
-            e.printStackTrace();
             return;
          }
       }

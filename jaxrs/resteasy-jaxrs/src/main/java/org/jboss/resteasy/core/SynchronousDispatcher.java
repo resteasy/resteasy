@@ -157,7 +157,7 @@ public class SynchronousDispatcher implements Dispatcher
          {
             throw new RuntimeException(e1);
          }
-         e.printStackTrace();
+         logger.debug("Could not match path: " + in.getUri().getPath(), e);
          return;
       }
       if (invoker == null)
@@ -170,6 +170,7 @@ public class SynchronousDispatcher implements Dispatcher
          {
             throw new RuntimeException(e);
          }
+         logger.debug("Could not match path: " + in.getUri().getPath());
          return;
       }
       invoke(in, response, invoker);
@@ -198,7 +199,7 @@ public class SynchronousDispatcher implements Dispatcher
             {
                throw new RuntimeException(e1);
             }
-            e.printStackTrace();
+            logger.error("Failure in processing: " + in.getHttpMethod() + " " + in.getUri().getPath(), e);
             return;
          }
 
@@ -206,7 +207,7 @@ public class SynchronousDispatcher implements Dispatcher
       catch (Exception e)
       {
          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-         e.printStackTrace();
+         logger.error("Failure in processing: " + in.getHttpMethod() + " " + in.getUri().getPath(), e);
          return;
       }
       finally
