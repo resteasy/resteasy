@@ -227,8 +227,9 @@ public class UriInfoImpl implements UriInfo
             try
             {
                String name = URLDecoder.decode(nv[0], "UTF-8");
-               encodedQueryParameters.add(name, nv[1]);
-               queryParameters.add(name, URLDecoder.decode(nv[1], "UTF-8"));
+               String val = nv.length > 1 ? nv[1] : "";
+               encodedQueryParameters.add(name, val);
+               queryParameters.add(name, URLDecoder.decode(val, "UTF-8"));
             }
             catch (UnsupportedEncodingException e)
             {

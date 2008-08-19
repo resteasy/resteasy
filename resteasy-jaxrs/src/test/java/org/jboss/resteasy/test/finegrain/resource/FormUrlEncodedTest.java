@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.finegrain.resource;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -18,6 +19,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
@@ -89,6 +91,41 @@ public class FormUrlEncodedTest
          Assert.assertEquals("mama", form.getFirst("yo"));
          return form;
       }
+
+      @Path("/RESTEASY-109")
+      @POST
+      public void post109(MultivaluedMap<String, String> form)
+      {
+         Assert.assertEquals(form.getFirst("name"), "jon");
+         Assert.assertEquals(form.getFirst("address1"), "123 Main St");
+         Assert.assertEquals(form.getFirst("address2"), "");
+         Assert.assertEquals(form.getFirst("zip"), "12345");
+      }
+
+
+   }
+
+   /**
+    * Testing  JIRA RESTEASY-109
+    */
+   @Test
+   public void testResteasy109()
+   {
+      HttpClient client = new HttpClient();
+      {
+         PostMethod method = new PostMethod("http://localhost:8081/RESTEASY-109");
+         try
+         {
+            method.setRequestEntity(new StringRequestEntity("name=jon&address1=123+Main+St&address2=&zip=12345", MediaType.APPLICATION_FORM_URLENCODED, null));
+            int status = client.executeMethod(method);
+            Assert.assertEquals(status, 204);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+
    }
 
    @Test
