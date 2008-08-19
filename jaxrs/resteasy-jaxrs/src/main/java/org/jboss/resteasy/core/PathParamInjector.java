@@ -19,10 +19,12 @@ public class PathParamInjector implements ValueInjector
    private StringParameterInjector extractor;
    private String paramName;
    private boolean encode;
+   private Class type;
 
    public PathParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode)
    {
-      if (type.equals(PathSegment.class) == false)
+      this.type = type;
+      if (type.equals(PathSegment.class) == false && !(isPathSegmentArray(type)))
       {
          extractor = new StringParameterInjector(type, genericType, paramName, "@" + PathParam.class.getSimpleName(), defaultValue, target);
       }
@@ -30,20 +32,33 @@ public class PathParamInjector implements ValueInjector
       this.encode = encode;
    }
 
+   private boolean isPathSegmentArray(Class type)
+   {
+      return type.isArray() && type.getComponentType().equals(PathSegment.class);
+   }
+
    public Object inject(HttpRequest request, HttpResponse response)
    {
       if (extractor == null) // we are a PathSegment
       {
          UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+         List<PathSegment[]> list = null;
          if (encode)
          {
-            List<PathSegment> list = uriInfo.getEncodedPathParameterPathSegments().get(paramName);
-            return list.get(list.size() - 1);
+            list = uriInfo.getEncodedPathParameterPathSegments().get(paramName);
          }
          else
          {
-            List<PathSegment> list = uriInfo.getPathParameterPathSegments().get(paramName);
-            return list.get(list.size() - 1);
+            list = uriInfo.getPathParameterPathSegments().get(paramName);
+         }
+         PathSegment[] segments = list.get(list.size() - 1);
+         if (isPathSegmentArray(type))
+         {
+            return segments;
+         }
+         else
+         {
+            return segments[segments.length - 1];
          }
       }
       else

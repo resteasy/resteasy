@@ -79,7 +79,7 @@ public class PathParamSegment extends Segment
          buffer.append("(");
          if (withPathParam.group(3) == null)
          {
-            buffer.append("[^/]*");
+            buffer.append("[^/]+");
             groups.add(new Group(groupNumber++, name, true));
          }
          else
@@ -113,25 +113,50 @@ public class PathParamSegment extends Segment
       {
          String value = matcher.group(group.group);
          uriInfo.addEncodedPathParameter(group.name, value);
-         if (group.storePathSegment)
-         {
-            int index = matcher.start(group.group);
+         int index = matcher.start(group.group);
 
-            int start = 0;
-            if (path.startsWith("/")) start++;
-            int segmentIndex = pathSegmentIndex(path, start, index);
-            PathSegment decoded = request.getUri().getPathSegments().get(segmentIndex);
-            PathSegment encoded = request.getUri().getPathSegments(false).get(segmentIndex);
-            uriInfo.getEncodedPathParameterPathSegments().add(group.name, encoded);
-            uriInfo.getPathParameterPathSegments().add(group.name, decoded);
+         int start = 0;
+         if (path.charAt(0) == '/') start++;
+         int segmentIndex = 0;
+
+         if (start < path.length())
+         {
+            int count = 0;
+            for (int i = start; i < index && i < path.length(); i++)
+            {
+               if (path.charAt(i) == '/') count++;
+            }
+            segmentIndex = count;
          }
+
+         int numSegments = 1;
+         for (int i = 0; i < value.length(); i++)
+         {
+            if (value.charAt(i) == '/') numSegments++;
+         }
+
+         if (segmentIndex + numSegments > request.getUri().getPathSegments().size())
+         {
+
+            throw new Failure("Number of matched segments greater than actual", HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+         }
+         PathSegment[] encodedSegments = new PathSegment[numSegments];
+         PathSegment[] decodedSegments = new PathSegment[numSegments];
+         for (int i = 0; i < numSegments; i++)
+         {
+            encodedSegments[i] = request.getUri().getPathSegments().get(segmentIndex + i);
+            decodedSegments[i] = request.getUri().getPathSegments(false).get(segmentIndex + i);
+         }
+         uriInfo.getEncodedPathParameterPathSegments().add(group.name, encodedSegments);
+         uriInfo.getPathParameterPathSegments().add(group.name, decodedSegments);
       }
    }
 
-   public ResourceInvoker matchPattern(HttpRequest request, String path, int start)
+   public ResourceInvoker matchPattern
+           (HttpRequest
+                   request, String
+                   path, int start)
    {
-      if (path.charAt(start) == '/') start++;
-
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       Matcher matcher = pattern.matcher(path);
       matcher.region(start, path.length());
@@ -140,7 +165,8 @@ public class PathParamSegment extends Segment
       {
          // we consumed entire path string
          ResourceInvoker invoker = match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
-         if (invoker == null) throw new Failure("Could not find resource for: " + path, HttpResponseCodes.SC_NOT_FOUND);
+         if (invoker == null)
+            throw new Failure("Could not find resource for: " + path, HttpResponseCodes.SC_NOT_FOUND);
          uriInfo.pushMatchedURI(path, Encode.decode(path));
          populatePathParams(request, matcher, path);
          return invoker;
@@ -163,7 +189,10 @@ public class PathParamSegment extends Segment
       throw new Failure("Could not find resource for: " + path, HttpResponseCodes.SC_NOT_FOUND);
    }
 
-   public static int pathSegmentIndex(String string, int start, int stop)
+   public static int pathSegmentIndex
+           (String
+                   string, int start,
+                           int stop)
    {
       if (start >= string.length()) return 0;
       int count = 0;
@@ -174,10 +203,4 @@ public class PathParamSegment extends Segment
       return count;
    }
 
-   public static void main(String[] args) throws Exception
-   {
-      System.out.println("".split("/").length);
-      System.out.println("/".split("/").length);
-      System.out.println("//".split("/").length);
-   }
 }

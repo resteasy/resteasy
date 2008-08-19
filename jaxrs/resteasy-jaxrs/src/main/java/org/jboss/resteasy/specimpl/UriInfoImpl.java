@@ -22,8 +22,8 @@ public class UriInfoImpl implements UriInfo
    private MultivaluedMap<String, String> encodedQueryParameters;
    private MultivaluedMap<String, String> pathParameters;
    private MultivaluedMap<String, String> encodedPathParameters;
-   private MultivaluedMap<String, PathSegment> pathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment>();
-   private MultivaluedMap<String, PathSegment> encodedPathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment>();
+   private MultivaluedMap<String, PathSegment[]> pathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment[]>();
+   private MultivaluedMap<String, PathSegment[]> encodedPathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment[]>();
    ;
    private List<PathSegment> pathSegments;
    private List<PathSegment> encodedPathSegments;
@@ -186,12 +186,12 @@ public class UriInfoImpl implements UriInfo
       }
    }
 
-   public MultivaluedMap<String, PathSegment> getEncodedPathParameterPathSegments()
+   public MultivaluedMap<String, PathSegment[]> getEncodedPathParameterPathSegments()
    {
       return encodedPathParameterPathSegments;
    }
 
-   public MultivaluedMap<String, PathSegment> getPathParameterPathSegments()
+   public MultivaluedMap<String, PathSegment[]> getPathParameterPathSegments()
    {
       return pathParameterPathSegments;
    }
