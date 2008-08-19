@@ -78,7 +78,8 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
          if (param.indexOf('=') >= 0)
          {
             String[] nv = param.split("=");
-            formData.add(nv[0], nv[1]);
+            String val = nv.length > 1 ? nv[1] : "";
+            formData.add(nv[0], val);
          }
          else
          {

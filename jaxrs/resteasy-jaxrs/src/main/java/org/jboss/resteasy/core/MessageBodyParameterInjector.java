@@ -5,7 +5,6 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
@@ -38,8 +37,7 @@ public class MessageBodyParameterInjector implements ValueInjector
          MediaType mediaType = request.getHttpHeaders().getMediaType();
          if (mediaType == null)
          {
-            System.err.println("content-type was null and expecting to extract a body");
-            throw new WebApplicationException(HttpResponseCodes.SC_BAD_REQUEST);
+            throw new Failure("content-type was null and expecting to extract a body", HttpResponseCodes.SC_BAD_REQUEST);
          }
          MessageBodyReader reader = factory.createMessageBodyReader(type, genericType, annotations, mediaType);
          if (reader == null)
