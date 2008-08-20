@@ -106,8 +106,16 @@ public class MethodInjectorImpl implements MethodInjector
             WebApplicationException wae = (WebApplicationException) cause;
             return wae.getResponse();
          }
-         ExceptionMapper mapper = factory.createExceptionMapper(cause.getClass());
-         if (mapper == null) throw new RuntimeException("Failed processing " + method.toString(), e.getCause());
+         ExceptionMapper mapper = null;
+         Class causeClass = cause.getClass();
+         while (mapper == null)
+         {
+            if (causeClass == null) break;
+            mapper = factory.createExceptionMapper(causeClass);
+            if (mapper == null) causeClass = causeClass.getSuperclass();
+         }
+         if (mapper == null)
+            throw new RuntimeException("Failed processing " + method.toString() + " could not find ExceptionMapper to handle it either", e.getCause());
          return mapper.toResponse(cause);
       }
       catch (IllegalArgumentException e)
