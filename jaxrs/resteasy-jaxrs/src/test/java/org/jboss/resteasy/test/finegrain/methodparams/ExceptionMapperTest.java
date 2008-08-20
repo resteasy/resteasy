@@ -27,6 +27,14 @@ public class ExceptionMapperTest
 {
    private static Dispatcher dispatcher;
 
+   public static class SubclassException extends JAXBException
+   {
+      public SubclassException(String s)
+      {
+         super(s);
+      }
+   }
+
    @Path("/")
    public static class Throwme
    {
@@ -34,6 +42,13 @@ public class ExceptionMapperTest
       public String get() throws JAXBException
       {
          throw new JAXBException("FAILURE!!!");
+      }
+
+      @Path("subclass")
+      @GET
+      public String getSubclass() throws JAXBException
+      {
+         throw new SubclassException("FAILURE!!!");
       }
    }
 
@@ -71,6 +86,24 @@ public class ExceptionMapperTest
    {
       HttpClient client = new HttpClient();
       GetMethod method = new GetMethod("http://localhost:8081");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpResponseCodes.SC_NOT_MODIFIED);
+      }
+      catch (IOException e)
+      {
+         method.releaseConnection();
+         throw new RuntimeException(e);
+      }
+      method.releaseConnection();
+   }
+
+   @Test
+   public void testSubclassMapping()
+   {
+      HttpClient client = new HttpClient();
+      GetMethod method = new GetMethod("http://localhost:8081/subclass");
       try
       {
          int status = client.executeMethod(method);
