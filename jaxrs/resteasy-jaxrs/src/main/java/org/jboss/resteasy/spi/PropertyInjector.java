@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.core.Failure;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -25,5 +25,5 @@ public interface PropertyInjector
     * @param target
     * @throws Failure
     */
-   void inject(HttpRequest request, HttpResponse response, Object target) throws Failure;
+   void inject(HttpRequest request, HttpResponse response, Object target) throws Failure, WebApplicationException, ApplicationException;
 }

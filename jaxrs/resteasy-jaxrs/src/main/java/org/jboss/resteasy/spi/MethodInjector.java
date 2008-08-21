@@ -1,8 +1,6 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.core.Failure;
-
-import javax.ws.rs.core.Response;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * Will invoke a method in the context of an HTTP request.  Does all the parameter injection for you.
@@ -21,7 +19,7 @@ public interface MethodInjector
     * @return
     * @throws Failure
     */
-   Response invoke(HttpRequest request, HttpResponse response, Object target) throws Failure;
+   Object invoke(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException, WebApplicationException;
 
    /**
     * Create the arguments that would be used to invoke the method in the context of an HTTP request.

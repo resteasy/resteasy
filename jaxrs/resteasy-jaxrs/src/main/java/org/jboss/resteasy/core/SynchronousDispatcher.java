@@ -2,21 +2,36 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.RequestImpl;
+import org.jboss.resteasy.specimpl.ResponseImpl;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.UnhandledException;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +87,7 @@ public class SynchronousDispatcher implements Dispatcher
       return languageMappings;
    }
 
-   public void preprocess(HttpRequest in)
+   protected void preprocess(HttpRequest in)
    {
       preprocessExtensions(in);
    }
@@ -153,9 +168,9 @@ public class SynchronousDispatcher implements Dispatcher
          {
             response.sendError(e.getErrorCode());
          }
-         catch (IOException e1)
+         catch (Exception e1)
          {
-            throw new RuntimeException(e1);
+            throw new UnhandledException(e1);
          }
          logger.debug("Could not match path: " + in.getUri().getPath(), e);
          return;
@@ -166,9 +181,9 @@ public class SynchronousDispatcher implements Dispatcher
          {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
          }
-         catch (IOException e)
+         catch (Exception e)
          {
-            throw new RuntimeException(e);
+            throw new UnhandledException(e);
          }
          logger.debug("Could not match path: " + in.getUri().getPath());
          return;
@@ -176,39 +191,147 @@ public class SynchronousDispatcher implements Dispatcher
       invoke(in, response, invoker);
    }
 
-   public void invoke(HttpRequest in, HttpResponse response, ResourceInvoker invoker)
+   /**
+    * Called if method invoke was unsuccessful
+    *
+    * @param request
+    * @param response
+    * @param e
+    */
+   public void handleInvokerException(HttpRequest request, HttpResponse response, Exception e)
+   {
+      handleException(request, response, e);
+   }
+
+
+   /**
+    * Called if method invoke was successful, but writing the Response after was not.
+    *
+    * @param request
+    * @param response
+    * @param e
+    */
+   public void handleWriteResponseException(HttpRequest request, HttpResponse response, Exception e)
+   {
+      handleException(request, response, e);
+   }
+
+   protected void handleException(HttpRequest request, HttpResponse response, Exception e)
+   {
+      if (e instanceof WebApplicationException)
+      {
+         handleWebApplicationException(response, (WebApplicationException) e);
+      }
+      else if (e instanceof ApplicationException)
+      {
+         handleApplicationException(response, (ApplicationException) e);
+      }
+      else if (e instanceof Failure)
+      {
+         response.setStatus(((Failure) e).getErrorCode());
+         if (((Failure) e).isLoggable())
+            logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+         else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+      }
+      else
+      {
+         logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+         throw new UnhandledException(e);
+      }
+   }
+
+   protected void handleApplicationException(HttpResponse response, ApplicationException e)
+   {
+      if (e.getCause() instanceof WebApplicationException)
+      {
+         handleWebApplicationException(response, (WebApplicationException) e.getCause());
+         return;
+      }
+      ExceptionMapper mapper = null;
+
+      Class causeClass = e.getCause().getClass();
+      while (mapper == null)
+      {
+         if (causeClass == null) break;
+         mapper = providerFactory.createExceptionMapper(causeClass);
+         if (mapper == null) causeClass = causeClass.getSuperclass();
+      }
+      if (mapper != null)
+      {
+         try
+         {
+            writeJaxrsResponse(response, mapper.toResponse(e.getCause()));
+         }
+         catch (WebApplicationException ex)
+         {
+            if (response.isCommitted())
+               throw new UnhandledException("Request was committed couldn't handle exception", ex);
+            // don't think I want to call writeJaxrsResponse infinately! so we'll just write the status
+            response.reset();
+            response.setStatus(ex.getResponse().getStatus());
+
+         }
+         catch (Exception e1)
+         {
+            throw new UnhandledException(e1); // we're screwed, can't handle the exception
+         }
+      }
+      else
+      {
+         throw new UnhandledException(e.getCause());
+      }
+   }
+
+   protected void handleWebApplicationException(HttpResponse response, WebApplicationException wae)
+   {
+      if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
+      response.reset();
+      try
+      {
+         writeJaxrsResponse(response, wae.getResponse());
+      }
+      catch (WebApplicationException ex)
+      {
+         if (response.isCommitted())
+            throw new UnhandledException("Request was committed couldn't handle exception", ex);
+         // don't think I want to call writeJaxrsResponse infinately! so we'll just write the status
+         response.reset();
+         response.setStatus(ex.getResponse().getStatus());
+
+      }
+      catch (Exception e1)
+      {
+         throw new UnhandledException(e1);  // we're screwed, can't handle the exception
+      }
+   }
+
+   public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
       try
       {
-         ResteasyProviderFactory.pushContext(HttpRequest.class, in);
+         ResteasyProviderFactory.pushContext(HttpRequest.class, request);
          ResteasyProviderFactory.pushContext(HttpResponse.class, response);
-         ResteasyProviderFactory.pushContext(HttpHeaders.class, in.getHttpHeaders());
-         ResteasyProviderFactory.pushContext(UriInfo.class, in.getUri());
-         ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(in));
+         ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
+         ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
+         ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
+         Response jaxrsResponse = null;
          try
          {
-            invoker.invoke(in, response);
+            jaxrsResponse = invoker.invoke(request, response);
          }
-         catch (Failure e)
+         catch (Exception e)
          {
-            try
-            {
-               response.sendError(e.getErrorCode());
-            }
-            catch (IOException e1)
-            {
-               throw new RuntimeException(e1);
-            }
-            logger.error("Failure in processing: " + in.getHttpMethod() + " " + in.getUri().getPath(), e);
-            return;
+            handleInvokerException(request, response, e);
          }
 
-      }
-      catch (Exception e)
-      {
-         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-         logger.error("Failure in processing: " + in.getHttpMethod() + " " + in.getUri().getPath(), e);
-         return;
+         try
+         {
+            if (jaxrsResponse != null) writeJaxrsResponse(response, jaxrsResponse);
+         }
+         catch (Exception e)
+         {
+            handleWriteResponseException(request, response, e);
+         }
       }
       finally
       {
@@ -216,4 +339,83 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
+   protected void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
+           throws IOException, WebApplicationException
+   {
+      if (jaxrsResponse.getMetadata() != null)
+      {
+         List cookies = jaxrsResponse.getMetadata().get(HttpHeaderNames.SET_COOKIE);
+         if (cookies != null)
+         {
+            Iterator it = cookies.iterator();
+            while (it.hasNext())
+            {
+               Object next = it.next();
+               if (next instanceof NewCookie)
+               {
+                  NewCookie cookie = (NewCookie) next;
+                  response.addNewCookie(cookie);
+                  it.remove();
+               }
+            }
+            if (cookies.size() < 1) jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
+         }
+      }
+
+      if (jaxrsResponse.getEntity() == null)
+      {
+         response.setStatus(jaxrsResponse.getStatus());
+         outputHeaders(response, jaxrsResponse);
+      }
+      if (jaxrsResponse.getEntity() != null)
+      {
+         MediaType responseContentType = resolveContentType(jaxrsResponse);
+         Class type = jaxrsResponse.getEntity().getClass();
+         Type genericType = null;
+         Annotation[] annotations = null;
+         if (jaxrsResponse instanceof ResponseImpl)
+         {
+            genericType = ((ResponseImpl) jaxrsResponse).getGenericType();
+            annotations = ((ResponseImpl) jaxrsResponse).getAnnotations();
+         }
+         MessageBodyWriter writer = providerFactory.createMessageBodyWriter(type, genericType, annotations, responseContentType);
+         if (writer == null)
+         {
+            throw new LoggableFailure("Could not find MessageBodyWriter for response object of type: " + type.getName() + " of media type: " + responseContentType, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+         }
+         //System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
+         //System.out.println("Response content type: " + responseContentType);
+         long size = writer.getSize(jaxrsResponse.getEntity());
+         //System.out.println("Writer: " + writer.getClass().getName());
+         //System.out.println("JAX-RS Content Size: " + size);
+         response.setStatus(jaxrsResponse.getStatus());
+         outputHeaders(response, jaxrsResponse);
+         response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));
+         writer.writeTo(jaxrsResponse.getEntity(), type, genericType, annotations, responseContentType, response.getOutputHeaders(), response.getOutputStream());
+      }
+   }
+
+   protected MediaType resolveContentType(Response jaxrsResponse)
+   {
+      MediaType responseContentType = null;
+      Object type = jaxrsResponse.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
+      if (type == null) return MediaType.valueOf("*/*");
+      if (type instanceof MediaType)
+      {
+         responseContentType = (MediaType) type;
+      }
+      else
+      {
+         responseContentType = MediaType.valueOf(type.toString());
+      }
+      return responseContentType;
+   }
+
+   protected void outputHeaders(HttpResponse response, Response jaxrsResponse)
+   {
+      if (jaxrsResponse.getMetadata() != null && jaxrsResponse.getMetadata().size() > 0)
+      {
+         response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
+      }
+   }
 }

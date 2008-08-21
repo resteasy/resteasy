@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.StringToPrimitive;
 
@@ -173,7 +174,7 @@ public class StringParameterInjector
          }
          catch (InvocationTargetException e)
          {
-            throw new Failure("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException(), HttpResponseCodes.SC_NOT_FOUND);
+            throw new LoggableFailure("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException(), HttpResponseCodes.SC_NOT_FOUND);
          }
       }
       return null;

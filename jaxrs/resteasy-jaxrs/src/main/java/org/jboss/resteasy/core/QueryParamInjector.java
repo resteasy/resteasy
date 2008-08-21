@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
 
 import javax.ws.rs.QueryParam;
 import java.io.UnsupportedEncodingException;
@@ -29,7 +30,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
       }
       catch (UnsupportedEncodingException e)
       {
-         throw new RuntimeException(e);
+         throw new LoggableFailure(e);
       }
    }
 

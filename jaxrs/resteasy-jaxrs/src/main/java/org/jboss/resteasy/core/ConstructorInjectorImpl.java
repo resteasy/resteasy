@@ -1,8 +1,11 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
@@ -64,7 +67,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       return args;
    }
 
-   public Object construct(HttpRequest request, HttpResponse httpResponse) throws Failure
+   public Object construct(HttpRequest request, HttpResponse httpResponse) throws Failure, ApplicationException, WebApplicationException
    {
       Object[] args = null;
       try
@@ -73,7 +76,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
       catch (Exception e)
       {
-         throw new Failure("Failed processing arguments of " + constructor.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new LoggableFailure("Failed processing arguments of " + constructor.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
       }
       try
       {
@@ -81,25 +84,20 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
       catch (InstantiationException e)
       {
-         throw new RuntimeException("Failed to construct " + constructor.toString(), e);
+         throw new LoggableFailure("Failed to construct " + constructor.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
       }
       catch (IllegalAccessException e)
       {
-         throw new RuntimeException("Failed to construct " + constructor.toString(), e);
+         throw new LoggableFailure("Failed to construct " + constructor.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
       }
       catch (InvocationTargetException e)
       {
          Throwable cause = e.getCause();
          if (cause instanceof WebApplicationException)
          {
-            WebApplicationException wae = (WebApplicationException) cause;
-            if (wae.getResponse() != null)
-            {
-               // FYI never log exception here as this should be done by user.
-               return wae.getResponse();
-            }
+            throw (WebApplicationException) cause;
          }
-         throw new RuntimeException("Failed to construct " + constructor.toString(), e.getCause());
+         throw new ApplicationException("Failed to construct " + constructor.toString(), e.getCause());
       }
       catch (IllegalArgumentException e)
       {
@@ -122,7 +120,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
             }
             msg += " " + arg;
          }
-         throw new RuntimeException(msg, e);
+         throw new LoggableFailure(msg, e, HttpResponseCodes.SC_BAD_REQUEST);
       }
    }
 

@@ -27,4 +27,11 @@ public interface HttpResponse
 
    void sendError(int status, String message) throws IOException;
 
+   boolean isCommitted();
+
+   /**
+    * reset status and headers.  Will fail if response is committed
+    */
+   void reset();
+
 }

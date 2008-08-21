@@ -6,6 +6,7 @@ import org.jboss.resteasy.specimpl.HttpHeadersImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.LocaleHelper;
@@ -206,7 +207,7 @@ public class MockHttpRequest implements HttpRequest
          }
          catch (IOException e)
          {
-            throw new RuntimeException(e);
+            throw new LoggableFailure(e);
          }
       }
       else

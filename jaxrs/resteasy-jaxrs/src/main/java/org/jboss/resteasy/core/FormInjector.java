@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -35,11 +36,11 @@ public class FormInjector implements ValueInjector
       }
       catch (InstantiationException e)
       {
-         throw new RuntimeException(e.getCause());
+         throw new LoggableFailure("Failed to instantiate @Form class", e.getCause());
       }
       catch (IllegalAccessException e)
       {
-         throw new RuntimeException(e);
+         throw new LoggableFailure("Failed to instantiate @Form class", e);
       }
       injector.inject(request, response, target);
       return target;

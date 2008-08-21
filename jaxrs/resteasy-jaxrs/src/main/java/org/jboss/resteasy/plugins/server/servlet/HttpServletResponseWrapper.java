@@ -19,11 +19,13 @@ public class HttpServletResponseWrapper implements HttpResponse
    private HttpServletResponse response;
    private int status = 200;
    private MultivaluedMap<String, Object> outputHeaders;
+   private ResteasyProviderFactory factory;
 
    public HttpServletResponseWrapper(HttpServletResponse response, ResteasyProviderFactory factory)
    {
       this.response = response;
       outputHeaders = new HttpServletResponseHeaders(response, factory);
+      this.factory = factory;
    }
 
    public int getStatus()
@@ -67,5 +69,16 @@ public class HttpServletResponseWrapper implements HttpResponse
    public void sendError(int status, String message) throws IOException
    {
       response.sendError(status, message);
+   }
+
+   public boolean isCommitted()
+   {
+      return response.isCommitted();
+   }
+
+   public void reset()
+   {
+      response.reset();
+      outputHeaders = new HttpServletResponseHeaders(response, factory);
    }
 }

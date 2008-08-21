@@ -1,11 +1,12 @@
 package org.jboss.resteasy.core.registry;
 
-import org.jboss.resteasy.core.Failure;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.PathHelper;
@@ -44,7 +45,7 @@ public class RootSegment extends Segment
          {
             PathParamSegment segmentNode = locatorExpressions.get(expression);
             if (segmentNode != null)
-               throw new RuntimeException("You cannot have 2 locators for same path: " + expression);
+               throw new LoggableFailure("You cannot have 2 locators for same path: " + expression);
             segmentNode = new PathParamSegment(expression);
             segmentNode.locator = (ResourceLocator) invoker;
             locatorExpressions.put(segmentNode.getPathExpression(), segmentNode);

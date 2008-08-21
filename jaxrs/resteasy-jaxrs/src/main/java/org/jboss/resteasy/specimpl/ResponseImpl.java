@@ -6,6 +6,8 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -17,6 +19,8 @@ public class ResponseImpl extends Response
    private int status = HttpResponseCodes.SC_OK;
    private Headers<Object> metadata = new Headers<Object>();
    private NewCookie[] newCookies = {};
+   private Annotation[] annotations;
+   private Type genericType;
 
    public ResponseImpl(Object entity, int status, Headers<Object> metadata, NewCookie[] newCookies)
    {
@@ -30,16 +34,19 @@ public class ResponseImpl extends Response
    {
    }
 
+   @Override
    public Object getEntity()
    {
       return entity;
    }
 
+   @Override
    public int getStatus()
    {
       return status;
    }
 
+   @Override
    public MultivaluedMap<String, Object> getMetadata()
    {
       return metadata;
@@ -69,5 +76,25 @@ public class ResponseImpl extends Response
    public void setNewCookies(NewCookie[] newCookies)
    {
       this.newCookies = newCookies;
+   }
+
+   public Annotation[] getAnnotations()
+   {
+      return annotations;
+   }
+
+   public void setAnnotations(Annotation[] annotations)
+   {
+      this.annotations = annotations;
+   }
+
+   public Type getGenericType()
+   {
+      return genericType;
+   }
+
+   public void setGenericType(Type genericType)
+   {
+      this.genericType = genericType;
    }
 }

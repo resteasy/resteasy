@@ -7,6 +7,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.core.ExceptionAdapter;
+import org.jboss.resteasy.spi.LoggableFailure;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -111,7 +112,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          }
          else
          {
-            throw new RuntimeException("A valid XmlRegistry could not be located.");
+            throw new LoggableFailure("A valid XmlRegistry could not be located.");
          }
       }
       catch (ClassNotFoundException e)
@@ -156,7 +157,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
             }
             else
             {
-               throw new RuntimeException(String.format("The method create%s() "
+               throw new LoggableFailure(String.format("The method create%s() "
                        + "was not found in the object Factory!", type));
             }
          }
