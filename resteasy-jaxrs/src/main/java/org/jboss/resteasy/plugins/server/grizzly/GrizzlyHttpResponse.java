@@ -2,7 +2,6 @@ package org.jboss.resteasy.plugins.server.grizzly;
 
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.Cookie;
-
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -20,11 +19,13 @@ public class GrizzlyHttpResponse implements HttpResponse
    protected GrizzlyResponse response;
    protected int status = 200;
    protected MultivaluedMap<String, Object> outputHeaders;
+   private ResteasyProviderFactory factory;
 
    public GrizzlyHttpResponse(GrizzlyResponse response, ResteasyProviderFactory factory)
    {
       this.response = response;
       outputHeaders = new GrizzlyResponseHeaders(response, factory);
+      this.factory = factory;
    }
 
    public int getStatus()
@@ -68,5 +69,16 @@ public class GrizzlyHttpResponse implements HttpResponse
    public void sendError(int status, String message) throws IOException
    {
       response.sendError(status, message);
+   }
+
+   public boolean isCommitted()
+   {
+      return response.isCommitted();
+   }
+
+   public void reset()
+   {
+      response.reset();
+      outputHeaders = new GrizzlyResponseHeaders(response, factory);
    }
 }

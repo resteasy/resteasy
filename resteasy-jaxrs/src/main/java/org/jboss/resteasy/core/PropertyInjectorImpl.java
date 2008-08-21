@@ -1,7 +1,10 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -195,7 +198,7 @@ public class PropertyInjectorImpl implements PropertyInjector
          }
          catch (IllegalAccessException e)
          {
-            throw new RuntimeException(e);
+            throw new LoggableFailure(e);
          }
       }
       for (SetterMethod setter : setters)
@@ -206,11 +209,11 @@ public class PropertyInjectorImpl implements PropertyInjector
          }
          catch (IllegalAccessException e)
          {
-            throw new RuntimeException(e);
+            throw new LoggableFailure(e);
          }
          catch (InvocationTargetException e)
          {
-            throw new RuntimeException(e);
+            throw new ApplicationException(e);
          }
       }
    }

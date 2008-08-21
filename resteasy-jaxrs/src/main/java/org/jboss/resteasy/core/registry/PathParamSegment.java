@@ -1,9 +1,10 @@
 package org.jboss.resteasy.core.registry;
 
-import org.jboss.resteasy.core.Failure;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.PathHelper;
@@ -138,7 +139,7 @@ public class PathParamSegment extends Segment
          if (segmentIndex + numSegments > request.getUri().getPathSegments().size())
          {
 
-            throw new Failure("Number of matched segments greater than actual", HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+            throw new LoggableFailure("Number of matched segments greater than actual", HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
          }
          PathSegment[] encodedSegments = new PathSegment[numSegments];
          PathSegment[] decodedSegments = new PathSegment[numSegments];

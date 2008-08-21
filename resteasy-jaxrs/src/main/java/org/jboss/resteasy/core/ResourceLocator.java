@@ -1,9 +1,12 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -13,6 +16,7 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -67,11 +71,11 @@ public class ResourceLocator implements ResourceInvoker
       }
       catch (IllegalAccessException e)
       {
-         throw new RuntimeException(e);
+         throw new LoggableFailure(e);
       }
       catch (InvocationTargetException e)
       {
-         throw new RuntimeException(e.getCause());
+         throw new ApplicationException(e.getCause());
       }
    }
 
@@ -80,13 +84,13 @@ public class ResourceLocator implements ResourceInvoker
       return method;
    }
 
-   public void invoke(HttpRequest request, HttpResponse response) throws IOException
+   public Response invoke(HttpRequest request, HttpResponse response) throws IOException
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       try
       {
          Object target = createResource(request, response);
-         invokeOnTargetObject(request, response, target);
+         return invokeOnTargetObject(request, response, target);
       }
       finally
       {
@@ -95,13 +99,13 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   public void invoke(HttpRequest request, HttpResponse response, Object locator) throws IOException
+   public Response invoke(HttpRequest request, HttpResponse response, Object locator) throws IOException
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       try
       {
          Object target = createResource(request, response, locator);
-         invokeOnTargetObject(request, response, target);
+         return invokeOnTargetObject(request, response, target);
       }
       finally
       {
@@ -110,7 +114,7 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   protected void invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target) throws IOException
+   protected Response invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target) throws IOException
    {
       if (target == null)
       {
@@ -124,7 +128,7 @@ public class ResourceLocator implements ResourceInvoker
          if (subResourceClass == null)
          {
             String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
-            throw new Failure(msg, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+            throw new LoggableFailure(msg, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
          }
          registry.addResourceFactory(null, null, subResourceClass);
          cachedSubresources.putIfAbsent(target.getClass(), registry);
@@ -137,12 +141,12 @@ public class ResourceLocator implements ResourceInvoker
       else if (invoker instanceof ResourceLocator)
       {
          ResourceLocator locator = (ResourceLocator) invoker;
-         locator.invoke(request, response, target);
+         return locator.invoke(request, response, target);
       }
       else
       {
          ResourceMethod method = (ResourceMethod) invoker;
-         method.invoke(request, response, target);
+         return method.invoke(request, response, target);
       }
    }
 

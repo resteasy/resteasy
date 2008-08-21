@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
@@ -37,16 +38,16 @@ public class MessageBodyParameterInjector implements ValueInjector
          MediaType mediaType = request.getHttpHeaders().getMediaType();
          if (mediaType == null)
          {
-            throw new Failure("content-type was null and expecting to extract a body", HttpResponseCodes.SC_BAD_REQUEST);
+            throw new LoggableFailure("content-type was null and expecting to extract a body", HttpResponseCodes.SC_BAD_REQUEST);
          }
          MessageBodyReader reader = factory.createMessageBodyReader(type, genericType, annotations, mediaType);
          if (reader == null)
-            throw new Failure("Could not find message body reader for type: " + genericType + " of content type: " + mediaType, HttpResponseCodes.SC_BAD_REQUEST);
+            throw new LoggableFailure("Could not find message body reader for type: " + genericType + " of content type: " + mediaType, HttpResponseCodes.SC_BAD_REQUEST);
          return reader.readFrom(type, genericType, annotations, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
       }
       catch (IOException e)
       {
-         throw new RuntimeException("Failure extracting body", e);
+         throw new LoggableFailure("Failure extracting body", e, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
       }
    }
 

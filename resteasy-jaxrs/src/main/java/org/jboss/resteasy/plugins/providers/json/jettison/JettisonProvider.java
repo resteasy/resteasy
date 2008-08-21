@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.json.jettison;
 
+import org.jboss.resteasy.spi.LoggableFailure;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -94,7 +96,7 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
       }
       catch (JAXBException e)
       {
-         throw new RuntimeException(e);
+         throw new LoggableFailure(e);
       }
    }
 
@@ -117,7 +119,7 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
       }
       catch (JAXBException e)
       {
-         throw new RuntimeException(e);
+         throw new LoggableFailure(e);
       }
    }
 

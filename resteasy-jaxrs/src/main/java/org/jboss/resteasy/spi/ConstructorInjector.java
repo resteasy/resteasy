@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.core.Failure;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -23,7 +23,7 @@ public interface ConstructorInjector
     * @return
     * @throws Failure
     */
-   Object construct(HttpRequest request, HttpResponse response) throws Failure;
+   Object construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException;
 
    /**
     * Create an arguments list from injectable tings outside the scope of an HTTP request.  Useful for singleton factories

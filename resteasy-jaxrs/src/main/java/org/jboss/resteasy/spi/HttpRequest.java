@@ -33,7 +33,7 @@ public interface HttpRequest
    /**
     * application/x-www-form-urlencoded parameters
     * <p/>
-    * This is here because @FormParam needs it and Request needs it
+    * This is here because @FormParam needs it.
     *
     * @return null if no parameters, this is encoded map
     */

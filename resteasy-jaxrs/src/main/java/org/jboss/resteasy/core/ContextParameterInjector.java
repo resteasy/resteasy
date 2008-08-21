@@ -2,8 +2,10 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.specimpl.MessageBodyWorkersImpl;
 import org.jboss.resteasy.specimpl.RequestImpl;
+import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -49,7 +51,7 @@ public class ContextParameterInjector implements ValueInjector
          {
             Object delegate = ResteasyProviderFactory.getContextData(type);
             if (delegate == null)
-               throw new RuntimeException("Unable to inject contextual data of type: " + type.getName());
+               throw new LoggableFailure("Unable to inject contextual data of type: " + type.getName());
             return method.invoke(delegate, objects);
          }
          catch (IllegalAccessException e)
@@ -62,7 +64,7 @@ public class ContextParameterInjector implements ValueInjector
          }
          catch (InvocationTargetException e)
          {
-            throw e.getCause();
+            throw new ApplicationException(e.getCause());
          }
       }
    }

@@ -1,13 +1,14 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.specimpl.ResponseImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
 
@@ -16,19 +17,13 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -127,10 +122,10 @@ public class ResourceMethod implements ResourceInvoker
       return method;
    }
 
-   public void invoke(HttpRequest request, HttpResponse response) throws IOException
+   public Response invoke(HttpRequest request, HttpResponse response) throws IOException
    {
       Object target = resource.createResource(request, response, injector);
-      invoke(request, response, target);
+      return invoke(request, response, target);
    }
 
    public void checkAuthorized()
@@ -149,129 +144,45 @@ public class ResourceMethod implements ResourceInvoker
       }
    }
 
-   public void invoke(HttpRequest request, HttpResponse response, Object target) throws IOException
+   public Response invoke(HttpRequest request, HttpResponse response, Object target) throws IOException
    {
 
       checkAuthorized();
 
-      Response jaxrsResponse = null;
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       uriInfo.pushCurrentResource(target);
       try
       {
-         try
+         Object rtn = methodInjector.invoke(request, response, target);
+         if (method.getReturnType().equals(Response.class))
          {
-            jaxrsResponse = methodInjector.invoke(request, response, target);
+            return (Response) rtn;
          }
-         catch (WebApplicationException we)
+         if (method.getReturnType().equals(void.class))
          {
-            jaxrsResponse = we.getResponse();
+            if (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST"))
+               return Response.noContent().build();
+            else return Response.ok().build();
          }
-         writeJaxrsResponse(request, response, jaxrsResponse);
+         Response.ResponseBuilder builder = null;
+         if (rtn == null && (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST")))
+         {
+            builder = Response.status(HttpResponseCodes.SC_NO_CONTENT);
+         }
+         else
+         {
+            builder = Response.ok(rtn);
+         }
+         builder.type(resolveContentType(request));
+         ResponseImpl jaxrsResponse = (ResponseImpl) builder.build();
+         jaxrsResponse.setGenericType(method.getGenericReturnType());
+         jaxrsResponse.setAnnotations(method.getAnnotations());
+         return jaxrsResponse;
       }
       finally
       {
          uriInfo.popCurrentResource();
       }
-   }
-
-   protected void writeJaxrsResponse(HttpRequest request, HttpResponse response, Response jaxrsResponse)
-           throws IOException
-   {
-      response.setStatus(jaxrsResponse.getStatus());
-      if (jaxrsResponse.getMetadata() != null)
-      {
-         List cookies = jaxrsResponse.getMetadata().get(HttpHeaderNames.SET_COOKIE);
-         if (cookies != null)
-         {
-            Iterator it = cookies.iterator();
-            while (it.hasNext())
-            {
-               Object next = it.next();
-               if (next instanceof NewCookie)
-               {
-                  NewCookie cookie = (NewCookie) next;
-                  response.addNewCookie(cookie);
-                  it.remove();
-               }
-            }
-            if (cookies.size() < 1) jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
-         }
-      }
-      if (jaxrsResponse.getMetadata() != null && jaxrsResponse.getMetadata().size() > 0)
-      {
-         response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
-      }
-
-      if (jaxrsResponse.getEntity() != null)
-      {
-         MediaType responseContentType = resolveContentType(request, jaxrsResponse);
-         try
-         {
-            writeResponse(response, jaxrsResponse.getEntity(), responseContentType);
-         }
-         catch (WebApplicationException we)
-         {
-            response.sendError(we.getResponse().getStatus());
-            return;
-         }
-      }
-   }
-
-   protected void writeResponse(HttpResponse response, Object entity, MediaType responseContentType)
-   {
-
-      Class type = entity.getClass();
-
-      Type genericType = null;
-      if (!Response.class.equals(getMethod().getReturnType()))
-      {
-         genericType = getMethod().getGenericReturnType();
-      }
-
-      Annotation[] annotations = getMethod().getAnnotations();
-
-      MessageBodyWriter writer = providerFactory.createMessageBodyWriter(type, genericType, annotations, responseContentType);
-      if (writer == null)
-      {
-         throw new RuntimeException("Could not find MessageBodyWriter for response object of type: " + entity.getClass() + " of media type: " + responseContentType);
-      }
-      //System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
-      //System.out.println("Response content type: " + responseContentType);
-      try
-      {
-         long size = writer.getSize(entity);
-         //System.out.println("Writer: " + writer.getClass().getName());
-         //System.out.println("JAX-RS Content Size: " + size);
-         response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));
-         response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_TYPE, responseContentType.toString());
-         writer.writeTo(entity, type, genericType, getMethod().getAnnotations(), responseContentType, response.getOutputHeaders(), response.getOutputStream());
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
-
-   protected MediaType resolveContentType(HttpRequest in, Response responseImpl)
-   {
-      Object contentType = responseImpl.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
-      MediaType responseContentType = null;
-      if (contentType != null) // if set by the response
-      {
-         //System.out.println("content type was set: " + contentType);
-         responseContentType = MediaType.valueOf(contentType.toString());
-      }
-      else
-      {
-         //System.out.println("finding content type from @ProduceMime");
-         responseContentType = matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
-      }
-      if (responseContentType == null)
-      {
-         responseContentType = MediaType.valueOf("*/*");
-      }
-      return responseContentType;
    }
 
    public boolean doesProduce(List<? extends MediaType> accepts)
@@ -326,6 +237,16 @@ public class ResourceMethod implements ResourceInvoker
          }
       }
       return matches;
+   }
+
+   protected MediaType resolveContentType(HttpRequest in)
+   {
+      MediaType responseContentType = matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
+      if (responseContentType == null)
+      {
+         responseContentType = MediaType.valueOf("*/*");
+      }
+      return responseContentType;
    }
 
    public MediaType matchByType(List<MediaType> accepts)

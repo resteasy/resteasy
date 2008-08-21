@@ -1,15 +1,15 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.specimpl.ResponseImpl;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -65,38 +65,20 @@ public class MethodInjectorImpl implements MethodInjector
       }
       catch (Exception e)
       {
-         throw new Failure("Failed processing arguments of " + method.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new LoggableFailure("Failed processing arguments of " + method.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
       }
    }
 
-   public Response invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure
+   public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException, WebApplicationException
    {
       Object[] args = injectArguments(request, httpResponse);
       try
       {
-         Object rtn = method.invoke(resource, args);
-         if (method.getReturnType().equals(void.class))
-         {
-            ResponseImpl response = new ResponseImpl();
-            if (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST"))
-               response.setStatus(HttpResponseCodes.SC_NO_CONTENT);
-
-         }
-         if (method.getReturnType().equals(Response.class))
-         {
-            return (Response) rtn;
-         }
-
-         ResponseImpl response = new ResponseImpl();
-         response.setEntity(rtn);
-         if (rtn == null && (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST")))
-            response.setStatus(HttpResponseCodes.SC_NO_CONTENT);
-         else response.setStatus(HttpResponseCodes.SC_OK);
-         return response;
+         return method.invoke(resource, args);
       }
       catch (IllegalAccessException e)
       {
-         throw new RuntimeException("Failed processing of " + method.toString(), e);
+         throw new LoggableFailure("Not allowed to reflect on method: " + method.toString(), e, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
       }
       catch (InvocationTargetException e)
       {
@@ -104,19 +86,9 @@ public class MethodInjectorImpl implements MethodInjector
          if (cause instanceof WebApplicationException)
          {
             WebApplicationException wae = (WebApplicationException) cause;
-            return wae.getResponse();
+            throw wae;
          }
-         ExceptionMapper mapper = null;
-         Class causeClass = cause.getClass();
-         while (mapper == null)
-         {
-            if (causeClass == null) break;
-            mapper = factory.createExceptionMapper(causeClass);
-            if (mapper == null) causeClass = causeClass.getSuperclass();
-         }
-         if (mapper == null)
-            throw new RuntimeException("Failed processing " + method.toString() + " could not find ExceptionMapper to handle it either", e.getCause());
-         return mapper.toResponse(cause);
+         throw new ApplicationException(cause);
       }
       catch (IllegalArgumentException e)
       {
@@ -139,7 +111,7 @@ public class MethodInjectorImpl implements MethodInjector
             }
             msg += " " + arg;
          }
-         throw new RuntimeException(msg, e);
+         throw new LoggableFailure(msg, e, HttpResponseCodes.SC_BAD_REQUEST);
       }
    }
 
