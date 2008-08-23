@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -84,7 +83,7 @@ public class ResourceLocator implements ResourceInvoker
       return method;
    }
 
-   public Response invoke(HttpRequest request, HttpResponse response) throws IOException
+   public Response invoke(HttpRequest request, HttpResponse response)
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       try
@@ -99,7 +98,7 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   public Response invoke(HttpRequest request, HttpResponse response, Object locator) throws IOException
+   public Response invoke(HttpRequest request, HttpResponse response, Object locator)
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       try
@@ -114,7 +113,7 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   protected Response invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target) throws IOException
+   protected Response invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
    {
       if (target == null)
       {

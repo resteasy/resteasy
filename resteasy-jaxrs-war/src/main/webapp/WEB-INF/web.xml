@@ -9,6 +9,14 @@
       <param-value>true</param-value>
    </context-param>
 
+   <!-- if you are using Spring, Seam or EJB as your component model, remove the ResourceMethodSecurityInterceptor -->
+   <context-param>
+      <param-name>resteasy.resource.method-interceptors</param-name>
+      <param-value>
+         org.jboss.resteasy.core.ResourceMethodSecurityInterceptor
+      </param-value>
+   </context-param>
+
    <listener>
       <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
    </listener>

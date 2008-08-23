@@ -30,4 +30,6 @@ public @interface Cache
 
    boolean proxyRevalidate() default false;
 
+   boolean isPrivate() default false;
+
 }

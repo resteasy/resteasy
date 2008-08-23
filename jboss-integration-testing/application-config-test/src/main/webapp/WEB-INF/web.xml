@@ -10,6 +10,13 @@
    </context-param>
 
    <context-param>
+      <param-name>resteasy.resource.method.interceptors</param-name>
+      <param-value>
+         org.jboss.resteasy.core.ResourceMethodSecurityInterceptor
+      </param-value>
+   </context-param>
+
+   <context-param>
       <param-name>javax.ws.rs.core.ApplicationConfig</param-name>
       <param-value>org.jboss.resteasy.test.smoke.MyApplicationConfig</param-value>
    </context-param>

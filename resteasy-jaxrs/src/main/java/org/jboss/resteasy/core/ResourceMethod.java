@@ -1,7 +1,10 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.ResourceMethodContext;
+import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
 import org.jboss.resteasy.specimpl.ResponseImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -12,15 +15,11 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
 
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,8 +43,8 @@ public class ResourceMethod implements ResourceInvoker
    protected ResourceFactory resource;
    protected ResteasyProviderFactory providerFactory;
    protected Method method;
-   protected String[] rolesAllowed;
-   protected boolean denyAll;
+   protected Class<?> resourceClass;
+   protected ResourceMethodInterceptor[] interceptors;
 
    public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods)
    {
@@ -53,6 +52,7 @@ public class ResourceMethod implements ResourceInvoker
       this.resource = resource;
       this.providerFactory = providerFactory;
       this.httpMethods = httpMethods;
+      this.resourceClass = clazz;
       this.method = method;
       this.methodInjector = injector.createMethodInjector(method);
 
@@ -83,18 +83,13 @@ public class ResourceMethod implements ResourceInvoker
       }
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
+      interceptors = providerFactory.getInterceptorRegistry().bind(this);
+      if (interceptors != null && interceptors.length == 0) interceptors = null;
+   }
 
-      RolesAllowed allowed = clazz.getAnnotation(RolesAllowed.class);
-      RolesAllowed methodAllowed = method.getAnnotation(RolesAllowed.class);
-      if (methodAllowed != null) allowed = methodAllowed;
-      if (allowed != null)
-      {
-         rolesAllowed = allowed.value();
-      }
-
-      denyAll = (clazz.isAnnotationPresent(DenyAll.class) && method.isAnnotationPresent(RolesAllowed.class) == false && method.isAnnotationPresent(PermitAll.class) == false) || method.isAnnotationPresent(DenyAll.class);
-
-
+   public Class<?> getResourceClass()
+   {
+      return resourceClass;
    }
 
    /**
@@ -122,67 +117,108 @@ public class ResourceMethod implements ResourceInvoker
       return method;
    }
 
-   public Response invoke(HttpRequest request, HttpResponse response) throws IOException
+   public Response invoke(HttpRequest request, HttpResponse response)
    {
       Object target = resource.createResource(request, response, injector);
       return invoke(request, response, target);
    }
 
-   public void checkAuthorized()
+   protected class ResourceContext implements ResourceMethodContext
    {
-      if (denyAll) throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
-      if (rolesAllowed == null) return;
+      protected HttpRequest request;
+      protected HttpResponse response;
+      protected Object target;
+      protected int index;
 
-      SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
-      if (context != null)
+      public ResourceContext(HttpRequest request, HttpResponse response, Object target)
       {
-         for (String role : rolesAllowed)
+         this.request = request;
+         this.response = response;
+         this.target = target;
+      }
+
+      public HttpRequest getRequest()
+      {
+         return null;
+      }
+
+      public void setRequest(HttpRequest request)
+      {
+      }
+
+      public Object getTarget()
+      {
+         return target;
+      }
+
+      public void setTarget(Object target)
+      {
+         this.target = target;
+      }
+
+      public ResourceMethod getMethod()
+      {
+         return ResourceMethod.this;
+      }
+
+      public Response proceed() throws Failure, WebApplicationException, ApplicationException
+      {
+         if (index >= interceptors.length) return invokeOnTarget(request, response, target);
+         try
          {
-            if (context.isUserInRole(role)) return;
+            return interceptors[index++].invoke(this);
          }
-         throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
+         finally
+         {
+            index--;
+         }
       }
    }
 
-   public Response invoke(HttpRequest request, HttpResponse response, Object target) throws IOException
+   public Response invoke(HttpRequest request, HttpResponse response, Object target)
    {
-
-      checkAuthorized();
-
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       uriInfo.pushCurrentResource(target);
       try
       {
-         Object rtn = methodInjector.invoke(request, response, target);
-         if (method.getReturnType().equals(Response.class))
-         {
-            return (Response) rtn;
-         }
-         if (method.getReturnType().equals(void.class))
-         {
-            if (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST"))
-               return Response.noContent().build();
-            else return Response.ok().build();
-         }
-         Response.ResponseBuilder builder = null;
-         if (rtn == null && (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST")))
-         {
-            builder = Response.status(HttpResponseCodes.SC_NO_CONTENT);
-         }
-         else
-         {
-            builder = Response.ok(rtn);
-         }
-         builder.type(resolveContentType(request));
-         ResponseImpl jaxrsResponse = (ResponseImpl) builder.build();
-         jaxrsResponse.setGenericType(method.getGenericReturnType());
-         jaxrsResponse.setAnnotations(method.getAnnotations());
-         return jaxrsResponse;
+         if (interceptors == null || interceptors.length == 0)
+            return invokeOnTarget(request, response, target);
+         return new ResourceContext(request, response, target).proceed();
+
       }
       finally
       {
          uriInfo.popCurrentResource();
       }
+   }
+
+   protected Response invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
+   {
+      Object rtn = methodInjector.invoke(request, response, target);
+      if (method.getReturnType().equals(Response.class))
+      {
+         return (Response) rtn;
+      }
+      if (method.getReturnType().equals(void.class))
+      {
+         if (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST"))
+            return Response.noContent().build();
+         else return Response.ok().build();
+      }
+      Response.ResponseBuilder builder = null;
+      if (rtn == null && (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST")))
+      {
+         builder = Response.status(HttpResponseCodes.SC_NO_CONTENT);
+      }
+      else
+      {
+         builder = Response.ok(rtn);
+      }
+      builder.type(resolveContentType(request));
+      ResponseImpl jaxrsResponse = (ResponseImpl) builder.build();
+      jaxrsResponse.setGenericType(method.getGenericReturnType());
+      jaxrsResponse.setAnnotations(method.getAnnotations());
+      return jaxrsResponse;
    }
 
    public boolean doesProduce(List<? extends MediaType> accepts)

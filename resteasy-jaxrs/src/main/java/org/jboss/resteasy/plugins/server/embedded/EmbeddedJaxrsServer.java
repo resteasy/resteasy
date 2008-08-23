@@ -24,4 +24,6 @@ public interface EmbeddedJaxrsServer
    void setSecurityDomain(SecurityDomain sc);
 
    void addApplicationConfig(Application config);
+
+   void setDefaultResourceMethodInterceptors(Class[] interceptorClasses);
 }

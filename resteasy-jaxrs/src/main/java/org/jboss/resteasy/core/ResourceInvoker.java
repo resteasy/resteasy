@@ -4,7 +4,6 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -12,5 +11,5 @@ import java.io.IOException;
  */
 public interface ResourceInvoker
 {
-   Response invoke(HttpRequest request, HttpResponse response) throws IOException;
+   Response invoke(HttpRequest request, HttpResponse response);
 }

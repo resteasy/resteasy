@@ -2,6 +2,8 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
@@ -107,6 +109,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
 
    private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    private static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
+   private InterceptorRegistry interceptorRegistry = new InterceptorRegistry();
 
    public static void pushContext(Class<?> type, Object data)
    {
@@ -360,6 +363,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
          }
       }
+      if (ResourceMethodInterceptor.class.isAssignableFrom(provider))
+      {
+         interceptorRegistry.registerResourceMethodInterceptor(provider);
+      }
    }
 
    /**
@@ -401,6 +408,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate
          {
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
          }
+      }
+      if (provider instanceof ResourceMethodInterceptor)
+      {
+         interceptorRegistry.registerResourceMethodInterceptor((ResourceMethodInterceptor) provider);
       }
    }
 
@@ -446,6 +457,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate
     */
    public <T> T createEndpoint(Application applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
    {
-      throw new RuntimeException("NOT USABLE IN RESTEASY");
+      throw new UnsupportedOperationException();
+   }
+
+   public InterceptorRegistry getInterceptorRegistry()
+   {
+      return interceptorRegistry;
    }
 }
