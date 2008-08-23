@@ -53,6 +53,10 @@ public class ResteasyBootstrap implements ServletContextListener
 
       if (providers != null) setProviders(providers);
 
+      String resourceMethodInterceptors = event.getServletContext().getInitParameter("resteasy.resource.method.interceptors");
+
+      if (resourceMethodInterceptors != null) setProviders(resourceMethodInterceptors);
+
       String builtin = event.getServletContext().getInitParameter("resteasy.use.builtin.providers");
       if (builtin == null || Boolean.valueOf(builtin.trim())) RegisterBuiltin.register(factory);
 

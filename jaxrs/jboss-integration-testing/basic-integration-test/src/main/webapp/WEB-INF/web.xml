@@ -9,6 +9,13 @@
       <param-value>true</param-value>
    </context-param>
 
+   <context-param>
+      <param-name>resteasy.resource.method.interceptors</param-name>
+      <param-value>
+         org.jboss.resteasy.core.ResourceMethodSecurityInterceptor
+      </param-value>
+   </context-param>
+
    <listener>
       <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
    </listener>
