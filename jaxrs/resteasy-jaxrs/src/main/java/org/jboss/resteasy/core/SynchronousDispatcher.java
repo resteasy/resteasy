@@ -165,14 +165,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Failure e)
       {
-         try
-         {
-            response.sendError(e.getErrorCode());
-         }
-         catch (Exception e1)
-         {
-            throw new UnhandledException(e1);
-         }
+         handleFailure(in, response, e);
          logger.debug("Could not match path: " + in.getUri().getPath(), e);
          return;
       }
@@ -229,16 +222,33 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else if (e instanceof Failure)
       {
-         response.setStatus(((Failure) e).getErrorCode());
-         if (((Failure) e).isLoggable())
-            logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
-         else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+         handleFailure(request, response, e);
       }
       else
       {
          logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
          throw new UnhandledException(e);
       }
+   }
+
+   protected void handleFailure(HttpRequest request, HttpResponse response, Exception e)
+   {
+      Failure failure = (Failure) e;
+      if (failure.getResponse() != null)
+      {
+         try
+         {
+            writeJaxrsResponse(response, failure.getResponse());
+         }
+         catch (Exception e1)
+         {
+            throw new UnhandledException(e1);
+         }
+      }
+      else response.setStatus(((Failure) e).getErrorCode());
+      if (((Failure) e).isLoggable())
+         logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+      else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
    }
 
    protected void handleApplicationException(HttpResponse response, ApplicationException e)

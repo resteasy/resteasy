@@ -2,6 +2,8 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.util.HttpResponseCodes;
 
+import javax.ws.rs.core.Response;
+
 
 /**
  * This exception should only be used by Resteasy integrators.  Applications code should use WebApplicationException.
@@ -16,6 +18,25 @@ public class Failure extends RuntimeException
 
    protected int errorCode = -1;
    protected boolean loggable;
+   protected Response response;
+
+   public Failure(String s, Response response)
+   {
+      super(s);
+      this.response = response;
+   }
+
+   public Failure(String s, Throwable throwable, Response response)
+   {
+      super(s, throwable);
+      this.response = response;
+   }
+
+   public Failure(Throwable throwable, Response response)
+   {
+      super(throwable);
+      this.response = response;
+   }
 
    public Failure(String s, Throwable throwable)
    {
@@ -76,5 +97,10 @@ public class Failure extends RuntimeException
    public void setLoggable(boolean loggable)
    {
       this.loggable = loggable;
+   }
+
+   public Response getResponse()
+   {
+      return response;
    }
 }
