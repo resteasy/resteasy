@@ -27,9 +27,11 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -46,7 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResteasyProviderFactory extends RuntimeDelegate
+public class ResteasyProviderFactory extends RuntimeDelegate implements Providers
 {
    /**
     * Allow us to sort message body implementations that are more specific for their types
@@ -268,7 +270,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       }
    }
 
-   public <T> MessageBodyReader<T> createMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<MessageBodyKey<MessageBodyReader>> readers = messageBodyReaders.getPossible(mediaType);
 
@@ -424,12 +426,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate
       return (T) providers.get(providerClass);
    }
 
-   public <T> ExceptionMapper<T> createExceptionMapper(Class<T> type)
+   public <T> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
       return exceptionMappers.get(type);
    }
 
-   public <T> MessageBodyWriter<T> createMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<MessageBodyKey<MessageBodyWriter>> writers = messageBodyWriters.getPossible(mediaType);
       // if the desired media type is */* then sort the readers by their parameterized type to weed out less generic types
@@ -463,5 +465,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate
    public InterceptorRegistry getInterceptorRegistry()
    {
       return interceptorRegistry;
+   }
+
+   public <T> ContextResolver<T> getContextResolver(Class<T> contextType, Class<?> objectType, MediaType mediaType)
+   {
+      throw new UnsupportedOperationException();
    }
 }

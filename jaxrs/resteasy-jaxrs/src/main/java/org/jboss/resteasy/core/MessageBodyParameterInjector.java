@@ -40,7 +40,7 @@ public class MessageBodyParameterInjector implements ValueInjector
          {
             throw new LoggableFailure("content-type was null and expecting to extract a body", HttpResponseCodes.SC_BAD_REQUEST);
          }
-         MessageBodyReader reader = factory.createMessageBodyReader(type, genericType, annotations, mediaType);
+         MessageBodyReader reader = factory.getMessageBodyReader(type, genericType, annotations, mediaType);
          if (reader == null)
             throw new LoggableFailure("Could not find message body reader for type: " + genericType + " of content type: " + mediaType, HttpResponseCodes.SC_BAD_REQUEST);
          return reader.readFrom(type, genericType, annotations, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());

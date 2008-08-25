@@ -205,7 +205,7 @@ abstract public class HttpClientInvoker extends ClientInvoker
          returnType = byte[].class;
       }
       MediaType media = MediaType.valueOf(mediaType);
-      MessageBodyReader reader = providerFactory.createMessageBodyReader(returnType, genericReturnType, method.getAnnotations(), media);
+      MessageBodyReader reader = providerFactory.getMessageBodyReader(returnType, genericReturnType, method.getAnnotations(), media);
       if (reader == null)
       {
          final String theMediaType = mediaType;

@@ -17,11 +17,11 @@ public class MessageBodyWorkersImpl implements MessageBodyWorkers
 {
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation annotations[], MediaType mediaType)
    {
-      return ResteasyProviderFactory.getInstance().createMessageBodyReader(type, genericType, annotations, mediaType);
+      return ResteasyProviderFactory.getInstance().getMessageBodyReader(type, genericType, annotations, mediaType);
    }
 
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation annotations[], MediaType mediaType)
    {
-      return ResteasyProviderFactory.getInstance().createMessageBodyWriter(type, genericType, annotations, mediaType);
+      return ResteasyProviderFactory.getInstance().getMessageBodyWriter(type, genericType, annotations, mediaType);
    }
 }
