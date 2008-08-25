@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spi;
 
+import javax.ws.rs.core.Response;
+
 /**
  * This exception should only be used by Resteasy integrators.  Applications code should use WebApplicationException
  * <p/>
@@ -10,6 +12,21 @@ package org.jboss.resteasy.spi;
  */
 public class LoggableFailure extends Failure
 {
+   public LoggableFailure(String s, Response response)
+   {
+      super(s, response);
+   }
+
+   public LoggableFailure(String s, Throwable throwable, Response response)
+   {
+      super(s, throwable, response);
+   }
+
+   public LoggableFailure(Throwable throwable, Response response)
+   {
+      super(throwable, response);
+   }
+
    public LoggableFailure(String s, Throwable throwable)
    {
       super(s, throwable);

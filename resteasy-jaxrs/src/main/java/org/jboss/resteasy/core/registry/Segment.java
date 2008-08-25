@@ -4,12 +4,15 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 
@@ -75,7 +78,27 @@ public class Segment
          if (locator != null) return locator;
          if (!methodMatch)
          {
-            throw new Failure("No matching http method", HttpResponseCodes.SC_METHOD_NOT_ALLOWED);
+            HashSet<String> allowed = new HashSet<String>();
+            for (ResourceMethod invoker : methods) allowed.addAll(invoker.getHttpMethods());
+            String allowHeaderValue = "";
+            boolean first = true;
+            for (String allow : allowed)
+            {
+               if (first) first = false;
+               else allowHeaderValue += ", ";
+               allowHeaderValue += allow;
+            }
+
+            if (httpMethod.equals("OPTIONS"))
+            {
+               Response res = Response.ok().header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
+               throw new Failure("No resource method found for options, return OK with Allow header", res);
+            }
+            else
+            {
+               Response res = Response.status(HttpResponseCodes.SC_METHOD_NOT_ALLOWED).header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
+               throw new Failure("No resource method found for " + httpMethod + ", return 405 with Allow header", res);
+            }
          }
          if (!consumeMatch)
          {
