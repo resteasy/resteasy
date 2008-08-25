@@ -46,7 +46,7 @@ public class MessageBodyParameterMarshaller implements Marshaller
 
    public MessageBodyWriter getMessageBodyWriter()
    {
-      MessageBodyWriter writer = factory.createMessageBodyWriter(type, genericType, annotations, mediaType);
+      MessageBodyWriter writer = factory.getMessageBodyWriter(type, genericType, annotations, mediaType);
       return writer;
    }
 

@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -253,7 +254,7 @@ public class SynchronousDispatcher implements Dispatcher
       while (mapper == null)
       {
          if (causeClass == null) break;
-         mapper = providerFactory.createExceptionMapper(causeClass);
+         mapper = providerFactory.getExceptionMapper(causeClass);
          if (mapper == null) causeClass = causeClass.getSuperclass();
       }
       if (mapper != null)
@@ -314,6 +315,7 @@ public class SynchronousDispatcher implements Dispatcher
          ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
          ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
          ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
+         ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
          Response jaxrsResponse = null;
          try
          {
@@ -378,7 +380,7 @@ public class SynchronousDispatcher implements Dispatcher
             genericType = ((ResponseImpl) jaxrsResponse).getGenericType();
             annotations = ((ResponseImpl) jaxrsResponse).getAnnotations();
          }
-         MessageBodyWriter writer = providerFactory.createMessageBodyWriter(type, genericType, annotations, responseContentType);
+         MessageBodyWriter writer = providerFactory.getMessageBodyWriter(type, genericType, annotations, responseContentType);
          if (writer == null)
          {
             throw new LoggableFailure("Could not find MessageBodyWriter for response object of type: " + type.getName() + " of media type: " + responseContentType, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);

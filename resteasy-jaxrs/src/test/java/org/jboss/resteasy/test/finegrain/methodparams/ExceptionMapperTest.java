@@ -13,9 +13,11 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
@@ -50,6 +52,15 @@ public class ExceptionMapperTest
       {
          throw new SubclassException("FAILURE!!!");
       }
+
+      @Path("providers")
+      @GET
+      public String getProvidersTest(@Context Providers providers)
+      {
+         Assert.assertNotNull(providers);
+         Assert.assertEquals(providers.getExceptionMapper(JAXBException.class).getClass(), JAXBMapper.class);
+         return "stuff";
+      }
    }
 
    @BeforeClass
@@ -78,7 +89,25 @@ public class ExceptionMapperTest
    @Test
    public void testRegisteredCorrectly()
    {
-      Assert.assertNotNull(ResteasyProviderFactory.getInstance().createExceptionMapper(JAXBException.class));
+      Assert.assertNotNull(ResteasyProviderFactory.getInstance().getExceptionMapper(JAXBException.class));
+   }
+
+   @Test
+   public void testProvidersInjection()
+   {
+      HttpClient client = new HttpClient();
+      GetMethod method = new GetMethod("http://localhost:8081/providers");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+      }
+      catch (IOException e)
+      {
+         method.releaseConnection();
+         throw new RuntimeException(e);
+      }
+      method.releaseConnection();
    }
 
    @Test

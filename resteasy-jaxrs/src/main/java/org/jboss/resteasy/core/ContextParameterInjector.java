@@ -12,6 +12,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWorkers;
+import javax.ws.rs.ext.Providers;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,6 +41,7 @@ public class ContextParameterInjector implements ValueInjector
       if (type.equals(Request.class)) return new RequestImpl(request);
       if (type.equals(HttpRequest.class)) return request;
       if (type.equals(MessageBodyWorkers.class)) return new MessageBodyWorkersImpl();
+      if (type.equals(Providers.class)) return factory;
       else return ResteasyProviderFactory.getContextData(type);
    }
 
