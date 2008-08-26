@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
@@ -382,12 +383,22 @@ public class SynchronousDispatcher implements Dispatcher
       if (jaxrsResponse.getEntity() != null)
       {
          MediaType responseContentType = resolveContentType(jaxrsResponse);
+         Object entity = jaxrsResponse.getEntity();
          Class type = jaxrsResponse.getEntity().getClass();
          Type genericType = null;
          Annotation[] annotations = null;
+         if (entity instanceof GenericEntity)
+         {
+            GenericEntity ge = (GenericEntity) entity;
+            genericType = ge.getType();
+            entity = ge.getEntity();
+            type = entity.getClass();
+         }
          if (jaxrsResponse instanceof ResponseImpl)
          {
-            genericType = ((ResponseImpl) jaxrsResponse).getGenericType();
+            // if we haven't set it in GenericEntity processing...
+            if (genericType == null) genericType = ((ResponseImpl) jaxrsResponse).getGenericType();
+
             annotations = ((ResponseImpl) jaxrsResponse).getAnnotations();
          }
          MessageBodyWriter writer = providerFactory.getMessageBodyWriter(type, genericType, annotations, responseContentType);
@@ -397,13 +408,13 @@ public class SynchronousDispatcher implements Dispatcher
          }
          //System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
          //System.out.println("Response content type: " + responseContentType);
-         long size = writer.getSize(jaxrsResponse.getEntity());
+         long size = writer.getSize(entity);
          //System.out.println("Writer: " + writer.getClass().getName());
          //System.out.println("JAX-RS Content Size: " + size);
          response.setStatus(jaxrsResponse.getStatus());
          outputHeaders(response, jaxrsResponse);
          response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));
-         writer.writeTo(jaxrsResponse.getEntity(), type, genericType, annotations, responseContentType, response.getOutputHeaders(), response.getOutputStream());
+         writer.writeTo(entity, type, genericType, annotations, responseContentType, response.getOutputHeaders(), response.getOutputStream());
       }
    }
 
