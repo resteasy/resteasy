@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 @Consumes("*/*")
 public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBodyWriter<byte[]>
 {
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.isArray() && type.getComponentType().equals(byte.class);
    }
@@ -32,12 +32,12 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
       return ReadFromStream.readFromStream(1024, entityStream);
    }
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.isArray() && type.getComponentType().equals(byte.class);
    }
 
-   public long getSize(byte[] bytes)
+   public long getSize(byte[] bytes, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return bytes.length;
    }

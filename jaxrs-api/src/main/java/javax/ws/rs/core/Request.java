@@ -61,9 +61,10 @@ public interface Request
     * @param variants a list of Variant that describe all of the
     *                 available representation variants.
     * @return the variant that best matches the request.
-    * @throws IllegalArgumentException if variants is empty
+    * @throws java.lang.IllegalArgumentException
+    *          if variants is empty or null
     * @throws java.lang.IllegalStateException
-    *                                  if called outside the scope of a request
+    *          if called outside the scope of a request
     * @see Variant.VariantListBuilder
     */
    Variant selectVariant(List<Variant> variants) throws IllegalArgumentException;
@@ -75,6 +76,8 @@ public interface Request
     * @return null if the preconditions are met or a ResponseBuilder set with
     *         the appropriate status if the preconditions are not met. A returned
     *         ResponseBuilder will include an ETag header set with the value of eTag.
+    * @throws java.lang.IllegalArgumentException
+    *          if eTag is null
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     */
@@ -86,6 +89,8 @@ public interface Request
     * @param lastModified a date that specifies the modification date of the resource
     * @return null if the preconditions are met or a ResponseBuilder set with
     *         the appropriate status if the preconditions are not met.
+    * @throws java.lang.IllegalArgumentException
+    *          if lastModified is null
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     */
@@ -99,6 +104,8 @@ public interface Request
     * @return null if the preconditions are met or a ResponseBuilder set with
     *         the appropriate status if the preconditions are not met.  A returned
     *         ResponseBuilder will include an ETag header set with the value of eTag.
+    * @throws java.lang.IllegalArgumentException
+    *          if lastModified or eTag is null
     * @throws java.lang.IllegalStateException
     *          if called outside the scope of a request
     */

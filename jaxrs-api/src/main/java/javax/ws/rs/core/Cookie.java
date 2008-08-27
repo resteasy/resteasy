@@ -188,7 +188,7 @@ public class Cookie
    /**
     * Compare for equality
     *
-    * @param obj
+    * @param obj the object to compare to
     * @return true if the object is a {@code Cookie} with the same value for
     *         all properties, false otherwise.
     */

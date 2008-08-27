@@ -26,9 +26,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines the MIME types that the methods of a resource class or MessageBodyReader
- * can accept. If
- * not specified, a container will assume that any MIME type is acceptable.
+ * Defines the media types that the methods of a resource class or
+ * {@link javax.ws.rs.ext.MessageBodyReader} can accept. If
+ * not specified, a container will assume that any media type is acceptable.
  * Method level annotations override a class level annotation. A container
  * is responsible for ensuring that the method invoked is capable of consuming
  * the media type of the HTTP request entity body. If no such method is
@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
 public @interface Consumes
 {
    /**
-    * A list of MIME types. E.g. {"image/jpeg","image/gif"}
+    * A list of media types. E.g. {"image/jpeg","image/gif"}
     */
    String[] value() default "*/*";
 }

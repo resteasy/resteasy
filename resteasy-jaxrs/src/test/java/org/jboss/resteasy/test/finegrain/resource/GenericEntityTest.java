@@ -71,7 +71,7 @@ public class GenericEntityTest
    @Produces("*/*")
    public static class FloatWriter implements MessageBodyWriter<List<Float>>
    {
-      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          if (!List.class.isAssignableFrom(type)) return false;
          if (!(genericType instanceof ParameterizedType)) return false;
@@ -81,7 +81,7 @@ public class GenericEntityTest
          return result;
       }
 
-      public long getSize(List<Float> floats)
+      public long getSize(List<Float> floats, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          return -1;
       }
@@ -101,7 +101,7 @@ public class GenericEntityTest
    @Produces("*/*")
    public static class DoubleWriter implements MessageBodyWriter<List<Double>>
    {
-      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          System.out.println("DoubleWriter type: " + type.getName());
          if (!List.class.isAssignableFrom(type)) return false;
@@ -114,7 +114,7 @@ public class GenericEntityTest
          return result;
       }
 
-      public long getSize(List<Double> floats)
+      public long getSize(List<Double> doubles, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          return -1;
       }

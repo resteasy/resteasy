@@ -38,7 +38,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     */
    public boolean isReadable(Class<?> type,
                              Type genericType,
-                             Annotation[] annotations)
+                             Annotation[] annotations, MediaType mediaType)
    {
       return DataSource.class.isAssignableFrom(type);
    }
@@ -79,7 +79,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @return
     * @see @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
     */
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return DataSource.class.isAssignableFrom(type);
    }

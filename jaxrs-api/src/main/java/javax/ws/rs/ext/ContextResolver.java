@@ -22,7 +22,7 @@ package javax.ws.rs.ext;
  * which it will be considered suitable.
  *
  * @see javax.ws.rs.core.Context
- * @see Providers#getContextResolver(java.lang.Class, java.lang.Class, javax.ws.rs.core.MediaType)
+ * @see Providers#getContextResolver(java.lang.Class, javax.ws.rs.core.MediaType)
  * @see Provider
  * @see javax.ws.rs.Produces
  */

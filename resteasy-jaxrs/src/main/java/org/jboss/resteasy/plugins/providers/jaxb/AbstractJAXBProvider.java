@@ -41,13 +41,6 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
     */
    public static final String FORMAT_XML_HEADER = "X-Xml-Formatted";
 
-   /**
-    *
-    */
-   public long getSize(T type)
-   {
-      return -1;
-   }
 
    /**
     * FIXME Comment this
@@ -197,22 +190,22 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
     */
    protected abstract boolean isReadWritable(Class<?> type,
                                              Type genericType,
-                                             Annotation[] annotations);
+                                             Annotation[] annotations, MediaType mediaType);
 
    /**
     *
     */
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return isReadWritable(type, genericType, annotations);
+      return isReadWritable(type, genericType, annotations, mediaType);
    }
 
    /**
     *
     */
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return isReadWritable(type, genericType, annotations);
+      return isReadWritable(type, genericType, annotations, mediaType);
    }
 
    /**

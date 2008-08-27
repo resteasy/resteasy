@@ -217,6 +217,17 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    @Override
+   public URI buildFromMap(Map<String, ? extends Object> values) throws IllegalArgumentException, UriBuilderException
+   {
+      return buildFromMap(values, false);
+   }
+
+   @Override
+   public URI buildFromEncodedMap(Map<String, ? extends Object> values) throws IllegalArgumentException, UriBuilderException
+   {
+      return buildFromMap(values, true);
+   }
+
    public URI buildFromMap(Map<String, ? extends Object> paramMap, boolean isEncoded) throws IllegalArgumentException, UriBuilderException
    {
       StringBuffer buffer = new StringBuffer();

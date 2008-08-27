@@ -39,7 +39,7 @@ public class DataContentProvider implements MessageBodyReader<Object>,
    *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
    */
    public boolean isReadable(Class<?> type, Type genericType,
-                             Annotation[] annotations)
+                             Annotation[] annotations, MediaType mediaType)
    {
       // TODO Auto-generated method stub
       return true;
@@ -67,25 +67,18 @@ public class DataContentProvider implements MessageBodyReader<Object>,
       return null;
    }
 
-   /*
-   * (non-Javadoc)
-   *
-   * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
-   */
-   public long getSize(Object t)
+   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      // TODO Auto-generated method stub
-      return 0;
-   }
-
-   /*
+      return -1;
+   }/*
    * (non-Javadoc)
    *
    * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class,
    *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
    */
+
    public boolean isWriteable(Class type, Type genericType,
-                              Annotation[] annotations)
+                              Annotation[] annotations, MediaType mediaType)
    {
       // TODO Auto-generated method stub
       return false;

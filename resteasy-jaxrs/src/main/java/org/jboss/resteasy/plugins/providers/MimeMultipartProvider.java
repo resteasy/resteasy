@@ -45,7 +45,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @param annotations
     * @return
     */
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MimeMultipart.class.equals(type);
    }
@@ -56,18 +56,9 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @param annotations
     * @return
     */
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MimeMultipart.class.equals(type);
-   }
-
-   /**
-    * @param t
-    * @return
-    */
-   public long getSize(MimeMultipart mimeMultipart)
-   {
-      return -1;
    }
 
    /**

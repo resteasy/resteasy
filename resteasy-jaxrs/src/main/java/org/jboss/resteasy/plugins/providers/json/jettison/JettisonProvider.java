@@ -77,7 +77,7 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
       cache.clear();
    }
 
-   public boolean isReadable(Class<?> aClass, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> aClass, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return aClass.isAnnotationPresent(XmlRootElement.class);
    }
@@ -100,12 +100,12 @@ public class JettisonProvider implements MessageBodyReader<Object>, MessageBodyW
       }
    }
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.isAnnotationPresent(XmlRootElement.class);
    }
 
-   public long getSize(Object object)
+   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }

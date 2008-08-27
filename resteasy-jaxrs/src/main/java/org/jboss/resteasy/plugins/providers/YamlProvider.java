@@ -38,7 +38,7 @@ public class YamlProvider extends AbstractEntityProvider<Object>
 
    // MessageBodyReader
 
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return true;
    }
@@ -70,7 +70,7 @@ public class YamlProvider extends AbstractEntityProvider<Object>
 
    // MessageBodyWriter
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
 
       return true;

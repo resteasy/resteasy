@@ -45,7 +45,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
 {
 
    @Override
-   protected boolean isReadWritable(Class<?> type, Type genericType, Annotation[] annotations)
+   protected boolean isReadWritable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
 
       return JAXBElement.class.equals(type);

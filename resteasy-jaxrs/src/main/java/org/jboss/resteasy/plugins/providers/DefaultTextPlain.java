@@ -25,7 +25,7 @@ import java.lang.reflect.Type;
 public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
 
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return TypeConverter.isConvertable(type);
    }
@@ -41,12 +41,12 @@ public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyW
       return TypeConverter.getType(type, value);
    }
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return !type.isArray();
    }
 
-   public long getSize(Object o)
+   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return o.toString().getBytes().length;
    }

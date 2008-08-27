@@ -26,10 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Disables automatic decoding of values bound using either {@link QueryParam},
- * {@link PathParam}, {@link FormParam} or {@link MatrixParam}. This annotation
- * is only effective when combined with one of these annotations, implementations
- * should warn if the annotation is used on a scope where it will have no effect.
+ * Disables automatic decoding of parameter values bound using {@link QueryParam},
+ * {@link PathParam}, {@link FormParam} or {@link MatrixParam}.
  * Using this annotation on a method will disable decoding for all parameters.
  * Using this annotation on a class will disable decoding for all parameters of
  * all methods.
