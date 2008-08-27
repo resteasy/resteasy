@@ -20,7 +20,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -61,6 +65,8 @@ public class HeaderParamsAsPrimitivesTest
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveWrappersDefaultNull.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveWrappersDefaultOverride.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveList.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveSet.class);
+      dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveSortedSet.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveListDefault.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveListDefaultNull.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveListDefaultOverride.class);
@@ -99,6 +105,8 @@ public class HeaderParamsAsPrimitivesTest
       dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveWrappersDefaultNull.class);
       dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveWrappersDefaultOverride.class);
       dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveList.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveSet.class);
+      dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveSortedSet.class);
       dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveListDefault.class);
       dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveListDefaultNull.class);
       dispatcher.getRegistry().removeRegistrations(ResourceHeaderPrimitiveListDefaultOverride.class);
@@ -846,6 +854,34 @@ public class HeaderParamsAsPrimitivesTest
    }
 
 
+   @Path("/set")
+   public static class ResourceHeaderPrimitiveSet implements IResourceHeaderPrimitiveSet
+   {
+      @GET
+      @Produces("application/boolean")
+      public String doGetBoolean(@HeaderParam("header")Set<String> v)
+      {
+         Assert.assertEquals(2, v.size());
+         Assert.assertTrue(v.contains("one"));
+         Assert.assertTrue(v.contains("two"));
+         return "content";
+      }
+   }
+
+   @Path("/sortedset")
+   public static class ResourceHeaderPrimitiveSortedSet implements IResourceHeaderPrimitiveSortedSet
+   {
+      @GET
+      @Produces("application/boolean")
+      public String doGetBoolean(@HeaderParam("header")SortedSet<String> v)
+      {
+         Assert.assertEquals(2, v.size());
+         Assert.assertTrue(v.contains("one"));
+         Assert.assertTrue(v.contains("two"));
+         return "content";
+      }
+   }
+
    @Path("/array")
    public static class ResourceHeaderPrimitiveArray implements IResourceHeaderPrimitiveArray
    {
@@ -1037,6 +1073,55 @@ public class HeaderParamsAsPrimitivesTest
    public void _testListDefault(String type, String value)
    {
       _testDefault("/list/", type, value);
+   }
+
+   @Test
+   public void testSet()
+   {
+      {
+         GetMethod method = new GetMethod("http://localhost:8081/set");
+         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/boolean");
+         method.addRequestHeader("header", "one");
+         method.addRequestHeader("header", "one");
+         method.addRequestHeader("header", "one");
+         method.addRequestHeader("header", "two");
+         try
+         {
+            int status = client.executeMethod(method);
+            Assert.assertEquals(HttpServletResponse.SC_OK, status);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         IResourceHeaderPrimitiveSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSet.class, "http://localhost:8081");
+         HashSet<String> set = new HashSet<String>();
+         set.add("one");
+         set.add("two");
+         setClient.doGetBoolean(set);
+      }
+      {
+         GetMethod method = new GetMethod("http://localhost:8081/sortedset");
+         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/boolean");
+         method.addRequestHeader("header", "one");
+         method.addRequestHeader("header", "one");
+         method.addRequestHeader("header", "one");
+         method.addRequestHeader("header", "two");
+         try
+         {
+            int status = client.executeMethod(method);
+            Assert.assertEquals(HttpServletResponse.SC_OK, status);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         IResourceHeaderPrimitiveSortedSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSortedSet.class, "http://localhost:8081");
+         TreeSet<String> set = new TreeSet<String>();
+         set.add("one");
+         set.add("two");
+         setClient.doGetBoolean(set);
+      }
    }
 
    @Test
@@ -1569,6 +1654,22 @@ public class HeaderParamsAsPrimitivesTest
       @GET
       @Produces("application/double")
       String doGet(@HeaderParam("double") @DefaultValue("0.0")Double v);
+   }
+
+   @Path("/set")
+   public static interface IResourceHeaderPrimitiveSet
+   {
+      @GET
+      @Produces("application/boolean")
+      String doGetBoolean(@HeaderParam("header")Set<String> v);
+   }
+
+   @Path("/sortedset")
+   public static interface IResourceHeaderPrimitiveSortedSet
+   {
+      @GET
+      @Produces("application/boolean")
+      String doGetBoolean(@HeaderParam("header")SortedSet<String> v);
    }
 
    @Path("/list")

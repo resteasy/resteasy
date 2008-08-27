@@ -3,7 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ClientHttpOutput;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -21,9 +21,9 @@ public class HeaderParamMarshaller implements Marshaller
    public void marshall(Object object, UriBuilderImpl uri, ClientHttpOutput output)
    {
       if (object == null) return;
-      if (object instanceof List)
+      if (object instanceof Collection)
       {
-         for (Object obj : (List) object)
+         for (Object obj : (Collection) object)
          {
             output.getOutputHeaders().add(paramName, obj.toString());
          }
