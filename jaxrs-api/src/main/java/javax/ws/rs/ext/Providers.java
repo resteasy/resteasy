@@ -90,20 +90,25 @@ public interface Providers
    <T> ExceptionMapper<T> getExceptionMapper(Class<T> type);
 
    /**
-    * Get a context resolver for a particular type of context for a class of
-    * object. Returns a ContextResolver whose generic type is assignable to
-    * {@code contextType} and that returns a non-null value from
-    * {@code getContext(objectType)}.
+    * Get a context resolver for a particular type of context and media type.
+    * The set of resolvers is first filtered by comparing the supplied value of
+    * {@code mediaType} with the value of each resolver's
+    * {@link javax.ws.rs.Produces}, ensuring the generic type of the context
+    * resolver is assignable to the supplied value of {@code contextType}, and
+    * eliminating those that do not match. If only one resolver matches the
+    * criteria then it is returned. If more than one resolver matches then the
+    * list of matching resolvers is ordered with those with the best
+    * matching values of {@link javax.ws.rs.Produces} (x/y > x&#47;* > *&#47;*)
+    * sorted first. A proxy is returned that delegates calls to
+    * {@link ContextResolver#getContext(java.lang.Class)} to each matching context
+    * resolver in order and returns the first non-null value it obtains or null
+    * if all matching context resolvers return null.
     *
     * @param contextType the class of context desired
-    * @param objectType  the class of object for which the context is desired
     * @param mediaType   the media type of data for which a context is required.
-    *                    The value is compared to the values of {@link javax.ws.rs.Produces}
-    *                    for each candidate and only matching providers will be considered.
-    *                    A null value is equivalent to
-    *                    {@link javax.ws.rs.core.MediaType#WILDCARD_TYPE}.
-    * @return a matching context resolver or null if none is found.
-    * @see ContextResolver#getContext(java.lang.Class)
+    * @return a matching context resolver instance or null if no matching
+    *         context providers are found.
     */
-   <T> ContextResolver<T> getContextResolver(Class<T> contextType, Class<?> objectType, MediaType mediaType);
+   <T> ContextResolver<T> getContextResolver(Class<T> contextType,
+                                             MediaType mediaType);
 }

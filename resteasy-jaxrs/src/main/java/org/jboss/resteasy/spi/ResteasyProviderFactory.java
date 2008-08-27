@@ -106,6 +106,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    private MediaTypeMap<MessageBodyKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<MessageBodyKey<MessageBodyWriter>>();
    private Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
    private Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
+   private Map<Class<?>, MediaTypeMap<ContextResolver>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<ContextResolver>>();
 
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
@@ -325,6 +326,70 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    }
 
+   public void addContextResolver(Class<? extends ContextResolver> resolver)
+   {
+      ContextResolver writer = null;
+      try
+      {
+         writer = resolver.newInstance();
+      }
+      catch (InstantiationException e)
+      {
+         throw new RuntimeException(e);
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new RuntimeException(e);
+      }
+      addContextResolver(writer);
+   }
+
+   public void addContextResolver(ContextResolver provider)
+   {
+      providers.put(provider.getClass(), provider);
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
+      injector.inject(provider);
+      Type[] intfs = provider.getClass().getGenericInterfaces();
+      for (Type type : intfs)
+      {
+         if (type instanceof ParameterizedType)
+         {
+            ParameterizedType pt = (ParameterizedType) type;
+            if (pt.getRawType().equals(ContextResolver.class))
+            {
+               Class<?> aClass = Types.getRawType(pt.getActualTypeArguments()[0]);
+               MediaTypeMap<ContextResolver> resolvers = contextResolvers.get(aClass);
+               if (resolvers == null)
+               {
+                  resolvers = new MediaTypeMap<ContextResolver>();
+                  contextResolvers.put(aClass, resolvers);
+               }
+               Produces produces = provider.getClass().getAnnotation(Produces.class);
+               if (produces != null)
+               {
+                  for (String produce : produces.value())
+                  {
+                     MediaType mime = MediaType.valueOf(produce);
+                     resolvers.add(mime, provider);
+                  }
+               }
+               else
+               {
+                  resolvers.add(new MediaType("*", "*"), provider);
+               }
+            }
+         }
+      }
+   }
+
+   public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
+   {
+      MediaTypeMap<ContextResolver> resolvers = contextResolvers.get(clazz);
+      if (resolvers == null) return null;
+      return resolvers.getPossible(type);
+   }
+
+
    /**
     * Register a @Provider class.  Can be a MessageBodyReader/Writer or ExceptionMapper.
     *
@@ -369,6 +434,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          interceptorRegistry.registerResourceMethodInterceptor(provider);
       }
+      if (ContextResolver.class.isAssignableFrom(provider))
+      {
+         try
+         {
+            addContextResolver(provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate ContextResolver", e);
+         }
+      }
    }
 
    /**
@@ -405,6 +481,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addExceptionMapper((ExceptionMapper) provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+         }
+      }
+      if (provider instanceof ContextResolver)
+      {
+         try
+         {
+            addContextResolver((ContextResolver) provider);
          }
          catch (Exception e)
          {
@@ -448,6 +535,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return null;
    }
 
+
    /**
     * this is a spec method that is unsupported.  it is an optional method anyways.
     *
@@ -467,8 +555,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return interceptorRegistry;
    }
 
-   public <T> ContextResolver<T> getContextResolver(Class<T> contextType, Class<?> objectType, MediaType mediaType)
+   public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)
    {
-      throw new UnsupportedOperationException();
+      final List<ContextResolver> resolvers = getContextResolvers(contextType, mediaType);
+      if (resolvers == null) return null;
+      if (resolvers.size() == 1) return resolvers.get(0);
+      return new ContextResolver<T>()
+      {
+         public T getContext(Class type)
+         {
+            for (ContextResolver resolver : resolvers)
+            {
+               Object rtn = resolver.getContext(type);
+               if (rtn != null) return (T) rtn;
+            }
+            return null;
+         }
+      };
    }
 }
