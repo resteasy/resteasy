@@ -12,9 +12,9 @@
 
 /*
  * Providers.java
- *
+ * 
  * Created on March 5, 2008, 9:00 AM
- *
+ * 
  */
 
 package javax.ws.rs.ext;
@@ -36,12 +36,21 @@ public interface Providers
 {
 
    /**
-    * Get a message body reader that matches a set of criteria.
+    * Get a message body reader that matches a set of criteria. The set of
+    * readers is first filtered by comparing the supplied value of
+    * {@code mediaType} with the value of each reader's
+    * {@link javax.ws.rs.Consumes}, ensuring the supplied value of
+    * {@code type} is assignable to the generic type of the reader, and
+    * eliminating those that do not match.
+    * The list of matching readers is then ordered with those with the best
+    * matching values of {@link javax.ws.rs.Consumes} (x/y > x&#47;* > *&#47;*)
+    * sorted first. Finally, the
+    * {@link MessageBodyReader#isReadable}
+    * method is called on each reader in order using the supplied criteria and
+    * the first reader that returns {@code true} is selected and returned.
     *
-    * @param mediaType   the media type of the data that will be read, this will
-    *                    be compared to the values of {@link javax.ws.rs.Consumes} for
-    *                    each candidate reader and only matching readers will be queried.
-    * @param type        the class of object to be produced.
+    * @param type        the class of object that is to be written.
+    * @param mediaType   the media type of the data that will be read.
     * @param genericType the type of object to be produced. E.g. if the
     *                    message body is to be converted into a method parameter, this will be
     *                    the formal type of the method parameter as returned by
@@ -54,15 +63,24 @@ public interface Providers
     * @return a MessageBodyReader that matches the supplied criteria or null
     *         if none is found.
     */
-   <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation annotations[], MediaType mediaType);
-
+   <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type,
+                                                 Type genericType, Annotation annotations[], MediaType mediaType);
 
    /**
-    * Get a message body writer that matches a set of criteria.
+    * Get a message body writer that matches a set of criteria. The set of
+    * writers is first filtered by comparing the supplied value of
+    * {@code mediaType} with the value of each writer's
+    * {@link javax.ws.rs.Produces}, ensuring the supplied value of
+    * {@code type} is assignable to the generic type of the reader, and
+    * eliminating those that do not match.
+    * The list of matching writers is then ordered with those with the best
+    * matching values of {@link javax.ws.rs.Produces} (x/y > x&#47;* > *&#47;*)
+    * sorted first. Finally, the
+    * {@link MessageBodyWriter#isWriteable}
+    * method is called on each writer in order using the supplied criteria and
+    * the first writer that returns {@code true} is selected and returned.
     *
-    * @param mediaType   the media type of the data that will be written, this will
-    *                    be compared to the values of {@link javax.ws.rs.Produces} for
-    *                    each candidate writer and only matching writers will be queried.
+    * @param mediaType   the media type of the data that will be written.
     * @param type        the class of object that is to be written.
     * @param genericType the type of object to be written. E.g. if the
     *                    message body is to be produced from a field, this will be
@@ -76,7 +94,8 @@ public interface Providers
     * @return a MessageBodyReader that matches the supplied criteria or null
     *         if none is found.
     */
-   <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation annotations[], MediaType mediaType);
+   <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type,
+                                                 Type genericType, Annotation annotations[], MediaType mediaType);
 
    /**
     * Get an exception mapping provider for a particular class of exception.
@@ -87,7 +106,7 @@ public interface Providers
     * @return an {@link ExceptionMapper} for the supplied type or null if none
     *         is found.
     */
-   <T> ExceptionMapper<T> getExceptionMapper(Class<T> type);
+   <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type);
 
    /**
     * Get a context resolver for a particular type of context and media type.

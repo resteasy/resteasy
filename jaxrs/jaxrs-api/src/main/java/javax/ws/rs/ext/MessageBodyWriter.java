@@ -53,20 +53,31 @@ public interface MessageBodyWriter<T>
     *                    provides a way to specify this information at runtime.
     * @param annotations an array of the annotations on the resource
     *                    method that returns the object.
+    * @param mediaType   the media type of the HTTP entity.
     * @return true if the type is supported, otherwise false.
     */
-   boolean isWriteable(Class<?> type, Type genericType, Annotation annotations[]);
+   boolean isWriteable(Class<?> type, Type genericType,
+                       Annotation annotations[], MediaType mediaType);
 
    /**
     * Called before <code>writeTo</code> to ascertain the length in bytes of
     * the serialized form of <code>t</code>. A non-negative return value is
     * used in a HTTP <code>Content-Length</code> header.
     *
-    * @param t the instance to write
+    * @param t           the instance to write
+    * @param type        the class of object that is to be written.
+    * @param genericType the type of object to be written, obtained either
+    *                    by reflection of a resource method return type or by inspection
+    *                    of the returned instance. {@link javax.ws.rs.core.GenericEntity}
+    *                    provides a way to specify this information at runtime.
+    * @param annotations an array of the annotations on the resource
+    *                    method that returns the object.
+    * @param mediaType   the media type of the HTTP entity.
     * @return length in bytes or -1 if the length cannot be determined in
     *         advance
     */
-   long getSize(T t);
+   long getSize(T t, Class<?> type, Type genericType, Annotation annotations[],
+                MediaType mediaType);
 
    /**
     * Write a type to an HTTP response. The response header map is mutable

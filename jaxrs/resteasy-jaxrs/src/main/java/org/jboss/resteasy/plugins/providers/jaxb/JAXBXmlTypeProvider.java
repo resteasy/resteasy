@@ -82,7 +82,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     *
     */
    @Override
-   protected boolean isReadWritable(Class<?> type, Type genericType, Annotation[] annotations)
+   protected boolean isReadWritable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return (!type.isAnnotationPresent(XmlRootElement.class)
               && type.isAnnotationPresent(XmlType.class));

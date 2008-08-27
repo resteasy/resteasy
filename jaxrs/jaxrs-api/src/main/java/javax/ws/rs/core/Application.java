@@ -13,7 +13,6 @@
 package javax.ws.rs.core;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -24,8 +23,6 @@ import java.util.Set;
 public abstract class Application
 {
    private static final Set<Object> emptySet = Collections.emptySet();
-   private static final Map<String, MediaType> emptyMediaMap = Collections.emptyMap();
-   private static final Map<String, String> emptyLanguageMap = Collections.emptyMap();
 
    /**
     * Get a set of root resource and provider classes. The default lifecycle
@@ -35,60 +32,33 @@ public abstract class Application
     * <p>Implementations should warn about and ignore classes that do not
     * conform to the requirements of root resource or provider classes.
     * Implementations should warn about and ignore classes for which
-    * {@link #getSingletons()} returns an instance.</p>
+    * {@link #getSingletons()} returns an instance. Implementations MUST
+    * NOT modify the returned set.</p>
     *
-    * @return a set of root resource and provider classes.
+    * @return a set of root resource and provider classes. Returning null
+    *         is equivalent to returning an empty set.
     */
    public abstract Set<Class<?>> getClasses();
 
    /**
     * Get a set of root resource and provider instances. Fields and properties
     * of returned instances are injected with their declared dependencies
-    * (see {@link Context}) prior to use.
+    * (see {@link Context}) by the runtime prior to use.
     * <p/>
     * <p>Implementations should warn about and ignore classes that do not
     * conform to the requirements of root resource or provider classes.
     * Implementations should flag an error if the returned set includes
-    * more than one instance of the same class.</p>
+    * more than one instance of the same class. Implementations MUST
+    * NOT modify the returned set.</p>
     * <p/>
     * <p>The default implementation returns an empty set.</p>
     *
-    * @return a set of root resource and provider instances.
+    * @return a set of root resource and provider instances. Returning null
+    *         is equivalent to returning an empty set.
     */
    public Set<Object> getSingletons()
    {
       return emptySet;
    }
 
-   /**
-    * Get a map of file extension to media type. This is used to drive
-    * URI-based content negotiation such that, e.g.:
-    * <pre>GET /resource.atom</pre>
-    * <p>is equivalent to:</p>
-    * <pre>GET /resource
-    * Accept: application/atom+xml</pre>
-    * <p>The default implementation returns an empty map.</p>
-    *
-    * @return a map of file extension to media type
-    */
-   public Map<String, MediaType> getMediaTypeMappings()
-   {
-      return emptyMediaMap;
-   }
-
-   /**
-    * Get a map of file extension to language. This is used to drive
-    * URI-based content negotiation such that, e.g.:
-    * <pre>GET /resource.english</pre>
-    * <p>is equivalent to:</p>
-    * <pre>GET /resource
-    * Accept-Language: en</pre>
-    * <p>The default implementation returns an empty map.</p>
-    *
-    * @return a map of file extension to language
-    */
-   public Map<String, String> getLanguageMappings()
-   {
-      return emptyLanguageMap;
-   }
 }

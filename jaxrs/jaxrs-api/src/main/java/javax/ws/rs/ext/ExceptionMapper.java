@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
  * @see Provider
  * @see javax.ws.rs.core.Response
  */
-public interface ExceptionMapper<E>
+public interface ExceptionMapper<E extends Throwable>
 {
 
    /**

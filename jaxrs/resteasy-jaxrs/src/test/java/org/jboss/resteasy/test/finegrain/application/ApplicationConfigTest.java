@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -48,12 +46,12 @@ public class ApplicationConfigTest
    @Produces("text/quoted")
    public static class QuotedTextWriter implements MessageBodyWriter<String>
    {
-      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          return type.equals(String.class);
       }
 
-      public long getSize(String s)
+      public long getSize(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          return -1;
       }
@@ -68,15 +66,11 @@ public class ApplicationConfigTest
    public static class MyApplicationConfig extends Application
    {
       private Set<Class<?>> classes = new HashSet<Class<?>>();
-      private Map<String, MediaType> mediaTypeMappings = new HashMap<String, MediaType>();
-      private Map<String, String> languageMappings = new HashMap<String, String>();
 
       public MyApplicationConfig()
       {
          classes.add(MyResource.class);
          classes.add(QuotedTextWriter.class);
-         mediaTypeMappings.put("quoted", MediaType.valueOf("text/quoted"));
-         languageMappings.put("en", "en_US");
       }
 
       @Override
@@ -85,17 +79,6 @@ public class ApplicationConfigTest
          return classes;
       }
 
-      @Override
-      public Map<String, MediaType> getMediaTypeMappings()
-      {
-         return mediaTypeMappings;
-      }
-
-      @Override
-      public Map<String, String> getLanguageMappings()
-      {
-         return languageMappings;
-      }
    }
 
    @BeforeClass
@@ -134,6 +117,6 @@ public class ApplicationConfigTest
    public void testIt()
    {
       HttpClient client = new HttpClient();
-      _test(client, "http://localhost:8081/my.quoted.en", "\"hello\"");
+      _test(client, "http://localhost:8081/my", "\"hello\"");
    }
 }

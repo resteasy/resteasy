@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
  * to a resource method parameter. Values are URL decoded unless this is
  * disabled using the {@link Encoded} annotation. A default value can be
  * specified using the {@link DefaultValue} annotation.
- * If the request entity body is absent or is of any media type other than
- * application/x-www-form-urlencoded, the default value is used.
+ * If the request entity body is absent or is an unsupported media type, the
+ * default value is used.
  * <p/>
  * The type <code>T</code> of the annotated parameter must either:
  * <ol>
@@ -45,21 +45,25 @@ import java.lang.annotation.Target;
  * <p/>
  * <p>If the type is not one of those listed in 4 above then the first value
  * (lexically) of the parameter is used.</p>
+ * <p/>
+ * <p>Note that, whilst the annotation target permits use on fields and methods,
+ * this annotation is only required to be supported on resource method
+ * parameters.</p>
  *
  * @see DefaultValue
  * @see Encoded
  */
-@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FormParam
 {
    /**
     * Defines the name of the form parameter whose value will be used
-    * to initialize the value of the annotated method argument.
-    * <p/>
-    * <p>The supplied value is automatically percent encoded. Note that percent
-    * encoded values are allowed in the value, an implementation will recognize
-    * such values and will not double encode the '%' character.</p>
+    * to initialize the value of the annotated method argument. The name is
+    * specified in decoded form, any percent encoded literals within the value
+    * will not be decoded and will instead be treated as literal text. E.g. if
+    * the parameter name is "a b" then the value of the annotation is "a b",
+    * <i>not</i> "a+b" or "a%20b".
     */
    String value();
 }

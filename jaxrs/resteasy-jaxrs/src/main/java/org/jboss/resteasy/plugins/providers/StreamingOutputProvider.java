@@ -17,12 +17,12 @@ import java.lang.reflect.Type;
 @Produces("*/*")
 public class StreamingOutputProvider implements MessageBodyWriter<StreamingOutput>
 {
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return StreamingOutput.class.isAssignableFrom(type);
    }
 
-   public long getSize(StreamingOutput streamingOutput)
+   public long getSize(StreamingOutput streamingOutput, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }

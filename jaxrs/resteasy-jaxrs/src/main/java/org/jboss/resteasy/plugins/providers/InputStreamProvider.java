@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 @Consumes("*/*")
 public class InputStreamProvider implements MessageBodyReader<InputStream>, MessageBodyWriter<InputStream>
 {
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.equals(InputStream.class);
    }
@@ -32,12 +32,12 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
       return entityStream;
    }
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.equals(InputStream.class);
    }
 
-   public long getSize(InputStream inputStream)
+   public long getSize(InputStream inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }

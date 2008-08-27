@@ -43,7 +43,7 @@ public class BodyRequestEntity implements RequestEntity
 
    public long getContentLength()
    {
-      return marshaller.getMessageBodyWriter().getSize(object);
+      return marshaller.getMessageBodyWriter().getSize(object, object.getClass(), genericType, annotations, marshaller.getMediaType());
    }
 
    public String getContentType()

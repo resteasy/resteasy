@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 @Consumes("*/*")
 public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return String.class.equals(type);
    }
@@ -38,14 +38,14 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
    }
 
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return String.class.equals(type);
    }
 
-   public long getSize(Object o)
+   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return o.toString().getBytes().length;
+      return -1;
    }
 
    public void writeTo(Object o,

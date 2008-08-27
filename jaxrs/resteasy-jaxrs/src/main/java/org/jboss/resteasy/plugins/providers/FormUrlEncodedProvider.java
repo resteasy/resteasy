@@ -34,7 +34,7 @@ import java.util.Map;
 @Consumes("application/x-www-form-urlencoded")
 public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<String, String>>, MessageBodyWriter<MultivaluedMap<String, String>>
 {
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
       if (genericType == null) return true;
@@ -89,7 +89,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
       return formData;
    }
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
       if (genericType == null) return true;
@@ -100,7 +100,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
       return params.getActualTypeArguments()[0].equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
    }
 
-   public long getSize(MultivaluedMap<String, String> inputStream)
+   public long getSize(MultivaluedMap<String, String> stringStringMultivaluedMap, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }

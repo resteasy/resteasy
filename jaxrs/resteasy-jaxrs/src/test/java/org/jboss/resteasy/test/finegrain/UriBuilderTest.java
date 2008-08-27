@@ -256,7 +256,7 @@ public class UriBuilderTest
       m.put("bar", "y");
       m.put("baz", "z");
       bu = UriBuilder.fromUri("http://localhost:8080/a/b/c").
-              path("/{foo}/{bar}/{baz}/{foo}").buildFromMap(m, false);
+              path("/{foo}/{bar}/{baz}/{foo}").buildFromMap(m);
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c/x/y/z/x"), bu);
    }
 

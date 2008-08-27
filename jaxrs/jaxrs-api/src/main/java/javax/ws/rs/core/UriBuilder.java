@@ -280,7 +280,7 @@ public abstract class UriBuilder
     * @param method a method whose {@link javax.ws.rs.Path} value will be
     *               used to obtain the path to append to the existing path
     * @return the updated UriBuilder
-    * @throws IllegalArgumentException if any element of methods is null or is
+    * @throws IllegalArgumentException if method is null or is
     *                                  not annotated with a {@link javax.ws.rs.Path}
     */
    public abstract UriBuilder path(Method method) throws IllegalArgumentException;
@@ -329,7 +329,7 @@ public abstract class UriBuilder
     *               to a {@code String} using its {@code toString()} method. Stringified
     *               values may contain URI template parameters.
     * @return the updated UriBuilder
-    * @throws IllegalArgumentException if name or value is null
+    * @throws IllegalArgumentException if name or values is null
     * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
     */
    public abstract UriBuilder matrixParam(String name, Object... values) throws IllegalArgumentException;
@@ -372,7 +372,7 @@ public abstract class UriBuilder
     *               to a {@code String} using its {@code toString()} method. Stringified
     *               values may contain URI template parameters.
     * @return the updated UriBuilder
-    * @throws IllegalArgumentException if name or value is null
+    * @throws IllegalArgumentException if name or values is null
     */
    public abstract UriBuilder queryParam(String name, Object... values) throws IllegalArgumentException;
 
@@ -403,22 +403,39 @@ public abstract class UriBuilder
     * Build a URI, any URI template parameters will be replaced by the value in
     * the supplied map. Values are converted to <code>String</code> using
     * their <code>toString</code> method and are then encoded to match the
-    * rules of the URI component to which they pertain. The state of the
-    * builder is unaffected; this method may be called multiple times on the
-    * same builder instance.
+    * rules of the URI component to which they pertain.  All '%' characters
+    * in the stringified values will be encoded.
+    * The state of the builder is unaffected; this method may be called
+    * multiple times on the same builder instance.
     *
-    * @param values    a map of URI template parameter names and values
-    * @param isEncoded specifies if the supplied values contain percent
-    *                  encoded characters. If false then all '%' characters will be encoded, if
-    *                  true then only % characters that are not followed by two hexadecimal
-    *                  numbers will be encoded.
+    * @param values a map of URI template parameter names and values
     * @return the URI built from the UriBuilder
     * @throws IllegalArgumentException if there are any URI template parameters
     *                                  without a supplied value, or if a template parameter value is null.
     * @throws UriBuilderException      if a URI cannot be constructed based on the
     *                                  current state of the builder.
     */
-   public abstract URI buildFromMap(Map<String, ? extends Object> values, boolean isEncoded)
+   public abstract URI buildFromMap(Map<String, ? extends Object> values)
+           throws IllegalArgumentException, UriBuilderException;
+
+   /**
+    * Build a URI, any URI template parameters will be replaced by the value in
+    * the supplied map. Values are converted to <code>String</code> using
+    * their <code>toString</code> method and are then encoded to match the
+    * rules of the URI component to which they pertain.  All % characters in
+    * the stringified values that are not followed by two hexadecimal numbers
+    * will be encoded.
+    * The state of the builder is unaffected; this method may be called
+    * multiple times on the same builder instance.
+    *
+    * @param values a map of URI template parameter names and values
+    * @return the URI built from the UriBuilder
+    * @throws IllegalArgumentException if there are any URI template parameters
+    *                                  without a supplied value, or if a template parameter value is null.
+    * @throws UriBuilderException      if a URI cannot be constructed based on the
+    *                                  current state of the builder.
+    */
+   public abstract URI buildFromEncodedMap(Map<String, ? extends Object> values)
            throws IllegalArgumentException, UriBuilderException;
 
    /**

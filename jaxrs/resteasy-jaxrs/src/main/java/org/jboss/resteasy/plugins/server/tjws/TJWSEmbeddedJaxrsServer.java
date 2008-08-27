@@ -97,8 +97,6 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
 
    public void addApplicationConfig(Application config)
    {
-      getDispatcher().setLanguageMappings(config.getLanguageMappings());
-      getDispatcher().setMediaTypeMappings(config.getMediaTypeMappings());
       if (config.getClasses() != null)
       {
          for (Class clazz : config.getClasses())

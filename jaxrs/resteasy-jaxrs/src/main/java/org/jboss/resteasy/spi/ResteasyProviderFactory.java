@@ -280,7 +280,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (mediaType.isWildcardType()) Collections.sort(readers);
       for (MessageBodyKey<MessageBodyReader> reader : readers)
       {
-         if (reader.obj.isReadable(type, genericType, annotations))
+         if (reader.obj.isReadable(type, genericType, annotations, mediaType))
          {
             return (MessageBodyReader<T>) reader.obj;
          }
@@ -513,7 +513,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return (T) providers.get(providerClass);
    }
 
-   public <T> ExceptionMapper<T> getExceptionMapper(Class<T> type)
+   public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
       return exceptionMappers.get(type);
    }
@@ -527,7 +527,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       for (MessageBodyKey<MessageBodyWriter> writer : writers)
       {
          //System.out.println("matching: " + writer.obj.getClass());
-         if (writer.obj.isWriteable(type, genericType, annotations))
+         if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
          {
             return (MessageBodyWriter<T>) writer.obj;
          }

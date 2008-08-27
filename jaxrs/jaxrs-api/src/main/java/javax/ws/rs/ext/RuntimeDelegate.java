@@ -23,6 +23,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
+import java.lang.reflect.ReflectPermission;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -43,6 +44,8 @@ public abstract class RuntimeDelegate
 
    private static AtomicReference<RuntimeDelegate> rdr =
            new AtomicReference<RuntimeDelegate>();
+
+   private static ReflectPermission rp = new ReflectPermission("suppressAccessChecks");
 
    protected RuntimeDelegate()
    {
@@ -127,15 +130,21 @@ public abstract class RuntimeDelegate
     * be sought as described in {@link #getInstance}.
     *
     * @param rd the runtime delegate instance
+    * @throws SecurityException if there is a security manager and the permission
+    *                           ReflectPermission("suppressAccessChecks") has not been granted.
     */
-   public static void setInstance(RuntimeDelegate rd)
+   public static void setInstance(RuntimeDelegate rd) throws SecurityException
    {
+      SecurityManager security = System.getSecurityManager();
+      if (security != null)
+      {
+         security.checkPermission(rp);
+      }
       rdr.set(rd);
    }
 
    /**
-    * Create a new instance of a {@link javax.ws.rs.core.UriBuilder} with
-    * automatic encoding enabled.
+    * Create a new instance of a {@link javax.ws.rs.core.UriBuilder}.
     *
     * @return new UriBuilder instance
     * @see javax.ws.rs.core.UriBuilder
@@ -167,8 +176,8 @@ public abstract class RuntimeDelegate
     * @param endpointType the type of endpoint instance to be created.
     * @return a configured instance of the requested type.
     * @throws java.lang.IllegalArgumentException
-    *          if the requested endpoint
-    *          type is not supported.
+    *          if application is null or the
+    *          requested endpoint type is not supported.
     * @throws java.lang.UnsupportedOperationException
     *          if the implementation
     *          supports no endpoint types.
@@ -179,10 +188,14 @@ public abstract class RuntimeDelegate
    /**
     * Obtain an instance of a HeaderDelegate for the supplied class. An
     * implementation is required to support the following values for type:
-    * Cookie, CacheControl, EntityTag, NewCookie, MediaType, Date.
+    * {@link javax.ws.rs.core.Cookie}, {@link javax.ws.rs.core.CacheControl},
+    * {@link javax.ws.rs.core.EntityTag}, {@link javax.ws.rs.core.NewCookie},
+    * {@link javax.ws.rs.core.MediaType} and {@code java.util.Date}.
     *
     * @param type the class of the header
     * @return an instance of HeaderDelegate for the supplied type
+    * @throws java.lang.IllegalArgumentException
+    *          if type is null
     */
    public abstract <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type);
 

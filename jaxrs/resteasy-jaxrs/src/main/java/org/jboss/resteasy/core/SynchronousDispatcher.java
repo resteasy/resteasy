@@ -408,7 +408,7 @@ public class SynchronousDispatcher implements Dispatcher
          }
          //System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
          //System.out.println("Response content type: " + responseContentType);
-         long size = writer.getSize(entity);
+         long size = writer.getSize(entity, type, genericType, annotations, responseContentType);
          //System.out.println("Writer: " + writer.getClass().getName());
          //System.out.println("JAX-RS Content Size: " + size);
          response.setStatus(jaxrsResponse.getStatus());

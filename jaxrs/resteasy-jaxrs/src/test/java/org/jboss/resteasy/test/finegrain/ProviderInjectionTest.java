@@ -40,7 +40,7 @@ public class ProviderInjectionTest
       @Context
       public MessageBodyWorkers workers;
 
-      public boolean isReadable(Class type, Type genericType, Annotation[] annotations)
+      public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          return false;
       }

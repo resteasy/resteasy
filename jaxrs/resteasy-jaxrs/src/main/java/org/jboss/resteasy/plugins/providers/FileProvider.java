@@ -38,7 +38,7 @@ public class FileProvider implements MessageBodyReader<Object>,
    // defined at runtime
 
    public boolean isReadable(Class<?> type, Type genericType,
-                             Annotation[] annotations)
+                             Annotation[] annotations, MediaType mediaType)
    {
       return File.class == type;
    }
@@ -87,12 +87,12 @@ public class FileProvider implements MessageBodyReader<Object>,
    }
 
    public boolean isWriteable(Class<?> type, Type genericType,
-                              Annotation[] annotations)
+                              Annotation[] annotations, MediaType mediaType)
    {
       return File.class.isAssignableFrom(type); // catch subtypes
    }
 
-   public long getSize(Object o)
+   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (o instanceof File)
       {

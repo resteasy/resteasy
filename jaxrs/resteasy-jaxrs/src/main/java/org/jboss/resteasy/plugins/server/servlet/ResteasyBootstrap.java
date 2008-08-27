@@ -156,18 +156,6 @@ public class ResteasyBootstrap implements ServletContextListener
             //System.out.println("application config: " + applicationConfig.trim());
             Class configClass = Thread.currentThread().getContextClassLoader().loadClass(applicationConfig.trim());
             Application config = (Application) configClass.newInstance();
-            if (config.getLanguageMappings() != null)
-            {
-               if (dispatcher.getLanguageMappings() != null)
-                  dispatcher.getLanguageMappings().putAll(config.getLanguageMappings());
-               else dispatcher.setLanguageMappings(config.getLanguageMappings());
-            }
-            if (config.getMediaTypeMappings() != null)
-            {
-               if (dispatcher.getMediaTypeMappings() != null)
-                  dispatcher.getMediaTypeMappings().putAll(config.getMediaTypeMappings());
-               else dispatcher.setMediaTypeMappings(config.getMediaTypeMappings());
-            }
             if (config.getClasses() != null)
             {
                for (Class clazz : config.getClasses())
