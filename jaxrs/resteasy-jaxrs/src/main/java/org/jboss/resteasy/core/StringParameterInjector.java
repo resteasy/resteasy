@@ -12,7 +12,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,7 +32,8 @@ public class StringParameterInjector
    protected String defaultValue;
    protected String paramName;
    protected String paramType;
-   protected boolean isList;
+   protected boolean isCollection;
+   protected Class<? extends Collection> collectionType;
    protected AccessibleObject target;
 
    public StringParameterInjector()
@@ -52,6 +58,21 @@ public class StringParameterInjector
       if (type.isArray()) baseType = type.getComponentType();
       if (List.class.isAssignableFrom(type))
       {
+         isCollection = true;
+         collectionType = ArrayList.class;
+      }
+      else if (SortedSet.class.isAssignableFrom(type))
+      {
+         isCollection = true;
+         collectionType = TreeSet.class;
+      }
+      else if (Set.class.isAssignableFrom(type))
+      {
+         isCollection = true;
+         collectionType = HashSet.class;
+      }
+      if (isCollection)
+      {
          if (genericType instanceof ParameterizedType)
          {
             ParameterizedType zType = (ParameterizedType) genericType;
@@ -61,9 +82,7 @@ public class StringParameterInjector
          {
             baseType = String.class;
          }
-         isList = true;
       }
-
       if (!baseType.isPrimitive())
       {
          try
@@ -96,7 +115,7 @@ public class StringParameterInjector
 
    public Object extractValues(List<String> values)
    {
-      if (values == null && (type.isArray() || isList) && defaultValue != null)
+      if (values == null && (type.isArray() || isCollection) && defaultValue != null)
       {
          values = new ArrayList<String>(1);
          values.add(defaultValue);
@@ -108,15 +127,23 @@ public class StringParameterInjector
          for (int i = 0; i < values.size(); i++) Array.set(vals, i, extractValue(values.get(i)));
          return vals;
       }
-      else if (isList)
+      else if (isCollection)
       {
          if (values == null) return null;
-         ArrayList list = new ArrayList();
+         Collection collection = null;
+         try
+         {
+            collection = collectionType.newInstance();
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
          for (String str : values)
          {
-            list.add(extractValue(str));
+            collection.add(extractValue(str));
          }
-         return list;
+         return collection;
       }
       else
       {

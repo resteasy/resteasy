@@ -109,8 +109,9 @@ public class MethodInjectorImpl implements MethodInjector
                msg += " null";
                continue;
             }
-            msg += " " + arg;
+            msg += " " + arg.getClass().getName() + " " + arg;
          }
+         msg += " )";
          throw new LoggableFailure(msg, e, HttpResponseCodes.SC_BAD_REQUEST);
       }
    }
