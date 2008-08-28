@@ -6,11 +6,8 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.util.TypeConverter;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -24,9 +21,11 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
-
-import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.util.TypeConverter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * A AbstractJAXBProvider.
@@ -44,52 +43,6 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
     */
    public static final String FORMAT_XML_HEADER = "X-Xml-Formatted";
 
-
-   /**
-    * FIXME Comment this
-    *
-    * @param type
-    * @param genericType
-    * @param annotations
-    * @param mediaType
-    * @param httpHeaders
-    * @return
-    */
-   protected Unmarshaller getUnmarshaller(Class<T> type,
-                                          Type genericType,
-                                          Annotation[] annotations,
-                                          MediaType mediaType,
-                                          MultivaluedMap<String, String> httpHeaders)
-   {
-      try
-      {
-         JAXBContext jaxb = findJAXBContext(type);
-         Unmarshaller unmarshaller = jaxb.createUnmarshaller();
-         return unmarshaller;
-      }
-      catch (JAXBException e)
-      {
-         Response response = Response.serverError().build();
-         throw new WebApplicationException(e, response);
-      }
-   }
-
-   /**
-    * FIXME Comment this
-    *
-    * @param type
-    * @param entityStream
-    * @return
-    * @throws JAXBException
-    */
-   protected JAXBElement<?> unmarshall(Class<?> type, InputStream entityStream)
-           throws JAXBException
-   {
-      JAXBContext jaxb = findJAXBContext(type);
-      Unmarshaller unmarshaller = jaxb.createUnmarshaller();
-      JAXBElement<?> e = unmarshaller.unmarshal(new StreamSource(entityStream), type);
-      return e;
-   }
 
    protected JAXBContext findJAXBContext(Class<?> type)
            throws JAXBException
@@ -225,10 +178,10 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       return null;
    }
-   
+
    /**
     * FIXME Comment this
-    * 
+    *
     * @param entityStream
     * @return
     */
@@ -239,7 +192,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param out
     * @return
     */
