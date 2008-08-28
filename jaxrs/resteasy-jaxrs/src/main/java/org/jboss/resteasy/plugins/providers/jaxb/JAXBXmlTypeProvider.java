@@ -43,15 +43,15 @@ import java.lang.reflect.Type;
  * <code>
  * public JAXBElement<Contact> createContact(Contact value);
  * </code>
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Provider
 @Produces(
-{"text/xml", "application/xml"})
+        {"text/xml", "application/xml"})
 @Consumes(
-{"text/xml", "application/xml"})
+        {"text/xml", "application/xml"})
 public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 {
 
@@ -89,7 +89,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * Attempts to locate {@link XmlRegistry} for the XML type. Usually, a class named ObjectFactory is located
     * in the same package as the type we're trying to marshall. This method simply locates this class and
     * instantiates it if found.
-    * 
+    *
     * @param t
     * @param type
     * @return
@@ -100,7 +100,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       {
          StringBuilder b = new StringBuilder(type.getPackage().getName());
          b.append(OBJECT_FACTORY_NAME);
-         Class<?> factoryClass = Class.forName(b.toString());
+         Class<?> factoryClass = Thread.currentThread().getContextClassLoader().loadClass(b.toString());
          if (factoryClass.isAnnotationPresent(XmlRegistry.class))
          {
             Object factory = factoryClass.newInstance();
@@ -129,7 +129,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    /**
     * If this object is managed by an XmlRegistry, this method will invoke the registry and wrap the object in
     * a JAXBElement so that it can be marshalled.
-    * 
+    *
     * @param t
     * @param type
     * @return
@@ -144,16 +144,16 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          {
             Method current = method[i];
             if (current.getParameterTypes().length == 1 && current.getParameterTypes()[0].equals(type)
-                  && current.getName().startsWith("create"))
+                    && current.getName().startsWith("create"))
             {
                Object result = current.invoke(factory, new Object[]
-               {t});
+                       {t});
                return JAXBElement.class.cast(result);
             }
             else
             {
                throw new LoggableFailure(String.format("The method create%s() "
-                     + "was not found in the object Factory!", type));
+                       + "was not found in the object Factory!", type));
             }
          }
       }
