@@ -1,17 +1,8 @@
 package org.jboss.resteasy.test.xml;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.apache.commons.httpclient.HttpClient;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.json.jettison.BadgerContext;
 import org.jboss.resteasy.plugins.providers.json.jettison.JettisonMappedContext;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
@@ -20,6 +11,14 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Simple smoke test

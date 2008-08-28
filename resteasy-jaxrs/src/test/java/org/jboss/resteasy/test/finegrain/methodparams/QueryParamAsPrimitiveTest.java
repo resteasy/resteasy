@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.finegrain.methodparams;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;

@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.finegrain.client;
 
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
-import org.jboss.resteasy.spi.ClientResponse;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.smoke.SimpleResource;
 import org.jboss.resteasy.util.HttpResponseCodes;

@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.LoggableFailure;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public class MediaTypeHelper
 {
-   public static MediaType getConsumes(Class declaring, Method method)
+   public static MediaType getConsumes(Class declaring, AccessibleObject method)
    {
       Consumes consume = method.getAnnotation(Consumes.class);
       if (consume == null)

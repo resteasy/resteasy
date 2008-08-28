@@ -1,4 +1,4 @@
-package org.jboss.resteasy.spi;
+package org.jboss.resteasy.client;
 
 import javax.ws.rs.core.MultivaluedMap;
 

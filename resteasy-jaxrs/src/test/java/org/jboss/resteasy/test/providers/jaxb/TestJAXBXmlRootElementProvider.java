@@ -6,10 +6,7 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
-import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -19,10 +16,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 /**
- * 
  * A TestJAXBXmlRootElementProvider.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -36,7 +35,7 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
    private static final String XML_PARENT = "XML Parent";
 
    private static final Logger logger = LoggerFactory
-         .getLogger(TestJAXBXmlRootElementProvider.class);
+           .getLogger(TestJAXBXmlRootElementProvider.class);
 
    private JAXBXmlRootElementClient client;
 
@@ -52,14 +51,13 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       client = ProxyFactory.create(JAXBXmlRootElementClient.class, HTTP_LOCALHOST_8081_JAXB);
       fastClient = ProxyFactory.create(JAXBXmlRootElementFastinfoSetClient.class,
-            HTTP_LOCALHOST_8081_JAXB);
+              HTTP_LOCALHOST_8081_JAXB);
 
       elementClient = ProxyFactory.create(JAXBElementClient.class, HTTP_LOCALHOST_8081_JAXB);
    }
 
    /**
     * FIXME Comment this
-    *
     */
    @Test
    public void testGetParent()
@@ -91,7 +89,6 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
 
    /**
     * FIXME Comment this
-    *
     */
    @Test
    public void testPostParent()
@@ -110,7 +107,7 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
    {
       Parent parent = Parent.createTestParent("TEST ELEMENT");
       JAXBElement<Parent> parentElement = new JAXBElement<Parent>(new QName("parent"),
-                                                                  Parent.class, parent);
+              Parent.class, parent);
       elementClient.postParent(parentElement);
    }
 

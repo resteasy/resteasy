@@ -1,7 +1,6 @@
-package org.jboss.resteasy.plugins.client.httpclient;
+package org.jboss.resteasy.client.core;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.ClientHttpOutput;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.OutputStream;

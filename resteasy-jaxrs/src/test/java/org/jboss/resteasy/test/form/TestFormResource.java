@@ -8,6 +8,8 @@ package org.jboss.resteasy.test.form;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -47,6 +54,14 @@ public class TestFormResource extends BaseResourceTest
    private static final Logger logger = LoggerFactory
            .getLogger(TestFormResource.class);
 
+   @Path("/form/{id}")
+   public interface FormClientProxy
+   {
+      @Produces(MediaType.APPLICATION_FORM_URLENCODED)
+      @POST
+      MultivaluedMap<String, String> post(@Form ClientForm form);
+   }
+
    /**
     * FIXME Comment this
     *
@@ -56,6 +71,28 @@ public class TestFormResource extends BaseResourceTest
    public void setUp() throws Exception
    {
       addPerRequestResource(FormResource.class);
+   }
+
+   @Test
+   public void testProxy() throws Exception
+   {
+      FormClientProxy proxy = ProxyFactory.create(FormClientProxy.class, "http://localhost:8081");
+      ClientForm form = new ClientForm();
+      form.setBooleanValue(true);
+      form.setName("This is My Name");
+      form.setDoubleValue(123.45);
+      form.setLongValue(566780L);
+      form.setIntegerValue(3);
+      form.setShortValue((short) 12345);
+      form.setHeaderParam(42);
+      form.setQueryParam(42);
+      form.setId(42);
+      MultivaluedMap<String, String> rtn = proxy.post(form);
+      Assert.assertEquals(rtn.getFirst(BOOLEAN_VALUE_FIELD), "true");
+      Assert.assertEquals(rtn.getFirst(NAME_FIELD), "This is My Name");
+      Assert.assertEquals(rtn.getFirst(DOUBLE_VALUE_FIELD), "123.45");
+      Assert.assertEquals(rtn.getFirst(LONG_VALUE_FIELD), "566780");
+      Assert.assertEquals(rtn.getFirst(INTEGER_VALUE_FIELD), "3");
    }
 
    @Test
