@@ -1,36 +1,42 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>org.jboss.resteasy</groupId>
 		<artifactId>resteasy-jaxrs-all</artifactId>
 		<version>1.0-beta-6-SNAPSHOT</version>
 	</parent>
-
 	<artifactId>resteasy-jaxrs</artifactId>
 	<name>RESTEasy JAX-RS Implementation</name>
 	<packaging>jar</packaging>
-
 	<dependencies>
-
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>jaxrs-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!-- Scans classes on cp for annotations and builds quick
-			lookup database of them. -->
+		<!--
+			Contains Generated Classes and other test data required for testing.
+		-->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-test-data</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!--
+			Scans classes on cp for annotations and builds quick lookup database
+			of them.
+		-->
 		<dependency>
 			<groupId>org.scannotation</groupId>
 			<artifactId>scannotation</artifactId>
 		</dependency>
-
-		<!-- Needed for javax.annotation.security.* which is part of javaee 6
-			XXX should this dependency be <scope>provided</scope> and
-			only used if detected runtime? -->
+		<!--
+			Needed for javax.annotation.security.* which is part of javaee 6 XXX
+			should this dependency be <scope>provided</scope> and only used if
+			detected runtime?
+		-->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
@@ -47,10 +53,13 @@
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.sun.xml.fastinfoset</groupId>
 			<artifactId>FastInfoset</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.stream</groupId>
+			<artifactId>sjsxp</artifactId>
 		</dependency>
 		
 		<!-- Used for org.jboss.resteasy.plugins.client.httpclient.* -->
@@ -59,17 +68,19 @@
 			<artifactId>commons-httpclient</artifactId>
 			<optional>true</optional>
 		</dependency>
-
-		<!-- Used for optional JSON provider. Provider is activated by
-			adding this jar to classpath -->
+		<!--
+			Used for optional JSON provider. Provider is activated by adding this
+			jar to classpath
+		-->
 		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
 			<artifactId>jettison</artifactId>
 			<optional>true</optional>
 		</dependency>
-
-		<!-- Used by optional MimeMultipartProvider. Drop in jar on classpath
-			to activate provider.-->
+		<!--
+			Used by optional MimeMultipartProvider. Drop in jar on classpath to
+			activate provider.
+		-->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
@@ -113,6 +124,5 @@
 			<artifactId>jyaml</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 	</dependencies>
 </project>

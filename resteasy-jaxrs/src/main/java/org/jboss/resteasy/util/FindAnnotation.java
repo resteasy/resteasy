@@ -1,7 +1,10 @@
 package org.jboss.resteasy.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.HeaderParam;
@@ -14,18 +17,14 @@ import javax.ws.rs.core.Context;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class FindAnnotation
+@SuppressWarnings("unchecked")
+public final class FindAnnotation
 {
-   public static <T> T findAnnotation(Annotation[] searchList, Class<T> annotation)
-   {
-      for (Annotation ann : searchList)
-      {
-         if (ann.annotationType().equals(annotation)) return (T) ann;
-      }
-      return null;
-   }
-
-   private final static Class<? extends Annotation>[] JAXRS_ANNOTATIONS =
+   
+   /**
+    * 
+    */
+   private static final Class<? extends Annotation>[] JAXRS_ANNOTATIONS =
       (Class<? extends Annotation>[]) new Class[] { 
          QueryParam.class,
          HeaderParam.class,
@@ -35,9 +34,34 @@ public class FindAnnotation
          Context.class
    };
    
-   private final static Class[] findJaxRSAnnotations_TYPE = 
-      new Class[]{};
+   private static final Class[] findJaxRSAnnotations_TYPE = new Class[]{};
    
+   
+   private FindAnnotation() 
+   {
+   }
+   
+   /**
+    * FIXME Comment this
+    * 
+    * @param <T>
+    * @param searchList
+    * @param annotation
+    * @return
+    */
+   public static <T> T findAnnotation(Annotation[] searchList, Class<T> annotation)
+   {
+      for (Annotation ann : searchList)
+      {
+         if (ann.annotationType().equals(annotation)) 
+            {
+            return (T) ann;
+            }
+      }
+      return null;
+   }
+
+
    public static Class<? extends Annotation>[] findJaxRSAnnotations(Annotation[] searchList)
    {
   
@@ -53,6 +77,27 @@ public class FindAnnotation
 
       return result.toArray(findJaxRSAnnotations_TYPE);
       
+   }
+   
+   /**
+    * Returns an array of annotations the specified method of 
+    * a resource class.
+    * 
+    * @param method
+    * @return
+    */
+   public static Annotation[] getResourcesAnnotations(Method method)
+   {
+      Map<Class<?>, Annotation> annotations = new HashMap<Class<?>, Annotation>();
+      for (Annotation annotation : method.getDeclaringClass().getAnnotations())
+      {
+         annotations.put(annotation.getClass(), annotation);
+      }
+      for (Annotation annotation : method.getAnnotations())
+      {
+         annotations.put(annotation.getClass(), annotation);
+      }
+      return annotations.values().toArray(new Annotation[annotations.size()]);
    }
    
 }

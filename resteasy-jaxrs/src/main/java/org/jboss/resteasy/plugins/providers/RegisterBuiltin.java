@@ -4,7 +4,7 @@ import org.jboss.resteasy.core.LoggerCategories;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.XmlRootElementFastinfoSetProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.FastinfoSetXmlRootElementProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
@@ -52,14 +52,14 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(xmlType);
       logger.info("Added {}", xmlType.getClass().getSimpleName());
 
-      XmlRootElementFastinfoSetProvider fast = new XmlRootElementFastinfoSetProvider();
+      FastinfoSetXmlRootElementProvider fast = new FastinfoSetXmlRootElementProvider();
       factory.addMessageBodyReader((MessageBodyReader<?>) fast);
       factory.addMessageBodyWriter((MessageBodyWriter<?>) fast);
       logger.info("Added {}", fast.getClass().getSimpleName());
       //      if (isAvailable("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer"))
       //      {
       //         Object provider = 
-      //            instantiate("org.jboss.resteasy.plugins.providers.jaxb.XmlRootElementFastinfoSetProvider");
+      //            instantiate("org.jboss.resteasy.plugins.providers.jaxb.FastinfoSetXmlRootElementProvider");
       //         
       //         factory.addMessageBodyReader((MessageBodyReader<?>) provider);
       //         factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);

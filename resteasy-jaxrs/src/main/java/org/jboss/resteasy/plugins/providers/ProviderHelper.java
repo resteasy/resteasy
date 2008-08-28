@@ -42,7 +42,7 @@ public final class ProviderHelper
     * @return
     * @throws IOException
     */
-   static String readString(InputStream in) throws IOException
+   public static String readString(InputStream in) throws IOException
    {
       char[] buffer = new char[1024];
       StringBuilder builder = new StringBuilder();
@@ -115,7 +115,7 @@ public final class ProviderHelper
     * @param out
     * @throws IOException
     */
-   static void writeTo(final InputStream in, final OutputStream out) throws IOException
+   public static void writeTo(final InputStream in, final OutputStream out) throws IOException
    {
       int read;
       final byte[] buf = new byte[2048];
