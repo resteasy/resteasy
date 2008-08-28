@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.smoke;
 
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;

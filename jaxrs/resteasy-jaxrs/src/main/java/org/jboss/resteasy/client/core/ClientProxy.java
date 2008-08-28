@@ -1,4 +1,4 @@
-package org.jboss.resteasy.core;
+package org.jboss.resteasy.client.core;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

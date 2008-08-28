@@ -1,47 +1,140 @@
-package org.jboss.resteasy.plugins.client.httpclient;
+package org.jboss.resteasy.client.core;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.jboss.resteasy.core.ClientInvoker;
-import org.jboss.resteasy.core.Marshaller;
-import org.jboss.resteasy.core.MessageBodyParameterMarshaller;
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.spi.ClientHttpOutput;
-import org.jboss.resteasy.spi.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.Encoded;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
-import java.util.List;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-abstract public class HttpClientInvoker extends ClientInvoker
+abstract public class ClientInvoker
 {
-   private HttpClient client;
+   protected ResteasyProviderFactory providerFactory;
+   protected Method method;
+   protected Marshaller[] params;
+   protected UriBuilderImpl builder;
+   protected Class declaring;
+   protected MediaType accepts;
+   protected HttpClient client;
 
-   public HttpClientInvoker(HttpClient client, Class<?> declaring, Method method, ResteasyProviderFactory providerFactory)
+   public ClientInvoker(Class<?> declaring, Method method, ResteasyProviderFactory providerFactory, HttpClient client)
    {
-      super(declaring, method, providerFactory);
+      this.declaring = declaring;
+      this.method = method;
+      this.providerFactory = providerFactory;
+      params = new Marshaller[method.getParameterTypes().length];
+      for (int i = 0; i < method.getParameterTypes().length; i++)
+      {
+         Class type = method.getParameterTypes()[i];
+         Annotation[] annotations = method.getParameterAnnotations()[i];
+         Type genericType = method.getGenericParameterTypes()[i];
+         AccessibleObject target = method;
+
+         Marshaller marshaller = createMarshaller(declaring, providerFactory, type, annotations, genericType, target, false);
+
+         params[i] = marshaller;
+      }
+      accepts = MediaTypeHelper.getProduces(declaring, method);
       this.client = client;
    }
 
-   public abstract HttpMethodBase createBaseMethod(String uri);
+   public static Marshaller createMarshaller(Class<?> declaring, ResteasyProviderFactory providerFactory, Class type, Annotation[] annotations, Type genericType, AccessibleObject target, boolean ignoreBody)
+   {
+      Marshaller marshaller = null;
+
+      QueryParam query;
+      HeaderParam header;
+      MatrixParam matrix;
+      PathParam uriParam;
+      CookieParam cookie;
+      FormParam formParam;
+      Form form;
+
+      boolean isEncoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
+
+      if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
+      {
+         marshaller = new QueryParamMarshaller(query.value());
+      }
+      else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
+      {
+         marshaller = new HeaderParamMarshaller(header.value());
+      }
+      else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
+      {
+         marshaller = new CookieParamMarshaller(cookie.value());
+      }
+      else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
+      {
+         marshaller = new PathParamMarshaller(uriParam.value(), isEncoded);
+      }
+      else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
+      {
+         marshaller = new MatrixParamMarshaller(matrix.value());
+      }
+      else if ((formParam = FindAnnotation.findAnnotation(annotations, FormParam.class)) != null)
+      {
+         marshaller = new FormParamMarshaller(formParam.value());
+      }
+      else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
+      {
+         marshaller = new FormMarshaller(type, providerFactory);
+      }
+      else if (type.equals(Cookie.class))
+      {
+         marshaller = new CookieParamMarshaller(null);
+      }
+      else if (!ignoreBody)
+      {
+         MediaType mediaType = MediaTypeHelper.getConsumes(declaring, target);
+         if (mediaType == null)
+         {
+            throw new RuntimeException("You must define a @ConsumeMime type on your client method or interface");
+         }
+         marshaller = new MessageBodyParameterMarshaller(mediaType, type, genericType, annotations, providerFactory);
+      }
+      return marshaller;
+   }
+
+   public void setBaseUri(URI uri)
+   {
+      builder = new UriBuilderImpl();
+      builder.uri(uri);
+      builder.path(declaring);
+      builder.path(method);
+   }
 
    public Object invoke(Object[] args)
    {
@@ -50,17 +143,12 @@ abstract public class HttpClientInvoker extends ClientInvoker
 
       UriBuilderImpl uri = (UriBuilderImpl) builder.clone();
 
-      int i = 0;
-      BodyRequestEntity body = null;
-      for (Marshaller param : params)
+      if (args != null)
       {
-         if (param instanceof MessageBodyParameterMarshaller)
+         for (int i = 0; i < args.length; i++)
          {
-            MessageBodyParameterMarshaller bodyMarshaller = (MessageBodyParameterMarshaller) param;
-            body = new BodyRequestEntity(args[i], method.getGenericParameterTypes()[i], method.getParameterAnnotations()[i], bodyMarshaller, output.getOutputHeaders());
+            params[i].buildUri(args[i], uri);
          }
-         else param.marshall(args[i], uri, output);
-         i++;
       }
 
       String url = null;
@@ -76,21 +164,22 @@ abstract public class HttpClientInvoker extends ClientInvoker
          throw new RuntimeException("Unable to build URL from uri", e);
       }
 
-      for (String key : output.getOutputHeaders().keySet())
-      {
-         List<Object> value = output.getOutputHeaders().get(key);
-         for (Object obj : value)
-         {
-            baseMethod.addRequestHeader(key, obj.toString());
-         }
-      }
-
       if (accepts != null)
       {
          baseMethod.setRequestHeader(HttpHeaderNames.ACCEPT, accepts.toString());
       }
 
-      if (body != null) ((EntityEnclosingMethod) baseMethod).setRequestEntity(body);
+      if (args != null)
+      {
+         for (int i = 0; i < args.length; i++)
+         {
+            params[i].setHeaders(args[i], baseMethod);
+         }
+         for (int i = 0; i < args.length; i++)
+         {
+            params[i].buildRequest(args[i], baseMethod);
+         }
+      }
 
       int status = 0;
       try
@@ -138,6 +227,8 @@ abstract public class HttpClientInvoker extends ClientInvoker
          baseMethod.releaseConnection();
       }
    }
+
+   public abstract HttpMethodBase createBaseMethod(String uri);
 
    protected ClientResponse extractClientResponse(HttpMethodBase baseMethod, int status, Type genericReturnType, Class returnType)
    {
@@ -270,5 +361,4 @@ abstract public class HttpClientInvoker extends ClientInvoker
          };
       }
    }
-
 }

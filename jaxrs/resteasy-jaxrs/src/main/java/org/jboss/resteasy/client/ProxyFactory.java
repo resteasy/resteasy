@@ -1,8 +1,12 @@
-package org.jboss.resteasy.plugins.client.httpclient;
+package org.jboss.resteasy.client;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.core.ClientInvoker;
-import org.jboss.resteasy.core.ClientProxy;
+import org.jboss.resteasy.client.core.ClientInvoker;
+import org.jboss.resteasy.client.core.ClientProxy;
+import org.jboss.resteasy.client.core.DeleteInvoker;
+import org.jboss.resteasy.client.core.GetInvoker;
+import org.jboss.resteasy.client.core.PostInvoker;
+import org.jboss.resteasy.client.core.PutInvoker;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 
