@@ -76,6 +76,7 @@
 		<module>resteasy-jaxrs-war</module>
 		<module>resteasy-client</module>
 		<module>resteasy-common</module>
+		<module>resteasy-test-data</module>
 		<module>distribution</module>
 
 	</modules>
@@ -99,6 +100,13 @@
 				<artifactId>jaxrs-api</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-test-data</artifactId>
+				<version>${project.version}</version>
+				<scope>test</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>org.scannotation</groupId>
@@ -117,7 +125,15 @@
 				<artifactId>jaxb-impl</artifactId>
 				<version>2.1.2</version>
 			</dependency>
-
+			
+		
+			
+			<dependency>
+				<groupId>com.sun.xml.stream</groupId>
+  				<artifactId>sjsxp</artifactId>
+  				<version>1.0.1</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>com.sun.xml.fastinfoset</groupId>
 				<artifactId>FastInfoset</artifactId>
@@ -256,7 +272,18 @@
 			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
 		</repository>
 	</repositories>
-
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven2-repository.dev.java.net</id>
+			<url>http://download.java.net/maven/2</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>maven-repository.dev.java.net</id>
+			<name>Java.net Maven 1 Repository (legacy)</name>
+			<url>http://download.java.net/maven/1</url>
+			<layout>legacy</layout>
+		</pluginRepository>
+	</pluginRepositories>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -278,6 +305,7 @@
 						</execution>
 					</executions>
 				</plugin>
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
@@ -402,6 +430,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 			</plugin>
+			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changes-plugin</artifactId>
@@ -422,6 +451,7 @@
 					<headingDateFormat>dd MMM, yyyy</headingDateFormat>
 				</configuration>
 			</plugin>
+			-->
 		</plugins>
 	</reporting>
 </project>
