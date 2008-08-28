@@ -6,8 +6,11 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.util.TypeConverter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -18,12 +21,12 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+
+import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.util.TypeConverter;
 
 /**
  * A AbstractJAXBProvider.
@@ -221,6 +224,28 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          return mediaType.getParameters().get("charset");
       }
       return null;
+   }
+   
+   /**
+    * FIXME Comment this
+    * 
+    * @param entityStream
+    * @return
+    */
+   protected XMLStreamReader getXMLStreamReader(InputStream entityStream)
+   {
+      return XMLStreamFactory.getXMLStreamReader(entityStream);
+   }
+
+   /**
+    * FIXME Comment this
+    * 
+    * @param out
+    * @return
+    */
+   protected XMLStreamWriter getXMLStreamWriter(OutputStream out)
+   {
+      return XMLStreamFactory.getXMLStreamWriter(out);
    }
 
 }

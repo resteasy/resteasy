@@ -1,0 +1,66 @@
+/*
+ * JBoss, the OpenSource J2EE webOS Distributable under LGPL license. See terms of license at gnu.org.
+ */
+package org.jboss.resteasy.plugins.providers.jaxb;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlNs;
+
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+
+/**
+ * A XmlNamespecePrefixMapper.
+ * 
+ * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
+ * @version $Revision:$
+ */
+public class XmlNamespecePrefixMapper extends NamespacePrefixMapper
+{
+
+   private final Map<String, String> namespaceMap = new HashMap<String, String>();
+
+   /**
+    * Create a new XmlNamespecePrefixMapper.
+    * 
+    * @param namespeces
+    */
+   public XmlNamespecePrefixMapper(final XmlNs... namespaces)
+   {
+      for (XmlNs namespace : namespaces)
+      {
+         namespaceMap.put(namespace.namespaceURI(), namespace.prefix());
+      }
+   }
+   
+   /**
+    * 
+    * Create a new XmlNamespecePrefixMapper.
+    * 
+    * @param namespaces
+    */
+   public XmlNamespecePrefixMapper(final Map<String, String> namespaces)
+   {
+      for (Map.Entry<String, String> namespace : namespaces.entrySet())
+      {
+         namespaceMap.put(namespace.getKey(), namespace.getValue());
+      }
+   }
+
+
+   /**
+    * 
+    */
+   @Override
+   public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix)
+   {
+      String prefix = namespaceMap.get(namespaceUri);
+      if (prefix != null)
+      {
+         return prefix;
+      }
+      return suggestion;
+   }
+
+}

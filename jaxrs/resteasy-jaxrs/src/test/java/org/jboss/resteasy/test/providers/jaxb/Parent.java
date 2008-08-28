@@ -71,7 +71,7 @@ public class Parent
     * 
     * @return the date.
     */
-   public Date getDate()
+   public final Date getDate()
    {
       return date;
    }
@@ -81,7 +81,7 @@ public class Parent
     * 
     * @param date The date to set.
     */
-   public void setDate(Date date)
+   public void setDate(final Date date)
    {
       this.date = date;
    }

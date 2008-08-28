@@ -1,8 +1,5 @@
 /*
- * JBoss, the OpenSource J2EE webOS
- * 
- * Distributable under LGPL license.
- * See terms of license at gnu.org.
+ * JBoss, the OpenSource J2EE webOS Distributable under LGPL license. See terms of license at gnu.org.
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
@@ -16,20 +13,23 @@ import java.lang.reflect.Type;
 
 /**
  * A JAXBXmlRootElementProvider.
- *
+ * 
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Provider
 @Produces(
-        {"text/xml", "application/xml"})
+{"text/xml", "application/xml"})
 @Consumes(
-        {"text/xml", "application/xml"})
+{"text/xml", "application/xml"})
 public class JAXBXmlRootElementProvider extends AbstractJAXBProvider<Object>
 {
 
    @Override
-   protected boolean isReadWritable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   protected boolean isReadWritable(Class<?> type,
+                                    Type genericType,
+                                    Annotation[] annotations,
+                                    MediaType mediaType)
    {
       return type.isAnnotationPresent(XmlRootElement.class);
    }
