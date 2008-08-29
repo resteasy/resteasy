@@ -35,4 +35,19 @@ public class Types
    }
 
 
+   /**
+    * Returns the type argument from a parameterized type
+    *
+    * @param genericType
+    * @return null if there is no type parameter
+    */
+   public static Class<?> getTypeArgument(Type genericType)
+   {
+      if (!(genericType instanceof ParameterizedType)) return null;
+      ParameterizedType parameterizedType = (ParameterizedType) genericType;
+      Class<?> typeArg = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+      return typeArg;
+   }
+
+
 }

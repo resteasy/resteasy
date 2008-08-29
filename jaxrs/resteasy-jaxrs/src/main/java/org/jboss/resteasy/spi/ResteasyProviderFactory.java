@@ -116,18 +116,24 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public static void pushContext(Class<?> type, Object data)
    {
+      Map<Class<?>, Object> map = getContextDataMap();
+      map.put(type, data);
+   }
+
+   private static Map<Class<?>, Object> getContextDataMap()
+   {
       Map<Class<?>, Object> map = contextualData.get();
       if (map == null)
       {
          map = new HashMap<Class<?>, Object>();
          contextualData.set(map);
       }
-      map.put(type, data);
+      return map;
    }
 
    public static <T> T getContextData(Class<T> type)
    {
-      return (T) contextualData.get().get(type);
+      return (T) getContextDataMap().get(type);
    }
 
    public static <T> T popContextData(Class<T> type)

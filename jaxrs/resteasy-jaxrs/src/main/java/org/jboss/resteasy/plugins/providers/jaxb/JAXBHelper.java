@@ -12,8 +12,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 /**
  * A JAXBHelper.
@@ -105,18 +103,5 @@ public final class JAXBHelper
       return null;
    }
 
-
-   /**
-    * Returns the type argument from the generic type.
-    *
-    * @param genericType
-    * @return
-    */
-   static Class<?> getTypeArgument(Type genericType)
-   {
-      ParameterizedType parameterizedType = (ParameterizedType) genericType;
-      Class<?> typeArg = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-      return typeArg;
-   }
 
 }

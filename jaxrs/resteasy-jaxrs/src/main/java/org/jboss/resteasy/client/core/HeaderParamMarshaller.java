@@ -33,7 +33,7 @@ public class HeaderParamMarshaller implements Marshaller
       {
          for (Object obj : (Collection) object)
          {
-            httpMethod.setRequestHeader(paramName, obj.toString());
+            httpMethod.addRequestHeader(paramName, obj.toString());
          }
       }
       else if (object.getClass().isArray())
@@ -43,31 +43,31 @@ public class HeaderParamMarshaller implements Marshaller
             Class componentType = object.getClass().getComponentType();
             if (componentType.equals(boolean.class))
             {
-               for (Boolean bool : (boolean[]) object) httpMethod.setRequestHeader(paramName, bool.toString());
+               for (Boolean bool : (boolean[]) object) httpMethod.addRequestHeader(paramName, bool.toString());
             }
             else if (componentType.equals(byte.class))
             {
-               for (Byte val : (byte[]) object) httpMethod.setRequestHeader(paramName, val.toString());
+               for (Byte val : (byte[]) object) httpMethod.addRequestHeader(paramName, val.toString());
             }
             else if (componentType.equals(short.class))
             {
-               for (Short val : (short[]) object) httpMethod.setRequestHeader(paramName, val.toString());
+               for (Short val : (short[]) object) httpMethod.addRequestHeader(paramName, val.toString());
             }
             else if (componentType.equals(int.class))
             {
-               for (Integer val : (int[]) object) httpMethod.setRequestHeader(paramName, val.toString());
+               for (Integer val : (int[]) object) httpMethod.addRequestHeader(paramName, val.toString());
             }
             else if (componentType.equals(long.class))
             {
-               for (Long val : (long[]) object) httpMethod.setRequestHeader(paramName, val.toString());
+               for (Long val : (long[]) object) httpMethod.addRequestHeader(paramName, val.toString());
             }
             else if (componentType.equals(float.class))
             {
-               for (Float val : (float[]) object) httpMethod.setRequestHeader(paramName, val.toString());
+               for (Float val : (float[]) object) httpMethod.addRequestHeader(paramName, val.toString());
             }
             else if (componentType.equals(double.class))
             {
-               for (Double val : (double[]) object) httpMethod.setRequestHeader(paramName, val.toString());
+               for (Double val : (double[]) object) httpMethod.addRequestHeader(paramName, val.toString());
             }
          }
          else
@@ -75,14 +75,14 @@ public class HeaderParamMarshaller implements Marshaller
             Object[] objs = (Object[]) object;
             for (Object obj : objs)
             {
-               httpMethod.setRequestHeader(paramName, obj.toString());
+               httpMethod.addRequestHeader(paramName, obj.toString());
 
             }
          }
       }
       else
       {
-         httpMethod.setRequestHeader(paramName, object.toString());
+         httpMethod.addRequestHeader(paramName, object.toString());
       }
    }
 }

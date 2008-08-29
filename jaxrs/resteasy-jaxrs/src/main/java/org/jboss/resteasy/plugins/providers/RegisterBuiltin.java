@@ -4,7 +4,6 @@ import org.jboss.resteasy.core.LoggerCategories;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.FastinfoSetXmlRootElementProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
@@ -52,19 +51,6 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(xmlType);
       logger.info("Added {}", xmlType.getClass().getSimpleName());
 
-      FastinfoSetXmlRootElementProvider fast = new FastinfoSetXmlRootElementProvider();
-      factory.addMessageBodyReader((MessageBodyReader<?>) fast);
-      factory.addMessageBodyWriter((MessageBodyWriter<?>) fast);
-      logger.info("Added {}", fast.getClass().getSimpleName());
-      //      if (isAvailable("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer"))
-      //      {
-      //         Object provider = 
-      //            instantiate("org.jboss.resteasy.plugins.providers.jaxb.FastinfoSetXmlRootElementProvider");
-      //         
-      //         factory.addMessageBodyReader((MessageBodyReader<?>) provider);
-      //         factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
-      //      }
-
       StringTextStar stringTextStar = new StringTextStar();
       factory.addMessageBodyReader(stringTextStar);
       factory.addMessageBodyWriter(stringTextStar);
@@ -85,38 +71,23 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(new StreamingOutputProvider());
 
       // optional providers.
+      optionalProvider("javax.imageio.IIOImage", "org.jboss.resteasy.plugins.providers.IIOImageProvider", factory);
+      optionalProvider("org.codehaus.jettison.json.JSONObject", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBElementProvider", factory);
+      optionalProvider("org.codehaus.jettison.json.JSONObject", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonXmlTypeProvider", factory);
+      optionalProvider("org.codehaus.jettison.json.JSONObject", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonXmlRootElementProvider", factory);
+      optionalProvider("javax.mail.internet.MimeMultipart", "org.jboss.resteasy.plugins.providers.MimeMultipartProvider", factory);
+      optionalProvider("org.ho.yaml.Yaml", "org.jboss.resteasy.plugins.providers.YamlProvider", factory);
+      optionalProvider("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetXmlRootElementProvider", factory);
+      optionalProvider("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBElementProvider", factory);
+      optionalProvider("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetXmlTypeProvider", factory);
+   }
 
-      if (isAvailable("javax.imageio.IIOImage"))
+   private static void optionalProvider(String dependency, String providerClass, ResteasyProviderFactory factory)
+   {
+      if (isAvailable(dependency))
       {
-         // javax.imageio is part of standard java, hence we
-         // could really just add it. However anyone relying on this
-         // provider would become jax-rs implementation dependent.
-         logger.info("Adding IIOImageProvider");
-         Object provider = instantiate("org.jboss.resteasy.plugins.providers.IIOImageProvider");
-         factory.addMessageBodyReader((MessageBodyReader<?>) provider);
-         factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
-      }
-
-      if (isAvailable("org.codehaus.jettison.json.JSONObject"))
-      {
-         logger.info("Adding JettisonProvider");
-         Object provider = instantiate("org.jboss.resteasy.plugins.providers.json.jettison.JettisonProvider");
-         factory.addMessageBodyReader((MessageBodyReader<?>) provider);
-         factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
-      }
-
-      if (isAvailable("javax.mail.internet.MimeMultipart"))
-      {
-         logger.info("Adding MimeMultipartProvider");
-         Object provider = instantiate("org.jboss.resteasy.plugins.providers.MimeMultipartProvider");
-         factory.addMessageBodyReader((MessageBodyReader<?>) provider);
-         factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
-      }
-
-      if (isAvailable("org.ho.yaml.Yaml"))
-      {
-         logger.info("Adding YamlProvider");
-         Object provider = instantiate("org.jboss.resteasy.plugins.providers.YamlProvider");
+         logger.info("Adding " + providerClass);
+         Object provider = instantiate(providerClass);
          factory.addMessageBodyReader((MessageBodyReader<?>) provider);
          factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
       }

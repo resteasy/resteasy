@@ -3,39 +3,45 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import org.jboss.resteasy.core.ExceptionAdapter;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * <p>
  * A JAXB Provider which handles parameter and return types of {@link JAXBElement}. This provider will be
  * selected when the resource is declared as:
  * </p>
- * <code> 
+ * <code>
  * &#064;POST<br/>
  * &#064;Consumes("applictaion/xml")<br/>
  * &#064;Produces("applictaion/xml")<br/>
  * public JAXBElement&lt;Contact&gt; getContact(JAXBElement&lt;Contact&gt; value);<br/>
  * </code>
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Provider
 @Produces(
-{"text/xml", "application/xml"})
+        {"text/xml", "application/xml"})
 @Consumes(
-{"text/xml", "application/xml"})
+        {"text/xml", "application/xml"})
 public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
 {
 
@@ -50,7 +56,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
    }
 
    /**
-    * 
+    *
     */
    public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
                                   Type genericType,
@@ -59,8 +65,29 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
                                   MultivaluedMap<String, String> httpHeaders,
                                   InputStream entityStream) throws IOException
    {
-      Class<?> typeArg = JAXBHelper.getTypeArgument(genericType);
-      JAXBElement<?> element = JAXBHelper.unmarshall(typeArg, entityStream, getXMLStreamReader(entityStream));
+      Class<?> typeArg = Object.class;
+      if (genericType != null) typeArg = Types.getTypeArgument(genericType);
+      JAXBContext jaxb = null;
+      try
+      {
+         jaxb = findJAXBContext(typeArg, annotations, mediaType);
+      }
+      catch (JAXBException e)
+      {
+         throw new RuntimeException(e);
+      }
+      JAXBElement<?> result;
+      try
+      {
+         Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+         JAXBElement<?> e = unmarshaller.unmarshal(new StreamSource(entityStream), (Class<?>) typeArg);
+         result = e;
+      }
+      catch (JAXBException e)
+      {
+         throw new ExceptionAdapter(e);
+      }
+      JAXBElement<?> element = result;
       return element;
    }
 
@@ -74,7 +101,8 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
                        OutputStream outputStream) throws IOException
    {
 
-      Class<?> typeArg = JAXBHelper.getTypeArgument(genericType);
+      Class<?> typeArg = Object.class;
+      if (genericType != null) typeArg = Types.getTypeArgument(genericType);
       super.writeTo(t, typeArg, genericType, annotations, mediaType, httpHeaders, outputStream);
    }
 

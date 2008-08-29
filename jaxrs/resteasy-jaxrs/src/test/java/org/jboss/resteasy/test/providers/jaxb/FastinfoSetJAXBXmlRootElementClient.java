@@ -21,7 +21,7 @@ import javax.ws.rs.Produces;
  */
 @Consumes("application/fastinfoset")
 @Produces("application/fastinfoset")
-public interface JAXBXmlRootElementFastinfoSetClient
+public interface FastinfoSetJAXBXmlRootElementClient
 {
 
    @GET

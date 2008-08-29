@@ -6,6 +6,8 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -21,9 +23,9 @@ import javax.ws.rs.Produces;
  */
 @Path("/jaxb")
 @Consumes(
-        {"application/xml", "application/fastinfoset"})
+        {"application/xml", "application/fastinfoset", "application/json"})
 @Produces(
-        {"application/xml", "application/fastinfoset"})
+        {"application/xml", "application/fastinfoset", "application/json"})
 public class JAXBXmlRootElementResource
 {
 
@@ -31,6 +33,16 @@ public class JAXBXmlRootElementResource
    @Path("/{name}")
    public Parent getParent(@PathParam("name")String name)
    {
+      Parent parent = Parent.createTestParent(name);
+      return parent;
+   }
+
+   @GET
+   @Path("/{name}/mapped")
+   @Mapped
+   public Parent getMappedParent(@PathParam("name")String name)
+   {
+      System.out.println("MAPPED!!!!");
       Parent parent = Parent.createTestParent(name);
       return parent;
    }

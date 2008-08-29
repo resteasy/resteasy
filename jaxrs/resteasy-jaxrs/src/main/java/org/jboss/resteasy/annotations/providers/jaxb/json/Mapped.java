@@ -1,7 +1,7 @@
 /*
  * JBoss, the OpenSource J2EE webOS Distributable under LGPL license. See terms of license at gnu.org.
  */
-package org.jboss.resteasy.annotations;
+package org.jboss.resteasy.annotations.providers.jaxb.json;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,37 +11,36 @@ import java.lang.annotation.Target;
 
 /**
  * A JSONConfig.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(
-{ElementType.METHOD, ElementType.TYPE})
-public @interface JSONConfig 
+        {ElementType.METHOD, ElementType.TYPE, ElementType.PARAMETER})
+public @interface Mapped
 {
+   /**
+    * Elements to ignore in JSON mapping
+    *
+    * @return
+    */
+   public String[] ignoredElements() default {};
 
    /**
-    * FIXME Comment this
-    * 
+    * List of JSON attributes that should be regarded as Elements
+    *
     * @return
     */
-   JSONConvention value() default JSONConvention.BADGERFISH;
-   
+   public String[] attributesAsElements() default {};
+
    /**
-    * FIXME Comment this
-    * 
+    * Map the XML namespace to a JSON namespace
+    *
     * @return
     */
-   String[] ignoredElements() default "";
-   
-   /**
-    * FIXME Comment this
-    * 
-    * @return
-    */
-   JSONToXml jsonToXml() default @JSONToXml(xmlElement = "", jsonName = "");
-   
-   
+   public XmlNsMap[] namespaceMap() default {};
+
+
 }

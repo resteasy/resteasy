@@ -3,7 +3,7 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.annotations.providers.ImageWriterParams;
+import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
 import org.jboss.resteasy.core.LoggerCategories;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.slf4j.Logger;

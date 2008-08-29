@@ -3,10 +3,11 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Map;
+import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
+import org.jboss.resteasy.core.LoggerCategories;
+import org.slf4j.Logger;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
@@ -20,17 +21,15 @@ import javax.xml.bind.Validator;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
-import org.jboss.resteasy.annotations.JAXBConfig;
-import org.jboss.resteasy.core.LoggerCategories;
-import org.slf4j.Logger;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * A wrapper class around a JAXBContext that enables additional features
  * to the RESTEasy JAXB-based providers.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -54,16 +53,22 @@ public class JAXBContextWrapper extends JAXBContext
     */
    private Schema schema;
 
+   public JAXBContextWrapper(JAXBContext wrappedContext, JAXBConfig config) throws JAXBException
+   {
+      processConfig(config);
+      this.wrappedContext = wrappedContext;
+   }
+
    /**
     * Create a new JAXBContextWrapper.
-    * 
+    *
     * @param classes
     * @param properties
     * @param config
     * @throws JAXBException
     */
    public JAXBContextWrapper(Class<?>[] classes, Map<String, Object> properties, JAXBConfig config)
-         throws JAXBException
+           throws JAXBException
    {
       processConfig(config);
       wrappedContext = JAXBContext.newInstance(classes, properties);
@@ -71,7 +76,7 @@ public class JAXBContextWrapper extends JAXBContext
 
    /**
     * Create a new JAXBContextWrapper.
-    * 
+    *
     * @param contextPath
     * @param config
     * @throws JAXBException
@@ -84,19 +89,19 @@ public class JAXBContextWrapper extends JAXBContext
 
    /**
     * Create a new JAXBContextWrapper.
-    * 
+    *
     * @param classes
     * @param config
     * @throws JAXBException
     */
-   public JAXBContextWrapper(Class<?>[] classes, JAXBConfig config) throws JAXBException
+   public JAXBContextWrapper(JAXBConfig config, Class<?>... classes) throws JAXBException
    {
-      this(classes, Collections.<String, Object> emptyMap(), config);
+      this(classes, Collections.<String, Object>emptyMap(), config);
    }
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param config
     */
    private void processConfig(JAXBConfig config) throws JAXBException
@@ -113,7 +118,7 @@ public class JAXBContextWrapper extends JAXBContext
             try
             {
                InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                     config.schema());
+                       config.schema());
                schema = schemaFactory.newSchema(new StreamSource(in));
             }
             catch (SAXException e)
@@ -127,7 +132,7 @@ public class JAXBContextWrapper extends JAXBContext
 
    /**
     * Get the schema.
-    * 
+    *
     * @return the schema.
     */
    public Schema getSchema()
@@ -137,9 +142,8 @@ public class JAXBContextWrapper extends JAXBContext
 
    /**
     * Set the schema.
-    * 
-    * @param schema
-    *           The schema to set.
+    *
+    * @param schema The schema to set.
     */
    public void setSchema(Schema schema)
    {
@@ -210,8 +214,8 @@ public class JAXBContextWrapper extends JAXBContext
    /**
     * @return
     * @throws JAXBException
-    * @deprecated
     * @see javax.xml.bind.JAXBContext#createValidator()
+    * @deprecated
     */
    public Validator createValidator() throws JAXBException
    {

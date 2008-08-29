@@ -3,7 +3,7 @@
  */
 package org.jboss.resteasy.test.providers.iioimage;
 
-import org.jboss.resteasy.annotations.providers.ImageWriterParams;
+import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
 
 import javax.imageio.IIOImage;
 import javax.ws.rs.Consumes;

@@ -6,26 +6,30 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.TypeConverter;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A AbstractJAXBProvider.
@@ -37,17 +41,44 @@ import java.lang.reflect.Type;
 public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 {
 
-   /**
-    * An HTTP Header than can be passed in order to have the XML response
-    * formatted.
-    */
-   public static final String FORMAT_XML_HEADER = "X-Xml-Formatted";
+   private ConcurrentHashMap<Class<?>, JAXBContext> cache = new ConcurrentHashMap<Class<?>, JAXBContext>();
 
+   @Context
+   protected Providers providers;
 
-   protected JAXBContext findJAXBContext(Class<?> type)
+   public JAXBContext findProvidedJAXBContext(Class<?> type, MediaType mediaType)
            throws JAXBException
    {
-      JAXBContext jaxb = JAXBCache.instance().getJAXBContext(type);
+      JAXBContext jaxb = null;
+      ContextResolver<JAXBContext> resolver = providers.getContextResolver(JAXBContext.class, mediaType);
+      if (resolver != null)
+      {
+         jaxb = resolver.getContext(type);
+         if (jaxb != null) return jaxb;
+      }
+      return jaxb;
+   }
+
+   protected JAXBContext createDefaultJAXBContext(Class<?> type, Annotation[] annotations) throws JAXBException
+   {
+      JAXBConfig config = FindAnnotation.findAnnotation(type, annotations, JAXBConfig.class);
+      return new JAXBContextWrapper(config, type);
+   }
+
+   public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType)
+           throws JAXBException
+   {
+
+      JAXBContext jaxb = cache.get(type);
+      if (jaxb != null) return jaxb;
+      jaxb = findProvidedJAXBContext(type, mediaType);
+      if (jaxb != null)
+      {
+         cache.putIfAbsent(type, jaxb);
+         return jaxb;
+      }
+      jaxb = createDefaultJAXBContext(type, annotations);
+      if (jaxb != null) cache.putIfAbsent(type, jaxb);
       return jaxb;
    }
 
@@ -63,7 +94,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
-         JAXBContext jaxb = findJAXBContext(type);
+         JAXBContext jaxb = findJAXBContext(type, annotations, mediaType);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          JAXBElement<T> e = unmarshaller.unmarshal(new StreamSource(entityStream), type);
          return e.getValue();
@@ -88,7 +119,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
-         Marshaller marshaller = getMarshaller(type, mediaType, httpHeaders);
+         Marshaller marshaller = getMarshaller(type, annotations, mediaType);
          marshaller.marshal(t, outputStream);
       }
       catch (JAXBException e)
@@ -107,12 +138,12 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
     * @return
     */
    protected Marshaller getMarshaller(Class<?> type,
-                                      MediaType mediaType,
-                                      MultivaluedMap<String, Object> httpHeaders)
+                                      Annotation[] annotations,
+                                      MediaType mediaType)
    {
       try
       {
-         JAXBContext jaxb = findJAXBContext(type);
+         JAXBContext jaxb = findJAXBContext(type, annotations, mediaType);
          Marshaller marshaller = jaxb.createMarshaller();
          String charset = getCharset(mediaType);
          // specify the character encoding if it is set on the media type
@@ -121,10 +152,10 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
             marshaller.setProperty(Marshaller.JAXB_ENCODING, charset);
          }
          // Pretty Print the XML response.
-         Object header = httpHeaders.getFirst(FORMAT_XML_HEADER);
-         if (header != null)
+         Object formatted = mediaType.getParameters().get("formatted");
+         if (formatted != null)
          {
-            Boolean value = TypeConverter.getBooleanValue(header.toString());
+            Boolean value = TypeConverter.getBooleanValue(formatted.toString());
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, value);
          }
          return marshaller;
@@ -179,26 +210,5 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       return null;
    }
 
-   /**
-    * FIXME Comment this
-    *
-    * @param entityStream
-    * @return
-    */
-   protected XMLStreamReader getXMLStreamReader(InputStream entityStream)
-   {
-      return XMLStreamFactory.getXMLStreamReader(entityStream);
-   }
-
-   /**
-    * FIXME Comment this
-    *
-    * @param out
-    * @return
-    */
-   protected XMLStreamWriter getXMLStreamWriter(OutputStream out)
-   {
-      return XMLStreamFactory.getXMLStreamWriter(out);
-   }
 
 }

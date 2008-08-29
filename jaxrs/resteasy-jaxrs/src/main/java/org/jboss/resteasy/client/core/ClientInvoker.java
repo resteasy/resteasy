@@ -5,6 +5,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -136,104 +138,162 @@ abstract public class ClientInvoker
       builder.path(method);
    }
 
+   protected void checkFailureStatus(HttpMethodBase baseMethod, int status)
+   {
+      if (status > 399 && status < 599)
+      {
+         throw new ClientResponseFailure("Error status " + status + " " + Response.Status.fromStatusCode(status) + " returned", createGenericClientResponse(baseMethod, status));
+      }
+   }
+
    public Object invoke(Object[] args)
    {
-      if (builder == null) throw new RuntimeException("You have not set a base URI for the client proxy");
-      ClientHttpOutput output = new HttpOutputMessage(null);
-
-      UriBuilderImpl uri = (UriBuilderImpl) builder.clone();
-
-      if (args != null)
-      {
-         for (int i = 0; i < args.length; i++)
-         {
-            params[i].buildUri(args[i], uri);
-         }
-      }
-
-      String url = null;
-      HttpMethodBase baseMethod = null;
-      try
-      {
-         url = uri.build().toURL().toString();
-         baseMethod = createBaseMethod(url);
-         if (ClientResponse.class.isAssignableFrom(method.getReturnType())) baseMethod.setFollowRedirects(false);
-      }
-      catch (MalformedURLException e)
-      {
-         throw new RuntimeException("Unable to build URL from uri", e);
-      }
-
-      if (accepts != null)
-      {
-         baseMethod.setRequestHeader(HttpHeaderNames.ACCEPT, accepts.toString());
-      }
-
-      if (args != null)
-      {
-         for (int i = 0; i < args.length; i++)
-         {
-            params[i].setHeaders(args[i], baseMethod);
-         }
-         for (int i = 0; i < args.length; i++)
-         {
-            params[i].buildRequest(args[i], baseMethod);
-         }
-      }
-
-      int status = 0;
-      try
-      {
-         status = client.executeMethod(baseMethod);
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException("Failed to execute GET request: " + url, e);
-      }
+      boolean isProvidersSet = ResteasyProviderFactory.getContextData(Providers.class) != null;
+      if (!isProvidersSet) ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
 
       try
       {
-         if (method.getReturnType().equals(Response.Status.class))
+         if (builder == null) throw new RuntimeException("You have not set a base URI for the client proxy");
+         ClientHttpOutput output = new HttpOutputMessage(null);
+
+         UriBuilderImpl uri = (UriBuilderImpl) builder.clone();
+
+         if (args != null)
          {
-            return Response.Status.fromStatusCode(status);
-         }
-         if (ClientResponse.class.isAssignableFrom(method.getReturnType()))
-         {
-            Type genericReturnType = null;
-            Class returnType = null;
-            if (method.getGenericReturnType() instanceof ParameterizedType)
+            for (int i = 0; i < args.length; i++)
             {
-               ParameterizedType zType = (ParameterizedType) method.getGenericReturnType();
-               genericReturnType = zType.getActualTypeArguments()[0];
-               returnType = Types.getRawType(genericReturnType);
+               params[i].buildUri(args[i], uri);
+            }
+         }
 
+         String url = null;
+         HttpMethodBase baseMethod = null;
+         try
+         {
+            url = uri.build().toURL().toString();
+            baseMethod = createBaseMethod(url);
+            if (ClientResponse.class.isAssignableFrom(method.getReturnType())) baseMethod.setFollowRedirects(false);
+         }
+         catch (MalformedURLException e)
+         {
+            throw new RuntimeException("Unable to build URL from uri", e);
+         }
+
+         if (accepts != null)
+         {
+            baseMethod.setRequestHeader(HttpHeaderNames.ACCEPT, accepts.toString());
+         }
+
+         if (args != null)
+         {
+            for (int i = 0; i < args.length; i++)
+            {
+               params[i].setHeaders(args[i], baseMethod);
+            }
+            for (int i = 0; i < args.length; i++)
+            {
+               params[i].buildRequest(args[i], baseMethod);
+            }
+         }
+
+         int status = 0;
+         try
+         {
+            status = client.executeMethod(baseMethod);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException("Failed to execute GET request: " + url, e);
+         }
+
+         try
+         {
+            if (method.getReturnType().equals(Response.Status.class))
+            {
+               return Response.Status.fromStatusCode(status);
+            }
+            if (ClientResponse.class.isAssignableFrom(method.getReturnType()))
+            {
+               Type genericReturnType = null;
+               Class returnType = null;
+               if (method.getGenericReturnType() instanceof ParameterizedType)
+               {
+                  ParameterizedType zType = (ParameterizedType) method.getGenericReturnType();
+                  genericReturnType = zType.getActualTypeArguments()[0];
+                  returnType = Types.getRawType(genericReturnType);
+
+               }
+               if (returnType == null) return createGenericClientResponse(baseMethod, status);
+               checkFailureStatus(baseMethod, status);
+               return extractClientResponse(baseMethod, status, genericReturnType, returnType);
+            }
+            else if (method.getReturnType() != null && !method.getReturnType().equals(void.class))
+            {
+               checkFailureStatus(baseMethod, status);
+               return extractClientResponse(baseMethod, status, method.getGenericReturnType(), method.getReturnType()).getEntity();
+            }
+            else
+            {
+               checkFailureStatus(baseMethod, status);
+               return null;
             }
 
-            return extractClientResponse(baseMethod, status, genericReturnType, returnType);
          }
-         else if (method.getReturnType() != null && !method.getReturnType().equals(void.class))
+         finally
          {
-            return extractClientResponse(baseMethod, status, method.getGenericReturnType(), method.getReturnType()).getEntity();
+            // todo better semantics/api for handling keep alive and such
+            baseMethod.releaseConnection();
          }
-         else
-         {
-            return null;
-         }
-
       }
       finally
       {
-         // todo better semantics/api for handling keep alive and such
-         baseMethod.releaseConnection();
+         if (!isProvidersSet) ResteasyProviderFactory.popContextData(Providers.class);
+
       }
    }
 
    public abstract HttpMethodBase createBaseMethod(String uri);
 
-   protected ClientResponse extractClientResponse(HttpMethodBase baseMethod, int status, Type genericReturnType, Class returnType)
+   protected ClientResponse<byte[]> createGenericClientResponse(final HttpMethodBase baseMethod, final int status)
    {
       final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
-      final int theStatus = status;
+
+
+      for (Header header : baseMethod.getResponseHeaders())
+      {
+         headers.add(header.getName(), header.getValue());
+      }
+
+      return new ClientResponse<byte[]>()
+      {
+         public byte[] getEntity()
+         {
+            try
+            {
+               return baseMethod.getResponseBody();
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+
+         public MultivaluedMap<String, String> getHeaders()
+         {
+            return headers;
+         }
+
+         public int getStatus()
+         {
+            return status;
+         }
+      };
+
+   }
+
+   protected ClientResponse extractClientResponse(HttpMethodBase baseMethod, final int status, Type genericReturnType, Class returnType)
+   {
+      final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
 
 
       for (Header header : baseMethod.getResponseHeaders())
@@ -244,23 +304,8 @@ abstract public class ClientInvoker
       Header contentType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
       if (contentType == null)
       {
-         return new ClientResponse()
-         {
-            public Object getEntity()
-            {
-               return null;
-            }
-
-            public MultivaluedMap getHeaders()
-            {
-               return headers;
-            }
-
-            public int getStatus()
-            {
-               return theStatus;
-            }
-         };
+         ClientResponse response = createGenericClientResponse(baseMethod, status);
+         throw new ClientResponseFailure("No Content-Type header specified", response);
       }
 
 
@@ -271,23 +316,8 @@ abstract public class ClientInvoker
          if (produce == null) produce = (Produces) declaring.getAnnotation(Produces.class);
          if (produce == null)
          {
-            return new ClientResponse()
-            {
-               public Object getEntity()
-               {
-                  throw new RuntimeException("Unable to determine content type of response for " + method.toString());
-               }
-
-               public MultivaluedMap getHeaders()
-               {
-                  return headers;
-               }
-
-               public int getStatus()
-               {
-                  return theStatus;
-               }
-            };
+            ClientResponse response = createGenericClientResponse(baseMethod, status);
+            throw new ClientResponseFailure("@Produces on your proxy method, " + method.toString() + ", is required", response);
          }
          mediaType = produce.value()[0];
       }
@@ -299,24 +329,8 @@ abstract public class ClientInvoker
       MessageBodyReader reader = providerFactory.getMessageBodyReader(returnType, genericReturnType, method.getAnnotations(), media);
       if (reader == null)
       {
-         final String theMediaType = mediaType;
-         return new ClientResponse()
-         {
-            public Object getEntity()
-            {
-               throw new RuntimeException("Unable to find a MessageBodyReader of content-type " + theMediaType + " for response of " + method.toString());
-            }
-
-            public MultivaluedMap getHeaders()
-            {
-               return headers;
-            }
-
-            public int getStatus()
-            {
-               return theStatus;
-            }
-         };
+         ClientResponse response = createGenericClientResponse(baseMethod, status);
+         throw new ClientResponseFailure("Unable to find a MessageBodyReader of content-type " + mediaType + " for response of " + method.toString(), response);
       }
       try
       {
@@ -335,7 +349,7 @@ abstract public class ClientInvoker
 
             public int getStatus()
             {
-               return theStatus;
+               return status;
             }
          };
 
@@ -356,7 +370,7 @@ abstract public class ClientInvoker
 
             public int getStatus()
             {
-               return theStatus;
+               return status;
             }
          };
       }

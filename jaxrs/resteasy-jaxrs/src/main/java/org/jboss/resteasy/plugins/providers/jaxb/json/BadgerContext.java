@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.providers.json.jettison;
+package org.jboss.resteasy.plugins.providers.jaxb.json;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

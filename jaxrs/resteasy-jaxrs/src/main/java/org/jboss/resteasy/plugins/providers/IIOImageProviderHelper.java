@@ -6,14 +6,10 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
+import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.util.FindAnnotation;
+import org.slf4j.Logger;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -26,17 +22,20 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.Status;
-
-import org.jboss.resteasy.annotations.providers.ImageWriterParams;
-import org.jboss.resteasy.core.LoggerCategories;
-import org.jboss.resteasy.util.FindAnnotation;
-import org.slf4j.Logger;
+import javax.ws.rs.core.Variant;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A IIOImageProviderHelper.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -51,7 +50,7 @@ public final class IIOImageProviderHelper
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param mediaType
     * @return
     */
@@ -69,7 +68,7 @@ public final class IIOImageProviderHelper
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param in
     * @param mediaType
     * @param imageIndex
@@ -77,7 +76,7 @@ public final class IIOImageProviderHelper
     * @throws IOException
     */
    public static IIOImage readImage(InputStream in, ImageReader reader, int imageIndex)
-         throws IOException
+           throws IOException
    {
       ImageInputStream iis = ImageIO.createImageInputStream(in);
       reader.setInput(iis, false);
@@ -86,7 +85,7 @@ public final class IIOImageProviderHelper
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param mediaType
     * @return
     */
@@ -104,7 +103,7 @@ public final class IIOImageProviderHelper
       {
          String[] availableTypes = ImageIO.getReaderMIMETypes();
          logger.warn("A reader for {} was not found. This provider is currently configured"
-               + "to handle only {}", mediaType, availableTypes);
+                 + "to handle only {}", mediaType, availableTypes);
          List<Variant> variants = ProviderHelper.getAvailableVariants(availableTypes);
          Response response = Response.notAcceptable(variants).status(Status.NOT_ACCEPTABLE).build();
          throw new WebApplicationException(response);
@@ -114,7 +113,7 @@ public final class IIOImageProviderHelper
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param annotations
     * @param mediaType
     * @param writer
@@ -127,7 +126,7 @@ public final class IIOImageProviderHelper
                                  ImageWriter writer,
                                  OutputStream out,
                                  IIOImage image)
-   throws IOException
+           throws IOException
    {
       ImageWriteParam param;
       if (mediaType.equals(MediaType.valueOf("image/jpeg")))
@@ -143,8 +142,8 @@ public final class IIOImageProviderHelper
       * If the image output type supports compression, set it to the highest
       * maximum
       */
-      ImageWriterParams writerParams = 
-         FindAnnotation.findAnnotation(annotations, ImageWriterParams.class);
+      ImageWriterParams writerParams =
+              FindAnnotation.findAnnotation(annotations, ImageWriterParams.class);
       if (writerParams != null)
       {
          if (param.canWriteCompressed())
