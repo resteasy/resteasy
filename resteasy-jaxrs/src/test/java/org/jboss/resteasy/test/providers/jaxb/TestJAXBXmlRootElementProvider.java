@@ -3,9 +3,6 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -16,9 +13,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 /**
  * A TestJAXBXmlRootElementProvider.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -28,6 +28,7 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
    private static final String HTTP_LOCALHOST_8081_JAXB = "http://localhost:8081/jaxb";
 
    private static final String FAST_PARENT = "Fast Parent";
+   private static final String JSON_PARENT = "JSON Parent";
 
    private static final String XML_PARENT = "XML Parent";
 
@@ -36,10 +37,13 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
            .getLogger(TestJAXBXmlRootElementProvider.class);
 
    private JAXBXmlRootElementClient client;
-
-   private JAXBXmlRootElementFastinfoSetClient fastClient;
-
    private JAXBElementClient elementClient;
+
+   private JsonJAXBXmlRootElementClient jsonClient;
+   private JsonJAXBElementClient jsonElementClient;
+
+   private FastinfoSetJAXBXmlRootElementClient fastClient;
+   private FastinfoSetJAXBElementClient fastElementClient;
 
    @Before
    public void setUp() throws Exception
@@ -48,11 +52,11 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
       ResteasyProviderFactory.initializeInstance();
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       client = ProxyFactory.create(JAXBXmlRootElementClient.class, HTTP_LOCALHOST_8081_JAXB);
-      fastClient = ProxyFactory.create(JAXBXmlRootElementFastinfoSetClient.class, HTTP_LOCALHOST_8081_JAXB);
-      fastClient = ProxyFactory.create(JAXBXmlRootElementFastinfoSetClient.class,
-              HTTP_LOCALHOST_8081_JAXB);
-
       elementClient = ProxyFactory.create(JAXBElementClient.class, HTTP_LOCALHOST_8081_JAXB);
+      jsonClient = ProxyFactory.create(JsonJAXBXmlRootElementClient.class, HTTP_LOCALHOST_8081_JAXB);
+      jsonElementClient = ProxyFactory.create(JsonJAXBElementClient.class, HTTP_LOCALHOST_8081_JAXB);
+      fastClient = ProxyFactory.create(FastinfoSetJAXBXmlRootElementClient.class, HTTP_LOCALHOST_8081_JAXB);
+      fastElementClient = ProxyFactory.create(FastinfoSetJAXBElementClient.class, HTTP_LOCALHOST_8081_JAXB);
    }
 
    /**
@@ -78,6 +82,44 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
    {
       Parent parent = fastClient.getParent(FAST_PARENT);
       Assert.assertNotNull(parent);
+      Assert.assertEquals(parent.getName(), FAST_PARENT);
+   }
+
+   @Test
+   public void testGetParentElementFast()
+   {
+      JAXBElement<Parent> element = fastElementClient.getParent(XML_PARENT);
+      Parent parent = element.getValue();
+      Assert.assertEquals(parent.getName(), XML_PARENT);
+   }
+
+   @Test
+   public void testGetParentJson2() throws Exception
+   {
+      String str = jsonClient.getParentMapped(JSON_PARENT);
+      System.out.println(str);
+   }
+
+   @Test
+   public void testGetParentJson() throws Exception
+   {
+      Parent parent = jsonClient.getParent(JSON_PARENT);
+      Assert.assertNotNull(parent);
+      Assert.assertEquals(parent.getName(), JSON_PARENT);
+
+      String badger = jsonClient.getParentString(JSON_PARENT);
+      System.out.println("Badger: '" + badger + "'");
+      String mapped = jsonClient.getParentMapped(JSON_PARENT);
+      System.out.println("Mapped: '" + mapped + "'");
+      Assert.assertTrue(!badger.equals(mapped));
+   }
+
+   @Test
+   public void testGetParentElementJson()
+   {
+      JAXBElement<Parent> element = jsonElementClient.getParent(JSON_PARENT);
+      Parent parent = element.getValue();
+      Assert.assertEquals(parent.getName(), JSON_PARENT);
    }
 
    /**

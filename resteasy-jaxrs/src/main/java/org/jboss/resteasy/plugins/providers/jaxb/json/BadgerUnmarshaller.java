@@ -1,10 +1,9 @@
-package org.jboss.resteasy.plugins.providers.json.jettison;
+package org.jboss.resteasy.plugins.providers.jaxb.json;
 
+import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamReader;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
-import org.codehaus.jettison.mapped.Configuration;
-import org.codehaus.jettison.mapped.MappedNamespaceConvention;
-import org.codehaus.jettison.mapped.MappedXMLStreamReader;
+import org.jboss.resteasy.plugins.providers.jaxb.UnmarshallerSpi;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -20,6 +19,7 @@ import javax.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,30 +30,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JettisonMappedUnmarshaller implements Unmarshaller
+public class BadgerUnmarshaller implements Unmarshaller, UnmarshallerSpi
 {
    private Unmarshaller unmarshaller;
 
-   private MappedNamespaceConvention convention;
-
-   public JettisonMappedUnmarshaller(JAXBContext context, Map<String, String> xmlToJSON, List<String> attributeMapping, List<String> ignoredElements) throws JAXBException
+   public BadgerUnmarshaller(JAXBContext context) throws JAXBException
    {
       unmarshaller = context.createUnmarshaller();
-      Configuration config = new Configuration(xmlToJSON, attributeMapping, ignoredElements);
-      convention = new MappedNamespaceConvention(config);
-   }
-
-   public JettisonMappedUnmarshaller(JAXBContext context, MappedNamespaceConvention convention) throws JAXBException
-   {
-      unmarshaller = context.createUnmarshaller();
-      this.convention = convention;
    }
 
    public Object unmarshal(File file)
@@ -78,6 +66,15 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    public Object unmarshal(Reader reader)
            throws JAXBException
    {
+      BadgerFishXMLStreamReader badger = null;
+      badger = getBadgerFishReader(reader);
+      return unmarshaller.unmarshal(badger);
+   }
+
+   protected BadgerFishXMLStreamReader getBadgerFishReader(Reader reader)
+           throws JAXBException
+   {
+      BadgerFishXMLStreamReader badger;
       char[] buffer = new char[100];
       StringBuffer buf = new StringBuffer();
       BufferedReader bufferedReader = new BufferedReader(reader);
@@ -90,14 +87,14 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
             wasRead = bufferedReader.read(buffer, 0, 100);
             if (wasRead > 0) buf.append(buffer, 0, wasRead);
          } while (wasRead > -1);
-         MappedXMLStreamReader badger = new MappedXMLStreamReader(new JSONObject(new JSONTokener(buf.toString())), convention);
+         badger = new BadgerFishXMLStreamReader(new JSONObject(new JSONTokener(buf.toString())));
 
-         return unmarshaller.unmarshal(badger);
       }
       catch (Exception e)
       {
          throw new JAXBException(e);
       }
+      return badger;
    }
 
    public Object unmarshal(URL url)
@@ -140,7 +137,10 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    public <T> JAXBElement<T> unmarshal(Source source, Class<T> tClass)
            throws JAXBException
    {
-      return unmarshaller.unmarshal(source, tClass);
+      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
+      StreamSource stream = (StreamSource) source;
+      XMLStreamReader reader = getBadgerFishReader(new InputStreamReader(stream.getInputStream()));
+      return unmarshal(reader, tClass);
    }
 
    public Object unmarshal(XMLStreamReader xmlStreamReader)

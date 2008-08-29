@@ -1,8 +1,7 @@
-package org.jboss.resteasy.plugins.providers.json.jettison;
+package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
-import org.codehaus.jettison.mapped.Configuration;
-import org.codehaus.jettison.mapped.MappedNamespaceConvention;
-import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
+import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import org.jboss.resteasy.plugins.providers.jaxb.MarshallerSpi;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
@@ -17,47 +16,46 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.validation.Schema;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JettisonMappedMarshaller implements Marshaller
+public class FastinfoSetMarshaller implements Marshaller, MarshallerSpi
 {
+   private JAXBContext context;
    private Marshaller marshaller;
-   private MappedNamespaceConvention convention;
 
-   public JettisonMappedMarshaller(JAXBContext context, Map<String, String> xmlToJSON, List<String> attributeMapping, List<String> ignoredElements) throws JAXBException
+   public FastinfoSetMarshaller(JAXBContext context) throws JAXBException
    {
-      marshaller = context.createMarshaller();
-      Configuration config = new Configuration(xmlToJSON, attributeMapping, ignoredElements);
-      convention = new MappedNamespaceConvention(config);
+      this.context = context;
+      marshaller = this.context.createMarshaller();
    }
 
-   public JettisonMappedMarshaller(JAXBContext context, MappedNamespaceConvention convention) throws JAXBException
+
+   protected static XMLStreamWriter getFastinfoSetXMLStreamWriter(OutputStream entityStream)
    {
-      marshaller = context.createMarshaller();
-      this.convention = convention;
+      BufferedOutputStream out = new BufferedOutputStream(entityStream, 2048);
+      XMLStreamWriter writer = new StAXDocumentSerializer(out);
+      return writer;
    }
 
    public void marshal(Object o, Result result)
            throws JAXBException
    {
-      marshaller.marshal(o, result);
+      throw new UnsupportedOperationException();
    }
 
    public void marshal(Object o, OutputStream outputStream)
            throws JAXBException
    {
-      marshal(o, new OutputStreamWriter(outputStream));
+      marshal(o, getFastinfoSetXMLStreamWriter(outputStream));
    }
 
    public void marshal(Object o, File file)
@@ -76,20 +74,19 @@ public class JettisonMappedMarshaller implements Marshaller
    public void marshal(Object o, Writer writer)
            throws JAXBException
    {
-      MappedXMLStreamWriter mapped = new MappedXMLStreamWriter(convention, writer);
-      marshaller.marshal(o, mapped);
+      throw new UnsupportedOperationException();
    }
 
    public void marshal(Object o, ContentHandler contentHandler)
            throws JAXBException
    {
-      marshaller.marshal(o, contentHandler);
+      throw new UnsupportedOperationException();
    }
 
    public void marshal(Object o, Node node)
            throws JAXBException
    {
-      marshaller.marshal(o, node);
+      throw new UnsupportedOperationException();
    }
 
    public void marshal(Object o, XMLStreamWriter xmlStreamWriter)
@@ -101,13 +98,13 @@ public class JettisonMappedMarshaller implements Marshaller
    public void marshal(Object o, XMLEventWriter xmlEventWriter)
            throws JAXBException
    {
-      marshaller.marshal(o, xmlEventWriter);
+      throw new UnsupportedOperationException();
    }
 
    public Node getNode(Object o)
            throws JAXBException
    {
-      return marshaller.getNode(o);
+      throw new UnsupportedOperationException();
    }
 
    public void setProperty(String s, Object o)

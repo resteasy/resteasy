@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.finegrain.client;
 
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -94,17 +95,19 @@ public class ClientResponseTest
    @Test
    public void testErrorResponse() throws Exception
    {
-      Client client = ProxyFactory.create(Client.class, "http://localhost:8081/shite");
-      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, client.getBasic().getStatus());
-
+      Client client = null;
+      client = ProxyFactory.create(Client.class, "http://localhost:8081/shite");
       try
       {
-         System.out.println(client.getUriParam(3333).getEntity());
+         client.getBasic().getStatus();
       }
-      catch (Exception e)
+      catch (ClientResponseFailure e)
       {
-         Assert.assertTrue(e.getMessage().startsWith("Unable to find a MessageBodyReader of content-type"));
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, e.getResponse().getStatus());
+         return;
       }
+
+      throw new RuntimeException("Exception should have been thrown");
 
    }
 

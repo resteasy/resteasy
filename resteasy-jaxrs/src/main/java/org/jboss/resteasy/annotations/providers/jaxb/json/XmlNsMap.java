@@ -1,7 +1,7 @@
 /*
  * JBoss, the OpenSource J2EE webOS Distributable under LGPL license. See terms of license at gnu.org.
  */
-package org.jboss.resteasy.annotations;
+package org.jboss.resteasy.annotations.providers.jaxb.json;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,15 +11,15 @@ import java.lang.annotation.Target;
 
 /**
  * A JSONToXml.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(
-{ElementType.METHOD, ElementType.TYPE})
-public @interface JSONToXml 
+        {ElementType.METHOD, ElementType.TYPE})
+public @interface XmlNsMap
 {
 
    String xmlElement();

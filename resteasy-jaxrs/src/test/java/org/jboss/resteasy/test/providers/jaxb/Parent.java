@@ -6,20 +6,18 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Parent.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -29,8 +27,6 @@ import javax.xml.bind.annotation.XmlType;
 public class Parent
 {
    private String name;
-
-   private Date date = new Date();
 
    @XmlElementWrapper(name = "children")
    @XmlElement(name = "child")
@@ -48,7 +44,7 @@ public class Parent
 
    /**
     * Get the name.
-    * 
+    *
     * @return the name.
     */
    public String getName()
@@ -58,7 +54,7 @@ public class Parent
 
    /**
     * Set the name.
-    * 
+    *
     * @param name The name to set.
     */
    public void setName(String name)
@@ -67,28 +63,8 @@ public class Parent
    }
 
    /**
-    * Get the date.
-    * 
-    * @return the date.
-    */
-   public final Date getDate()
-   {
-      return date;
-   }
-
-   /**
-    * Set the date.
-    * 
-    * @param date The date to set.
-    */
-   public void setDate(final Date date)
-   {
-      this.date = date;
-   }
-
-   /**
     * Get the children.
-    * 
+    *
     * @return the children.
     */
    public List<Child> getChildren()
@@ -98,7 +74,7 @@ public class Parent
 
    /**
     * Set the children.
-    * 
+    *
     * @param children The children to set.
     */
    public void setChildren(List<Child> children)
