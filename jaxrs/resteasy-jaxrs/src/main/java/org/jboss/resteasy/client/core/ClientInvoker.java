@@ -154,7 +154,6 @@ abstract public class ClientInvoker
       try
       {
          if (builder == null) throw new RuntimeException("You have not set a base URI for the client proxy");
-         ClientHttpOutput output = new HttpOutputMessage(null);
 
          UriBuilderImpl uri = (UriBuilderImpl) builder.clone();
 
