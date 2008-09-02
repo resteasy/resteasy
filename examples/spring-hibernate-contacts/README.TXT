@@ -1,4 +1,4 @@
-Example of using ReastEasy with:
+Example of using RestEasy with:
 - Hibernate
 - Hibernate Annotations
 - Spring

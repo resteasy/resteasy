@@ -1,90 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.resteasy.examples</groupId>
-	<artifactId>spring-hibernate-contacts</artifactId>
-	<packaging>pom</packaging>
-	<version>1.0-SNAPSHOT</version>
-	<name>RestContact Maven Webapp</name>
-	<url>http://maven.apache.org</url>
-	<properties>
-		<resteasy.version>1.0-beta-5</resteasy.version>
-	</properties>
-	<repositories>
-		<repository>
-			<id>java.net</id>
-			<url>http://download.java.net/maven/1</url>
-			<layout>legacy</layout>
-		</repository>
-		<repository>
-			<id>maven repo</id>
-			<name>maven repo</name>
-			<url>http://repo1.maven.org/maven2/</url>
-		</repository>
-		<!-- For resteasy -->
-		<repository>
-			<id>jboss</id>
-			<name>jboss repo</name>
-			<url>http://repository.jboss.org/maven2</url>
-		</repository>
-		<repository>
-			<id>scannotation</id>
-			<url>http://scannotation.sf.net/maven2</url>
-		</repository>
-	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>maven-jetty6-plugin</artifactId>
-			<version>6.0.0beta17</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.resteasy</groupId>
-			<artifactId>resteasy-jaxrs</artifactId>
-			<version>${resteasy.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.4</version>
-		</dependency>
-		<!-- Test classes that integrates Junit 3.8 and 4 to Spring based applications -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>2.5.4</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>persistence-api</artifactId>
-			<version>1.0.2</version>
-		</dependency>
-	</dependencies>
-	<build>
-		<finalName>RestContact</finalName>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<modules>
-		<module>core</module>
-		<module>services</module>
-		<module>persistence</module>
-		<module>client</module>
-	</modules>
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.jboss.resteasy.examples</groupId>
+   <artifactId>spring-hibernate-contacts</artifactId>
+   <packaging>pom</packaging>
+   <version>1.0-beta-6</version>
+   <name>RestContact Maven Webapp</name>
+   <url>http://maven.apache.org</url>
+   <repositories>
+      <repository>
+         <id>java.net</id>
+         <url>http://download.java.net/maven/1</url>
+         <layout>legacy</layout>
+      </repository>
+      <repository>
+         <id>maven repo</id>
+         <name>maven repo</name>
+         <url>http://repo1.maven.org/maven2/</url>
+      </repository>
+      <!-- For resteasy -->
+      <repository>
+         <id>jboss</id>
+         <name>jboss repo</name>
+         <url>http://repository.jboss.org/maven2</url>
+      </repository>
+      <repository>
+         <id>scannotation</id>
+         <url>http://scannotation.sf.net/maven2</url>
+      </repository>
+   </repositories>
+   <dependencies>
+      <dependency>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>maven-jetty6-plugin</artifactId>
+         <version>6.0.0beta17</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.4</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jaxrs</artifactId>
+         <version>1.0-beta-6</version>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring</artifactId>
+         <version>2.5.4</version>
+      </dependency>
+      <!-- Test classes that integrates Junit 3.8 and 4 to Spring based applications -->
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-test</artifactId>
+         <version>2.5.4</version>
+      </dependency>
+      <dependency>
+         <groupId>javax.persistence</groupId>
+         <artifactId>persistence-api</artifactId>
+         <version>1.0.2</version>
+      </dependency>
+   </dependencies>
+   <build>
+      <finalName>RestContact</finalName>
+      <plugins>
+         <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <source>1.5</source>
+               <target>1.5</target>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+   <modules>
+      <module>core</module>
+      <module>services</module>
+      <module>persistence</module>
+      <module>client</module>
+   </modules>
 </project>
