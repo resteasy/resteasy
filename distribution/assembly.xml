@@ -15,6 +15,10 @@
          <directory>../jaxrs-api/target/apidocs</directory>
          <outputDirectory>docs/jaxrs-api</outputDirectory>
       </fileSet>
+      <fileSet>
+         <directory>../examples/spring-hibernate-contacts</directory>
+         <outputDirectory>examples/spring-hibernate</outputDirectory>
+      </fileSet>
    </fileSets>
    <dependencySets>
       <dependencySet>
