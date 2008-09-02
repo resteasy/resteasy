@@ -75,6 +75,9 @@ public class UriBuilderTest
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").
               replaceMatrix("x=a;y=b").build();
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c;x=a;y=b"), bu);
+      bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").
+              replaceMatrixParam("a", "1", "2").build();
+      Assert.assertEquals(URI.create("http://localhost:8080/a/b/c;b=y;a=1;a=2"), bu);
    }
 
    @Test
@@ -83,6 +86,12 @@ public class UriBuilderTest
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c?a=x&b=y").
               replaceQuery("x=a&y=b").build();
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c?x=a&y=b"), bu);
+
+      UriBuilder builder = UriBuilder.fromUri("http://localhost:8080/a/b/c?a=x&b=y");
+      builder.replaceQueryParam("a", "1", "2");
+      bu = builder.build();
+      Assert.assertEquals(URI.create("http://localhost:8080/a/b/c?b=y&a=1&a=2"), bu);
+
    }
 
    @Test
@@ -281,4 +290,5 @@ public class UriBuilderTest
       Assert.assertEquals("foo%2Bbar", ub.build().toString());
 
    }
+
 }

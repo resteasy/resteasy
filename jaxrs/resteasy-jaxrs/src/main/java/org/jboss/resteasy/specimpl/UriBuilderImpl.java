@@ -424,7 +424,7 @@ public class UriBuilderImpl extends UriBuilder
             List<String> vals = map.get(theName);
             for (Object val : vals)
             {
-               path += ";" + name + "=" + val.toString();
+               path += ";" + theName + "=" + val.toString();
             }
          }
       }
