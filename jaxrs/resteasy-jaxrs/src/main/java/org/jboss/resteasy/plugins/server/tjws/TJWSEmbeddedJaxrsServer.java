@@ -6,10 +6,10 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
 /**
@@ -97,20 +97,6 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
 
    public void addApplicationConfig(Application config)
    {
-      if (config.getClasses() != null)
-      {
-         for (Class clazz : config.getClasses())
-         {
-            if (clazz.isAnnotationPresent(Path.class)) getRegistry().addPerRequestResource(clazz);
-            else factory.registerProvider(clazz);
-         }
-      }
-      if (config.getSingletons() != null)
-      {
-         for (Object obj : config.getSingletons())
-         {
-            if (obj.getClass().isAnnotationPresent(Path.class)) getRegistry().addSingletonResource(obj);
-         }
-      }
+      ResteasyBootstrap.processApplication(config, getRegistry(), getFactory());
    }
 }

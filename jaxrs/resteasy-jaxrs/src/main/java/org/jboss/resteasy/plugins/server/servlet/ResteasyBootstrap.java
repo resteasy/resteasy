@@ -156,21 +156,7 @@ public class ResteasyBootstrap implements ServletContextListener
             //System.out.println("application config: " + applicationConfig.trim());
             Class configClass = Thread.currentThread().getContextClassLoader().loadClass(applicationConfig.trim());
             Application config = (Application) configClass.newInstance();
-            if (config.getClasses() != null)
-            {
-               for (Class clazz : config.getClasses())
-               {
-                  if (clazz.isAnnotationPresent(Path.class)) registry.addPerRequestResource(clazz);
-                  else factory.registerProvider(clazz);
-               }
-            }
-            if (config.getSingletons() != null)
-            {
-               for (Object obj : config.getSingletons())
-               {
-                  if (obj.getClass().isAnnotationPresent(Path.class)) registry.addSingletonResource(obj);
-               }
-            }
+            processApplication(config, registry, factory);
          }
          catch (ClassNotFoundException e)
          {
@@ -186,6 +172,32 @@ public class ResteasyBootstrap implements ServletContextListener
          }
       }
 
+   }
+
+   public static void processApplication(Application config, Registry registry, ResteasyProviderFactory factory)
+   {
+      if (config.getClasses() != null)
+      {
+         for (Class clazz : config.getClasses())
+         {
+            if (clazz.isAnnotationPresent(Path.class)) registry.addPerRequestResource(clazz);
+            else factory.registerProvider(clazz);
+         }
+      }
+      if (config.getSingletons() != null)
+      {
+         for (Object obj : config.getSingletons())
+         {
+            if (obj.getClass().isAnnotationPresent(Path.class))
+            {
+               registry.addSingletonResource(obj);
+            }
+            else
+            {
+               factory.registerProviderInstance(obj);
+            }
+         }
+      }
    }
 
    protected Map<String, String> parseMap(String map)
