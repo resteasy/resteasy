@@ -1,74 +1,74 @@
 <project>
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>1.0-beta-6-SNAPSHOT</version>
-  </parent>
-
-  <artifactId>resteasy-jaxrs-dist</artifactId>
-  <packaging>pom</packaging>
-  <name>RESTEasy JAX-RS Distribution</name>
-
-  <dependencies>
-
-    <dependency>
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+      <artifactId>resteasy-jaxrs-all</artifactId>
+      <version>1.0-beta-6</version>
+   </parent>
 
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs-war</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-    </dependency>
+   <artifactId>resteasy-jaxrs-dist</artifactId>
+   <packaging>pom</packaging>
+   <name>RESTEasy JAX-RS Distribution</name>
 
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-    </dependency>
-    
-  </dependencies>
+   <dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-2</version>
-        <executions>
-          <execution>
-            <id>assemble</id>
-            <phase>install</phase>
-            <goals>
-              <goal>attached</goal>
-            </goals>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jaxrs</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jaxrs-war</artifactId>
+         <version>${project.version}</version>
+         <type>war</type>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>jaxrs-api</artifactId>
+      </dependency>
+
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.2-beta-2</version>
+            <executions>
+               <execution>
+                  <id>assemble</id>
+                  <phase>install</phase>
+                  <goals>
+                     <goal>attached</goal>
+                  </goals>
+                  <configuration>
+                     <descriptors>
+                        <descriptor>assembly.xml</descriptor>
+                     </descriptors>
+                     <outputDirectory>
+                        target/distribution
+                     </outputDirectory>
+                     <workDirectory>
+                        target/assembly/work
+                     </workDirectory>
+                     <finalName>
+                        resteasy-jaxrs-${project.version}
+                     </finalName>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
             <configuration>
-              <descriptors>
-                <descriptor>assembly.xml</descriptor>
-              </descriptors>
-              <outputDirectory>
-                target/distribution
-              </outputDirectory>
-              <workDirectory>
-                target/assembly/work
-              </workDirectory>
-              <finalName>
-                resteasy-jaxrs-${project.version}
-              </finalName>
+               <createChecksum>true</createChecksum>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-install-plugin</artifactId>
-        <configuration>
-          <createChecksum>true</createChecksum>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  
+         </plugin>
+      </plugins>
+   </build>
+
 </project>
