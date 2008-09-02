@@ -1,68 +1,68 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>1.0-beta-6-SNAPSHOT</version>
-  </parent>
-
-  <artifactId>resteasy-jaxrs-war</artifactId>
-  <packaging>war</packaging>
-  <name>RESTEasy JAX-RS Template Webapp</name>
-
-  <dependencies>
-
-    <dependency>
+   <parent>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+      <artifactId>resteasy-jaxrs-all</artifactId>
+      <version>1.0-beta-6</version>
+   </parent>
 
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <optional>true</optional>
-    </dependency>
+   <artifactId>resteasy-jaxrs-war</artifactId>
+   <packaging>war</packaging>
+   <name>RESTEasy JAX-RS Template Webapp</name>
 
-    <!-- These dependencies are declared as <optiona>true</optional> in the
-         resteasy-jaxrs jar. We redeclare them as not optional to build the
-         "full" war. -->
-    <dependency>
-      <groupId>org.codehaus.jettison</groupId>
-      <artifactId>jettison</artifactId>
-    </dependency>
+   <dependencies>
 
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-    </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jaxrs</artifactId>
+         <version>${project.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-    </dependency>
+      <dependency>
+         <groupId>commons-httpclient</groupId>
+         <artifactId>commons-httpclient</artifactId>
+         <optional>true</optional>
+      </dependency>
 
-  </dependencies>
+      <!-- These dependencies are declared as <optiona>true</optional> in the
+    resteasy-jaxrs jar. We redeclare them as not optional to build the
+    "full" war. -->
+      <dependency>
+         <groupId>org.codehaus.jettison</groupId>
+         <artifactId>jettison</artifactId>
+      </dependency>
 
-  <build>
+      <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>mail</artifactId>
+      </dependency>
 
-<!--
-    XXX Doesn't work with classpath scanning.
-    <plugins>
-      <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
-        <configuration>
-          <scanIntervalSeconds>3</scanIntervalSeconds>
-          <contextPath>/</contextPath>
-        </configuration>
-      </plugin>
-    </plugins>
--->
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring</artifactId>
+      </dependency>
 
-  </build>
+   </dependencies>
+
+   <build>
+
+      <!--
+          XXX Doesn't work with classpath scanning.
+          <plugins>
+            <plugin>
+              <groupId>org.mortbay.jetty</groupId>
+              <artifactId>maven-jetty-plugin</artifactId>
+              <configuration>
+                <scanIntervalSeconds>3</scanIntervalSeconds>
+                <contextPath>/</contextPath>
+              </configuration>
+            </plugin>
+          </plugins>
+      -->
+
+   </build>
 
 </project>
