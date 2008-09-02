@@ -76,7 +76,7 @@ public class Contact extends ContactInfo
     */
    //   @GET
    //   @Path("/emailAddresses")
-   //   @ProduceMime({"application/xml","application/json"})
+   //   @Produces({"application/xml","application/json"})
    public Set<EmailAddress> getEmailAddresses()
    {
       return emailAddresses;
