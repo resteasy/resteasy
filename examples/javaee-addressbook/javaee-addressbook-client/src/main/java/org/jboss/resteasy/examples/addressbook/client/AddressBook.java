@@ -11,9 +11,9 @@ import javax.ws.rs.core.Response;
 import org.jboss.resteasy.examples.addressbook.client.entity.Contact;
 import org.jboss.resteasy.examples.addressbook.client.entity.Contacts;
 import org.jboss.resteasy.examples.addressbook.client.entity.EmailAddresses;
-import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ClientResponse;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**

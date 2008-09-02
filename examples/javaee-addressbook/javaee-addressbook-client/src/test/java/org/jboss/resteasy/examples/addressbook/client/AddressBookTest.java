@@ -11,7 +11,7 @@ import org.jboss.resteasy.examples.addressbook.client.entity.Contacts;
 import org.jboss.resteasy.examples.addressbook.client.entity.EmailAddress;
 import org.jboss.resteasy.examples.addressbook.client.entity.EmailAddresses;
 import org.jboss.resteasy.examples.addressbook.client.entity.Label;
-import org.jboss.resteasy.spi.ClientResponse;
+import org.jboss.resteasy.client.ClientResponse;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

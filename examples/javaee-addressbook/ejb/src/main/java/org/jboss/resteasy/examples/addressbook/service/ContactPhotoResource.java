@@ -6,10 +6,10 @@
  */
 package org.jboss.resteasy.examples.addressbook.service;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.jboss.resteasy.examples.addressbook.entity.Contact;
 
@@ -19,8 +19,8 @@ import org.jboss.resteasy.examples.addressbook.entity.Contact;
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
-@ProduceMime({"image/jpeg"})
-@ConsumeMime({"image/*"})
+@Produces({"image/jpeg"})
+@Consumes({"image/*"})
 public class ContactPhotoResource
 {
 
