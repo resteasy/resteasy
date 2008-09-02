@@ -1,15 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <parent>
-      <groupId>org.resteasy</groupId>
-      <artifactId>ejb-integration-test</artifactId>
-      <version>1.0</version>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs-all</artifactId>
+      <version>1.0-beta-6-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
-   <groupId>org.resteasy</groupId>
    <artifactId>ejb-test-ear</artifactId>
    <packaging>jar</packaging>
-   <version>${resteasy-version}</version>
    <name>Basic Integration Test</name>
    <url>http://maven.apache.org</url>
    <repositories>
@@ -20,20 +18,32 @@
    </repositories>
    <dependencies>
       <dependency>
-         <groupId>org.resteasy</groupId>
-         <artifactId>resteasy-jaxrs</artifactId>
-         <version>${resteasy-version}</version>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.1</version>
+         <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.resteasy</groupId>
+         <groupId>commons-httpclient</groupId>
+         <artifactId>commons-httpclient</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.ejb</groupId>
+         <artifactId>ejb-api</artifactId>
+         <version>3.0</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
          <artifactId>ejb-test</artifactId>
-         <version>${resteasy-version}</version>
+         <version>${project.version}</version>
          <type>ejb</type>
       </dependency>
       <dependency>
-         <groupId>org.resteasy</groupId>
+         <groupId>org.jboss.resteasy</groupId>
          <artifactId>ejb-test-war</artifactId>
-         <version>${resteasy-version}</version>
+         <version>${project.version}</version>
          <type>war</type>
       </dependency>
       <dependency>

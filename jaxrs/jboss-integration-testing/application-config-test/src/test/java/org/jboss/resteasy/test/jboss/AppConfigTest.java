@@ -4,17 +4,15 @@ import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
-import org.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
-import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.lang.reflect.Type;
@@ -38,6 +36,7 @@ public class AppConfigTest
          GetMethod method = new GetMethod(uri);
          try
          {
+            method.addRequestHeader("Accept", "text/quoted");
             int status = client.executeMethod(method);
             Assert.assertEquals(status, HttpResponseCodes.SC_OK);
             Assert.assertEquals(body, method.getResponseBodyAsString());
@@ -55,6 +54,6 @@ public class AppConfigTest
    public void testIt()
    {
       HttpClient client = new HttpClient();
-      _test(client, "http://localhost:8080/application-config-test/my.quoted.en", "\"hello\"");
+      _test(client, "http://localhost:8080/application-config-test/my", "\"hello\"");
    }
 }

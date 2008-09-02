@@ -1,15 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <parent>
-      <groupId>org.resteasy</groupId>
-      <artifactId>resteasy-jaxrs-jboss-integration-testing</artifactId>
-      <version>1.0</version>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs-all</artifactId>
+      <version>1.0-beta-6-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
-   <groupId>org.resteasy</groupId>
    <artifactId>spring-integration-test</artifactId>
    <packaging>war</packaging>
-   <version>${resteasy-version}</version>
    <name>Spring Integration Test</name>
    <url>http://maven.apache.org</url>
    <repositories>
@@ -28,14 +26,19 @@
    </repositories>
    <dependencies>
       <dependency>
-         <groupId>org.resteasy</groupId>
+         <groupId>org.jboss.resteasy</groupId>
          <artifactId>resteasy-jaxrs</artifactId>
-         <version>${resteasy-version}</version>
+         <version>${project.version}</version>
       </dependency>
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
          <version>4.1</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>commons-httpclient</groupId>
+         <artifactId>commons-httpclient</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>

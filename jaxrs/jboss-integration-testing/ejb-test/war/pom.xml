@@ -1,23 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <parent>
-      <groupId>org.resteasy</groupId>
-      <artifactId>ejb-integration-test</artifactId>
-      <version>1.0</version>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs-all</artifactId>
+      <version>1.0-beta-6-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
-   <groupId>org.resteasy</groupId>
    <artifactId>ejb-test-war</artifactId>
    <packaging>war</packaging>
-   <version>${resteasy-version}</version>
    <name>Basic Integration Test</name>
    <url>http://maven.apache.org</url>
-   <repositories>
-      <repository>
-         <id>jboss</id>
-         <url>http://repository.jboss.org/maven2</url>
-      </repository>
-   </repositories>
    <build>
       <plugins>
          <plugin>
