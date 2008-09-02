@@ -1,14 +1,11 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
@@ -35,18 +32,11 @@ public class SpringBeanProcessor implements BeanPostProcessor
    {
       if (GetRestful.isRootResource(bean.getClass()))
       {
-         registry.addResourceFactory(new SingletonResource(bean));
+         registry.addSingletonResource(bean);
       }
       else if (bean.getClass().isAnnotationPresent(Provider.class))
       {
-         if (bean instanceof MessageBodyReader)
-         {
-            factory.addMessageBodyReader((MessageBodyReader) bean);
-         }
-         if (bean instanceof MessageBodyWriter)
-         {
-            factory.addMessageBodyWriter((MessageBodyWriter) bean);
-         }
+         factory.registerProviderInstance(bean);
       }
       else
       {
