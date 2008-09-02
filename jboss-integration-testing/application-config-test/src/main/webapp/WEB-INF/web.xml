@@ -17,24 +17,8 @@
    </context-param>
 
    <context-param>
-      <param-name>javax.ws.rs.core.ApplicationConfig</param-name>
+      <param-name>javax.ws.rs.core.Application</param-name>
       <param-value>org.jboss.resteasy.test.smoke.MyApplicationConfig</param-value>
-   </context-param>
-
-   <context-param>
-      <param-name>resteasy.media.type.mappings</param-name>
-      <param-value>
-         xml : application/xml,
-         html : text/html,
-         txt : text/plain
-      </param-value>
-   </context-param>
-
-   <context-param>
-      <param-name>resteasy.language.mappings</param-name>
-      <param-value>
-         en : en-US
-      </param-value>
    </context-param>
 
    <listener>

@@ -1,13 +1,5 @@
 package org.resteasy.test.ejb;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.ProduceMime;
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
 import javax.ejb.Stateless;
 
 /**
@@ -28,17 +20,17 @@ public class SimpleResourceBean implements SimpleResource
       System.out.println(body);
    }
 
-   public String getQueryParam(@QueryParam("param")String param)
+   public String getQueryParam(String param)
    {
       return param;
    }
 
-   public String getMatrixParam(@MatrixParam("param")String param)
+   public String getMatrixParam(String param)
    {
       return param;
    }
 
-   public int getUriParam(@PathParam("param")int param)
+   public int getUriParam(int param)
    {
       return param;
    }
