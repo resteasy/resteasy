@@ -28,5 +28,13 @@
          </includes>
          <outputDirectory>resteasy-jaxrs.war</outputDirectory>
       </dependencySet>
+      <dependencySet>
+         <unpack>false</unpack>
+         <useTransitiveFiltering>true</useTransitiveFiltering>
+         <includes>
+            <include>org.jboss.resteasy:resteasy-jaxrs</include>
+         </includes>
+         <outputDirectory>lib</outputDirectory>
+      </dependencySet>
    </dependencySets>
 </assembly>
