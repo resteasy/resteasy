@@ -4,28 +4,20 @@
 
 <web-app>
    <display-name>Archetype Created Web Application</display-name>
-   <!-- Scan for both @Provider and JAX-RS resource classes (@Path, @GET, @POST etc..) and register them -->
-   <!-- context-param>
-       <param-name>resteasy.scan</param-name>
-       <param-value>true</param-value>
-    </context-param-->
 
-   <!-- set this if you map the Resteasy servlet to something other than /*
+   <context-param>
+      <param-name>javax.ws.rs.core.Application</param-name>
+      <param-value>org.jboss.resteasy.examples.service.LibraryApplication</param-value>
+   </context-param>
+
    <context-param>
       <param-name>resteasy.servlet.mapping.prefix</param-name>
       <param-value>/resteasy</param-value>
    </context-param>
-   -->
+
    <listener>
       <listener-class>
          org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
-      </listener-class>
-   </listener>
-
-   <!-- Any beans annotated with JAX-RS are automatically loaded (@Path...) -->
-   <listener>
-      <listener-class>
-         org.jboss.resteasy.plugins.server.servlet.SpringContextLoaderListener
       </listener-class>
    </listener>
 
@@ -38,8 +30,7 @@
 
    <servlet-mapping>
       <servlet-name>Resteasy</servlet-name>
-      <!-- URL would be http://localhost:9095/services/helloservice/hello/toto -->
-      <url-pattern>/*</url-pattern>
+      <url-pattern>/resteasy/*</url-pattern>
    </servlet-mapping>
 
 </web-app>

@@ -19,6 +19,14 @@
          <directory>../examples/spring-hibernate-contacts</directory>
          <outputDirectory>examples/spring-hibernate</outputDirectory>
       </fileSet>
+      <fileSet>
+         <directory>../examples/ejb-integration</directory>
+         <outputDirectory>examples/ejb-integration</outputDirectory>
+      </fileSet>
+      <fileSet>
+         <directory>../examples/jaxb-json</directory>
+         <outputDirectory>examples/jaxb-json</outputDirectory>
+      </fileSet>
    </fileSets>
    <dependencySets>
       <dependencySet>

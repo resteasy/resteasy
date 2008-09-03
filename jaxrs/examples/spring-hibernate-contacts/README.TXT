@@ -6,6 +6,10 @@ Example of using RestEasy with:
 - In memory HSQLDB 
 - MySQL as a possible replacement to HSQLDB
 
+System Requirements:
+====================
+- Maven 2.0.9 or higher
+
 07/07/08 Updated:
 ================
 
