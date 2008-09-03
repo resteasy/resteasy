@@ -167,7 +167,7 @@ public class SynchronousDispatcher implements Dispatcher
       catch (Failure e)
       {
          handleFailure(in, response, e);
-         logger.debug("Could not match path: " + in.getUri().getPath(), e);
+         logger.info(e.getMessage());
          return;
       }
       if (invoker == null)
@@ -180,7 +180,7 @@ public class SynchronousDispatcher implements Dispatcher
          {
             throw new UnhandledException(e);
          }
-         logger.debug("Could not match path: " + in.getUri().getPath());
+         logger.info("Could not match path: " + in.getUri().getPath());
          return;
       }
       invoke(in, response, invoker);
@@ -246,7 +246,24 @@ public class SynchronousDispatcher implements Dispatcher
             throw new UnhandledException(e1);
          }
       }
-      else response.setStatus(((Failure) e).getErrorCode());
+      else
+      {
+         try
+         {
+            if (failure.getMessage() != null)
+            {
+               response.sendError(failure.getErrorCode(), failure.getMessage());
+            }
+            else
+            {
+               response.sendError(failure.getErrorCode());
+            }
+         }
+         catch (IOException e1)
+         {
+            throw new UnhandledException(e1);
+         }
+      }
       if (((Failure) e).isLoggable())
          logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
       else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
