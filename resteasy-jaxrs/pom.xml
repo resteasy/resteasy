@@ -24,6 +24,27 @@
          <version>${project.version}</version>
          <scope>test</scope>
       </dependency>
+
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-simple</artifactId>
+      </dependency>
+
       <!--
            Scans classes on cp for annotations and builds quick lookup database
            of them.
@@ -66,7 +87,6 @@
       <dependency>
          <groupId>commons-httpclient</groupId>
          <artifactId>commons-httpclient</artifactId>
-         <optional>true</optional>
       </dependency>
       <!--
            Used for optional JSON provider. Provider is activated by adding this
@@ -75,7 +95,6 @@
       <dependency>
          <groupId>org.codehaus.jettison</groupId>
          <artifactId>jettison</artifactId>
-         <optional>true</optional>
       </dependency>
       <!--
            Used by optional MimeMultipartProvider. Drop in jar on classpath to
@@ -84,7 +103,11 @@
       <dependency>
          <groupId>javax.mail</groupId>
          <artifactId>mail</artifactId>
-         <optional>true</optional>
+      </dependency>
+
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
       </dependency>
 
       <!-- Used for org.jboss.resteasy.plugins.server.servlet.SpringXXX -->
@@ -115,14 +138,12 @@
       <dependency>
          <groupId>tjws</groupId>
          <artifactId>webserver</artifactId>
-         <optional>true</optional>
       </dependency>
 
       <!-- Used by org.jboss.resteasy.plugins.providers.YamlProvider -->
       <dependency>
          <groupId>org.jyaml</groupId>
          <artifactId>jyaml</artifactId>
-         <optional>true</optional>
       </dependency>
    </dependencies>
 </project>
