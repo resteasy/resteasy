@@ -9,6 +9,12 @@
       <param-value>true</param-value>
    </context-param>
 
+   <!-- set this if you map the Resteasy servlet to something other than /*
+   <context-param>
+      <param-name>resteasy.servlet.mapping.prefix</param-name>
+      <param-value>/resteasy</param-value>
+   </context-param>
+   -->
    <!-- if you are using Spring, Seam or EJB as your component model, remove the ResourceMethodSecurityInterceptor -->
    <context-param>
       <param-name>resteasy.resource.method-interceptors</param-name>
