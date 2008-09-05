@@ -50,6 +50,7 @@ public final class FindAnnotation
     */
    public static <T> T findAnnotation(Annotation[] searchList, Class<T> annotation)
    {
+      if (searchList == null) return null;
       for (Annotation ann : searchList)
       {
          if (ann.annotationType().equals(annotation))

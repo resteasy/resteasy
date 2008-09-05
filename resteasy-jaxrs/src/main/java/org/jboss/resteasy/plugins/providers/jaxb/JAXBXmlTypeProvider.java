@@ -150,12 +150,9 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
                        {t});
                return JAXBElement.class.cast(result);
             }
-            else
-            {
-               throw new LoggableFailure(String.format("The method create%s() "
-                       + "was not found in the object Factory!", type));
-            }
          }
+         throw new LoggableFailure(String.format("The method create%s() "
+                 + "was not found in the object Factory!", type));
       }
       catch (IllegalArgumentException e)
       {
@@ -169,6 +166,5 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       {
          throw new ExceptionAdapter(e);
       }
-      return null;
    }
 }
