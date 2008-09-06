@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.xml;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.providers.jaxb.json.BadgerContext;
@@ -103,20 +104,26 @@ public class TestJAXB
    }
 
    @Test
+   @Mapped(attributesAsElements = {"title"})
    public void testJSON() throws Exception
    {
+      {
+         Mapped mapped = TestJAXB.class.getMethod("testJSON").getAnnotation(Mapped.class);
+         JettisonMappedContext context = new JettisonMappedContext(mapped, Book.class);
+         StringWriter writer = new StringWriter();
+         context.createMarshaller().marshal(new Book("Bill Burke", "666", "EJB 3.0"), writer);
+         System.out.println("Mapped: ");
+         String val = writer.toString();
+         System.out.println(val);
+
+         // test Mapped attributeAsElement
+         Assert.assertTrue(val.indexOf("@title") == -1);
+      }
       {
          BadgerContext context = new BadgerContext(Book.class);
          StringWriter writer = new StringWriter();
          context.createMarshaller().marshal(new Book("Bill Burke", "666", "EJB 3.0"), writer);
          System.out.println("Badger: ");
-         System.out.println(writer.toString());
-      }
-      {
-         JettisonMappedContext context = new JettisonMappedContext(Book.class);
-         StringWriter writer = new StringWriter();
-         context.createMarshaller().marshal(new Book("Bill Burke", "666", "EJB 3.0"), writer);
-         System.out.println("Mapped: ");
          System.out.println(writer.toString());
       }
       Library library = new Library();

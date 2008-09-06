@@ -33,8 +33,8 @@ public interface JsonJAXBXmlRootElementClient
    String getParentString(@PathParam("name")String name);
 
    @GET
-   @Path("/{name}/mapped")
-   String getParentMapped(@PathParam("name")String name);
+   @Path("/{name}/badger")
+   String getParentBadger(@PathParam("name")String name);
 
    @POST
    Parent postParent(Parent parent);

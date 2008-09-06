@@ -6,7 +6,7 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
-import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -47,8 +47,8 @@ public class JAXBXmlRootElementResource
    }
 
    @GET
-   @Path("/{name}/mapped")
-   @Mapped
+   @Path("/{name}/badger")
+   @BadgerFish
    public Parent getMappedParent(@PathParam("name")String name)
    {
       System.out.println("MAPPED!!!!");

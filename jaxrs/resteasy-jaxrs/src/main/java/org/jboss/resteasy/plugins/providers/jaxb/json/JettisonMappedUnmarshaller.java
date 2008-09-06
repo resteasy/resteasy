@@ -151,7 +151,7 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    {
       if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
       StreamSource stream = (StreamSource) source;
-      XMLStreamReader reader = getXmlStreamReader(stream.getReader());
+      XMLStreamReader reader = getXmlStreamReader(new InputStreamReader(stream.getInputStream()));
       return unmarshal(reader, tClass);
    }
 

@@ -5,13 +5,14 @@ import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Validator;
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,20 +29,27 @@ public class JettisonMappedContext extends JAXBContext
 
    public JettisonMappedContext(Class... classes)
    {
-      this(new HashMap<String, String>(), new ArrayList<String>(), new ArrayList<String>(), classes);
+      this(new HashMap<String, String>(), new ArrayList<QName>(), new ArrayList<QName>(), classes);
    }
 
    public JettisonMappedContext(Mapped mapped, Class... classes)
    {
-      List<String> ignoredElements = Arrays.asList(mapped.ignoredElements());
-      List<String> attributesAsElements = Arrays.asList(mapped.attributesAsElements());
+      List<QName> attributesAsElements = new ArrayList<QName>();
+      for (String name : mapped.attributesAsElements())
+      {
+         System.out.println("XMLConstants.NULL_NS_URI: " + XMLConstants.NULL_NS_URI);
+         System.out.println("XMLConstants.DEFAULT_NS_PREFIX: " + XMLConstants.DEFAULT_NS_PREFIX);
+         QName qName = new QName(name);
+         attributesAsElements.add(qName);
+      }
       HashMap<String, String> xmlnsToJson = new HashMap<String, String>();
       for (XmlNsMap j : mapped.namespaceMap())
       {
-         xmlnsToJson.put(j.xmlElement(), j.jsonName());
+         xmlnsToJson.put(j.namespace(), j.jsonName());
       }
-      Configuration config = new Configuration(xmlnsToJson, attributesAsElements, ignoredElements);
-      convention = new MappedNamespaceConvention(config);
+      Configuration config = new Configuration(xmlnsToJson, attributesAsElements, new ArrayList());
+      //convention = new MappedNamespaceConvention(config);
+      convention = new MappedConvention(config);
 
       try
       {
@@ -53,7 +61,7 @@ public class JettisonMappedContext extends JAXBContext
       }
    }
 
-   public JettisonMappedContext(Map<String, String> xmlnsToJson, List<String> attributesAsElements, List<String> ignoredElements, Class... classes)
+   public JettisonMappedContext(Map<String, String> xmlnsToJson, List<QName> attributesAsElements, List<QName> ignoredElements, Class... classes)
    {
       Configuration config = new Configuration(xmlnsToJson, attributesAsElements, ignoredElements);
       convention = new MappedNamespaceConvention(config);

@@ -22,13 +22,6 @@ import java.lang.annotation.Target;
 public @interface Mapped
 {
    /**
-    * Elements to ignore in JSON mapping
-    *
-    * @return
-    */
-   public String[] ignoredElements() default {};
-
-   /**
     * List of JSON attributes that should be regarded as Elements
     *
     * @return
