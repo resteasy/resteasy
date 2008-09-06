@@ -71,6 +71,17 @@ public class MediaTypeHelper
       return 2.0f;
    }
 
+   /**
+    * subtypes like application/*+xml
+    *
+    * @param subtype
+    * @return
+    */
+   public static boolean isCompositeWildcardSubtype(String subtype)
+   {
+      return subtype.indexOf("/*+") > -1;
+   }
+
    private static class MediaTypeComparator implements Comparator<MediaType>
    {
 
@@ -92,6 +103,10 @@ public class MediaTypeHelper
          if (!mediaType.isWildcardType() && mediaType2.isWildcardType()) return 1;
          if (mediaType.isWildcardSubtype() && !mediaType2.isWildcardSubtype()) return -1;
          if (!mediaType.isWildcardSubtype() && mediaType2.isWildcardSubtype()) return 1;
+         if (isCompositeWildcardSubtype(mediaType.getSubtype()) && !isCompositeWildcardSubtype(mediaType2.getSubtype()))
+            return -1;
+         if (!isCompositeWildcardSubtype(mediaType.getSubtype()) && isCompositeWildcardSubtype(mediaType2.getSubtype()))
+            return 1;
 
          int numNonQ = 0;
          if (mediaType.getParameters() != null)

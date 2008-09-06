@@ -13,15 +13,15 @@ import java.lang.reflect.Type;
 
 /**
  * A JAXBXmlRootElementProvider.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
 @Provider
 @Produces(
-{"text/xml", "application/xml"})
+        {"text/*+xml", "application/*+xml"})
 @Consumes(
-{"text/xml", "application/xml"})
+        {"text/*+xml", "application/*+xml"})
 public class JAXBXmlRootElementProvider extends AbstractJAXBProvider<Object>
 {
 

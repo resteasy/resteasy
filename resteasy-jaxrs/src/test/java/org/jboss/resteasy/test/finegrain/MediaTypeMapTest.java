@@ -34,6 +34,8 @@ public class MediaTypeMapTest
       map.add(new MediaType("*", "*"), wildcard);
       String allText = "allText";
       map.add(new MediaType("text", "*"), allText);
+      String allXML = "allXML";
+      map.add(new MediaType("text", "*+xml"), allXML);
       String app = "app";
       map.add(new MediaType("application", "*"), app);
 
@@ -46,21 +48,30 @@ public class MediaTypeMapTest
 
       list = map.getPossible(new MediaType("*", "*"));
       Assert.assertNotNull(list);
-      Assert.assertEquals(5, list.size());
+      Assert.assertEquals(6, list.size());
       Assert.assertTrue(list.get(0), list.get(0) == defaultPlainText || list.get(0) == jaxb);
       Assert.assertTrue(list.get(1), list.get(1) == defaultPlainText || list.get(1) == jaxb);
-      Assert.assertTrue(list.get(2), list.get(2) == allText || list.get(2) == app);
+      Assert.assertTrue(list.get(2), list.get(2) == allXML);
       Assert.assertTrue(list.get(3), list.get(3) == allText || list.get(3) == app);
-      Assert.assertTrue(list.get(4), list.get(4) == wildcard);
+      Assert.assertTrue(list.get(4), list.get(4) == allText || list.get(4) == app);
+      Assert.assertTrue(list.get(5), list.get(5) == wildcard);
 
       list = map.getPossible(new MediaType("text", "*"));
       Assert.assertNotNull(list);
-      Assert.assertEquals(4, list.size());
+      Assert.assertEquals(5, list.size());
       Assert.assertTrue(list.get(0), list.get(0) == defaultPlainText || list.get(0) == jaxb);
       Assert.assertTrue(list.get(1), list.get(1) == defaultPlainText || list.get(1) == jaxb);
-      Assert.assertTrue(list.get(2), list.get(2) == allText);
-      Assert.assertTrue(list.get(3), list.get(3) == wildcard);
+      Assert.assertTrue(list.get(2), list.get(2) == allXML);
+      Assert.assertTrue(list.get(3), list.get(3) == allText);
+      Assert.assertTrue(list.get(4), list.get(4) == wildcard);
 
+      list = map.getPossible(new MediaType("text", "xml"));
+      Assert.assertNotNull(list);
+      Assert.assertEquals(4, list.size());
+      Assert.assertTrue(list.get(0) == jaxb);
+      Assert.assertTrue(list.get(1) == allXML);
+      Assert.assertTrue(list.get(2) == allText);
+      Assert.assertTrue(list.get(3) == wildcard);
    }
 
    @Test
