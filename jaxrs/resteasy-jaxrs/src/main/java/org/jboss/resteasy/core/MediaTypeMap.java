@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * efficient MediaType index of T
@@ -34,9 +36,24 @@ public class MediaTypeMap<T>
       }
    }
 
+   private static Pattern COMPOSITE_SUBTYPE_PATTERN = Pattern.compile("[^\\+]+\\+(.+)");
+   private static Pattern COMPOSITE_SUBTYPE_WILDCARD_PATTERN = Pattern.compile("\\*\\+(.+)");
+
+   public static void main(String[] args) throws Exception
+   {
+      String type = "*+foo";
+      //String type = "application/foo";
+      Matcher matcher = COMPOSITE_SUBTYPE_WILDCARD_PATTERN.matcher(type);
+      if (matcher.matches())
+      {
+         System.out.println(matcher.group(1));
+      }
+   }
+
    private static class SubtypeMap<T>
    {
       private Map<String, List<Entry<T>>> index = new HashMap<String, List<Entry<T>>>();
+      private Map<String, List<Entry<T>>> compositeWildcardIndex = new HashMap<String, List<Entry<T>>>();
       private List<Entry<T>> wildcards = new ArrayList<Entry<T>>();
       private List<Entry<T>> all = new ArrayList<Entry<T>>();
 
@@ -46,7 +63,20 @@ public class MediaTypeMap<T>
          Entry<T> entry = new Entry<T>(type, obj);
          all.add(entry);
 
+         Matcher matcher = COMPOSITE_SUBTYPE_WILDCARD_PATTERN.matcher(type.getSubtype());
+
          if (type.isWildcardSubtype()) wildcards.add(entry);
+         else if (matcher.matches())
+         {
+            String main = matcher.group(1);
+            List<Entry<T>> list = compositeWildcardIndex.get(main);
+            if (list == null)
+            {
+               list = new ArrayList<Entry<T>>();
+               compositeWildcardIndex.put(main, list);
+            }
+            list.add(entry);
+         }
          else
          {
             List<Entry<T>> list = index.get(type.getSubtype());
@@ -68,9 +98,19 @@ public class MediaTypeMap<T>
          else
          {
             List<Entry<T>> matches = new ArrayList<Entry<T>>();
-            matches.addAll(wildcards);
+
             List<Entry<T>> indexed = index.get(accept.getSubtype());
             if (indexed != null) matches.addAll(indexed);
+
+            Matcher matcher = COMPOSITE_SUBTYPE_PATTERN.matcher(accept.getSubtype());
+            String compositeKey = accept.getSubtype();
+            if (matcher.matches())
+            {
+               compositeKey = matcher.group(1);
+            }
+            List<Entry<T>> indexed2 = compositeWildcardIndex.get(compositeKey);
+            if (indexed2 != null) matches.addAll(indexed2);
+            matches.addAll(wildcards);
             return matches;
          }
       }

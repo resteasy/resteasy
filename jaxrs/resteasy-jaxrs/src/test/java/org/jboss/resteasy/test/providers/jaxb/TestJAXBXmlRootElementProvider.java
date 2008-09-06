@@ -44,6 +44,7 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
 
    private FastinfoSetJAXBXmlRootElementClient fastClient;
    private FastinfoSetJAXBElementClient fastElementClient;
+   private JunkXmlOrderClient junkClient;
 
    @Before
    public void setUp() throws Exception
@@ -57,6 +58,7 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
       jsonElementClient = ProxyFactory.create(JsonJAXBElementClient.class, HTTP_LOCALHOST_8081_JAXB);
       fastClient = ProxyFactory.create(FastinfoSetJAXBXmlRootElementClient.class, HTTP_LOCALHOST_8081_JAXB);
       fastElementClient = ProxyFactory.create(FastinfoSetJAXBElementClient.class, HTTP_LOCALHOST_8081_JAXB);
+      junkClient = ProxyFactory.create(JunkXmlOrderClient.class, HTTP_LOCALHOST_8081_JAXB);
    }
 
    /**
@@ -66,6 +68,13 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
    public void testGetParent()
    {
       Parent parent = client.getParent(XML_PARENT);
+      Assert.assertEquals(parent.getName(), XML_PARENT);
+   }
+
+   @Test
+   public void testGetParentJunk()
+   {
+      Parent parent = junkClient.getParent(XML_PARENT);
       Assert.assertEquals(parent.getName(), XML_PARENT);
    }
 

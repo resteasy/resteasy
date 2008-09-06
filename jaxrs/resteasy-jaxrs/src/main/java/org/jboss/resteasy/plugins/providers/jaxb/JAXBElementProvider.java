@@ -39,9 +39,9 @@ import java.lang.reflect.Type;
  */
 @Provider
 @Produces(
-        {"text/xml", "application/xml"})
+        {"text/*+xml", "application/*+xml"})
 @Consumes(
-        {"text/xml", "application/xml"})
+        {"text/*+xml", "application/*+xml"})
 public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
 {
 
