@@ -2,7 +2,7 @@ package org.jboss.resteasy.examples.service;
 
 import org.jboss.resteasy.examples.data.Book;
 import org.jboss.resteasy.examples.data.BookListing;
-import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.plugins.providers.jaxb.json.BadgerContext;
 import org.jboss.resteasy.plugins.providers.jaxb.json.JettisonMappedContext;
 
@@ -33,6 +33,7 @@ public class Library
    @GET
    @Path("books/badger")
    @Produces("application/json")
+   @BadgerFish
    public BookListing getBooksBadger()
    {
       return getListing();
@@ -41,7 +42,7 @@ public class Library
    @GET
    @Path("books/mapped")
    @Produces("application/json")
-   @Mapped
+   //@Mapped // mapped is the default format
    public BookListing getBooksMapped()
    {
       return getListing();
@@ -56,7 +57,6 @@ public class Library
       BadgerContext context = new BadgerContext(BookListing.class);
       StringWriter writer = new StringWriter();
       Marshaller marshaller = context.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       marshaller.marshal(listing, writer);
       return writer.toString();
    }
@@ -64,14 +64,12 @@ public class Library
    @GET
    @Path("books/mapped.html")
    @Produces("text/html")
-   @Mapped
    public String getBooksMappedText() throws Exception
    {
       BookListing listing = getListing();
       JettisonMappedContext context = new JettisonMappedContext(BookListing.class);
       StringWriter writer = new StringWriter();
       Marshaller marshaller = context.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       marshaller.marshal(listing, writer);
       return writer.toString();
    }

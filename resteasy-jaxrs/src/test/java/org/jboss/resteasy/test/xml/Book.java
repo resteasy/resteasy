@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.xml;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -47,7 +48,7 @@ public class Book
       this.ISBN = ISBN;
    }
 
-   @XmlElement
+   @XmlAttribute
    public String getTitle()
    {
       return title;

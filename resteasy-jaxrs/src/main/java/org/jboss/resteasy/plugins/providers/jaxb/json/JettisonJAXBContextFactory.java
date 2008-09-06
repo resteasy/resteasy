@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
+import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -29,17 +30,19 @@ public class JettisonJAXBContextFactory
            throws JAXBException
    {
       Mapped mapped = FindAnnotation.findAnnotation(type, annotations, Mapped.class);
-      if (mapped != null)
+      BadgerFish badger = FindAnnotation.findAnnotation(type, annotations, BadgerFish.class);
+      if (badger != null)
       {
-         return find(type, mediaType, mappedCache, mapped);
+         return find(type, mediaType, badgerCache, mapped, badger);
+
       }
       else
       {
-         return find(type, mediaType, badgerCache, mapped);
+         return find(type, mediaType, mappedCache, mapped, badger);
       }
    }
 
-   protected JAXBContext find(Class<?> type, MediaType mediaType, ConcurrentHashMap<Class<?>, JAXBContext> cache, Mapped mapped)
+   protected JAXBContext find(Class<?> type, MediaType mediaType, ConcurrentHashMap<Class<?>, JAXBContext> cache, Mapped mapped, BadgerFish badger)
            throws JAXBException
    {
       JAXBContext jaxb;
@@ -51,13 +54,17 @@ public class JettisonJAXBContextFactory
       jaxb = provider.findProvidedJAXBContext(type, mediaType);
       if (jaxb == null)
       {
-         if (mapped == null)
+         if (badger != null)
          {
             jaxb = new BadgerContext(type);
          }
-         else
+         else if (mapped != null)
          {
             jaxb = new JettisonMappedContext(mapped, type);
+         }
+         else
+         {
+            jaxb = new JettisonMappedContext(type);
          }
       }
       cache.putIfAbsent(type, jaxb);

@@ -103,23 +103,16 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
    }
 
    @Test
-   public void testGetParentJson2() throws Exception
-   {
-      String str = jsonClient.getParentMapped(JSON_PARENT);
-      System.out.println(str);
-   }
-
-   @Test
    public void testGetParentJson() throws Exception
    {
       Parent parent = jsonClient.getParent(JSON_PARENT);
       Assert.assertNotNull(parent);
       Assert.assertEquals(parent.getName(), JSON_PARENT);
 
-      String badger = jsonClient.getParentString(JSON_PARENT);
-      System.out.println("Badger: '" + badger + "'");
-      String mapped = jsonClient.getParentMapped(JSON_PARENT);
+      String mapped = jsonClient.getParentString(JSON_PARENT);
       System.out.println("Mapped: '" + mapped + "'");
+      String badger = jsonClient.getParentBadger(JSON_PARENT);
+      System.out.println("Badger: '" + badger + "'");
       Assert.assertTrue(!badger.equals(mapped));
    }
 
