@@ -1,0 +1,20 @@
+<!-- test -->
+<project>
+   <name>Resteasy MOM Parent POM</name>
+   <url>http://www.attainware.com/</url>
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.jboss.resteasy.mom</groupId>
+   <version>1.0</version>
+   <artifactId>resteasy-mom-all</artifactId>
+   <packaging>pom</packaging>
+   <properties>
+      <resteasy-mom-version>1.0</resteasy-mom-version>
+      <jbossHome>/Users/billburke/jboss/jboss-4.2.2.GA</jbossHome>
+   </properties>
+
+   <modules>
+      <module>resteasy-mom</module>
+      <module>resteasy-mom-war</module>
+   </modules>
+</project>
