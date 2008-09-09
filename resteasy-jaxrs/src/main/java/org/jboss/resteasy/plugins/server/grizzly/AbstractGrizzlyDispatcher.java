@@ -33,8 +33,7 @@ abstract public class AbstractGrizzlyDispatcher
    public AbstractGrizzlyDispatcher(ResteasyProviderFactory providerFactory, String contextPath)
    {
       this.contextPath = contextPath;
-      dispatcher = new SynchronousDispatcher();
-      dispatcher.setProviderFactory(providerFactory);
+      dispatcher = new SynchronousDispatcher(providerFactory);
       if (contextPath == null) throw new RuntimeException("contextPath cannot be null");
       if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
    }

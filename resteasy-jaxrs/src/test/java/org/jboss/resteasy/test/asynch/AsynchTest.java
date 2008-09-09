@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
+import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.TJWSServletContainer;
 import org.junit.AfterClass;
@@ -58,8 +59,13 @@ public class AsynchTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = new AsynchronousDispatcher();
-      TJWSServletContainer.start(dispatcher);
+      TJWSServletContainer.tjws = new TJWSEmbeddedJaxrsServer();
+      dispatcher = new AsynchronousDispatcher(TJWSServletContainer.tjws.getFactory());
+      TJWSServletContainer.tjws.setDispatcher(dispatcher);
+      TJWSServletContainer.tjws.setPort(8081);
+      TJWSServletContainer.tjws.setRootResourcePath("");
+      TJWSServletContainer.tjws.setSecurityDomain(null);
+      TJWSServletContainer.tjws.start();
       dispatcher.start();
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
    }

@@ -43,7 +43,8 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    @Override
    public void start()
    {
-      getDispatcher().setProviderFactory(getFactory());  // make sure everything is initialized
+      getFactory();
+      getDispatcher(); // make sur everything is initialized
       server.setAttribute(ResteasyProviderFactory.class.getName(), getFactory());
       server.setAttribute(Dispatcher.class.getName(), getDispatcher());
       server.setAttribute(Registry.class.getName(), getRegistry());
@@ -83,8 +84,7 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    {
       if (dispatcher == null)
       {
-         dispatcher = new SynchronousDispatcher();
-         dispatcher.setProviderFactory(getFactory());
+         dispatcher = new SynchronousDispatcher(getFactory());
          registry = dispatcher.getRegistry();
       }
       return dispatcher;

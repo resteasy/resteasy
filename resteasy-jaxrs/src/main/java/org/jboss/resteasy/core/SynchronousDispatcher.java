@@ -49,11 +49,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected Map<String, String> languageMappings;
    private final static Logger logger = LoggerFactory.getLogger(SynchronousDispatcher.class);
 
-   public SynchronousDispatcher()
-   {
-   }
-
-   public void setProviderFactory(ResteasyProviderFactory providerFactory)
+   public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
