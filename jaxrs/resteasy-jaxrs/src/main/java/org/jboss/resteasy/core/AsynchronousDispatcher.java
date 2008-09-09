@@ -71,8 +71,9 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    private int maxCacheSize = 100;
 
 
-   public AsynchronousDispatcher()
+   public AsynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {
+      super(providerFactory);
    }
 
    /**

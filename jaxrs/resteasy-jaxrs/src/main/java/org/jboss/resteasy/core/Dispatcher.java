@@ -16,8 +16,6 @@ public interface Dispatcher
 {
    ResteasyProviderFactory getProviderFactory();
 
-   void setProviderFactory(ResteasyProviderFactory factory);
-
    Registry getRegistry();
 
    void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings);

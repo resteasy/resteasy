@@ -40,8 +40,7 @@ public class ResteasyBootstrap implements ServletContextListener
       ResteasyProviderFactory.setInstance(factory);
 
       event.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), factory);
-      dispatcher = new SynchronousDispatcher();
-      dispatcher.setProviderFactory(factory);
+      dispatcher = new SynchronousDispatcher(factory);
       registry = dispatcher.getRegistry();
       String rootPath = event.getServletContext().getInitParameter("resteasy.servlet.mapping.prefix");
       if (rootPath != null) ((ResourceMethodRegistry) registry).setRootPath(rootPath.trim());
