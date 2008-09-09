@@ -1,0 +1,374 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>JMS Facade</title><link rel="stylesheet" href="css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="d0e1"></a>JMS Facade</h1></div><div><h2 class="subtitle">Using JAX-RS to build a JMS Facade</h2></div><div><p class="releaseinfo">1.0</p></div></div><div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="chapter"><a href="#Configuration">1. Configuration</a></span></dt><dt><span class="chapter"><a href="#The RESTFul Interface">2. The RESTFul Interface</a></span></dt><dd><dl><dt><span class="sect1"><a href="#Queues">2.1. Queues</a></span></dt><dt><span class="sect1"><a href="#Topics">2.2. Topics</a></span></dt><dt><span class="sect1"><a href="#Durable Topics">2.3. Durable Topics</a></span></dt></dl></dd></dl></div><div class="preface" lang="en"><div class="titlepage"><div><div></div></div><div></div></div><p>
+      </p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="Configuration"></a>Chapter&nbsp;1.&nbsp;Configuration</h2></div></div><div></div></div><p>
+
+RESTEasy MOM has only been used/tested with JBoss MQ on JBoss 4.2.2.  It should work with other JMS providers and on other application servers, but you may have to do some tweaking.  RESTEasy MOM is deployed as a WAR file.  To configure you will have to modify its web.xml file.
+</p><p>
+
+
+</p><p>
+
+By default, RESTEasy MOM will try to lookup and use a ConnectionFactory stored under the JNDI name "java:/ConnectionFactory".  You can configure it to look into another JNDI location by setting the context param:
+</p><p>
+
+</p><pre class="programlisting">resteasy.mom.connection.factory</pre><p>
+</p><p>
+
+</p><p>
+
+
+</p><p>
+
+When RESTEasy MOM cannot deliver a message it tries to send the message to a dead letter queue.  It looks for this in JNDI, by default, under "queue/DLQ".  You can configure this setting via
+</p><p>
+
+</p><p>
+
+resteasy.mom.dlq.jndi
+</p><p>
+
+</p><p>
+
+
+</p><p>
+
+Every RESTEasy MOM URI path is prefaced with
+</p><p>
+
+</p><pre class="programlisting">/queues/{queue-name} </pre><p>
+</p><p>
+
+or
+</p><p>
+
+</p><pre class="programlisting">/topics/{topic-name} </pre><p>
+</p><p>
+
+</p><p>
+
+By default, RESTEasy MOM will try and lookup destinations as follows:
+</p><p>
+
+</p><pre class="programlisting">
+Destination dest = (Destination)jndi.lookup("queue/" + {queue-name});
+</pre><p>
+</p><p>
+
+or
+</p><p>
+
+</p><pre class="programlisting">
+Destination dest = (Destination)jndi.lookup("topic/" + {topic-name});
+</pre><p>
+</p><p>
+
+If you are using JBoss MQ and you have not defined a specific JNDIName for your queue or topic, then this will just work, if not, read further.
+</p><p>
+
+
+</p><p>
+
+You can use the resteasy.mom.queues.jndi or resteasy.mom.topics.jndi web.xml context-params to specify a name/jndiName mapping of the form:
+</p><p>
+
+name ':' jndi-name
+</p><p>
+
+As many as these as you want separate by a ','.  For example:
+</p><p>
+
+</p><pre class="programlisting">
+&lt;context-param&gt;
+   &lt;param-name&gt;resteasy.mom.queues.jndi&lt;/param-name&gt;
+   &lt;param-value&gt;
+       queueA : java:comp/env/jms/MyQueue,
+       queueB : jboss/queues/B
+   &lt;/param-value&gt;
+&lt;/context-param&gt;
+</pre><p>
+</p><p>
+
+</p><p>
+
+
+</p><p>
+
+If you cannot obtain JMS ConnectionFactory or destinations from JNDI, then you must write your own RestasyMomBootstrap class.  Download the RESTEasy MOM src and checkout the implementation of this class.  Its pretty straightforward.
+      </p><p>
+
+
+</p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="The RESTFul Interface"></a>Chapter&nbsp;2.&nbsp;The RESTFul Interface</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Queues"></a>2.1.&nbsp;Queues</h2></div></div><div></div></div><p>
+
+
+</p><pre class="programlisting">
+POST /queues/{queue-name}?persistent=[true|false]&amp;priority=[0-9+]&amp;timeToLive=[0-9+]
+</pre><p>
+</p><p>
+
+Response is 204 NO-CONTENT on success.  All query parameters optional
+</p><p>
+
+</p><p>
+
+
+</p><pre class="programlisting">
+POST /queues/{queue-name}/head?wait=[0-9+]
+</pre><p>
+</p><p>
+
+Wait is optional.  Defaults to wait forever.
+</p><p>
+
+</p><p>
+
+</p><p>
+
+
+</p><pre class="programlisting">
+GET /queues/{queue-name}/browser
+</pre><p>
+</p><p>
+
+Returns HTML document with links to message you can view.
+</p><p>
+
+
+Dedicated queues receivers are JMS message consumers attached to a specific session.
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+PUT /queues/{queue-name}/receivers/{receiver-id}
+</pre><p>
+If you pass an ACCEPT header this will create a JMS selector that filters message for only a specific media type.  So, if you pass an ACCEPT header of 'application/xml' this receiver will only get message of CONTENT-TYPE 'application/xml'
+</p><p>
+
+</p><p>
+
+
+</p><pre class="programlisting">DELETE /queues/{queue-name}/receivers/{receiver-id} </pre><p>
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+GET /queues/{queue-name}/receivers/{receiver-id}/head?wait=[0-9+]
+</pre><p>
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+DELETE /queues/{queue-name}/receivers/{receiver-id}/head
+</pre><p>
+</p><p>
+
+FYI, this is idempotent still!
+</p><p>
+
+
+</p><pre class="programlisting">
+POST /queues/{queue-name}/receivers/{reciever-id}/head
+</pre><p> 
+</p><p>
+
+</p><p>
+
+
+You can register a URI to post to when a message is sent to the queue.  This registers a MessageListener with the queue.  When the message is received, on the server, it send the message to the registered URI.
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+PUT /queues/{queue-name}/listeners/{listener-id}
+</pre><p>
+You must send a string that is the URI you want to send the message to.  The content-type can be anything, "text/plain" or whatever.
+</p><p>
+
+If you pass an ACCEPT header this will create a JMS selector that filters message for only a specific media type.  So, if you pass an ACCEPT header of 'application/xml' this receiver will only get message of CONTENT-TYPE 'application/xml'
+</p><p>
+
+
+</p><pre class="programlisting">DELETE /queues/{queue-name}/receivers/{receiver-id} </pre><p>
+</p><p>
+
+</p><p>
+
+ 
+</p><p>
+
+</p><p>
+
+
+</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Topics"></a>2.2.&nbsp;Topics</h2></div></div><div></div></div><p>
+
+
+</p><pre class="programlisting">
+POST /topics/{topic-name}?persistent=[true|false]&amp;priority=[0-9+]&amp;timeToLive=[0-9+]
+</pre><p>
+</p><p>
+
+Response is 204 NO-CONTENT on success.  All query parameters optional
+</p><p>
+
+
+Dedicated topic receivers are JMS message consumers attached to a specific session.
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+PUT /topics/{topic-name}/receivers/{receiver-id}
+</pre><p>
+If you pass an ACCEPT header this will create a JMS selector that filters message for only a specific media type.  So, if you pass an ACCEPT header of 'application/xml' this receiver will only get message of CONTENT-TYPE 'application/xml'
+</p><p>
+
+</p><p>
+
+
+</p><pre class="programlisting">DELETE /topics/{topic-name}/receivers/{receiver-id} </pre><p>
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+GET /topics/{topic-name}/receivers/{receiver-id}/head?wait=[0-9+]
+</pre><p>
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+DELETE /topics/{topic-name}/receivers/{receiver-id}/head
+</pre><p>
+</p><p>
+
+FYI, this is idempotent still!
+</p><p>
+
+
+</p><pre class="programlisting">
+POST /topics/{topic-name}/receivers/{receiver-id}/head
+</pre><p> 
+</p><p>
+
+</p><p>
+
+
+You can register a URI to post to when a message is sent to this dedicated topic listener.  This registers a MessageListener with the queue.  When the message is received, on the server, it send the message to the registered URI.
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+PUT /topics/{topic-name}/listeners/{listener-id}
+</pre><p>
+You must send a string that is the URI you want to send the message to.  The content-type can be anything, "text/plain" or whatever.
+</p><p>
+
+If you pass an ACCEPT header this will create a JMS selector that filters message for only a specific media type.  So, if you pass an ACCEPT header of 'application/xml' this receiver will only get message of CONTENT-TYPE 'application/xml'
+</p><p>
+
+
+</p><pre class="programlisting">DELETE /topics/{topic-name}/receivers/{receiver-id} </pre><p>
+</p><p>
+
+</p><p>
+
+ 
+</p><p>
+
+</p><p>
+
+
+</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Durable Topics"></a>2.3.&nbsp;Durable Topics</h2></div></div><div></div></div><p>
+
+
+</p><pre class="programlisting">
+POST /topics/{topic-name}?persistent=[true|false]&amp;priority=[0-9+]&amp;timeToLive=[0-9+]
+</pre><p>
+</p><p>
+
+Response is 204 NO-CONTENT on success.  All query parameters optional
+</p><p>
+
+</p><p>
+
+
+Dedicated topic receivers are JMS message consumers attached to a specific session.
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+PUT /topics/{topic-name}/durable/receivers/{receiver-id}
+</pre><p>
+If you pass an ACCEPT header this will create a JMS selector that filters message for only a specific media type.  So, if you pass an ACCEPT header of 'application/xml' this receiver will only get message of CONTENT-TYPE 'application/xml'
+</p><p>
+
+</p><p>
+
+
+</p><pre class="programlisting">DELETE /topics/{topic-name}/durable/receivers/{receiver-id} </pre><p>
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+GET /topics/{topic-name}/durable/receivers/{receiver-id}/head?wait=[0-9+]
+</pre><p>
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+DELETE /topics/{topic-name}/durable/receivers/{receiver-id}/head
+</pre><p>
+</p><p>
+
+FYI, this is idempotent still!
+</p><p>
+
+
+</p><pre class="programlisting">
+POST /topics/{topic-name}/durable/receivers/{receiver-id}/head
+</pre><p> 
+</p><p>
+
+</p><p>
+
+
+You can register a URI to post to when a message is sent to this dedicated topic listener.  This registers a MessageListener with the queue.  When the message is received, on the server, it send the message to the registered URI.
+</p><p>
+
+
+</p><p>
+
+</p><pre class="programlisting">
+PUT /topics/{topic-name}/durable/listeners/{listener-id}
+</pre><p>
+You must send a string that is the URI you want to send the message to.  The content-type can be anything, "text/plain" or whatever.
+</p><p>
+
+If you pass an ACCEPT header this will create a JMS selector that filters message for only a specific media type.  So, if you pass an ACCEPT header of 'application/xml' this receiver will only get message of CONTENT-TYPE 'application/xml'
+</p><p>
+
+
+</p><pre class="programlisting">DELETE /topics/{topic-name}/durable/receivers/{receiver-id} </pre><p>
+
+
+</p></div></div></div></body></html>
