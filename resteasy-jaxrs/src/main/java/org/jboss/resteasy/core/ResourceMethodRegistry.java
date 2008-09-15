@@ -30,22 +30,11 @@ public class ResourceMethodRegistry implements Registry
    protected int size;
 
    protected ResteasyProviderFactory providerFactory;
-   protected String rootPath = "";
    protected RootSegment rootSegment = new RootSegment();
 
    public ResourceMethodRegistry(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
-   }
-
-   /**
-    * Set a base root path that all mappings will be based on
-    *
-    * @param rootPath
-    */
-   public void setRootPath(String rootPath)
-   {
-      this.rootPath = rootPath;
    }
 
    public void addPerRequestResource(Class clazz, String basePath)
@@ -137,7 +126,6 @@ public class ResourceMethodRegistry implements Registry
          if (path == null && httpMethods == null) continue;
 
          UriBuilderImpl builder = new UriBuilderImpl();
-         if (rootPath != null) builder.path(rootPath);
          if (base != null) builder.path(base);
          if (clazz.isAnnotationPresent(Path.class))
          {
