@@ -19,12 +19,15 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class PathParamSegment extends Segment
+public class PathParamSegment extends Segment implements Comparable<PathParamSegment>
 {
    protected String pathExpression;
    protected String regex;
    protected Pattern pattern;
    protected List<Group> groups = new ArrayList<Group>();
+   protected int literalCharacters;
+   protected int numCapturingGroups;
+   protected int numNonDefaultGroups;
 
    private static class Group
    {
@@ -44,6 +47,22 @@ public class PathParamSegment extends Segment
          this.name = name;
          this.storePathSegment = storePathSegment;
       }
+   }
+
+   public int compareTo(PathParamSegment pathParamSegment)
+   {
+      // as per spec sort first by literal characters, then numCapturing groups, then num non-default groups
+
+      if (literalCharacters > pathParamSegment.literalCharacters) return -1;
+      if (literalCharacters < pathParamSegment.literalCharacters) return 1;
+
+      if (numCapturingGroups > pathParamSegment.numCapturingGroups) return -1;
+      if (numCapturingGroups < pathParamSegment.numCapturingGroups) return 1;
+
+      if (numNonDefaultGroups > pathParamSegment.numNonDefaultGroups) return -1;
+      if (numNonDefaultGroups < pathParamSegment.numNonDefaultGroups) return 1;
+
+      return 0;
    }
 
    public static final Pattern GROUP = Pattern.compile("[^\\\\]\\(");
@@ -67,6 +86,7 @@ public class PathParamSegment extends Segment
    public PathParamSegment(String segment)
    {
       this.pathExpression = segment;
+      literalCharacters = PathHelper.URI_PARAM_PATTERN.matcher(segment).replaceAll("").length();
       String[] split = PathHelper.URI_PARAM_PATTERN.split(segment);
       Matcher withPathParam = PathHelper.URI_PARAM_PATTERN.matcher(segment);
       int i = 0;
@@ -87,6 +107,7 @@ public class PathParamSegment extends Segment
          {
             String expr = withPathParam.group(3);
             buffer.append(expr);
+            numNonDefaultGroups++;
             groups.add(new Group(groupNumber++, name));
             groupNumber += groupCount(expr);
          }
@@ -95,6 +116,7 @@ public class PathParamSegment extends Segment
       }
       regex = buffer.toString();
       pattern = Pattern.compile(regex);
+      numCapturingGroups = groups.size();
    }
 
    public String getRegex()
