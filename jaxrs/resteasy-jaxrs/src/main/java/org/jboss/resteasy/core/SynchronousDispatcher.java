@@ -294,6 +294,7 @@ public class SynchronousDispatcher implements Dispatcher
             // don't think I want to call writeJaxrsResponse infinately! so we'll just write the status
             response.reset();
             response.setStatus(ex.getResponse().getStatus());
+            logger.error("Failed to write exception response", ex);
 
          }
          catch (Exception e1)
@@ -309,6 +310,7 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void handleWebApplicationException(HttpResponse response, WebApplicationException wae)
    {
+      logger.error("failed to execute", wae);
       if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
       response.reset();
       try

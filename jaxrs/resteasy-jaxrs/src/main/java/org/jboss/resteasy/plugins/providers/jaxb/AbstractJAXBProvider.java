@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -96,8 +95,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       {
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
-         JAXBElement<T> e = unmarshaller.unmarshal(new StreamSource(entityStream), type);
-         return e.getValue();
+         return (T) unmarshaller.unmarshal(new StreamSource(entityStream));
       }
       catch (JAXBException e)
       {

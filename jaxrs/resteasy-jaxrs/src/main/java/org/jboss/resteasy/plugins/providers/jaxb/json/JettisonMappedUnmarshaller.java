@@ -143,7 +143,10 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    public Object unmarshal(Source source)
            throws JAXBException
    {
-      return unmarshaller.unmarshal(source);
+      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
+      StreamSource stream = (StreamSource) source;
+      XMLStreamReader reader = getXmlStreamReader(new InputStreamReader(stream.getInputStream()));
+      return unmarshal(reader);
    }
 
    public <T> JAXBElement<T> unmarshal(Source source, Class<T> tClass)
