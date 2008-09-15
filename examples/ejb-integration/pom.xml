@@ -4,7 +4,7 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.jboss.resteasy</groupId>
-   <version>1.0-beta-6</version>
+   <version>1.0-beta-7</version>
    <artifactId>ejb-integration-example</artifactId>
    <packaging>pom</packaging>
    <properties>
