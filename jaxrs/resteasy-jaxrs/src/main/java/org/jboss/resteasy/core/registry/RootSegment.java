@@ -12,8 +12,11 @@ import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.PathHelper;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -25,7 +28,9 @@ public class RootSegment extends Segment
 {
    protected Map<String, SimpleSegment> simpleSegments = new HashMap<String, SimpleSegment>();
    protected Map<String, PathParamSegment> resourceExpressions = new HashMap<String, PathParamSegment>();
+   protected List<PathParamSegment> sortedResourceExpressions = new ArrayList<PathParamSegment>();
    protected Map<String, PathParamSegment> locatorExpressions = new HashMap<String, PathParamSegment>();
+   protected List<PathParamSegment> sortedLocatorExpressions = new ArrayList<PathParamSegment>();
 
    @Override
    protected boolean isEmpty()
@@ -49,6 +54,8 @@ public class RootSegment extends Segment
             segmentNode = new PathParamSegment(expression);
             segmentNode.locator = (ResourceLocator) invoker;
             locatorExpressions.put(segmentNode.getPathExpression(), segmentNode);
+            sortedLocatorExpressions.add(segmentNode);
+            Collections.sort(sortedLocatorExpressions);
          }
          else
          {
@@ -57,6 +64,8 @@ public class RootSegment extends Segment
             {
                segmentNode = new PathParamSegment(expression);
                resourceExpressions.put(segmentNode.getPathExpression(), segmentNode);
+               sortedResourceExpressions.add(segmentNode);
+               Collections.sort(sortedResourceExpressions);
             }
             segmentNode.methods.add((ResourceMethod) invoker);
          }
@@ -123,7 +132,11 @@ public class RootSegment extends Segment
          if (isLocator(method))
          {
             PathParamSegment rtn = locatorExpressions.remove(expression);
-            if (rtn != null) return rtn.locator;
+            if (rtn != null)
+            {
+               sortedLocatorExpressions.remove(rtn);
+               return rtn.locator;
+            }
             else return null;
          }
          else
@@ -146,7 +159,11 @@ public class RootSegment extends Segment
             }
             finally
             {
-               if (node.isEmpty()) resourceExpressions.remove(expression);
+               if (node.isEmpty())
+               {
+                  PathParamSegment seg = resourceExpressions.remove(expression);
+                  if (seg != null) sortedResourceExpressions.remove(seg);
+               }
             }
          }
       }
@@ -265,7 +282,7 @@ public class RootSegment extends Segment
          }
       }
 
-      for (PathParamSegment pathParamSegment : resourceExpressions.values())
+      for (PathParamSegment pathParamSegment : sortedResourceExpressions)
       {
          try
          {
@@ -276,7 +293,7 @@ public class RootSegment extends Segment
             lastFailure = e;
          }
       }
-      for (PathParamSegment pathParamSegment : locatorExpressions.values())
+      for (PathParamSegment pathParamSegment : sortedLocatorExpressions)
       {
          try
          {

@@ -15,6 +15,7 @@
    <modules>
       <module>basic-integration-test</module>
       <module>application-config-test</module>
+      <module>servlet-mapping-test</module>
       <module>spring-integration-test</module>
       <module>ejb-test</module>
    </modules>
