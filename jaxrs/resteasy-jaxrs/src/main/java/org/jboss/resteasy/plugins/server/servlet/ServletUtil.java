@@ -30,9 +30,16 @@ import java.util.Map;
  */
 public class ServletUtil
 {
-   public static UriInfoImpl extractUriInfo(HttpServletRequest request)
+   public static UriInfoImpl extractUriInfo(HttpServletRequest request, String servletPrefix)
    {
-      String path = PathHelper.getEncodedPathInfo(request.getRequestURI(), request.getContextPath());
+      String contextPath = request.getContextPath();
+      if (servletPrefix != null && servletPrefix.length() > 0)
+      {
+         if (!contextPath.endsWith("/"))
+            contextPath += "/";
+         contextPath += servletPrefix;
+      }
+      String path = PathHelper.getEncodedPathInfo(request.getRequestURI(), contextPath);
       URI absolutePath = null;
       try
       {

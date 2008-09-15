@@ -1,13 +1,19 @@
 package org.jboss.resteasy.test.smoke;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import org.junit.Assert;
+import java.net.URI;
+
+
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -19,16 +25,18 @@ public class SimpleResource
 
    @GET
    @Path("basic")
-   @ProduceMime("text/plain")
-   public String getBasic()
+   @Produces("text/plain")
+   public String getBasic(@Context UriInfo uriInfo) throws Exception
    {
+      URI uri = uriInfo.getBaseUriBuilder().path(SimpleResource.class, "getBasic").build();
+      Assert.assertEquals(uri.getPath(), "/resteasy/rest/basic");
       System.out.println("getBasic()");
       return "basic";
    }
 
    @PUT
    @Path("basic")
-   @ConsumeMime("text/plain")
+   @Consumes("text/plain")
    public void putBasic(String body)
    {
       System.out.println(body);
@@ -36,7 +44,7 @@ public class SimpleResource
 
    @GET
    @Path("queryParam")
-   @ProduceMime("text/plain")
+   @Produces("text/plain")
    public String getQueryParam(@QueryParam("param")String param)
    {
       return param;
@@ -44,7 +52,7 @@ public class SimpleResource
 
    @GET
    @Path("matrixParam")
-   @ProduceMime("text/plain")
+   @Produces("text/plain")
    public String getMatrixParam(@MatrixParam("param")String param)
    {
       return param;
@@ -52,7 +60,7 @@ public class SimpleResource
 
    @GET
    @Path("uriParam/{param}")
-   @ProduceMime("text/plain")
+   @Produces("text/plain")
    public int getUriParam(@PathParam("param")int param)
    {
       return param;

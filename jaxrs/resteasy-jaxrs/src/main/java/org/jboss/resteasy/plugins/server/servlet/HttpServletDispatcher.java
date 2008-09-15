@@ -51,6 +51,9 @@ public class HttpServletDispatcher extends HttpServlet
          servletConfig.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
          servletConfig.getServletContext().setAttribute(Registry.class.getName(), dispatcher.getRegistry());
       }
+      servletMappingPrefix = servletConfig.getServletContext().getInitParameter("resteasy.servlet.mapping.prefix");
+      if (servletMappingPrefix == null) servletMappingPrefix = "";
+      servletMappingPrefix.trim();
    }
 
    public void setDispatcher(Dispatcher dispatcher)
@@ -66,7 +69,7 @@ public class HttpServletDispatcher extends HttpServlet
    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-      UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request);
+      UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
 
       HttpRequest in;
       try
