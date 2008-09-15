@@ -107,7 +107,10 @@ public class FastinfoSetUnmarshaller implements Unmarshaller, UnmarshallerSpi
    public Object unmarshal(Source source)
            throws JAXBException
    {
-      throw new UnsupportedOperationException();
+      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
+      StreamSource stream = (StreamSource) source;
+      XMLStreamReader reader = getFastinfoSetXMLStreamReader(stream.getInputStream());
+      return unmarshal(reader);
    }
 
    public <T> JAXBElement<T> unmarshal(Source source, Class<T> tClass)

@@ -131,7 +131,10 @@ public class BadgerUnmarshaller implements Unmarshaller, UnmarshallerSpi
    public Object unmarshal(Source source)
            throws JAXBException
    {
-      return unmarshaller.unmarshal(source);
+      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
+      StreamSource stream = (StreamSource) source;
+      XMLStreamReader reader = getBadgerFishReader(new InputStreamReader(stream.getInputStream()));
+      return unmarshal(reader);
    }
 
    public <T> JAXBElement<T> unmarshal(Source source, Class<T> tClass)
