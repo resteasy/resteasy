@@ -85,7 +85,7 @@ public class ResteasyBootstrap implements ServletContextListener
          URL[] urls = WarUrlFinder.findWebInfLibClasspaths(event);
          URL url = WarUrlFinder.findWebInfClassesPath(event);
          AnnotationDB db = new AnnotationDB();
-         String[] ignoredPackages = {"org.jboss.resteasy.plugins", "javax.ws.rs"};
+         String[] ignoredPackages = {"org.jboss.resteasy.plugins", "org.jboss.resteasy.annotations", "org.jboss.resteasy.client", "org.jboss.resteasy.specimpl", "org.jboss.resteasy.core", "org.jboss.resteasy.spi", "org.jboss.resteasy.util", "org.jboss.resteasy.mock", "javax.ws.rs"};
          db.setIgnoredPackages(ignoredPackages);
          try
          {
