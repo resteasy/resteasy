@@ -74,7 +74,7 @@ public class HttpServletDispatcher extends HttpServlet
       HttpRequest in;
       try
       {
-         in = new HttpServletInputMessage(headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase());
+         in = new HttpServletInputMessage(request, headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase());
       }
       catch (IOException e)
       {

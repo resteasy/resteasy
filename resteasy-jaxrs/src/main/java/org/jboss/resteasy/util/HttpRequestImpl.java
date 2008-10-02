@@ -93,4 +93,33 @@ public class HttpRequestImpl implements HttpRequest
       return decodedFormParameters;
    }
 
+   public void suspend()
+   {
+      throw new UnsupportedOperationException("UNSUPPORTED OPERATION");
+   }
+
+   public void suspend(long timeout)
+   {
+      throw new UnsupportedOperationException("UNSUPPORTED OPERATION");
+   }
+
+   public void complete()
+   {
+      throw new UnsupportedOperationException("UNSUPPORTED OPERATION");
+   }
+
+   public boolean isInitial()
+   {
+      return true;
+   }
+
+   public boolean isSuspended()
+   {
+      return false;
+   }
+
+   public boolean isTimeout()
+   {
+      return false;
+   }
 }

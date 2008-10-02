@@ -41,4 +41,36 @@ public interface HttpRequest
 
    MultivaluedMap<String, String> getDecodedFormParameters();
 
+
+   /**
+    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
+    */
+   public void suspend();
+
+   /**
+    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
+    */
+   public void suspend(long timeout);
+
+   /**
+    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
+    */
+   public void complete();
+
+   /**
+    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
+    */
+   public boolean isInitial();
+
+   /**
+    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
+    */
+   public boolean isSuspended();
+
+   /**
+    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
+    */
+   public boolean isTimeout();
+
+
 }

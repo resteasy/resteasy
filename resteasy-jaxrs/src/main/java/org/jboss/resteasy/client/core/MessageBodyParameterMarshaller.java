@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -47,29 +48,7 @@ public class MessageBodyParameterMarshaller implements Marshaller
       final MessageBodyWriter writer = getMessageBodyWriter();
       final Object target = object;
       final HttpClientHeaderWrapper wrapper = new HttpClientHeaderWrapper(httpMethod, factory);
-      RequestEntity body = new RequestEntity()
-      {
-         public boolean isRepeatable()
-         {
-            return true;
-         }
-
-         public void writeRequest(OutputStream outputStream) throws IOException
-         {
-            wrapper.sync();
-            writer.writeTo(target, type, genericType, annotations, mediaType, wrapper, outputStream);
-         }
-
-         public long getContentLength()
-         {
-            return writer.getSize(target, type, genericType, annotations, mediaType);
-         }
-
-         public String getContentType()
-         {
-            return mediaType.toString();
-         }
-      };
+      RequestEntity body = new ClientRequestEntity(wrapper, writer, target);
       ((EntityEnclosingMethod) httpMethod).setRequestEntity(body);
    }
 
@@ -87,5 +66,53 @@ public class MessageBodyParameterMarshaller implements Marshaller
    public MediaType getMediaType()
    {
       return mediaType;
+   }
+
+   private class ClientRequestEntity implements RequestEntity
+   {
+      private final HttpClientHeaderWrapper wrapper;
+      private final MessageBodyWriter writer;
+      private final Object target;
+      private byte[] bytes;
+
+      public ClientRequestEntity(HttpClientHeaderWrapper wrapper, MessageBodyWriter writer, Object target)
+      {
+         this.wrapper = wrapper;
+         this.writer = writer;
+         this.target = target;
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         try
+         {
+            writer.writeTo(target, type, genericType, annotations, mediaType, wrapper, baos);
+            bytes = baos.toByteArray();
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+
+      }
+
+      public boolean isRepeatable()
+      {
+         return true;
+      }
+
+      public void writeRequest(OutputStream outputStream) throws IOException
+      {
+         //wrapper.sync();
+         //writer.writeTo(target, type, genericType, annotations, mediaType, wrapper, outputStream);
+         outputStream.write(bytes);
+      }
+
+      public long getContentLength()
+      {
+         return bytes.length;
+      }
+
+      public String getContentType()
+      {
+         return mediaType.toString();
+      }
    }
 }
