@@ -44,12 +44,12 @@ public class HttpClientHeaderWrapper implements MultivaluedMap<String, Object>
       if (delegate != null)
       {
          //System.out.println("addResponseHeader: " + key + " " + delegate.toString(value));
-         httpMethod.addRequestHeader(key, delegate.toString(value));
+         httpMethod.setRequestHeader(key.toLowerCase(), delegate.toString(value));
       }
       else
       {
          //System.out.println("addResponseHeader: " + key + " " + value.toString());
-         httpMethod.addRequestHeader(key, value.toString());
+         httpMethod.setRequestHeader(key.toLowerCase(), value.toString());
       }
    }
 
@@ -65,12 +65,12 @@ public class HttpClientHeaderWrapper implements MultivaluedMap<String, Object>
       if (delegate != null)
       {
          //System.out.println("addResponseHeader: " + key + " " + delegate.toString(value));
-         httpMethod.addRequestHeader(key, delegate.toString(value));
+         httpMethod.addRequestHeader(key.toLowerCase(), delegate.toString(value));
       }
       else
       {
          //System.out.println("addResponseHeader: " + key + " " + value.toString());
-         httpMethod.addRequestHeader(key, value.toString());
+         httpMethod.addRequestHeader(key.toLowerCase(), value.toString());
       }
    }
 

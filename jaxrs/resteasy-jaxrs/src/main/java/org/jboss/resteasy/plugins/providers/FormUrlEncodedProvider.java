@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Encoded;
@@ -13,6 +14,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -108,7 +110,8 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
    public void writeTo(MultivaluedMap<String, String> formData, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
-      OutputStreamWriter writer = new OutputStreamWriter(entityStream, "UTF-8");
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      OutputStreamWriter writer = new OutputStreamWriter(baos, "UTF-8");
 
       boolean first = true;
       for (Map.Entry<String, List<String>> entry : formData.entrySet())
@@ -130,6 +133,10 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
          }
          writer.flush();
       }
+
+      byte[] bytes = baos.toByteArray();
+      httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(bytes.length));
+      entityStream.write(bytes);
 
    }
 

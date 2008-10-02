@@ -233,4 +233,34 @@ public class MockHttpRequest implements HttpRequest
    {
       preprocessedPath = path;
    }
+
+   public void suspend()
+   {
+      throw new UnsupportedOperationException();
+   }
+
+   public void suspend(long timeout)
+   {
+      throw new UnsupportedOperationException();
+   }
+
+   public void complete()
+   {
+      throw new UnsupportedOperationException();
+   }
+
+   public boolean isInitial()
+   {
+      return true;
+   }
+
+   public boolean isSuspended()
+   {
+      return false;
+   }
+
+   public boolean isTimeout()
+   {
+      return false;
+   }
 }
