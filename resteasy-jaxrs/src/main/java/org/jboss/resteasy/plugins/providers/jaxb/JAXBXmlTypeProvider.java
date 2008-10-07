@@ -3,19 +3,27 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
 import org.jboss.resteasy.core.ExceptionAdapter;
 import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -73,6 +81,48 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       super.writeTo(result, type, genericType, annotations, mediaType, httpHeaders, entityStream);
    }
 
+   @Override
+   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   {
+      try
+      {
+         JAXBContext jaxb = findJAXBContext(type, annotations, mediaType);
+         Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+         Object obj = unmarshaller.unmarshal(entityStream);
+         if (obj instanceof JAXBElement)
+         {
+            JAXBElement element = (JAXBElement) obj;
+            return element.getValue();
+
+         }
+         else
+         {
+            return obj;
+         }
+      }
+      catch (JAXBException e)
+      {
+         Response response = Response.serverError().build();
+         throw new WebApplicationException(e, response);
+      }
+   }
+
+   @Override
+   protected JAXBContext createDefaultJAXBContext(Class<?> type, Annotation[] annotations) throws JAXBException
+   {
+      JAXBConfig config = FindAnnotation.findAnnotation(type, annotations, JAXBConfig.class);
+      Class objectFactory = null;
+      try
+      {
+         objectFactory = findDefaultObjectFactoryClass(type);
+      }
+      catch (ClassNotFoundException e)
+      {
+      }
+      if (objectFactory != null) return new JAXBContextWrapper(config, type, objectFactory);
+      else return new JAXBContextWrapper(config, type);
+   }
+
    /**
     *
     */
@@ -94,13 +144,11 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * @param type
     * @return
     */
-   private Object findObjectFactory(Object t, Class<?> type)
+   private Object findObjectFactory(Class<?> type)
    {
       try
       {
-         StringBuilder b = new StringBuilder(type.getPackage().getName());
-         b.append(OBJECT_FACTORY_NAME);
-         Class<?> factoryClass = Thread.currentThread().getContextClassLoader().loadClass(b.toString());
+         Class<?> factoryClass = findDefaultObjectFactoryClass(type);
          if (factoryClass.isAnnotationPresent(XmlRegistry.class))
          {
             Object factory = factoryClass.newInstance();
@@ -126,6 +174,18 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 
    }
 
+   private Class<?> findDefaultObjectFactoryClass(Class<?> type)
+           throws ClassNotFoundException
+   {
+      XmlType typeAnnotation = type.getAnnotation(XmlType.class);
+      if (!typeAnnotation.factoryClass().equals(XmlType.DEFAULT.class)) return null;
+      StringBuilder b = new StringBuilder(type.getPackage().getName());
+      b.append(OBJECT_FACTORY_NAME);
+      Class<?> factoryClass = Thread.currentThread().getContextClassLoader().loadClass(b.toString());
+      if (factoryClass.isAnnotationPresent(XmlRegistry.class)) return factoryClass;
+      return null;
+   }
+
    /**
     * If this object is managed by an XmlRegistry, this method will invoke the registry and wrap the object in
     * a JAXBElement so that it can be marshalled.
@@ -138,7 +198,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    {
       try
       {
-         Object factory = findObjectFactory(t, type);
+         Object factory = findObjectFactory(type);
          Method[] method = factory.getClass().getDeclaredMethods();
          for (int i = 0; i < method.length; i++)
          {
