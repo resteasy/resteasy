@@ -74,8 +74,6 @@
       <module>resteasy-test-data</module>
       <module>resteasy-jaxrs</module>
       <module>resteasy-jaxrs-war</module>
-      <module>resteasy-client</module>
-      <module>resteasy-common</module>
       <module>distribution</module>
 
    </modules>
@@ -122,7 +120,7 @@
          <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.1.2</version>
+            <version>2.1.8</version>
          </dependency>
 
 
@@ -162,22 +160,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
             <version>2.5.1</version>
-         </dependency>
-
-         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-http-servlet</artifactId>
-            <version>1.7.2</version>
-         </dependency>
-         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-http-webserver</artifactId>
-            <version>1.7.2</version>
-         </dependency>
-         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-comet</artifactId>
-            <version>1.7.2</version>
          </dependency>
 
          <dependency>

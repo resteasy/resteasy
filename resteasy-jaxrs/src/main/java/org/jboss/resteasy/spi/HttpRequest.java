@@ -33,7 +33,7 @@ public interface HttpRequest
    /**
     * application/x-www-form-urlencoded parameters
     * <p/>
-    * This is here because @FormParam needs it.
+    * This is here because @FormParam needs it and for when there are servlet filters that eat up the input stream
     *
     * @return null if no parameters, this is encoded map
     */
@@ -41,21 +41,6 @@ public interface HttpRequest
 
    MultivaluedMap<String, String> getDecodedFormParameters();
 
-
-   /**
-    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
-    */
-   public void suspend();
-
-   /**
-    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
-    */
-   public void suspend(long timeout);
-
-   /**
-    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
-    */
-   public void complete();
 
    /**
     * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
@@ -68,9 +53,17 @@ public interface HttpRequest
    public boolean isSuspended();
 
    /**
-    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
+    * This method will create an asynchronous response and prepare the
+    * request to be issued asynchronously
+    *
+    * @return
     */
-   public boolean isTimeout();
+   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout);
 
-
+   /**
+    * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
+    * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
+    * asychronous HTTP.
+    */
+   public void initialRequestThreadFinished();
 }

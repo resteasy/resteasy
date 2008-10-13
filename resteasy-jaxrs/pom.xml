@@ -117,23 +117,6 @@
          <optional>true</optional>
       </dependency>
 
-      <!-- Used by org.jboss.resteasy.plugins.server.grizzly.* -->
-      <dependency>
-         <groupId>com.sun.grizzly</groupId>
-         <artifactId>grizzly-http-servlet</artifactId>
-         <optional>true</optional>
-      </dependency>
-      <dependency>
-         <groupId>com.sun.grizzly</groupId>
-         <artifactId>grizzly-http-webserver</artifactId>
-         <optional>true</optional>
-      </dependency>
-      <dependency>
-         <groupId>com.sun.grizzly</groupId>
-         <artifactId>grizzly-comet</artifactId>
-         <optional>true</optional>
-      </dependency>
-
       <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
       <dependency>
          <groupId>tjws</groupId>

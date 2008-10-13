@@ -71,16 +71,8 @@ public class HttpServletDispatcher extends HttpServlet
       HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
       UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
 
-      HttpRequest in;
-      try
-      {
-         in = new HttpServletInputMessage(request, headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase());
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
-      HttpResponse theResponse = new HttpServletResponseWrapper(response, dispatcher.getProviderFactory());
+      HttpResponse theResponse = createServletResponse(response);
+      HttpRequest in = createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);
 
       try
       {
@@ -93,6 +85,25 @@ public class HttpServletDispatcher extends HttpServlet
       {
          ResteasyProviderFactory.clearContextData();
       }
+   }
+
+   protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse)
+   {
+      HttpRequest in;
+      try
+      {
+         in = new HttpServletInputMessage(request, theResponse, headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) dispatcher);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      return in;
+   }
+
+   protected HttpResponse createServletResponse(HttpServletResponse response)
+   {
+      return new HttpServletResponseWrapper(response, this.dispatcher.getProviderFactory());
    }
 
 }

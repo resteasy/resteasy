@@ -2,12 +2,10 @@ package org.jboss.resteasy.test.finegrain.resource;
 
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.specimpl.HttpHeadersImpl;
+import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.HttpRequestImpl;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,7 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
-import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,17 +68,21 @@ public class AcceptTest
 
    private HttpRequest createRequest(String httpMethod, String path, MediaType contentType, List<MediaType> accepts)
    {
-      URI uri = URI.create(path);
-      UriInfoImpl uriInfo = new UriInfoImpl(uri, path, null);
-      HttpHeadersImpl headers = new HttpHeadersImpl();
-      headers.setAcceptableMediaTypes(accepts);
-      headers.setMediaType(contentType);
+      MockHttpRequest request = null;
+      try
+      {
+         request = MockHttpRequest.create(httpMethod, path).contentType(contentType);
+      }
+      catch (URISyntaxException e)
+      {
+         throw new RuntimeException(e);
+      }
+      request.accept(accepts);
 
-      HttpRequest request = new HttpRequestImpl(null, headers, httpMethod, uriInfo);
       // finally strip out matrix parameters
 
       StringBuffer preprocessedPath = new StringBuffer();
-      for (PathSegment pathSegment : uriInfo.getPathSegments())
+      for (PathSegment pathSegment : request.getUri().getPathSegments())
       {
          preprocessedPath.append("/").append(pathSegment.getPath());
       }

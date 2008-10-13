@@ -29,6 +29,7 @@ public interface HttpResponse
 
    boolean isCommitted();
 
+
    /**
     * reset status and headers.  Will fail if response is committed
     */

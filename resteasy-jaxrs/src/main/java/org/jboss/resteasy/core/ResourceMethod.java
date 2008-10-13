@@ -195,6 +195,7 @@ public class ResourceMethod implements ResourceInvoker
    protected Response invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
       Object rtn = methodInjector.invoke(request, response, target);
+      if (request.isSuspended()) return null;
       if (method.getReturnType().equals(Response.class))
       {
          return (Response) rtn;
