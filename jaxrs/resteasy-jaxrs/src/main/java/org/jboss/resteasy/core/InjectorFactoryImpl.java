@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
@@ -67,6 +68,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       CookieParam cookie;
       FormParam formParam;
       Form form;
+      Suspend suspend;
 
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
@@ -96,6 +98,10 @@ public class InjectorFactoryImpl implements InjectorFactory
       else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
       {
          return new MatrixParamInjector(type, genericType, target, matrix.value(), defaultVal);
+      }
+      else if ((suspend = FindAnnotation.findAnnotation(annotations, Suspend.class)) != null)
+      {
+         return new SuspendInjector(suspend, type);
       }
       else if (FindAnnotation.findAnnotation(annotations, Context.class) != null)
       {

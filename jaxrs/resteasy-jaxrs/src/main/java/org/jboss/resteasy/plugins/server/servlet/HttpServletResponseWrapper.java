@@ -81,4 +81,5 @@ public class HttpServletResponseWrapper implements HttpResponse
       response.reset();
       outputHeaders = new HttpServletResponseHeaders(response, factory);
    }
+
 }

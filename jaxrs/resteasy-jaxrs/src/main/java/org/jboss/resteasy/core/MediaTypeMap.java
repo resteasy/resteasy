@@ -39,17 +39,6 @@ public class MediaTypeMap<T>
    private static Pattern COMPOSITE_SUBTYPE_PATTERN = Pattern.compile("[^\\+]+\\+(.+)");
    private static Pattern COMPOSITE_SUBTYPE_WILDCARD_PATTERN = Pattern.compile("\\*\\+(.+)");
 
-   public static void main(String[] args) throws Exception
-   {
-      String type = "*+foo";
-      //String type = "application/foo";
-      Matcher matcher = COMPOSITE_SUBTYPE_WILDCARD_PATTERN.matcher(type);
-      if (matcher.matches())
-      {
-         System.out.println(matcher.group(1));
-      }
-   }
-
    private static class SubtypeMap<T>
    {
       private Map<String, List<Entry<T>>> index = new HashMap<String, List<Entry<T>>>();

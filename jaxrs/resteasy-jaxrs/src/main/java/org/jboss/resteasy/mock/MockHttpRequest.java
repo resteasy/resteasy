@@ -5,6 +5,7 @@ import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.Encode;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -57,6 +59,13 @@ public class MockHttpRequest implements HttpRequest
       request.preprocessedPath = request.uri.getPath(false);
       return request;
 
+   }
+
+   public static MockHttpRequest create(String httpMethod, String uri) throws URISyntaxException
+   {
+      MockHttpRequest request = initWithUri(uri);
+      request.httpMethod = httpMethod;
+      return request;
    }
 
    public static MockHttpRequest get(String uri) throws URISyntaxException
@@ -112,6 +121,12 @@ public class MockHttpRequest implements HttpRequest
       return this;
    }
 
+   public MockHttpRequest accept(List<MediaType> accepts)
+   {
+      httpHeaders.setAcceptableMediaTypes(accepts);
+      return this;
+   }
+
    public MockHttpRequest accept(String type)
    {
       httpHeaders.getRequestHeaders().add(HttpHeaderNames.ACCEPT, type);
@@ -137,6 +152,13 @@ public class MockHttpRequest implements HttpRequest
    {
       httpHeaders.getRequestHeaders().add(HttpHeaderNames.CONTENT_TYPE, type);
       httpHeaders.setMediaType(MediaType.valueOf(type));
+      return this;
+   }
+
+   public MockHttpRequest contentType(MediaType type)
+   {
+      httpHeaders.getRequestHeaders().add(HttpHeaderNames.CONTENT_TYPE, type.toString());
+      httpHeaders.setMediaType(type);
       return this;
    }
 
@@ -263,4 +285,14 @@ public class MockHttpRequest implements HttpRequest
    {
       return false;
    }
+
+   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
+   {
+      throw new UnsupportedOperationException("NOT SUPPORTED");
+   }
+
+   public void initialRequestThreadFinished()
+   {
+   }
+
 }

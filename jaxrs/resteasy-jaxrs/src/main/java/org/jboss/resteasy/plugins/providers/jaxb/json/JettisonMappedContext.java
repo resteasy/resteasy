@@ -5,7 +5,6 @@ import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -37,8 +36,6 @@ public class JettisonMappedContext extends JAXBContext
       List<QName> attributesAsElements = new ArrayList<QName>();
       for (String name : mapped.attributesAsElements())
       {
-         System.out.println("XMLConstants.NULL_NS_URI: " + XMLConstants.NULL_NS_URI);
-         System.out.println("XMLConstants.DEFAULT_NS_PREFIX: " + XMLConstants.DEFAULT_NS_PREFIX);
          QName qName = new QName(name);
          attributesAsElements.add(qName);
       }

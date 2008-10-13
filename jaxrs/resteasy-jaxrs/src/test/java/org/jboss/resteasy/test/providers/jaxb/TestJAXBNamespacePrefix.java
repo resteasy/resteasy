@@ -3,14 +3,7 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
-import java.math.BigDecimal;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.annotation.XmlSchema;
-
-import org.jboss.resteasy.plugins.providers.jaxb.XmlNamespecePrefixMapper;
+import org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper;
 import org.jboss.resteasy.test.providers.jaxb.generated.po.Item;
 import org.jboss.resteasy.test.providers.jaxb.generated.po.Items;
 import org.jboss.resteasy.test.providers.jaxb.generated.po.ObjectFactory;
@@ -19,9 +12,15 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.bind.annotation.XmlSchema;
+import java.math.BigDecimal;
+
 /**
  * A TestJAXBNamespacePrefix.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -46,7 +45,7 @@ public class TestJAXBNamespacePrefix
       po.setItems(items);
       Marshaller marshaller = ctx.createMarshaller();
       XmlSchema xmlSchema = PurchaseOrderType.class.getPackage().getAnnotation(XmlSchema.class);
-      XmlNamespecePrefixMapper mapper = new XmlNamespecePrefixMapper(xmlSchema.xmlns());
+      XmlNamespacePrefixMapper mapper = new XmlNamespacePrefixMapper(xmlSchema.xmlns());
       try
       {
          marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);

@@ -151,18 +151,31 @@ public class SynchronousDispatcher implements Dispatcher
       in.setPreprocessedPath(preprocessedPath.toString());
    }
 
-   public void invoke(HttpRequest in, HttpResponse response)
+   public void invoke(HttpRequest request, HttpResponse response)
    {
-      logger.debug("PathInfo: " + in.getUri().getPath());
-      preprocess(in);
+      logger.debug("PathInfo: " + request.getUri().getPath());
+      if (!request.isInitial())
+      {
+         try
+         {
+            logger.error(request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
+            response.sendError(500, request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
+         }
+         catch (IOException e)
+         {
+            throw new UnhandledException(e);
+         }
+         return;
+      }
+      preprocess(request);
       ResourceInvoker invoker = null;
       try
       {
-         invoker = registry.getResourceInvoker(in, response);
+         invoker = registry.getResourceInvoker(request, response);
       }
       catch (Failure e)
       {
-         handleFailure(in, response, e);
+         handleFailure(request, response, e);
          logger.info(e.getMessage());
          return;
       }
@@ -176,10 +189,10 @@ public class SynchronousDispatcher implements Dispatcher
          {
             throw new UnhandledException(e);
          }
-         logger.info("Could not match path: " + in.getUri().getPath());
+         logger.info("Could not match path: " + request.getUri().getPath());
          return;
       }
-      invoke(in, response, invoker);
+      invoke(request, response, invoker);
    }
 
    /**
@@ -207,7 +220,7 @@ public class SynchronousDispatcher implements Dispatcher
       handleException(request, response, e);
    }
 
-   protected void handleException(HttpRequest request, HttpResponse response, Exception e)
+   public void handleException(HttpRequest request, HttpResponse response, Exception e)
    {
       if (e instanceof WebApplicationException)
       {
@@ -228,7 +241,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected void handleFailure(HttpRequest request, HttpResponse response, Exception e)
+   public void handleFailure(HttpRequest request, HttpResponse response, Exception e)
    {
       Failure failure = (Failure) e;
       if (failure.getResponse() != null)
@@ -265,7 +278,7 @@ public class SynchronousDispatcher implements Dispatcher
       else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
    }
 
-   protected void handleApplicationException(HttpResponse response, ApplicationException e)
+   public void handleApplicationException(HttpResponse response, ApplicationException e)
    {
       if (e.getCause() instanceof WebApplicationException)
       {
@@ -308,7 +321,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected void handleWebApplicationException(HttpResponse response, WebApplicationException wae)
+   public void handleWebApplicationException(HttpResponse response, WebApplicationException wae)
    {
       logger.error("failed to execute", wae);
       if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
@@ -336,16 +349,22 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
-         ResteasyProviderFactory.pushContext(HttpRequest.class, request);
-         ResteasyProviderFactory.pushContext(HttpResponse.class, response);
-         ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
-         ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
-         ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
-         ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
+         pushContextObjects(request, response);
          Response jaxrsResponse = null;
          try
          {
             jaxrsResponse = invoker.invoke(request, response);
+            if (request.isSuspended())
+            {
+               /**
+                * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
+                * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
+                * asychronous HTTP.
+                *
+                */
+               request.initialRequestThreadFinished();
+               return; // we're handing response asynchronously
+            }
          }
          catch (Exception e)
          {
@@ -367,7 +386,37 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
+   public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse)
+   {
+      try
+      {
+         pushContextObjects(request, response);
+         try
+         {
+            if (jaxrsResponse != null) writeJaxrsResponse(response, jaxrsResponse);
+         }
+         catch (Exception e)
+         {
+            handleWriteResponseException(request, response, e);
+         }
+      }
+      finally
+      {
+         ResteasyProviderFactory.clearContextData();
+      }
+   }
+
+   public void pushContextObjects(HttpRequest request, HttpResponse response)
+   {
+      ResteasyProviderFactory.pushContext(HttpRequest.class, request);
+      ResteasyProviderFactory.pushContext(HttpResponse.class, response);
+      ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
+      ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
+      ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
+      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
+   }
+
+   public void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
            throws IOException, WebApplicationException
    {
       if (jaxrsResponse.getMetadata() != null)

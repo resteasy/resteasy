@@ -46,7 +46,7 @@ public class JAXBContextWrapper extends JAXBContext
    /**
     * An optional namespace mapper that is used to apply prefixes to elements with a given namespace.
     */
-   private XmlNamespecePrefixMapper mapper;
+   private XmlNamespacePrefixMapper mapper;
 
    /**
     * The optional Schema that is bound to this context
@@ -110,7 +110,7 @@ public class JAXBContextWrapper extends JAXBContext
       {
          if (config.useNameSpacePrefix())
          {
-            mapper = new XmlNamespecePrefixMapper(config.namespaces());
+            mapper = new XmlNamespacePrefixMapper(config.namespaces());
          }
          if (!"".equals(config.schema()))
          {

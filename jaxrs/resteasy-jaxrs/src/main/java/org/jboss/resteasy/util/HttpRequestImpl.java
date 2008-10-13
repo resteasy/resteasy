@@ -16,7 +16,7 @@ import java.io.InputStream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpRequestImpl implements HttpRequest
+public abstract class HttpRequestImpl implements HttpRequest
 {
    protected HttpHeaders httpHeaders;
    protected InputStream inputStream;

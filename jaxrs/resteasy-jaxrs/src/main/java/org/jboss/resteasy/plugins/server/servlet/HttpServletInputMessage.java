@@ -1,16 +1,22 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.AsynchronousResponse;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpRequestImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Abstraction for an inbound http request on the server, or a response from a server to a client
@@ -23,12 +29,20 @@ import java.util.Map;
 public class HttpServletInputMessage extends HttpRequestImpl
 {
    protected HttpServletRequest request;
+   protected CountDownLatch latch;
+   protected long suspendTimeout;
+   protected SynchronousDispatcher dispatcher;
+   protected HttpResponse httpResponse;
+   protected boolean suspended;
 
 
-   public HttpServletInputMessage(HttpServletRequest request, HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, String httpMethod)
+   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
    {
       super(inputStream, httpHeaders, httpMethod, uri);
       this.request = request;
+      this.dispatcher = dispatcher;
+      this.httpResponse = httpResponse;
+
    }
 
    @Override
@@ -68,5 +82,47 @@ public class HttpServletInputMessage extends HttpRequestImpl
       }
       return decodedFormParameters;
 
+   }
+
+
+   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
+   {
+      suspended = true;
+      latch = new CountDownLatch(1);
+      this.suspendTimeout = suspendTimeout;
+      return new AsynchronousResponse()
+      {
+         public void setResponse(Response response)
+         {
+            try
+            {
+               dispatcher.asynchronousDelivery(HttpServletInputMessage.this, httpResponse, response);
+            }
+            finally
+            {
+               latch.countDown();
+            }
+         }
+      };
+   }
+
+   @Override
+   public boolean isSuspended()
+   {
+      return suspended;
+   }
+
+
+   public void initialRequestThreadFinished()
+   {
+      if (latch == null) return; // only block if createAsynchronousResponse was called.
+      try
+      {
+         latch.await(suspendTimeout + 100, TimeUnit.MILLISECONDS);
+      }
+      catch (InterruptedException e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 }
