@@ -74,6 +74,9 @@
       <module>resteasy-test-data</module>
       <module>resteasy-jaxrs</module>
       <module>resteasy-jaxrs-war</module>
+      <module>async-http-jbossweb</module>
+      <module>async-http-servlet-3.0</module>
+      <module>async-http-tomcat</module>
       <module>distribution</module>
 
    </modules>

@@ -1,11 +1,11 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.apache.catalina.CometProcessor;
-import org.apache.catalina.CometEvent;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.servlet.http.HttpEventServlet;
+import org.jboss.servlet.http.HttpEvent;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,34 +17,37 @@ import java.io.IOException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class Tomcat6CometDispatcherServlet extends HttpServletDispatcher implements CometProcessor
+public class JBossWebDispatcherServlet extends HttpServletDispatcher implements HttpEventServlet
 {
    // Hack to avoid code changes within HttpServletDispatcher
-   private static ThreadLocal<CometEvent> cometEvent = new ThreadLocal<CometEvent>();
+   private static ThreadLocal<HttpEvent> cometEvent = new ThreadLocal<HttpEvent>();
 
-   public void event(CometEvent event) throws IOException, ServletException
+   public void event(HttpEvent event) throws IOException, ServletException
    {
       HttpServletRequest request = event.getHttpServletRequest();
       HttpServletResponse response = event.getHttpServletResponse();
-      if (event.getEventType() == CometEvent.EventType.BEGIN)
+      switch (event.getType())
       {
-         cometEvent.set(event);
-         try
+         case BEGIN:
          {
-            super.service(request.getMethod(), request, response);
+            try
+            {
+               cometEvent.set(event);
+               super.service(request.getMethod(), request, response);
+            }
+            finally
+            {
+               cometEvent.set(null);
+            }
+            break;
          }
-         finally
+         case ERROR:
+         case EOF:
+         case TIMEOUT:
          {
-            cometEvent.set(null);
+            event.close();
+            break;
          }
-      }
-      else if (event.getEventType() == CometEvent.EventType.ERROR)
-      {
-         event.close();
-      }
-      else if (event.getEventType() == CometEvent.EventType.END || event.getEventSubType() == CometEvent.EventSubType.TIMEOUT)
-      {
-         event.close();
       }
    }
 
@@ -53,7 +56,7 @@ public class Tomcat6CometDispatcherServlet extends HttpServletDispatcher impleme
    {
       try
       {
-         return new Tomcat6AsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, httpServletRequest.getInputStream(), uriInfo, httpMethod, (SynchronousDispatcher)dispatcher, cometEvent.get());
+         return new JBossWebAsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, httpServletRequest.getInputStream(), uriInfo, httpMethod, (SynchronousDispatcher)dispatcher, cometEvent.get());
       }
       catch (IOException e)
       {

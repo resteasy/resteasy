@@ -7,20 +7,15 @@
       <artifactId>resteasy-jaxrs-all</artifactId>
       <version>1.0-beta-9</version>
    </parent>
-   <artifactId>async-http-tomcat6</artifactId>
+   <artifactId>async-http-servlet-3.0</artifactId>
    <packaging>jar</packaging>
-   <name>Async Http Tomcat 6</name>
+   <name>Async Http Servlet 3.0</name>
 
    <dependencies>
       <dependency>
-         <groupId>jboss.web</groupId>
-         <artifactId>jbossweb</artifactId>
-         <version>2.0.1.GA</version>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>servlet-api-3.0</artifactId>
+         <version>7.0.0pre2</version>
          <scope>provided</scope>
       </dependency>
       <dependency>
