@@ -2,6 +2,7 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.core.ResourceMethodCacheControlInterceptor;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
@@ -177,6 +178,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
       addHeaderDelegate(Locale.class, new LocaleDelegate());
+      interceptorRegistry.registerResourceMethodInterceptor(ResourceMethodCacheControlInterceptor.class);
    }
 
    public UriBuilder createUriBuilder()

@@ -29,6 +29,21 @@
          <groupId>org.jboss.resteasy</groupId>
          <artifactId>jaxrs-api</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>async-http-jbossweb</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>async-http-servlet-3.0</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>async-http-tomcat6</artifactId>
+         <version>${project.version}</version>
+      </dependency>
 
    </dependencies>
 

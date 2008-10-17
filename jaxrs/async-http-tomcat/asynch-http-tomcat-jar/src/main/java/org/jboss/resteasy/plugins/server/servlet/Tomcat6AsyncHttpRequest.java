@@ -6,23 +6,24 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.apache.catalina.CometEvent;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.ServletException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AsyncHttpRequest extends HttpServletInputMessage
+public class Tomcat6AsyncHttpRequest extends HttpServletInputMessage
 {
-   public AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpResponse httpResponse, HttpHeaders httpHeaders, InputStream inputStream, UriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
+   protected CometEvent event;
+
+   public Tomcat6AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpResponse httpResponse, HttpHeaders httpHeaders, InputStream inputStream, UriInfo uriInfo, String httpMethodName, SynchronousDispatcher synchronousDispatcher, CometEvent event)
    {
-      super(httpServletRequest, httpResponse, httpHeaders, inputStream, uriInfo, s, synchronousDispatcher);
+      super(httpServletRequest, httpResponse, httpHeaders, inputStream, uriInfo, httpMethodName, synchronousDispatcher);
+      this.event = event;
    }
 
    @Override
@@ -39,7 +40,20 @@ public class AsyncHttpRequest extends HttpServletInputMessage
       {
          public void setResponse(Response response)
          {
-            dispatcher.asynchronousDelivery(AsyncHttpRequest.this, httpResponse, response);
+            try
+            {
+               dispatcher.asynchronousDelivery(Tomcat6AsyncHttpRequest.this, httpResponse, response);
+            }
+            finally
+            {
+               try
+               {
+                  event.close();
+               }
+               catch (IOException ignored)
+               {
+               }
+            }
          }
       };
    }

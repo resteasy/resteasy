@@ -49,6 +49,9 @@
          <useTransitiveFiltering>true</useTransitiveFiltering>
          <includes>
             <include>org.jboss.resteasy:resteasy-jaxrs</include>
+            <include>org.jboss.resteasy:async-http-jbossweb</include>
+            <include>org.jboss.resteasy:async-http-servlet-3.0</include>
+            <include>org.jboss.resteasy:async-http-tomcat6</include>
          </includes>
          <outputDirectory>lib</outputDirectory>
       </dependencySet>
