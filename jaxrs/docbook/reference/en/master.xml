@@ -12,6 +12,7 @@
                 <!ENTITY _CookieParam SYSTEM "modules/_CookieParam.xml">
                 <!ENTITY _FormParam SYSTEM "modules/_FormParam.xml">
                 <!ENTITY _Form SYSTEM "modules/_Form.xml">
+                <!ENTITY Cache_NoCache_CacheControl SYSTEM "modules/Cache_NoCache_CacheControl.xml">
                 <!ENTITY _DefaultValue SYSTEM "modules/_DefaultValue.xml">
                 <!ENTITY _Encoded_and_encoding SYSTEM "modules/_Encoded_and_encoding.xml">
                 <!ENTITY _Context SYSTEM "modules/_Context.xml">
@@ -78,6 +79,7 @@
    &_FormParam;
    &_Form;
    &_DefaultValue;
+   &Cache_NoCache_CacheControl;
    &_Encoded_and_encoding;
    &_Context;
    &JAX-RS_Resource_Locators_and_Sub_Resources;

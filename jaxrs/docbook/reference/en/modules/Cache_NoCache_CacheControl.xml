@@ -1,0 +1,36 @@
+<chapter id="Cache_NoCache_CacheControl">
+   <title>@Cache, @NoCache, and CacheControl</title>
+   <para>
+      Resteasy provides an extension to JAX-RS that allows you to automatically set Cache-Control headers on a successful
+      GET request.  It can only be used on @GET annotated methods.  A successful @GET request is any request
+      that returns 200 OK response.
+   </para>
+   <programlisting>
+package org.jboss.resteasy.annotations.cache;
+
+public @interface Cache
+{
+   int maxAge() default -1;
+   int sMaxAge() default -1;
+   boolean noStore() default false;
+   boolean noTransform() default false;
+   boolean mustRevalidate() default false;
+   boolean proxyRevalidate() default false;
+   boolean isPrivate() default false;
+}
+
+public @interface NoCache
+{
+   String[] fields() default {};
+}
+
+   </programlisting>
+   <para>
+      While @Cache builds a complex Cache-Control header, @NoCache is a simplified notation to say that you don't
+      want anything cached i.e. Cache-Control: nocache.
+   </para>
+   <para>
+      These annotations can be put on the resource class or interface and specifies a default cache value for each
+      @GET resource method.  Or they can be put individually on each @GET resource method.
+   </para>
+</chapter>

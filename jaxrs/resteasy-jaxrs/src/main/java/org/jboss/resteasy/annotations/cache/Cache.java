@@ -7,9 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * Set response Cache-Control header automatically.
- * <p/>
- * "public" will automatically be set if this is a non-authenticated request, otherwise "private" is the default.
- * You can override the default public/private settings with the @Private and @Public annotations
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
