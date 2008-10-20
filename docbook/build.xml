@@ -1,0 +1,178 @@
+<project name="jaxrs-docbook" default="all.doc" basedir=".">
+
+   <!-- Set build directories for all formats. -->
+   <property name="build.dir" value="${basedir}/build"/>
+
+   <!-- Support files for build process. -->
+   <property name="docbook.dir" value="../../docbook-support"/>
+   <property name="support.dir" value="${docbook.dir}/support"/>
+   <property name="styles.dir" value="${docbook.dir}/styles"/>
+
+   <!-- Set DocBook stylesheets. -->
+   <property name="db.style.fopdf" value="fopdf.xsl"/>
+   <property name="db.style.html" value="html_chunk.xsl"/>
+   <property name="db.style.htmlsingle" value="html.xsl"/>
+
+   <!-- Classpath for the build tools. -->
+   <path id="lib.classpath">
+      <fileset dir="${support.dir}/lib">
+         <include name="**/*.jar"/>
+      </fileset>
+   </path>
+
+
+   <target name="all.doc"
+           depends="clean"
+           description="Compile documentation for all languages and all formats.">
+
+      <antcall target="lang.all">
+         <param name="lang" value="en"/>
+         <param name="book" value="reference"/>
+      </antcall>
+
+
+   </target>
+
+   <target name="all.revdiff"
+           description="Generates a diff report for all translated versions.">
+
+      <!-- TRANSLATOR: Duplicate this line for your language -->
+      <antcall target="lang.revdiff" inheritRefs="true">
+         <param name="lang" value="de"/>
+      </antcall>
+
+   </target>
+
+
+   <target name="clean">
+
+      <!-- Delete build directory. -->
+      <delete dir="${build.dir}"/>
+
+   </target>
+
+   <target name="lang.all">
+      <!-- Compile the documentation for a single language in all formats. -->
+      <antcall target="lang.docpdf" inheritRefs="true"/>
+      <antcall target="lang.dochtml" inheritRefs="true"/>
+      <antcall target="lang.dochtmlsingle" inheritRefs="true"/>
+      <antcall target="lang.htmlmisc" inheritRefs="true"/>
+   </target>
+
+
+   <target name="lang.docpdf.prepare">
+
+      <!-- Copy all the images to the output location, will be removed later. -->
+      <copy todir="${build.dir}/${book}/${lang}/pdf/images">
+         <fileset dir="${basedir}/${book}/${lang}/images">
+            <include name="**/*.png"/>
+            <include name="**/*.svg"/>
+            <include name="**/*.gif"/>
+            <include name="**/*.jpg"/>
+         </fileset>
+      </copy>
+
+      <!-- Create the XSL/FO temporary file. -->
+      <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${basedir}">
+         <classpath refid="lib.classpath"/>
+         <arg value="-o"/>
+         <arg value="${build.dir}/${book}/${lang}/pdf/docbook_fop.tmp"/>
+         <arg value="${basedir}/${book}/${lang}/master.xml"/>
+         <arg value="${styles.dir}/${lang}/${db.style.fopdf}"/>
+      </java>
+
+      <available property="custom.fop.userconfig.present" file="userconfig.xml"
+                 filepath="${basedir}/${book}/${lang}/fop"/>
+   </target>
+
+   <target name="lang.docpdf.customized" depends="lang.docpdf.prepare" if="custom.fop.userconfig.present">
+
+      <copy todir="${build.dir}/${book}/${lang}/pdf">
+         <fileset dir="${basedir}/${book}/${lang}/fop">
+            <include name="*"/>
+         </fileset>
+      </copy>
+
+      <!-- Create a PDF from the XSL/FO, using customized fop userconfig.xml -->
+      <java classname="org.apache.fop.apps.Fop" fork="true" dir="${basedir}">
+         <classpath refid="lib.classpath"/>
+         <arg value="-c"/>
+         <arg value="${basedir}/${book}/${lang}/fop/userconfig.xml"/>
+         <arg value="${build.dir}/${book}/${lang}/pdf/docbook_fop.tmp"/>
+         <arg value="${build.dir}/${book}/${lang}/pdf/jaxrs_${book}.pdf"/>
+      </java>
+   </target>
+
+   <target name="lang.docpdf.normal" depends="lang.docpdf.prepare" unless="custom.fop.userconfig.present">
+      <!-- Create a PDF from the XSL/FO. -->
+      <java classname="org.apache.fop.apps.Fop" fork="true" dir="${basedir}">
+         <classpath refid="lib.classpath"/>
+         <arg value="${build.dir}/${book}/${lang}/pdf/docbook_fop.tmp"/>
+         <arg value="${build.dir}/${book}/${lang}/pdf/jaxrs_${book}.pdf"/>
+      </java>
+   </target>
+
+   <target name="lang.docpdf" depends="lang.docpdf.normal,lang.docpdf.customized">
+      <!-- House keeping,delete temporary files. -->
+      <delete>
+         <fileset dir="${build.dir}/${book}/${lang}/pdf" excludes="**/*.pdf"/>
+      </delete>
+      <delete dir="${build.dir}/${book}/${lang}/pdf/images"/>
+   </target>
+
+   <target name="lang.dochtml">
+
+      <mkdir dir="${build.dir}/${book}/${lang}/html/"/>
+      <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${build.dir}/${book}/${lang}/html">
+         <classpath refid="lib.classpath"/>
+         <arg value="${basedir}/${book}/${lang}/master.xml"/>
+         <arg value="${basedir}/${styles.dir}/${lang}/${db.style.html}"/>
+      </java>
+   </target>
+
+   <target name="lang.dochtmlsingle">
+
+      <mkdir dir="${build.dir}/${book}/${lang}/html_single/"/>
+      <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${basedir}">
+         <classpath refid="lib.classpath"/>
+         <arg value="-o"/>
+         <arg value="${build.dir}/${book}/${lang}/html_single/index.html"/>
+         <arg value="${basedir}/${book}/${lang}/master.xml"/>
+         <arg value="${styles.dir}/${lang}/${db.style.htmlsingle}"/>
+      </java>
+   </target>
+
+   <target name="lang.htmlmisc">
+
+      <!-- Copy images and CSS for HTML documentation, language specific. -->
+      <copy todir="${build.dir}/${book}/${lang}/shared/images">
+         <fileset dir="${basedir}/${book}/${lang}/images">
+            <include name="**/*.png"/>
+            <include name="**/*.gif"/>
+            <include name="**/*.jpg"/>
+         </fileset>
+      </copy>
+      <copy todir="${build.dir}/${book}/${lang}/shared/css">
+         <fileset dir="${styles.dir}/${lang}">
+            <include name="**/*.css"/>
+         </fileset>
+      </copy>
+
+   </target>
+
+   <target name="lang.revdiff">
+
+      <taskdef name="revdiff"
+               classname="org.hibernate.docproc.revdiff.RevDiffReportTask"
+               classpathref="lib.classpath">
+
+      </taskdef>
+
+      <revdiff original="${basedir}/${book}/en/master.xml"
+               copy="${basedir}/${book}/${lang}/master.xml"
+               report="${build.dir}/${book}/status_${lang}.html"/>
+
+   </target>
+
+
+</project>

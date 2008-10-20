@@ -1,0 +1,150 @@
+<chapter id="JAX-RS_Resource_Locators_and_Sub_Resources">
+   <title>JAX-RS Resource Locators and Sub Resources</title>
+
+   <para>
+
+      Resource classes are able to partially process a request and provide another &quot;sub&quot; resource object that
+      can process the remainder of the request. For example:
+   </para>
+   <para>
+
+      <programlisting>
+         @Path("/")
+         public class ShoppingStore {
+
+         @Path("/customers/{id}")
+         public Customer getCustomer(@PathParam("id") int id) {
+         Customer cust = ...; // Find a customer object
+         return cust;
+         }
+         }
+
+
+         public class Customer {
+
+         @GET
+         public String get() {...}
+
+         @Path("/address")
+         public String getAddress() {...}
+
+         }
+
+      </programlisting>
+   </para>
+   <para>
+
+   </para>
+   <para>
+
+      Resource methods that have a @Path annotation, but no HTTP method are considered sub-resource locators. Their job
+      is to provide an object that can process the request. In the above example ShoppingStore is a root resource
+      because its class is annotated with @Path. The getCustomer() method is a sub-resource locator method.
+   </para>
+   <para>
+
+      If the client invoked:
+   </para>
+   <para>
+
+      <programlisting>GET /customer/123</programlisting>
+   </para>
+   <para>
+
+      The ShoppingStore.getCustomer() method would be invoked first. This method provides a Customer object that can
+      service the request. The http request will be dispatched to the Customer.get() method. Another example is:
+   </para>
+   <para>
+
+      <programlisting>GET /customer/123/address</programlisting>
+   </para>
+   <para>
+
+      In this request, again, first the ShoppingStore.getCustomer() method is invoked. A customer object is returned,
+      and the rest of the request is dispatched to the Customer.getAddress() method.
+   </para>
+   <para>
+
+
+   </para>
+   <para>
+
+      Another interesting feature of Sub-resource locators is that the locator method result is dynamically processed at
+      runtime to figure out how to dispatch the request. So, the ShoppingStore.getCustomer() method does not have to
+      declare any specific type.
+   </para>
+   <para>
+
+      <programlisting>
+         @Path("/")
+         public class ShoppingStore {
+
+         @Path("/customers/{id}")
+         public java.lang.Object getCustomer(@PathParam("id") int id) {
+         Customer cust = ...; // Find a customer object
+         return cust;
+         }
+         }
+
+
+         public class Customer {
+
+         @GET
+         public String get() {...}
+
+         @Path("/address")
+         public String getAddress() {...}
+
+         }
+
+      </programlisting>
+   </para>
+   <para>
+
+      In the above example, getCustomer() returns a java.lang.Object. Per request, at runtime, the JAX-RS server will
+      figure out how to dispatch the request based on the object returned by getCustomer(). What are the uses of this?
+      Well, maybe you have a class hierarchy for your customers. Customer is the abstract base, CorporateCustomer and
+      IndividualCustomer are subclasses. Your getCustomer() method might be doing a Hibernate polymorphic query and
+      doesn't know, or care, what concrete class is it querying for, or what it returns.
+   </para>
+   <para>
+
+      <programlisting>
+         @Path("/")
+         public class ShoppingStore {
+
+         @Path("/customers/{id}")
+         public java.lang.Object getCustomer(@PathParam("id") int id) {
+         Customer cust = entityManager.find(Customer.class, id);
+         return cust;
+         }
+         }
+
+
+         public class Customer {
+
+         @GET
+         public String get() {...}
+
+         @Path("/address")
+         public String getAddress() {...}
+
+         }
+
+         public class CorporateCustomer extendsCustomer {
+
+         @Path("/businessAddress")
+         public String getAddress() {...}
+
+         }
+
+      </programlisting>
+   </para>
+   <para>
+
+   </para>
+   <para>
+
+
+   </para>
+</chapter>

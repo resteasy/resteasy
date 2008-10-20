@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding="iso-8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+        "../../../../docbook-support/support/docbook-dtd/docbookx.dtd"
+        [
+                <!ENTITY Overview SYSTEM "modules/Overview.xml">
+                <!ENTITY Installation_Configuration SYSTEM "modules/Installation_Configuration.xml">
+                <!ENTITY Using__Path_and__GET___POST__etc. SYSTEM "modules/Using__Path_and__GET___POST__etc..xml">
+                <!ENTITY _PathParam SYSTEM "modules/_PathParam.xml">
+                <!ENTITY _QueryParam SYSTEM "modules/_QueryParam.xml">
+                <!ENTITY _HeaderParam SYSTEM "modules/_HeaderParam.xml">
+                <!ENTITY _MatrixParam SYSTEM "modules/_MatrixParam.xml">
+                <!ENTITY _CookieParam SYSTEM "modules/_CookieParam.xml">
+                <!ENTITY _FormParam SYSTEM "modules/_FormParam.xml">
+                <!ENTITY _Form SYSTEM "modules/_Form.xml">
+                <!ENTITY _DefaultValue SYSTEM "modules/_DefaultValue.xml">
+                <!ENTITY _Encoded_and_encoding SYSTEM "modules/_Encoded_and_encoding.xml">
+                <!ENTITY _Context SYSTEM "modules/_Context.xml">
+                <!ENTITY JAX-RS_Resource_Locators_and_Sub_Resources SYSTEM "modules/JAX-RS_Resource_Locators_and_Sub_Resources.xml">
+                <!ENTITY JAX-RS_Content_Negotiation SYSTEM "modules/JAX-RS_Content_Negotiation.xml">
+                <!ENTITY Content_Marshalling_Providers SYSTEM "modules/Content_Marshalling_Providers.xml">
+                <!ENTITY Responses_using_javax.ws.rs.core.Response SYSTEM "modules/Responses_using_javax.ws.rs.core.Response.xml">
+                <!ENTITY ExceptionMappers SYSTEM "modules/ExceptionMappers.xml">
+                <!ENTITY Configuring_Individual_JAX-RS_Resource_Beans SYSTEM "modules/Configuring_Individual_JAX-RS_Resource_Beans.xml">
+                <!ENTITY RESTEasy_Embedded_Container SYSTEM "modules/RESTEasy_Embedded_Container.xml">
+                <!ENTITY RESTEasy_Server-side_Mock_Framework SYSTEM "modules/RESTEasy_Server-side_Mock_Framework.xml">
+                <!ENTITY Securing_JAX-RS_and_RESTeasy SYSTEM "modules/Securing_JAX-RS_and_RESTeasy.xml">
+                <!ENTITY RESTEasy_EJB_Integration SYSTEM "modules/RESTEasy_EJB_Integration.xml">
+                <!ENTITY RESTEasy_Spring_Integration SYSTEM "modules/RESTEasy_Spring_Integration.xml">
+                <!ENTITY RESTEasy_Client_Framework SYSTEM "modules/RESTEasy_Client_Framework.xml">
+                <!ENTITY Maven_and_RESTEasy SYSTEM "modules/Maven_and_RESTEasy.xml">
+                <!ENTITY Migration_from_older_versions SYSTEM "modules/Migration_from_older_versions.xml">
+                ]>
+
+<book lang="en">
+
+   <bookinfo>
+      <title>RESTEasy JAX-RS</title>
+      <subtitle>RESTFul Web Service for Java</subtitle>
+      <releaseinfo>1.0-beta-9</releaseinfo>
+   </bookinfo>
+
+   <toc/>
+
+   <preface id="preface" revision="1">
+      <title>Preface</title>
+      <para>
+         Commercial development support, production support and training for RESTEasy JAX-RS is
+         available through JBoss, a division of Red Hat Inc. (see http://www.jboss.com/).
+      </para>
+
+      <para>
+         In some of the example listings, what is meant to be displayed on one line does not fit
+         inside the available page width. These lines have been broken up. A '\' at the end of a
+         line means that a break has been introduced to fit in the page, with the following lines
+         indented. So:
+         <programlisting>
+            Let's pretend to have an extremely \
+            long line that \
+            does not fit
+            This one is short
+         </programlisting>
+         Is really:
+         <programlisting>
+            Let's pretend to have an extremely long line that does not fit
+            This one is short
+         </programlisting>
+      </para>
+   </preface>
+   &Overview;
+   &Installation_Configuration;
+   &Using__Path_and__GET___POST__etc.;
+   &_PathParam;
+   &_QueryParam;
+   &_HeaderParam;
+   &_MatrixParam;
+   &_CookieParam;
+   &_FormParam;
+   &_Form;
+   &_DefaultValue;
+   &_Encoded_and_encoding;
+   &_Context;
+   &JAX-RS_Resource_Locators_and_Sub_Resources;
+   &JAX-RS_Content_Negotiation;
+   &Content_Marshalling_Providers;
+   &Responses_using_javax.ws.rs.core.Response;
+   &ExceptionMappers;
+   &Configuring_Individual_JAX-RS_Resource_Beans;
+   &RESTEasy_Embedded_Container;
+   &RESTEasy_Server-side_Mock_Framework;
+   &Securing_JAX-RS_and_RESTeasy;
+   &RESTEasy_EJB_Integration;
+   &RESTEasy_Spring_Integration;
+   &RESTEasy_Client_Framework;
+   &Maven_and_RESTEasy;
+   &Migration_from_older_versions;
+
+</book>
+
