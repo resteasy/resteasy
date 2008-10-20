@@ -1,73 +1,68 @@
 <chapter id="RESTEasy_Embedded_Container">
-   <title>RESTEasy Embedded Container</title>
+<title>RESTEasy Embedded Container</title>
 
-   <para>
+<para>
 
-      RESTeasy JAX-RS comes with an embeddable server that you can run within your classpath. It packages TJWS
-      embeddable servlet container with JAX-RS.
-   </para>
-   <para>
+RESTeasy JAX-RS comes with an embeddable server that you can run within your classpath.  It packages TJWS embeddable servlet container with JAX-RS.
+</para>
+<para>
 
-      From the distribution, move the jars in resteasy-jaxrs.war/WEB-INF/lib into your classpath. You must both
-      programmatically register your JAX-RS beans using the embedded server's Registry. Here's an example:
-   </para>
-   <para>
+From the distribution, move the jars in resteasy-jaxrs.war/WEB-INF/lib into your classpath.  You must both programmatically register your JAX-RS beans using the embedded server's Registry.  Here's an example:
+</para>
+<para>
 
-      <programlisting>
+<programlisting>
 
-         @Path("/")
-         public class MyResource {
+@Path("/")
+public class MyResource {
 
-         @GET
-         public String get() { return "hello world"; }
+   @GET
+   public String get() { return "hello world"; }
+ 
 
+   public static void main(String[] args) throws Exception 
+   {
+      TJWSEmbeddedJaxrsServer tjws = new TJWSEmbeddedJaxrsServer();
+      tjws.setPort(8081);
+      tjws.getRegistry().addPerRequestResource(MyResource.class);
+      tjws.start();
+   }
+}
 
-         public static void main(String[] args) throws Exception
-         {
-         TJWSEmbeddedJaxrsServer tjws = new TJWSEmbeddedJaxrsServer();
-         tjws.setPort(8081);
-         tjws.getRegistry().addPerRequestResource(MyResource.class);
-         tjws.start();
-         }
-         }
+</programlisting>
+</para>
+<para>
 
-      </programlisting>
-   </para>
-   <para>
-
-      The server can either host non-encrypted or SSL based resources, but not both. See the Javadoc for
-      TJWSEmbeddedJaxrsServer as well as its superclass TJWSServletServer. The TJWS website is also a good place for
-      information.
-   </para>
-   <para>
+The server can either host non-encrypted or SSL based resources, but not both.  See the Javadoc for TJWSEmbeddedJaxrsServer as well as its superclass TJWSServletServer.  The TJWS website is also a good place for information.
+</para>
+<para>
 
 
-   </para>
-   <para>
+</para>
+<para>
 
-      If you want to use Spring, see the SpringBeanProcessor. Here's a pseudo-code example
-   </para>
-   <para>
+If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code example
+</para>
+<para>
 
-      <programlisting>
+<programlisting>
 
-         public static void main(String[] args) throws Exception
-         {
-         final TJWSEmbeddedJaxrsServer tjws = new TJWSEmbeddedJaxrsServer();
-         tjws.setPort(8081);
+   public static void main(String[] args) throws Exception 
+   {
+      final TJWSEmbeddedJaxrsServer tjws = new TJWSEmbeddedJaxrsServer();
+      tjws.setPort(8081);
 
-         org.resteasy.plugins.server.servlet.SpringBeanProcessor processor = new SpringBeanProcessor(tjws.getRegistry(),
-         tjws.getFactory();
-         ConfigurableBeanFactory factory = new XmlBeanFactory(...);
-         factory.addBeanPostProcessor(processor);
+      org.resteasy.plugins.server.servlet.SpringBeanProcessor processor = new SpringBeanProcessor(tjws.getRegistry(), tjws.getFactory();
+      ConfigurableBeanFactory factory = new XmlBeanFactory(...);
+      factory.addBeanPostProcessor(processor);
 
-         tjws.start();
-         }
+      tjws.start();
+   }
 
-      </programlisting>
-   </para>
-   <para>
+</programlisting>
+      </para>
+<para>
 
 
-   </para>
+</para>
 </chapter>

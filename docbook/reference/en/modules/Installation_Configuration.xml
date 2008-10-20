@@ -1,422 +1,361 @@
 <chapter id="Installation_Configuration">
-   <title>Installation/Configuration</title>
+<title>Installation/Configuration</title>
 
-   <para>
-
-
-   </para>
-   <para>
-
-      RESTeasy is deployed as a WAR archive and thus depends on a Servlet container.
-      When you download RESTeasy and unzip it you will see that it contains an exploded WAR.
-      Make a deep copy of the WAR archive for your particular application. Place your JAX-RS annotated class resources
-      and providers within
-      one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes. RESTeasy is configured by
-      default
-      to scan jars and classes within these directories for JAX-RS annotated classes and deploy and register them within
-      the system.
-   </para>
-   <para>
+<para>
 
 
-      RESTeasy is implemented as a ServletContextListener and a Servlet and deployed within a WAR file. If you open up
-      the WEB-INF/web.xml in your RESTeasy download you will see this:
-   </para>
-   <para>
+</para>
+<para>
 
-      <programlisting>
-         &lt;web-app&gt;
-         &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
-         &lt;context-param&gt;
-         &lt;param-name&gt;resteasy.scan&lt;/param-name&gt;
-         &lt;param-value&gt;true&lt;/param-value&gt;
-         &lt;/context-param&gt;
+RESTeasy is deployed as a WAR archive and thus depends on a Servlet container.  
+When you download RESTeasy and unzip it you will see that it contains an exploded WAR.
+Make a deep copy of the WAR archive for your particular application.  Place your JAX-RS annotated class resources and providers within
+one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.  RESTeasy is configured by default
+to scan jars and classes within these directories for JAX-RS annotated classes and deploy and register them within the system.
+</para>
+<para>
 
-         &lt;!-- set this if you map the Resteasy servlet to something other than /*
-         &lt;context-param&gt;
-         &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
-         &lt;param-value&gt;/resteasy&lt;/param-value&gt;
-         &lt;/context-param&gt;
-         --&gt;
-         &lt;!-- if you are using Spring, Seam or EJB as your component model, remove the
-         ResourceMethodSecurityInterceptor --&gt;
-         &lt;context-param&gt;
-         &lt;param-name&gt;resteasy.resource.method-interceptors&lt;/param-name&gt;
-         &lt;param-value&gt;
+
+RESTeasy is implemented as a ServletContextListener and a Servlet and deployed within a WAR file. If you open up the WEB-INF/web.xml in your RESTeasy download you will see this:
+</para>
+<para>
+
+<programlisting>
+&lt;web-app&gt;
+   &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
+   &lt;context-param&gt;
+      &lt;param-name&gt;resteasy.scan&lt;/param-name&gt;
+      &lt;param-value&gt;true&lt;/param-value&gt;
+   &lt;/context-param&gt;
+
+   &lt;!-- set this if you map the Resteasy servlet to something other than /*
+   &lt;context-param&gt;
+      &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+      &lt;param-value&gt;/resteasy&lt;/param-value&gt;
+   &lt;/context-param&gt;
+   --&gt;
+   &lt;!-- if you are using Spring, Seam or EJB as your component model, remove the ResourceMethodSecurityInterceptor --&gt;
+   &lt;context-param&gt;
+      &lt;param-name&gt;resteasy.resource.method-interceptors&lt;/param-name&gt;
+      &lt;param-value&gt;
          org.jboss.resteasy.core.ResourceMethodSecurityInterceptor
-         &lt;/param-value&gt;
-         &lt;/context-param&gt;
+      &lt;/param-value&gt;
+   &lt;/context-param&gt;
 
-         &lt;listener&gt;
-         &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
-         &lt;/listener&gt;
+   &lt;listener&gt;
+      &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+   &lt;/listener&gt;
 
-         &lt;servlet&gt;
-         &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-         &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
-         &lt;/servlet&gt;
+   &lt;servlet&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
+   &lt;/servlet&gt;
 
-         &lt;servlet-mapping&gt;
-         &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-         &lt;/servlet-mapping&gt;
-         &lt;/web-app&gt;
-      </programlisting>
-   </para>
-   <para>
+   &lt;servlet-mapping&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+   &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</programlisting>
+</para>
+<para>
 
-      The ResteasyBootstrap listener is responsible for initializing some basic components of RESTeasy as well as
-      scanning for annotation classes you have in your WAR file. It receives configuration options from &lt;context-param&gt;
-      elements. Here's a list of what options are available
-   </para>
-   <para>
+The ResteasyBootstrap listener is responsible for initializing some basic components of RESTeasy as well as scanning for annotation classes you have in your WAR file.  It receives configuration options from &lt;context-param&gt; elements.  Here's a list of what options are available
+</para>
+<para>
 
 
-   </para>
-   <para>
+</para>
+<para>
 
-      This config variable must be set if your servlet-mapping for the Resteasy servlet has a url-pattern other than /*.
-      For example, if the url-pattern is
-   </para>
-   <para>
+This config variable must be set if your servlet-mapping for the Resteasy servlet has a url-pattern other than /*.  For example, if the url-pattern is 
+</para>
+<para>
 
-      <programlisting>
+<programlisting>
 
-         &lt;servlet-mapping&gt;
-         &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-         &lt;url-pattern&gt;/restful-services/*&lt;/url-pattern&gt;
-         &lt;/servlet-mapping&gt;
-      </programlisting>
-   </para>
-   <para>
+   &lt;servlet-mapping&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;url-pattern&gt;/restful-services/*&lt;/url-pattern&gt;
+   &lt;/servlet-mapping&gt;
+</programlisting>
+</para>
+<para>
 
-      Then the value of resteasy-servlet.mapping.prefix must be:
-   </para>
-   <para>
+Then the value of resteasy-servlet.mapping.prefix must be:
+</para>
+<para>
 
-      <programlisting>
+<programlisting>
 
-         &lt;context-param&gt;
-         &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
-         &lt;param-value&gt;/restful-services&lt;/param-value&gt;
-         &lt;/context-param&gt;
-      </programlisting>
-   </para>
-   <para>
+   &lt;context-param&gt;
+      &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+      &lt;param-value&gt;/restful-services&lt;/param-value&gt;
+   &lt;/context-param&gt;
+</programlisting>
+</para>
+<para>
 
-      <table frame="topbot">
-         <tgroup cols="3" rowsep="1" colsep="1">
-            <thead>
-               <row>
-                  <entry>
-                     Option Name
-                  </entry>
-                  <entry>
-                     Default Value
-                  </entry>
-                  <entry>
-                     Description
-                  </entry>
-               </row>
-            </thead>
-            <tbody>
-               <row>
-                  <entry>
-                     resteasy.servlet.mapping.prefix
-                  </entry>
-                  <entry>
-                     no default
-                  </entry>
-                  <entry>
-                     If the url-pattern for the Resteasy servlet-mapping is not /*
-                  </entry>
-               </row>
-               <row>
-                  <entry>
-                     resteasy.scan.providers
-                  </entry>
-                  <entry>
-                     false
-                  </entry>
-                  <entry>
-                     Scan for @Provider classes and register them
-                  </entry>
-               </row>
-               <row>
-                  <entry>
-                     resteasy.scan.resources
-                  </entry>
-                  <entry>
-                     false
-                  </entry>
-                  <entry>
-                     Scan for JAX-RS resource classes
-                  </entry>
-               </row>
-               <row>
-                  <entry>
-                     resteasy.scan
-                  </entry>
-                  <entry>
-                     false
-                  </entry>
-                  <entry>
-                     Scan for both @Provider and JAX-RS resource classes (@Path, @GET, @POST etc..) and register them
-                  </entry>
-               </row>
-               <row>
-                  <entry>
-                     resteasy.providers
-                  </entry>
-                  <entry>
-                     no default
-                  </entry>
-                  <entry>
-                     A comma delimited list of fully qualified @Provider class names you want to register
-                  </entry>
-               </row>
-               <row>
-                  <entry>
-                     resteasy.use.builtin.providers
-                  </entry>
-                  <entry>
-                     true
-                  </entry>
-                  <entry>
-                     Whether or not to register default, built-in @Provider classes. (Only available in 1.0-beta-5 and
-                     later)
-                  </entry>
-               </row>
-               <row>
-                  <entry>
-                     resteasy.resources
-                  </entry>
-                  <entry>
-                     no default
-                  </entry>
-                  <entry>
-                     A comma delimited list of fully qualified JAX-RS resource class names you want to register
-                  </entry>
-               </row>
-               <row>
-                  <entry>
-                     resteasy.jndi.resources
-                  </entry>
-                  <entry>
-                     no default
-                  </entry>
-                  <entry>
-                     A comma delimited list of JNDI names which reference objects you want to register as JAX-RS
-                     resources
-                  </entry>
-               </row>
-               <row>
-                  <entry>
-                     javax.ws.rs.core.Application
-                  </entry>
-                  <entry>
-                     no default
-                  </entry>
-                  <entry>
-                     Fully qualified name of Application class to bootstrap in a spec portable way
-                  </entry>
-               </row>
-            </tbody>
-         </tgroup>
-      </table>
+<table frame="topbot">
+<tgroup cols="3" rowsep="1" colsep="1">
+<thead>
+<row>
+<entry>
+Option Name</entry>
+<entry>
+Default Value</entry>
+<entry>
+Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>
+resteasy.servlet.mapping.prefix</entry>
+<entry>
+no default</entry>
+<entry>
+If the url-pattern for the Resteasy servlet-mapping is not /*</entry>
+</row>
+<row>
+<entry>
+resteasy.scan.providers</entry>
+<entry>
+false</entry>
+<entry>
+Scan for @Provider classes and register them</entry>
+</row>
+<row>
+<entry>
+resteasy.scan.resources</entry>
+<entry>
+false</entry>
+<entry>
+Scan for JAX-RS resource classes</entry>
+</row>
+<row>
+<entry>
+resteasy.scan</entry>
+<entry>
+false</entry>
+<entry>
+Scan for both @Provider and JAX-RS resource classes (@Path, @GET, @POST etc..) and register them</entry>
+</row>
+<row>
+<entry>
+resteasy.providers</entry>
+<entry>
+no default</entry>
+<entry>
+A comma delimited list of fully qualified @Provider class names you want to register</entry>
+</row>
+<row>
+<entry>
+resteasy.use.builtin.providers</entry>
+<entry>
+true</entry>
+<entry>
+Whether or not to register default, built-in @Provider classes.  (Only available in 1.0-beta-5 and later)</entry>
+</row>
+<row>
+<entry>
+resteasy.resources</entry>
+<entry>
+no default</entry>
+<entry>
+A comma delimited list of fully qualified JAX-RS resource class names you want to register</entry>
+</row>
+<row>
+<entry>
+resteasy.jndi.resources</entry>
+<entry>
+no default</entry>
+<entry>
+A comma delimited list of JNDI names which reference objects you want to register as JAX-RS resources</entry>
+</row>
+<row>
+<entry>
+javax.ws.rs.core.Application</entry>
+<entry>
+no default</entry>
+<entry>
+Fully qualified name of Application class to bootstrap in a spec portable way</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
 
-   </para>
-   <para>
+</para>
+<para>
 
 
-      The ResteasyBootstrap listener configures an instance of an ResteasyProviderFactory and Registry. You can obtain
-      instances of a ResteasyProviderFactory and Registry from the ServletContext attributes
-      org.jboss.resteasy.spi.ResteasyProviderFactory and org.jboss.resteasy.spi.Registry.
-   </para>
-   <para>
+The ResteasyBootstrap listener configures an instance of an ResteasyProviderFactory and Registry.  You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes org.jboss.resteasy.spi.ResteasyProviderFactory and org.jboss.resteasy.spi.Registry.
+</para>
+<para>
 
-   </para>
-   <para>
+</para>
+<para>
 
 
-   </para>
-   <sect1 id="javax.ws.rs.core.Application">
-      <title>javax.ws.rs.core.Application</title>
+</para>
+<sect1 id="javax.ws.rs.core.Application">
+<title>javax.ws.rs.core.Application</title>
 
-      <para>
+<para>
 
-         javax.ws.rs.core.Application is a standard JAX-RS class that you may implement to provide information on your
-         deployment. It is simply a class the lists all JAX-RS root resources and providers.
-      </para>
-      <para>
+javax.ws.rs.core.Application is a standard JAX-RS class that you may implement to provide information on your deployment.  It is simply a class the lists all JAX-RS root resources and providers.
+</para>
+<para>
 
-         <programlisting>
-            /**
-            * Defines the components of a JAX-RS application and supplies additional
-            * metadata. A JAX-RS application or implementation supplies a concrete
-            * subclass of this abstract class.
-            */
-            public abstract class Application
-            {
-            private static final Set&lt;Object&gt; emptySet = Collections.emptySet();
+<programlisting>
+/**
+ * Defines the components of a JAX-RS application and supplies additional
+ * metadata. A JAX-RS application or implementation supplies a concrete
+ * subclass of this abstract class.
+ */
+public abstract class Application
+{
+   private static final Set&lt;Object&gt; emptySet = Collections.emptySet();
 
-            /**
-            * Get a set of root resource and provider classes. The default lifecycle
-            * for resource class instances is per-request. The default lifecycle for
-            * providers is singleton.
-            * &lt;p/&gt;
-            * &lt;p&gt;Implementations should warn about and ignore classes that do not
-            * conform to the requirements of root resource or provider classes.
-            * Implementations should warn about and ignore classes for which
-            * {@link #getSingletons()} returns an instance. Implementations MUST
-            * NOT modify the returned set.&lt;/p&gt;
-            *
-            * @return a set of root resource and provider classes. Returning null
-            * is equivalent to returning an empty set.
-            */
-            public abstract Set&lt;Class&lt;?&gt;&gt; getClasses();
+   /**
+    * Get a set of root resource and provider classes. The default lifecycle
+    * for resource class instances is per-request. The default lifecycle for
+    * providers is singleton.
+    * &lt;p/&gt;
+    * &lt;p&gt;Implementations should warn about and ignore classes that do not
+    * conform to the requirements of root resource or provider classes.
+    * Implementations should warn about and ignore classes for which
+    * {@link #getSingletons()} returns an instance. Implementations MUST
+    * NOT modify the returned set.&lt;/p&gt;
+    *
+    * @return a set of root resource and provider classes. Returning null
+    *         is equivalent to returning an empty set.
+    */
+   public abstract Set&lt;Class&lt;?&gt;&gt; getClasses();
 
-            /**
-            * Get a set of root resource and provider instances. Fields and properties
-            * of returned instances are injected with their declared dependencies
-            * (see {@link Context}) by the runtime prior to use.
-            * &lt;p/&gt;
-            * &lt;p&gt;Implementations should warn about and ignore classes that do not
-            * conform to the requirements of root resource or provider classes.
-            * Implementations should flag an error if the returned set includes
-            * more than one instance of the same class. Implementations MUST
-            * NOT modify the returned set.&lt;/p&gt;
-            * &lt;p/&gt;
-            * &lt;p&gt;The default implementation returns an empty set.&lt;/p&gt;
-            *
-            * @return a set of root resource and provider instances. Returning null
-            * is equivalent to returning an empty set.
-            */
-            public Set&lt;Object&gt; getSingletons()
-            {
-            return emptySet;
-            }
+   /**
+    * Get a set of root resource and provider instances. Fields and properties
+    * of returned instances are injected with their declared dependencies
+    * (see {@link Context}) by the runtime prior to use.
+    * &lt;p/&gt;
+    * &lt;p&gt;Implementations should warn about and ignore classes that do not
+    * conform to the requirements of root resource or provider classes.
+    * Implementations should flag an error if the returned set includes
+    * more than one instance of the same class. Implementations MUST
+    * NOT modify the returned set.&lt;/p&gt;
+    * &lt;p/&gt;
+    * &lt;p&gt;The default implementation returns an empty set.&lt;/p&gt;
+    *
+    * @return a set of root resource and provider instances. Returning null
+    *         is equivalent to returning an empty set.
+    */
+   public Set&lt;Object&gt; getSingletons()
+   {
+      return emptySet;
+   }
 
-            }
-         </programlisting>
-      </para>
-      <para>
-
-
-      </para>
-      <para>
-
-         To use Application you must set a servlet context-param, javax.ws.rs.core.Application with a fully qualified
-         class that implements Application. For example:
-      </para>
-      <para>
-
-         <programlisting>
-
-            &lt;context-param&gt;
-            &lt;param-name&gt;javax.ws.rs.core.Application&lt;/param-name&gt;
-            &lt;param-value&gt;com.mycom.MyApplicationConfig&lt;/param-value&gt;
-            &lt;/context-param&gt;
+}
+</programlisting>
+</para>
+<para>
 
 
-         </programlisting>
-      </para>
-      <para>
+</para>
+<para>
 
-         If you have this set, you should probably turn off automatic scanning as this will probably result in duplicate
-         classes being registered.
-      </para>
-      <para>
+To use Application you must set a servlet context-param, javax.ws.rs.core.Application with a fully qualified class that implements Application.  For example:
+</para>
+<para>
 
+<programlisting>
 
-      </para>
-   </sect1>
-   <sect1 id="RESTEasyLogging">
-      <title>RESTEasyLogging</title>
-
-      <para>
-
-         RESTEasy logs various events using slf4j.
-      </para>
-      <para>
-
-         The slf4j API is intended to serve as a simple facade for various logging APIs allowing to plug in the desired
-         implementation at deployment time. By default, RESTEasy is configured to use Apache log4j, but you may opt to
-         choose any logging provider supported by slf4j.
-      </para>
-      <para>
-
-         The logging categories are still a work in progress, but the initial set should make it easier to trouleshoot
-         issues. Currently, the framework has defined the following log categories:
-      </para>
-      <para>
-
-         <table frame="topbot">
-            <tgroup cols="2" rowsep="1" colsep="1">
-               <thead>
-                  <row>
-                     <entry>
-                        Category
-                     </entry>
-                     <entry>
-                        Function
-                     </entry>
-                  </row>
-               </thead>
-               <tbody>
-                  <row>
-                     <entry>
-                        org.jboss.resteasy.core
-                     </entry>
-                     <entry>
-                        Logs all activity by the core RESTEasy implementation
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        org.jboss.resteasy.plugins.providers
-                     </entry>
-                     <entry>
-                        Logs all activity by RESTEasy entity providers
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        org.jboss.resteasy.plugins.server
-                     </entry>
-                     <entry>
-                        Logs all activity by the RESTEasy server implementation.
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        org.jboss.resteasy.specimpl
-                     </entry>
-                     <entry>
-                        Logs all activity by JAX-RS implementing classes
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        org.jboss.resteasy.mock
-                     </entry>
-                     <entry>
-                        Logs all activity by the RESTEasy mock framework
-                     </entry>
-                  </row>
-               </tbody>
-            </tgroup>
-         </table>
-
-      </para>
-      <para>
-
-         If you're developing RESTEasy code, the LoggerCategories class provide easy access to category names and
-         provides easy access to the various loggers.
-      </para>
-      <para>
+   &lt;context-param&gt;
+      &lt;param-name&gt;javax.ws.rs.core.Application&lt;/param-name&gt;
+      &lt;param-value&gt;com.mycom.MyApplicationConfig&lt;/param-value&gt;
+   &lt;/context-param&gt;
 
 
-      </para>
-   </sect1>
+
+</programlisting>
+</para>
+<para>
+
+If you have this set, you should probably turn off automatic scanning as this will probably result in duplicate classes being registered.</para>
+<para>
+
+
+</para>
+</sect1>
+<sect1 id="RESTEasyLogging">
+<title>RESTEasyLogging</title>
+
+<para>
+
+RESTEasy logs various events using  slf4j.
+</para>
+<para>
+
+The slf4j API is intended to serve as a simple facade for various logging APIs allowing to plug in the desired implementation at deployment time. By default, RESTEasy is configured to use Apache log4j, but you may opt to choose any logging provider supported by slf4j. 
+</para>
+<para>
+
+The logging categories are still a work in progress, but the initial set should make it easier to trouleshoot issues. Currently, the framework has defined the following log categories:
+</para>
+<para>
+
+<table frame="topbot">
+<tgroup cols="2" rowsep="1" colsep="1">
+<thead>
+<row>
+<entry>
+Category</entry>
+<entry>
+ Function</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>
+org.jboss.resteasy.core</entry>
+<entry>
+Logs all activity by the core RESTEasy implementation</entry>
+</row>
+<row>
+<entry>
+org.jboss.resteasy.plugins.providers</entry>
+<entry>
+Logs all activity by RESTEasy entity providers</entry>
+</row>
+<row>
+<entry>
+org.jboss.resteasy.plugins.server</entry>
+<entry>
+Logs all activity by the RESTEasy server implementation.</entry>
+</row>
+<row>
+<entry>
+org.jboss.resteasy.specimpl</entry>
+<entry>
+Logs all activity by JAX-RS implementing classes</entry>
+</row>
+<row>
+<entry>
+org.jboss.resteasy.mock</entry>
+<entry>
+Logs all activity by the RESTEasy mock framework</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+</para>
+<para>
+
+If you're developing RESTEasy code, the LoggerCategories class provide easy access to category names and provides easy access to the various loggers. 
+</para>
+<para>
+
+
+</para>
+</sect1>
 </chapter>

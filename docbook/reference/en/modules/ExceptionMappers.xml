@@ -1,68 +1,62 @@
 <chapter id="ExceptionMappers">
-   <title>ExceptionMappers</title>
+<title>ExceptionMappers</title>
 
-   <para>
+<para>
 
-      ExceptionMappers are custom, application provided, components that can catch thrown application exceptions and
-      write specific HTTP responses. The are classes annotated with @Provider and that implement this interface
-   </para>
-   <para>
+ExceptionMappers are custom, application provided, components that can catch thrown application exceptions and write specific HTTP responses.  The are classes annotated with @Provider and that implement this interface
+</para>
+<para>
 
-      <programlisting>
-         package javax.ws.rs.ext;
+<programlisting>
+package javax.ws.rs.ext;
 
-         import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response;
 
-         /**
-         * Contract for a provider that maps Java exceptions to
-         * {@link javax.ws.rs.core.Response}. An implementation of this interface must
-         * be annotated with {@link Provider}.
-         *
-         * @see Provider
-         * @see javax.ws.rs.core.Response
-         */
-         public interface ExceptionMapper&lt;E&gt;
-         {
+/**
+ * Contract for a provider that maps Java exceptions to
+ * {@link javax.ws.rs.core.Response}. An implementation of this interface must
+ * be annotated with {@link Provider}.
+ *
+ * @see Provider
+ * @see javax.ws.rs.core.Response
+ */
+public interface ExceptionMapper&lt;E&gt;
+{
 
-         /**
-         * Map an exception to a {@link javax.ws.rs.core.Response}.
-         *
-         * @param exception the exception to map to a response
-         * @return a response mapped from the supplied exception
-         */
-         Response toResponse(E exception);
-         }
-      </programlisting>
-   </para>
-   <para>
+   /**
+    * Map an exception to a {@link javax.ws.rs.core.Response}.
+    *
+    * @param exception the exception to map to a response
+    * @return a response mapped from the supplied exception
+    */
+   Response toResponse(E exception);
+}
+</programlisting>
+</para>
+<para>
 
-      When an application exception is thrown it will be caught by the JAX-RS runtime. JAX-RS will then scan registered
-      ExceptionMappers to see which one support marshalling the exception type thrown. Here is an example of
-      ExceptionMapper
-   </para>
-   <para>
+When an application exception is thrown it will be caught by the JAX-RS runtime.  JAX-RS will then scan registered ExceptionMappers to see which one support marshalling the exception type thrown.  Here is an example of ExceptionMapper
+</para>
+<para>
 
-      <programlisting>
+<programlisting>
 
-         @Provider
-         public class EJBExceptionMapper implements ExceptionMapper&lt;javax.ejb.EJBException&gt;
-         {
+@Provider
+public class EJBExceptionMapper implements ExceptionMapper&lt;javax.ejb.EJBException&gt;
+{
 
-         Response toResponse(EJBException exception) {
-         return Response.status(500);
-         }
+   Response toResponse(EJBException exception) {
+      return Response.status(500);
+   }
 
-         }
-      </programlisting>
-   </para>
-   <para>
+}
+</programlisting>
+</para>
+<para>
 
-      You register ExceptionMappers the same way you do MessageBodyReader/Writers. By scanning, through the resteasy
-      provider context-param (if you're deploying via a WAR file), or programmatically through the
-      ResteasyProviderFactory class.
-   </para>
-   <para>
+You register ExceptionMappers the same way you do MessageBodyReader/Writers.  By scanning, through the resteasy provider context-param (if you're deploying via a WAR file), or programmatically through the ResteasyProviderFactory class.</para>
+<para>
 
 
-   </para>
+</para>
 </chapter>

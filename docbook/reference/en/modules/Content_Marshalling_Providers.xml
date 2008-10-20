@@ -1,774 +1,704 @@
 <chapter id="Content_Marshalling_Providers">
-   <title>Content Marshalling/Providers</title>
-   <sect1 id="Default_Providers_and_default_JAX-RS_Content_Marshalling">
-      <title>Default Providers and default JAX-RS Content Marshalling</title>
-
-      <para>
-
-         Resteasy can automatically marshal and unmarshal a few different message bodies.
-      </para>
-      <para>
-
-         <table frame="topbot">
-            <tgroup cols="2" rowsep="1" colsep="1">
-               <thead>
-                  <row>
-                     <entry>
-                        Media Types
-                     </entry>
-                     <entry>
-                        Java Type
-                     </entry>
-                  </row>
-               </thead>
-               <tbody>
-                  <row>
-                     <entry>
-                        application/*+xml, text/*+xml
-                     </entry>
-                     <entry>
-                        JaxB annotated classes
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        */*
-                     </entry>
-                     <entry>
-                        java.lang.String
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        */*
-                     </entry>
-                     <entry>
-                        java.io.InputStream
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        text/plain
-                     </entry>
-                     <entry>
-                        primtives, java.lang.String, or any type that has a String constructor, or static
-                        valueOf(String) method for input, toString() for output
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        */*
-                     </entry>
-                     <entry>
-                        javax.activation.DataSource
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        */*
-                     </entry>
-                     <entry>
-                        java.io.File
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        */*
-                     </entry>
-                     <entry>
-                        byte[]
-                     </entry>
-                  </row>
-                  <row>
-                     <entry>
-                        application/x-www-form-urlencoded
-                     </entry>
-                     <entry>
-                        javax.ws.rs.core.MultivaluedMap
-                     </entry>
-                  </row>
-               </tbody>
-            </tgroup>
-         </table>
-
-      </para>
-      <para>
-
-      </para>
-      <para>
-
-      </para>
-      <para>
-
+<title>Content Marshalling/Providers</title>
+<sect1 id="Default_Providers_and_default_JAX-RS_Content_Marshalling">
+<title>Default Providers and default JAX-RS Content Marshalling</title>
+
+<para>
+
+Resteasy can automatically marshal and unmarshal a few different message bodies.
+</para>
+<para>
+
+<table frame="topbot">
+<tgroup cols="2" rowsep="1" colsep="1">
+<thead>
+<row>
+<entry>
+Media Types</entry>
+<entry>
+Java Type</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>
+application/*+xml, text/*+xml</entry>
+<entry>
+JaxB annotated classes</entry>
+</row>
+<row>
+<entry>
+*/*</entry>
+<entry>
+java.lang.String</entry>
+</row>
+<row>
+<entry>
+*/*</entry>
+<entry>
+java.io.InputStream</entry>
+</row>
+<row>
+<entry>
+text/plain</entry>
+<entry>
+primtives, java.lang.String, or any type that has a String constructor, or static valueOf(String) method for input, toString() for output</entry>
+</row>
+<row>
+<entry>
+*/*</entry>
+<entry>
+javax.activation.DataSource</entry>
+</row>
+<row>
+<entry>
+*/*</entry>
+<entry>
+java.io.File</entry>
+</row>
+<row>
+<entry>
+*/*</entry>
+<entry>
+byte[]</entry>
+</row>
+<row>
+<entry>
+application/x-www-form-urlencoded</entry>
+<entry>
+javax.ws.rs.core.MultivaluedMap</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+</para>
+<para>
+
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
+</sect1>
+<sect1 id="Content_Marshalling_with__Provider_classes">
+<title>Content Marshalling with @Provider classes</title>
+
+<para>
+
+The JAX-RS specification allows you to plug in your own request/response body reader and writers.  To do this, you annotate a class
+with @Provider and specify the @ProduceMime types for a writer and @ConsumeMime types for a reader.  You must also implement
+a MessageBodyReader/Writer interface respectively.  Here is an example.
+</para>
+<para>
+
+
+The Resteasy ServletContextLoader will automatically scan your WEB-INF/lib and classes directories for classes annotated with @Provider or you can manually configure them in web.xml.  See Installation/Configuration
+</para>
+<para>
+
 
-      </para>
-   </sect1>
-   <sect1 id="Content_Marshalling_with__Provider_classes">
-      <title>Content Marshalling with @Provider classes</title>
-
-      <para>
-
-         The JAX-RS specification allows you to plug in your own request/response body reader and writers. To do this,
-         you annotate a class
-         with @Provider and specify the @ProduceMime types for a writer and @ConsumeMime types for a reader. You must
-         also implement
-         a MessageBodyReader/Writer interface respectively. Here is an example.
-      </para>
-      <para>
-
-
-         The Resteasy ServletContextLoader will automatically scan your WEB-INF/lib and classes directories for classes
-         annotated with @Provider or you can manually configure them in web.xml. See Installation/Configuration
-      </para>
-      <para>
-
-
-      </para>
-   </sect1>
-   <sect1 id="Built_in_JAXB_providers">
-      <title>Built in JAXB providers</title>
-
-      <para>
-
-         As required by the specification, RESTEasy JAX-RS includes support for (un)marshalling JAXB annotated classes.
-         RESTEasy provides multiple JAXB Providers to address some subtle differences between classes generated by XJC
-         and classes which are simply annotated with @XmlRootElement, or working with JAXBElement classes directly.
-      </para>
-      <para>
-
-         For the most part, developers using the JAX-RS API, the selection of which provider is invoked will be
-         completely transparent. For developers wishing to access the providers directly (which most folks won't need to
-         do), this document describes which provider is best suited for different configurations.
-      </para>
-      <para>
-
-         A JAXB Provider is selected by RESTEasy when a parameter or return type is an object that is annotated with
-         JAXB annotations (such as @XmlRootEntity or @XmlType) or if the type is a JAXBElement. Additionally, the
-         resource class or resource method will be annotated with either a @ConsumeMime or @ProduceMime annotation and
-         contain one or more of the following values:
-      </para>
-      <para>
-
-         <itemizedlist>
-
-            <listitem>
-               text/*+xml
-            </listitem>
-
-            <listitem>
-               application/*+xml
-            </listitem>
-
-            <listitem>
-               application/fastinfoset
-            </listitem>
-
-            <listitem>
-               application/json
-            </listitem>
-
-         </itemizedlist>
-
-      </para>
-      <para>
-
-      </para>
-      <para>
-
-         RESTEasy will select a different provider based on the return type or parameter type used in the resource. This
-         section decribes how the selection process works.
-      </para>
-      <para>
-
-         @XmlRootEntity
-         When a class is annotated with a @XmlRootElement annotation, RESTEasy will select the
-         JAXBXmlRootElementProvider. This provider handles basic marhaling and and unmarshalling of custom JAXB
-         entities.
-      </para>
-      <para>
-
-         @XmlType
-         Classes which have been generated by XJC will most likely not contain an @XmlRootEntity annotation. In order
-         for these classes to marshalled, they must be wrapped within a JAXBElement instance. This is typically
-         accomplished by invoking a method on the class which serves as the XmlRegistry and is named ObjectFactory.
-      </para>
-      <para>
-
-         The JAXBXmlTypeProvider provider is selected when the class is annotated with an XmlType annotation and not an
-         XmlRootElement annotation.
-      </para>
-      <para>
-
-         This provider simplifies this task by attempting to locate the XmlRegistry for the target class. By default, a
-         JAXB implementation will create a class called ObjectFactory and is located in the same package as the target
-         class. When this class is located, it will contain a &quot;create&quot; method that takes the object instance
-         as a parameter. For example, of the target type is called &quot;Contact&quot;, then the ObjectFactory class
-         will have a method:
-      </para>
-      <para>
-
-         public JAXBElement createContact(Contact value) {..
-      </para>
-      <para>
-
-         JAXBElement&lt;?&gt;
-         If your resource works with the JAXBElement class directly, the RESTEasy runtime will select the
-         JAXBElementProvider. This provider examines the ParameterizedType value of the JAXBElement in order to select
-         the appropriate JAXBContext.
-      </para>
-      <para>
-
-      </para>
-      <para>
-
-
-      </para>
-      <sect1 id="Pluggable_JAXBContext_s_with_ContextResolvers">
-         <title>Pluggable JAXBContext's with ContextResolvers</title>
-
-         <para>
-
-            You should not use this feature unless you know what you're doing.
-         </para>
-         <para>
-
-            Based on the class you are marshalling/unmarshalling, RESTEasy will, by default create and cache JAXBContext
-            instances per class type. If you do not want RESTEasy to create JAXBContexts, you can plug-in your own by
-            implementing an instance of javax.ws.rs.ext.ContextResolver
-         </para>
-         <para>
-
-            <programlisting>
-
-               public interface ContextResolver&lt;T&gt;
-               {
-               T getContext(Class&lt;?&gt; type);
-               }
-
-               @Produces("application/xml")
-               @Provider
-               public class MyJAXBContextResolver implements ContextResolver&lt;JAXBContext&gt;
-               {
-
-               JAXBContext getContext(Class&lt;?&gt; type)
-               {
-               if (type.equals(WhateverClassIsOverridedFor.class)) return JAXBContext.newInstance()...;
-               }
-               }
-            </programlisting>
-         </para>
-         <para>
-
-            You must provide a @Produces annotation to specify the media type the context is meant for. You must also
-            make sure to implement ContextResolver&lt;JAXBContext&gt;. This helps the runtime match to the correct
-            context resolver. You must also annotate the ContextResolver class with @Provider.
-         </para>
-         <para>
-
-            There are multiple ways to make this ContextResolver available.
-         </para>
-         <para>
-
-            <orderedlist>
-
-               <listitem>
-                  Return it as a class or instance from a javax.ws.rs.core.Application implementation
-               </listitem>
-
-               <listitem>
-                  List it as a provider with resteasy.providers
-               </listitem>
-
-               <listitem>
-                  Let RESTEasy automatically scan for it within your WAR file. See Configuration Guide
-               </listitem>
-
-               <listitem>
-                  Manually add it via ResteasyProviderFactory.getInstance().registerProvider(Class) or
-                  registerProviderInstance(Object)
-               </listitem>
-
-            </orderedlist>
-
-         </para>
-         <para>
-
-
-         </para>
-      </sect1>
-      <sect1 id="JAXB_+_XML_provider">
-         <title>JAXB + XML provider</title>
-      </sect1>
-      <sect1 id="JAXB_+_JSON_provider">
-         <title>JAXB + JSON provider</title>
-
-         <para>
-
-            RESTEasy allows you to marshall JAXB annotated POJOs to and from JSON. This provider wraps the Jettison JSON
-            library to accomplish this. Jettison has two mapping formats. One is BadgerFish the other is a Jettison
-            Mapped Convention format.
-         </para>
-         <para>
-
-            The Mapped Convention is the default mapping.
-         </para>
-         <para>
-
-         </para>
-         <para>
-
-            For example, consider this JAXB class:
-         </para>
-         <para>
-
-            <programlisting>
-               @XmlRootElement(name = "book")
-               public class Book
-               {
-               private String author;
-               private String ISBN;
-               private String title;
-
-               public Book()
-               {
-               }
-
-               public Book(String author, String ISBN, String title)
-               {
-               this.author = author;
-               this.ISBN = ISBN;
-               this.title = title;
-               }
-
-               @XmlElement
-               public String getAuthor()
-               {
-               return author;
-               }
-
-               public void setAuthor(String author)
-               {
-               this.author = author;
-               }
-
-               @XmlElement
-               public String getISBN()
-               {
-               return ISBN;
-               }
-
-               public void setISBN(String ISBN)
-               {
-               this.ISBN = ISBN;
-               }
-
-               @XmlAttribute
-               public String getTitle()
-               {
-               return title;
-               }
-
-               public void setTitle(String title)
-               {
-               this.title = title;
-               }
-               }
-            </programlisting>
-         </para>
-         <para>
-
-
-         </para>
-         <para>
-
-            This is how the JAXB Book class would be marshalled to JSON using the BadgerFish Convention
-         </para>
-         <para>
-
-            <programlisting>
-               {"book":
-               {
-               "@title":"EJB 3.0",
-               "author":{"$":"Bill Burke"},
-               "ISBN":{"$":"596529260"}
-               }
-               }
-            </programlisting>
-         </para>
-         <para>
-
-            Notice that element values have a map associated with them and to get to the value of the element, you must
-            access the &quot;$&quot; variable. Here's an example of accessing the book in Javascript:
-         </para>
-         <para>
-
-            <programlisting>
-               var data = eval("(" + xhr.responseText + ")");
-               document.getElementById("zone").innerHTML = data.book.@title;
-               document.getElementById("zone").innerHTML += data.book.author.$;
-            </programlisting>
-         </para>
-         <para>
-
-
-         </para>
-         <para>
-
-            To use the BadgerFish Convention you must use the
-            @org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish annotation on the JAXB class you are
-            marshalling/unmarshalling, or, on the JAX-RS resource method or parameter:
-         </para>
-         <para>
-
-            <programlisting>
-               @BadgerFish
-               @XmlRootElement(name = "book")
-               public class Book {...}
-            </programlisting>
-         </para>
-         <para>
-
-            If you are returning a book on the JAX-RS method and you don't want to (or can't) pollute your JAXB classes
-            with RESTEasy annotations, add the annotation to the JAX-RS method:
-         </para>
-         <para>
-
-            <programlisting>
-               @BadgerFish
-               @GET
-               public Book getBook(...) {...}
-            </programlisting>
-         </para>
-         <para>
-
-            If a Book is your input then you put it on the parameter:
-         </para>
-         <para>
-
-            <programlisting>
-               @POST
-               public void newBook(@BadgerFish Book book) {...}
-            </programlisting>
-         </para>
-         <para>
-
-
-         </para>
-         <para>
-
-            The default Jettison Mapped Convention would return JSON that looked like this:
-         </para>
-         <para>
-
-            <programlisting>
-               {"book" :
-               {
-               "@title":"EJB 3.0",
-               "author":"Bill Burke",
-               "ISBN":596529260
-               }
-               }
-            </programlisting>
-         </para>
-         <para>
-
-            Notice that the @XmlAttribute &quot;title&quot; is prefixed with the '@' character. Unlike BadgerFish, the
-            '$' does not represent the value of element text. This format is a bit simpler than the BadgerFish
-            convention which is why it was chose as a default. Here's an example of accessing this in Javascript:
-         </para>
-         <para>
-
-            <programlisting>
-               var data = eval("(" + xhr.responseText + ")");
-               document.getElementById("zone").innerHTML = data.book.@title;
-               document.getElementById("zone").innerHTML += data.book.author;
-            </programlisting>
-         </para>
-         <para>
-
-
-         </para>
-         <para>
-
-            The Mapped Convention allows you to fine tune the JAXB mapping using the
-            @org.jboss.resteasy.annotations.providers.jaxb.json.Mapped annotation. You can provide an XML Namespace to
-            JSON namespace mapping. You can also force @XmlAttribute's to be marshaled as XMLElements.
-         </para>
-         <para>
-
-            <programlisting>
-               @Mapped(attributeAsElements={"title"})
-               @XmlRootElement(name = "book")
-               public class Book {...}
-            </programlisting>
-         </para>
-         <para>
-
-            If you are returning a book on the JAX-RS method and you don't want to (or can't) pollute your JAXB classes
-            with RESTEasy annotations, add the annotation to the JAX-RS method:
-         </para>
-         <para>
-
-            <programlisting>
-               @Mapped(attributeAsElements={"title"})
-               @GET
-               public Book getBook(...) {...}
-            </programlisting>
-         </para>
-         <para>
-
-            If a Book is your input then you put it on the parameter:
-         </para>
-         <para>
-
-            <programlisting>
-               @POST
-               public void newBook(@Mapped(attributeAsElements={"title"}) Book book) {...}
-            </programlisting>
-         </para>
-         <para>
-
-         </para>
-         <para>
-
-         </para>
-         <para>
-
-         </para>
-         <para>
-
-         </para>
-         <para>
-
-         </para>
-         <para>
-
-
-         </para>
-      </sect1>
-      <sect1 id="JAXB_+_FastinfoSet_provider">
-         <title>JAXB + FastinfoSet provider</title>
-
-         <para>
-
-            RESTEasy supports the FastinfoSet mime type with JAXB annotated classes. Fast infoset documents are faster
-            to serialize and parse, and smaller in size, than logically equivalent XML documents. Thus, fast infoset
-            documents may be used whenever the size and processing time of XML documents is an issue. It is configured
-            the same way the XML JAXB provider is so really no other documentation is needed here.
-         </para>
-         <para>
-
-
-         </para>
-      </sect1>
-   </sect1>
-   <sect1 id="Built_in_YAML_Provider">
-      <title>Built in YAML Provider</title>
-
-      <para>
-
-         Since Beta 6, resteasy comes with built in support for YAML using the Jyaml library. To enable YAML support,
-         you need to drop in the jyaml-1.3.jar in RestEASY's classpath.
-      </para>
-      <para>
-
-
-      </para>
-      <para>
-
-         Jyaml jar file can either be downloaded from sourceforge:
-         https://sourceforge.net/project/showfiles.php?group_id=153924
-      </para>
-      <para>
-
-         Or if you use maven, the jyaml jar is available through the main repositories and included using this
-         dependency:
-      </para>
-      <para>
-
-         <programlisting>
-            &lt;dependency&gt;
-            &lt;groupId&gt;org.jyaml&lt;/groupId&gt;
-            &lt;artifactId&gt;jyaml&lt;/artifactId&gt;
-            &lt;version&gt;1.3&lt;/version&gt;
-            &lt;/dependency&gt;
-         </programlisting>
-      </para>
-      <para>
-
-         When starting resteasy look out in the logs for a line stating that the YamlProvider has been added - this
-         indicates that resteasy has found the Jyaml jar:
-      </para>
-      <para>
-
-         2877 Main INFO org.jboss.resteasy.plugins.providers.RegisterBuiltin - Adding YamlProvider
-      </para>
-      <para>
-
-
-      </para>
-      <para>
-
-         The Yaml provider recognises three mime types:
-      </para>
-      <para>
-
-         <itemizedlist>
-
-            <listitem>
-               text/x-yaml
-            </listitem>
-
-            <listitem>
-               text/yaml
-            </listitem>
-
-            <listitem>
-               application/x-yaml
-            </listitem>
-
-         </itemizedlist>
-
-      </para>
-      <para>
-
-
-      </para>
-      <para>
-
-         This is an example of how to use Yaml in a resource method.
-      </para>
-      <para>
-
-         <programlisting>
-
-            import javax.ws.rs.ConsumeMime;
-            import javax.ws.rs.GET;
-            import javax.ws.rs.Path;
-            import javax.ws.rs.ProduceMime;
-
-            @Path("/yaml")
-            public class YamlResource
-            {
-
-            @GET
-            @ProduceMime("text/x-yaml")
-            public MyObject getMyObject() {
-            return createMyObject();
-            }
-            ...
-            }
-
-         </programlisting>
-      </para>
-      <para>
-
-      </para>
-      <para>
-
-      </para>
-      <para>
-
-
-      </para>
-   </sect1>
-   <sect1 id="MessageBodyWorkers">
-      <title>MessageBodyWorkers</title>
-
-      <para>
-
-         javax.ws.rs.ext.MessageBodyWorks is a simple injectable interface that allows you to look up MessageBodyReaders
-         and Writers. It is very useful, for instance, for implementing multipart providers. Content types that embed
-         other random content types.
-      </para>
-      <para>
-
-         <programlisting>
-
-            /**
-            * An injectable interface providing lookup of {@link MessageBodyReader} and
-            * {@link MessageBodyWriter} instances.
-            *
-            * @see javax.ws.rs.core.Context
-            * @see MessageBodyReader
-            * @see MessageBodyWriter
-            */
-            public interface MessageBodyWorkers
-            {
-
-            /**
-            * Get a message body reader that matches a set of criteria.
-            *
-            * @param mediaType the media type of the data that will be read, this will
-            * be compared to the values of {@link javax.ws.rs.ConsumeMime} for
-            * each candidate reader and only matching readers will be queried.
-            * @param type the class of object to be produced.
-            * @param genericType the type of object to be produced. E.g. if the
-            * message body is to be converted into a method parameter, this will be
-            * the formal type of the method parameter as returned by
-            * &lt;code&gt;Class.getGenericParameterTypes&lt;/code&gt;.
-            * @param annotations an array of the annotations on the declaration of the
-            * artifact that will be initialized with the produced instance. E.g. if the
-            * message body is to be converted into a method parameter, this will be
-            * the annotations on that parameter returned by
-            * &lt;code&gt;Class.getParameterAnnotations&lt;/code&gt;.
-            * @return a MessageBodyReader that matches the supplied criteria or null
-            * if none is found.
-            */
-            public abstract &lt;T&gt; MessageBodyReader&lt;T&gt; getMessageBodyReader(Class&lt;T&gt; type, Type
-            genericType, Annotation annotations[], MediaType mediaType);
-
-
-            /**
-            * Get a message body writer that matches a set of criteria.
-            *
-            * @param mediaType the media type of the data that will be written, this will
-            * be compared to the values of {@link javax.ws.rs.ProduceMime} for
-            * each candidate writer and only matching writers will be queried.
-            * @param type the class of object that is to be written.
-            * @param genericType the type of object to be written. E.g. if the
-            * message body is to be produced from a field, this will be
-            * the declared type of the field as returned by
-            * &lt;code&gt;Field.getGenericType&lt;/code&gt;.
-            * @param annotations an array of the annotations on the declaration of the
-            * artifact that will be written. E.g. if the
-            * message body is to be produced from a field, this will be
-            * the annotations on that field returned by
-            * &lt;code&gt;Field.getDeclaredAnnotations&lt;/code&gt;.
-            * @return a MessageBodyReader that matches the supplied criteria or null
-            * if none is found.
-            */
-            public abstract &lt;T&gt; MessageBodyWriter&lt;T&gt; getMessageBodyWriter(Class&lt;T&gt; type, Type
-            genericType, Annotation annotations[], MediaType mediaType);
-            }
-
-         </programlisting>
-      </para>
-      <para>
-
-
-      </para>
-      <para>
-
-         MessageBodyWorkers are injectable into MessageBodyReader or Writers:
-      </para>
-      <para>
-
-         <programlisting>
-            @Provider
-            @ConsumeMime("multipart/fixed")
-            public class MultipartProvider implements MessageBodyReader {
-
-            private @Context MessageBodyWorkers workers;
-
-            ...
-
-            }
-         </programlisting>
-      </para>
-      <para>
-
-
-      </para>
-   </sect1>
+</para>
+</sect1>
+<sect1 id="Built_in_JAXB_providers">
+<title>Built in JAXB providers</title>
+
+<para>
+
+As required by the specification, RESTEasy JAX-RS includes support for (un)marshalling JAXB annotated classes. RESTEasy provides multiple JAXB Providers to address some subtle differences between classes generated by XJC and classes which are simply annotated with @XmlRootElement, or working with JAXBElement classes directly.
+</para>
+<para>
+
+For the most part, developers using the JAX-RS API, the selection of which provider is invoked will be completely transparent. For developers wishing to access the providers directly (which most folks won't need to do), this document describes which provider is best suited for different configurations.
+</para>
+<para>
+
+A JAXB Provider is selected by RESTEasy when a parameter or return type is an object that is annotated with JAXB annotations (such as @XmlRootEntity or @XmlType) or if the type is a JAXBElement. Additionally, the resource class or resource method will be annotated with either a @ConsumeMime or @ProduceMime annotation and contain one or more of the following values:
+</para>
+<para>
+
+<itemizedlist>
+
+<listitem>
+ text/*+xml
+</listitem>
+
+<listitem>
+ application/*+xml
+</listitem>
+
+<listitem>
+ application/fastinfoset
+</listitem>
+
+<listitem>
+ application/json
+</listitem>
+
+</itemizedlist>
+
+</para>
+<para>
+
+</para>
+<para>
+
+RESTEasy will select a different provider based on the return type or parameter type used in the resource. This section decribes how the selection process works. 
+</para>
+<para>
+
+@XmlRootEntity
+When a class is annotated with a @XmlRootElement annotation, RESTEasy will select the JAXBXmlRootElementProvider. This provider handles basic marhaling and and unmarshalling of custom JAXB entities.
+</para>
+<para>
+
+@XmlType
+Classes which have been generated by XJC will most likely not contain an @XmlRootEntity annotation. In order for these classes to marshalled, they must be wrapped within a JAXBElement instance. This is typically accomplished by invoking a method on the class which serves as the XmlRegistry and is named ObjectFactory.
+</para>
+<para>
+
+The JAXBXmlTypeProvider provider is selected when the class is annotated with an XmlType annotation and not an XmlRootElement annotation.
+</para>
+<para>
+
+This provider simplifies this task by attempting to locate the XmlRegistry for the target class. By default, a JAXB implementation will create a class called ObjectFactory and is located in the same package as the target class. When this class is located, it will contain a &quot;create&quot; method that takes the object instance as a parameter. For example, of the target type is called &quot;Contact&quot;, then the ObjectFactory class will have a method:
+</para>
+<para>
+
+public JAXBElement createContact(Contact value) {..
+</para>
+<para>
+
+JAXBElement&lt;?&gt;
+If your resource works with the JAXBElement class directly, the RESTEasy runtime will select the JAXBElementProvider. This provider examines the ParameterizedType value of the JAXBElement in order to select the appropriate JAXBContext.
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
+<sect1 id="Pluggable_JAXBContext_s_with_ContextResolvers">
+<title>Pluggable JAXBContext's with ContextResolvers</title>
+
+<para>
+
+You should not use this feature unless you know what you're doing.
+</para>
+<para>
+
+Based on the class you are marshalling/unmarshalling, RESTEasy will, by default create and cache JAXBContext instances per class type.  If you do not want RESTEasy to create JAXBContexts, you can plug-in your own by implementing an instance of javax.ws.rs.ext.ContextResolver
+</para>
+<para>
+
+<programlisting>
+
+public interface ContextResolver&lt;T&gt;
+{
+   T getContext(Class&lt;?&gt; type);
+}
+
+@Produces("application/xml")
+@Provider
+public class MyJAXBContextResolver implements ContextResolver&lt;JAXBContext&gt;
+{
+
+   JAXBContext getContext(Class&lt;?&gt; type)
+   {
+      if (type.equals(WhateverClassIsOverridedFor.class)) return JAXBContext.newInstance()...;
+   }
+}
+</programlisting>
+</para>
+<para>
+
+You must provide a @Produces annotation to specify the media type the context is meant for.  You must also make sure to implement ContextResolver&lt;JAXBContext&gt;.  This helps the runtime match to the correct context resolver.  You must also annotate the ContextResolver class with @Provider.
+</para>
+<para>
+
+There are multiple ways to make this ContextResolver available.  
+</para>
+<para>
+
+<orderedlist>
+
+<listitem>
+ Return it as a class or instance from a javax.ws.rs.core.Application implementation
+</listitem>
+
+<listitem>
+ List it as a provider with resteasy.providers
+</listitem>
+
+<listitem>
+ Let RESTEasy automatically scan for it within your WAR file. See Configuration Guide
+</listitem>
+
+<listitem>
+ Manually add it via ResteasyProviderFactory.getInstance().registerProvider(Class) or registerProviderInstance(Object)
+</listitem>
+
+</orderedlist>
+
+</para>
+<para>
+
+
+</para>
+</sect1>
+<sect1 id="JAXB_+_XML_provider">
+<title>JAXB + XML provider</title>
+</sect1>
+<sect1 id="JAXB_+_JSON_provider">
+<title>JAXB + JSON provider</title>
+
+<para>
+
+RESTEasy allows you to marshall JAXB annotated POJOs to and from JSON.  This provider wraps the Jettison JSON library to accomplish this.  Jettison has two mapping formats.  One is BadgerFish the other is a Jettison Mapped Convention format.
+</para>
+<para>
+
+The Mapped Convention is the default mapping.  
+</para>
+<para>
+
+</para>
+<para>
+
+For example, consider this JAXB class:
+</para>
+<para>
+
+<programlisting>
+@XmlRootElement(name = "book")
+public class Book
+{
+   private String author;
+   private String ISBN;
+   private String title;
+
+   public Book()
+   {
+   }
+
+   public Book(String author, String ISBN, String title)
+   {
+      this.author = author;
+      this.ISBN = ISBN;
+      this.title = title;
+   }
+
+   @XmlElement
+   public String getAuthor()
+   {
+      return author;
+   }
+
+   public void setAuthor(String author)
+   {
+      this.author = author;
+   }
+
+   @XmlElement
+   public String getISBN()
+   {
+      return ISBN;
+   }
+
+   public void setISBN(String ISBN)
+   {
+      this.ISBN = ISBN;
+   }
+
+   @XmlAttribute
+   public String getTitle()
+   {
+      return title;
+   }
+
+   public void setTitle(String title)
+   {
+      this.title = title;
+   }
+}
+</programlisting>
+</para>
+<para>
+
+
+</para>
+<para>
+
+This is how the JAXB Book class would be marshalled to JSON using the BadgerFish Convention
+</para>
+<para>
+
+<programlisting>
+{"book": 
+   {
+      "@title":"EJB 3.0",
+      "author":{"$":"Bill Burke"},
+      "ISBN":{"$":"596529260"}
+   }
+}
+</programlisting>
+</para>
+<para>
+
+Notice that element values have a map associated with them and to get to the value of the element, you must access the &quot;$&quot; variable.  Here's an example of accessing the book in Javascript:
+</para>
+<para>
+
+<programlisting>
+  var data = eval("(" + xhr.responseText + ")");
+  document.getElementById("zone").innerHTML = data.book.@title;
+  document.getElementById("zone").innerHTML += data.book.author.$;
+</programlisting>
+</para>
+<para>
+
+
+</para>
+<para>
+
+To use the BadgerFish Convention you must use the @org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish annotation on the JAXB class you are marshalling/unmarshalling, or, on the JAX-RS resource method or parameter:
+</para>
+<para>
+
+<programlisting>
+@BadgerFish
+@XmlRootElement(name = "book")
+public class Book {...}
+</programlisting>
+</para>
+<para>
+
+If you are returning a book on the JAX-RS method and you don't want to (or can't) pollute your JAXB classes with RESTEasy annotations, add the annotation to the JAX-RS method:
+</para>
+<para>
+
+<programlisting>
+@BadgerFish
+@GET
+public Book getBook(...) {...}
+</programlisting>
+</para>
+<para>
+
+If a Book is your input then you put it on the parameter:
+</para>
+<para>
+
+<programlisting>
+@POST
+public void newBook(@BadgerFish Book book) {...}
+</programlisting>
+</para>
+<para>
+
+
+</para>
+<para>
+
+The default Jettison Mapped Convention would return JSON that looked like this:
+</para>
+<para>
+
+<programlisting>
+{"book" : 
+   {
+      "@title":"EJB 3.0",
+      "author":"Bill Burke",
+      "ISBN":596529260
+   }
+}
+</programlisting>
+</para>
+<para>
+
+Notice that the @XmlAttribute &quot;title&quot; is prefixed with the '@' character.  Unlike BadgerFish, the '$' does not represent the value of element text.  This format is a bit simpler than the BadgerFish convention which is why it was chose as a default.  Here's an example of accessing this in Javascript:
+</para>
+<para>
+
+<programlisting>
+  var data = eval("(" + xhr.responseText + ")");
+  document.getElementById("zone").innerHTML = data.book.@title;
+  document.getElementById("zone").innerHTML += data.book.author;
+</programlisting>
+</para>
+<para>
+
+
+</para>
+<para>
+
+The Mapped Convention allows you to fine tune the JAXB mapping using the @org.jboss.resteasy.annotations.providers.jaxb.json.Mapped annotation.  You can provide an XML Namespace to JSON namespace mapping.  You can also force @XmlAttribute's to be marshaled as XMLElements.
+</para>
+<para>
+
+<programlisting>
+@Mapped(attributeAsElements={"title"})
+@XmlRootElement(name = "book")
+public class Book {...}
+</programlisting>
+</para>
+<para>
+
+If you are returning a book on the JAX-RS method and you don't want to (or can't) pollute your JAXB classes with RESTEasy annotations, add the annotation to the JAX-RS method:
+</para>
+<para>
+
+<programlisting>
+@Mapped(attributeAsElements={"title"})
+@GET
+public Book getBook(...) {...}
+</programlisting>
+</para>
+<para>
+
+If a Book is your input then you put it on the parameter:
+</para>
+<para>
+
+<programlisting>
+@POST
+public void newBook(@Mapped(attributeAsElements={"title"}) Book book) {...}
+</programlisting>
+</para>
+<para>
+
+</para>
+<para>
+
+</para>
+<para>
+
+</para>
+<para>
+
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
+</sect1>
+<sect1 id="JAXB_+_FastinfoSet_provider">
+<title>JAXB + FastinfoSet provider</title>
+
+<para>
+
+RESTEasy supports the FastinfoSet mime type with JAXB annotated classes.  Fast infoset documents are faster to serialize and parse, and smaller in size, than logically equivalent XML documents. Thus, fast infoset documents may be used whenever the size and processing time of XML documents is an issue.  It is configured the same way the XML JAXB provider is so really no other documentation is needed here.</para>
+<para>
+
+
+</para>
+</sect1>
+</sect1>
+<sect1 id="Built_in_YAML_Provider">
+<title>Built in YAML Provider</title>
+
+<para>
+
+Since Beta 6, resteasy comes with built in support for YAML using the Jyaml library. To enable YAML support, you need to drop in the jyaml-1.3.jar in RestEASY's classpath.
+</para>
+<para>
+
+
+</para>
+<para>
+
+Jyaml jar file can either be downloaded from sourceforge: https://sourceforge.net/project/showfiles.php?group_id=153924
+</para>
+<para>
+
+Or if you use maven, the jyaml jar is available through the main repositories and included using this dependency:
+</para>
+<para>
+
+<programlisting>
+      &lt;dependency&gt;
+        &lt;groupId&gt;org.jyaml&lt;/groupId&gt;
+        &lt;artifactId&gt;jyaml&lt;/artifactId&gt;
+        &lt;version&gt;1.3&lt;/version&gt;
+      &lt;/dependency&gt;      
+</programlisting>
+</para>
+<para>
+
+When starting resteasy look out in the logs for a line stating that the YamlProvider has been added - this indicates that resteasy has found the Jyaml jar:
+</para>
+<para>
+
+2877 Main INFO org.jboss.resteasy.plugins.providers.RegisterBuiltin - Adding YamlProvider
+</para>
+<para>
+
+
+</para>
+<para>
+
+The Yaml provider recognises three mime types:
+</para>
+<para>
+
+<itemizedlist>
+
+<listitem>
+ text/x-yaml
+</listitem>
+
+<listitem>
+ text/yaml
+</listitem>
+
+<listitem>
+ application/x-yaml
+</listitem>
+
+</itemizedlist>
+
+</para>
+<para>
+
+
+</para>
+<para>
+
+This is an example of how to use Yaml in a resource method.
+</para>
+<para>
+
+<programlisting>
+
+import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
+
+@Path("/yaml")
+public class YamlResource
+{
+   
+   @GET
+   @ProduceMime("text/x-yaml")
+   public MyObject getMyObject() {
+      return createMyObject();
+   }
+...
+}
+
+</programlisting>
+</para>
+<para>
+
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
+</sect1>
+<sect1 id="MessageBodyWorkers">
+<title>MessageBodyWorkers</title>
+
+<para>
+
+javax.ws.rs.ext.MessageBodyWorks is a simple injectable interface that allows you to look up MessageBodyReaders and Writers.  It is very useful, for instance, for implementing multipart providers.  Content types that embed other random content types.
+</para>
+<para>
+
+<programlisting>
+
+/**
+ * An injectable interface providing lookup of {@link MessageBodyReader} and
+ * {@link MessageBodyWriter} instances.
+ *
+ * @see javax.ws.rs.core.Context
+ * @see MessageBodyReader
+ * @see MessageBodyWriter
+ */
+public interface MessageBodyWorkers
+{
+
+   /**
+    * Get a message body reader that matches a set of criteria.
+    *
+    * @param mediaType   the media type of the data that will be read, this will
+    *                    be compared to the values of {@link javax.ws.rs.ConsumeMime} for
+    *                    each candidate reader and only matching readers will be queried.
+    * @param type        the class of object to be produced.
+    * @param genericType the type of object to be produced. E.g. if the
+    *                    message body is to be converted into a method parameter, this will be
+    *                    the formal type of the method parameter as returned by
+    *                    &lt;code&gt;Class.getGenericParameterTypes&lt;/code&gt;.
+    * @param annotations an array of the annotations on the declaration of the
+    *                    artifact that will be initialized with the produced instance. E.g. if the
+    *                    message body is to be converted into a method parameter, this will be
+    *                    the annotations on that parameter returned by
+    *                    &lt;code&gt;Class.getParameterAnnotations&lt;/code&gt;.
+    * @return a MessageBodyReader that matches the supplied criteria or null
+    *         if none is found.
+    */
+   public abstract &lt;T&gt; MessageBodyReader&lt;T&gt; getMessageBodyReader(Class&lt;T&gt; type, Type genericType, Annotation annotations[], MediaType mediaType);
+
+
+   /**
+    * Get a message body writer that matches a set of criteria.
+    *
+    * @param mediaType   the media type of the data that will be written, this will
+    *                    be compared to the values of {@link javax.ws.rs.ProduceMime} for
+    *                    each candidate writer and only matching writers will be queried.
+    * @param type        the class of object that is to be written.
+    * @param genericType the type of object to be written. E.g. if the
+    *                    message body is to be produced from a field, this will be
+    *                    the declared type of the field as returned by
+    *                    &lt;code&gt;Field.getGenericType&lt;/code&gt;.
+    * @param annotations an array of the annotations on the declaration of the
+    *                    artifact that will be written. E.g. if the
+    *                    message body is to be produced from a field, this will be
+    *                    the annotations on that field returned by
+    *                    &lt;code&gt;Field.getDeclaredAnnotations&lt;/code&gt;.
+    * @return a MessageBodyReader that matches the supplied criteria or null
+    *         if none is found.
+    */
+   public abstract &lt;T&gt; MessageBodyWriter&lt;T&gt; getMessageBodyWriter(Class&lt;T&gt; type, Type genericType, Annotation annotations[], MediaType mediaType);
+}
+
+</programlisting>
+</para>
+<para>
+
+
+</para>
+<para>
+
+MessageBodyWorkers are injectable into MessageBodyReader or Writers:
+</para>
+<para>
+
+<programlisting>
+@Provider
+@ConsumeMime("multipart/fixed")
+public class MultipartProvider implements MessageBodyReader {
+
+   private @Context MessageBodyWorkers workers;
+
+...
+
+}
+</programlisting></para>
+<para>
+
+
+</para>
+</sect1>
 </chapter>

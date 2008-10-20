@@ -1,48 +1,46 @@
 <chapter id="Maven_and_RESTEasy">
-   <title>Maven and RESTEasy</title>
+<title>Maven and RESTEasy</title>
 
-   <para>
+<para>
 
 
-   </para>
-   <para>
+</para>
+<para>
 
-      http://repository.jboss.org/maven2
-   </para>
-   <para>
+http://repository.jboss.org/maven2
+</para>
+<para>
 
-      Here's the pom.xml fragment to use:
-   </para>
-   <para>
+Here's the pom.xml fragment to use:
+</para>
+<para>
 
-      <programlisting>
-         &lt;repository&gt;
+<programlisting>
+      &lt;repository&gt;
          &lt;id&gt;jboss&lt;/id&gt;
          &lt;url&gt;http://repository.jboss.org/maven2&lt;/url&gt;
-         &lt;/repository&gt;
-         &lt;/repositories&gt;
-         &lt;dependencies&gt;
-         &lt;dependency&gt;
+      &lt;/repository&gt;
+   &lt;/repositories&gt;
+   &lt;dependencies&gt;
+      &lt;dependency&gt;
          &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
          &lt;artifactId&gt;resteasy-jaxrs&lt;/artifactId&gt;
          &lt;version&gt;1.0-beta-7&lt;/version&gt;
-         &lt;/dependency&gt;
-      </programlisting>
-   </para>
-   <para>
+      &lt;/dependency&gt;
+</programlisting>
+</para>
+<para>
 
-   </para>
-   <para>
-
-
-   </para>
-   <para>
-
-      Please download the RESTEasy JAX-RS source and view our testsuite. Everything is done in maven and we use our
-      Embedded JAX-RS Container to do our testing.
-   </para>
-   <para>
+</para>
+<para>
 
 
-   </para>
+</para>
+<para>
+
+Please download the RESTEasy JAX-RS source and view our testsuite.  Everything is done in maven and we use our Embedded JAX-RS Container to do our testing.</para>
+<para>
+
+
+</para>
 </chapter>

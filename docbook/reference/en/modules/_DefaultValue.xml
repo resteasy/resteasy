@@ -1,23 +1,22 @@
 <chapter id="_DefaultValue">
-   <title>@DefaultValue</title>
+<title>@DefaultValue</title>
 
-   <para>
+<para>
 
-      @DefaultValue is a parameter annotation that can be combined with any of the other @*Param annotations to define a
-      default value when the HTTP request item does not exist.
-   </para>
-   <para>
+@DefaultValue is a parameter annotation that can be combined with any of the other @*Param annotations to define a default value when the HTTP request item does not exist.
+</para>
+<para>
 
-      <programlisting>
-         @GET
-         public String getBooks(@QueryParam("num") @DefaultValue("10") int num) {...}
-      </programlisting>
-   </para>
-   <para>
+<programlisting>
+   @GET
+   public String getBooks(@QueryParam("num") @DefaultValue("10") int num) {...}
+</programlisting>
+</para>
+<para>
 
-   </para>
-   <para>
+</para>
+<para>
 
 
-   </para>
+</para>
 </chapter>

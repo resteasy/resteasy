@@ -1,42 +1,41 @@
 <chapter id="_HeaderParam">
-   <title>@HeaderParam</title>
+<title>@HeaderParam</title>
 
-   <para>
+<para>
 
-      The @HeaderParam annotation allows you to map a request HTTP header to your method invocation.
-   </para>
-   <para>
+The @HeaderParam annotation allows you to map a request HTTP header to your method invocation.
+</para>
+<para>
 
-      GET /books?num=5
-   </para>
-   <para>
+GET /books?num=5
+</para>
+<para>
 
-      <programlisting>
+<programlisting>
+   
+   @GET
+   public String getBooks(@HeaderParam("From") String from) {
+   ...
+   }
+</programlisting>
+</para>
+<para>
 
-         @GET
-         public String getBooks(@HeaderParam("From") String from) {
-         ...
-         }
-      </programlisting>
-   </para>
-   <para>
+Like PathParam, your parameter type can be an String, primitive, or class that has a String constructor or static valueOf() method.  For example, MediaType has a valueOf() method and you could do:
+</para>
+<para>
 
-      Like PathParam, your parameter type can be an String, primitive, or class that has a String constructor or static
-      valueOf() method. For example, MediaType has a valueOf() method and you could do:
-   </para>
-   <para>
+<programlisting>
 
-      <programlisting>
+   @PUT
+   public void put(@HeaderParam("Content-Type") MediaType contentType, ...)
+</programlisting>
+</para>
+<para>
 
-         @PUT
-         public void put(@HeaderParam("Content-Type") MediaType contentType, ...)
-      </programlisting>
-   </para>
-   <para>
-
-   </para>
-   <para>
+</para>
+<para>
 
 
-   </para>
+</para>
 </chapter>
