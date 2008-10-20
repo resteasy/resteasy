@@ -1,63 +1,55 @@
 <chapter id="RESTEasy_Spring_Integration">
-   <title>RESTEasy Spring Integration</title>
+<title>RESTEasy Spring Integration</title>
 
-   <para>
+<para>
 
-      RESTEasy integrates with Spring 2.5. We are interested in other forms of Spring integration, so please help
-      contribute.
-   </para>
-   <para>
+RESTEasy integrates with Spring 2.5.  We are interested in other forms of Spring integration, so please help contribute.
+</para>
+<para>
 
-      RESTeasy comes with its own Spring ContextLoaderListener that registers a RESTeasy specific BeanPostProcessor that
-      processes JAX-RS annotations when a bean is created by a BeanFactory. What does this mean? RESTeasy will
-      automatically scan for @Provider and JAX-RS resource annotations on your bean class and register them as JAX-RS
-      resources.
-   </para>
-   <para>
+RESTeasy comes with its own Spring ContextLoaderListener that registers a RESTeasy specific BeanPostProcessor that processes JAX-RS annotations when a bean is created by a BeanFactory.  What does this mean?  RESTeasy will automatically scan for @Provider and JAX-RS resource annotations on your bean class and register them as JAX-RS resources.
+</para>
+<para>
 
-      <programlisting>
-         &lt;web-app&gt;
-         &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
+<programlisting>
+&lt;web-app&gt;
+   &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
 
-         &lt;listener&gt;
-         &lt;listener-class&gt;org.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
-         &lt;/listener&gt;
+   &lt;listener&gt;
+      &lt;listener-class&gt;org.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+   &lt;/listener&gt;
 
-         &lt;listener&gt;
-         &lt;listener-class&gt;org.resteasy.plugins.server.servlet.SpringContextLoaderListener&lt;/listener-class&gt;
-         &lt;/listener&gt;
+   &lt;listener&gt;
+      &lt;listener-class&gt;org.resteasy.plugins.server.servlet.SpringContextLoaderListener&lt;/listener-class&gt;
+   &lt;/listener&gt;
 
-         &lt;servlet&gt;
-         &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-         &lt;servlet-class&gt;org.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
-         &lt;/servlet&gt;
+   &lt;servlet&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;servlet-class&gt;org.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
+   &lt;/servlet&gt;
 
-         &lt;servlet-mapping&gt;
-         &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-         &lt;/servlet-mapping&gt;
+   &lt;servlet-mapping&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+   &lt;/servlet-mapping&gt;
 
 
-         &lt;/web-app&gt;
-      </programlisting>
-   </para>
-   <para>
+&lt;/web-app&gt;
+</programlisting>
+</para>
+<para>
 
-      The SpringContextLoaderListener must be declared after ResteasyBootstrap as it uses ServletContext attributes
-      initialized by it.
-   </para>
-   <para>
+The SpringContextLoaderListener must be declared after ResteasyBootstrap as it uses ServletContext attributes initialized by it.
+</para>
+<para>
 
-      If you do not use a Spring ContextLoaderListener to create your bean factories, then you can manually register the
-      RESTeasy BeanPostProcessor by allocating an instance of org.resteasy.plugins.server.servlet.SpringBeanProcessor.
-      You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes
-      org.resteasy.spi.ResteasyProviderFactory and org.resteasy.spi.Registry. (Really the string FQN of these classes)
-   </para>
-   <para>
+If you do not use a Spring ContextLoaderListener to create your bean factories, then you can manually register the RESTeasy BeanPostProcessor by allocating an instance of org.resteasy.plugins.server.servlet.SpringBeanProcessor.  You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes org.resteasy.spi.ResteasyProviderFactory and org.resteasy.spi.Registry.  (Really the string FQN of these classes) 
+</para>
+<para>
 
-   </para>
-   <para>
+</para>
+<para>
 
 
-   </para>
+</para>
 </chapter>

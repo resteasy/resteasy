@@ -1,39 +1,38 @@
 <chapter id="_CookieParam">
-   <title>@CookieParam</title>
+<title>@CookieParam</title>
 
-   <para>
+<para>
 
-      The @CookieParam annotation allows you to inject the value of a cookie or an object representation of an HTTP
-      request cookie into your method invocation
-   </para>
-   <para>
+The @CookieParam annotation allows you to inject the value of a cookie or an object representation of an HTTP request cookie into your method invocation
+</para>
+<para>
 
-      GET /books?num=5
-   </para>
-   <para>
+GET /books?num=5
+</para>
+<para>
 
-      <programlisting>
-
-
-         @GET
-         public String getBooks(@CookieParam("sessionid") int id) {
-         ...
-         }
-
-         @GET
-         publi cString getBooks(@CookieParam("sessionid") javax.ws.rs.core.Cookie id) {...}
-      </programlisting>
-   </para>
-   <para>
-
-      Like PathParam, your parameter type can be an String, primitive, or class that has a String constructor or static
-      valueOf() method. You can also get an object representation of the cookie via the javax.ws.rs.core.Cookie class.
-   </para>
-   <para>
-
-   </para>
-   <para>
+<programlisting>
+   
 
 
-   </para>
+   @GET
+   public String getBooks(@CookieParam("sessionid") int id) {
+   ...
+   }
+
+   @GET
+   publi cString getBooks(@CookieParam("sessionid") javax.ws.rs.core.Cookie id) {...}
+</programlisting>
+</para>
+<para>
+
+Like PathParam, your parameter type can be an String, primitive, or class that has a String constructor or static valueOf() method.  You can also get an object representation of the cookie via the javax.ws.rs.core.Cookie class.
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
 </chapter>
