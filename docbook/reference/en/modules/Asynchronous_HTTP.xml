@@ -24,17 +24,17 @@
       AsynchronousResponse interface.
    </para>
    <programlisting>
-      public @interface Suspend
-      {
-      long value() default -1;
-      }
+public @interface Suspend
+{
+   long value() default -1;
+}
 
-      import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response;
 
-      public interface AsynchronousResponse
-      {
-      void setResponse(Response response);
-      }
+public interface AsynchronousResponse
+{
+   void setResponse(Response response);
+}
    </programlisting>
    <para>
       The @Suspend annotation tells Resteasy that the HTTP request/response should be detached from the currently
@@ -50,37 +50,37 @@
 
 
    <programlisting>
-      import org.jboss.resteasy.annotations.Suspend;
-      import org.jboss.resteasy.spi.AsynchronousResponse;
+import org.jboss.resteasy.annotations.Suspend;
+import org.jboss.resteasy.spi.AsynchronousResponse;
 
-      @Path("/")
-      public class SimpleResource
-      {
+@Path("/")
+public class SimpleResource
+{
 
-      @GET
-      @Path("basic")
-      @Produces("text/plain")
-      public void getBasic(final @Suspend(10000) AsynchronousResponse response) throws Exception
-      {
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   public void getBasic(final @Suspend(10000) AsynchronousResponse response) throws Exception
+   {
       Thread t = new Thread()
       {
-      @Override
-      public void run()
-      {
-      try
-      {
-      Response jaxrs = Response.ok("basic").type(MediaType.TEXT_PLAIN).build();
-      response.setResponse(jaxrs);
-      }
-      catch (Exception e)
-      {
-      e.printStackTrace();
-      }
-      }
+         @Override
+         public void run()
+         {
+            try
+            {
+               Response jaxrs = Response.ok("basic").type(MediaType.TEXT_PLAIN).build();
+               response.setResponse(jaxrs);
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         }
       };
       t.start();
-      }
-      }
+   }
+}
    </programlisting>
    <sect1 id="Asynch_HTTP_Tomcat6">
       <title>Tomcat 6 and JBoss 4.2.3 Support</title>
@@ -91,10 +91,10 @@
          server.xml file. Comment out the vanilla HTTP adapter and add this:
       </para>
       <programlisting>
-         &lt;Connector port="8080" address="${jboss.bind.address}"
-         emptySessionPath="true" protocol="org.apache.coyote.http11.Http11NioProtocol"
-         enableLookups="false" redirectPort="6443" acceptorThreadCount="2" pollerThreadCount="10"
-         /&gt;
+&lt;Connector port="8080" address="${jboss.bind.address}"
+   emptySessionPath="true" protocol="org.apache.coyote.http11.Http11NioProtocol"
+   enableLookups="false" redirectPort="6443" acceptorThreadCount="2" pollerThreadCount="10"
+/&gt;
       </programlisting>
       <para>
          Your deployed Resteasy applications must also use a different Resteasy servlet,
@@ -103,10 +103,10 @@
          async-http-tomcat6 artifact id. web.xml
       </para>
       <programlisting>
-         &lt;servlet&gt;
-         &lt;servlet-name>Resteasy&lt;/servlet-name&gt;
-         &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.Tomcat6CometDispatcherServlet&lt;/servlet-class&gt;
-         &lt;/servlet&gt;
+&lt;servlet&gt;
+   &lt;servlet-name>Resteasy&lt;/servlet-name&gt;
+   &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.Tomcat6CometDispatcherServlet&lt;/servlet-class&gt;
+&lt;/servlet&gt;
       </programlisting>
    </sect1>
    <sect1 id="Asynch_HTTP_Servlet3">
@@ -122,10 +122,10 @@
          async-http-servlet-3.0 artifact id. web.xml:
       </para>
       <programlisting>
-         &lt;servlet&gt;
-         &lt;servlet-name>Resteasy&lt;/servlet-name&gt;
-         &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher&lt;/servlet-class&gt;
-         &lt;/servlet&gt;
+&lt;servlet&gt;
+   &lt;servlet-name>Resteasy&lt;/servlet-name&gt;
+   &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher&lt;/servlet-class&gt;
+&lt;/servlet&gt;
       </programlisting>
    </sect1>
    <sect1 id="Asynch_HTTP_JBossWeb">
@@ -141,10 +141,10 @@
          async-http-jbossweb artifact id. web.xml:
       </para>
       <programlisting>
-         &lt;servlet&gt;
-         &lt;servlet-name>Resteasy&lt;/servlet-name&gt;
-         &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.JBossWebDispatcherServlet&lt;/servlet-class&gt;
-         &lt;/servlet&gt;
+&lt;servlet&gt;
+   &lt;servlet-name>Resteasy&lt;/servlet-name&gt;
+   &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.JBossWebDispatcherServlet&lt;/servlet-class&gt;
+&lt;/servlet&gt;
       </programlisting>
    </sect1>
 </chapter>
