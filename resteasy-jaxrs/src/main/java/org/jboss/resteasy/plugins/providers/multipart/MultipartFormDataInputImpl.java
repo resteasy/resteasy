@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.jboss.resteasy.util.GenericType;
+
 import javax.ws.rs.ext.MessageBodyWorkers;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +35,13 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements Mu
       InputPart part = getFormData().get(key);
       if (part == null) return null;
       return part.getBody(rawType, genericType);
+   }
+
+   public <T> T getFormDataPart(String key, GenericType<T> type) throws IOException
+   {
+      InputPart part = getFormData().get(key);
+      if (part == null) return null;
+      return part.getBody(type);
    }
 
    @Override
