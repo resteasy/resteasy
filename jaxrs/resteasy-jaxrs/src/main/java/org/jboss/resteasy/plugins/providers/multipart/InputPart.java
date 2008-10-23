@@ -5,7 +5,6 @@ import org.jboss.resteasy.util.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Type;
 
 /**
@@ -15,8 +14,6 @@ import java.lang.reflect.Type;
 public interface InputPart
 {
    MultivaluedMap<String, String> getHeaders();
-
-   InputStream getBody();
 
    String getBodyAsString();
 
