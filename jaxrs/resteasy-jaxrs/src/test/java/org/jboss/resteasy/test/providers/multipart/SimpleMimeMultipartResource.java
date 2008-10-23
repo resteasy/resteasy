@@ -3,6 +3,8 @@
  */
 package org.jboss.resteasy.test.providers.multipart;
 
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
 import org.junit.Assert;
@@ -13,6 +15,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -27,6 +30,36 @@ import java.util.Map;
 @Path("/mime")
 public class SimpleMimeMultipartResource
 {
+   public static class Form
+   {
+      @FormParam("bill")
+      @PartType("application/xml")
+      private Customer bill;
+
+      @FormParam("monica")
+      @PartType("application/xml")
+      private Customer monica;
+
+      public Form()
+      {
+      }
+
+      public Form(Customer bill, Customer monica)
+      {
+         this.bill = bill;
+         this.monica = monica;
+      }
+
+      public Customer getBill()
+      {
+         return bill;
+      }
+
+      public Customer getMonica()
+      {
+         return monica;
+      }
+   }
 
    private static final Logger logger = LoggerFactory.getLogger(SimpleMimeMultipartResource.class);
 
@@ -175,6 +208,22 @@ public class SimpleMimeMultipartResource
       Assert.assertNotNull(cust);
       Assert.assertEquals("monica", cust.getName());
 
+   }
+
+   /**
+    * @param multipart
+    * @return
+    */
+   @PUT
+   @Path("form/class")
+   @Consumes("multipart/form-data")
+   public void putMultipartForm(@MultipartForm Form form) throws IOException
+   {
+      Assert.assertNotNull(form.getBill());
+      Assert.assertEquals("bill", form.getBill().getName());
+
+      Assert.assertNotNull(form.getMonica());
+      Assert.assertEquals("monica", form.getMonica().getName());
    }
 
    /**

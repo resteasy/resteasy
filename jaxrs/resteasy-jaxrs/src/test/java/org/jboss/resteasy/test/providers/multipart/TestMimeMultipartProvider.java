@@ -11,6 +11,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
@@ -87,6 +88,7 @@ public class TestMimeMultipartProvider extends BaseResourceTest
 
       testMultipart(TEST_URI + "/form");
       testMultipart(TEST_URI + "/form/map");
+      testMultipart(TEST_URI + "/form/class");
       testMultipart(TEST_URI + "/multi");
       testMultipart(TEST_URI + "/multi/list");
    }
@@ -133,6 +135,11 @@ public class TestMimeMultipartProvider extends BaseResourceTest
       @PUT
       @Consumes("multipart/form-data")
       public void putFormDataMap(@PartType("application/xml")Map<String, Customer> customers);
+
+      @Path("form")
+      @PUT
+      @Consumes("multipart/form-data")
+      public void putFormDataMap(@MultipartForm SimpleMimeMultipartResource.Form form);
    }
 
    @Test
@@ -173,6 +180,14 @@ public class TestMimeMultipartProvider extends BaseResourceTest
       customers.put("bill", new Customer("bill"));
       customers.put("monica", new Customer("monica"));
       client.putFormDataMap(customers);
+   }
+
+   @Test
+   public void testMultipartForm() throws Exception
+   {
+      MultipartClient client = ProxyFactory.create(MultipartClient.class, "http://localhost:8081");
+      SimpleMimeMultipartResource.Form form = new SimpleMimeMultipartResource.Form(new Customer("bill"), new Customer("monica"));
+      client.putFormDataMap(form);
    }
 
    private String createCustomerData(String name)

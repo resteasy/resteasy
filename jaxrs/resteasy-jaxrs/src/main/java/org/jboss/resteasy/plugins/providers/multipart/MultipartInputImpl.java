@@ -99,7 +99,7 @@ public class MultipartInputImpl implements MultipartInput
 
       public <T> T getBody(GenericType<T> type) throws IOException
       {
-         return getBody(type.getRawType(), type.getType());
+         return getBody(type.getType(), type.getGenericType());
       }
 
       public MediaType getMediaType()
@@ -185,6 +185,11 @@ public class MultipartInputImpl implements MultipartInput
    {
       if (preambleEnd < 0) return null;
       return new String(buffer, 0, preambleEnd);
+   }
+
+   public String getBufferAsString()
+   {
+      return new String(buffer);
    }
 
    protected String readLine(InputStream is) throws IOException
