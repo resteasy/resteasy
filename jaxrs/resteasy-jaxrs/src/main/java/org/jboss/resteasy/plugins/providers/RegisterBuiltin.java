@@ -4,6 +4,14 @@ import org.jboss.resteasy.core.LoggerCategories;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
+import org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader;
+import org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter;
+import org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader;
+import org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartReader;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartWriter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
@@ -69,6 +77,15 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(formProvider);
 
       factory.addMessageBodyWriter(new StreamingOutputProvider());
+
+      factory.addMessageBodyReader(MultipartReader.class);
+      factory.addMessageBodyReader(ListMultipartReader.class);
+      factory.addMessageBodyReader(MultipartFormDataReader.class);
+      factory.addMessageBodyReader(MapMultipartFormDataReader.class);
+      factory.addMessageBodyWriter(MultipartWriter.class);
+      factory.addMessageBodyWriter(MultipartFormDataWriter.class);
+      factory.addMessageBodyWriter(ListMultipartWriter.class);
+      factory.addMessageBodyWriter(MapMultipartFormDataWriter.class);
 
       // optional providers.
       optionalProvider("javax.imageio.IIOImage", "org.jboss.resteasy.plugins.providers.IIOImageProvider", factory);

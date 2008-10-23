@@ -3,6 +3,9 @@
  */
 package org.jboss.resteasy.test.providers.multipart;
 
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +18,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
@@ -58,6 +63,131 @@ public class SimpleMimeMultipartResource
          e.printStackTrace();
       }
       return b.toString();
+   }
+
+   /**
+    * @param multipart
+    * @return
+    */
+   @PUT
+   @Path("form")
+   @Consumes("multipart/form-data")
+   public void putMultipartFormData(MultipartFormDataInput multipart) throws IOException
+   {
+      Assert.assertEquals(2, multipart.getParts().size());
+
+      Assert.assertTrue(multipart.getFormData().containsKey("bill"));
+      Assert.assertTrue(multipart.getFormData().containsKey("monica"));
+
+      System.out.println(multipart.getFormData().get("bill").getBodyAsString());
+      Customer cust = multipart.getFormDataPart("bill", Customer.class, null);
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("bill", cust.getName());
+
+      cust = multipart.getFormDataPart("monica", Customer.class, null);
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("monica", cust.getName());
+
+   }
+
+   /**
+    * @param multipart
+    * @return
+    */
+   @PUT
+   @Path("form/map")
+   @Consumes("multipart/form-data")
+   public void putMultipartMap(Map<String, Customer> multipart) throws IOException
+   {
+      Assert.assertEquals(2, multipart.size());
+
+      Assert.assertTrue(multipart.containsKey("bill"));
+      Assert.assertTrue(multipart.containsKey("monica"));
+
+      Customer cust = multipart.get("bill");
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("bill", cust.getName());
+
+      cust = multipart.get("monica");
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("monica", cust.getName());
+
+   }
+
+   /**
+    * @param multipart
+    * @return
+    */
+   @PUT
+   @Path("multi")
+   @Consumes("multipart/form-data")
+   public void putMultipartData(MultipartInput multipart) throws IOException
+   {
+      Assert.assertEquals(2, multipart.getParts().size());
+
+      Customer cust = multipart.getParts().get(0).getBody(Customer.class, null);
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("bill", cust.getName());
+
+      cust = multipart.getParts().get(1).getBody(Customer.class, null);
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("monica", cust.getName());
+
+   }
+
+   /**
+    * @param multipart
+    * @return
+    */
+   @PUT
+   @Path("mixed")
+   @Consumes("multipart/mixed")
+   public void putMultipartMixed(MultipartInput multipart) throws IOException
+   {
+      Assert.assertEquals(2, multipart.getParts().size());
+
+      Customer cust = multipart.getParts().get(0).getBody(Customer.class, null);
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("bill", cust.getName());
+
+      cust = multipart.getParts().get(1).getBody(Customer.class, null);
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("monica", cust.getName());
+
+   }
+
+   /**
+    * @param multipart
+    * @return
+    */
+   @PUT
+   @Path("multi/list")
+   @Consumes("multipart/form-data")
+   public void putMultipartList(List<Customer> multipart) throws IOException
+   {
+      Assert.assertEquals(2, multipart.size());
+
+      Customer cust = multipart.get(0);
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("bill", cust.getName());
+
+      cust = multipart.get(1);
+      Assert.assertNotNull(cust);
+      Assert.assertEquals("monica", cust.getName());
+
+   }
+
+   /**
+    * @param multipart
+    * @return
+    */
+   @PUT
+   @Path("text")
+   @Consumes("multipart/form-data")
+   @Produces("text/plain")
+   public void putData(String multipart)
+   {
+      System.out.println(multipart);
    }
 
    //    @POST
