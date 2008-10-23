@@ -9,8 +9,8 @@ import java.lang.reflect.Type;
  */
 public class GenericType<T>
 {
-   final Class<T> rawType;
-   final Type type;
+   final Class<T> type;
+   final Type genericType;
 
    /**
     * Constructs a new generic entity. Derives represented class from type
@@ -28,8 +28,8 @@ public class GenericType<T>
          throw new RuntimeException("Missing type parameter.");
       }
       ParameterizedType parameterized = (ParameterizedType) superclass;
-      this.type = parameterized.getActualTypeArguments()[0];
-      this.rawType = (Class<T>) Types.getRawType(type);
+      this.genericType = parameterized.getActualTypeArguments()[0];
+      this.type = (Class<T>) Types.getRawType(genericType);
    }
 
    /**
@@ -39,9 +39,9 @@ public class GenericType<T>
     *
     * @return the raw type
     */
-   public final Class<T> getRawType()
+   public final Class<T> getType()
    {
-      return rawType;
+      return type;
    }
 
    /**
@@ -52,9 +52,9 @@ public class GenericType<T>
     *
     * @return the type
     */
-   public final Type getType()
+   public final Type getGenericType()
    {
-      return type;
+      return genericType;
    }
 
 }

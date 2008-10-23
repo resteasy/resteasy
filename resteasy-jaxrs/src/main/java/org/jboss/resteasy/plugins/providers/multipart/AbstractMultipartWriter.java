@@ -4,7 +4,6 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWorkers;
@@ -57,15 +56,8 @@ public class AbstractMultipartWriter
       headers.putSingle(HttpHeaderNames.CONTENT_TYPE, part.getMediaType());
 
       Object entity = part.getEntity();
-      Class entityType = entity.getClass();
-      Type entityGenericType = null;
-      if (entity instanceof GenericEntity)
-      {
-         GenericEntity ge = (GenericEntity) entity;
-         entityGenericType = ge.getType();
-         entity = ge.getEntity();
-         entityType = entity.getClass();
-      }
+      Class entityType = part.getType();
+      Type entityGenericType = part.getGenericType();
       MessageBodyWriter writer = workers.getMessageBodyWriter(entityType, entityGenericType, null, part.getMediaType());
       long size = writer.getSize(entity, entityType, entityGenericType, null, part.getMediaType());
       headers.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));

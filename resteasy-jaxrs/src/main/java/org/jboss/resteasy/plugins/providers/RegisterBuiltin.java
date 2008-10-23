@@ -8,6 +8,8 @@ import org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader;
 import org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter;
 import org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader;
 import org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartReader;
@@ -86,6 +88,8 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(MultipartFormDataWriter.class);
       factory.addMessageBodyWriter(ListMultipartWriter.class);
       factory.addMessageBodyWriter(MapMultipartFormDataWriter.class);
+      factory.addMessageBodyReader(MultipartFormAnnotationReader.class);
+      factory.addMessageBodyWriter(MultipartFormAnnotationWriter.class);
 
       // optional providers.
       optionalProvider("javax.imageio.IIOImage", "org.jboss.resteasy.plugins.providers.IIOImageProvider", factory);
