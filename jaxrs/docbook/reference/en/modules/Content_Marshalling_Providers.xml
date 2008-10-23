@@ -103,6 +103,100 @@ The Resteasy ServletContextLoader will automatically scan your WEB-INF/lib and c
 
 </para>
 </sect1>
+   <sect1 id="MessageBodyWorkers">
+   <title>MessageBodyWorkers</title>
+
+   <para>
+
+   javax.ws.rs.ext.MessageBodyWorks is a simple injectable interface that allows you to look up MessageBodyReaders and Writers.  It is very useful, for instance, for implementing multipart providers.  Content types that embed other random content types.
+   </para>
+   <para>
+
+   <programlisting>
+
+   /**
+    * An injectable interface providing lookup of {@link MessageBodyReader} and
+    * {@link MessageBodyWriter} instances.
+    *
+    * @see javax.ws.rs.core.Context
+    * @see MessageBodyReader
+    * @see MessageBodyWriter
+    */
+   public interface MessageBodyWorkers
+   {
+
+      /**
+       * Get a message body reader that matches a set of criteria.
+       *
+       * @param mediaType   the media type of the data that will be read, this will
+       *                    be compared to the values of {@link javax.ws.rs.ConsumeMime} for
+       *                    each candidate reader and only matching readers will be queried.
+       * @param type        the class of object to be produced.
+       * @param genericType the type of object to be produced. E.g. if the
+       *                    message body is to be converted into a method parameter, this will be
+       *                    the formal type of the method parameter as returned by
+       *                    &lt;code&gt;Class.getGenericParameterTypes&lt;/code&gt;.
+       * @param annotations an array of the annotations on the declaration of the
+       *                    artifact that will be initialized with the produced instance. E.g. if the
+       *                    message body is to be converted into a method parameter, this will be
+       *                    the annotations on that parameter returned by
+       *                    &lt;code&gt;Class.getParameterAnnotations&lt;/code&gt;.
+       * @return a MessageBodyReader that matches the supplied criteria or null
+       *         if none is found.
+       */
+      public abstract &lt;T&gt; MessageBodyReader&lt;T&gt; getMessageBodyReader(Class&lt;T&gt; type, Type genericType, Annotation annotations[], MediaType mediaType);
+
+
+      /**
+       * Get a message body writer that matches a set of criteria.
+       *
+       * @param mediaType   the media type of the data that will be written, this will
+       *                    be compared to the values of {@link javax.ws.rs.ProduceMime} for
+       *                    each candidate writer and only matching writers will be queried.
+       * @param type        the class of object that is to be written.
+       * @param genericType the type of object to be written. E.g. if the
+       *                    message body is to be produced from a field, this will be
+       *                    the declared type of the field as returned by
+       *                    &lt;code&gt;Field.getGenericType&lt;/code&gt;.
+       * @param annotations an array of the annotations on the declaration of the
+       *                    artifact that will be written. E.g. if the
+       *                    message body is to be produced from a field, this will be
+       *                    the annotations on that field returned by
+       *                    &lt;code&gt;Field.getDeclaredAnnotations&lt;/code&gt;.
+       * @return a MessageBodyReader that matches the supplied criteria or null
+       *         if none is found.
+       */
+      public abstract &lt;T&gt; MessageBodyWriter&lt;T&gt; getMessageBodyWriter(Class&lt;T&gt; type, Type genericType, Annotation annotations[], MediaType mediaType);
+   }
+
+   </programlisting>
+   </para>
+   <para>
+
+
+   </para>
+   <para>
+
+   MessageBodyWorkers are injectable into MessageBodyReader or Writers:
+   </para>
+   <para>
+
+   <programlisting>
+   @Provider
+   @ConsumeMime("multipart/fixed")
+   public class MultipartProvider implements MessageBodyReader {
+
+      private @Context MessageBodyWorkers workers;
+
+   ...
+
+   }
+   </programlisting></para>
+   <para>
+
+
+   </para>
+</sect1>
 <sect1 id="Built_in_JAXB_providers">
 <title>Built in JAXB providers</title>
 
@@ -182,7 +276,7 @@ If your resource works with the JAXBElement class directly, the RESTEasy runtime
 
 
 </para>
-<sect1 id="Pluggable_JAXBContext_s_with_ContextResolvers">
+<sect2 id="Pluggable_JAXBContext_s_with_ContextResolvers">
 <title>Pluggable JAXBContext's with ContextResolvers</title>
 
 <para>
@@ -249,11 +343,11 @@ There are multiple ways to make this ContextResolver available.
 
 
 </para>
-</sect1>
-<sect1 id="JAXB_+_XML_provider">
+</sect2>
+<sect2 id="JAXB_+_XML_provider">
 <title>JAXB + XML provider</title>
-</sect1>
-<sect1 id="JAXB_+_JSON_provider">
+</sect2>
+<sect2 id="JAXB_+_JSON_provider">
 <title>JAXB + JSON provider</title>
 
 <para>
@@ -488,8 +582,8 @@ public void newBook(@Mapped(attributeAsElements={"title"}) Book book) {...}
 
 
 </para>
-</sect1>
-<sect1 id="JAXB_+_FastinfoSet_provider">
+</sect2>
+<sect2 id="JAXB_+_FastinfoSet_provider">
 <title>JAXB + FastinfoSet provider</title>
 
 <para>
@@ -499,7 +593,7 @@ RESTEasy supports the FastinfoSet mime type with JAXB annotated classes.  Fast i
 
 
 </para>
-</sect1>
+</sect2>
 </sect1>
 <sect1 id="Built_in_YAML_Provider">
 <title>Built in YAML Provider</title>
@@ -607,98 +701,5 @@ public class YamlResource
 
 </para>
 </sect1>
-<sect1 id="MessageBodyWorkers">
-<title>MessageBodyWorkers</title>
-
-<para>
-
-javax.ws.rs.ext.MessageBodyWorks is a simple injectable interface that allows you to look up MessageBodyReaders and Writers.  It is very useful, for instance, for implementing multipart providers.  Content types that embed other random content types.
-</para>
-<para>
-
-<programlisting>
-
-/**
- * An injectable interface providing lookup of {@link MessageBodyReader} and
- * {@link MessageBodyWriter} instances.
- *
- * @see javax.ws.rs.core.Context
- * @see MessageBodyReader
- * @see MessageBodyWriter
- */
-public interface MessageBodyWorkers
-{
-
-   /**
-    * Get a message body reader that matches a set of criteria.
-    *
-    * @param mediaType   the media type of the data that will be read, this will
-    *                    be compared to the values of {@link javax.ws.rs.ConsumeMime} for
-    *                    each candidate reader and only matching readers will be queried.
-    * @param type        the class of object to be produced.
-    * @param genericType the type of object to be produced. E.g. if the
-    *                    message body is to be converted into a method parameter, this will be
-    *                    the formal type of the method parameter as returned by
-    *                    &lt;code&gt;Class.getGenericParameterTypes&lt;/code&gt;.
-    * @param annotations an array of the annotations on the declaration of the
-    *                    artifact that will be initialized with the produced instance. E.g. if the
-    *                    message body is to be converted into a method parameter, this will be
-    *                    the annotations on that parameter returned by
-    *                    &lt;code&gt;Class.getParameterAnnotations&lt;/code&gt;.
-    * @return a MessageBodyReader that matches the supplied criteria or null
-    *         if none is found.
-    */
-   public abstract &lt;T&gt; MessageBodyReader&lt;T&gt; getMessageBodyReader(Class&lt;T&gt; type, Type genericType, Annotation annotations[], MediaType mediaType);
-
-
-   /**
-    * Get a message body writer that matches a set of criteria.
-    *
-    * @param mediaType   the media type of the data that will be written, this will
-    *                    be compared to the values of {@link javax.ws.rs.ProduceMime} for
-    *                    each candidate writer and only matching writers will be queried.
-    * @param type        the class of object that is to be written.
-    * @param genericType the type of object to be written. E.g. if the
-    *                    message body is to be produced from a field, this will be
-    *                    the declared type of the field as returned by
-    *                    &lt;code&gt;Field.getGenericType&lt;/code&gt;.
-    * @param annotations an array of the annotations on the declaration of the
-    *                    artifact that will be written. E.g. if the
-    *                    message body is to be produced from a field, this will be
-    *                    the annotations on that field returned by
-    *                    &lt;code&gt;Field.getDeclaredAnnotations&lt;/code&gt;.
-    * @return a MessageBodyReader that matches the supplied criteria or null
-    *         if none is found.
-    */
-   public abstract &lt;T&gt; MessageBodyWriter&lt;T&gt; getMessageBodyWriter(Class&lt;T&gt; type, Type genericType, Annotation annotations[], MediaType mediaType);
-}
-
-</programlisting>
-</para>
-<para>
-
-
-</para>
-<para>
-
-MessageBodyWorkers are injectable into MessageBodyReader or Writers:
-</para>
-<para>
-
-<programlisting>
-@Provider
-@ConsumeMime("multipart/fixed")
-public class MultipartProvider implements MessageBodyReader {
-
-   private @Context MessageBodyWorkers workers;
-
-...
-
-}
-</programlisting></para>
-<para>
-
-
-</para>
-</sect1>
+&Multipart;
 </chapter>
