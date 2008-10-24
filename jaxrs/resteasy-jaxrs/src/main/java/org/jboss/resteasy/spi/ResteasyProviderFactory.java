@@ -508,7 +508,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+            throw new RuntimeException("Unable to instantiate ContextResolver", e);
          }
       }
       if (provider instanceof ResourceMethodInterceptor)
