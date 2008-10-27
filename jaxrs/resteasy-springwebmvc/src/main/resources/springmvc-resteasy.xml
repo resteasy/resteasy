@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <description>
+        Import this file "as is" in a Spring MVC dispatcher XML environment to get the default implementation of the
+        Spring MVC/RestEasy integration. You can also use this as a template for more advanced functionality, such as
+        configuring multiple RestEasy factories/dispatchers/registries for different scenarios.
+    </description>
+
+    <bean id="jaxRSproviderFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory">
+        <description>
+            This bean manages all of the JAX-RS @Providers. @Providers convert from the inputStream to a java object and
+            from a Java object to an output stream. The SpringBeanPreprocessor scans through the context for all
+            @Provider, and adds them to this instance.
+        </description>
+    </bean>
+
+    <bean id="jaxRSHandlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter"
+        name="resteasyDispatcher">
+        <description>
+            This HandlerAdapter knows how to forward requests to Resteasy for the handling of the service functionality,
+            but not the rendering, which is handled by a ResteasyView. Note, this also acts as the "dispatcher", which
+            is a bit whacky.
+        </description>
+
+        <constructor-arg ref="jaxRSproviderFactory" />
+    </bean>
+
+    <bean id="resteasyRegistry" factory-bean="resteasyDispatcher" factory-method="getRegistry">
+        <description>
+            Expose the dispatcher's registry as a full-blown Spring bean, so that it can be passed in as a reference.
+        </description>
+    </bean>
+
+    <bean class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping" id="jaxRSHandlerMapping">
+        <description>
+            Tap into the RestEasy registry to find out if any of it's Resources handle a specific URL
+        </description>
+        <constructor-arg ref="resteasyRegistry" />
+    </bean>
+
+    <bean class="org.jboss.resteasy.plugins.server.servlet.SpringBeanProcessor">
+        <description>Add Resources and @Providers to the appropriate places in Resteasy's infrastruccture</description>
+        <constructor-arg ref="resteasyRegistry" />
+        <constructor-arg ref="jaxRSproviderFactory" />
+    </bean>
+
+
+</beans>

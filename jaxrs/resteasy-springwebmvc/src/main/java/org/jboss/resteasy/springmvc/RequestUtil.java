@@ -1,0 +1,41 @@
+package org.jboss.resteasy.springmvc;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.jboss.resteasy.spi.HttpRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+public class RequestUtil {
+
+    private static String RESPONSE_WRAPPER_KEY = RequestUtil.class.getName() + ".RESPONSE_WRAPPER";
+
+    public static HttpServletRequest getRequest() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    }
+
+    public static ResteasyRequestWrapper getRequestWrapper(HttpServletRequest request) throws ServletException,
+            IOException {
+        ResteasyRequestWrapper wrapper = (ResteasyRequestWrapper) request.getAttribute(RESPONSE_WRAPPER_KEY);
+        if (wrapper == null) {
+            request.setAttribute(RESPONSE_WRAPPER_KEY, wrapper = new ResteasyRequestWrapper(request));
+        }
+        return wrapper;
+    }
+    
+    public static HttpRequest getHttpRequest(HttpServletRequest request) throws ServletException, IOException{
+        return getRequestWrapper(request).getHttpRequest();
+    }
+
+    public static ResteasyRequestWrapper getRequestWrapper(HttpServletRequest request, String method, String prefix)
+            throws ServletException, IOException {
+        ResteasyRequestWrapper wrapper = (ResteasyRequestWrapper) request.getAttribute(RESPONSE_WRAPPER_KEY);
+        if (wrapper == null) {
+            request.setAttribute(RESPONSE_WRAPPER_KEY, wrapper = new ResteasyRequestWrapper(request, method, prefix));
+        }
+        return wrapper;
+    }
+}
