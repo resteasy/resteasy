@@ -3,14 +3,14 @@
  */
 package org.jboss.resteasy.test;
 
+import org.jboss.resteasy.core.Dispatcher;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import org.jboss.resteasy.core.Dispatcher;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
@@ -40,7 +40,7 @@ public abstract class BaseResourceTest
    {
       dispatcher.getRegistry().addPerRequestResource(resource);
    }
-   
+
    public String readString(InputStream in) throws IOException
    {
       char[] buffer = new char[1024];
