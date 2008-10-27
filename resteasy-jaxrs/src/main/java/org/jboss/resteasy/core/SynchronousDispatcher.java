@@ -419,25 +419,7 @@ public class SynchronousDispatcher implements Dispatcher
    public void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
            throws IOException, WebApplicationException
    {
-      if (jaxrsResponse.getMetadata() != null)
-      {
-         List cookies = jaxrsResponse.getMetadata().get(HttpHeaderNames.SET_COOKIE);
-         if (cookies != null)
-         {
-            Iterator it = cookies.iterator();
-            while (it.hasNext())
-            {
-               Object next = it.next();
-               if (next instanceof NewCookie)
-               {
-                  NewCookie cookie = (NewCookie) next;
-                  response.addNewCookie(cookie);
-                  it.remove();
-               }
-            }
-            if (cookies.size() < 1) jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
-         }
-      }
+      writeCookies(response, jaxrsResponse);
 
       if (jaxrsResponse.getEntity() == null)
       {
@@ -482,7 +464,29 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected MediaType resolveContentType(Response jaxrsResponse)
+   public void writeCookies(HttpResponse response, Response jaxrsResponse) {
+      if (jaxrsResponse.getMetadata() != null)
+      {
+         List cookies = jaxrsResponse.getMetadata().get(HttpHeaderNames.SET_COOKIE);
+         if (cookies != null)
+         {
+            Iterator it = cookies.iterator();
+            while (it.hasNext())
+            {
+               Object next = it.next();
+               if (next instanceof NewCookie)
+               {
+                  NewCookie cookie = (NewCookie) next;
+                  response.addNewCookie(cookie);
+                  it.remove();
+               }
+            }
+            if (cookies.size() < 1) jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
+         }
+      }
+   }
+
+   public static MediaType resolveContentType(Response jaxrsResponse)
    {
       MediaType responseContentType = null;
       Object type = jaxrsResponse.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
