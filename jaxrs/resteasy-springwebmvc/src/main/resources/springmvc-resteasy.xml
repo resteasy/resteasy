@@ -9,7 +9,7 @@
         configuring multiple RestEasy factories/dispatchers/registries for different scenarios.
     </description>
 
-    <bean id="jaxRSproviderFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory">
+    <bean id="jaxRSproviderFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory" factory-method="initializeInstance">
         <description>
             This bean manages all of the JAX-RS @Providers. @Providers convert from the inputStream to a java object and
             from a Java object to an output stream. The SpringBeanPreprocessor scans through the context for all
@@ -17,7 +17,11 @@
         </description>
     </bean>
 
-    <bean id="jaxRSHandlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter"
+    <bean id="resteasyIntializer" class="org.jboss.resteasy.springmvc.ResteasyIntializer">
+        <constructor-arg ref="jaxRSproviderFactory" />
+    </bean>
+
+    <bean id="jaxRSHandlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter" depends-on="resteasyIntializer"
         name="resteasyDispatcher">
         <description>
             This HandlerAdapter knows how to forward requests to Resteasy for the handling of the service functionality,
@@ -41,8 +45,8 @@
         <constructor-arg ref="resteasyRegistry" />
     </bean>
 
-    <bean class="org.jboss.resteasy.plugins.server.servlet.SpringBeanProcessor">
-        <description>Add Resources and @Providers to the appropriate places in Resteasy's infrastruccture</description>
+    <bean class="org.jboss.resteasy.plugins.server.servlet.SpringBeanProcessor" depends-on="resteasyIntializer">
+        <description>Add Resources and @Providers to the appropriate places in Resteasy's infrastructure</description>
         <constructor-arg ref="resteasyRegistry" />
         <constructor-arg ref="jaxRSproviderFactory" />
     </bean>

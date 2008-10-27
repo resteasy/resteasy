@@ -33,7 +33,8 @@ import org.springframework.web.servlet.ModelAndView;
 // TODO: Right now there's a problematic relationship between Dispatcher and
 // Registry. Ideally, the Registry shouldn't be owned by the Dispatcher, and the
 // methods needed from SynchronousDispatcher should move into a shared class.
-public class ResteasyHandlerAdapter extends SynchronousDispatcher implements HandlerAdapter {
+public class ResteasyHandlerAdapter extends SynchronousDispatcher implements
+        HandlerAdapter {
 
     public ResteasyHandlerAdapter(ResteasyProviderFactory providerFactory) {
         super(providerFactory);
@@ -44,18 +45,23 @@ public class ResteasyHandlerAdapter extends SynchronousDispatcher implements Han
         return 0;
     }
 
-    public ModelAndView handle(HttpServletRequest servletRequest, HttpServletResponse servletResponse, Object handler)
+    public ModelAndView handle(HttpServletRequest servletRequest,
+            HttpServletResponse servletResponse, Object handler)
             throws Exception {
 
         ResteasyRequestWrapper responseWrapper = (ResteasyRequestWrapper) handler;
 
         // TODO: copied from HttpServletDisptacher;
-        HttpResponse response = new HttpServletResponseWrapper(servletResponse, getProviderFactory());
+        HttpResponse response = new HttpServletResponseWrapper(servletResponse,
+                getProviderFactory());
 
         try {
-            ResteasyProviderFactory.pushContext(HttpServletRequest.class, servletRequest);
-            ResteasyProviderFactory.pushContext(HttpServletResponse.class, servletResponse);
-            ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(servletRequest));
+            ResteasyProviderFactory.pushContext(HttpServletRequest.class,
+                    servletRequest);
+            ResteasyProviderFactory.pushContext(HttpServletResponse.class,
+                    servletResponse);
+            ResteasyProviderFactory.pushContext(SecurityContext.class,
+                    new ServletSecurityContext(servletRequest));
 
             // TODO: copied from SynchronousDispatcher!
             HttpRequest request = responseWrapper.getHttpRequest();
@@ -63,7 +69,8 @@ public class ResteasyHandlerAdapter extends SynchronousDispatcher implements Han
 
             Response jaxrsResponse = null;
             try {
-                jaxrsResponse = responseWrapper.getInvoker().invoke(request, response);
+                jaxrsResponse = responseWrapper.getInvoker().invoke(request,
+                        response);
             } catch (Exception e) {
                 handleInvokerException(request, response, e);
             }
@@ -128,7 +135,8 @@ public class ResteasyHandlerAdapter extends SynchronousDispatcher implements Han
         response.setStatus(jaxrsResponse.getStatus());
         outputHeaders(response, jaxrsResponse);
 
-        return new ModelAndView(new ResteasyView(resolvedContentType.getType(), this)).addObject(jaxrsResponse);
+        ResteasyView resteasyView = new ResteasyView(resolvedContentType.toString(), this);
+        return new ModelAndView(resteasyView).addObject(jaxrsResponse);
     }
 
     public boolean supports(Object handler) {
