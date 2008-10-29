@@ -33,6 +33,7 @@
                 <!ENTITY Maven_and_RESTEasy SYSTEM "modules/Maven_and_RESTEasy.xml">
                 <!ENTITY Migration_from_older_versions SYSTEM "modules/Migration_from_older_versions.xml">
                 <!ENTITY Multipart SYSTEM "modules/Multipart.xml">
+                <!ENTITY Abdera SYSTEM "modules/Abdera.xml">
                 ]>
 
 <book lang="en">
