@@ -1,9 +1,13 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.StringToPrimitive;
 
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -31,22 +35,24 @@ public class StringParameterInjector
    protected Method valueOf;
    protected String defaultValue;
    protected String paramName;
-   protected String paramType;
+   protected Class paramType;
    protected boolean isCollection;
    protected Class<? extends Collection> collectionType;
    protected AccessibleObject target;
+   protected StringConverter converter;
+   protected RuntimeDelegate.HeaderDelegate delegate;
 
    public StringParameterInjector()
    {
 
    }
 
-   public StringParameterInjector(Class type, Type genericType, String paramName, String paramType, String defaultValue, AccessibleObject target)
+   public StringParameterInjector(Class type, Type genericType, String paramName, Class paramType, String defaultValue, AccessibleObject target, ResteasyProviderFactory factory)
    {
-      initialize(type, genericType, paramName, paramType, defaultValue, target);
+      initialize(type, genericType, paramName, paramType, defaultValue, target, factory);
    }
 
-   protected void initialize(Class type, Type genericType, String paramName, String paramType, String defaultValue, AccessibleObject target)
+   protected void initialize(Class type, Type genericType, String paramName, Class paramType, String defaultValue, AccessibleObject target, ResteasyProviderFactory factory)
    {
       this.type = type;
       this.paramName = paramName;
@@ -85,6 +91,16 @@ public class StringParameterInjector
       }
       if (!baseType.isPrimitive())
       {
+         converter = factory.getStringConverter(baseType);
+         if (converter != null) return;
+
+         if (paramType.equals(HeaderParam.class))
+         {
+            delegate = factory.createHeaderDelegate(baseType);
+            if (delegate != null) return;
+         }
+
+
          try
          {
             constructor = baseType.getConstructor(String.class);
@@ -110,7 +126,7 @@ public class StringParameterInjector
 
    public String getParamSignature()
    {
-      return paramType + "(\"" + paramName + "\")";
+      return paramType.getName() + "(\"" + paramName + "\")";
    }
 
    public Object extractValues(List<String> values)
@@ -170,7 +186,15 @@ public class StringParameterInjector
          }
       }
       if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
-      if (constructor != null)
+      if (converter != null)
+      {
+         return converter.fromString(strVal);
+      }
+      else if (delegate != null)
+      {
+         return delegate.fromString(strVal);
+      }
+      else if (constructor != null)
       {
          try
          {
@@ -189,7 +213,7 @@ public class StringParameterInjector
             throw new RuntimeException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
       }
-      if (valueOf != null)
+      else if (valueOf != null)
       {
          try
          {

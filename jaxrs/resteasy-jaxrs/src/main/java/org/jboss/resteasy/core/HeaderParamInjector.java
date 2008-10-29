@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.HeaderParam;
 import java.lang.reflect.AccessibleObject;
@@ -15,9 +16,9 @@ import java.util.List;
 public class HeaderParamInjector extends StringParameterInjector implements ValueInjector
 {
 
-   public HeaderParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue)
+   public HeaderParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue, ResteasyProviderFactory factory)
    {
-      super(type, genericType, header, "@" + HeaderParam.class.getSimpleName(), defaultValue, target);
+      super(type, genericType, header, HeaderParam.class, defaultValue, target, factory);
    }
 
    public Object inject(HttpRequest request, HttpResponse response)

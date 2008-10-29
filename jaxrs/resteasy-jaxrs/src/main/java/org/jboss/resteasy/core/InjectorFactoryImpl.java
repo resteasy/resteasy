@@ -73,23 +73,23 @@ public class InjectorFactoryImpl implements InjectorFactory
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
       {
-         return new QueryParamInjector(type, genericType, target, query.value(), defaultVal, encode);
+         return new QueryParamInjector(type, genericType, target, query.value(), defaultVal, encode, providerFactory);
       }
       else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
       {
-         return new HeaderParamInjector(type, genericType, target, header.value(), defaultVal);
+         return new HeaderParamInjector(type, genericType, target, header.value(), defaultVal, providerFactory);
       }
       else if ((formParam = FindAnnotation.findAnnotation(annotations, FormParam.class)) != null)
       {
-         return new FormParamInjector(type, genericType, target, formParam.value(), defaultVal);
+         return new FormParamInjector(type, genericType, target, formParam.value(), defaultVal, providerFactory);
       }
       else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
       {
-         return new CookieParamInjector(type, genericType, target, cookie.value(), defaultVal);
+         return new CookieParamInjector(type, genericType, target, cookie.value(), defaultVal, providerFactory);
       }
       else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
       {
-         return new PathParamInjector(type, genericType, target, uriParam.value(), defaultVal, encode);
+         return new PathParamInjector(type, genericType, target, uriParam.value(), defaultVal, encode, providerFactory);
       }
       else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
       {
@@ -97,7 +97,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
       {
-         return new MatrixParamInjector(type, genericType, target, matrix.value(), defaultVal);
+         return new MatrixParamInjector(type, genericType, target, matrix.value(), defaultVal, providerFactory);
       }
       else if ((suspend = FindAnnotation.findAnnotation(annotations, Suspend.class)) != null)
       {

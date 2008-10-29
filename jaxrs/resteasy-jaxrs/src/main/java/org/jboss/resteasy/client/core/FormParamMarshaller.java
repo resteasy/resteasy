@@ -3,6 +3,8 @@ package org.jboss.resteasy.client.core;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StringConverter;
 
 import java.util.Collection;
 
@@ -13,10 +15,12 @@ import java.util.Collection;
 public class FormParamMarshaller implements Marshaller
 {
    private String paramName;
+   private ResteasyProviderFactory factory;
 
-   public FormParamMarshaller(String paramName)
+   public FormParamMarshaller(String paramName, ResteasyProviderFactory factory)
    {
       this.paramName = paramName;
+      this.factory = factory;
    }
 
    public void buildUri(Object object, UriBuilderImpl uri)
@@ -26,6 +30,15 @@ public class FormParamMarshaller implements Marshaller
    public void setHeaders(Object object, HttpMethodBase httpMethod)
    {
    }
+
+   protected String toString(Object object)
+   {
+      StringConverter converter = factory.getStringConverter(object.getClass());
+      if (converter != null) return converter.toString(object);
+      else return object.toString();
+
+   }
+
 
    public void buildRequest(Object object, HttpMethodBase httpMethod)
    {
@@ -41,7 +54,7 @@ public class FormParamMarshaller implements Marshaller
       {
          for (Object obj : (Collection) object)
          {
-            post.addParameter(paramName, obj.toString());
+            post.addParameter(paramName, toString(obj));
          }
       }
       else if (object.getClass().isArray())
@@ -83,14 +96,14 @@ public class FormParamMarshaller implements Marshaller
             Object[] objs = (Object[]) object;
             for (Object obj : objs)
             {
-               post.addParameter(paramName, obj.toString());
+               post.addParameter(paramName, toString(obj));
 
             }
          }
       }
       else
       {
-         post.addParameter(paramName, object.toString());
+         post.addParameter(paramName, toString(object));
       }
    }
 }

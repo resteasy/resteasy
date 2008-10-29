@@ -2,7 +2,10 @@ package org.jboss.resteasy.client.core;
 
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StringConverter;
 
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.Collection;
 
 /**
@@ -12,10 +15,12 @@ import java.util.Collection;
 public class HeaderParamMarshaller implements Marshaller
 {
    private String paramName;
+   private ResteasyProviderFactory factory;
 
-   public HeaderParamMarshaller(String paramName)
+   public HeaderParamMarshaller(String paramName, ResteasyProviderFactory factory)
    {
       this.paramName = paramName;
+      this.factory = factory;
    }
 
    public void buildUri(Object object, UriBuilderImpl uri)
@@ -26,6 +31,17 @@ public class HeaderParamMarshaller implements Marshaller
    {
    }
 
+   protected String toString(Object object)
+   {
+      StringConverter converter = factory.getStringConverter(object.getClass());
+      if (converter != null) return converter.toString(object);
+
+      RuntimeDelegate.HeaderDelegate delegate = factory.createHeaderDelegate(object.getClass());
+      if (delegate != null) return delegate.toString(object);
+      else return object.toString();
+
+   }
+
    public void setHeaders(Object object, HttpMethodBase httpMethod)
    {
       if (object == null) return;
@@ -33,7 +49,7 @@ public class HeaderParamMarshaller implements Marshaller
       {
          for (Object obj : (Collection) object)
          {
-            httpMethod.addRequestHeader(paramName, obj.toString());
+            httpMethod.addRequestHeader(paramName, toString(obj));
          }
       }
       else if (object.getClass().isArray())
@@ -75,14 +91,14 @@ public class HeaderParamMarshaller implements Marshaller
             Object[] objs = (Object[]) object;
             for (Object obj : objs)
             {
-               httpMethod.addRequestHeader(paramName, obj.toString());
+               httpMethod.addRequestHeader(paramName, toString(obj));
 
             }
          }
       }
       else
       {
-         httpMethod.addRequestHeader(paramName, object.toString());
+         httpMethod.addRequestHeader(paramName, toString(object));
       }
    }
 }

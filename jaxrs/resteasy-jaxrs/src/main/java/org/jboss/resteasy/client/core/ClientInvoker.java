@@ -88,11 +88,11 @@ abstract public class ClientInvoker
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
       {
-         marshaller = new QueryParamMarshaller(query.value());
+         marshaller = new QueryParamMarshaller(query.value(), providerFactory);
       }
       else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
       {
-         marshaller = new HeaderParamMarshaller(header.value());
+         marshaller = new HeaderParamMarshaller(header.value(), providerFactory);
       }
       else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
       {
@@ -100,15 +100,15 @@ abstract public class ClientInvoker
       }
       else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
       {
-         marshaller = new PathParamMarshaller(uriParam.value(), isEncoded);
+         marshaller = new PathParamMarshaller(uriParam.value(), isEncoded, providerFactory);
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
       {
-         marshaller = new MatrixParamMarshaller(matrix.value());
+         marshaller = new MatrixParamMarshaller(matrix.value(), providerFactory);
       }
       else if ((formParam = FindAnnotation.findAnnotation(annotations, FormParam.class)) != null)
       {
-         marshaller = new FormParamMarshaller(formParam.value());
+         marshaller = new FormParamMarshaller(formParam.value(), providerFactory);
       }
       else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
       {
