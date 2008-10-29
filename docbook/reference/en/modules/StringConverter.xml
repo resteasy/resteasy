@@ -1,0 +1,117 @@
+<chapter id="StringConverter">
+   <title>String marshalling for String based @*Param</title>
+   <para>@PathParam, @QueryParam, @MatrixParam, @FormParam, and @HeaderParam are represented as strings in a raw
+      HTTP request. The specification says that these types of injected parameters can be converted to objects
+      if these objects have a valueOf(String) static method or a constructor that takes one String parameter.
+      What if you have a class where valueOf() or this string constructor doesn't exist or is inappropriate for
+      an HTTP request? Resteasy has a proprietary @Provider interface that you can plug in:
+   </para>
+   <programlisting>
+      package org.jboss.resteasy.spi;
+
+      public interface StringConverter&lt;T&gt;
+      {
+      T fromString(String str);
+
+      String toString(T value);
+      }
+
+   </programlisting>
+   <para>You implement this interface to provide your own custom string marshalling. It is registered
+      within your web.xml under the resteasy.providers context-param (See Installation and Configuration chapter).
+      You can do it manually by calling the ResteasyProviderFactory.addStringConverter() method. Here's a simple
+      example of using a StringConverter:
+   </para>
+   <programlisting><![CDATA[
+   import org.jboss.resteasy.client.ProxyFactory;
+   import org.jboss.resteasy.spi.StringConverter;
+   import org.jboss.resteasy.test.BaseResourceTest;
+   import org.junit.Assert;
+   import org.junit.Before;
+   import org.junit.Test;
+
+   import javax.ws.rs.HeaderParam;
+   import javax.ws.rs.MatrixParam;
+   import javax.ws.rs.PUT;
+   import javax.ws.rs.Path;
+   import javax.ws.rs.PathParam;
+   import javax.ws.rs.QueryParam;
+   import javax.ws.rs.ext.Provider;
+
+   public class StringConverterTest extends BaseResourceTest
+   {
+      public static class POJO
+      {
+         private String name;
+
+         public String getName()
+         {
+            return name;
+         }
+
+         public void setName(String name)
+         {
+            this.name = name;
+         }
+      }
+
+      @Provider
+      public static class POJOConverter implements StringConverter<POJO>
+      {
+         public POJO fromString(String str)
+         {
+            System.out.println("FROM STRNG: " + str);
+            POJO pojo = new POJO();
+            pojo.setName(str);
+            return pojo;
+         }
+
+         public String toString(POJO value)
+         {
+            return value.getName();
+         }
+      }
+
+      @Path("/")
+      public static class MyResource
+      {
+         @Path("{pojo}")
+         @PUT
+         public void put(@QueryParam("pojo")POJO q, @PathParam("pojo")POJO pp,
+                         @MatrixParam("pojo")POJO mp, @HeaderParam("pojo")POJO hp)
+         {
+            Assert.assertEquals(q.getName(), "pojo");
+            Assert.assertEquals(pp.getName(), "pojo");
+            Assert.assertEquals(mp.getName(), "pojo");
+            Assert.assertEquals(hp.getName(), "pojo");
+         }
+      }
+
+      @Before
+      public void setUp() throws Exception
+      {
+         dispatcher.getProviderFactory().addStringConverter(POJOConverter.class);
+         dispatcher.getRegistry().addPerRequestResource(MyResource.class);
+      }
+
+      @Path("/")
+      public static interface MyClient
+      {
+         @Path("{pojo}")
+         @PUT
+         void put(@QueryParam("pojo")POJO q, @PathParam("pojo")POJO pp,
+                  @MatrixParam("pojo")POJO mp, @HeaderParam("pojo")POJO hp);
+      }
+
+      @Test
+      public void testIt() throws Exception
+      {
+         MyClient client = ProxyFactory.create(MyClient.class, "http://localhost:8081");
+         POJO pojo = new POJO();
+         pojo.setName("pojo");
+         client.put(pojo, pojo, pojo, pojo);
+      }
+   }
+]]>
+   </programlisting>
+</chapter>
