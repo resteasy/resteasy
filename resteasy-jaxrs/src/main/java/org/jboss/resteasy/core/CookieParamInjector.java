@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.core.Cookie;
@@ -15,19 +16,19 @@ import java.lang.reflect.Type;
 public class CookieParamInjector extends StringParameterInjector implements ValueInjector
 {
 
-   public CookieParamInjector(Class type, Type genericType, AccessibleObject target, String cookieName, String defaultValue)
+   public CookieParamInjector(Class type, Type genericType, AccessibleObject target, String cookieName, String defaultValue, ResteasyProviderFactory factory)
    {
       if (type.equals(Cookie.class))
       {
          this.type = type;
          this.paramName = cookieName;
-         this.paramType = "@" + CookieParam.class.getSimpleName();
+         this.paramType = CookieParam.class;
          this.defaultValue = defaultValue;
 
       }
       else
       {
-         initialize(type, genericType, cookieName, "@" + CookieParam.class.getSimpleName(), defaultValue, target);
+         initialize(type, genericType, cookieName, CookieParam.class, defaultValue, target, factory);
       }
    }
 

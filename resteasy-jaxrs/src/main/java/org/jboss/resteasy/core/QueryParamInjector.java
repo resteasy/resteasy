@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.QueryParam;
 import java.io.UnsupportedEncodingException;
@@ -20,9 +21,9 @@ public class QueryParamInjector extends StringParameterInjector implements Value
    private boolean encode;
    private String encodedName;
 
-   public QueryParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode)
+   public QueryParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, ResteasyProviderFactory factory)
    {
-      super(type, genericType, paramName, "@" + QueryParam.class.getSimpleName(), defaultValue, target);
+      super(type, genericType, paramName, QueryParam.class, defaultValue, target, factory);
       this.encode = encode;
       try
       {

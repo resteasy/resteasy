@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
@@ -21,12 +22,12 @@ public class PathParamInjector implements ValueInjector
    private boolean encode;
    private Class type;
 
-   public PathParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode)
+   public PathParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, ResteasyProviderFactory factory)
    {
       this.type = type;
       if (type.equals(PathSegment.class) == false && !(isPathSegmentArray(type)))
       {
-         extractor = new StringParameterInjector(type, genericType, paramName, "@" + PathParam.class.getSimpleName(), defaultValue, target);
+         extractor = new StringParameterInjector(type, genericType, paramName, PathParam.class, defaultValue, target, factory);
       }
       this.paramName = paramName;
       this.encode = encode;

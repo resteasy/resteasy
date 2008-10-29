@@ -108,6 +108,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    private Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
    private Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
    private Map<Class<?>, MediaTypeMap<ContextResolver>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<ContextResolver>>();
+   private Map<Class<?>, StringConverter> stringConverters = new HashMap<Class<?>, StringConverter>();
 
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
@@ -395,11 +396,55 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
+   public void addStringConverter(Class<? extends StringConverter> resolver)
+   {
+      StringConverter writer = null;
+      try
+      {
+         writer = resolver.newInstance();
+      }
+      catch (InstantiationException e)
+      {
+         throw new RuntimeException(e);
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new RuntimeException(e);
+      }
+      addStringConverter(writer);
+   }
+
+   public void addStringConverter(StringConverter provider)
+   {
+      providers.put(provider.getClass(), provider);
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
+      injector.inject(provider);
+      Type[] intfs = provider.getClass().getGenericInterfaces();
+      for (Type type : intfs)
+      {
+         if (type instanceof ParameterizedType)
+         {
+            ParameterizedType pt = (ParameterizedType) type;
+            if (pt.getRawType().equals(StringConverter.class))
+            {
+               Class<?> aClass = Types.getRawType(pt.getActualTypeArguments()[0]);
+               stringConverters.put(aClass, provider);
+            }
+         }
+      }
+   }
+
    public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
    {
       MediaTypeMap<ContextResolver> resolvers = contextResolvers.get(clazz);
       if (resolvers == null) return null;
       return resolvers.getPossible(type);
+   }
+
+   public StringConverter getStringConverter(Class<?> clazz)
+   {
+      if (stringConverters.size() == 0) return null;
+      return stringConverters.get(clazz);
    }
 
 
@@ -458,6 +503,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Unable to instantiate ContextResolver", e);
          }
       }
+      if (StringConverter.class.isAssignableFrom(provider))
+      {
+         addStringConverter(provider);
+      }
    }
 
    /**
@@ -514,6 +563,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (provider instanceof ResourceMethodInterceptor)
       {
          interceptorRegistry.registerResourceMethodInterceptor((ResourceMethodInterceptor) provider);
+      }
+      if (provider instanceof StringConverter)
+      {
+         addStringConverter((StringConverter) provider);
       }
    }
 
