@@ -225,7 +225,7 @@
       </para>
    </sect1>
    <sect1 id="Built_in_JAXB_providers">
-      <title>Built in JAXB providers</title>
+      <title>JAXB providers</title>
 
       <para>
 
@@ -662,7 +662,7 @@
       </sect2>
    </sect1>
    <sect1 id="Built_in_YAML_Provider">
-      <title>Built in YAML Provider</title>
+      <title>YAML Provider</title>
 
       <para>
 
