@@ -3,12 +3,14 @@ package org.jboss.resteasy.plugins.spring;
 import org.jboss.resteasy.core.ContextParameterInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Required;
 
 public class ResteasyContextFactoryBean implements FactoryBean {
 
 	private Class<?> objectType;
 	private ResteasyProviderFactory providerFactory;
 
+	@Required
 	public ResteasyProviderFactory getProviderFactory() {
 		return providerFactory;
 	}
@@ -25,6 +27,7 @@ public class ResteasyContextFactoryBean implements FactoryBean {
 		return new ContextParameterInjector(objectType, providerFactory).inject();
 	}
 
+	@Required
 	public Class<?> getObjectType() {
 		return objectType;
 	}

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<description>
 		Import this file "as is" in a Spring MVC dispatcher XML
@@ -94,6 +96,10 @@
 		p:objectType="org.jboss.resteasy.spi.HttpRequest" />
 	<bean id="resteasy.providers" parent="resteasy.abstract.context.bean"
 		p:objectType="javax.ws.rs.ext.Providers" />
+
+	<bean id="contextAnnotationProcessor" p:factory-ref="jaxrs.providerFactory" 
+		class="org.jboss.resteasy.plugins.spring.ContextAnnotationBeanPostProcessor" />
+		 
 
 	<bean id="resteasy.resource.registration" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
 		p:registry-ref="resteasy.registry" abstract="true" />

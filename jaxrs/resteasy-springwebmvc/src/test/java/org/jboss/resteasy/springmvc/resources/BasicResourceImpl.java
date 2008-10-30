@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Path("/basic")
 public class BasicResourceImpl {
 
-	
+	@Context UriInfo uriInfo;	
 	
 	@GET
 	@Produces("text/plain")
@@ -25,7 +25,7 @@ public class BasicResourceImpl {
 	@GET
 	@Produces("text/plain")
 	@Path("/url")
-	public String getURL(@Context UriInfo uriInfo) {
+	public String getURL() {
 		return uriInfo.getPath();
 	}
 
