@@ -1,39 +1,43 @@
 <chapter id="Migration_from_older_versions">
-<title>Migration from older versions</title>
-<sect1 id="Migrating_to_Resteasy_Beta_6">
-<title>Migrating to Resteasy Beta 6</title>
+   <title>Migration from older versions</title>
+   <sect1 id="Migrating_to_Resteasy_Beta_6">
+      <title>Migrating to Resteasy Beta 6</title>
 
-<para>
+      <para>
 
-<itemizedlist>
+         <itemizedlist>
 
-<listitem>
- The org.resteasy package has been moved to org.jboss.resteasy.  This means all your web.xml configurations will not work anymore
-</listitem>
+            <listitem>
+               The org.resteasy package has been moved to org.jboss.resteasy. This means all your web.xml configurations
+               will not work anymore
+            </listitem>
 
-<listitem>
- @Path.limited doesn't exist in the spec anymore.  Regular expressions are now support in @Path.  See docs/spec for more details.
-</listitem>
+            <listitem>
+               @Path.limited doesn't exist in the spec anymore. Regular expressions are now support in @Path. See
+               docs/spec for more details.
+            </listitem>
 
-<listitem>
- Media type and language extension mappings are no longer in the specification. i.e. /foo.xml.en
-</listitem>
+            <listitem>
+               Media type and language extension mappings are no longer in the specification. i.e. /foo.xml.en
+            </listitem>
 
-<listitem>
- @Produce/ConsumeMime annotations have been renamed @Produces/@Consumes respectively
-</listitem>
+            <listitem>
+               @Produce/Consumes annotations have been renamed @Produces/@Consumes respectively
+            </listitem>
 
-<listitem>
- The default JAXB/JSON format is now Mapped rather than BadgerFish.
-</listitem>
+            <listitem>
+               The default JAXB/JSON format is now Mapped rather than BadgerFish.
+            </listitem>
 
-<listitem>
- javax.ws.rs.ApplicationConfig has been renamed to javax.ws.rs.Application and only has 2 methods.  getClasses() and getSingletons()<para>
+            <listitem>
+               javax.ws.rs.ApplicationConfig has been renamed to javax.ws.rs.Application and only has 2 methods.
+               getClasses() and getSingletons()
+               <para>
 
 
-</para>
-</listitem>
-</itemizedlist>
-</para>
-</sect1>
+               </para>
+            </listitem>
+         </itemizedlist>
+      </para>
+   </sect1>
 </chapter>

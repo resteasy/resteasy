@@ -110,7 +110,7 @@
 
          The JAX-RS specification allows you to plug in your own request/response body reader and writers. To do this,
          you annotate a class
-         with @Provider and specify the @ProduceMime types for a writer and @ConsumeMime types for a reader. You must
+         with @Provider and specify the @Produces types for a writer and @Consumes types for a reader. You must
          also implement
          a MessageBodyReader/Writer interface respectively. Here is an example.
       </para>
@@ -153,7 +153,7 @@
             * Get a message body reader that matches a set of criteria.
             *
             * @param mediaType the media type of the data that will be read, this will
-            * be compared to the values of {@link javax.ws.rs.ConsumeMime} for
+            * be compared to the values of {@link javax.ws.rs.Consumes} for
             * each candidate reader and only matching readers will be queried.
             * @param type the class of object to be produced.
             * @param genericType the type of object to be produced. E.g. if the
@@ -176,7 +176,7 @@
             * Get a message body writer that matches a set of criteria.
             *
             * @param mediaType the media type of the data that will be written, this will
-            * be compared to the values of {@link javax.ws.rs.ProduceMime} for
+            * be compared to the values of {@link javax.ws.rs.Produces} for
             * each candidate writer and only matching writers will be queried.
             * @param type the class of object that is to be written.
             * @param genericType the type of object to be written. E.g. if the
@@ -209,7 +209,7 @@
 
          <programlisting>
             @Provider
-            @ConsumeMime("multipart/fixed")
+            @Consumes("multipart/fixed")
             public class MultipartProvider implements MessageBodyReader {
 
             private @Context MessageBodyWorkers workers;
@@ -243,7 +243,7 @@
 
          A JAXB Provider is selected by RESTEasy when a parameter or return type is an object that is annotated with
          JAXB annotations (such as @XmlRootEntity or @XmlType) or if the type is a JAXBElement. Additionally, the
-         resource class or resource method will be annotated with either a @ConsumeMime or @ProduceMime annotation and
+         resource class or resource method will be annotated with either a @Consumes or @Produces annotation and
          contain one or more of the following values:
       </para>
       <para>
@@ -741,17 +741,17 @@
 
          <programlisting>
 
-            import javax.ws.rs.ConsumeMime;
+            import javax.ws.rs.Consumes;
             import javax.ws.rs.GET;
             import javax.ws.rs.Path;
-            import javax.ws.rs.ProduceMime;
+            import javax.ws.rs.Produces;
 
             @Path("/yaml")
             public class YamlResource
             {
 
             @GET
-            @ProduceMime("text/x-yaml")
+            @Produces("text/x-yaml")
             public MyObject getMyObject() {
             return createMyObject();
             }
