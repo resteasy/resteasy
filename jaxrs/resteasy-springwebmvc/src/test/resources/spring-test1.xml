@@ -1,9 +1,30 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-   <!-- Import basic springMVC resteash integration -->
-   <import resource="classpath:springmvc-resteasy.xml"/>
+	<!-- Import basic SpringMVC Resteasy integration -->
+	<import resource="classpath:springmvc-resteasy.xml" />
 
-   <bean class="org.jboss.resteasy.springmvc.resources.BasicResource"/>
+	<bean class="org.jboss.resteasy.springmvc.resources.BasicResourceImpl" />
+
+	<bean class="org.jboss.resteasy.springmvc.test.MyCustomView" id="someView" />
+
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+
+	<bean id="singletonReg" parent="resteasy.resource.registration" p:context="/basic/singleton/">
+		<property name="beanName">
+			<idref local="singletonScopedResource" />
+		</property>
+	</bean>
+	<bean id="prototypeReg" parent="resteasy.resource.registration" p:context="/basic/prototype/">
+		<property name="beanName">
+			<idref local="requestScopedResource" />
+		</property>
+	</bean>
+
+	<bean id="singletonScopedResource" scope="singleton"
+		class="org.jboss.resteasy.springmvc.resources.CounterResource" />
+	<bean id="requestScopedResource" scope="request"
+		class="org.jboss.resteasy.springmvc.resources.CounterResource" />
+
 </beans>
