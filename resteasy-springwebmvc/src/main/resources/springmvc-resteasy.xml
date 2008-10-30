@@ -1,55 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-    <description>
-        Import this file "as is" in a Spring MVC dispatcher XML environment to get the default implementation of the
-        Spring MVC/RestEasy integration. You can also use this as a template for more advanced functionality, such as
-        configuring multiple RestEasy factories/dispatchers/registries for different scenarios.
-    </description>
+	<description>
+		Import this file "as is" in a Spring MVC dispatcher XML
+		environment to get the default implementation of the Spring
+		MVC/RestEasy integration. You can also use this as a template for more
+		advanced functionality, such as configuring multiple RestEasy
+		factories/dispatchers/registries for different scenarios.
+	</description>
 
-    <bean id="jaxRSproviderFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory" factory-method="initializeInstance">
-        <description>
-            This bean manages all of the JAX-RS @Providers. @Providers convert from the inputStream to a java object and
-            from a Java object to an output stream. The SpringBeanPreprocessor scans through the context for all
-            @Provider, and adds them to this instance.
+	<bean id="jaxrs.providerFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory"
+		factory-method="initializeInstance">
+		<description>
+			This bean manages all of the JAX-RS @Providers.
+			@Providers convert from
+			the inputStream to a java object and
+			from a
+			Java object to an output stream. The SpringBeanPreprocessor scans
+			through the context for all
+			@Provider, and adds them to this instance.
+		</description>
+	</bean>
+
+	<bean id="resteasy.intializer" class="org.jboss.resteasy.springmvc.ResteasyIntializer">
+		<constructor-arg ref="jaxrs.providerFactory" />
+	</bean>
+
+	<bean id="jaxrs.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter"
+		depends-on="resteasy.intializer" name="resteasy.dispatcher">
+		<description>
+			This HandlerAdapter knows how to forward requests to
+			Resteasy for the handling of the service functionality, but not the
+			rendering, which is handled by a ResteasyView. Note, this also acts
+			as the "dispatcher", which is a bit whacky.
         </description>
-    </bean>
 
-    <bean id="resteasyIntializer" class="org.jboss.resteasy.springmvc.ResteasyIntializer">
-        <constructor-arg ref="jaxRSproviderFactory" />
-    </bean>
+		<constructor-arg ref="jaxrs.providerFactory" />
+	</bean>
 
-    <bean id="jaxRSHandlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter" depends-on="resteasyIntializer"
-        name="resteasyDispatcher">
-        <description>
-            This HandlerAdapter knows how to forward requests to Resteasy for the handling of the service functionality,
-            but not the rendering, which is handled by a ResteasyView. Note, this also acts as the "dispatcher", which
-            is a bit whacky.
+	<bean id="resteasy.registry" factory-bean="resteasy.dispatcher"
+		factory-method="getRegistry">
+		<description>
+			Expose the dispatcher's registry as a full-blown Spring
+			bean, so that it can be passed in as a reference.
         </description>
+	</bean>
 
-        <constructor-arg ref="jaxRSproviderFactory" />
-    </bean>
-
-    <bean id="resteasyRegistry" factory-bean="resteasyDispatcher" factory-method="getRegistry">
-        <description>
-            Expose the dispatcher's registry as a full-blown Spring bean, so that it can be passed in as a reference.
+	<bean class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping"
+		id="jaxrs.handlerMapping">
+		<description>
+			Tap into the RestEasy registry to find out if any of it's
+			Resources
+			handle a specific URL
         </description>
-    </bean>
+		<constructor-arg ref="resteasy.registry" />
+	</bean>
 
-    <bean class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping" id="jaxRSHandlerMapping">
-        <description>
-            Tap into the RestEasy registry to find out if any of it's Resources handle a specific URL
-        </description>
-        <constructor-arg ref="resteasyRegistry" />
-    </bean>
-
-    <bean class="org.jboss.resteasy.plugins.server.servlet.SpringBeanProcessor" depends-on="resteasyIntializer">
-        <description>Add Resources and @Providers to the appropriate places in Resteasy's infrastructure</description>
-        <constructor-arg ref="resteasyRegistry" />
-        <constructor-arg ref="jaxRSproviderFactory" />
-    </bean>
+	<bean class="org.jboss.resteasy.plugins.spring.SpringBeanProcessorExt"
+		depends-on="resteasy.intializer">
+		<description>Add Resources and @Providers to the appropriate places
+			in Resteasy's infrastructure</description>
+		<constructor-arg ref="resteasy.registry" />
+		<constructor-arg ref="jaxrs.providerFactory" />
+	</bean>
 
 
+	<bean id="resteasy.customAutowireConfigurer"
+		class="org.springframework.beans.factory.annotation.CustomAutowireConfigurer">
+		<property name="customQualifierTypes">
+			<set>
+				<value>org.springframework.beans.factory.annotation.Qualifier</value>
+				<value>javax.ws.rs.core.Context</value>
+			</set>
+		</property>
+	</bean>
+
+	<bean id="resteasy.abstract.context.bean"
+		class="org.jboss.resteasy.plugins.spring.ResteasyContextFactoryBean"
+		abstract="true" p:providerFactory-ref="jaxrs.providerFactory" />
+
+	<bean id="resteasy.uriContext" parent="resteasy.abstract.context.bean"
+		p:objectType="javax.ws.rs.core.UriInfo" />
+	<bean id="resteasy.headers" parent="resteasy.abstract.context.bean"
+		p:objectType="javax.ws.rs.core.HttpHeaders" />
+	<bean id="resteasy.request" parent="resteasy.abstract.context.bean"
+		p:objectType="javax.ws.rs.core.Request" />
+	<bean id="resteasy.messageBodyWorkers" parent="resteasy.abstract.context.bean"
+		p:objectType="javax.ws.rs.ext.MessageBodyWorkers" />
+	<bean id="resteasy.httprequest" parent="resteasy.abstract.context.bean"
+		p:objectType="org.jboss.resteasy.spi.HttpRequest" />
+	<bean id="resteasy.providers" parent="resteasy.abstract.context.bean"
+		p:objectType="javax.ws.rs.ext.Providers" />
+
+	<bean id="resteasy.resource.registration" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
+		p:registry-ref="resteasy.registry" abstract="true" />
 </beans>
