@@ -1,39 +1,59 @@
 package org.jboss.resteasy.plugins.spring;
 
+import java.util.List;
+
 import org.jboss.resteasy.core.ContextParameterInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.Ordered;
 
-public class ResteasyContextFactoryBean implements FactoryBean {
+public class ResteasyContextFactoryBean implements BeanFactoryPostProcessor,
+		Ordered {
 
-	private Class<?> objectType;
-	private ResteasyProviderFactory providerFactory;
-
-	@Required
-	public ResteasyProviderFactory getProviderFactory() {
-		return providerFactory;
-	}
-
-	public void setProviderFactory(ResteasyProviderFactory providerFactory) {
-		this.providerFactory = providerFactory;
-	}
-
-	public void setObjectType(Class<?> objectType) {
-		this.objectType = objectType;
-	}
-
-	public Object getObject() throws Exception {
-		return new ContextParameterInjector(objectType, providerFactory).inject();
-	}
+	private List<Class<?>> objectTypes;
+	
+	private int order = 0;
 
 	@Required
-	public Class<?> getObjectType() {
-		return objectType;
+	public List<Class<?>> getObjectTypes() {
+		return objectTypes;
 	}
 
-	public boolean isSingleton() {
-		return true;
+	public void setObjectTypes(List<Class<?>> objectTypes) {
+		this.objectTypes = objectTypes;
 	}
 
+	@SuppressWarnings("unchecked")
+	public void postProcessBeanFactory(
+			ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		for (final Class<?> clazz : objectTypes) {
+			ObjectFactory of = new ObjectFactory() {
+				public Object getObject() throws BeansException {
+					// TODO: is this right? Can't we inject this? Perhaps this
+					// can be handled with Spring's web based infrastructure?
+					// Ideally, all @Context injections, including Resource
+					// method injections.  For now, this seems like it should work
+					return new ContextParameterInjector(clazz,
+							ResteasyProviderFactory.getInstance()).inject();
+				}
+			};
+			try {
+				beanFactory.registerResolvableDependency(clazz, of);
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
 }

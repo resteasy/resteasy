@@ -22,6 +22,20 @@ public class ResteasyRegistration implements InitializingBean, ResourceFactory, 
 
 	private BeanFactory beanFactory;
 
+	
+	public ResteasyRegistration() {
+		super();
+	}
+
+	public ResteasyRegistration(Registry registry, String context,
+			String beanName, BeanFactory beanFactory) {
+		super();
+		this.registry = registry;
+		this.context = context;
+		this.beanName = beanName;
+		this.beanFactory = beanFactory;
+	}
+
 	@Required
 	public Registry getRegistry() {
 		return registry;

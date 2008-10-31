@@ -1,4 +1,4 @@
-package org.jboss.resteasy.springmvc.resources;
+package org.jboss.resteasy.springmvc.test.client;
 
 import java.io.IOException;
 
@@ -18,11 +18,7 @@ public class BasicSpringTest {
 	@BeforeClass
 	public static void before() {
 		start = System.currentTimeMillis();
-		server = new TJWSEmbeddedSpringMVCServer();
-		server.setSpringConfigLocation("classpath:spring-test1.xml");
-		server.setPort(8081);
-		server.setRootResourcePath("");
-		server.setSecurityDomain(null);
+		server = new TJWSEmbeddedSpringMVCServer("classpath:spring-test1.xml", 8081);
 		server.start();
 	}
 
@@ -35,7 +31,7 @@ public class BasicSpringTest {
 				e.printStackTrace();
 			}
 			server = null;
-			System.out.println(System.currentTimeMillis() - start);
+			System.out.println("Total time in ms: " + (System.currentTimeMillis() - start));
 		}
 	}
 
@@ -52,5 +48,6 @@ public class BasicSpringTest {
 		Assert.assertEquals(2, br.getSingletonCount().intValue());
 		Assert.assertEquals(1, br.getPrototypeCount().intValue());
 		Assert.assertEquals(1, br.getPrototypeCount().intValue());
+		Assert.assertEquals("text/plain", br.getContentTypeHeader());
 	}
 }

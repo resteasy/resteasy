@@ -1,16 +1,30 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		">
 
 	<!-- Import basic SpringMVC Resteasy integration -->
 	<import resource="classpath:springmvc-resteasy.xml" />
 
-	<bean class="org.jboss.resteasy.springmvc.resources.BasicResourceImpl" />
+	<!-- imports 2 beans: MyCustomView and BasicResourceImpl -->
+	<context:component-scan base-package="org.jboss.resteasy.springmvc.test" />
+	
+	<!--  this can be added in later for a Restful @Controller 
+	<context:annotation-config/> 
+	-->
 
-	<bean class="org.jboss.resteasy.springmvc.test.MyCustomView" id="someView" />
-
+	<!--  use MyCustomView as a view - this takes the bean name and uses it to resolve the name "myCustomView" -->
 	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
 
+	<!-- Register the same class twice, under two different scopes and URL "root contexts" -->
+	<bean id="singletonScopedResource" scope="singleton"
+		class="org.jboss.resteasy.springmvc.test.resources.CounterResource" />
+	<bean id="requestScopedResource" scope="prototype"
+		class="org.jboss.resteasy.springmvc.test.resources.CounterResource" />
 	<bean id="singletonReg" parent="resteasy.resource.registration" p:context="/basic/singleton/">
 		<property name="beanName">
 			<idref local="singletonScopedResource" />
@@ -21,10 +35,5 @@
 			<idref local="requestScopedResource" />
 		</property>
 	</bean>
-
-	<bean id="singletonScopedResource" scope="singleton"
-		class="org.jboss.resteasy.springmvc.resources.CounterResource" />
-	<bean id="requestScopedResource" scope="request"
-		class="org.jboss.resteasy.springmvc.resources.CounterResource" />
 
 </beans>
