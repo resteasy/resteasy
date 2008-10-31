@@ -23,7 +23,7 @@
 			from a
 			Java object to an output stream. The SpringBeanPreprocessor scans
 			through the context for all
-			@Provider, and adds them to this instance.
+			@Provider, and adds them to this instanc.
 		</description>
 	</bean>
 
@@ -55,8 +55,7 @@
 		id="jaxrs.handlerMapping">
 		<description>
 			Tap into the RestEasy registry to find out if any of it's
-			Resources
-			handle a specific URL
+			Resources handle a specific URL
         </description>
 		<constructor-arg ref="resteasy.registry" />
 	</bean>
@@ -69,38 +68,23 @@
 		<constructor-arg ref="jaxrs.providerFactory" />
 	</bean>
 
-
-	<bean id="resteasy.customAutowireConfigurer"
-		class="org.springframework.beans.factory.annotation.CustomAutowireConfigurer">
-		<property name="customQualifierTypes">
-			<set>
-				<value>org.springframework.beans.factory.annotation.Qualifier</value>
-				<value>javax.ws.rs.core.Context</value>
-			</set>
+	<bean id="resteasy.abstract.context.bean"
+		class="org.jboss.resteasy.plugins.spring.ResteasyContextFactoryBean" p:order="0">
+		<property name="objectTypes">
+			<list>
+				<value>javax.ws.rs.core.UriInfo</value>
+				<value>javax.ws.rs.core.HttpHeaders</value>
+				<value>javax.ws.rs.core.Request</value>
+				<value>javax.ws.rs.ext.MessageBodyWorkers</value>
+				<value>javax.ws.rs.ext.Providers</value>
+				<value>org.jboss.resteasy.spi.HttpRequest</value>
+			</list>
 		</property>
 	</bean>
 
-	<bean id="resteasy.abstract.context.bean"
-		class="org.jboss.resteasy.plugins.spring.ResteasyContextFactoryBean"
-		abstract="true" p:providerFactory-ref="jaxrs.providerFactory" />
-
-	<bean id="resteasy.uriContext" parent="resteasy.abstract.context.bean"
-		p:objectType="javax.ws.rs.core.UriInfo" />
-	<bean id="resteasy.headers" parent="resteasy.abstract.context.bean"
-		p:objectType="javax.ws.rs.core.HttpHeaders" />
-	<bean id="resteasy.request" parent="resteasy.abstract.context.bean"
-		p:objectType="javax.ws.rs.core.Request" />
-	<bean id="resteasy.messageBodyWorkers" parent="resteasy.abstract.context.bean"
-		p:objectType="javax.ws.rs.ext.MessageBodyWorkers" />
-	<bean id="resteasy.httprequest" parent="resteasy.abstract.context.bean"
-		p:objectType="org.jboss.resteasy.spi.HttpRequest" />
-	<bean id="resteasy.providers" parent="resteasy.abstract.context.bean"
-		p:objectType="javax.ws.rs.ext.Providers" />
-
-	<bean id="contextAnnotationProcessor" p:factory-ref="jaxrs.providerFactory" 
-		class="org.jboss.resteasy.plugins.spring.ContextAnnotationBeanPostProcessor" />
-		 
+	<bean id="contextAnnotationProcessor" p:autowiredAnnotationType="javax.ws.rs.core.Context" p:order="1"
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 
 	<bean id="resteasy.resource.registration" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
-		p:registry-ref="resteasy.registry" abstract="true" />
+		p:registry-ref="resteasy.registry" abstract="true" depends-on="resteasy.intializer" />
 </beans>

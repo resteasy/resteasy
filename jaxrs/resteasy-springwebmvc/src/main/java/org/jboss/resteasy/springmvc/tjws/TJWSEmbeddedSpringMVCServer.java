@@ -4,7 +4,6 @@ import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.jboss.resteasy.core.DefaultInterceptors;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -26,6 +25,11 @@ public class TJWSEmbeddedSpringMVCServer extends TJWSServletServer {
 	}
 
 	public TJWSEmbeddedSpringMVCServer() {
+	}
+
+	public TJWSEmbeddedSpringMVCServer(String applicationContext, int port) {
+		setSpringConfigLocation(applicationContext);
+		setPort(port);
 	}
 
 	public void setDefaultResourceMethodInterceptors(Class[] interceptorClasses) {

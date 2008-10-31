@@ -53,11 +53,7 @@ public class SpringBeanProcessorExt implements BeanFactoryPostProcessor {
 					String name) throws BeansException {
 				if (GetRestful.isRootResource(bean.getClass())) {
 					if (!ignoreBeansList.contains(name)) {
-						ResteasyRegistration registration = new ResteasyRegistration();
-						registration.setBeanFactory(beanFactory);
-						registration.setBeanName(name);
-						registration.setRegistry(registry);
-						registry.addResourceFactory(registration);
+						registry.addResourceFactory(new ResteasyRegistration(registry, "", name, beanFactory));
 					}
 				} else if (bean.getClass().isAnnotationPresent(Provider.class)) {
 					factory.registerProviderInstance(bean);

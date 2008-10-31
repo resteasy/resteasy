@@ -1,4 +1,4 @@
-package org.jboss.resteasy.springmvc.resources;
+package org.jboss.resteasy.springmvc.test.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

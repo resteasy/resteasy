@@ -87,7 +87,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>RestContact</finalName>
+		<finalName>RestEasy Spring MVC</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
