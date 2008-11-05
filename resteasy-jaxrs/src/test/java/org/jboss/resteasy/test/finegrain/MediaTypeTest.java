@@ -164,4 +164,41 @@ public class MediaTypeTest
 
 
    }
+
+   @Test
+   public void testComposite()
+   {
+      MediaType[] array = {
+              MediaType.valueOf("application/rss+*"),
+              MediaType.valueOf("text/*"),
+              MediaType.valueOf("application/*+json"),
+              MediaType.valueOf("text/html"),
+              MediaType.valueOf("application/*+xml"),
+              MediaType.valueOf("application/xml"),
+              MediaType.valueOf("application/atom+*"),
+              MediaType.valueOf("*/*")
+      };
+      List<MediaType> list = new ArrayList<MediaType>();
+      for (MediaType type : array)
+      {
+         System.out.println("isComposite: " + type.getSubtype() + " " + MediaTypeHelper.isComposite(type.getSubtype()));
+         list.add(type);
+      }
+
+      MediaTypeHelper.sortByWeight(list);
+
+      for (MediaType type : list) System.out.println(type);
+
+
+      Assert.assertTrue(array[3] == list.get(0) || array[5] == list.get(0));
+      Assert.assertTrue(array[3] == list.get(1) || array[5] == list.get(1));
+      Assert.assertTrue(array[0] == list.get(2) || array[6] == list.get(2));
+      Assert.assertTrue(array[0] == list.get(3) || array[6] == list.get(3));
+      Assert.assertTrue(array[2] == list.get(4) || array[4] == list.get(4));
+      Assert.assertTrue(array[2] == list.get(5) || array[4] == list.get(5));
+      Assert.assertTrue(array[1] == list.get(6));
+      Assert.assertTrue(array[7] == list.get(7));
+
+
+   }
 }

@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.providers.jaxb.json;
 import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamReader;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
-import org.jboss.resteasy.plugins.providers.jaxb.UnmarshallerSpi;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -35,7 +34,7 @@ import java.net.URL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class BadgerUnmarshaller implements Unmarshaller, UnmarshallerSpi
+public class BadgerUnmarshaller implements Unmarshaller
 {
    private Unmarshaller unmarshaller;
 

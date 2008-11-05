@@ -2,10 +2,14 @@ package org.jboss.resteasy.plugins.providers.jaxb.json;
 
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
-import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBContextFinder;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.util.FindAnnotation;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.lang.annotation.Annotation;
@@ -15,19 +19,28 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JettisonJAXBContextFactory
+@Provider
+@Produces("application/*+json")
+public class JsonJAXBContextFinder extends AbstractJAXBContextFinder implements ContextResolver<JAXBContextFinder>
 {
    private ConcurrentHashMap<Class<?>, JAXBContext> mappedCache = new ConcurrentHashMap<Class<?>, JAXBContext>();
    private ConcurrentHashMap<Class<?>, JAXBContext> badgerCache = new ConcurrentHashMap<Class<?>, JAXBContext>();
-   private AbstractJAXBProvider provider;
 
-   public JettisonJAXBContextFactory(AbstractJAXBProvider provider)
+   protected JAXBContext createContextObject(Annotation[] annotations, Class... classes) throws JAXBException
    {
-      this.provider = provider;
+      Mapped mapped = FindAnnotation.findAnnotation(annotations, Mapped.class);
+      BadgerFish badger = FindAnnotation.findAnnotation(annotations, BadgerFish.class);
+      if (badger != null)
+      {
+         return new BadgerContext(classes);
+      }
+      else
+      {
+         return new JettisonMappedContext(classes);
+      }
    }
 
-   public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType)
-           throws JAXBException
+   public JAXBContext findCachedContext(Class type, MediaType mediaType, Annotation[] annotations) throws JAXBException
    {
       Mapped mapped = FindAnnotation.findAnnotation(type, annotations, Mapped.class);
       BadgerFish badger = FindAnnotation.findAnnotation(type, annotations, BadgerFish.class);
@@ -42,6 +55,7 @@ public class JettisonJAXBContextFactory
       }
    }
 
+
    protected JAXBContext find(Class<?> type, MediaType mediaType, ConcurrentHashMap<Class<?>, JAXBContext> cache, Mapped mapped, BadgerFish badger)
            throws JAXBException
    {
@@ -51,7 +65,7 @@ public class JettisonJAXBContextFactory
       {
          return jaxb;
       }
-      jaxb = provider.findProvidedJAXBContext(type, mediaType);
+      jaxb = findProvidedJAXBContext(type, mediaType);
       if (jaxb == null)
       {
          if (badger != null)

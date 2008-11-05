@@ -6,9 +6,8 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.TypeConverter;
 
 import javax.ws.rs.WebApplicationException;
@@ -28,7 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A AbstractJAXBProvider.
@@ -39,46 +37,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 {
-
-   private ConcurrentHashMap<Class<?>, JAXBContext> cache = new ConcurrentHashMap<Class<?>, JAXBContext>();
-
    @Context
    protected Providers providers;
-
-   public JAXBContext findProvidedJAXBContext(Class<?> type, MediaType mediaType)
-           throws JAXBException
-   {
-      JAXBContext jaxb = null;
-      ContextResolver<JAXBContext> resolver = providers.getContextResolver(JAXBContext.class, mediaType);
-      if (resolver != null)
-      {
-         jaxb = resolver.getContext(type);
-         if (jaxb != null) return jaxb;
-      }
-      return jaxb;
-   }
-
-   protected JAXBContext createDefaultJAXBContext(Class<?> type, Annotation[] annotations) throws JAXBException
-   {
-      JAXBConfig config = FindAnnotation.findAnnotation(type, annotations, JAXBConfig.class);
-      return new JAXBContextWrapper(config, type);
-   }
 
    public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType)
            throws JAXBException
    {
-
-      JAXBContext jaxb = cache.get(type);
-      if (jaxb != null) return jaxb;
-      jaxb = findProvidedJAXBContext(type, mediaType);
-      if (jaxb != null)
-      {
-         cache.putIfAbsent(type, jaxb);
-         return jaxb;
-      }
-      jaxb = createDefaultJAXBContext(type, annotations);
-      if (jaxb != null) cache.putIfAbsent(type, jaxb);
-      return jaxb;
+      ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, mediaType);
+      if (resolver == null) throw new LoggableFailure("Could not find JAXBContextFinder for media type: " + mediaType);
+      JAXBContextFinder finder = resolver.getContext(type);
+      return finder.findCachedContext(type, mediaType, annotations);
    }
 
    /**

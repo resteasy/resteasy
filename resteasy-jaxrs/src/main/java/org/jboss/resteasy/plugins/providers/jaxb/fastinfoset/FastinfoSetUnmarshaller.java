@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
 import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
-import org.jboss.resteasy.plugins.providers.jaxb.UnmarshallerSpi;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -32,7 +31,7 @@ import java.net.URL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class FastinfoSetUnmarshaller implements Unmarshaller, UnmarshallerSpi
+public class FastinfoSetUnmarshaller implements Unmarshaller
 {
    private Unmarshaller unmarshaller;
 

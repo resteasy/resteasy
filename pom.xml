@@ -221,10 +221,6 @@
          <layout>legacy</layout>
       </repository>
       <repository>
-         <id>scannotation</id>
-         <url>http://scannotation.sf.net/maven2</url>
-      </repository>
-      <repository>
          <id>codehaus</id>
          <url>http://repository.codehaus.org</url>
       </repository>

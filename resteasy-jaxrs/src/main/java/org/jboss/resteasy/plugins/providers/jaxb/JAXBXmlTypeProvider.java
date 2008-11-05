@@ -3,7 +3,7 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
+import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.core.ExceptionAdapter;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -56,10 +56,8 @@ import java.lang.reflect.Type;
  * @version $Revision:$
  */
 @Provider
-@Produces(
-        {"text/*+xml", "application/*+xml"})
-@Consumes(
-        {"text/*+xml", "application/*+xml"})
+@Produces("*/*")
+@Consumes("*/*")
 public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 {
 
@@ -107,22 +105,6 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       }
    }
 
-   @Override
-   protected JAXBContext createDefaultJAXBContext(Class<?> type, Annotation[] annotations) throws JAXBException
-   {
-      JAXBConfig config = FindAnnotation.findAnnotation(type, annotations, JAXBConfig.class);
-      Class objectFactory = null;
-      try
-      {
-         objectFactory = findDefaultObjectFactoryClass(type);
-      }
-      catch (ClassNotFoundException e)
-      {
-      }
-      if (objectFactory != null) return new JAXBContextWrapper(config, type, objectFactory);
-      else return new JAXBContextWrapper(config, type);
-   }
-
    /**
     *
     */
@@ -132,7 +114,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
                                     Annotation[] annotations,
                                     MediaType mediaType)
    {
-      return (!type.isAnnotationPresent(XmlRootElement.class) && type.isAnnotationPresent(XmlType.class));
+      return (!type.isAnnotationPresent(XmlRootElement.class) && type.isAnnotationPresent(XmlType.class)) && FindAnnotation.findAnnotation(type, annotations, DoNotUseJAXBProvider.class) == null;
    }
 
    /**
@@ -148,8 +130,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    {
       try
       {
-         Class<?> factoryClass = findDefaultObjectFactoryClass(type);
-         if (factoryClass.isAnnotationPresent(XmlRegistry.class))
+         Class<?> factoryClass = AbstractJAXBContextFinder.findDefaultObjectFactoryClass(type);
+         if (factoryClass != null && factoryClass.isAnnotationPresent(XmlRegistry.class))
          {
             Object factory = factoryClass.newInstance();
             return factory;
@@ -158,10 +140,6 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          {
             throw new LoggableFailure("A valid XmlRegistry could not be located.");
          }
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw new ExceptionAdapter(e);
       }
       catch (InstantiationException e)
       {
@@ -172,18 +150,6 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          throw new ExceptionAdapter(e);
       }
 
-   }
-
-   private Class<?> findDefaultObjectFactoryClass(Class<?> type)
-           throws ClassNotFoundException
-   {
-      XmlType typeAnnotation = type.getAnnotation(XmlType.class);
-      if (!typeAnnotation.factoryClass().equals(XmlType.DEFAULT.class)) return null;
-      StringBuilder b = new StringBuilder(type.getPackage().getName());
-      b.append(OBJECT_FACTORY_NAME);
-      Class<?> factoryClass = Thread.currentThread().getContextClassLoader().loadClass(b.toString());
-      if (factoryClass.isAnnotationPresent(XmlRegistry.class)) return factoryClass;
-      return null;
    }
 
    /**
