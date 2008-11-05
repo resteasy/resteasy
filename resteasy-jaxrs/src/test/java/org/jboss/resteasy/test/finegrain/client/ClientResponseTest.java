@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Arrays;
 
 /**
  * Simple smoke test
@@ -68,6 +69,10 @@ public class ClientResponseTest
       @GET
       @Path("header")
       ClientResponse<Void> getHeader();
+
+      @GET
+      @Path("basic")
+      ClientResponse<byte[]> getBasicBytes();
    }
 
 
@@ -95,6 +100,8 @@ public class ClientResponseTest
       Assert.assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
       Assert.assertEquals(Response.Status.OK, client.putBasicReturnCode("hello world"));
       Assert.assertEquals("headervalue", client.getHeader().getHeaders().getFirst("header"));
+      final byte[] entity = client.getBasicBytes().getEntity();
+      Assert.assertTrue(Arrays.equals("basic".getBytes(), entity));
    }
 
    @Test
