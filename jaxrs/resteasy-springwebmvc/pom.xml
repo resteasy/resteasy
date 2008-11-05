@@ -9,10 +9,10 @@
 		<version>1.0-beta-9</version> </parent>
 	-->
 	<groupId>org.jboss.resteasy</groupId>
-	<artifactId>resteasy-springwebmvc</artifactId>
+	<artifactId>resteasy-spring</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-beta-9</version>
-	<name>Resteasy SpringMVC integration</name>
+	<name>Resteasy Spring integration</name>
 	<url>http://maven.apache.org</url>
 
 	<repositories>
