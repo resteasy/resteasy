@@ -3,6 +3,9 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
+import org.jboss.resteasy.util.FindAnnotation;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -18,10 +21,8 @@ import java.lang.reflect.Type;
  * @version $Revision:$
  */
 @Provider
-@Produces(
-        {"text/*+xml", "application/*+xml"})
-@Consumes(
-        {"text/*+xml", "application/*+xml"})
+@Produces("*/*")
+@Consumes("*/*")
 public class JAXBXmlRootElementProvider extends AbstractJAXBProvider<Object>
 {
 
@@ -31,7 +32,7 @@ public class JAXBXmlRootElementProvider extends AbstractJAXBProvider<Object>
                                     Annotation[] annotations,
                                     MediaType mediaType)
    {
-      return type.isAnnotationPresent(XmlRootElement.class);
+      return type.isAnnotationPresent(XmlRootElement.class) && FindAnnotation.findAnnotation(type, annotations, DoNotUseJAXBProvider.class) == null;
    }
 
 }

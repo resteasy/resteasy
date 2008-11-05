@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.LoggerCategories;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader;
 import org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter;
 import org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader;
@@ -59,6 +60,7 @@ public class RegisterBuiltin
       JAXBXmlTypeProvider xmlType = new JAXBXmlTypeProvider();
       factory.addMessageBodyReader(xmlType);
       factory.addMessageBodyWriter(xmlType);
+      factory.addContextResolver(XmlJAXBContextFinder.class);
       logger.info("Added {}", xmlType.getClass().getSimpleName());
 
       StringTextStar stringTextStar = new StringTextStar();
@@ -92,15 +94,13 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(MultipartFormAnnotationWriter.class);
 
       // optional providers.
+      optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", "org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", factory);
+      optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider", "org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider", factory);
       optionalProvider("javax.imageio.IIOImage", "org.jboss.resteasy.plugins.providers.IIOImageProvider", factory);
-      optionalProvider("org.codehaus.jettison.json.JSONObject", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBElementProvider", factory);
-      optionalProvider("org.codehaus.jettison.json.JSONObject", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonXmlTypeProvider", factory);
-      optionalProvider("org.codehaus.jettison.json.JSONObject", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonXmlRootElementProvider", factory);
+      optionalContextResolver("org.codehaus.jettison.json.JSONObject", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder", factory);
+      optionalContextResolver("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", factory);
       optionalProvider("javax.mail.internet.MimeMultipart", "org.jboss.resteasy.plugins.providers.MimeMultipartProvider", factory);
       optionalProvider("org.ho.yaml.Yaml", "org.jboss.resteasy.plugins.providers.YamlProvider", factory);
-      optionalProvider("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetXmlRootElementProvider", factory);
-      optionalProvider("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBElementProvider", factory);
-      optionalProvider("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetXmlTypeProvider", factory);
    }
 
    private static void optionalProvider(String dependency, String providerClass, ResteasyProviderFactory factory)
@@ -111,6 +111,16 @@ public class RegisterBuiltin
          Object provider = instantiate(providerClass);
          factory.addMessageBodyReader((MessageBodyReader<?>) provider);
          factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
+      }
+
+   }
+
+   private static void optionalContextResolver(String dependency, String providerClass, ResteasyProviderFactory factory)
+   {
+      if (isAvailable(dependency))
+      {
+         logger.info("Adding " + providerClass);
+         factory.registerProviderInstance(instantiate(providerClass));
       }
 
    }

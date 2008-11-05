@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
 import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
-import org.jboss.resteasy.plugins.providers.jaxb.MarshallerSpi;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
@@ -27,7 +26,7 @@ import java.io.Writer;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class FastinfoSetMarshaller implements Marshaller, MarshallerSpi
+public class FastinfoSetMarshaller implements Marshaller
 {
    private JAXBContext context;
    private Marshaller marshaller;

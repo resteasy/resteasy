@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
 import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamWriter;
-import org.jboss.resteasy.plugins.providers.jaxb.MarshallerSpi;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
@@ -27,7 +26,7 @@ import java.io.Writer;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class BadgerMarshaller implements Marshaller, MarshallerSpi
+public class BadgerMarshaller implements Marshaller
 {
    private JAXBContext context;
    private Marshaller marshaller;

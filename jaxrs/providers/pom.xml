@@ -14,5 +14,6 @@
 
    <modules>
       <module>abdera-atom</module>
+      <module>resteasy-atom</module>
    </modules>
 </project>
