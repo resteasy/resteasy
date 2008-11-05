@@ -3,6 +3,7 @@ package org.jboss.resteasy.util;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.Array;
 
 /**
  * Type conversions and generic type manipulations
@@ -28,8 +29,9 @@ public class Types
       }
       else if (type instanceof GenericArrayType)
       {
-         // can't figure out how to get a typed array here :(
-         return Object[].class;
+         final GenericArrayType genericArrayType = (GenericArrayType) type;
+         final Class<?> componentRawType = getRawType(genericArrayType.getGenericComponentType());
+         return Array.newInstance(componentRawType, 0).getClass();
       }
       throw new RuntimeException("Unable to determine base class from Type");
    }
