@@ -64,6 +64,10 @@ public class ClientResponseTest
       @Path("uriParam/{param}")
       @Produces("text/plain")
       ClientResponse<Integer> getUriParam(@PathParam("param")int param);
+
+      @GET
+      @Path("header")
+      ClientResponse<Void> getHeader();
    }
 
 
@@ -90,6 +94,7 @@ public class ClientResponseTest
       Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
       Assert.assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
       Assert.assertEquals(Response.Status.OK, client.putBasicReturnCode("hello world"));
+      Assert.assertEquals("headervalue", client.getHeader().getHeaders().getFirst("header"));
    }
 
    @Test
