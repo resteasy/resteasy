@@ -222,7 +222,9 @@ abstract public class ClientInvoker
                   returnType = Types.getRawType(genericReturnType);
 
                }
-               if (returnType == null) return createGenericClientResponse(baseMethod, status);
+               if (returnType == null || returnType.equals(Void.class)) {
+                  return createGenericClientResponse(baseMethod, status);
+               }
                checkFailureStatus(baseMethod, status);
                return extractClientResponse(baseMethod, status, genericReturnType, returnType);
             }
