@@ -29,6 +29,7 @@
          <plugin>
             <groupId>org.jvnet.jaxb2.maven2</groupId>
             <artifactId>maven-jaxb2-plugin</artifactId>
+            <version>0.4</version>
             <dependencies>
                <!-- javax.activation.DataSource provider is required by spec -->
                <dependency>
