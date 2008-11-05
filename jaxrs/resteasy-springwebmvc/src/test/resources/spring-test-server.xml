@@ -25,6 +25,7 @@
 		class="org.jboss.resteasy.springmvc.test.resources.CounterResource" />
 	<bean id="requestScopedResource" scope="prototype"
 		class="org.jboss.resteasy.springmvc.test.resources.CounterResource" />
+
 	<bean id="singletonReg" parent="resteasy.resource.registration" p:context="/basic/singleton/">
 		<property name="beanName">
 			<idref local="singletonScopedResource" />

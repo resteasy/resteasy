@@ -14,6 +14,8 @@
 		factories/dispatchers/registries for different scenarios.
 	</description>
 
+	<!-- ========== Resteasy setup ================ -->
+
 	<bean id="jaxrs.providerFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory"
 		factory-method="initializeInstance">
 		<description>
@@ -31,17 +33,10 @@
 		<constructor-arg ref="jaxrs.providerFactory" />
 	</bean>
 
-	<bean id="jaxrs.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter"
-		depends-on="resteasy.intializer" name="resteasy.dispatcher">
-		<description>
-			This HandlerAdapter knows how to forward requests to
-			Resteasy for the handling of the service functionality, but not the
-			rendering, which is handled by a ResteasyView. Note, this also acts
-			as the "dispatcher", which is a bit whacky.
-        </description>
-
+	<bean id="resteasy.dispatcher" class="org.jboss.resteasy.core.SynchronousDispatcher" depends-on="resteasy.intializer">
 		<constructor-arg ref="jaxrs.providerFactory" />
 	</bean>
+
 
 	<bean id="resteasy.registry" factory-bean="resteasy.dispatcher"
 		factory-method="getRegistry">
@@ -49,15 +44,6 @@
 			Expose the dispatcher's registry as a full-blown Spring
 			bean, so that it can be passed in as a reference.
         </description>
-	</bean>
-
-	<bean class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping"
-		id="jaxrs.handlerMapping">
-		<description>
-			Tap into the RestEasy registry to find out if any of it's
-			Resources handle a specific URL
-        </description>
-		<constructor-arg ref="resteasy.registry" />
 	</bean>
 
 	<bean class="org.jboss.resteasy.plugins.spring.SpringBeanProcessorExt"
@@ -85,6 +71,29 @@
 	<bean id="contextAnnotationProcessor" p:autowiredAnnotationType="javax.ws.rs.core.Context" p:order="1"
 		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 
+	<!-- ========== Resteasy Spring MVC setup ================ -->
+
+	<bean class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping"
+		id="jaxrs.handlerMapping">
+		<description>
+			Tap into the RestEasy registry to find out if any of it's
+			Resources handle a specific URL
+        </description>
+		<constructor-arg ref="resteasy.registry" />
+	</bean>
+
+	<bean id="jaxrs.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter">
+		<description>
+			This HandlerAdapter knows how to forward requests to
+			Resteasy for the handling of the service functionality, but not the
+			rendering, which is handled by a ResteasyView. Note, this also acts
+			as the "dispatcher", which is a bit whacky.
+        </description>
+
+		<constructor-arg ref="resteasy.dispatcher" />
+	</bean>
+
 	<bean id="resteasy.resource.registration" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
 		p:registry-ref="resteasy.registry" abstract="true" depends-on="resteasy.intializer" />
+
 </beans>

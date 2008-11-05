@@ -72,5 +72,4 @@ public class BasicResourceImpl {
 	public String getURL() {
 		return basicDao.getPath();
 	}
-
 }

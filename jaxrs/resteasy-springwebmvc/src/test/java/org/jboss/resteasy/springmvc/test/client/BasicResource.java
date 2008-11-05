@@ -23,7 +23,7 @@ public interface BasicResource {
 	@GET
 	@Produces("application/custom")
 	@Path("/custom-rep")
-	public String getCustomRepresentation();
+	public String getSpringMvcValue();
 
 	/** test singleton with custom registration -- implemented in CounterResource, with bean named singletonScopedResource **/
 	@GET
