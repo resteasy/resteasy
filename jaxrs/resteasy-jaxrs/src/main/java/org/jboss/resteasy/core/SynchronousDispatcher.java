@@ -1,8 +1,17 @@
 package org.jboss.resteasy.core;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.specimpl.RequestImpl;
-import org.jboss.resteasy.specimpl.ResponseImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -17,42 +26,28 @@ import org.jboss.resteasy.util.LocaleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class SynchronousDispatcher implements Dispatcher
 {
    protected ResteasyProviderFactory providerFactory;
    protected ResourceMethodRegistry registry;
    protected Map<String, MediaType> mediaTypeMappings;
    protected Map<String, String> languageMappings;
+   
+   // this should be overridable
+   protected DispatcherUtilities dispatcherUtilities;
+
    private final static Logger logger = LoggerFactory.getLogger(SynchronousDispatcher.class);
 
    public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
+      dispatcherUtilities = new DispatcherUtilities(providerFactory);
    }
 
    public ResteasyProviderFactory getProviderFactory()
@@ -349,7 +344,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
-         pushContextObjects(request, response);
+         getDispatcherUtilities().pushContextObjects(request, response);
          Response jaxrsResponse = null;
          try
          {
@@ -390,7 +385,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
-         pushContextObjects(request, response);
+         getDispatcherUtilities().pushContextObjects(request, response);
          try
          {
             if (jaxrsResponse != null) writeJaxrsResponse(response, jaxrsResponse);
@@ -406,107 +401,43 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   public void pushContextObjects(HttpRequest request, HttpResponse response)
-   {
-      ResteasyProviderFactory.pushContext(HttpRequest.class, request);
-      ResteasyProviderFactory.pushContext(HttpResponse.class, response);
-      ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
-      ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
-      ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
-      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
-   }
-
    public void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
            throws IOException, WebApplicationException
    {
-      writeCookies(response, jaxrsResponse);
+      this.dispatcherUtilities.writeCookies(response, jaxrsResponse);
+      ResponseInvoker responseInvoker = new ResponseInvoker(dispatcherUtilities, jaxrsResponse);
 
       if (jaxrsResponse.getEntity() == null)
       {
          response.setStatus(jaxrsResponse.getStatus());
-         outputHeaders(response, jaxrsResponse);
+         this.dispatcherUtilities.outputHeaders(response, jaxrsResponse);
       }
       if (jaxrsResponse.getEntity() != null)
       {
-         MediaType responseContentType = resolveContentType(jaxrsResponse);
-         Object entity = jaxrsResponse.getEntity();
-         Class type = jaxrsResponse.getEntity().getClass();
-         Type genericType = null;
-         Annotation[] annotations = null;
-         if (entity instanceof GenericEntity)
+         if (responseInvoker.getWriter() == null)
          {
-            GenericEntity ge = (GenericEntity) entity;
-            genericType = ge.getType();
-            entity = ge.getEntity();
-            type = entity.getClass();
+            throw new LoggableFailure(String.format(
+						"Could not find MessageBodyWriter for response object of type: %s of media type: %s",
+								responseInvoker.getType().getName(),
+								responseInvoker.getContentType()),
+						HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
          }
-         if (jaxrsResponse instanceof ResponseImpl)
-         {
-            // if we haven't set it in GenericEntity processing...
-            if (genericType == null) genericType = ((ResponseImpl) jaxrsResponse).getGenericType();
 
-            annotations = ((ResponseImpl) jaxrsResponse).getAnnotations();
-         }
-         MessageBodyWriter writer = providerFactory.getMessageBodyWriter(type, genericType, annotations, responseContentType);
-         if (writer == null)
-         {
-            throw new LoggableFailure("Could not find MessageBodyWriter for response object of type: " + type.getName() + " of media type: " + responseContentType, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
-         }
-         //System.out.println("MessageBodyWriter class is: " + writer.getClass().getName());
-         //System.out.println("Response content type: " + responseContentType);
-         long size = writer.getSize(entity, type, genericType, annotations, responseContentType);
-         //System.out.println("Writer: " + writer.getClass().getName());
-         //System.out.println("JAX-RS Content Size: " + size);
          response.setStatus(jaxrsResponse.getStatus());
-         outputHeaders(response, jaxrsResponse);
-         response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));
-         writer.writeTo(entity, type, genericType, annotations, responseContentType, response.getOutputHeaders(), response.getOutputStream());
+         this.dispatcherUtilities.outputHeaders(response, jaxrsResponse);
+         long size = responseInvoker.getResponseSize();
+         response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
+         responseInvoker.writeTo(response);
       }
    }
 
-   public void writeCookies(HttpResponse response, Response jaxrsResponse) {
-      if (jaxrsResponse.getMetadata() != null)
-      {
-         List cookies = jaxrsResponse.getMetadata().get(HttpHeaderNames.SET_COOKIE);
-         if (cookies != null)
-         {
-            Iterator it = cookies.iterator();
-            while (it.hasNext())
-            {
-               Object next = it.next();
-               if (next instanceof NewCookie)
-               {
-                  NewCookie cookie = (NewCookie) next;
-                  response.addNewCookie(cookie);
-                  it.remove();
-               }
-            }
-            if (cookies.size() < 1) jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
-         }
-      }
-   }
-
-   public static MediaType resolveContentType(Response jaxrsResponse)
+   public DispatcherUtilities getDispatcherUtilities() 
    {
-      MediaType responseContentType = null;
-      Object type = jaxrsResponse.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
-      if (type == null) return MediaType.valueOf("*/*");
-      if (type instanceof MediaType)
-      {
-         responseContentType = (MediaType) type;
-      }
-      else
-      {
-         responseContentType = MediaType.valueOf(type.toString());
-      }
-      return responseContentType;
+	  return dispatcherUtilities;
    }
 
-   protected void outputHeaders(HttpResponse response, Response jaxrsResponse)
+   public void setDispatcherUtilities(DispatcherUtilities dispatcherUtilities) 
    {
-      if (jaxrsResponse.getMetadata() != null && jaxrsResponse.getMetadata().size() > 0)
-      {
-         response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
-      }
+	  this.dispatcherUtilities = dispatcherUtilities;
    }
 }
