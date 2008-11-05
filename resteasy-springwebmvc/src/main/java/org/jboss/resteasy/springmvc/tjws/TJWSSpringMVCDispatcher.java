@@ -8,7 +8,10 @@ import org.jboss.resteasy.plugins.server.tjws.TJWSRequestPreProcessor;
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class TJWSSpringMVCDispatcher extends DispatcherServlet {
-    private TJWSRequestPreProcessor requestPreProcessor;
+
+   private static final long serialVersionUID = -2514290159304754308L;
+   
+   private TJWSRequestPreProcessor requestPreProcessor;
 
     public TJWSSpringMVCDispatcher()
     {

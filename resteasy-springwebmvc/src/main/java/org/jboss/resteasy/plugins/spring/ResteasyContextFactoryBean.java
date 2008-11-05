@@ -27,7 +27,6 @@ public class ResteasyContextFactoryBean implements BeanFactoryPostProcessor,
 		this.objectTypes = objectTypes;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		for (final Class<?> clazz : objectTypes) {
