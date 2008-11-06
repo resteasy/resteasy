@@ -93,23 +93,25 @@ public class MethodInjectorImpl implements MethodInjector
       catch (IllegalArgumentException e)
       {
          String msg = "Bad arguments passed to " + method.toString() + "  (";
+         if( args != null ){
          boolean first = false;
-         for (Object arg : args)
-         {
-            if (!first)
+            for (Object arg : args)
             {
-               first = true;
+               if (!first)
+               {
+                  first = true;
+               }
+               else
+               {
+                  msg += ",";
+               }
+               if (arg == null)
+               {
+                  msg += " null";
+                  continue;
+               }
+               msg += " " + arg.getClass().getName() + " " + arg;
             }
-            else
-            {
-               msg += ",";
-            }
-            if (arg == null)
-            {
-               msg += " null";
-               continue;
-            }
-            msg += " " + arg.getClass().getName() + " " + arg;
          }
          msg += " )";
          throw new LoggableFailure(msg, e, HttpResponseCodes.SC_BAD_REQUEST);
