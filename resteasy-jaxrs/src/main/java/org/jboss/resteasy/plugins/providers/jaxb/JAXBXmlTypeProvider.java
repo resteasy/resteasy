@@ -126,7 +126,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * @param type
     * @return
     */
-   private Object findObjectFactory(Class<?> type)
+   public static Object findObjectFactory(Class<?> type)
    {
       try
       {
@@ -160,7 +160,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * @param type
     * @return
     */
-   protected JAXBElement<?> wrapInJAXBElement(Object t, Class<?> type)
+   public static JAXBElement<?> wrapInJAXBElement(Object t, Class<?> type)
    {
       try
       {
