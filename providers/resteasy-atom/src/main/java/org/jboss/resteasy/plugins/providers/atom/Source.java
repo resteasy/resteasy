@@ -84,6 +84,12 @@ public class Source extends CommonAttributes
       this.updated = updated;
    }
 
+   public Link getLinkByRel(String name)
+   {
+      for (Link link : links) if (link.getRel().equals(name)) return link;
+      return null;
+   }
+
    public List<Link> getLinks()
    {
       return links;
@@ -102,5 +108,45 @@ public class Source extends CommonAttributes
    public void setGenerator(Generator generator)
    {
       this.generator = generator;
+   }
+
+   public URI getIcon()
+   {
+      return icon;
+   }
+
+   public void setIcon(URI icon)
+   {
+      this.icon = icon;
+   }
+
+   public URI getLogo()
+   {
+      return logo;
+   }
+
+   public void setLogo(URI logo)
+   {
+      this.logo = logo;
+   }
+
+   public String getRights()
+   {
+      return rights;
+   }
+
+   public void setRights(String rights)
+   {
+      this.rights = rights;
+   }
+
+   public String getSubtitle()
+   {
+      return subtitle;
+   }
+
+   public void setSubtitle(String subtitle)
+   {
+      this.subtitle = subtitle;
    }
 }

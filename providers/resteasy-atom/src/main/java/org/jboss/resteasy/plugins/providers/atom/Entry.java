@@ -157,6 +157,12 @@ public class Entry extends CommonAttributes
       this.updated = updated;
    }
 
+   public Link getLinkByRel(String name)
+   {
+      for (Link link : links) if (link.getRel().equals(name)) return link;
+      return null;
+   }
+
    public List<Link> getLinks()
    {
       return links;

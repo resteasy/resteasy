@@ -83,6 +83,8 @@ public class ModelTest
       marshaller.marshal(content, writer);
       marshaller.marshal(content, System.out);
 
+      System.out.println("**********");
+      System.out.println(writer.toString());
       content = (Content) ctx.createUnmarshaller().unmarshal(new StringReader(writer.toString()));
 
       //JAXBElement<Customer> cust = ctx.createUnmarshaller().unmarshal(node, Customer.class);
