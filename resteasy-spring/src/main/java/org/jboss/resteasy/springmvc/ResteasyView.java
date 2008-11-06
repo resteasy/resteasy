@@ -22,6 +22,12 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.View;
 
+/**
+* 
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+*/
+
 public class ResteasyView implements View
 {
 

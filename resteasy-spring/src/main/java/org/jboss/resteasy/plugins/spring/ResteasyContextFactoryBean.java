@@ -11,6 +11,12 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.Ordered;
 
+/**
+* 
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+*/
+
 public class ResteasyContextFactoryBean implements BeanFactoryPostProcessor,
 		Ordered {
 

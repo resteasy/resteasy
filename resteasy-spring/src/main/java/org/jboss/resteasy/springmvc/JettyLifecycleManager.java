@@ -6,11 +6,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+* 
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+*/
+
 public class JettyLifecycleManager implements InitializingBean, DisposableBean
 {
-   private Server servletContainer;
    private final static Logger logger = LoggerFactory
          .getLogger(JettyLifecycleManager.class);
+
+   private Server servletContainer;
 
    public Server getServletContainer()
    {

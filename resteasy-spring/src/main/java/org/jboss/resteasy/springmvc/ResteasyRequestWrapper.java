@@ -12,7 +12,11 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
 import org.jboss.resteasy.spi.HttpRequest;
 
-// TODO: remove duplication!  copied from HttpServletDispatcher
+/**
+* 
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+*/
 public class ResteasyRequestWrapper {
 
     private HttpRequest httpRequest = null;

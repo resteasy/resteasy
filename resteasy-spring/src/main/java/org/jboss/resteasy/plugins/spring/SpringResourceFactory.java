@@ -8,6 +8,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 
+/**
+* 
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+*/
+
 public class SpringResourceFactory implements ResourceFactory, BeanFactoryAware {
 
 	private BeanFactory beanFactory;

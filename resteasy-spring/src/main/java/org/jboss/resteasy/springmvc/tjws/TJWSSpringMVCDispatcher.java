@@ -7,6 +7,13 @@ import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.tjws.TJWSRequestPreProcessor;
 import org.springframework.web.servlet.DispatcherServlet;
 
+/**
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+* 
+*/
+
+
 public class TJWSSpringMVCDispatcher extends DispatcherServlet {
 
    private static final long serialVersionUID = -2514290159304754308L;
