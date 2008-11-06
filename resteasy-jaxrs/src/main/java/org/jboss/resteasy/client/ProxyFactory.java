@@ -71,6 +71,12 @@ public class ProxyFactory
 
       Class<?>[] intfs = {clazz};
 
-      return (T) Proxy.newProxyInstance(clazz.getClassLoader(), intfs, new ClientProxy(methodMap));
+      ClientProxy clientProxy = new ClientProxy(methodMap);
+      // this is done so that equals and hashCode work ok. Adding the proxy to a
+      // Collection will cause equals and hashCode to be invoked. The Spring
+      // infrastructure had some problems without this.
+      clientProxy.setClazz(clazz);
+
+      return (T) Proxy.newProxyInstance(clazz.getClassLoader(), intfs, clientProxy);
    }
 }

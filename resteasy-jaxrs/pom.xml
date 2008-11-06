@@ -110,13 +110,6 @@
          <artifactId>servlet-api</artifactId>
       </dependency>
 
-      <!-- Used for org.jboss.resteasy.plugins.server.servlet.SpringXXX -->
-      <dependency>
-         <groupId>org.springframework</groupId>
-         <artifactId>spring</artifactId>
-         <optional>true</optional>
-      </dependency>
-
       <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
       <dependency>
          <groupId>tjws</groupId>
