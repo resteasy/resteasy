@@ -9,6 +9,12 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+/**
+* 
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+*/
+
 public class RequestUtil {
 
     private static String RESPONSE_WRAPPER_KEY = RequestUtil.class.getName() + ".RESPONSE_WRAPPER";

@@ -2,8 +2,10 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="
 	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		">
 
@@ -19,6 +21,9 @@
 
 	<!--  use MyCustomView as a view - this takes the bean name and uses it to resolve the name "myCustomView" -->
 	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 
 	<!-- Register the same class twice, under two different scopes and URL "root contexts" -->
 	<bean id="singletonScopedResource" scope="singleton"
@@ -36,5 +41,10 @@
 			<idref local="requestScopedResource" />
 		</property>
 	</bean>
+	
+	<bean id="myTestInterceptor" class="org.jboss.resteasy.springmvc.test.spring.MyTestInterceptor" />
+	<util:list id="resteasy.dispatcher.interceptors" >
+		<ref local="myTestInterceptor" />
+	</util:list>
 
 </beans>

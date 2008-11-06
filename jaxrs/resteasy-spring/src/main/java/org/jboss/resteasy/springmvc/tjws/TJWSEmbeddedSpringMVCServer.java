@@ -5,9 +5,10 @@ import org.jboss.resteasy.plugins.server.tjws.TJWSServletServer;
 import org.springframework.context.ApplicationContext;
 
 /**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+* 
+*/
 public class TJWSEmbeddedSpringMVCServer extends TJWSServletServer {
 	protected TJWSSpringMVCDispatcher servlet = new TJWSSpringMVCDispatcher();
 //	Class<>[] defaultResourceMethodInterceptors = DefaultInterceptors.defaultInterceptors;

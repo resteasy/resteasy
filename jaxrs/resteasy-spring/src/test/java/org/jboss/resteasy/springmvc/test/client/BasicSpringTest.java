@@ -37,5 +37,10 @@ public class BasicSpringTest
       Assert.assertEquals(1, br.getPrototypeCount().intValue());
 
       Assert.assertEquals("text/plain", br.getContentTypeHeader());
+
+      Integer interceptorCount = br
+            .getSpringInterceptorCount("afterCompletion");
+      
+      Assert.assertEquals(Integer.valueOf(9), interceptorCount);
    }
 }

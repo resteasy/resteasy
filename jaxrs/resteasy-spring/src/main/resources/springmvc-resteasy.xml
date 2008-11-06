@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+ @version $Revision: 1 $
+ -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -80,6 +84,14 @@
 			Resources handle a specific URL
         </description>
 		<constructor-arg ref="resteasy.registry" />
+		<property name="interceptors">
+			<description>
+				Look for a list/array bean named "resteasy.dispatcher.interceptors"
+				which is composed of HandlerInterceptors to apply to this handler adapter. 
+	        </description>
+			<bean class="org.jboss.resteasy.plugins.spring.OptionalValueBeanFactory" 
+				p:beanName="resteasy.dispatcher.interceptors"/>
+		</property>
 	</bean>
 
 	<bean id="jaxrs.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter">

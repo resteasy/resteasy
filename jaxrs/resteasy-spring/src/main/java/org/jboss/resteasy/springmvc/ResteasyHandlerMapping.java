@@ -7,60 +7,98 @@ import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.spi.Failure;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
-public class ResteasyHandlerMapping implements HandlerMapping, Ordered {
+/**
+* 
+* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @version $Revision: 1 $
+*/
+public class ResteasyHandlerMapping implements HandlerMapping, Ordered
+{
 
-    private int order = -1;
-    private ResourceMethodRegistry registry;
-    private String prefix = "";
+   private int order = -1;
+   private ResourceMethodRegistry registry;
+   private String prefix = "";
+   private HandlerInterceptor[] interceptors;
 
-    public ResteasyHandlerMapping(ResourceMethodRegistry registry) {
-        super();
-        this.registry = registry;
-    }
+   public ResteasyHandlerMapping(ResourceMethodRegistry registry)
+   {
+      super();
+      this.registry = registry;
+   }
 
-    public void setRegistry(ResourceMethodRegistry registry) {
-        this.registry = registry;
-    }
+   public void setRegistry(ResourceMethodRegistry registry)
+   {
+      this.registry = registry;
+   }
 
-    public void setOrder(int order) {
-        this.order = order;
-    }
+   public void setOrder(int order)
+   {
+      this.order = order;
+   }
 
-    public String getPrefix() {
-        return prefix;
-    }
+   public String getPrefix()
+   {
+      return prefix;
+   }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
+   public HandlerInterceptor[] getInterceptors()
+   {
+      return interceptors;
+   }
 
-    public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-        try {
-            ResteasyRequestWrapper responseWrapper = RequestUtil.getRequestWrapper(request, request.getMethod(), prefix);
+   public void setInterceptors(HandlerInterceptor[] interceptors)
+   {
+      this.interceptors = interceptors;
+   }
 
-            // TODO: remove null response requirement? The "response" parameter
-            // isn't currently used in the registry
-            ResourceInvoker invoker = registry.getResourceInvoker(responseWrapper.getHttpRequest(), null);
+   public ResourceMethodRegistry getRegistry()
+   {
+      return registry;
+   }
 
-            if (invoker == null) {
-                // if we don't have a JAX-RS invoker, let Spring MVC handle the
-                // request.
-                return null;
-            }
+   public void setPrefix(String prefix)
+   {
+      this.prefix = prefix;
+   }
 
-            responseWrapper.setInvoker(invoker);
-            return new HandlerExecutionChain(responseWrapper);
-        } catch (Failure e) {
-            // TODO: proper handling?
-            // handleFailure(in, response, e);
-            // logger.info(e.getMessage());
+   public HandlerExecutionChain getHandler(HttpServletRequest request)
+         throws Exception
+   {
+      try
+      {
+         ResteasyRequestWrapper responseWrapper = RequestUtil
+               .getRequestWrapper(request, request.getMethod(), prefix);
+
+         // TODO: remove null response requirement? The "response" parameter
+         // isn't currently used in the registry
+         ResourceInvoker invoker = registry.getResourceInvoker(responseWrapper
+               .getHttpRequest(), null);
+
+         if (invoker == null)
+         {
+            // if we don't have a JAX-RS invoker, let Spring MVC handle the
+            // request.
             return null;
-        }
-    }
+         }
 
-    public int getOrder() {
-        return order;
-    }
+         responseWrapper.setInvoker(invoker);
+         return new HandlerExecutionChain(responseWrapper, interceptors);
+      }
+      catch (Failure e)
+      {
+         // TODO: proper handling?
+         // handleFailure(in, response, e);
+         // logger.info(e.getMessage());
+         return null;
+      }
+   }
+
+   public int getOrder()
+   {
+      return order;
+   }
+
 }

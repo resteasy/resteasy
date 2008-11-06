@@ -3,6 +3,7 @@ package org.jboss.resteasy.springmvc.test.client;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.jboss.resteasy.springmvc.test.jaxb.BasicJaxbObject;
 
@@ -55,4 +56,12 @@ public interface BasicResource {
 	@Path("/url")
 	public String getURL();
 
+
+    /**
+     * test Spring @Controllers along with 
+     **/
+    @GET
+    @Produces("text/plain")
+    @Path("interceptor-test")
+    public Integer getSpringInterceptorCount(@QueryParam("type") String type);
 }
