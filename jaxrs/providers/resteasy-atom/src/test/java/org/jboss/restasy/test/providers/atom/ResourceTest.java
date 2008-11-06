@@ -9,6 +9,7 @@ import org.jboss.resteasy.plugins.providers.atom.Feed;
 import org.jboss.resteasy.plugins.providers.atom.Link;
 import org.jboss.resteasy.plugins.providers.atom.Person;
 import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.providers.atom.DataCollectionRecord;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +63,22 @@ public class ResourceTest extends BaseResourceTest
          assertFeed(feed);
          return feed;
       }
+
+      @GET
+      @Path("xmltype")
+      @Produces("application/atom+xml")
+      public Entry getXmlType()
+      {
+         Entry entry = new Entry();
+         entry.setTitle("Hello World");
+         Content content = new Content();
+         DataCollectionRecord record = new DataCollectionRecord();
+         record.setCollectedData("hello world");
+         content.setJAXBObject(record);
+         entry.setContent(content);
+         return entry;
+
+      }
    }
 
    @Path("atom")
@@ -72,6 +89,12 @@ public class ResourceTest extends BaseResourceTest
       @Consumes("application/atom+xml")
       @Produces("application/atom+xml")
       public Feed postFeed(String feed);
+
+      @GET
+      @Path("xmltype")
+      @Produces("application/atom+xml")
+      public Entry getXmlType();
+
 
    }
 
@@ -205,4 +228,15 @@ public class ResourceTest extends BaseResourceTest
       Assert.assertEquals(200, status);
       System.out.println(get.getResponseBodyAsString());
    }
+
+   @Test
+   public void testXmlType() throws Exception
+   {
+      AtomServerInterface intf = ProxyFactory.create(AtomServerInterface.class, "http://localhost:8081");
+      Entry entry = intf.getXmlType();
+      DataCollectionRecord record = entry.getContent().getJAXBObject(DataCollectionRecord.class);
+      Assert.assertEquals("hello world", record.getCollectedData());
+
+   }
+
 }
