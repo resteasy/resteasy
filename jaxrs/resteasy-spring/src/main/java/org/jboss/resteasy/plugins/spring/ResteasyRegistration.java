@@ -1,10 +1,6 @@
 package org.jboss.resteasy.plugins.spring;
 
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResourceFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -12,7 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.StringUtils;
 
-public class ResteasyRegistration implements InitializingBean, ResourceFactory, BeanFactoryAware {
+public class ResteasyRegistration implements InitializingBean, BeanFactoryAware {
 
 	private Registry registry;
 
@@ -36,7 +32,6 @@ public class ResteasyRegistration implements InitializingBean, ResourceFactory, 
 		this.beanFactory = beanFactory;
 	}
 
-	@Required
 	public Registry getRegistry() {
 		return registry;
 	}
@@ -61,31 +56,6 @@ public class ResteasyRegistration implements InitializingBean, ResourceFactory, 
 			registry.addResourceFactory(resourceFactory, context);
 		else
 			registry.addResourceFactory(resourceFactory);
-	}
-
-	public Object createResource(HttpRequest request, HttpResponse response,
-			InjectorFactory factory) {
-		return beanFactory.getBean(beanName);
-	}
-
-	public Class<?> getScannableClass() {
-		return beanFactory.getType(beanName);
-	}
-
-	public void registered(InjectorFactory factory) {
-		// do nothing
-
-	}
-
-	public void requestFinished(HttpRequest request, HttpResponse response,
-			Object resource) {
-		// do nothing
-
-	}
-
-	public void unregistered() {
-		// do nothing
-
 	}
 
 	@Required
