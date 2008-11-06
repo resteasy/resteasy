@@ -9,6 +9,7 @@ public class TJWSEmbeddedSpringMVCServerBean implements InitializingBean,
 {
    private String applicationContextConfiguration;
    private int port;
+   private String context = ""; 
 
    private TJWSEmbeddedSpringMVCServer server;
 
@@ -43,10 +44,20 @@ public class TJWSEmbeddedSpringMVCServerBean implements InitializingBean,
       this.server = server;
    }
 
+   public String getContext()
+   {
+      return context;
+   }
+
+   public void setContext(String context)
+   {
+      this.context = context;
+   }
+
    public void afterPropertiesSet() throws Exception
    {
       server = new TJWSEmbeddedSpringMVCServer(
-            this.applicationContextConfiguration, this.port);
+            this.applicationContextConfiguration, this.port, context);
       server.start();
    }
 

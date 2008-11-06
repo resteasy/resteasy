@@ -22,9 +22,13 @@ public class TJWSEmbeddedSpringMVCServer extends TJWSServletServer {
 	}
 
 	public TJWSEmbeddedSpringMVCServer(String applicationContext, int port) {
-		setSpringConfigLocation(applicationContext);
-		setPort(port);
+		this(applicationContext, port, "");
 	}
+    public TJWSEmbeddedSpringMVCServer(String applicationContext, int port, String rootResourcePath) {
+       setSpringConfigLocation(applicationContext);
+       setPort(port);
+       setRootResourcePath(rootResourcePath);
+   }
 
 //	public void setDefaultResourceMethodInterceptors(Class[] interceptorClasses) {
 //		defaultResourceMethodInterceptors = interceptorClasses;

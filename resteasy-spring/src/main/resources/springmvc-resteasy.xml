@@ -46,7 +46,7 @@
         </description>
 	</bean>
 
-	<bean class="org.jboss.resteasy.plugins.spring.SpringBeanProcessorExt"
+	<bean class="org.jboss.resteasy.plugins.server.servlet.SpringBeanProcessor"
 		depends-on="resteasy.intializer">
 		<description>Add Resources and @Providers to the appropriate places
 			in Resteasy's infrastructure</description>

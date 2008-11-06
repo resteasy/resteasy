@@ -9,6 +9,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.core.DispatcherUtilities;
+import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.core.ResourceLocator;
+import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ResponseInvoker;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletResponseWrapper;
@@ -19,6 +22,7 @@ import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -70,8 +74,18 @@ public class ResteasyHandlerAdapter implements HandlerAdapter
          Response jaxrsResponse = null;
          try
          {
-            jaxrsResponse = responseWrapper.getInvoker().invoke(request,
-                  response);
+            ResourceInvoker invoker = responseWrapper.getInvoker();
+            if (invoker instanceof ResourceMethod)
+            {
+               ReflectionUtils.makeAccessible(((ResourceMethod) invoker)
+                     .getMethod());
+            }
+            else if (invoker instanceof ResourceLocator)
+            {
+               ReflectionUtils.makeAccessible(((ResourceLocator) invoker)
+                     .getMethod());
+            }
+            jaxrsResponse = invoker.invoke(request, response);
          }
          catch (Exception e)
          {
