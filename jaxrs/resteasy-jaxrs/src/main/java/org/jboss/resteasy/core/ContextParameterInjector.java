@@ -74,6 +74,7 @@ public class ContextParameterInjector implements ValueInjector
    public Object inject()
    {
       if (type.equals(MessageBodyWorkers.class)) return new MessageBodyWorkersImpl();
+      if (type.equals(Providers.class)) return factory;
 
       if (!type.isInterface()) throw new RuntimeException("Illegal to inject a non-interface type into a singleton");
 

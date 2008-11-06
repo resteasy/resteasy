@@ -45,7 +45,7 @@ public class Link extends CommonAttributes
    private MediaType type;
 
    @XmlAttribute
-   private String hreflaang;
+   private String hreflang;
 
    @XmlAttribute
    private String title;
@@ -83,14 +83,14 @@ public class Link extends CommonAttributes
       this.type = type;
    }
 
-   public String getHreflaang()
+   public String getHreflang()
    {
-      return hreflaang;
+      return hreflang;
    }
 
-   public void setHreflaang(String hreflaang)
+   public void setHreflang(String hreflang)
    {
-      this.hreflaang = hreflaang;
+      this.hreflang = hreflang;
    }
 
    public String getTitle()
