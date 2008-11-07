@@ -10,6 +10,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 
 /**
 * 
+* 
 * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
 * @version $Revision: 1 $
 */
@@ -18,6 +19,7 @@ public class SpringResourceFactory implements ResourceFactory, BeanFactoryAware 
 
 	private BeanFactory beanFactory;
 	private String beanName;
+	private Class scannableClass;
 
 	public SpringResourceFactory(String beanName) {
 		this.beanName = beanName;
@@ -29,7 +31,7 @@ public class SpringResourceFactory implements ResourceFactory, BeanFactoryAware 
 	}
 
 	public Class<?> getScannableClass() {
-		return beanFactory.getType(this.beanName);
+		return scannableClass != null ? scannableClass : beanFactory.getType(this.beanName);
 	}
 
 	public void registered(InjectorFactory factory) {
@@ -48,5 +50,10 @@ public class SpringResourceFactory implements ResourceFactory, BeanFactoryAware 
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
+
+   public void setScannableClass(Class scannableClass)
+   {
+      this.scannableClass = scannableClass;
+   }
 
 }

@@ -79,6 +79,7 @@ public class TJWSEmbeddedSpringMVCServerBean implements InitializingBean,
       return server;
    }
 
+   @SuppressWarnings("unchecked")
    public Class getObjectType()
    {
       return TJWSEmbeddedSpringMVCServer.class;
