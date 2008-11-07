@@ -12,13 +12,9 @@
 	<!-- Import basic SpringMVC Resteasy integration -->
 	<import resource="classpath:springmvc-resteasy.xml" />
 
-	<!-- imports 2 beans: MyCustomView and BasicResourceImpl -->
+	<!-- imports beans: MyCustomView, BasicResourceImpl and TestInterceptorCountController -->
 	<context:component-scan base-package="org.jboss.resteasy.springmvc.test" />
 	
-	<!--  this can be added in later for a Restful @Controller 
-	<context:annotation-config/> 
-	-->
-
 	<!--  use MyCustomView as a view - this takes the bean name and uses it to resolve the name "myCustomView" -->
 	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
 
@@ -41,7 +37,11 @@
 			<idref local="requestScopedResource" />
 		</property>
 	</bean>
-	
+
+	<!--
+		See the 'jaxrs.handlerMapping' bean in springmvc-resteasy.xml. This is
+		magically added through OptionalValueBeanFactory.
+	-->	
 	<bean id="myTestInterceptor" class="org.jboss.resteasy.springmvc.test.spring.MyTestInterceptor" />
 	<util:list id="resteasy.dispatcher.interceptors" >
 		<ref local="myTestInterceptor" />

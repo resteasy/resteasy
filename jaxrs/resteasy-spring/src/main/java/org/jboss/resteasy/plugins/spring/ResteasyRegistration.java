@@ -24,6 +24,7 @@ public class ResteasyRegistration implements InitializingBean, BeanFactoryAware 
 
 	private BeanFactory beanFactory;
 
+	private Class scannableClass;
 	
 	public ResteasyRegistration() {
 		super();
@@ -58,6 +59,7 @@ public class ResteasyRegistration implements InitializingBean, BeanFactoryAware 
 		SpringResourceFactory resourceFactory = new SpringResourceFactory(
 				beanName);
 		resourceFactory.setBeanFactory(beanFactory);
+		resourceFactory.setScannableClass(scannableClass);
 		if (StringUtils.hasText(context))
 			registry.addResourceFactory(resourceFactory, context);
 		else
@@ -76,4 +78,16 @@ public class ResteasyRegistration implements InitializingBean, BeanFactoryAware 
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
+
+   public Class getScannableClass()
+   {
+      return scannableClass;
+   }
+
+   public void setScannableClass(Class scannableClass)
+   {
+      this.scannableClass = scannableClass;
+   }
+	
+	
 }
