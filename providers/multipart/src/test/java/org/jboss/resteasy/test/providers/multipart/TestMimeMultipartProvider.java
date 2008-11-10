@@ -129,12 +129,12 @@ public class TestMimeMultipartProvider extends BaseResourceTest
       @Path("mixed")
       @PUT
       @Consumes("multipart/mixed")
-      public void putMixedList(@PartType("application/xml")List<Customer> customers);
+      public void putMixedList(@PartType("application/xml") List<Customer> customers);
 
       @Path("form")
       @PUT
       @Consumes("multipart/form-data")
-      public void putFormDataMap(@PartType("application/xml")Map<String, Customer> customers);
+      public void putFormDataMap(@PartType("application/xml") Map<String, Customer> customers);
 
       @Path("form")
       @PUT

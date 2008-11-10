@@ -1,125 +1,112 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <modelVersion>4.0.0</modelVersion>
-   <parent>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs-all</artifactId>
-      <version>1.0-beta-9</version>
-   </parent>
-   <artifactId>resteasy-jaxrs</artifactId>
-   <name>RESTEasy JAX-RS Implementation</name>
-   <packaging>jar</packaging>
-   <dependencies>
-      <dependency>
-         <groupId>org.jboss.resteasy</groupId>
-         <artifactId>jaxrs-api</artifactId>
-         <version>${project.version}</version>
-      </dependency>
-      <!--
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>1.0-beta-9</version>
+    </parent>
+    <artifactId>resteasy-jaxrs</artifactId>
+    <name>RESTEasy JAX-RS Implementation</name>
+    <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>jaxrs-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--
            Contains Generated Classes and other test data required for testing.
         -->
-      <dependency>
-         <groupId>org.jboss.resteasy</groupId>
-         <artifactId>resteasy-test-data</artifactId>
-         <version>${project.version}</version>
-         <scope>test</scope>
-      </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-test-data</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
-      </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
 
-      <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-         <scope>provided</scope>
-      </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-simple</artifactId>
-      </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </dependency>
 
-      <!--
+        <!--
            Scans classes on cp for annotations and builds quick lookup database
            of them.
         -->
-      <dependency>
-         <groupId>org.scannotation</groupId>
-         <artifactId>scannotation</artifactId>
-      </dependency>
-      <!--
+        <dependency>
+            <groupId>org.scannotation</groupId>
+            <artifactId>scannotation</artifactId>
+        </dependency>
+        <!--
            Needed for javax.annotation.security.* which is part of javaee 6 XXX
            should this dependency be <scope>provided</scope> and only used if
            detected runtime?
         -->
-      <dependency>
-         <groupId>javax.annotation</groupId>
-         <artifactId>jsr250-api</artifactId>
-      </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+        </dependency>
 
-      <!-- javax.activation.DataSource provider is required by spec -->
-      <dependency>
-         <groupId>javax.activation</groupId>
-         <artifactId>activation</artifactId>
-      </dependency>
+        <!-- javax.activation.DataSource provider is required by spec -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+        </dependency>
 
-      <!-- javax.xml.bind.JAXBElement provider is required by spec -->
-      <dependency>
-         <groupId>com.sun.xml.bind</groupId>
-         <artifactId>jaxb-impl</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>com.sun.xml.fastinfoset</groupId>
-         <artifactId>FastInfoset</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>com.sun.xml.stream</groupId>
-         <artifactId>sjsxp</artifactId>
-      </dependency>
+        <!-- javax.xml.bind.JAXBElement provider is required by spec -->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.fastinfoset</groupId>
+            <artifactId>FastInfoset</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.stream</groupId>
+            <artifactId>sjsxp</artifactId>
+        </dependency>
 
-      <!-- Used for org.jboss.resteasy.plugins.client.httpclient.* -->
-      <dependency>
-         <groupId>commons-httpclient</groupId>
-         <artifactId>commons-httpclient</artifactId>
-      </dependency>
-      <!--
+        <!-- Used for org.jboss.resteasy.plugins.client.httpclient.* -->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <!--
            Used for optional JSON provider. Provider is activated by adding this
            jar to classpath
         -->
-      <dependency>
-         <groupId>org.codehaus.jettison</groupId>
-         <artifactId>jettison</artifactId>
-      </dependency>
-      <!--
-           Used by optional MimeMultipartProvider. Drop in jar on classpath to
-           activate provider.
-        -->
-      <dependency>
-         <groupId>javax.mail</groupId>
-         <artifactId>mail</artifactId>
-      </dependency>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+        </dependency>
 
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
-      </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
 
-      <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
-      <dependency>
-         <groupId>tjws</groupId>
-         <artifactId>webserver</artifactId>
-      </dependency>
+        <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
+        <dependency>
+            <groupId>tjws</groupId>
+            <artifactId>webserver</artifactId>
+        </dependency>
 
-      <!-- Used by org.jboss.resteasy.plugins.providers.YamlProvider -->
-      <dependency>
-         <groupId>org.jyaml</groupId>
-         <artifactId>jyaml</artifactId>
-      </dependency>
-   </dependencies>
+    </dependencies>
 </project>

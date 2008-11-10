@@ -5,16 +5,6 @@ import org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder;
-import org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader;
-import org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter;
-import org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader;
-import org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartReader;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartWriter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
@@ -82,16 +72,16 @@ public class RegisterBuiltin
 
       factory.addMessageBodyWriter(new StreamingOutputProvider());
 
-      factory.addMessageBodyReader(MultipartReader.class);
-      factory.addMessageBodyReader(ListMultipartReader.class);
-      factory.addMessageBodyReader(MultipartFormDataReader.class);
-      factory.addMessageBodyReader(MapMultipartFormDataReader.class);
-      factory.addMessageBodyWriter(MultipartWriter.class);
-      factory.addMessageBodyWriter(MultipartFormDataWriter.class);
-      factory.addMessageBodyWriter(ListMultipartWriter.class);
-      factory.addMessageBodyWriter(MapMultipartFormDataWriter.class);
-      factory.addMessageBodyReader(MultipartFormAnnotationReader.class);
-      factory.addMessageBodyWriter(MultipartFormAnnotationWriter.class);
+      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartReader", factory);
+      optionalReader("org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader", "org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader", factory);
+      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader", factory);
+      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader", "org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader", factory);
+      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartWriter", factory);
+      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter", factory);
+      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter", "org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter", factory);
+      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", "org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", factory);
+      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", factory);
+      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter", factory);
 
       // optional providers.
       optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", "org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", factory);
@@ -99,7 +89,7 @@ public class RegisterBuiltin
       optionalProvider("javax.imageio.IIOImage", "org.jboss.resteasy.plugins.providers.IIOImageProvider", factory);
       optionalContextResolver("org.codehaus.jettison.json.JSONObject", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder", factory);
       optionalContextResolver("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", factory);
-      optionalProvider("javax.mail.internet.MimeMultipart", "org.jboss.resteasy.plugins.providers.MimeMultipartProvider", factory);
+      optionalProvider("javax.mail.internet.MimeMultipart", "org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", factory);
       optionalProvider("org.ho.yaml.Yaml", "org.jboss.resteasy.plugins.providers.YamlProvider", factory);
    }
 
@@ -110,6 +100,28 @@ public class RegisterBuiltin
          logger.info("Adding " + providerClass);
          Object provider = instantiate(providerClass);
          factory.addMessageBodyReader((MessageBodyReader<?>) provider);
+         factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
+      }
+
+   }
+
+   private static void optionalReader(String dependency, String providerClass, ResteasyProviderFactory factory)
+   {
+      if (isAvailable(dependency))
+      {
+         logger.info("Adding " + providerClass);
+         Object provider = instantiate(providerClass);
+         factory.addMessageBodyReader((MessageBodyReader<?>) provider);
+      }
+
+   }
+
+   private static void optionalWriter(String dependency, String providerClass, ResteasyProviderFactory factory)
+   {
+      if (isAvailable(dependency))
+      {
+         logger.info("Adding " + providerClass);
+         Object provider = instantiate(providerClass);
          factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
       }
 
