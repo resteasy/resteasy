@@ -6,7 +6,9 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
-import java.io.BufferedInputStream;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.Variant.VariantListBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,17 +17,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.activation.DataSource;
-import javax.mail.util.ByteArrayDataSource;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.core.Variant.VariantListBuilder;
-
 /**
- * 
- * A utility class to provide supporting functionality to various 
- * entity providers. 
- * 
+ * A utility class to provide supporting functionality to various
+ * entity providers.
+ *
  * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
  * @version $Revision: $
  */
@@ -65,7 +60,7 @@ public final class ProviderHelper
     * @param mediaTypes
     * @return
     */
-   static List<MediaType> getAvailableMediaTypes(String[] mediaTypes)
+   public static List<MediaType> getAvailableMediaTypes(String[] mediaTypes)
    {
       List<MediaType> types = new ArrayList<MediaType>();
       for (String mediaType : mediaTypes)
@@ -79,7 +74,7 @@ public final class ProviderHelper
     * @param mediaTypes
     * @return
     */
-   static List<Variant> getAvailableVariants(String[] mediaTypes)
+   public static List<Variant> getAvailableVariants(String[] mediaTypes)
    {
       return getAvailableVariants(getAvailableMediaTypes(mediaTypes));
    }
@@ -88,26 +83,12 @@ public final class ProviderHelper
     * @param mediaTypes
     * @return
     */
-   static List<Variant> getAvailableVariants(List<MediaType> mediaTypes)
+   public static List<Variant> getAvailableVariants(List<MediaType> mediaTypes)
    {
       VariantListBuilder builder = Variant.VariantListBuilder.newInstance();
       MediaType[] types = mediaTypes.toArray(new MediaType[mediaTypes.size()]);
       builder.mediaTypes(types);
       return builder.build();
-   }
-
-   /**
-    * @param in
-    * @param mediaType
-    * @return
-    * @throws IOException
-    */
-   static DataSource readDataSource(InputStream in, MediaType mediaType) throws IOException
-   {
-      ByteArrayDataSource ds = new ByteArrayDataSource(new BufferedInputStream(in), mediaType
-            .toString());
-
-      return ds;
    }
 
    /**

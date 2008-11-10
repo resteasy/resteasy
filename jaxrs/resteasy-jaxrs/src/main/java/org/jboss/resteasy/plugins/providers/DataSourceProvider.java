@@ -10,6 +10,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,6 +28,43 @@ import java.lang.reflect.Type;
 public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 {
 
+
+   /**
+    * @param in
+    * @param mediaType
+    * @return
+    * @throws IOException
+    */
+   public static DataSource readDataSource(final InputStream in, final MediaType mediaType) throws IOException
+   {
+      final String type = mediaType.toString();
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ProviderHelper.writeTo(in, baos);
+      final byte[] bytes = baos.toByteArray();
+
+      return new DataSource()
+      {
+         public InputStream getInputStream() throws IOException
+         {
+            return new ByteArrayInputStream(bytes);
+         }
+
+         public OutputStream getOutputStream() throws IOException
+         {
+            throw new IOException("No output stream allowed");
+         }
+
+         public String getContentType()
+         {
+            return type;
+         }
+
+         public String getName()
+         {
+            return "";
+         }
+      };
+   }
 
    /**
     * FIXME Comment this
@@ -66,7 +105,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
                               InputStream entityStream) throws IOException
    {
 
-      return ProviderHelper.readDataSource(entityStream, mediaType);
+      return readDataSource(entityStream, mediaType);
    }
 
 

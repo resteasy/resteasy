@@ -14,11 +14,11 @@ public class MyNestedObject
    {
       this.moreText = moreText;
    }
-   
+
    @Override
    public String toString()
    {
-      return "MyNestedObject["+moreText+"]";
+      return "MyNestedObject[" + moreText + "]";
    }
-   
+
 }

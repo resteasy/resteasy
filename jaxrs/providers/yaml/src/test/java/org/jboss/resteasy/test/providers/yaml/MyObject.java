@@ -6,11 +6,11 @@ public class MyObject
 {
 
    private String someText;
-   
+
    private Date date;
 
    private MyNestedObject nested = new MyNestedObject();
-   
+
    public MyNestedObject getNested()
    {
       return nested;
@@ -41,11 +41,11 @@ public class MyObject
       this.date = date;
    }
 
-   
+
    @Override
    public String toString()
    {
-      return "MyObject["+nested+","+date+","+nested+"]";
+      return "MyObject[" + nested + "," + date + "," + nested + "]";
    }
-   
+
 }

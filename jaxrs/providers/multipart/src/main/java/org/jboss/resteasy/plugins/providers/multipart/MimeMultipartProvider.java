@@ -1,14 +1,18 @@
-package org.jboss.resteasy.plugins.providers;
+package org.jboss.resteasy.plugins.providers.multipart;
+
+import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +42,20 @@ import java.lang.reflect.Type;
 @Consumes({"multipart/mixed", "multipart/form-data"})
 public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
 {
+
+   /**
+    * @param in
+    * @param mediaType
+    * @return
+    * @throws IOException
+    */
+   public static DataSource readDataSource(InputStream in, MediaType mediaType) throws IOException
+   {
+      ByteArrayDataSource ds = new ByteArrayDataSource(new BufferedInputStream(in), mediaType
+              .toString());
+
+      return ds;
+   }
 
    /**
     * @param type
@@ -84,7 +102,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
    {
       try
       {
-         DataSource ds = ProviderHelper.readDataSource(entityStream, mediaType);
+         DataSource ds = readDataSource(entityStream, mediaType);
          return new MimeMultipart(ds);
       }
       catch (MessagingException e)

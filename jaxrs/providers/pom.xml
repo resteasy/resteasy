@@ -1,19 +1,21 @@
 <project>
-   <parent>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs-all</artifactId>
-      <version>1.0-beta-9</version>
-   </parent>
-   <name>Resteasy Providers</name>
-   <url>http://www.attainware.com/</url>
-   <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>1.0-beta-9</version>
+    </parent>
+    <name>Resteasy Providers</name>
+    <url>http://www.attainware.com/</url>
+    <modelVersion>4.0.0</modelVersion>
 
-   <groupId>org.jboss.resteasy</groupId>
-   <artifactId>providers-pom</artifactId>
-   <packaging>pom</packaging>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>providers-pom</artifactId>
+    <packaging>pom</packaging>
 
-   <modules>
-      <module>abdera-atom</module>
-      <module>resteasy-atom</module>
-   </modules>
+    <modules>
+        <module>abdera-atom</module>
+        <module>resteasy-atom</module>
+        <module>multipart</module>
+        <module>yaml</module>
+    </modules>
 </project>
