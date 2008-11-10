@@ -196,7 +196,7 @@ public class ResourceMethod implements ResourceInvoker
    {
       Object rtn = methodInjector.invoke(request, response, target);
       if (request.isSuspended()) return null;
-      if (method.getReturnType().equals(Response.class))
+      if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
          return (Response) rtn;
       }
