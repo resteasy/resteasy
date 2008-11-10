@@ -198,10 +198,14 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
       {
          throw new Failure("Could not find resource for: " + path, HttpResponseCodes.SC_NOT_FOUND);
       }
-      if (matcher.find(start))
+      if (matcher.find(start) && matcher.start() == start)
       {
          // a non-matched locator path must have a '/' immediately after.  A locator cannot match a partial segment
-         if (path.charAt(start + matcher.group(0).length()) == '/')
+         String group0 = matcher.group(0);
+         int charAt = start + group0.length();
+
+         char c = path.charAt(charAt);
+         if (c == '/')
          {
             String matched = path.substring(0, start + matcher.group(0).length());
             uriInfo.pushMatchedURI(matched, Encode.decode(matched));
@@ -215,7 +219,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
    public static int pathSegmentIndex
            (String
                    string, int start,
-                           int stop)
+            int stop)
    {
       if (start >= string.length()) return 0;
       int count = 0;

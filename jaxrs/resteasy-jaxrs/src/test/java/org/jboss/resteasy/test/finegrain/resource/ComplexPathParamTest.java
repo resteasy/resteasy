@@ -32,11 +32,11 @@ public class ComplexPathParamTest
    {
       @GET
       @Path("/{1},{2}/{3}/blah{4}-{5}ttt")
-      public String get(@PathParam("1")int one,
-                        @PathParam("2")int two,
-                        @PathParam("3")int three,
-                        @PathParam("4")int four,
-                        @PathParam("5")int five)
+      public String get(@PathParam("1") int one,
+                        @PathParam("2") int two,
+                        @PathParam("3") int three,
+                        @PathParam("4") int four,
+                        @PathParam("5") int five)
       {
          Assert.assertEquals(one, 1);
          Assert.assertEquals(two, 2);
@@ -53,7 +53,7 @@ public class ComplexPathParamTest
    {
       @GET
       @Path("{hello}")
-      public String getHello(@PathParam("hello")int one)
+      public String getHello(@PathParam("hello") int one)
       {
          Assert.assertEquals(one, 1);
          return "hello";
@@ -62,8 +62,8 @@ public class ComplexPathParamTest
 
       @GET
       @Path("{1},{2}")
-      public String get2Groups(@PathParam("1")int one,
-                               @PathParam("2")int two)
+      public String get2Groups(@PathParam("1") int one,
+                               @PathParam("2") int two)
       {
          Assert.assertEquals(1, one);
          Assert.assertEquals(2, two);
@@ -72,7 +72,7 @@ public class ComplexPathParamTest
 
       @GET
       @Path("h{1}")
-      public String getPrefixed(@PathParam("1")int one)
+      public String getPrefixed(@PathParam("1") int one)
       {
          Assert.assertEquals(1, one);
          return "prefixed";
@@ -84,13 +84,49 @@ public class ComplexPathParamTest
    {
       @Path("{1}-{rest:.*}")
       @GET
-      public String get(@PathParam("1")int one,
-                        @PathParam("rest")String rest)
+      public String get(@PathParam("1") int one,
+                        @PathParam("rest") String rest)
       {
          Assert.assertEquals(1, one);
          Assert.assertEquals("on/and/on", rest);
          return "ok";
       }
+   }
+
+   public static class Sub1
+   {
+      @GET
+      public String get()
+      {
+         return "sub1";
+      }
+   }
+
+   public static class Sub2
+   {
+      @GET
+      public String get()
+      {
+         return "sub2";
+      }
+   }
+
+   @Path("/repository/workspaces")
+   public static class Resteasy145
+   {
+      @Path("{service: x.*}")
+      public Sub1 getService(@PathParam("service") String serviceName)
+      {
+         return new Sub1();
+      }
+
+      @Path("{path:.*}")
+      public Sub2 getChild(@PathParam("path") String path)
+      {
+         return new Sub2();
+      }
+
+
    }
 
    @BeforeClass
@@ -142,12 +178,14 @@ public class ComplexPathParamTest
          dispatcher.getRegistry().addPerRequestResource(ExtensionResource.class);
          dispatcher.getRegistry().addPerRequestResource(TrickyResource.class);
          dispatcher.getRegistry().addPerRequestResource(UnlimitedResource.class);
+         dispatcher.getRegistry().addPerRequestResource(Resteasy145.class);
          HttpClient client = new HttpClient();
          _test(client, "http://localhost:8081/1,2/3/blah4-5ttt", "hello");
          _test(client, "http://localhost:8081/tricky/1,2", "2Groups");
          _test(client, "http://localhost:8081/tricky/h1", "prefixed");
          _test(client, "http://localhost:8081/tricky/1", "hello");
          _test(client, "http://localhost:8081/unlimited/1-on/and/on", "ok");
+         _test(client, "http://localhost:8081/repository/workspaces/aaaaaaxvi/wdddd", "sub2");
       }
       finally
       {
