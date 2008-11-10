@@ -13,8 +13,8 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.net.URL;
 import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -48,7 +48,7 @@ public class RegressionTest
 
       @Path("/complex")
       @GET
-      public Response getComplex()
+      public Object getComplex()
       {
          Response.ResponseBuilder builder = Response.status(HttpResponseCodes.SC_FOUND).entity("hello world".getBytes());
          builder.header("CoNtEnT-type", "text/plain");
@@ -93,7 +93,7 @@ public class RegressionTest
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
          URL url = new URL("http://localhost:8081/simple");
-         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
          @SuppressWarnings("unused")
          Object obj = conn.getContent();
       }
@@ -102,7 +102,7 @@ public class RegressionTest
 
 
    /**
-    * Test JIRA bug RESTEASY-24
+    * Test JIRA bug RESTEASY-24 and 139
     */
    @Test
    public void test24() throws Exception
