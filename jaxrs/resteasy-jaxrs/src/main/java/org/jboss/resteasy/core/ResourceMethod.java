@@ -12,6 +12,7 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
 
@@ -175,15 +176,34 @@ public class ResourceMethod implements ResourceInvoker
       }
    }
 
+
    public Response invoke(HttpRequest request, HttpResponse response, Object target)
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       uriInfo.pushCurrentResource(target);
       try
       {
+         Response jaxrsResponse = null;
          if (interceptors == null || interceptors.length == 0)
-            return invokeOnTarget(request, response, target);
-         return new ResourceContext(request, response, target).proceed();
+         {
+            jaxrsResponse = invokeOnTarget(request, response, target);
+         }
+         else
+         {
+            jaxrsResponse = new ResourceContext(request, response, target).proceed();
+         }
+
+         if (jaxrsResponse.getEntity() != null)
+         {
+            // if the content type isn't set, then set it to be either most desired type from the Accept header
+            // or the first media type in the @Produces annotation
+            // See RESTEASY-144
+            Object type = jaxrsResponse.getMetadata().getFirst(
+                    HttpHeaderNames.CONTENT_TYPE);
+            if (type == null)
+               jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, resolveContentType(request));
+         }
+         return jaxrsResponse;
 
       }
       finally

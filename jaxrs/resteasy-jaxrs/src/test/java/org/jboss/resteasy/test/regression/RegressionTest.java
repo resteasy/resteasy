@@ -12,7 +12,17 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -32,6 +42,21 @@ public class RegressionTest
    @AfterClass
    public static void after() throws Exception
    {
+   }
+
+   public static class Customer
+   {
+      private String name;
+
+      public String getName()
+      {
+         return name;
+      }
+
+      public void setName(String name)
+      {
+         this.name = name;
+      }
    }
 
    @Path("/")
@@ -55,6 +80,63 @@ public class RegressionTest
          return builder.build();
       }
 
+      @Path("/implicit")
+      @GET
+      @Produces("application/xml")
+      public Response getCustomer()
+      {
+         System.out.println("GET CUSTOEMR");
+         Customer cust = new Customer();
+         cust.setName("bill");
+         return Response.ok(cust).build();
+      }
+
+   }
+
+   @Provider
+   @Produces("application/xml")
+   public static class CustomerWriter implements MessageBodyWriter<Customer>
+   {
+      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return type.equals(Customer.class);
+      }
+
+      public long getSize(Customer customer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return -1;
+      }
+
+      public void writeTo(Customer customer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+      {
+         String out = "<customer><name>" + customer.getName() + "</name></customer>";
+         entityStream.write(out.getBytes());
+      }
+   }
+
+   /**
+    * Test JIRA bugs RESTEASY-144
+    *
+    * @throws Exception
+    */
+   @Test
+   public void test144() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      dispatcher.getProviderFactory().addMessageBodyWriter(CustomerWriter.class);
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+      {
+         HttpClient client = new HttpClient();
+         GetMethod method = new GetMethod("http://localhost:8081/implicit");
+         int status = client.executeMethod(method);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         Assert.assertEquals(method.getResponseHeader("content-type").getValue(), "application/xml");
+         byte[] responseBody = method.getResponseBody();
+         String response = new String(responseBody, "US-ASCII");
+         Assert.assertEquals("<customer><name>bill</name></customer>", response);
+         method.releaseConnection();
+      }
+      EmbeddedContainer.stop();
    }
 
    /**
