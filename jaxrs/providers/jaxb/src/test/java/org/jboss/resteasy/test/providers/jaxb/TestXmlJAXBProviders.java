@@ -3,13 +3,7 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
-import java.io.InputStream;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import junit.framework.Assert;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -25,9 +19,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import java.io.InputStream;
+
 /**
  * A TestXmlJAXBProviders.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -52,18 +50,18 @@ public class TestXmlJAXBProviders extends BaseResourceTest
    public void testUnmarshalOrder() throws Exception
    {
       InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-            "orders/order_123.xml");
+              "orders/order_123.xml");
       Order order = JAXBHelper.unmarshall(Order.class, in).getValue();
-      
+
       Assert.assertNotNull(order);
       Assert.assertEquals("Ryan J. McDonough", order.getPerson());
    }
-   
+
    //@Test
    public void testUnmarshalOrdertype() throws Exception
    {
       InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-            "order_123.xml");
+              "order_123.xml");
       JAXBContext jaxb = JAXBContext.newInstance(Ordertype.class);
       Unmarshaller u = jaxb.createUnmarshaller();
       Ordertype order = (Ordertype) u.unmarshal(in);
@@ -93,7 +91,7 @@ public class TestXmlJAXBProviders extends BaseResourceTest
    public void testUpdateOrder()
    {
       InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-            "orders/order_123.xml");
+              "orders/order_123.xml");
       Ordertype order = JAXBHelper.unmarshall(Ordertype.class, in).getValue();
       int initialItemCount = order.getItem().size();
       order = client.updateOrder(order, "order_123");

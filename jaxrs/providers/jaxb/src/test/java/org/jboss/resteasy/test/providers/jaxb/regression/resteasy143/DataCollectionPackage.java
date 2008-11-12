@@ -43,7 +43,7 @@ import java.util.List;
                 "sourceID",
                 "eventID",
                 "dataRecords"
-                })
+        })
 //@XmlRootElement
 public class DataCollectionPackage extends AbstractData
 {
@@ -142,7 +142,7 @@ public class DataCollectionPackage extends AbstractData
    @XmlAccessorType(XmlAccessType.FIELD)
    @XmlType(name = "", propOrder = {
            "dataCollectionRecord"
-           })
+   })
    public static class DataRecords
    {
 

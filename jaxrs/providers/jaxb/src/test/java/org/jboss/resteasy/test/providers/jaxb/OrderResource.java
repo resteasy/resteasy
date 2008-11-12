@@ -3,7 +3,9 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
-import java.io.InputStream;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBHelper;
+import org.jboss.resteasy.test.providers.jaxb.data.Item;
+import org.jboss.resteasy.test.providers.jaxb.data.Order;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -13,14 +15,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBHelper;
-import org.jboss.resteasy.test.providers.jaxb.data.Item;
-import org.jboss.resteasy.test.providers.jaxb.data.Order;
+import java.io.InputStream;
 
 /**
  * A OrderResource.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -40,7 +39,7 @@ public class OrderResource
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param order
     * @return
     */

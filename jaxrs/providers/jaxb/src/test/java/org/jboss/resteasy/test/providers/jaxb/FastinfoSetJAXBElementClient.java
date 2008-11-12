@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.xml.bind.JAXBElement;
 
 /**
  * A JAXBXmlRootElementClient.
@@ -19,24 +20,16 @@ import javax.ws.rs.Produces;
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
-@Consumes("application/json")
-@Produces("application/json")
-public interface JsonJAXBXmlRootElementClient
+@Consumes("application/fastinfoset")
+@Produces("application/fastinfoset")
+public interface FastinfoSetJAXBElementClient
 {
 
    @GET
    @Path("/{name}")
-   Parent getParent(@PathParam("name")String name);
-
-   @GET
-   @Path("/{name}")
-   String getParentString(@PathParam("name")String name);
-
-   @GET
-   @Path("/{name}/badger")
-   String getParentBadger(@PathParam("name")String name);
+   JAXBElement<Parent> getParent(@PathParam("name") String name);
 
    @POST
-   Parent postParent(Parent parent);
+   JAXBElement<Parent> postParent(JAXBElement<Parent> parent);
 
 }

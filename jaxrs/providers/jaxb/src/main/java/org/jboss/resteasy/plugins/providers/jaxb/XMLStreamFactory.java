@@ -3,19 +3,8 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
+import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
 import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamReader;
 import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamWriter;
 import org.codehaus.jettison.json.JSONException;
@@ -26,12 +15,21 @@ import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.jboss.resteasy.core.ExceptionAdapter;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 
-import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
-import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 /**
  * A XMLStreamFactory.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -45,7 +43,7 @@ final class XMLStreamFactory
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param out
     * @return
     */
@@ -63,7 +61,7 @@ final class XMLStreamFactory
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param entityStream
     * @return
     */
@@ -82,7 +80,7 @@ final class XMLStreamFactory
    }
 
    /**
-    * 
+    *
     */
    protected static XMLStreamReader getFastinfoSetXMLStreamReader(InputStream entityStream)
    {
@@ -92,7 +90,7 @@ final class XMLStreamFactory
    }
 
    /**
-    * 
+    *
     */
    protected static XMLStreamWriter getFastinfoSetXMLStreamWriter(OutputStream entityStream)
    {
@@ -103,7 +101,7 @@ final class XMLStreamFactory
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param entityStream
     * @return
     */
@@ -128,8 +126,8 @@ final class XMLStreamFactory
          throw new ExceptionAdapter(e);
       }
    }
-   
-   
+
+
    protected static XMLStreamWriter getMappedXMLStreamWriter(OutputStream entityStream)
    {
       OutputStreamWriter out = new OutputStreamWriter(entityStream);
@@ -137,8 +135,9 @@ final class XMLStreamFactory
       XMLStreamWriter writer = new MappedXMLStreamWriter(convention, out);
       return writer;
    }
+
    /**
-    * 
+    *
     */
    protected static XMLStreamWriter getBadgerFishXMLStreamWriter(OutputStream entityStream)
    {
@@ -146,8 +145,9 @@ final class XMLStreamFactory
       XMLStreamWriter writer = new BadgerFishXMLStreamWriter(out);
       return writer;
    }
+
    /**
-    * 
+    *
     */
    protected static XMLStreamReader getBadgerFishXMLStreamReader(InputStream entityStream)
    {
@@ -171,6 +171,5 @@ final class XMLStreamFactory
       }
    }
 
-   
 
 }

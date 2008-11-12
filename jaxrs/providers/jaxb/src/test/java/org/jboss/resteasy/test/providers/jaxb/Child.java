@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * A Child.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -28,12 +28,12 @@ public class Child
 
    @XmlTransient
    private Parent parent;
-   
-   public Child() 
+
+   public Child()
    {
-      
+
    }
-   
+
    public Child(String name)
    {
       this.name = name;
@@ -41,7 +41,7 @@ public class Child
 
    /**
     * Get the name.
-    * 
+    *
     * @return the name.
     */
    public String getName()
@@ -51,7 +51,7 @@ public class Child
 
    /**
     * Set the name.
-    * 
+    *
     * @param name The name to set.
     */
    public void setName(String name)
@@ -61,7 +61,7 @@ public class Child
 
    /**
     * Get the parent.
-    * 
+    *
     * @return the parent.
     */
    public Parent getParent()
@@ -71,7 +71,7 @@ public class Child
 
    /**
     * Set the parent.
-    * 
+    *
     * @param parent The parent to set.
     */
    public void setParent(Parent parent)
@@ -81,7 +81,7 @@ public class Child
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param unmarshaller
     * @param parent
     */

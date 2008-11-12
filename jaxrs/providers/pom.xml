@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>jaxb</module>
         <module>abdera-atom</module>
         <module>resteasy-atom</module>
         <module>multipart</module>

@@ -20,14 +20,14 @@ import javax.xml.bind.JAXBElement;
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
-@Consumes("application/json")
-@Produces("application/json")
-public interface JsonJAXBElementClient
+@Consumes("application/xml")
+@Produces("application/xml")
+public interface JAXBElementClient
 {
 
    @GET
    @Path("/{name}")
-   JAXBElement<Parent> getParent(@PathParam("name")String name);
+   JAXBElement<Parent> getParent(@PathParam("name") String name);
 
    @POST
    JAXBElement<Parent> postParent(JAXBElement<Parent> parent);
