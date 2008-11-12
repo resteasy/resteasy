@@ -31,7 +31,7 @@ public class JAXBXmlRootElementResource
 
    @GET
    @Path("/{name}")
-   public Parent getParent(@PathParam("name")String name)
+   public Parent getParent(@PathParam("name") String name)
    {
       Parent parent = Parent.createTestParent(name);
       return parent;
@@ -40,7 +40,7 @@ public class JAXBXmlRootElementResource
    @GET
    @Path("/{name}")
    @Produces("application/junk+xml")
-   public Parent getParentJunk(@PathParam("name")String name)
+   public Parent getParentJunk(@PathParam("name") String name)
    {
       Parent parent = Parent.createTestParent(name);
       return parent;
@@ -49,7 +49,7 @@ public class JAXBXmlRootElementResource
    @GET
    @Path("/{name}/badger")
    @BadgerFish
-   public Parent getMappedParent(@PathParam("name")String name)
+   public Parent getMappedParent(@PathParam("name") String name)
    {
       System.out.println("MAPPED!!!!");
       Parent parent = Parent.createTestParent(name);

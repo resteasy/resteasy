@@ -16,7 +16,6 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <!-- Used by org.jboss.resteasy.plugins.providers.YamlProvider -->
         <dependency>

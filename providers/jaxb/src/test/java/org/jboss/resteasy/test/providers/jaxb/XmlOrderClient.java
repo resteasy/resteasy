@@ -3,6 +3,8 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
+import org.jboss.resteasy.test.providers.jaxb.generated.order.Ordertype;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,11 +14,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.test.providers.jaxb.generated.order.Ordertype;
-
 /**
  * A XmlOrderClient.
- * 
+ *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
  */
@@ -31,7 +31,7 @@ public interface XmlOrderClient
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param order
     * @return
     */

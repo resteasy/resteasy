@@ -193,7 +193,7 @@ public class ResourceMethod implements ResourceInvoker
             jaxrsResponse = new ResourceContext(request, response, target).proceed();
          }
 
-         if (jaxrsResponse.getEntity() != null)
+         if (jaxrsResponse != null && jaxrsResponse.getEntity() != null)
          {
             // if the content type isn't set, then set it to be either most desired type from the Accept header
             // or the first media type in the @Produces annotation

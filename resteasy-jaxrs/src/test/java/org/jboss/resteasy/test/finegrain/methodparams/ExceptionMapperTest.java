@@ -18,7 +18,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
 /**
@@ -29,7 +28,29 @@ public class ExceptionMapperTest
 {
    private static Dispatcher dispatcher;
 
-   public static class SubclassException extends JAXBException
+   public static class MyException extends Exception
+   {
+      public MyException()
+      {
+      }
+
+      public MyException(String s)
+      {
+         super(s);
+      }
+
+      public MyException(String s, Throwable throwable)
+      {
+         super(s, throwable);
+      }
+
+      public MyException(Throwable throwable)
+      {
+         super(throwable);
+      }
+   }
+
+   public static class SubclassException extends MyException
    {
       public SubclassException(String s)
       {
@@ -41,14 +62,14 @@ public class ExceptionMapperTest
    public static class Throwme
    {
       @GET
-      public String get() throws JAXBException
+      public String get() throws MyException
       {
-         throw new JAXBException("FAILURE!!!");
+         throw new MyException("FAILURE!!!");
       }
 
       @Path("subclass")
       @GET
-      public String getSubclass() throws JAXBException
+      public String getSubclass() throws MyException
       {
          throw new SubclassException("FAILURE!!!");
       }
@@ -58,7 +79,7 @@ public class ExceptionMapperTest
       public String getProvidersTest(@Context Providers providers)
       {
          Assert.assertNotNull(providers);
-         Assert.assertEquals(providers.getExceptionMapper(JAXBException.class).getClass(), JAXBMapper.class);
+         Assert.assertEquals(providers.getExceptionMapper(MyException.class).getClass(), MyExceptionMapper.class);
          return "stuff";
       }
    }
@@ -68,7 +89,7 @@ public class ExceptionMapperTest
    {
       dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addPerRequestResource(Throwme.class);
-      ResteasyProviderFactory.getInstance().addExceptionMapper(JAXBMapper.class);
+      ResteasyProviderFactory.getInstance().addExceptionMapper(MyExceptionMapper.class);
    }
 
    @AfterClass
@@ -78,9 +99,9 @@ public class ExceptionMapperTest
    }
 
    @Provider
-   public static class JAXBMapper implements ExceptionMapper<JAXBException>
+   public static class MyExceptionMapper implements ExceptionMapper<MyException>
    {
-      public Response toResponse(JAXBException exception)
+      public Response toResponse(MyException exception)
       {
          return Response.notModified().build();
       }
@@ -89,7 +110,7 @@ public class ExceptionMapperTest
    @Test
    public void testRegisteredCorrectly()
    {
-      Assert.assertNotNull(ResteasyProviderFactory.getInstance().getExceptionMapper(JAXBException.class));
+      Assert.assertNotNull(ResteasyProviderFactory.getInstance().getExceptionMapper(MyException.class));
    }
 
    @Test

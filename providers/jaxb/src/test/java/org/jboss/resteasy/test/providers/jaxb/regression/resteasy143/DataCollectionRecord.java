@@ -30,7 +30,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
         propOrder = {
                 "timestamp",
                 "collectedData"
-                })
+        })
 public class DataCollectionRecord
 {
 

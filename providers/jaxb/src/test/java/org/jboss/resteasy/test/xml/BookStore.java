@@ -28,7 +28,7 @@ public class BookStore
    @GET
    @Path("books/{isbn}")
    @Produces({"text/xml", "application/json"})
-   public Book getBookByISBN(@PathParam("isbn")String isbn)
+   public Book getBookByISBN(@PathParam("isbn") String isbn)
    {
       return availableBooks.get(isbn);
    }

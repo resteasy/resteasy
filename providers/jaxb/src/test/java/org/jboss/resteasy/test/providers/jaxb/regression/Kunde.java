@@ -20,7 +20,7 @@ import java.util.Locale;
 @XmlSeeAlso({
         Firmenkunde.class,
         Privatkunde.class
-        })
+})
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class Kunde implements java.io.Serializable
 {

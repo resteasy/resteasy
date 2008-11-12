@@ -18,7 +18,7 @@ public interface BookStoreClient
    @GET
    @Path("books/{isbn}")
    @Produces("text/xml")
-   Book getBookByISBN(@PathParam("isbn")String isbn);
+   Book getBookByISBN(@PathParam("isbn") String isbn);
 
    @PUT
    @Path("books")
@@ -33,7 +33,7 @@ public interface BookStoreClient
    @GET
    @Path("books/{isbn}")
    @Produces("application/json")
-   Book getBookByISBNJson(@PathParam("isbn")String isbn);
+   Book getBookByISBNJson(@PathParam("isbn") String isbn);
 
    @PUT
    @Path("books")
