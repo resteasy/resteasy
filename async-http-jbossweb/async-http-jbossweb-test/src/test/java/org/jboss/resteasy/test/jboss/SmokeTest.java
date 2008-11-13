@@ -1,15 +1,10 @@
 package org.jboss.resteasy.test.jboss;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.Test;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 
 
 /**
@@ -25,7 +20,7 @@ public class SmokeTest
 
       {
          long start = System.currentTimeMillis();
-         GetMethod method = new GetMethod("http://localhost:6080/resteasy/basic");
+         GetMethod method = new GetMethod("http://localhost:8080/resteasy/basic");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals("basic", method.getResponseBodyAsString());

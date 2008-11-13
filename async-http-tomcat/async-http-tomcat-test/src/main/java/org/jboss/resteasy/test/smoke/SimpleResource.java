@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/")
 public class SimpleResource
 {
+   private static int count = 0;
 
    @GET
    @Path("basic")

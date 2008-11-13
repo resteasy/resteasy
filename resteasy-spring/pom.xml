@@ -42,6 +42,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -70,6 +71,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
             <version>2.5.5</version>
+            <scope>provided</scope>
         </dependency>
         <!--
               Test classes that integrates Junit 3.8 and 4 to Spring based
@@ -79,21 +81,25 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>2.5.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>2.5.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
             <version>1.0.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
             <version>6.1.11</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
