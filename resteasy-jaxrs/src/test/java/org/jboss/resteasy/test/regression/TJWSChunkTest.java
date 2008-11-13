@@ -17,13 +17,13 @@ public class TJWSChunkTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = TJWSServletContainer.start();
+      //dispatcher = TJWSServletContainer.start();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      TJWSServletContainer.stop();
+      //TJWSServletContainer.stop();
    }
 
    @Test
