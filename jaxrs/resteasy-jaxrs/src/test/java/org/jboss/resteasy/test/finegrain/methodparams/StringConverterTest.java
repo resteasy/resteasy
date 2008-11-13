@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PUT;
@@ -67,11 +68,24 @@ public class StringConverterTest extends BaseResourceTest
       }
    }
 
+   @Path("/")
+   public static class MyDefaultResource
+   {
+      @PUT
+      public void putDefault(@QueryParam("pojo") @DefaultValue("default") POJO q, @MatrixParam("pojo") @DefaultValue("default") POJO mp, @DefaultValue("default") @HeaderParam("pojo")POJO hp)
+      {
+         Assert.assertEquals(q.getName(), "default");
+         Assert.assertEquals(mp.getName(), "default");
+         Assert.assertEquals(hp.getName(), "default");
+      }
+   }
+
    @Before
    public void setUp() throws Exception
    {
       dispatcher.getProviderFactory().addStringConverter(POJOConverter.class);
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
+      dispatcher.getRegistry().addPerRequestResource(MyDefaultResource.class);
    }
 
    /**
@@ -93,5 +107,19 @@ public class StringConverterTest extends BaseResourceTest
       POJO pojo = new POJO();
       pojo.setName("pojo");
       client.put(pojo, pojo, pojo, pojo);
+   }
+
+   @Path("/")
+   public static interface MyDefaultClient
+   {
+      @PUT
+      void put();
+   }
+
+   @Test
+   public void testDefault() throws Exception
+   {
+      final MyDefaultClient client = ProxyFactory.create(MyDefaultClient.class, "http://localhost:8081");
+      client.put();
    }
 }
