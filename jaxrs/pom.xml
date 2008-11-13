@@ -8,6 +8,10 @@
     <version>1.0-beta-9</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
+    </properties>
+
     <url>http://wiki.jboss.org/wiki/Wiki.jsp?page=RESTeasyJAXRS</url>
 
     <licenses>
@@ -79,7 +83,6 @@
         <module>async-http-jbossweb</module>
         <module>async-http-servlet-3.0</module>
         <module>async-http-tomcat</module>
-        <module>distribution</module>
 
     </modules>
 

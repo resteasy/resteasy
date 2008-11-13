@@ -4,75 +4,75 @@
 
 /* Page background color */
 body {
-   background-color: #FFFFFF
+    background-color: #FFFFFF
 }
 
 /* Headings */
 h1 {
-   font-size: 145%
+    font-size: 145%
 }
 
 /* Table colors */
 .TableHeadingColor {
-   background: #CCCCFF
+    background: #CCCCFF
 }
 
 /* Dark mauve */
 .TableSubHeadingColor {
-   background: #EEEEFF
+    background: #EEEEFF
 }
 
 /* Light mauve */
 .TableRowColor {
-   background: #FFFFFF
+    background: #FFFFFF
 }
 
 /* White */
 
 /* Font used in left-hand frame lists */
 .FrameTitleFont {
-   font-size: 100%;
-   font-family: Helvetica, Arial, sans-serif
+    font-size: 100%;
+    font-family: Helvetica, Arial, sans-serif
 }
 
 .FrameHeadingFont {
-   font-size: 90%;
-   font-family: Helvetica, Arial, sans-serif
+    font-size: 90%;
+    font-family: Helvetica, Arial, sans-serif
 }
 
 .FrameItemFont {
-   font-size: 90%;
-   font-family: Helvetica, Arial, sans-serif
+    font-size: 90%;
+    font-family: Helvetica, Arial, sans-serif
 }
 
 /* Navigation bar fonts and colors */
 .NavBarCell1 {
-   background-color: #EEEEFF;
+    background-color: #EEEEFF;
 }
 
 /* Light mauve */
 .NavBarCell1Rev {
-   background-color: #00008B;
+    background-color: #00008B;
 }
 
 /* Dark Blue */
 .NavBarFont1 {
-   font-family: Arial, Helvetica, sans-serif;
-   color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000000;
 }
 
 .NavBarFont1Rev {
-   font-family: Arial, Helvetica, sans-serif;
-   color: #FFFFFF;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #FFFFFF;
 }
 
 .NavBarCell2 {
-   font-family: Arial, Helvetica, sans-serif;
-   background-color: #FFFFFF;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #FFFFFF;
 }
 
 .NavBarCell3 {
-   font-family: Arial, Helvetica, sans-serif;
-   background-color: #FFFFFF;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #FFFFFF;
 }
 

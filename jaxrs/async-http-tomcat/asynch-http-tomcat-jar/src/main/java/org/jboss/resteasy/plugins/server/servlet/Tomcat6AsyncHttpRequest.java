@@ -1,16 +1,17 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.AsynchronousResponse;
-import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.apache.catalina.CometEvent;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.spi.AsynchronousResponse;
+import org.jboss.resteasy.spi.HttpResponse;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response;
-import java.io.InputStream;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -35,7 +36,18 @@ public class Tomcat6AsyncHttpRequest extends HttpServletInputMessage
    public AsynchronousResponse createAsynchronousResponse(long l)
    {
       suspended = true;
-      this.request.setAttribute("org.apache.tomcat.comet.timeout", new Integer((int)l));
+      try
+      {
+         event.setTimeout((int) l);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      catch (ServletException e)
+      {
+         throw new RuntimeException(e);
+      }
       return new AsynchronousResponse()
       {
          public void setResponse(Response response)
@@ -43,6 +55,14 @@ public class Tomcat6AsyncHttpRequest extends HttpServletInputMessage
             try
             {
                dispatcher.asynchronousDelivery(Tomcat6AsyncHttpRequest.this, httpResponse, response);
+               try
+               {
+                  httpResponse.getOutputStream().flush();
+               }
+               catch (IOException e)
+               {
+                  throw new RuntimeException(e);
+               }
             }
             finally
             {
