@@ -1,7 +1,10 @@
 package org.jboss.resteasy.test.regression;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -10,6 +13,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -83,7 +87,7 @@ public class RegressionTest
       @Path("/implicit")
       @GET
       @Produces("application/xml")
-      public Response getCustomer()
+      public Object getCustomer()
       {
          System.out.println("GET CUSTOEMR");
          Customer cust = new Customer();
@@ -91,6 +95,32 @@ public class RegressionTest
          return Response.ok(cust).build();
       }
 
+      @Path("/implicit")
+      @DELETE
+      public Object deleteCustomer()
+      {
+         return Response.ok().build();
+      }
+
+      @Path("/complex")
+      @DELETE
+      public void deleteComplex()
+      {
+
+      }
+
+   }
+
+   @Path("/")
+   public interface SimpleClient
+   {
+      @Path("/implicit")
+      @DELETE
+      ClientResponse<String> deleteCustomer();
+
+      @Path("/complex")
+      @DELETE
+      ClientResponse<String> deleteComplex();
    }
 
    @Provider
@@ -134,6 +164,16 @@ public class RegressionTest
          byte[] responseBody = method.getResponseBody();
          String response = new String(responseBody, "US-ASCII");
          Assert.assertEquals("<customer><name>bill</name></customer>", response);
+
+         DeleteMethod del = new DeleteMethod("http://localhost:8081/implicit");
+         status = client.executeMethod(del);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+
+         SimpleClient proxy = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
+         proxy.deleteCustomer();
+
+         Assert.assertEquals(204, proxy.deleteComplex().getStatus());
+
          method.releaseConnection();
       }
       EmbeddedContainer.stop();
