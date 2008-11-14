@@ -11,6 +11,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.Types;
 
@@ -222,7 +223,8 @@ abstract public class ClientInvoker
                   returnType = Types.getRawType(genericReturnType);
 
                }
-               if (returnType == null || returnType.equals(Void.class)) {
+               if (returnType == null || returnType.equals(Void.class) || status == HttpResponseCodes.SC_NO_CONTENT || (baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE) == null && baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_LENGTH) == null))
+               {
                   return createGenericClientResponse(baseMethod, status);
                }
                checkFailureStatus(baseMethod, status);

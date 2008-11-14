@@ -8,12 +8,8 @@
 
     <fileSets>
         <fileSet>
-            <directory>../resteasy-jaxrs/target/apidocs</directory>
-            <outputDirectory>docs/javadocs/resteasy-jaxrs</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>../jaxrs-api/target/apidocs</directory>
-            <outputDirectory>docs/javadocs/jaxrs-api</outputDirectory>
+            <directory>../target/site/apidocs</directory>
+            <outputDirectory>docs/javadocs</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../examples/spring-hibernate-contacts</directory>
