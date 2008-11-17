@@ -10,7 +10,6 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.lang.annotation.Annotation;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -22,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements ContextResolver<JAXBContextFinder>
 {
    private ConcurrentHashMap<Class<?>, JAXBContext> cache = new ConcurrentHashMap<Class<?>, JAXBContext>();
+   private ConcurrentHashMap<CacheKey, JAXBContext> collectionCache = new ConcurrentHashMap<CacheKey, JAXBContext>();
 
 
    public JAXBContext findCachedContext(Class type, MediaType mediaType, Annotation[] parameterAnnotations) throws JAXBException
@@ -36,16 +36,7 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
          cache.putIfAbsent((Class<?>) type, jaxb);
          result = jaxb;
       }
-      Class[] types = new Class[]{(Class<?>) type};
-      JAXBConfig config = FindAnnotation.findAnnotation(type, parameterAnnotations, JAXBConfig.class);
-      HashSet<Class> classes = new HashSet<Class>();
-      for (Class type1 : types)
-      {
-         classes.add(type1);
-         Class factory = findDefaultObjectFactoryClass(type1);
-         if (factory != null) classes.add(factory);
-      }
-      jaxb = new JAXBContextWrapper(config, classes.toArray(new Class[classes.size()]));
+      jaxb = createContext(parameterAnnotations, type);
       if (jaxb != null) cache.putIfAbsent((Class<?>) type, jaxb);
       result = jaxb;
       return result;
@@ -57,5 +48,15 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
       return new JAXBContextWrapper(config, classes);
    }
 
+   public JAXBContext findCacheContext(MediaType mediaType, Annotation[] paraAnnotations, Class... classes) throws JAXBException
+   {
+      CacheKey key = new CacheKey(classes);
+      JAXBContext ctx = collectionCache.get(key);
+      if (ctx != null) return ctx;
 
+      ctx = createContextObject(paraAnnotations, classes);
+      collectionCache.put(key, ctx);
+
+      return ctx;
+   }
 }
