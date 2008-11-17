@@ -6,7 +6,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,7 +88,6 @@ public class TestCollection extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      dispatcher.getProviderFactory().registerProvider(CollectionProvider.class);
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
    }
 

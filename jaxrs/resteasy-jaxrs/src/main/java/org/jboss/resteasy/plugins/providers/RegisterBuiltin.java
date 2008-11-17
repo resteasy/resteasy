@@ -55,6 +55,7 @@ public class RegisterBuiltin
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider", factory);
+      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider", "org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider", factory);
       optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder", factory);
 
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartReader", factory);
