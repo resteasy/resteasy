@@ -21,6 +21,51 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
    @Context
    protected Providers providers;
 
+   public static class CacheKey
+   {
+      private Class[] classes;
+      private int hashCode;
+
+      public CacheKey(Class[] classes)
+      {
+         this.classes = classes;
+         for (Class clazz : classes) hashCode += clazz.hashCode();
+      }
+
+      @Override
+      public boolean equals(Object o)
+      {
+         if (this == o) return true;
+         if (o == null || getClass() != o.getClass()) return false;
+
+         CacheKey cacheKey = (CacheKey) o;
+
+         if (hashCode != cacheKey.hashCode) return false;
+         if (classes.length != cacheKey.classes.length) return false;
+
+         for (Class clazz : classes)
+         {
+            boolean found = false;
+            for (Class compare : cacheKey.classes)
+            {
+               if (compare.equals(clazz))
+               {
+                  found = true;
+                  break;
+               }
+            }
+            if (found == false) return false;
+         }
+         return true;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         return hashCode;
+      }
+   }
+
    public JAXBContext findProvidedJAXBContext(Class<?> type, MediaType mediaType)
            throws JAXBException
    {
