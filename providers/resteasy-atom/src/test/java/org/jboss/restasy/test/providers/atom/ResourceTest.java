@@ -54,6 +54,30 @@ public class ResourceTest extends BaseResourceTest
          return feed;
       }
 
+      @GET
+      @Path("text/entry")
+      @Produces("application/atom+xml")
+      public Entry getTextEntry()
+      {
+         Entry entry = new Entry();
+         entry.setTitle("Hello World");
+         Content content = new Content();
+         content.setText("<pre>How are you today?\nNotBad!</pre>");
+         content.setType(MediaType.TEXT_HTML_TYPE);
+         entry.setContent(content);
+         return entry;
+      }
+
+      @GET
+      @Path("text/feed")
+      @Produces("application/atom+xml")
+      public Feed getTextFeed()
+      {
+         Feed feed = new Feed();
+         feed.getEntries().add(getTextEntry());
+         return feed;
+      }
+
       @POST
       @Path("feed")
       @Consumes("application/atom+xml")
@@ -216,6 +240,8 @@ public class ResourceTest extends BaseResourceTest
       AtomServerInterface intf = ProxyFactory.create(AtomServerInterface.class, "http://localhost:8081");
       Feed feed = intf.postFeed(RFC_COMPLEX_XML);
       assertFeed(feed);
+
+      //Thread.sleep(1000000);
 
    }
 
