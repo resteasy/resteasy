@@ -25,7 +25,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,6 +49,8 @@ public class ResourceMethod implements ResourceInvoker
    protected Method method;
    protected Class<?> resourceClass;
    protected ResourceMethodInterceptor[] interceptors;
+   protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
+
 
    public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods)
    {
@@ -86,6 +91,28 @@ public class ResourceMethod implements ResourceInvoker
       Collections.sort(preferredConsumes);
       interceptors = providerFactory.getInterceptorRegistry().bind(this);
       if (interceptors != null && interceptors.length == 0) interceptors = null;
+   }
+
+   protected void incrementMethodCount(String httpMethod)
+   {
+      AtomicLong stat = stats.get(httpMethod);
+      if (stat == null)
+      {
+         stat = new AtomicLong();
+         AtomicLong old = stats.putIfAbsent(httpMethod, stat);
+         if (old != null) stat = old;
+      }
+      stat.incrementAndGet();
+   }
+
+   /**
+    * Key is httpMethod called
+    *
+    * @return
+    */
+   public Map<String, AtomicLong> getStats()
+   {
+      return stats;
    }
 
    public Class<?> getResourceClass()
@@ -179,6 +206,7 @@ public class ResourceMethod implements ResourceInvoker
 
    public Response invoke(HttpRequest request, HttpResponse response, Object target)
    {
+      incrementMethodCount(request.getHttpMethod());
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       uriInfo.pushCurrentResource(target);
       try

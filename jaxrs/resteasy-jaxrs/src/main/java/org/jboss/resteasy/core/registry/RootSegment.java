@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -31,6 +32,17 @@ public class RootSegment extends Segment
    protected List<PathParamSegment> sortedResourceExpressions = new ArrayList<PathParamSegment>();
    protected Map<String, PathParamSegment> locatorExpressions = new HashMap<String, PathParamSegment>();
    protected List<PathParamSegment> sortedLocatorExpressions = new ArrayList<PathParamSegment>();
+   protected Map<String, List<ResourceInvoker>> bounded = new LinkedHashMap<String, List<ResourceInvoker>>();
+
+   /**
+    * Return a map of paths and what resource methods they are bound to
+    *
+    * @return
+    */
+   public Map<String, List<ResourceInvoker>> getBounded()
+   {
+      return bounded;
+   }
 
    @Override
    protected boolean isEmpty()
@@ -223,6 +235,13 @@ public class RootSegment extends Segment
 
    public void addPath(String path, ResourceInvoker invoker)
    {
+      List<ResourceInvoker> list = bounded.get(path);
+      if (list == null)
+      {
+         list = new ArrayList<ResourceInvoker>();
+         bounded.put(path, list);
+      }
+      list.add(invoker);
       if (path.startsWith("/")) path = path.substring(1);
 
       MultivaluedMapImpl<String, String> pathParamExpr = new MultivaluedMapImpl<String, String>();
@@ -239,6 +258,35 @@ public class RootSegment extends Segment
 
    public ResourceInvoker removePath(String path, Method method)
    {
+      List<ResourceInvoker> list = bounded.get(path);
+      if (list != null)
+      {
+         ResourceInvoker removed = null;
+         for (ResourceInvoker invoker : list)
+         {
+            if (invoker instanceof ResourceMethod)
+            {
+               ResourceMethod rm = (ResourceMethod) invoker;
+               if (rm.getMethod().equals(method))
+               {
+                  removed = rm;
+                  break;
+               }
+            }
+            else
+            {
+               ResourceLocator locator = (ResourceLocator) invoker;
+               if (locator.getMethod().equals(method))
+               {
+                  removed = locator;
+                  break;
+               }
+
+            }
+         }
+         list.remove(removed);
+         if (list.size() == 0) bounded.remove(path);
+      }
       if (path.startsWith("/")) path = path.substring(1);
 
       MultivaluedMapImpl<String, String> pathParamExpr = new MultivaluedMapImpl<String, String>();
