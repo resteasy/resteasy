@@ -122,8 +122,17 @@ public class Content extends CommonAttributes
    public void setType(MediaType type)
    {
       mediaType = type;
-      this.type = type.toString();
+      if (type.equals(MediaType.TEXT_PLAIN_TYPE)) this.type = "text";
+      else if (type.equals(MediaType.TEXT_HTML_TYPE)) this.type = "html";
+      else if (type.equals(MediaType.APPLICATION_XHTML_XML_TYPE)) this.type = "xhtml";
+      else this.type = type.toString();
    }
+
+   public void setType(String type)
+   {
+      this.type = type;
+   }
+
 
    /**
     * If content is text, return it as a String.  Otherwise, if content is not text this will return null.
