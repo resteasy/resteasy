@@ -189,6 +189,11 @@ public class ResourceMethodRegistry implements Registry
       }
    }
 
+   public RootSegment getRoot()
+   {
+      return rootSegment;
+   }
+
 
    /**
     * Number of endpoints registered

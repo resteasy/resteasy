@@ -1,16 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -26,6 +15,16 @@ import org.jboss.resteasy.util.LocaleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -37,7 +36,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected ResourceMethodRegistry registry;
    protected Map<String, MediaType> mediaTypeMappings;
    protected Map<String, String> languageMappings;
-   
+
    // this should be overridable
    protected DispatcherUtilities dispatcherUtilities;
 
@@ -47,7 +46,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
-      dispatcherUtilities = new DispatcherUtilities(providerFactory);
+      dispatcherUtilities = new DispatcherUtilities(providerFactory, registry);
    }
 
    public ResteasyProviderFactory getProviderFactory()
@@ -417,10 +416,10 @@ public class SynchronousDispatcher implements Dispatcher
          if (responseInvoker.getWriter() == null)
          {
             throw new LoggableFailure(String.format(
-						"Could not find MessageBodyWriter for response object of type: %s of media type: %s",
-								responseInvoker.getType().getName(),
-								responseInvoker.getContentType()),
-						HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+                    "Could not find MessageBodyWriter for response object of type: %s of media type: %s",
+                    responseInvoker.getType().getName(),
+                    responseInvoker.getContentType()),
+                    HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
          }
 
          response.setStatus(jaxrsResponse.getStatus());
@@ -431,13 +430,13 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   public DispatcherUtilities getDispatcherUtilities() 
+   public DispatcherUtilities getDispatcherUtilities()
    {
-	  return dispatcherUtilities;
+      return dispatcherUtilities;
    }
 
-   public void setDispatcherUtilities(DispatcherUtilities dispatcherUtilities) 
+   public void setDispatcherUtilities(DispatcherUtilities dispatcherUtilities)
    {
-	  this.dispatcherUtilities = dispatcherUtilities;
+      this.dispatcherUtilities = dispatcherUtilities;
    }
 }
