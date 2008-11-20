@@ -55,6 +55,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
          class="org.springframework.orm.hibernate3.HibernateTransactionManager"
          p:sessionFactory-ref="sessionFactory"/>
 
-   <tx:annotation-driven transaction-manager="transactionManager"/>
+   <!-- Note: JAX-RS needs this proxy-target-class="true" setting in order to function properly -->
+   <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 
 </beans>
