@@ -24,7 +24,7 @@ public class ResteasyRegistration implements InitializingBean, BeanFactoryAware 
 
 	private BeanFactory beanFactory;
 
-	private Class scannableClass;
+	private Class<?> scannableClass;
 	
 	public ResteasyRegistration() {
 		super();
@@ -79,12 +79,12 @@ public class ResteasyRegistration implements InitializingBean, BeanFactoryAware 
 		this.beanFactory = beanFactory;
 	}
 
-   public Class getScannableClass()
+   public Class<?> getScannableClass()
    {
       return scannableClass;
    }
 
-   public void setScannableClass(Class scannableClass)
+   public void setScannableClass(Class<?> scannableClass)
    {
       this.scannableClass = scannableClass;
    }

@@ -18,7 +18,7 @@
 		factories/dispatchers/registries for different scenarios.
 	</description>
 
-	<!-- ========== Resteasy setup ================ -->
+	<!-- ========== General Resteasy setup ================ -->
 
 	<bean id="jaxrs.providerFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory"
 		factory-method="initializeInstance">
@@ -41,7 +41,6 @@
 		<constructor-arg ref="jaxrs.providerFactory" />
 	</bean>
 
-
 	<bean id="resteasy.registry" factory-bean="resteasy.dispatcher"
 		factory-method="getRegistry">
 		<description>
@@ -54,23 +53,20 @@
 		depends-on="resteasy.intializer">
 		<description>Add Resources and @Providers to the appropriate places
 			in Resteasy's infrastructure</description>
-		<constructor-arg ref="resteasy.registry" />
-		<constructor-arg ref="jaxrs.providerFactory" />
+		<constructor-arg index="0" ref="resteasy.registry" />
+		<constructor-arg index="1" ref="jaxrs.providerFactory" />
+		<constructor-arg index="2" >
+			<bean class="org.jboss.resteasy.plugins.spring.OptionalValueBeanFactory" 
+					p:beanName="resteasy.springbeanprocessor.context"/>
+		</constructor-arg>
+		<constructor-arg index="3" >
+			<bean class="org.jboss.resteasy.plugins.spring.OptionalValueBeanFactory" 
+					p:beanName="resteasy.springbeanprocessor.filter"/>
+		</constructor-arg>
 	</bean>
 
-	<bean id="resteasy.abstract.context.bean"
-		class="org.jboss.resteasy.plugins.spring.ResteasyContextFactoryBean" p:order="0">
-		<property name="objectTypes">
-			<list>
-				<value>javax.ws.rs.core.UriInfo</value>
-				<value>javax.ws.rs.core.HttpHeaders</value>
-				<value>javax.ws.rs.core.Request</value>
-				<value>javax.ws.rs.ext.MessageBodyWorkers</value>
-				<value>javax.ws.rs.ext.Providers</value>
-				<value>org.jboss.resteasy.spi.HttpRequest</value>
-			</list>
-		</property>
-	</bean>
+	<bean id="resteasy.context.injection.bean"
+		class="org.jboss.resteasy.plugins.spring.ResteasyContextFactoryBean" p:order="0" />
 
 	<bean id="contextAnnotationProcessor" p:autowiredAnnotationType="javax.ws.rs.core.Context" p:order="1"
 		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
@@ -98,14 +94,13 @@
 		<description>
 			This HandlerAdapter knows how to forward requests to
 			Resteasy for the handling of the service functionality, but not the
-			rendering, which is handled by a ResteasyView. Note, this also acts
-			as the "dispatcher", which is a bit whacky.
+			rendering, which is handled by a ResteasyView. 
         </description>
 
 		<constructor-arg ref="resteasy.dispatcher" />
 	</bean>
 
 	<bean id="resteasy.resource.registration" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
-		p:registry-ref="resteasy.registry" abstract="true" depends-on="resteasy.intializer" />
+		p:registry-ef="resteasy.registry" abstract="true" depends-on="resteasy.intializer" />
 
 </beans>
