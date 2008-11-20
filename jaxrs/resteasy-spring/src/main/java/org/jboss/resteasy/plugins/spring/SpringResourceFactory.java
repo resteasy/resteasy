@@ -19,7 +19,7 @@ public class SpringResourceFactory implements ResourceFactory, BeanFactoryAware 
 
 	private BeanFactory beanFactory;
 	private String beanName;
-	private Class scannableClass;
+	private Class<?> scannableClass;
 
 	public SpringResourceFactory(String beanName) {
 		this.beanName = beanName;
@@ -51,7 +51,7 @@ public class SpringResourceFactory implements ResourceFactory, BeanFactoryAware 
 		this.beanFactory = beanFactory;
 	}
 
-   public void setScannableClass(Class scannableClass)
+   public void setScannableClass(Class<?> scannableClass)
    {
       this.scannableClass = scannableClass;
    }
