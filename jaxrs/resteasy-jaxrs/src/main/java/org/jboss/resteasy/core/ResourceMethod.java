@@ -60,7 +60,7 @@ public class ResourceMethod implements ResourceInvoker
       this.httpMethods = httpMethods;
       this.resourceClass = clazz;
       this.method = method;
-      this.methodInjector = injector.createMethodInjector(method);
+      this.methodInjector = injector.createMethodInjector(clazz, method);
 
       Produces p = method.getAnnotation(Produces.class);
       if (p == null) p = clazz.getAnnotation(Produces.class);

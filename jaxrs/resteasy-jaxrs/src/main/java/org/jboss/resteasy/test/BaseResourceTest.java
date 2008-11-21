@@ -4,6 +4,8 @@
 package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -31,6 +33,16 @@ public abstract class BaseResourceTest
    public static void after() throws Exception
    {
       EmbeddedContainer.stop();
+   }
+
+   public Registry getRegistry()
+   {
+      return dispatcher.getRegistry();
+   }
+
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return dispatcher.getProviderFactory();
    }
 
    /**

@@ -34,6 +34,7 @@ public class ResteasyBootstrap implements ServletContextListener
    private Registry registry;
    private Dispatcher dispatcher;
 
+
    public void contextInitialized(ServletContextEvent event)
    {
       ResteasyProviderFactory.setInstance(factory);
@@ -45,33 +46,33 @@ public class ResteasyBootstrap implements ServletContextListener
       event.getServletContext().setAttribute(Registry.class.getName(), registry);
       String applicationConfig = event.getServletContext().getInitParameter(Application.class.getName());
 
-      String providers = event.getServletContext().getInitParameter("resteasy.providers");
+      String providers = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_PROVIDERS);
 
       if (providers != null) setProviders(providers);
 
-      String resourceMethodInterceptors = event.getServletContext().getInitParameter("resteasy.resource.method.interceptors");
+      String resourceMethodInterceptors = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS);
 
       if (resourceMethodInterceptors != null) setProviders(resourceMethodInterceptors);
 
-      String builtin = event.getServletContext().getInitParameter("resteasy.use.builtin.providers");
+      String builtin = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
       if (builtin == null || Boolean.valueOf(builtin.trim())) RegisterBuiltin.register(factory);
 
       boolean scanProviders = false;
       boolean scanResources = false;
 
-      String sProviders = event.getServletContext().getInitParameter("resteasy.scan.providers");
+      String sProviders = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
       if (sProviders != null)
       {
          scanProviders = Boolean.valueOf(sProviders.trim());
       }
-      String scanAll = event.getServletContext().getInitParameter("resteasy.scan");
+      String scanAll = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_SCAN);
       if (scanAll != null)
       {
          boolean tmp = Boolean.valueOf(scanAll.trim());
          scanProviders = tmp || scanProviders;
          scanResources = tmp || scanResources;
       }
-      String sResources = event.getServletContext().getInitParameter("resteasy.scan.resources");
+      String sResources = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
       if (sResources != null)
       {
          scanResources = Boolean.valueOf(sResources.trim());
@@ -111,13 +112,13 @@ public class ResteasyBootstrap implements ServletContextListener
          if (scanResources) processResources(db);
       }
 
-      String jndiResources = event.getServletContext().getInitParameter("resteasy.jndi.resources");
+      String jndiResources = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_JNDI_RESOURCES);
       if (jndiResources != null)
       {
          processJndiResources(jndiResources);
       }
 
-      String resources = event.getServletContext().getInitParameter("resteasy.resources");
+      String resources = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_RESOURCES);
       if (resources != null)
       {
          processResources(resources);
