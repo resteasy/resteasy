@@ -30,7 +30,7 @@ public class SuperStringConverterTest extends BaseResourceTest
    }
 
    @Provider
-   public static class PersonConverter extends SuperPersonConverter
+   public static class PersonConverter extends SuperPersonConverter implements StringConverter<Person>
    {
    }
 
@@ -68,7 +68,6 @@ public class SuperStringConverterTest extends BaseResourceTest
       }
    }
 
-   // remove implements to trigger RESTEASY-160
    @Provider
    public static class CompanyConverter extends ObjectConverter<Company> implements StringConverter<Company>
    {
