@@ -4,103 +4,91 @@
  @version $Revision: 1 $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<description>
-		Import this file "as is" in a Spring MVC dispatcher XML
-		environment to get the default implementation of the Spring
-		MVC/RestEasy integration. You can also use this as a template for more
-		advanced functionality, such as configuring multiple RestEasy
-		factories/dispatchers/registries for different scenarios.
-	</description>
+    <description>
+        Import this file "as is" in a Spring MVC dispatcher XML
+        environment to get the default implementation of the Spring
+        MVC/RestEasy integration. You can also use this as a template for more
+        advanced functionality, such as configuring multiple RestEasy
+        factories/dispatchers/registries for different scenarios.
+    </description>
 
-	<!-- ========== General Resteasy setup ================ -->
+    <!-- ========== Resteasy setup ================ -->
 
-	<bean id="jaxrs.providerFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory"
-		factory-method="initializeInstance">
-		<description>
-			This bean manages all of the JAX-RS @Providers.
-			@Providers convert from
-			the inputStream to a java object and
-			from a
-			Java object to an output stream. The SpringBeanPreprocessor scans
-			through the context for all
-			@Provider, and adds them to this instanc.
-		</description>
-	</bean>
-
-	<bean id="resteasy.intializer" class="org.jboss.resteasy.springmvc.ResteasyIntializer">
-		<constructor-arg ref="jaxrs.providerFactory" />
-	</bean>
-
-	<bean id="resteasy.dispatcher" class="org.jboss.resteasy.core.SynchronousDispatcher" depends-on="resteasy.intializer">
-		<constructor-arg ref="jaxrs.providerFactory" />
-	</bean>
-
-	<bean id="resteasy.registry" factory-bean="resteasy.dispatcher"
-		factory-method="getRegistry">
-		<description>
-			Expose the dispatcher's registry as a full-blown Spring
-			bean, so that it can be passed in as a reference.
+    <bean id="jaxrs.providerFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory"
+          factory-method="initializeInstance">
+        <description>
+            This bean manages all of the JAX-RS @Providers.
+            @Providers convert from
+            the inputStream to a java object and
+            from a
+            Java object to an output stream. The SpringBeanPreprocessor scans
+            through the context for all
+            @Provider, and adds them to this instanc.
         </description>
-	</bean>
+    </bean>
 
-	<bean class="org.jboss.resteasy.plugins.server.servlet.SpringBeanProcessor"
-		depends-on="resteasy.intializer">
-		<description>Add Resources and @Providers to the appropriate places
-			in Resteasy's infrastructure</description>
-		<constructor-arg index="0" ref="resteasy.registry" />
-		<constructor-arg index="1" ref="jaxrs.providerFactory" />
-		<constructor-arg index="2" >
-			<bean class="org.jboss.resteasy.plugins.spring.OptionalValueBeanFactory" 
-					p:beanName="resteasy.springbeanprocessor.context"/>
-		</constructor-arg>
-		<constructor-arg index="3" >
-			<bean class="org.jboss.resteasy.plugins.spring.OptionalValueBeanFactory" 
-					p:beanName="resteasy.springbeanprocessor.filter"/>
-		</constructor-arg>
-	</bean>
+    <bean id="resteasy.intializer" class="org.jboss.resteasy.springmvc.ResteasyIntializer">
+        <constructor-arg ref="jaxrs.providerFactory"/>
+    </bean>
 
-	<bean id="resteasy.context.injection.bean"
-		class="org.jboss.resteasy.plugins.spring.ResteasyContextFactoryBean" p:order="0" />
+    <bean id="resteasy.dispatcher" class="org.jboss.resteasy.core.SynchronousDispatcher"
+          depends-on="resteasy.intializer">
+        <constructor-arg ref="jaxrs.providerFactory"/>
+    </bean>
 
-	<bean id="contextAnnotationProcessor" p:autowiredAnnotationType="javax.ws.rs.core.Context" p:order="1"
-		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 
-	<!-- ========== Resteasy Spring MVC setup ================ -->
-
-	<bean class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping"
-		id="jaxrs.handlerMapping">
-		<description>
-			Tap into the RestEasy registry to find out if any of it's
-			Resources handle a specific URL
+    <bean id="resteasy.registry" factory-bean="resteasy.dispatcher"
+          factory-method="getRegistry">
+        <description>
+            Expose the dispatcher's registry as a full-blown Spring
+            bean, so that it can be passed in as a reference.
         </description>
-		<constructor-arg ref="resteasy.registry" />
-		<property name="interceptors">
-			<description>
-				Look for a list/array bean named "resteasy.dispatcher.interceptors"
-				which is composed of HandlerInterceptors to apply to this handler adapter. 
-	        </description>
-			<bean class="org.jboss.resteasy.plugins.spring.OptionalValueBeanFactory" 
-				p:beanName="resteasy.dispatcher.interceptors"/>
-		</property>
-	</bean>
+    </bean>
 
-	<bean id="jaxrs.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter">
-		<description>
-			This HandlerAdapter knows how to forward requests to
-			Resteasy for the handling of the service functionality, but not the
-			rendering, which is handled by a ResteasyView. 
+    <bean class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor"
+          depends-on="resteasy.intializer">
+        <description>Add Resources and @Providers to the appropriate places
+            in Resteasy's infrastructure
+        </description>
+        <constructor-arg ref="resteasy.dispatcher"/>
+        <constructor-arg ref="resteasy.registry"/>
+        <constructor-arg ref="jaxrs.providerFactory"/>
+    </bean>
+
+    <!-- ========== Resteasy Spring MVC setup ================ -->
+
+    <bean class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping"
+          id="jaxrs.handlerMapping">
+        <description>
+            Tap into the RestEasy registry to find out if any of it's
+            Resources handle a specific URL
+        </description>
+        <constructor-arg ref="resteasy.registry"/>
+        <property name="interceptors">
+            <description>
+                Look for a list/array bean named "resteasy.dispatcher.interceptors"
+                which is composed of HandlerInterceptors to apply to this handler adapter.
+            </description>
+            <bean class="org.jboss.resteasy.plugins.spring.OptionalValueBeanFactory"
+                  p:beanName="resteasy.dispatcher.interceptors"/>
+        </property>
+    </bean>
+
+    <bean id="jaxrs.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter">
+        <description>
+            This HandlerAdapter knows how to forward requests to
+            Resteasy for the handling of the service functionality, but not the
+            rendering, which is handled by a ResteasyView. Note, this also acts
+            as the "dispatcher", which is a bit whacky.
         </description>
 
-		<constructor-arg ref="resteasy.dispatcher" />
-	</bean>
-
-	<bean id="resteasy.resource.registration" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
-		p:registry-ref="resteasy.registry" abstract="true" depends-on="resteasy.intializer" />
+        <constructor-arg ref="resteasy.dispatcher"/>
+    </bean>
 
 </beans>

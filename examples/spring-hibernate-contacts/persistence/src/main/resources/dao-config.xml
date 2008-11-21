@@ -6,11 +6,11 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-   <import resource="classpath:persistence-config.xml"/>
+    <import resource="classpath:persistence-config.xml"/>
 
-   <bean id="contactDao"
-         class="org.jboss.resteasy.examples.contacts.persistence.hibernate.ContactDaoImpl"
-         p:sessionFactory-ref="sessionFactory"/>
+    <bean id="contactDao"
+          class="org.jboss.resteasy.examples.contacts.persistence.hibernate.ContactDaoImpl"
+          p:sessionFactory-ref="sessionFactory"/>
 
 
 </beans>

@@ -14,47 +14,47 @@ import org.jboss.resteasy.examples.contacts.persistence.ContactDao;
 
 /**
  * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a>
- * Jun 28, 2008
- * 
+ *         Jun 28, 2008
  */
 @Path("contactservice")
 @Transactional
 public class ContactServiceImpl implements ContactService
 {
-    // DAO class used for interacting with the database
-    private ContactDao contactDao;
-    
-    public ContactServiceImpl() {
-	System.out.println("In Constructor ContactServiceImpl");
-    }
+   // DAO class used for interacting with the database
+   private ContactDao contactDao;
 
-    @GET
-    @Path("/contacts")
-    @Produces("application/xml")
-    public Contacts getAllContacts()
-    {
-	Contacts contacts = new Contacts();
-	contacts.setContacts(contactDao.findAllContacts());
-	return contacts;
-    }
+   public ContactServiceImpl()
+   {
+      System.out.println("In Constructor ContactServiceImpl");
+   }
 
-    @Path("/contacts/{id}")
-    @Produces("application/xml")
-    public Contact getContactById(@PathParam("id")Long id)
-    {
-	Contact contact = contactDao.findContactById(id);
-	
-	return contact;
-    }
+   @GET
+   @Path("/contacts")
+   @Produces("application/xml")
+   public Contacts getAllContacts()
+   {
+      Contacts contacts = new Contacts();
+      contacts.setContacts(contactDao.findAllContacts());
+      return contacts;
+   }
 
-    public ContactDao getContactDao()
-    {
-        return contactDao;
-    }
+   @Path("/contacts/{id}")
+   @Produces("application/xml")
+   public Contact getContactById(@PathParam("id") Long id)
+   {
+      Contact contact = contactDao.findContactById(id);
 
-    public void setContactDao(ContactDao contactDao)
-    {
-        this.contactDao = contactDao;
-    }
+      return contact;
+   }
+
+   public ContactDao getContactDao()
+   {
+      return contactDao;
+   }
+
+   public void setContactDao(ContactDao contactDao)
+   {
+      this.contactDao = contactDao;
+   }
 
 }

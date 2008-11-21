@@ -13,5 +13,5 @@ public interface InjectorFactory
 
    PropertyInjector createPropertyInjector(Class resourceClass);
 
-   MethodInjector createMethodInjector(Method method);
+   MethodInjector createMethodInjector(Class root, Method method);
 }

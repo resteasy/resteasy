@@ -6,13 +6,13 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-   <!-- Import necessary DAO and DB transaction management classes -->
-   <import resource="classpath:dao-config.xml"/>
+    <!-- Import necessary DAO and DB transaction management classes -->
+    <import resource="classpath:dao-config.xml"/>
 
-   <!-- Inject DAO classes in service -->
-   <bean id="contactService"
-         class="org.jboss.resteasy.examples.contacts.services.ContactServiceImpl"
-         p:contactDao-ref="contactDao"/>
+    <!-- Inject DAO classes in service -->
+    <bean id="contactService"
+          class="org.jboss.resteasy.examples.contacts.services.ContactServiceImpl"
+          p:contactDao-ref="contactDao"/>
 
 
 </beans>

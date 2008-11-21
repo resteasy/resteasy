@@ -141,7 +141,7 @@ public class ResourceMethodRegistry implements Registry
          InjectorFactory injectorFactory = new InjectorFactoryImpl(providerFactory);
          if (httpMethods == null)
          {
-            ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, method);
+            ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, clazz, method);
             rootSegment.addPath(pathExpression, locator);
          }
          else

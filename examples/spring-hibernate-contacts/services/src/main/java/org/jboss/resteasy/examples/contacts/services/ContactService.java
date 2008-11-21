@@ -6,11 +6,11 @@ import org.jboss.resteasy.examples.contacts.core.Contacts;
 
 /**
  * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a>
- * Jun 28, 2008
- * 
+ *         Jun 28, 2008
  */
 public interface ContactService
 {
-    public Contact getContactById(Long id);
-    public Contacts getAllContacts();
+   public Contact getContactById(Long id);
+
+   public Contacts getAllContacts();
 }

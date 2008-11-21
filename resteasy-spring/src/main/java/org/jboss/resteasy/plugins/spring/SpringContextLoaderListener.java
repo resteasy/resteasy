@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.spring;
 
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;

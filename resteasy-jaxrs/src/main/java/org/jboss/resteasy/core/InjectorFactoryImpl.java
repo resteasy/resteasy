@@ -48,9 +48,9 @@ public class InjectorFactoryImpl implements InjectorFactory
       return new PropertyInjectorImpl(resourceClass, factory);
    }
 
-   public MethodInjector createMethodInjector(Method method)
+   public MethodInjector createMethodInjector(Class root, Method method)
    {
-      return new MethodInjectorImpl(method, factory);
+      return new MethodInjectorImpl(root, method, factory);
    }
 
    public static ValueInjector getParameterExtractor(Class type, Type genericType, Annotation[] annotations, AccessibleObject target, ResteasyProviderFactory providerFactory)

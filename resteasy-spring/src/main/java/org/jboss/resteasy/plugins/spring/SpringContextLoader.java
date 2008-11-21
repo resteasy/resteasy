@@ -1,11 +1,12 @@
-package org.jboss.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.spring;
 
-import javax.servlet.ServletContext;
-
+import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoader;
+
+import javax.servlet.ServletContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -26,8 +27,11 @@ public class SpringContextLoader extends ContextLoader
       if (registry == null)
          throw new RuntimeException("RESTeasy Registry is null, do ou have the ResteasyBootstrap listener configured?");
 
+      final Dispatcher dispatcher = (Dispatcher) servletContext.getAttribute(Dispatcher.class.getName());
+      if (registry == null)
+         throw new RuntimeException("RESTeasy Dispatcher is null, do ou have the ResteasyBootstrap listener configured?");
 
-      configurableWebApplicationContext.addBeanFactoryPostProcessor(new SpringBeanProcessor(registry, providerFactory));
+      configurableWebApplicationContext.addBeanFactoryPostProcessor(new SpringBeanProcessor(dispatcher, registry, providerFactory));
 
    }
 }

@@ -22,12 +22,20 @@ import java.lang.reflect.Type;
 public class MethodInjectorImpl implements MethodInjector
 {
    protected Method method;
+   protected Method invokedMethod;
+   protected Class rootClass;
    protected ValueInjector[] params;
    protected ResteasyProviderFactory factory;
 
-   public MethodInjectorImpl(Method method, ResteasyProviderFactory factory)
+   public MethodInjectorImpl(Class root, Method method, ResteasyProviderFactory factory)
    {
       this.method = method;
+      this.rootClass = root;
+
+      // invokedMethod is for when the target object might be a proxy and
+      // resteasy is getting the bean class to introspect.
+      // An example is a proxied Spring bean that is a resource
+      this.invokedMethod = findInterfaceBasedMethod(root, method);
       this.factory = factory;
       params = new ValueInjector[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
@@ -37,6 +45,24 @@ public class MethodInjectorImpl implements MethodInjector
          Annotation[] annotations = method.getParameterAnnotations()[i];
          params[i] = InjectorFactoryImpl.getParameterExtractor(type, genericType, annotations, method, factory);
       }
+   }
+
+   public static Method findInterfaceBasedMethod(Class root, Method method)
+   {
+      if (method.getDeclaringClass().isInterface() || root.isInterface()) return method;
+
+      for (Class intf : root.getInterfaces())
+      {
+         try
+         {
+            return intf.getMethod(method.getName(), method.getParameterTypes());
+         }
+         catch (NoSuchMethodException ignored) {}
+      }
+
+      if (root.getSuperclass() == null || root.getSuperclass().equals(Object.class)) return method;
+      return findInterfaceBasedMethod(root.getSuperclass(), method);
+
    }
 
    public Object[] injectArguments(HttpRequest input, HttpResponse response)
@@ -74,7 +100,7 @@ public class MethodInjectorImpl implements MethodInjector
       Object[] args = injectArguments(request, httpResponse);
       try
       {
-         return method.invoke(resource, args);
+         return invokedMethod.invoke(resource, args);
       }
       catch (IllegalAccessException e)
       {
@@ -93,8 +119,9 @@ public class MethodInjectorImpl implements MethodInjector
       catch (IllegalArgumentException e)
       {
          String msg = "Bad arguments passed to " + method.toString() + "  (";
-         if( args != null ){
-         boolean first = false;
+         if (args != null)
+         {
+            boolean first = false;
             for (Object arg : args)
             {
                if (!first)
