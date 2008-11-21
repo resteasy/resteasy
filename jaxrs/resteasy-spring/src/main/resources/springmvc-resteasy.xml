@@ -101,6 +101,6 @@
 	</bean>
 
 	<bean id="resteasy.resource.registration" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
-		p:registry-ef="resteasy.registry" abstract="true" depends-on="resteasy.intializer" />
+		p:registry-ref="resteasy.registry" abstract="true" depends-on="resteasy.intializer" />
 
 </beans>
