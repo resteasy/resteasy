@@ -419,19 +419,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       providers.put(provider.getClass(), provider);
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
       injector.inject(provider);
-      Type[] intfs = provider.getClass().getGenericInterfaces();
-      for (Type type : intfs)
-      {
-         if (type instanceof ParameterizedType)
+      Class clazz = provider.getClass();
+      do {
+         Type[] intfs = clazz.getGenericInterfaces();
+         for (Type type : intfs)
          {
-            ParameterizedType pt = (ParameterizedType) type;
-            if (pt.getRawType().equals(StringConverter.class))
+            if (type instanceof ParameterizedType)
             {
-               Class<?> aClass = Types.getRawType(pt.getActualTypeArguments()[0]);
-               stringConverters.put(aClass, provider);
+               ParameterizedType pt = (ParameterizedType) type;
+               if (pt.getRawType().equals(StringConverter.class))
+               {
+                  Class<?> aClass = Types.getRawType(pt.getActualTypeArguments()[0]);
+                  stringConverters.put(aClass, provider);
+               }
             }
          }
-      }
+         clazz = clazz.getSuperclass();
+      } while (clazz != null);
    }
 
    public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
