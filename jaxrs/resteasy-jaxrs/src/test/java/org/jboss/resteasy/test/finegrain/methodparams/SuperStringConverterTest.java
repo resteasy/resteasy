@@ -47,6 +47,45 @@ public class SuperStringConverterTest extends BaseResourceTest
       }
    }
 
+   public static class Company
+   {
+      private final String name;
+
+      public Company(String name)
+      {
+         this.name = name;
+      }
+
+      public String getName()
+      {
+         return name;
+      }
+
+      @Override
+      public String toString()
+      {
+         return getName();
+      }
+   }
+
+   @Provider
+   public static class CompanyConverter extends ObjectConverter<Company>
+   {
+      public Company fromString(String value)
+      {
+         return new Company(value);
+      }
+
+   }
+
+   public abstract static class ObjectConverter<T> implements StringConverter<T>
+   {
+      public String toString(T value)
+      {
+         return value.toString();
+      }
+   }
+
    @Path("/")
    public static class MyResource
    {
@@ -56,12 +95,21 @@ public class SuperStringConverterTest extends BaseResourceTest
       {
          Assert.assertEquals(p.getName(), "name");
       }
+
+      @Path("company/{company}")
+      @PUT
+      public void putCompany(@PathParam("company") Company c)
+      {
+         Assert.assertEquals(c.getName(), "name");
+      }
    }
 
    @Before
    public void setUp() throws Exception
    {
       dispatcher.getProviderFactory().addStringConverter(PersonConverter.class);
+      // uncomment the following line to trigger RESTEASY-160
+      //dispatcher.getProviderFactory().addStringConverter(CompanyConverter.class);
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
    }
 
@@ -71,6 +119,10 @@ public class SuperStringConverterTest extends BaseResourceTest
       @Path("person/{person}")
       @PUT
       void put(@PathParam("person") Person p);
+
+      @Path("company/{company}")
+      @PUT
+      public void putCompany(@PathParam("company") Company c);
    }
 
    @Test
@@ -79,5 +131,13 @@ public class SuperStringConverterTest extends BaseResourceTest
       MyClient client = ProxyFactory.create(MyClient.class, "http://localhost:8081");
       Person person = new Person("name");
       client.put(person);
+   }
+
+   //@Test
+   public void testCompany() throws Exception
+   {
+      MyClient client = ProxyFactory.create(MyClient.class, "http://localhost:8081");
+      Company company = new Company("name");
+      client.putCompany(company);
    }
 }
