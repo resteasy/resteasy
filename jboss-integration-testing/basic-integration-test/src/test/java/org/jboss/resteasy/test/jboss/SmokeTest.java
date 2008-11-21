@@ -8,8 +8,15 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.POST;
+import javax.ws.rs.FormParam;
 
 
 /**
@@ -100,4 +107,22 @@ public class SmokeTest
       return getDeploySetup(SmokeTest.class, "basic-integration-test.war");
    }
    */
+
+   @Test
+   public void testFormParam()
+   {
+      ResteasyProviderFactory.initializeInstance();
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      final FormResource client = ProxyFactory.create(FormResource.class, "http://localhost:8080/basic-integration-test");
+      final String result = client.postForm("value");
+      Assert.assertEquals(result, "value");
+   }
+
+   @Path("/")
+   public static interface FormResource
+   {
+      @POST
+      @Path("form")
+      public String postForm(@FormParam("value") String value);
+   }
 }
