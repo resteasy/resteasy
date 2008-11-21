@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>asynch-http-servlet-3.0</artifactId>
+            <artifactId>async-http-servlet-3.0</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
