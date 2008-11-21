@@ -68,8 +68,9 @@ public class SuperStringConverterTest extends BaseResourceTest
       }
    }
 
+   // remove implements to trigger RESTEASY-160
    @Provider
-   public static class CompanyConverter extends ObjectConverter<Company>
+   public static class CompanyConverter extends ObjectConverter<Company> implements StringConverter<Company>
    {
       public Company fromString(String value)
       {
@@ -108,8 +109,7 @@ public class SuperStringConverterTest extends BaseResourceTest
    public void setUp() throws Exception
    {
       dispatcher.getProviderFactory().addStringConverter(PersonConverter.class);
-      // uncomment the following line to trigger RESTEASY-160
-      //dispatcher.getProviderFactory().addStringConverter(CompanyConverter.class);
+      dispatcher.getProviderFactory().addStringConverter(CompanyConverter.class);
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
    }
 
@@ -133,7 +133,7 @@ public class SuperStringConverterTest extends BaseResourceTest
       client.put(person);
    }
 
-   //@Test
+   @Test
    public void testCompany() throws Exception
    {
       MyClient client = ProxyFactory.create(MyClient.class, "http://localhost:8081");
