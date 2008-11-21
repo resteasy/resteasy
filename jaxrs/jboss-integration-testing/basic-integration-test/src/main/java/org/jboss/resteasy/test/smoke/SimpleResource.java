@@ -8,6 +8,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.FormParam;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -58,5 +60,12 @@ public class SimpleResource
       return param;
    }
 
-
+   @POST
+   @Path("form")
+   @Produces("text/plain")
+   public String postForm(@FormParam("value") String value)
+   {
+      System.out.println(value);
+      return value;
+   }
 }
