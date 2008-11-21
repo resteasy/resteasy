@@ -431,6 +431,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
                {
                   Class<?> aClass = Types.getRawType(pt.getActualTypeArguments()[0]);
                   stringConverters.put(aClass, provider);
+                  return;
                }
             }
          }
