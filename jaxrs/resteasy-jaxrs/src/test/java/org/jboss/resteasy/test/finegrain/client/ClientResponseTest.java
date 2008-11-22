@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.finegrain.client;
 
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -24,8 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Simple smoke test
@@ -46,6 +45,10 @@ public class ClientResponseTest
       @Produces("text/plain")
       ClientResponse<String> getBasic();
 
+      @GET
+      @Path("basic")
+      ClientResponse getBasic2();
+
       @PUT
       @Path("basic")
       @Consumes("text/plain")
@@ -59,12 +62,12 @@ public class ClientResponseTest
       @GET
       @Path("queryParam")
       @Produces("text/plain")
-      ClientResponse<String> getQueryParam(@QueryParam("param")String param);
+      ClientResponse<String> getQueryParam(@QueryParam("param") String param);
 
       @GET
       @Path("uriParam/{param}")
       @Produces("text/plain")
-      ClientResponse<Integer> getUriParam(@PathParam("param")int param);
+      ClientResponse<Integer> getUriParam(@PathParam("param") int param);
 
       @GET
       @Path("header")
@@ -73,8 +76,11 @@ public class ClientResponseTest
       @GET
       @Path("basic")
       ClientResponse<byte[]> getBasicBytes();
-   }
 
+      @GET
+      @Path("error")
+      ClientResponse<String> getError();
+   }
 
    @BeforeClass
    public static void before() throws Exception
@@ -102,6 +108,9 @@ public class ClientResponseTest
       Assert.assertEquals("headervalue", client.getHeader().getHeaders().getFirst("header"));
       final byte[] entity = client.getBasicBytes().getEntity();
       Assert.assertTrue(Arrays.equals("basic".getBytes(), entity));
+
+      ClientResponse response = client.getBasic2();
+      Assert.assertEquals("basic", response.getEntity(String.class, null));
    }
 
    @Test
@@ -109,17 +118,11 @@ public class ClientResponseTest
    {
       Client client = null;
       client = ProxyFactory.create(Client.class, "http://localhost:8081/shite");
-      try
-      {
-         client.getBasic().getStatus();
-      }
-      catch (ClientResponseFailure e)
-      {
-         Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, e.getResponse().getStatus());
-         return;
-      }
+      ClientResponse<String> response = client.getBasic();
+      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+      response = client.getError();
+      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
 
-      throw new RuntimeException("Exception should have been thrown");
 
    }
 

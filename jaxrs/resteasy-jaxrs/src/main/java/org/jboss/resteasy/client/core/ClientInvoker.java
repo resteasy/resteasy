@@ -10,8 +10,8 @@ import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.Types;
 
@@ -143,7 +143,9 @@ abstract public class ClientInvoker
    {
       if (status > 399 && status < 599)
       {
-         throw new ClientResponseFailure("Error status " + status + " " + Response.Status.fromStatusCode(status) + " returned", createGenericClientResponse(baseMethod, status));
+         final CaseInsensitiveMap<String> headers = extractHeaders(baseMethod);
+         ClientResponse clientResponse = createFailureResponse(headers, baseMethod, status);
+         throw new ClientResponseFailure("Error status " + status + " " + Response.Status.fromStatusCode(status) + " returned", clientResponse);
       }
    }
 
@@ -206,47 +208,46 @@ abstract public class ClientInvoker
             throw new RuntimeException("Failed to execute GET request: " + url, e);
          }
 
-         try
+         if (ClientResponse.class.isAssignableFrom(method.getReturnType()))
          {
-            if (method.getReturnType().equals(Response.Status.class))
+            Type genericReturnType = null;
+            Class returnType = null;
+            if (method.getGenericReturnType() instanceof ParameterizedType)
             {
-               return Response.Status.fromStatusCode(status);
-            }
-            if (ClientResponse.class.isAssignableFrom(method.getReturnType()))
-            {
-               Type genericReturnType = null;
-               Class returnType = null;
-               if (method.getGenericReturnType() instanceof ParameterizedType)
-               {
-                  ParameterizedType zType = (ParameterizedType) method.getGenericReturnType();
-                  genericReturnType = zType.getActualTypeArguments()[0];
-                  returnType = Types.getRawType(genericReturnType);
+               ParameterizedType zType = (ParameterizedType) method.getGenericReturnType();
+               genericReturnType = zType.getActualTypeArguments()[0];
+               returnType = Types.getRawType(genericReturnType);
 
-               }
-               if (returnType == null || returnType.equals(Void.class) || status == HttpResponseCodes.SC_NO_CONTENT || (baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE) == null && baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_LENGTH) == null))
-               {
-                  return createGenericClientResponse(baseMethod, status);
-               }
-               checkFailureStatus(baseMethod, status);
-               return extractClientResponse(baseMethod, status, genericReturnType, returnType);
             }
-            else if (method.getReturnType() != null && !method.getReturnType().equals(void.class))
-            {
-               checkFailureStatus(baseMethod, status);
-               return extractClientResponse(baseMethod, status, method.getGenericReturnType(), method.getReturnType()).getEntity();
-            }
-            else
-            {
-               checkFailureStatus(baseMethod, status);
-               return null;
-            }
+            ClientResponseImpl clientResponse = new ClientResponseImpl();
+            clientResponse.setStatus(status);
+            clientResponse.setBaseMethod(baseMethod);
+            CaseInsensitiveMap<String> headers = extractHeaders(baseMethod);
+            clientResponse.setHeaders(headers);
+            clientResponse.setReturnType(returnType);
+            clientResponse.setGenericReturnType(genericReturnType);
+            clientResponse.setAnnotations(method.getAnnotations());
+            clientResponse.setProviderFactory(providerFactory);
 
+            return clientResponse;
          }
-         finally
+         if (method.getReturnType().equals(Response.Status.class))
          {
-            // todo better semantics/api for handling keep alive and such
             baseMethod.releaseConnection();
+            return Response.Status.fromStatusCode(status);
          }
+         if (method.getReturnType() != null && !method.getReturnType().equals(void.class))
+         {
+            checkFailureStatus(baseMethod, status);
+            return extractClientResponse(baseMethod, status, method.getGenericReturnType(), method.getReturnType());
+         }
+         else
+         {
+            checkFailureStatus(baseMethod, status);
+            baseMethod.releaseConnection();
+            return null;
+         }
+
       }
       finally
       {
@@ -257,57 +258,30 @@ abstract public class ClientInvoker
 
    public abstract HttpMethodBase createBaseMethod(String uri);
 
-   protected ClientResponse<byte[]> createGenericClientResponse(final HttpMethodBase baseMethod, final int status)
+   protected ClientResponse createFailureResponse(CaseInsensitiveMap<String> headers, HttpMethodBase baseMethod, int status)
    {
-      final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
-
-
-      for (Header header : baseMethod.getResponseHeaders())
+      ClientResponseImpl response = new ClientResponseImpl()
       {
-         headers.add(header.getName(), header.getValue());
-      }
-
-      return new ClientResponse<byte[]>()
-      {
-         public byte[] getEntity()
+         @Override
+         public Object getEntity()
          {
-            try
-            {
-               return baseMethod.getResponseBody();
-            }
-            catch (IOException e)
-            {
-               throw new RuntimeException(e);
-            }
-         }
-
-         public MultivaluedMap<String, String> getHeaders()
-         {
-            return headers;
-         }
-
-         public int getStatus()
-         {
-            return status;
+            throw new RuntimeException("No type information to extract entity with, use other getEntity() methods");
          }
       };
-
+      response.setHeaders(headers);
+      response.setBaseMethod(baseMethod);
+      response.setStatus(status);
+      return response;
    }
 
-   protected ClientResponse extractClientResponse(HttpMethodBase baseMethod, final int status, Type genericReturnType, Class returnType)
+   protected Object extractClientResponse(HttpMethodBase baseMethod, final int status, Type genericReturnType, Class returnType)
    {
-      final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
-
-
-      for (Header header : baseMethod.getResponseHeaders())
-      {
-         headers.add(header.getName(), header.getValue());
-      }
+      final CaseInsensitiveMap<String> headers = extractHeaders(baseMethod);
 
       Header contentType = baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
       if (contentType == null)
       {
-         ClientResponse response = createGenericClientResponse(baseMethod, status);
+         ClientResponse response = createFailureResponse(headers, baseMethod, status);
          throw new ClientResponseFailure("No Content-Type header specified", response);
       }
 
@@ -319,7 +293,7 @@ abstract public class ClientInvoker
          if (produce == null) produce = (Produces) declaring.getAnnotation(Produces.class);
          if (produce == null)
          {
-            ClientResponse response = createGenericClientResponse(baseMethod, status);
+            ClientResponse response = createFailureResponse(headers, baseMethod, status);
             throw new ClientResponseFailure("@Produces on your proxy method, " + method.toString() + ", is required", response);
          }
          mediaType = produce.value()[0];
@@ -332,34 +306,16 @@ abstract public class ClientInvoker
       MessageBodyReader reader = providerFactory.getMessageBodyReader(returnType, genericReturnType, method.getAnnotations(), media);
       if (reader == null)
       {
-         ClientResponse response = createGenericClientResponse(baseMethod, status);
+         ClientResponse response = createFailureResponse(headers, baseMethod, status);
          throw new ClientResponseFailure("Unable to find a MessageBodyReader of content-type " + mediaType + " for response of " + method.toString(), response);
       }
       try
       {
-         final Object response = reader.readFrom(returnType, genericReturnType, method.getAnnotations(), media, headers, baseMethod.getResponseBodyAsStream());
-         return new ClientResponse()
-         {
-            public Object getEntity()
-            {
-               return response;
-            }
-
-            public MultivaluedMap getHeaders()
-            {
-               return headers;
-            }
-
-            public int getStatus()
-            {
-               return status;
-            }
-         };
-
+         return reader.readFrom(returnType, genericReturnType, method.getAnnotations(), media, headers, baseMethod.getResponseBodyAsStream());
       }
-      catch (final IOException e)
+      catch (final Exception e)
       {
-         return new ClientResponse()
+         ClientResponse clientResponse = new ClientResponse()
          {
             public Object getEntity()
             {
@@ -375,7 +331,34 @@ abstract public class ClientInvoker
             {
                return status;
             }
+
+            public Object getEntity(Class type, Type genericType)
+            {
+               throw new RuntimeException("Unable to unmarshall response for " + method.toString(), e);
+            }
+
+            public Object getBody(GenericType genericType)
+            {
+               throw new RuntimeException("Unable to unmarshall response for " + method.toString(), e);
+            }
          };
+         throw new ClientResponseFailure(e, clientResponse);
       }
+      finally
+      {
+         baseMethod.releaseConnection();
+      }
+   }
+
+   public static CaseInsensitiveMap<String> extractHeaders(HttpMethodBase baseMethod)
+   {
+      final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
+
+
+      for (Header header : baseMethod.getResponseHeaders())
+      {
+         headers.add(header.getName(), header.getValue());
+      }
+      return headers;
    }
 }
