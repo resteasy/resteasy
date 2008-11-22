@@ -4,6 +4,15 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
+ * This class is a trick used to extract GenericType information at runtime.  Java does not allow you get generic
+ * type information easily, so this class does the trick.  For example:
+ * <p/>
+ * <pre>
+ * Type genericType = (new GenericType<List<String>>() {}).getGenericType();
+ * </pre>
+ * <p/>
+ * The above code will get you the genericType for List<String>
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

@@ -246,5 +246,31 @@ public class RegressionTest
 
    }
 
+   @Path("/nowhere")
+   public static interface NowhereClient
+   {
+      @GET
+      @Produces("text/plain")
+      public ClientResponse<String> read();
+   }
+
+   /**
+    * Test JIRA bug RESTEASY-
+    */
+   @Test
+   public void testIt() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      try
+      {
+         NowhereClient client = ProxyFactory.create(NowhereClient.class, "http://localhost:8081");
+         client.read();
+      }
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
+
+   }
 
 }
