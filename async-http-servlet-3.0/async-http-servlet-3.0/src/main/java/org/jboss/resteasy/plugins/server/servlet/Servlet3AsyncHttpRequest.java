@@ -1,14 +1,13 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.spi.AsynchronousResponse;
+import org.jboss.resteasy.spi.HttpResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response;
-import java.io.InputStream;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 
 /**
@@ -17,9 +16,9 @@ import java.io.IOException;
  */
 public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 {
-   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpResponse httpResponse, HttpHeaders httpHeaders, InputStream inputStream, UriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
+   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
    {
-      super(httpServletRequest, httpResponse, httpHeaders, inputStream, uriInfo, s, synchronousDispatcher);
+      super(httpServletRequest, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
    }
 
    @Override

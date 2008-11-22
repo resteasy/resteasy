@@ -1,15 +1,15 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.servlet.http.HttpEventServlet;
 import org.jboss.servlet.http.HttpEvent;
+import org.jboss.servlet.http.HttpEventServlet;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 
@@ -54,13 +54,6 @@ public class JBossWebDispatcherServlet extends HttpServletDispatcher implements 
    @Override
    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest httpServletRequest, HttpHeaders httpHeaders, UriInfoImpl uriInfo, HttpResponse httpResponse)
    {
-      try
-      {
-         return new JBossWebAsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, httpServletRequest.getInputStream(), uriInfo, httpMethod, (SynchronousDispatcher)dispatcher, cometEvent.get());
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
+      return new JBossWebAsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, uriInfo, httpMethod, (SynchronousDispatcher) dispatcher, cometEvent.get());
    }
 }
