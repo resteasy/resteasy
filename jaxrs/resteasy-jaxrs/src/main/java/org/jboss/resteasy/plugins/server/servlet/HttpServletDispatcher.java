@@ -89,16 +89,7 @@ public class HttpServletDispatcher extends HttpServlet
 
    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse)
    {
-      HttpRequest in;
-      try
-      {
-         in = new HttpServletInputMessage(request, theResponse, headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) dispatcher);
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
-      return in;
+      return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) dispatcher);
    }
 
    protected HttpResponse createServletResponse(HttpServletResponse response)

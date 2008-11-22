@@ -12,6 +12,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import org.junit.Assert;
 import java.net.URI;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.POST;
 
 
 
@@ -67,4 +71,15 @@ public class SimpleResource
    }
 
 
+   @POST
+   @Path("formtestit")
+   @Produces("text/plain")
+   public String postForm(@FormParam("value") String value, @Context HttpHeaders headers)
+   {
+      System.out.println(headers.getRequestHeaders().getFirst("content-type"));
+      System.out.println("HERE!!!");
+      if (value == null) throw new RuntimeException("VALUE WAS NULL");
+      System.out.println(value);
+      return value;
+   }
 }

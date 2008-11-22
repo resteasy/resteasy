@@ -10,6 +10,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Context;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -61,10 +63,13 @@ public class SimpleResource
    }
 
    @POST
-   @Path("form")
+   @Path("formtestit")
    @Produces("text/plain")
-   public String postForm(@FormParam("value") String value)
+   public String postForm(@FormParam("value") String value, @Context HttpHeaders headers)
    {
+      System.out.println(headers.getRequestHeaders().getFirst("content-type"));
+      System.out.println("HERE!!!");
+      if (value == null) throw new RuntimeException("VALUE WAS NULL");
       System.out.println(value);
       return value;
    }

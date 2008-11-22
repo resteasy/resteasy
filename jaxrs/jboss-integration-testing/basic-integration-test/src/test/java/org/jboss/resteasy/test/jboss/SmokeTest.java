@@ -122,7 +122,7 @@ public class SmokeTest
    public static interface FormResource
    {
       @POST
-      @Path("form")
+      @Path("formtestit")
       public String postForm(@FormParam("value") String value);
    }
 }

@@ -3,15 +3,16 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.AsynchronousResponse;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.Encode;
-import org.jboss.resteasy.util.HttpRequestImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -26,26 +27,34 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServletInputMessage extends HttpRequestImpl
+public class HttpServletInputMessage implements HttpRequest
 {
+   protected HttpHeaders httpHeaders;
    protected HttpServletRequest request;
    protected CountDownLatch latch;
    protected long suspendTimeout;
    protected SynchronousDispatcher dispatcher;
    protected HttpResponse httpResponse;
    protected boolean suspended;
+   protected UriInfo uri;
+   protected String httpMethod;
+   protected String preProcessedPath;
+   protected MultivaluedMap<String, String> formParameters;
+   protected MultivaluedMap<String, String> decodedFormParameters;
 
 
-   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
+   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
    {
-      super(inputStream, httpHeaders, httpMethod, uri);
       this.request = request;
       this.dispatcher = dispatcher;
       this.httpResponse = httpResponse;
+      this.httpHeaders = httpHeaders;
+      this.httpMethod = httpMethod;
+      this.uri = uri;
+      this.preProcessedPath = uri.getPath(false);
 
    }
 
-   @Override
    public MultivaluedMap<String, String> getFormParameters()
    {
       if (formParameters != null) return formParameters;
@@ -53,7 +62,6 @@ public class HttpServletInputMessage extends HttpRequestImpl
       return formParameters;
    }
 
-   @Override
    public MultivaluedMap<String, String> getDecodedFormParameters()
    {
       if (decodedFormParameters != null) return decodedFormParameters;
@@ -84,6 +92,43 @@ public class HttpServletInputMessage extends HttpRequestImpl
 
    }
 
+   public HttpHeaders getHttpHeaders()
+   {
+      return httpHeaders;
+   }
+
+   public InputStream getInputStream()
+   {
+      try
+      {
+         return request.getInputStream();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   public UriInfo getUri()
+   {
+      return uri;
+   }
+
+   public String getHttpMethod()
+   {
+      return httpMethod;
+   }
+
+   public String getPreprocessedPath()
+   {
+      return preProcessedPath;
+   }
+
+   public void setPreprocessedPath(String path)
+   {
+      preProcessedPath = path;
+   }
+
 
    public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
    {
@@ -106,7 +151,16 @@ public class HttpServletInputMessage extends HttpRequestImpl
       };
    }
 
-   @Override
+   public boolean isInitial()
+   {
+      return true;
+   }
+
+   public boolean isTimeout()
+   {
+      return false;
+   }
+
    public boolean isSuspended()
    {
       return suspended;
