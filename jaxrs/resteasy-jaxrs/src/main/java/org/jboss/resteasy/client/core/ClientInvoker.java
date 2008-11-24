@@ -337,7 +337,7 @@ abstract public class ClientInvoker
                throw new RuntimeException("Unable to unmarshall response for " + method.toString(), e);
             }
 
-            public Object getBody(GenericType genericType)
+            public Object getEntity(GenericType genericType)
             {
                throw new RuntimeException("Unable to unmarshall response for " + method.toString(), e);
             }
