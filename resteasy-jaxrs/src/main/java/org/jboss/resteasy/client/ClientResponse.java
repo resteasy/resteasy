@@ -42,6 +42,6 @@ public interface ClientResponse<T>
     * @param <T2>
     * @return
     */
-   <T2> T2 getBody(GenericType<T2> type);
+   <T2> T2 getEntity(GenericType<T2> type);
 
 }

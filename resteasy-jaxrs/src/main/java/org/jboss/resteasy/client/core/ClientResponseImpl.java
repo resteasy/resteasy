@@ -120,7 +120,7 @@ public class ClientResponseImpl implements ClientResponse
       }
    }
 
-   public Object getBody(GenericType genericType)
+   public Object getEntity(GenericType genericType)
    {
       return getEntity(genericType.getType(), genericType.getGenericType());
    }

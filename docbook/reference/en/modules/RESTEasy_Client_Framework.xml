@@ -1,5 +1,5 @@
 <chapter id="RESTEasy_Client_Framework">
-   <title>RESTEasy Client Framework</title>
+   <title>Client Framework</title>
 
    <para>
 
@@ -18,33 +18,33 @@
    <para>
 
       <programlisting>
-         public interface SimpleClient
-         {
-         @GET
-         @Path("basic")
-         @Produces("text/plain")
-         String getBasic();
+ public interface SimpleClient
+{
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   String getBasic();
 
-         @PUT
-         @Path("basic")
-         @Consumes("text/plain")
-         void putBasic(String body);
+   @PUT
+   @Path("basic")
+   @Consumes("text/plain")
+   void putBasic(String body);
 
-         @GET
-         @Path("queryParam")
-         @Produces("text/plain")
-         String getQueryParam(@QueryParam("param")String param);
+   @GET
+   @Path("queryParam")
+   @Produces("text/plain")
+   String getQueryParam(@QueryParam("param")String param);
 
-         @GET
-         @Path("matrixParam")
-         @Produces("text/plain")
-         String getMatrixParam(@MatrixParam("param")String param);
+   @GET
+   @Path("matrixParam")
+   @Produces("text/plain")
+   String getMatrixParam(@MatrixParam("param")String param);
 
-         @GET
-         @Path("uriParam/{param}")
-         @Produces("text/plain")
-         int getUriParam(@PathParam("param")int param);
-         }
+   @GET
+   @Path("uriParam/{param}")
+   @Produces("text/plain")
+   int getUriParam(@PathParam("param")int param);
+}
       </programlisting>
    </para>
    <para>
@@ -115,13 +115,11 @@
       <para>
 
          <programlisting>
-
-            @Path("/")
-            public interface MyProxy {
-
-            @POST
-            Response.Status updateSite(MyPojo pojo);
-            }
+@Path("/")
+public interface MyProxy {
+   @POST
+   Response.Status updateSite(MyPojo pojo);
+}
          </programlisting>
       </para>
       <para>
@@ -137,52 +135,69 @@
 
          If you are interested in everything, you can get it with the org.resteasy.spi.ClientResponse interface:
       </para>
+<programlisting><![CDATA[
+/**
+ * Response interface for the RESTEasy client framework.  Use this in your client proxy interface method return type
+ * declarations if you want access to the response entity as well as status and header information.
+ *
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @version $Revision: 1 $
+ */
+public interface ClientResponse<T>
+{
+   T getEntity();
+
+   MultivaluedMap<String, String> getHeaders();
+
+   int getStatus();
+
+   /**
+    * Extract the response body with the provided type information
+    *
+    * @param type
+    * @param genericType
+    * @param <T2>
+    * @return
+    */
+   <T2> T2 getEntity(Class<T2> type, Type genericType);
+
+   /**
+    * Extract the response body with the provided type information.  GenericType is a trick used to
+    * pass in generic type information to the resteasy runtime.
+    * <p/>
+    * For example:
+    * <pre>
+    * List<String> list = response.getEntity(new GenericType<List<String>() {});
+    *
+    * @param type
+    * @param <T2>
+    * @return
+    */
+   <T2> T2 getBody(GenericType<T2> type);
+
+}
+]]>
+</programlisting>
       <para>
-
-         <programlisting>
-
-            /**
-            * Response interface for the RESTEasy client framework. Use this in your client proxy interface method
-            return type
-            * declarations if you want access to the response entity as well as status and header information.
-            *
-            * @author &lt;a href="mailto:bill@burkecentral.com"&gt;Bill Burke&lt;/a&gt;
-            * @version $Revision: 1 $
-            */
-            public interface ClientResponse&lt;T&gt;
-            {
-            T getEntity();
-
-            MultivaluedMap&lt;String, String&gt; getHeaders();
-
-            int getStatus();
-            }
-
-
-         </programlisting>
+         All the getEntity() methods are deferred until you invoke them.  In other words, the response OutputStream is not read
+         untily you call one of these methods.   The empty paramed getBody() method can only be used if you have templated the ClientResponse within your method declaration.  Resteasy uses this generic type information to know what type to unmarshal the raw OutputStream into.  The other two getEntity() methods that take parameters, allow you to specify which Object types you want to marshal the response into.  These methods allow you to dynamically extract whatever types you want at runtime.  Here's an example:
       </para>
       <para>
 
-         You must use it as a generic with the entity body type you are interested in receiving back from the response
-         unmarshalling layer. Here's an example
-      </para>
-      <para>
+ <programlisting>
+@Path("/")
+public interface LibraryService {
 
-         <programlisting>
-            @Path("/")
-            public interface LibraryService {
-
-            @GET
-            @Produces("application/xml")
-            ClientResponse&lt;LibraryPojo&gt; getAllBooks();
-            }
+   @GET
+   @Produces("application/xml")
+   ClientResponse&lt;LibraryPojo&gt; getAllBooks();
+}
          </programlisting>
       </para>
       <para>
 
          We need to include the LibraryPojo in ClientResponse's generic declaration so that the client proxy framework
-         knows how to unmarshal the HTTP response body. We could not reuse the javax.ws.rs.core.Response class because
-         it is not a Java generic and we would have had no way to get this type information.
+         knows how to unmarshal the HTTP response body.
       </para>
       <para>
 
@@ -194,7 +209,7 @@
 
       <para>
 
-         If you are using the Client Framework and your proxy methods return something other than an un-type
+         If you are using the Client Framework and your proxy methods return something other than a
          ClientResponse, then the default client error handling comes into play. Any response code that is greater tha
          399 will automatically cause a org.jboss.resteasy.client.ClientResponseFailure exception
       </para>
@@ -202,10 +217,7 @@
 
          <programlisting>
             @GET
-            ClientResponse&lt;String&gt; get() // will throw a ClientResponseFailure on response &gt; code 399
-
-            @POST
-            ClientResponse post(); // will not throw a ClientResponseFailure
+            ClientResponse&lt;String&gt; get() // will throw an exception if you call getEntity()
 
             @GET
             MyObject get(); // will throw a ClientResponseFailure on response code &gt; 399
