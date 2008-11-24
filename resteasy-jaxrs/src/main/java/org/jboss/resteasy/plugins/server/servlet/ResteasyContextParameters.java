@@ -16,4 +16,6 @@ public interface ResteasyContextParameters
    String RESTEASY_SCAN_RESOURCES = "resteasy.scan.resources";
    String RESTEASY_JNDI_RESOURCES = "resteasy.jndi.resources";
    String RESTEASY_RESOURCES = "resteasy.resources";
+   String RESTEASY_MEDIA_TYPE_MAPPINGS = "resteasy.media.type.mappings";
+   String RESTEASY_LANGUAGE_MAPPINGS = "resteasy.language.mappings";
 }
