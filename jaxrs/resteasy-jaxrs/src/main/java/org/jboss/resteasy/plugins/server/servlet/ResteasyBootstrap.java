@@ -125,7 +125,7 @@ public class ResteasyBootstrap implements ServletContextListener
       }
 
       // Mappings don't work anymore, but leaving the code in just in case users demand to put it back in
-      String mimeExtentions = event.getServletContext().getInitParameter("resteasy.media.type.mappings");
+      String mimeExtentions = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_MEDIA_TYPE_MAPPINGS);
       if (mimeExtentions != null)
       {
          Map<String, String> map = parseMap(mimeExtentions);
@@ -140,7 +140,7 @@ public class ResteasyBootstrap implements ServletContextListener
       }
 
       // Mappings don't work anymore, but leaving the code in just in case users demand to put it back in
-      String languageExtensions = event.getServletContext().getInitParameter("resteasy.language.mappings");
+      String languageExtensions = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_LANGUAGE_MAPPINGS);
       if (languageExtensions != null)
       {
          Map<String, String> map = parseMap(languageExtensions);
