@@ -6,7 +6,7 @@
 
    </para>
    <para>
-
+JBoss's Maven Repository is at:
       http://repository.jboss.org/maven2
    </para>
    <para>
@@ -16,17 +16,19 @@
    <para>
 
       <programlisting>
-         &lt;repository&gt;
-         &lt;id&gt;jboss&lt;/id&gt;
-         &lt;url&gt;http://repository.jboss.org/maven2&lt;/url&gt;
-         &lt;/repository&gt;
-         &lt;/repositories&gt;
-         &lt;dependencies&gt;
-         &lt;dependency&gt;
-         &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-         &lt;artifactId&gt;resteasy-jaxrs&lt;/artifactId&gt;
-         &lt;version&gt;1.0-beta-9&lt;/version&gt;
-         &lt;/dependency&gt;
+&lt;repositories&gt;
+   &lt;repository&gt;
+      &lt;id&gt;jboss&lt;/id&gt;
+      &lt;url&gt;http://repository.jboss.org/maven2&lt;/url&gt;
+   &lt;/repository&gt;
+&lt;/repositories&gt;
+&lt;dependencies&gt;
+   &lt;dependency&gt;
+      &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+      &lt;artifactId&gt;resteasy-jaxrs&lt;/artifactId&gt;
+      &lt;version&gt;1.0-beta-9&lt;/version&gt;
+   &lt;/dependency&gt;
+&lt;/dependencies&gt;
       </programlisting>
    </para>
    <para>

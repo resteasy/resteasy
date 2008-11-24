@@ -24,7 +24,7 @@
                <tbody>
                   <row>
                      <entry>
-                        application/*+xml, text/*+xml
+                        application/*+xml, text/*+xml, application/*+json, application/*+fastinfoset, application/atom+*
                      </entry>
                      <entry>
                         JaxB annotated classes
@@ -259,11 +259,11 @@
             </listitem>
 
             <listitem>
-               application/fastinfoset
+               application/*+fastinfoset
             </listitem>
 
             <listitem>
-               application/json
+               application/*+json
             </listitem>
 
          </itemizedlist>
@@ -337,23 +337,21 @@
          </para>
          <para>
 
-            <programlisting>
+<programlisting>
+public interface ContextResolver&lt;T&gt;
+{
+   T getContext(Class&lt;?&gt; type);
+}
 
-               public interface ContextResolver&lt;T&gt;
-               {
-               T getContext(Class&lt;?&gt; type);
-               }
-
-               @Produces("application/xml")
-               @Provider
-               public class MyJAXBContextResolver implements ContextResolver&lt;JAXBContext&gt;
-               {
-
-               JAXBContext getContext(Class&lt;?&gt; type)
-               {
-               if (type.equals(WhateverClassIsOverridedFor.class)) return JAXBContext.newInstance()...;
-               }
-               }
+@Provider
+@Produces("application/xml")
+public class MyJAXBContextResolver implements ContextResolver&lt;JAXBContext&gt;
+{
+   JAXBContext getContext(Class&lt;?&gt; type)
+   {
+      if (type.equals(WhateverClassIsOverridedFor.class)) return JAXBContext.newInstance()...;
+   }
+}
             </programlisting>
          </para>
          <para>
@@ -420,58 +418,58 @@
          </para>
          <para>
 
-            <programlisting>
-               @XmlRootElement(name = "book")
-               public class Book
-               {
-               private String author;
-               private String ISBN;
-               private String title;
+<programlisting>
+@XmlRootElement(name = "book")
+public class Book
+{
+   private String author;
+   private String ISBN;
+   private String title;
 
-               public Book()
-               {
-               }
+   public Book()
+   {
+   }
 
-               public Book(String author, String ISBN, String title)
-               {
-               this.author = author;
-               this.ISBN = ISBN;
-               this.title = title;
-               }
+   public Book(String author, String ISBN, String title)
+   {
+      this.author = author;
+      this.ISBN = ISBN;
+      this.title = title;
+   }
 
-               @XmlElement
-               public String getAuthor()
-               {
-               return author;
-               }
+   @XmlElement
+   public String getAuthor()
+   {
+      return author;
+   }
 
-               public void setAuthor(String author)
-               {
-               this.author = author;
-               }
+   public void setAuthor(String author)
+   {
+      this.author = author;
+   }
 
-               @XmlElement
-               public String getISBN()
-               {
-               return ISBN;
-               }
+   @XmlElement
+   public String getISBN()
+   {
+      return ISBN;
+   }
 
-               public void setISBN(String ISBN)
-               {
-               this.ISBN = ISBN;
-               }
+   public void setISBN(String ISBN)
+   {
+      this.ISBN = ISBN;
+   }
 
-               @XmlAttribute
-               public String getTitle()
-               {
-               return title;
-               }
+   @XmlAttribute
+   public String getTitle()
+   {
+      return title;
+   }
 
-               public void setTitle(String title)
-               {
-               this.title = title;
-               }
-               }
+   public void setTitle(String title)
+   {
+      this.title = title;
+   }
+}
             </programlisting>
          </para>
          <para>
@@ -484,15 +482,15 @@
          </para>
          <para>
 
-            <programlisting>
-               {"book":
-               {
-               "@title":"EJB 3.0",
-               "author":{"$":"Bill Burke"},
-               "ISBN":{"$":"596529260"}
-               }
-               }
-            </programlisting>
+<programlisting>
+{"book":
+       {
+          "@title":"EJB 3.0",
+          "author":{"$":"Bill Burke"},
+          "ISBN":{"$":"596529260"}
+       }
+}
+</programlisting>
          </para>
          <para>
 
@@ -501,11 +499,11 @@
          </para>
          <para>
 
-            <programlisting>
-               var data = eval("(" + xhr.responseText + ")");
-               document.getElementById("zone").innerHTML = data.book.@title;
-               document.getElementById("zone").innerHTML += data.book.author.$;
-            </programlisting>
+<programlisting>
+var data = eval("(" + xhr.responseText + ")");
+document.getElementById("zone").innerHTML = data.book.@title;
+document.getElementById("zone").innerHTML += data.book.author.$;
+</programlisting>
          </para>
          <para>
 
@@ -519,11 +517,11 @@
          </para>
          <para>
 
-            <programlisting>
-               @BadgerFish
-               @XmlRootElement(name = "book")
-               public class Book {...}
-            </programlisting>
+<programlisting>
+@BadgerFish
+@XmlRootElement(name = "book")
+public class Book {...}
+</programlisting>
          </para>
          <para>
 
@@ -532,11 +530,11 @@
          </para>
          <para>
 
-            <programlisting>
-               @BadgerFish
-               @GET
-               public Book getBook(...) {...}
-            </programlisting>
+<programlisting>
+@BadgerFish
+@GET
+public Book getBook(...) {...}
+</programlisting>
          </para>
          <para>
 
@@ -544,10 +542,10 @@
          </para>
          <para>
 
-            <programlisting>
-               @POST
-               public void newBook(@BadgerFish Book book) {...}
-            </programlisting>
+<programlisting>
+@POST
+public void newBook(@BadgerFish Book book) {...}
+</programlisting>
          </para>
          <para>
 
@@ -559,15 +557,15 @@
          </para>
          <para>
 
-            <programlisting>
-               {"book" :
-               {
-               "@title":"EJB 3.0",
-               "author":"Bill Burke",
-               "ISBN":596529260
-               }
-               }
-            </programlisting>
+<programlisting>
+{ "book" :
+         {
+            "@title":"EJB 3.0",
+            "author":"Bill Burke",
+            "ISBN":596529260
+          }
+}
+</programlisting>
          </para>
          <para>
 
@@ -577,11 +575,11 @@
          </para>
          <para>
 
-            <programlisting>
-               var data = eval("(" + xhr.responseText + ")");
-               document.getElementById("zone").innerHTML = data.book.@title;
-               document.getElementById("zone").innerHTML += data.book.author;
-            </programlisting>
+<programlisting>
+var data = eval("(" + xhr.responseText + ")");
+document.getElementById("zone").innerHTML = data.book.@title;
+document.getElementById("zone").innerHTML += data.book.author;
+</programlisting>
          </para>
          <para>
 
@@ -620,10 +618,10 @@
          </para>
          <para>
 
-            <programlisting>
-               @POST
-               public void newBook(@Mapped(attributeAsElements={"title"}) Book book) {...}
-            </programlisting>
+<programlisting>
+@POST
+public void newBook(@Mapped(attributeAsElements={"title"}) Book book) {...}
+</programlisting>
          </para>
          <para>
 
@@ -660,6 +658,84 @@
 
          </para>
       </sect2>
+      <sect2 id="JAXB_Collections">
+         <title>Arrays and Collections of JAXB Objects</title>
+         <para>
+            In combination with the @org.jboss.resteasy.annotations.providers.jaxb.Wrapped annotation on your methods and parameters, you can 
+            marshal arrays, java.util.Set's, and java.util.List's of JAXB objects to and from XML, JSON, Fastinfoset (or any other new JAXB mapper Restasy comes up with).
+         </para>
+<programlisting><![CDATA[
+@XmlRootElement(name = "customer")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer
+{
+   @XmlElement
+   private String name;
+
+   public Customer()
+   {
+   }
+
+   public Customer(String name)
+   {
+      this.name = name;
+   }
+
+   public String getName()
+   {
+      return name;
+   }
+}
+
+@Path("/")
+public class MyResource
+{
+      @PUT
+      @Path("array")
+      @Consumes("application/xml")
+      public void putCustomers(@Wrapped Customer[] customers)
+      {
+         Assert.assertEquals("bill", customers[0].getName());
+         Assert.assertEquals("monica", customers[1].getName());
+      }
+
+      @GET
+      @Path("set")
+      @Produces("application/xml")
+      @Wrapped
+      public Set<Customer> getCustomerSet()
+      {
+         HashSet<Customer> set = new HashSet<Customer>();
+         set.add(new Customer("bill"));
+         set.add(new Customer("monica"));
+
+         return set;
+      }
+
+
+      @PUT
+      @Path("list")
+      @Consumes("application/xml")
+      public void putCustomers(@Wrapped List<Customer> customers)
+      {
+         Assert.assertEquals("bill", customers.get(0).getName());
+         Assert.assertEquals("monica", customers.get(1).getName());
+      }
+}
+]]>
+</programlisting>
+      <para>
+         The above resource can publish and receive JAXB objects.  It is assumed that are wrapped in a collection element in the
+         http://jboss.org/resteasy namespace.
+      </para>
+<programlisting><![CDATA[
+<resteasy:collection xmlns:resteasy="http://jboss.org/resteasy">
+   <customer><name>bill</name></customer>
+   <customer><name>monica</name></customer>
+</resteasy:collection>
+]]>
+</programlisting>
+   </sect2>
    </sect1>
    <sect1 id="Built_in_YAML_Provider">
       <title>YAML Provider</title>
@@ -685,12 +761,12 @@
       </para>
       <para>
 
-         <programlisting>
-            &lt;dependency&gt;
-            &lt;groupId&gt;org.jyaml&lt;/groupId&gt;
-            &lt;artifactId&gt;jyaml&lt;/artifactId&gt;
-            &lt;version&gt;1.3&lt;/version&gt;
-            &lt;/dependency&gt;
+<programlisting>
+&lt;dependency&gt;
+   &lt;groupId&gt;org.jyaml&lt;/groupId&gt;
+   &lt;artifactId&gt;jyaml&lt;/artifactId&gt;
+   &lt;version&gt;1.3&lt;/version&gt;
+&lt;/dependency&gt;
          </programlisting>
       </para>
       <para>
@@ -739,26 +815,24 @@
       </para>
       <para>
 
-         <programlisting>
+<programlisting>
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
-            import javax.ws.rs.Consumes;
-            import javax.ws.rs.GET;
-            import javax.ws.rs.Path;
-            import javax.ws.rs.Produces;
+@Path("/yaml")
+public class YamlResource
+{
 
-            @Path("/yaml")
-            public class YamlResource
-            {
-
-            @GET
-            @Produces("text/x-yaml")
-            public MyObject getMyObject() {
-            return createMyObject();
-            }
-            ...
-            }
-
-         </programlisting>
+   @GET
+   @Produces("text/x-yaml")
+   public MyObject getMyObject() {
+      return createMyObject();
+   }
+   ...
+}
+</programlisting>
       </para>
       <para>
 
