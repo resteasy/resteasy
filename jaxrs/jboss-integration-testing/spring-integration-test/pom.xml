@@ -46,6 +46,11 @@
             <artifactId>commons-httpclient</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>2.5.5</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>spring-integration-test</finalName>

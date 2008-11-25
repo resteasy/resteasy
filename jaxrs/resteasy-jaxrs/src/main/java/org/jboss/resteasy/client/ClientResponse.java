@@ -14,14 +14,26 @@ import java.lang.reflect.Type;
  */
 public interface ClientResponse<T>
 {
-   T getEntity();
-
    MultivaluedMap<String, String> getHeaders();
 
    int getStatus();
 
    /**
+    * Unmarshal the target entity from the response OutputStream.  You must have type information set via <T>
+    * otherwise, this will not work.
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
+    * cache the result and return the cached result.
+    *
+    * @return
+    */
+   T getEntity();
+
+   /**
     * Extract the response body with the provided type information
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
+    * cache the result and return the cached result.
     *
     * @param type
     * @param genericType
@@ -37,6 +49,10 @@ public interface ClientResponse<T>
     * For example:
     * <pre>
     * List<String> list = response.getBody(new GenericType<List<String>() {});
+    * <p/>
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
+    * cache the result and return the cached result.
     *
     * @param type
     * @param <T2>

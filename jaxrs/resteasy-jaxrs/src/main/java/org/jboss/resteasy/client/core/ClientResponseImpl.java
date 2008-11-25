@@ -28,6 +28,8 @@ public class ClientResponseImpl implements ClientResponse
    protected CaseInsensitiveMap<String> headers;
    protected int status;
    protected boolean wasReleased = false;
+   protected Object unmarshaledEntity;
+   protected boolean streamWasRead = false;
 
    public void setProviderFactory(ResteasyProviderFactory providerFactory)
    {
@@ -69,6 +71,8 @@ public class ClientResponseImpl implements ClientResponse
       try
       {
          if (status == HttpResponseCodes.SC_NO_CONTENT) return null;
+         if (unmarshaledEntity != null) return unmarshaledEntity;
+         if (streamWasRead) throw new RuntimeException("Stream was already read");
          String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
          MediaType media = MediaType.valueOf(mediaType);
          MessageBodyReader reader = providerFactory.getMessageBodyReader(returnType, genericReturnType, annotations, media);
@@ -76,9 +80,11 @@ public class ClientResponseImpl implements ClientResponse
          {
             throw new RuntimeException("Unable to find a MessageBodyReader of content-type " + mediaType);
          }
+         streamWasRead = true;
          try
          {
-            return reader.readFrom(returnType, genericReturnType, annotations, media, headers, baseMethod.getResponseBodyAsStream());
+            unmarshaledEntity = reader.readFrom(returnType, genericReturnType, annotations, media, headers, baseMethod.getResponseBodyAsStream());
+            return unmarshaledEntity;
          }
          catch (Exception e)
          {
@@ -97,6 +103,8 @@ public class ClientResponseImpl implements ClientResponse
       try
       {
          if (status == HttpResponseCodes.SC_NO_CONTENT) return null;
+         if (unmarshaledEntity != null) return unmarshaledEntity;
+         if (streamWasRead) throw new RuntimeException("Stream was already read");
          String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
          MediaType media = MediaType.valueOf(mediaType);
          MessageBodyReader reader = providerFactory.getMessageBodyReader(type, genericType, null, media);
@@ -104,9 +112,11 @@ public class ClientResponseImpl implements ClientResponse
          {
             throw new RuntimeException("Unable to find a MessageBodyReader of content-type " + mediaType);
          }
+         streamWasRead = true;
          try
          {
-            return reader.readFrom(type, genericType, null, media, headers, baseMethod.getResponseBodyAsStream());
+            unmarshaledEntity = reader.readFrom(type, genericType, null, media, headers, baseMethod.getResponseBodyAsStream());
+            return unmarshaledEntity;
          }
          catch (Exception e)
          {
