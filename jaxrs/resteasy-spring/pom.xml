@@ -6,12 +6,12 @@
     <!--
          <parent> <groupId>org.jboss.resteasy</groupId>
          <artifactId>resteasy-jaxrs-all</artifactId>
-         <version>1.0-beta-9</version> </parent>
+         <version>1.0-RC1</version> </parent>
      -->
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-beta-9</version>
+    <version>1.0-RC1</version>
     <name>Resteasy Spring integration</name>
     <url>http://maven.apache.org</url>
 
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.0-beta-9</version>
+            <version>1.0-RC1</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>1.0-beta-9</version>
+            <version>1.0-RC1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
