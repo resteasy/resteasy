@@ -28,7 +28,7 @@
             <outputDirectory>examples/jms-facade</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../resteasy-jaxrs-docbook/build/reference/en</directory>
+            <directory>../docbook/build/reference/en</directory>
             <outputDirectory>docs/userguide</outputDirectory>
         </fileSet>
     </fileSets>
@@ -56,7 +56,6 @@
             </includes>
             <excludes>
                 <exclude>org.jboss.resteasy:resteasy-jaxrs-war</exclude>
-                <exclude>org.jboss.resteasy:resteasy-jaxrs-dist</exclude>
             </excludes>
             <outputDirectory>lib</outputDirectory>
         </dependencySet>
