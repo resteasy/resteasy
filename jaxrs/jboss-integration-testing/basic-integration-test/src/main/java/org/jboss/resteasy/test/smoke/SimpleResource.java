@@ -73,4 +73,17 @@ public class SimpleResource
       System.out.println(value);
       return value;
    }
+
+
+   @PUT
+   @Path("formtestit")
+   @Produces("text/plain")
+   public String putForm(@FormParam("value") String value, @Context HttpHeaders headers)
+   {
+      System.out.println(headers.getRequestHeaders().getFirst("content-type"));
+      System.out.println("HERE!!!");
+      if (value == null) throw new RuntimeException("VALUE WAS NULL");
+      System.out.println(value);
+      return value;
+   }
 }

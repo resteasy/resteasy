@@ -6,12 +6,14 @@ import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.Encode;
+import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -55,8 +57,43 @@ public class HttpServletInputMessage implements HttpRequest
 
    }
 
+   public MultivaluedMap<String, String> getPutFormParameters()
+   {
+      if (formParameters != null) return formParameters;
+      if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
+      {
+         try
+         {
+            formParameters = FormUrlEncodedProvider.parseForm(getInputStream());
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      else
+      {
+         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
+      }
+      return formParameters;
+   }
+
+   public MultivaluedMap<String, String> getPutDecodedFormParameters()
+   {
+      if (decodedFormParameters != null) return decodedFormParameters;
+      decodedFormParameters = Encode.decode(getFormParameters());
+      return decodedFormParameters;
+   }
+
+
    public MultivaluedMap<String, String> getFormParameters()
    {
+      // Tomcat does not set getParameters() if it is a PUT request
+      // so pull it out manually
+      if (request.getMethod().equals("PUT"))
+      {
+         return getPutFormParameters();
+      }
       if (formParameters != null) return formParameters;
       formParameters = Encode.encode(getDecodedFormParameters());
       return formParameters;
@@ -64,6 +101,12 @@ public class HttpServletInputMessage implements HttpRequest
 
    public MultivaluedMap<String, String> getDecodedFormParameters()
    {
+      // Tomcat does not set getParameters() if it is a PUT request
+      // so pull it out manually
+      if (request.getMethod().equals("PUT"))
+      {
+         return getPutDecodedFormParameters();
+      }
       if (decodedFormParameters != null) return decodedFormParameters;
       decodedFormParameters = new MultivaluedMapImpl<String, String>();
       Map<String, String[]> params = request.getParameterMap();
