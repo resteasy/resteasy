@@ -262,7 +262,7 @@ public class UriInfoImpl implements UriInfo
       else
       {
          if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
-         return matchedUris;
+         return encodedMatchedUris;
       }
    }
 
