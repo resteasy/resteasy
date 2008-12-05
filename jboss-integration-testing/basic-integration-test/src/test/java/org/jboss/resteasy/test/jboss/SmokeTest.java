@@ -16,7 +16,11 @@ import org.apache.commons.httpclient.auth.AuthScope;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MultivaluedMap;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 
 /**
@@ -114,7 +118,11 @@ public class SmokeTest
       ResteasyProviderFactory.initializeInstance();
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       final FormResource client = ProxyFactory.create(FormResource.class, "http://localhost:8080/basic-integration-test");
-      final String result = client.postForm("value");
+      String result = client.postForm("value");
+      Assert.assertEquals(result, "value");
+      MultivaluedMap<String, String> rtn = new MultivaluedMapImpl<String, String>();
+      rtn.add("value", "value");
+      result = client.putForm(rtn);
       Assert.assertEquals(result, "value");
    }
 
@@ -124,5 +132,10 @@ public class SmokeTest
       @POST
       @Path("formtestit")
       public String postForm(@FormParam("value") String value);
+
+      @PUT
+      @Path("formtestit")
+      @Consumes("application/x-www-form-urlencoded")
+      public String putForm(MultivaluedMap<String, String> value);
    }
 }
