@@ -47,7 +47,7 @@ public class TestClientInterceptor
          return postExecuted;
       }
       
-      public void postMarshalling(ClientResponseImpl clientResponseImpl)
+      public void postUnMarshalling(ClientResponseImpl clientResponseImpl)
       {
       }
 
