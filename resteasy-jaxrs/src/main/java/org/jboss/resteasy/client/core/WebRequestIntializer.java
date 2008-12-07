@@ -18,14 +18,11 @@ public class WebRequestIntializer
    public static Object getUrl(Object resource, String methodName,
          Object... args)
    {
-      if (resource == null || methodName == null)
+      if (resource == null)
       {
-         return null;
+         throw new RuntimeException("A URL cannot be created for a null Resource."); 
       }
-      else
-      {
-         return getUrl(getClass(resource), methodName, args);
-      }
+      return getUrl(getClass(resource), methodName, args);
    }
 
    private static Class<? extends Object> getClass(Object resource)
@@ -55,6 +52,11 @@ public class WebRequestIntializer
    public static String getUrl(final Class<? extends Object> clazz,
          String methodName, Object... args)
    {
+      if (methodName == null)
+      {
+         throw new RuntimeException("A URL cannot be created for a null method."); 
+      }
+
       return getUrl("/", clazz, methodName, args);
    }
 
