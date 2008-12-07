@@ -1,15 +1,11 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.smoke.SimpleResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,16 +15,22 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Map;
+
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.WebRequest;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.smoke.SimpleResource;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Simple smoke test
- *
+ * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -95,22 +97,56 @@ public class ClientResponseTest
       EmbeddedContainer.stop();
    }
 
+   @SuppressWarnings("unchecked")
    @Test
    public void testClientResponse() throws Exception
    {
-      Client client = ProxyFactory.create(Client.class, "http://localhost:8081");
+      Client client = ProxyFactory
+            .create(Client.class, "http://localhost:8081");
 
       Assert.assertEquals("basic", client.getBasic().getEntity());
       client.putBasic("hello world");
-      Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
-      Assert.assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
-      Assert.assertEquals(Response.Status.OK, client.putBasicReturnCode("hello world"));
-      Assert.assertEquals("headervalue", client.getHeader().getHeaders().getFirst("header"));
+      Assert.assertEquals("hello world", client.getQueryParam("hello world")
+            .getEntity());
+
+      String queryResult = new WebRequest("http://localhost:8081/queryParam")
+            .queryParameter("param", "hello world").get(String.class).getEntity();
+      Assert.assertEquals("hello world", queryResult);
+
+      Assert
+            .assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
+
+      ClientResponse<Integer> paramPathResult = new WebRequest(
+            "http://localhost:8081/uriParam/{param}").accept("text/plain")
+            .pathParameter("param", 1234).get(Integer.class);
+      Assert.assertEquals(1234, paramPathResult.getEntity().intValue());
+
+      Assert.assertEquals(Response.Status.OK, client
+            .putBasicReturnCode("hello world"));
+      ClientResponse putResponse = new WebRequest(
+            "http://localhost:8081/basic").body("text/plain", "hello world").put();
+
+      Assert.assertEquals(Response.Status.OK, putResponse.getResponseStatus());
+
+      Assert.assertEquals("headervalue", client.getHeader().getHeaders()
+            .getFirst("header"));
+      ClientResponse getHeaderResponse = new WebRequest(
+            "http://localhost:8081/header").get();
+      Assert.assertEquals("headervalue", getHeaderResponse.getHeaders()
+            .getFirst("header"));
+
       final byte[] entity = client.getBasicBytes().getEntity();
       Assert.assertTrue(Arrays.equals("basic".getBytes(), entity));
 
-      ClientResponse response = client.getBasic2();
-      Assert.assertEquals("basic", response.getEntity(String.class, null));
+      ClientResponse<byte[]> getBasicResponse = new WebRequest(
+         "http://localhost:8081/basic").get(byte[].class);
+      Assert.assertTrue(Arrays.equals("basic".getBytes(), getBasicResponse.getEntity()));
+
+      Assert.assertEquals("basic", client.getBasic2().getEntity(String.class, null));
+
+      getBasicResponse = new WebRequest(
+         "http://localhost:8081/basic").get(byte[].class);
+      Assert.assertEquals("basic", getBasicResponse.getEntity(String.class, null));
    }
 
    @Test
@@ -123,7 +159,6 @@ public class ClientResponseTest
       response = client.getError();
       Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
 
-
    }
 
    @Path("/redirect")
@@ -134,7 +169,8 @@ public class ClientResponseTest
       {
          try
          {
-            return Response.seeOther(new URI("http://localhost:8081/redirect/data")).build();
+            return Response.seeOther(
+                  new URI("http://localhost:8081/redirect/data")).build();
          }
          catch (URISyntaxException e)
          {
@@ -162,21 +198,13 @@ public class ClientResponseTest
    {
       dispatcher.getRegistry().addPerRequestResource(RedirectResource.class);
       {
-         RedirectClient client = ProxyFactory.create(RedirectClient.class, "http://localhost:8081");
-         ClientResponse response = client.get();
-         System.out.println("size: " + response.getHeaders().size());
-         for (Object name : response.getHeaders().keySet())
-         {
-            System.out.print(name);
-            System.out.println(":" + response.getHeaders().getFirst(name.toString()));
-         }
-         String uri = (String) response.getHeaders().getFirst("location");
-         Assert.assertEquals(uri, "http://localhost:8081/redirect/data");
+         testRedirect(ProxyFactory.create(RedirectClient.class, "http://localhost:8081").get());
+         testRedirect(new WebRequest("http://localhost:8081/redirect").get());
       }
       System.out.println("*****");
       {
          URL url = new URL("http://localhost:8081/redirect");
-         //HttpURLConnection.setFollowRedirects(false);
+         // HttpURLConnection.setFollowRedirects(false);
          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
          conn.setInstanceFollowRedirects(false);
          conn.setRequestMethod("GET");
@@ -190,5 +218,16 @@ public class ClientResponseTest
 
    }
 
+   private void testRedirect(ClientResponse response)
+   {
+      System.out.println("size: " + response.getHeaders().size());
+      for (Object name : response.getHeaders().keySet())
+      {
+         System.out.print(name);
+         System.out.println(":"
+               + response.getHeaders().getFirst(name.toString()));
+      }
+      Assert.assertEquals((String) response.getHeaders().getFirst("location"), "http://localhost:8081/redirect/data");
+   }
 
 }

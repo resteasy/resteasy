@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.finegrain.client;
 
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.WebRequest;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Assert;
@@ -38,10 +39,14 @@ public class ClientFormParamTest
          final FormResource client = ProxyFactory.create(FormResource.class, "http://localhost:8081");
          final String result = client.put("value");
          Assert.assertEquals(result, "value");
+         final String result1 = new WebRequest("http://localhost:8081/form")
+               .formParameter("value", "value").post(String.class).getEntity();
+         Assert.assertEquals(result1, "value");
       }
       finally
       {
          EmbeddedContainer.stop();
       }
    }
+   
 }

@@ -137,7 +137,8 @@ public class FormMarshaller implements Marshaller
          Class type = field.getType();
          Type genericType = field.getGenericType();
 
-         Marshaller marshaller = ClientInvoker.createMarshaller(clazz, factory, type, annotations, genericType, field, true);
+         Marshaller marshaller = ClientMarshallerFactory.createMarshaller(
+               clazz, factory, type, annotations, genericType, field, true);
          if (marshaller != null)
          {
             if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
@@ -156,7 +157,9 @@ public class FormMarshaller implements Marshaller
          Class type = method.getReturnType();
          Type genericType = method.getGenericReturnType();
 
-         Marshaller marshaller = ClientInvoker.createMarshaller(clazz, factory, type, annotations, genericType, method, true);
+         Marshaller marshaller = ClientMarshallerFactory
+         .createMarshaller(clazz, factory, type, annotations,
+               genericType, method, true);
          if (marshaller != null)
          {
             long hash = 0;
