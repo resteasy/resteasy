@@ -9,5 +9,5 @@ public interface ClientInterceptor<T>
 
    void postExecute(ClientResponseImpl<T> clientResponseImpl);
    
-   void postMarshalling(ClientResponseImpl<T> clientResponseImpl);
+   void postUnMarshalling(ClientResponseImpl<T> clientResponseImpl);
 }

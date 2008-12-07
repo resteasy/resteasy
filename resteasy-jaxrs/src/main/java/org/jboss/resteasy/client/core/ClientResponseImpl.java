@@ -226,6 +226,10 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
          {
             streamWasRead = true;
             unmarshaledEntity = reader.readFrom(type, genericType, annotations, media, headers, getInputStream());
+            for (ClientInterceptor<T> clientInterceptor : interceptors)
+            {
+               clientInterceptor.postUnMarshalling(this);
+            }
             return (T2) unmarshaledEntity;
          }
          catch (Exception e)
