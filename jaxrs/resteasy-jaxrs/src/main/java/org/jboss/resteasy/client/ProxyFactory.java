@@ -1,22 +1,22 @@
 package org.jboss.resteasy.client;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.client.core.ClientInvoker;
-import org.jboss.resteasy.client.core.ClientProxy;
-import org.jboss.resteasy.client.core.DeleteInvoker;
-import org.jboss.resteasy.client.core.GetInvoker;
-import org.jboss.resteasy.client.core.PostInvoker;
-import org.jboss.resteasy.client.core.PutInvoker;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.IsHttpMethod;
-
-import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
+
+import javax.ws.rs.HttpMethod;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.jboss.resteasy.client.core.ClientInterceptor;
+import org.jboss.resteasy.client.core.ClientInvoker;
+import org.jboss.resteasy.client.core.ClientProxy;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.IsHttpMethod;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,6 +24,8 @@ import java.util.Set;
  */
 public class ProxyFactory
 {
+
+   private static Collection<ClientInterceptor> interceptors = new ArrayList<ClientInterceptor>();
 
    public static <T> T create(Class<T> clazz, String base)
    {
@@ -42,7 +44,12 @@ public class ProxyFactory
       }
    }
 
-   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory)
+   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory){
+      return create(clazz, baseUri, httpClient, providerFactory, ProxyFactory.interceptors);
+   }
+
+   @SuppressWarnings("unchecked")
+   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory, Collection<ClientInterceptor> interceptors)
    {
       HashMap<Method, ClientInvoker> methodMap = new HashMap<Method, ClientInvoker>();
 
@@ -55,17 +62,9 @@ public class ProxyFactory
          if (httpMethods.size() != 1)
             throw new RuntimeException("You may only annotate a method with only one http method annotation");
 
-         if (httpMethods.contains(HttpMethod.GET))
-            invoker = new GetInvoker(httpClient, clazz, method, providerFactory);
-         else if (httpMethods.contains(HttpMethod.PUT))
-            invoker = new PutInvoker(httpClient, clazz, method, providerFactory);
-         else if (httpMethods.contains(HttpMethod.POST))
-            invoker = new PostInvoker(httpClient, clazz, method, providerFactory);
-         else if (httpMethods.contains(HttpMethod.DELETE))
-            invoker = new DeleteInvoker(httpClient, clazz, method, providerFactory);
-         else throw new RuntimeException("@" + httpMethods.iterator().next() + " is not supported yet");
-
+         invoker = new ClientInvoker(clazz, method, providerFactory, httpClient, interceptors);
          invoker.setBaseUri(baseUri);
+         invoker.setRestVerb(getRestVerb(httpMethods));
          methodMap.put(method, invoker);
       }
 
@@ -78,5 +77,24 @@ public class ProxyFactory
       clientProxy.setClazz(clazz);
 
       return (T) Proxy.newProxyInstance(clazz.getClassLoader(), intfs, clientProxy);
+   }
+
+   private static String getRestVerb(Set<String> httpMethods)
+   {
+      if (httpMethods.contains(HttpMethod.GET))
+         return "GET";
+      else if (httpMethods.contains(HttpMethod.PUT))
+         return "PUT";
+      else if (httpMethods.contains(HttpMethod.POST))
+         return "POST";
+      else if (httpMethods.contains(HttpMethod.DELETE))
+         return "DELETE";
+      else 
+         throw new RuntimeException("@" + httpMethods.iterator().next() + " is not supported yet");
+   }
+   
+   public static void addInterceptor(ClientInterceptor clientInterceptor)
+   {
+      interceptors.add(clientInterceptor);
    }
 }

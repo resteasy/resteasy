@@ -3,6 +3,8 @@ package org.jboss.resteasy.client;
 import org.jboss.resteasy.util.GenericType;
 
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
 import java.lang.reflect.Type;
 
 /**
@@ -17,6 +19,8 @@ public interface ClientResponse<T>
    MultivaluedMap<String, String> getHeaders();
 
    int getStatus();
+   
+   Response.Status getResponseStatus();
 
    /**
     * Unmarshal the target entity from the response OutputStream.  You must have type information set via <T>
