@@ -77,6 +77,8 @@ public class ClientInvoker
       clientResponse.setProviderFactory(providerFactory);
       clientResponse.setRestVerb(restVerb);
       clientResponse.setAttributeExceptionsTo(method.toString());
+      if( interceptors != null )
+         clientResponse.setInterceptors(interceptors);
 
       clientResponse.setUrl(urlRetriever.buildUrl(uri, false, args));
       return clientResponse;
