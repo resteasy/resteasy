@@ -1,20 +1,21 @@
 package org.jboss.resteasy.core.registry;
 
-import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceLocator;
-import org.jboss.resteasy.core.ResourceMethod;
-import org.jboss.resteasy.spi.Failure;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.util.WeightedMediaType;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.core.ResourceLocator;
+import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.spi.NoResourceFoundFailure;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.util.WeightedMediaType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -92,19 +93,19 @@ public class Segment
             if (httpMethod.equals("OPTIONS"))
             {
                Response res = Response.ok().header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
-               throw new Failure("No resource method found for options, return OK with Allow header", res);
+               throw new NoResourceFoundFailure("No resource method found for options, return OK with Allow header", res);
             }
             else
             {
                Response res = Response.status(HttpResponseCodes.SC_METHOD_NOT_ALLOWED).header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
-               throw new Failure("No resource method found for " + httpMethod + ", return 405 with Allow header", res);
+               throw new NoResourceFoundFailure("No resource method found for " + httpMethod + ", return 405 with Allow header", res);
             }
          }
          if (!consumeMatch)
          {
-            throw new Failure("Cannot consume content type", HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE);
+            throw new NoResourceFoundFailure("Cannot consume content type", HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE);
          }
-         throw new Failure("No match for accept header", HttpResponseCodes.SC_NOT_ACCEPTABLE);
+         throw new NoResourceFoundFailure("No match for accept header", HttpResponseCodes.SC_NOT_ACCEPTABLE);
       }
       if (list.size() == 1) return list.get(0);
 

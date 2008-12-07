@@ -7,6 +7,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.NoResourceFoundFailure;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.PathHelper;
@@ -353,7 +354,7 @@ public class RootSegment extends Segment
          }
       }
       if (lastFailure != null) throw lastFailure;
-      throw new Failure("Could not find resource for path: " + path, HttpResponseCodes.SC_NOT_FOUND);
+      throw new NoResourceFoundFailure("Could not find resource for path: " + path, HttpResponseCodes.SC_NOT_FOUND);
    }
 
 
