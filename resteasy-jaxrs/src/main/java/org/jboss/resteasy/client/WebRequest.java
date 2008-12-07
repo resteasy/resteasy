@@ -3,6 +3,7 @@ package org.jboss.resteasy.client;
 import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
 
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,13 +50,13 @@ public class WebRequest
       this.httpClient = httpClient;
    }
 
-   public WebRequest withInterceptor(ClientInterceptor clientInterceptor)
+   public WebRequest interceptor(ClientInterceptor clientInterceptor)
    {
       interceptors.add(clientInterceptor);
       return this;
    }
 
-   public WebRequest withInterceptors(
+   public WebRequest interceptors(
          Collection<ClientInterceptor> clientInterceptors)
    {
       interceptors.addAll(clientInterceptors);
@@ -221,6 +222,7 @@ public class WebRequest
       clientResponse.setProviderFactory(providerFactory);
       clientResponse.setRestVerb(restVerb);
       clientResponse.setAttributeExceptionsTo("WebRequest");
+      clientResponse.setInterceptors(interceptors);
       return clientResponse;
    }
 

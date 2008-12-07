@@ -38,7 +38,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    protected ResteasyProviderFactory providerFactory;
 
    protected String attributeExceptionsTo;
-   protected Iterable<ClientInterceptor<T>> interceptors = Collections.emptyList();
+   protected Iterable<ClientInterceptor> interceptors = Collections.emptyList();
 
    protected String restVerb;
    protected String url;
@@ -62,7 +62,6 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    // These can only be set by an interceptor
    protected boolean allowRereads = false;
    protected boolean performExecute = true;
-
 
    protected boolean cacheInputStream;
 
@@ -104,6 +103,11 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    public void setException(Exception exception)
    {
       this.exception = exception;
+   }
+
+   public void setInterceptors(Iterable<ClientInterceptor> interceptors)
+   {
+      this.interceptors = interceptors;
    }
 
    public Header getContentTypeHeader()
