@@ -1,15 +1,5 @@
 package org.jboss.resteasy.client.core;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.URI;
-
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Providers;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.client.ClientResponse;
@@ -17,6 +7,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.Types;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Providers;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -77,7 +76,7 @@ public class ClientInvoker
       clientResponse.setProviderFactory(providerFactory);
       clientResponse.setRestVerb(restVerb);
       clientResponse.setAttributeExceptionsTo(method.toString());
-      if( interceptors != null )
+      if (interceptors != null)
          clientResponse.setInterceptors(interceptors);
 
       clientResponse.setUrl(urlRetriever.buildUrl(uri, false, args));
@@ -85,15 +84,15 @@ public class ClientInvoker
    }
 
    private void initBaseMethod(Object[] args,
-         ClientResponseImpl clientResponse)
+                               ClientResponseImpl clientResponse)
    {
       HttpMethodBase baseMethod = clientResponse.getHttpBaseMethod();
       boolean isClientResponseResult = ClientResponse.class.isAssignableFrom(method.getReturnType());
       if (isClientResponseResult)
-      { 
+      {
          baseMethod.setFollowRedirects(false);
       }
-      
+
       if (accepts != null)
       {
          baseMethod.setRequestHeader(HttpHeaderNames.ACCEPT, accepts.toString());
@@ -134,9 +133,10 @@ public class ClientInvoker
       }
 
       clientResponse.setReturnType(method.getReturnType());
-      
+      clientResponse.setGenericReturnType(method.getGenericReturnType());
+
       // TODO: Bill, why do we need this?
-      if (clientResponse.getContentType() != null && clientResponse.getContentType() == null)
+      if (clientResponse.getContentType() == null)
       {
          Produces produce = method.getAnnotation(Produces.class);
          if (produce == null) produce = (Produces) declaring.getAnnotation(Produces.class);
@@ -157,5 +157,5 @@ public class ClientInvoker
    public void setRestVerb(String restVerb)
    {
       this.restVerb = restVerb;
-   }   
+   }
 }
