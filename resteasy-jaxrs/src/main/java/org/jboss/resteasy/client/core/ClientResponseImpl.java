@@ -1,17 +1,5 @@
 package org.jboss.resteasy.client.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collections;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.MessageBodyReader;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -27,7 +15,18 @@ import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.ext.MessageBodyReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
+
+//import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -167,12 +166,12 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       if (exception != null)
       {
          throw new RuntimeException("Unable to unmarshall response for "
-               + attributeExceptionsTo, exception);
+                 + attributeExceptionsTo, exception);
       }
       if (returnType == null)
       {
          throw new RuntimeException(
-               "No type information to extract entity with, use other getEntity() methods");
+                 "No type information to extract entity with, use other getEntity() methods");
       }
       return (T) getEntity(returnType, genericReturnType);
    }
@@ -187,11 +186,11 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
             if (type.isInstance(this.unmarshaledEntity))
             {
                return (T2) unmarshaledEntity;
-            } 
+            }
             else
             {
                throw new RuntimeException("The entity was already read, and it was of type "
-                  + unmarshaledEntity.getClass());
+                       + unmarshaledEntity.getClass());
             }
          }
          else
@@ -201,7 +200,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       }
       try
       {
-         if (status == HttpResponseCodes.SC_NO_CONTENT) return null;         
+         if (status == HttpResponseCodes.SC_NO_CONTENT) return null;
          String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
          if (mediaType == null)
          {
@@ -216,11 +215,11 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
          }
 
          MessageBodyReader<T2> reader = providerFactory.getMessageBodyReader(
-               type, genericType, annotations, media);
+                 type, genericType, annotations, media);
          if (reader == null)
          {
             throw createResponseFailure("Unable to find a MessageBodyReader of content-type "
-                  + mediaType + " and type " + type.getName());
+                    + mediaType + " and type " + type.getName());
          }
          try
          {
@@ -236,8 +235,8 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
          {
             this.exception = e;
             throw createResponseFailure(
-                  "Failure reading from MessageBodyReader: "
-                        + reader.getClass().getName(), e);
+                    "Failure reading from MessageBodyReader: "
+                            + reader.getClass().getName(), e);
          }
       }
       finally
@@ -252,6 +251,8 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
 
    private InputStream getInputStream() throws IOException
    {
+      return baseMethod.getResponseBodyAsStream();
+      /*
       if (allowRereads)
       {
          this.rawResults = StreamUtil.getBytes(baseMethod.getResponseBodyAsStream(), false);
@@ -259,8 +260,8 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       }
       else
       {
-         return baseMethod.getResponseBodyAsStream();
       }
+      */
    }
 
    public <T2> T2 getEntity(GenericType<T2> genericType)
@@ -337,7 +338,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    }
 
    public static CaseInsensitiveMap<String> extractHeaders(
-         HttpMethodBase baseMethod)
+           HttpMethodBase baseMethod)
    {
       final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
 
@@ -374,7 +375,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       if (status > 399 && status < 599)
       {
          throw createResponseFailure("Error status " + status + " "
-               + Response.Status.fromStatusCode(status) + " returned");
+                 + Response.Status.fromStatusCode(status) + " returned");
       }
    }
 
@@ -385,13 +386,13 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
 
    @SuppressWarnings("unchecked")
    public ClientResponseFailure createResponseFailure(String message,
-         Exception e)
+                                                      Exception e)
    {
       setException(e);
       this.returnType = byte[].class;
       this.genericReturnType = null;
       return new ClientResponseFailure(message, e,
-            (ClientResponse<byte[]>) this);
+              (ClientResponse<byte[]>) this);
    }
 
    public void releaseConnection()

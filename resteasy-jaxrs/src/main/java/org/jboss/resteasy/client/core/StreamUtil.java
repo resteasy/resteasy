@@ -4,44 +4,48 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+//import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class StreamUtil
 {
-   public static byte[] getBytes(InputStream is, boolean closeIn) throws IOException{
+   public static byte[] getBytes(InputStream is, boolean closeIn) throws IOException
+   {
+      /*
       final ByteOutputStream bos = new ByteOutputStream();
       readInto(is, closeIn, bos, false, is.available());
       return bos.getBytes();
+      */
+      throw new RuntimeException("NOT IMPLEMENTED");
    }
 
-  public static void readInto(InputStream is, boolean closeIn,
-         OutputStream os, boolean closeOut) throws IOException
+   public static void readInto(InputStream is, boolean closeIn,
+                               OutputStream os, boolean closeOut) throws IOException
    {
-     readInto(is, closeIn, os, closeOut, 4 << 10);
+      readInto(is, closeIn, os, closeOut, 4 << 10);
    }
 
-private static void readInto(InputStream is, boolean closeIn, OutputStream os,
-      boolean closeOut, final int maxBufferSize) throws IOException
-{
-   try
+   private static void readInto(InputStream is, boolean closeIn, OutputStream os,
+                                boolean closeOut, final int maxBufferSize) throws IOException
    {
-      byte[] buf = new byte[Math.max(is.available(), maxBufferSize)];
-      if (buf.length == 0)
+      try
       {
-         return;
+         byte[] buf = new byte[Math.max(is.available(), maxBufferSize)];
+         if (buf.length == 0)
+         {
+            return;
+         }
+         int read = 0;
+         while ((read = is.read(buf, 0, Math.max(is.available(), buf.length))) != -1)
+         {
+            os.write(buf, 0, read);
+         }
       }
-      int read = 0;
-      while ((read = is.read(buf, 0, Math.max(is.available(), buf.length))) != -1)
+      finally
       {
-         os.write(buf, 0, read);
+         if (is != null && closeIn)
+            is.close();
+         if (os != null && closeOut)
+            os.close();
       }
    }
-   finally
-   {
-      if (is != null && closeIn)
-         is.close();
-      if (os != null && closeOut)
-         os.close();
-   }
-}
 }
