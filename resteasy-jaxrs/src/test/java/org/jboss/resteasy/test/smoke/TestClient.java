@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.smoke;
 
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.UriFor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
@@ -41,6 +42,7 @@ public class TestClient
       SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
 
       Assert.assertEquals("basic", client.getBasic());
+      Assert.assertEquals("/basic", UriFor.resolve(SimpleClient.class, "getBasic"));
       client.putBasic("hello world");
       Assert.assertEquals("hello world", client.getQueryParam("hello world"));
       Assert.assertEquals(1234, client.getUriParam(1234));

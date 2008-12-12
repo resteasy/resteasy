@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.WebRequest;
+import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.smoke.SimpleResource;
@@ -109,28 +109,28 @@ public class ClientResponseTest
       Assert.assertEquals("hello world", client.getQueryParam("hello world")
             .getEntity());
 
-      String queryResult = new WebRequest("http://localhost:8081/queryParam")
+      String queryResult = new ClientRequest("http://localhost:8081/queryParam")
             .queryParameter("param", "hello world").get(String.class).getEntity();
       Assert.assertEquals("hello world", queryResult);
 
       Assert
             .assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
 
-      ClientResponse<Integer> paramPathResult = new WebRequest(
+      ClientResponse<Integer> paramPathResult = new ClientRequest(
             "http://localhost:8081/uriParam/{param}").accept("text/plain")
             .pathParameter("param", 1234).get(Integer.class);
       Assert.assertEquals(1234, paramPathResult.getEntity().intValue());
 
       Assert.assertEquals(Response.Status.OK, client
             .putBasicReturnCode("hello world"));
-      ClientResponse putResponse = new WebRequest(
+      ClientResponse putResponse = new ClientRequest(
             "http://localhost:8081/basic").body("text/plain", "hello world").put();
 
       Assert.assertEquals(Response.Status.OK, putResponse.getResponseStatus());
 
       Assert.assertEquals("headervalue", client.getHeader().getHeaders()
             .getFirst("header"));
-      ClientResponse getHeaderResponse = new WebRequest(
+      ClientResponse getHeaderResponse = new ClientRequest(
             "http://localhost:8081/header").get();
       Assert.assertEquals("headervalue", getHeaderResponse.getHeaders()
             .getFirst("header"));
@@ -138,13 +138,13 @@ public class ClientResponseTest
       final byte[] entity = client.getBasicBytes().getEntity();
       Assert.assertTrue(Arrays.equals("basic".getBytes(), entity));
 
-      ClientResponse<byte[]> getBasicResponse = new WebRequest(
+      ClientResponse<byte[]> getBasicResponse = new ClientRequest(
          "http://localhost:8081/basic").get(byte[].class);
       Assert.assertTrue(Arrays.equals("basic".getBytes(), getBasicResponse.getEntity()));
 
       Assert.assertEquals("basic", client.getBasic2().getEntity(String.class, null));
 
-      getBasicResponse = new WebRequest(
+      getBasicResponse = new ClientRequest(
          "http://localhost:8081/basic").get(byte[].class);
       Assert.assertEquals("basic", getBasicResponse.getEntity(String.class, null));
    }
@@ -199,7 +199,7 @@ public class ClientResponseTest
       dispatcher.getRegistry().addPerRequestResource(RedirectResource.class);
       {
          testRedirect(ProxyFactory.create(RedirectClient.class, "http://localhost:8081").get());
-         testRedirect(new WebRequest("http://localhost:8081/redirect").get());
+         testRedirect(new ClientRequest("http://localhost:8081/redirect").get());
       }
       System.out.println("*****");
       {
