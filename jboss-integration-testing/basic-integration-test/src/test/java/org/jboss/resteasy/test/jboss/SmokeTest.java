@@ -20,7 +20,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.bind.JAXBContext;
+
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.test.smoke.Customer;
+
+import java.io.StringReader;
 
 
 /**
@@ -62,6 +67,17 @@ public class SmokeTest
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals("1234", method.getResponseBodyAsString());
+         method.releaseConnection();
+      }
+      {
+         // I'm testing unknown content-length here
+         GetMethod method = new GetMethod("http://localhost:8080/basic-integration-test/xml");
+         int status = client.executeMethod(method);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         String result = method.getResponseBodyAsString();
+         JAXBContext ctx = JAXBContext.newInstance(Customer.class);
+         Customer cust = (Customer)ctx.createUnmarshaller().unmarshal(new StringReader(result));
+         Assert.assertEquals("Bill Burke", cust.getName());
          method.releaseConnection();
       }
    }
