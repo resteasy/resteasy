@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,6 +55,32 @@ public final class ProviderHelper
       while (wasRead > -1);
 
       return builder.toString();
+   }
+
+   /**
+    * @param in
+    * @return
+    * @throws IOException
+    */
+   public static String readString(InputStream in, MediaType mediaType) throws IOException
+   {
+      byte[] buffer = new byte[1024];
+      ByteArrayOutputStream builder = new ByteArrayOutputStream();
+      int wasRead = 0;
+      do
+      {
+         wasRead = in.read(buffer, 0, 1024);
+         if (wasRead > 0)
+         {
+            builder.write(buffer, 0, wasRead);
+         }
+      }
+      while (wasRead > -1);
+      byte[] bytes = builder.toByteArray();
+
+      String charset = mediaType.getParameters().get("charset");
+      if (charset != null) return new String(bytes, charset);
+      else return new String(bytes, "UTF-8");
    }
 
    /**
