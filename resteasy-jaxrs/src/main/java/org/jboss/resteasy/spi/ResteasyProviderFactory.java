@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class ResteasyProviderFactory extends RuntimeDelegate implements Providers
 {
    /**
@@ -116,7 +117,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    private static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
    private InterceptorRegistry interceptorRegistry = new InterceptorRegistry();
 
-   public static void pushContext(Class<?> type, Object data)
+   public static <T> void pushContext(Class<T> type, T data)
    {
       Map<Class<?>, Object> map = getContextDataMap();
       map.put(type, data);
