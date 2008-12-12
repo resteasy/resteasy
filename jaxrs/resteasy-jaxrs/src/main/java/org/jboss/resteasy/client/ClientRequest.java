@@ -3,14 +3,12 @@ package org.jboss.resteasy.client;
 import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
 
 import java.lang.reflect.Type;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -26,8 +24,15 @@ import org.jboss.resteasy.client.core.QueryParamMarshaller;
 import org.jboss.resteasy.client.core.WebRequestIntializer;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+/**
+ * 
+ * 
+ * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
+ * @version $Revision: 1 $
+ */
+
 @SuppressWarnings("unchecked")
-public class WebRequest
+public class ClientRequest
 {
    protected ResteasyProviderFactory providerFactory = ResteasyProviderFactory
          .getInstance();
@@ -37,76 +42,76 @@ public class WebRequest
    private List<Marshaller> marshallers = new ArrayList<Marshaller>();
    private List<Object> args = new ArrayList<Object>();
 
-   public WebRequest(String uriTemplate)
+   public ClientRequest(String uriTemplate)
    {
       super();
       this.uriTemplate = uriTemplate;
    }
 
-   public WebRequest(String uriTemplate, HttpClient httpClient)
+   public ClientRequest(String uriTemplate, HttpClient httpClient)
    {
       super();
       this.uriTemplate = uriTemplate;
       this.httpClient = httpClient;
    }
 
-   public WebRequest interceptor(ClientInterceptor clientInterceptor)
+   public ClientRequest interceptor(ClientInterceptor clientInterceptor)
    {
       interceptors.add(clientInterceptor);
       return this;
    }
 
-   public WebRequest interceptors(
+   public ClientRequest interceptors(
          Collection<ClientInterceptor> clientInterceptors)
    {
       interceptors.addAll(clientInterceptors);
       return this;
    }
 
-   public WebRequest accept(MediaType accepts)
+   public ClientRequest accept(MediaType accepts)
    {
       return header(ACCEPT, accepts.toString());
    }
 
-   public WebRequest accept(String accept)
+   public ClientRequest accept(String accept)
    {
       return header(ACCEPT, accept);
    }
 
-   public WebRequest formParameter(String parameterName, String value)
+   public ClientRequest formParameter(String parameterName, Object value)
    {
       return marshaller(
             new FormParamMarshaller(parameterName, providerFactory), value);
    }
 
-   public WebRequest queryParameter(String parameterName, String value)
+   public ClientRequest queryParameter(String parameterName, Object value)
    {
       return marshaller(
             new QueryParamMarshaller(parameterName, providerFactory), value);
    }
 
-   public WebRequest header(String headerName, Object value)
+   public ClientRequest header(String headerName, Object value)
    {
       return marshaller(new HeaderParamMarshaller(headerName, providerFactory),
             value);
    }
 
-   public WebRequest cookie(String cookieName, String value)
+   public ClientRequest cookie(String cookieName, Object value)
    {
       return marshaller(new CookieParamMarshaller(cookieName), value);
    }
 
-   public WebRequest cookie(Cookie cookie)
+   public ClientRequest cookie(Cookie cookie)
    {
       return marshaller(new CookieParamMarshaller(null), cookie);
    }
 
-   public WebRequest pathParameter(String parameterName, Object value)
+   public ClientRequest pathParameter(String parameterName, Object value)
    {
       return pathParameter(parameterName, value, false);
    }
 
-   public WebRequest pathParameter(String parameterName, Object value,
+   public ClientRequest pathParameter(String parameterName, Object value,
          boolean encoded)
    {
       return marshaller(new PathParamMarshaller(parameterName, encoded,
@@ -122,14 +127,14 @@ public class WebRequest
     * @param value
     * @return
     */
-   public WebRequest marshaller(Marshaller marshaller, Object value)
+   public ClientRequest marshaller(Marshaller marshaller, Object value)
    {
       marshallers.add(marshaller);
       args.add(value);
       return this;
    }
    
-   public WebRequest body(String contentType, Object data)
+   public ClientRequest body(String contentType, Object data)
    {
       MessageBodyParameterMarshaller marshaller = new MessageBodyParameterMarshaller(
             MediaType.valueOf(contentType), data.getClass(), null, null,

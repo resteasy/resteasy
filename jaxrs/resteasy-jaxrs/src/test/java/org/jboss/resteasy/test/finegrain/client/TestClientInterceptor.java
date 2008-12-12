@@ -19,7 +19,7 @@ import junit.framework.Assert;
 import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.WebRequest;
+import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.core.ClientInterceptor;
 import org.jboss.resteasy.client.core.ClientResponseImpl;
 import org.jboss.resteasy.core.Dispatcher;
@@ -133,7 +133,7 @@ public class TestClientInterceptor
       Assert.assertEquals(1, interceptor.getPostExecuted());
       client.getBasic();
       Assert.assertEquals(2, interceptor.getPostExecuted());
-      new WebRequest("http://localhost:8081/basic").interceptor(interceptor).get();
+      new ClientRequest("http://localhost:8081/basic").interceptor(interceptor).get();
       Assert.assertEquals(3, interceptor.getPostExecuted());
    }
 }
