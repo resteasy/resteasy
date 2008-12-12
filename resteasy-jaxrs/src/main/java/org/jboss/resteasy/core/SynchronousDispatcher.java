@@ -110,7 +110,7 @@ public class SynchronousDispatcher implements Dispatcher
                MediaType match = mediaTypeMappings.get(ext);
                if (match != null)
                {
-                  in.getHttpHeaders().getAcceptableMediaTypes().add(match);
+                  in.getHttpHeaders().getAcceptableMediaTypes().add(0, match);
                   preprocessed = true;
                   continue;
                }
@@ -147,6 +147,37 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void invoke(HttpRequest request, HttpResponse response)
    {
+      ResourceInvoker invoker = null;
+      try
+      {
+         invoker = getInvoker(request, response);
+      }
+      catch (Failure e)
+      {
+         handleFailure(request, response, e);
+         logger.info(e.getMessage());
+         return;
+      }
+      if (invoker == null)
+      {
+         try
+         {
+            if( response.getStatus() != 500 )
+               response.sendError(HttpServletResponse.SC_NOT_FOUND);
+         }
+         catch (Exception e)
+         {
+            throw new UnhandledException(e);
+         }
+         logger.info("Could not match path: " + request.getUri().getPath());
+         return;
+      }
+      invoke(request, response, invoker);
+   }
+
+   public ResourceInvoker getInvoker(HttpRequest request, HttpResponse response)
+      throws Failure
+   {
       logger.debug("PathInfo: " + request.getUri().getPath());
       if (!request.isInitial())
       {
@@ -159,34 +190,10 @@ public class SynchronousDispatcher implements Dispatcher
          {
             throw new UnhandledException(e);
          }
-         return;
+         return null;
       }
       preprocess(request);
-      ResourceInvoker invoker = null;
-      try
-      {
-         invoker = registry.getResourceInvoker(request, response);
-      }
-      catch (Failure e)
-      {
-         handleFailure(request, response, e);
-         logger.info(e.getMessage());
-         return;
-      }
-      if (invoker == null)
-      {
-         try
-         {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-         }
-         catch (Exception e)
-         {
-            throw new UnhandledException(e);
-         }
-         logger.info("Could not match path: " + request.getUri().getPath());
-         return;
-      }
-      invoke(request, response, invoker);
+      return registry.getResourceInvoker(request, response);
    }
 
    /**
@@ -344,26 +351,7 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          getDispatcherUtilities().pushContextObjects(request, response);
-         Response jaxrsResponse = null;
-         try
-         {
-            jaxrsResponse = invoker.invoke(request, response);
-            if (request.isSuspended())
-            {
-               /**
-                * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
-                * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
-                * asychronous HTTP.
-                *
-                */
-               request.initialRequestThreadFinished();
-               return; // we're handing response asynchronously
-            }
-         }
-         catch (Exception e)
-         {
-            handleInvokerException(request, response, e);
-         }
+         Response jaxrsResponse = getJaxrsResponseInternal(request, response, invoker);
 
          try
          {
@@ -376,8 +364,34 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         ResteasyProviderFactory.clearContextData();
+         getDispatcherUtilities().clearContextData();
       }
+   }
+
+   private Response getJaxrsResponseInternal(HttpRequest request,
+         HttpResponse response, ResourceInvoker invoker)
+   {
+      Response jaxrsResponse = null;
+      try
+      {
+         jaxrsResponse = invoker.invoke(request, response);
+         if (request.isSuspended())
+         {
+            /**
+             * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
+             * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
+             * asychronous HTTP.
+             *
+             */
+            request.initialRequestThreadFinished();
+            return null; // we're handing response asynchronously
+         }
+      }
+      catch (Exception e)
+      {
+         handleInvokerException(request, response, e);
+      }
+      return jaxrsResponse;
    }
 
    public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse)
@@ -396,11 +410,11 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         ResteasyProviderFactory.clearContextData();
+         getDispatcherUtilities().clearContextData();
       }
    }
 
-   public void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
+   protected void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
            throws IOException, WebApplicationException
    {
       this.dispatcherUtilities.writeCookies(response, jaxrsResponse);
