@@ -162,7 +162,7 @@ public class SynchronousDispatcher implements Dispatcher
       {
          try
          {
-            if( response.getStatus() != 500 )
+            if (response.getStatus() != 500)
                response.sendError(HttpServletResponse.SC_NOT_FOUND);
          }
          catch (Exception e)
@@ -176,7 +176,7 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    public ResourceInvoker getInvoker(HttpRequest request, HttpResponse response)
-      throws Failure
+           throws Failure
    {
       logger.debug("PathInfo: " + request.getUri().getPath());
       if (!request.isInitial())
@@ -369,7 +369,7 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    private Response getJaxrsResponseInternal(HttpRequest request,
-         HttpResponse response, ResourceInvoker invoker)
+                                             HttpResponse response, ResourceInvoker invoker)
    {
       Response jaxrsResponse = null;
       try
@@ -439,7 +439,7 @@ public class SynchronousDispatcher implements Dispatcher
          response.setStatus(jaxrsResponse.getStatus());
          this.dispatcherUtilities.outputHeaders(response, jaxrsResponse);
          long size = responseInvoker.getResponseSize();
-         response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
+         if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
          responseInvoker.writeTo(response);
       }
    }
