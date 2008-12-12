@@ -11,7 +11,7 @@ public interface Registry
     *
     * @param clazz
     */
-   void addPerRequestResource(Class clazz);
+   void addPerRequestResource(Class<?> clazz);
 
    /**
     * Add a JAX-RS endpoint.  Objects of clazz will be created and destroy and the beginning/end of every request
@@ -19,7 +19,7 @@ public interface Registry
     * @param clazz
     * @param basePath prefix path of resource
     */
-   void addPerRequestResource(Class clazz, String basePath);
+   void addPerRequestResource(Class<?> clazz, String basePath);
 
 
    /**
@@ -67,9 +67,9 @@ public interface Registry
     */
    void addResourceFactory(ResourceFactory ref, String basePath);
 
-   void removeRegistrations(Class clazz);
+   void removeRegistrations(Class<?> clazz);
 
-   void removeRegistrations(Class clazz, String base);
+   void removeRegistrations(Class<?> clazz, String base);
 
    int getSize();
 }
