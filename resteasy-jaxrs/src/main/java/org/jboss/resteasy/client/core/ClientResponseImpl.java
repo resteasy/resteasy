@@ -225,7 +225,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
          {
             streamWasRead = true;
             unmarshaledEntity = reader.readFrom(type, genericType, annotations, media, headers, getInputStream());
-            for (ClientInterceptor<T> clientInterceptor : interceptors)
+            for (ClientInterceptor clientInterceptor : interceptors)
             {
                clientInterceptor.postUnMarshalling(this);
             }
@@ -252,16 +252,6 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    private InputStream getInputStream() throws IOException
    {
       return baseMethod.getResponseBodyAsStream();
-      /*
-      if (allowRereads)
-      {
-         this.rawResults = StreamUtil.getBytes(baseMethod.getResponseBodyAsStream(), false);
-         return new ByteInputStream(rawResults, 0);
-      }
-      else
-      {
-      }
-      */
    }
 
    public <T2> T2 getEntity(GenericType<T2> genericType)
@@ -302,7 +292,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    public void setUrl(String url)
    {
       this.url = url;
-      for (ClientInterceptor<T> clientInterceptor : interceptors)
+      for (ClientInterceptor clientInterceptor : interceptors)
       {
          clientInterceptor.preBaseMethodConstruction(this);
       }
@@ -313,7 +303,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    {
       try
       {
-         for (ClientInterceptor<T> clientInterceptor : interceptors)
+         for (ClientInterceptor clientInterceptor : interceptors)
          {
             clientInterceptor.preExecute(this);
          }
@@ -324,7 +314,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
          {
             status = client.executeMethod(baseMethod);
             headers = extractHeaders(baseMethod);
-            for (ClientInterceptor<T> clientInterceptor : interceptors)
+            for (ClientInterceptor clientInterceptor : interceptors)
             {
                clientInterceptor.postExecute(this);
             }

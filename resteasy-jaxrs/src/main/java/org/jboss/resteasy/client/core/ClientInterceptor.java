@@ -1,13 +1,14 @@
 package org.jboss.resteasy.client.core;
 
 
-public interface ClientInterceptor<T>
+@SuppressWarnings("unchecked")
+public interface ClientInterceptor
 {
-   void preBaseMethodConstruction(ClientResponseImpl<T> clientResponseImpl);
+   void preBaseMethodConstruction(ClientResponseImpl clientResponseImpl);
    
-   void preExecute(ClientResponseImpl<T> clientResponseImpl);
+   void preExecute(ClientResponseImpl clientResponseImpl);
 
-   void postExecute(ClientResponseImpl<T> clientResponseImpl);
+   void postExecute(ClientResponseImpl clientResponseImpl);
    
-   void postUnMarshalling(ClientResponseImpl<T> clientResponseImpl);
+   void postUnMarshalling(ClientResponseImpl clientResponseImpl);
 }
