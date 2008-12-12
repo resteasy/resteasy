@@ -37,7 +37,7 @@ public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyW
                           MultivaluedMap<String, String> httpHeaders,
                           InputStream entityStream) throws IOException
    {
-      String value = ProviderHelper.readString(entityStream);
+      String value = ProviderHelper.readString(entityStream, mediaType);
       return TypeConverter.getType(type, value);
    }
 

@@ -34,7 +34,7 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
                           MultivaluedMap<String, String> httpHeaders,
                           InputStream entityStream) throws IOException
    {
-      return ProviderHelper.readString(entityStream);
+      return ProviderHelper.readString(entityStream, mediaType);
    }
 
 
