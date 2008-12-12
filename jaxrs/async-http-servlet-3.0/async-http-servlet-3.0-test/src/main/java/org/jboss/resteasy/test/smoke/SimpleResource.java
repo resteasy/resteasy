@@ -45,5 +45,13 @@ public class SimpleResource
 
    }
 
+   @GET
+   @Path("xml")
+   @Produces("application/xml")
+   public Customer getCustomer()
+   {
+      return new Customer("Bill Burke");
+   }
+
 
 }
