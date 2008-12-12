@@ -86,13 +86,16 @@ public class DispatcherUtilities
    {
       ResteasyProviderFactory.pushContext(HttpRequest.class, request);
       ResteasyProviderFactory.pushContext(HttpResponse.class, response);
-      ResteasyProviderFactory.pushContext(HttpHeaders.class, request
-              .getHttpHeaders());
+      ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
       ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
-      ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(
-              request));
+      ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
       ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
       ResteasyProviderFactory.pushContext(Registry.class, registry);
+   }
+
+   public void clearContextData()
+   {
+      ResteasyProviderFactory.clearContextData();
    }
 
    public ResteasyProviderFactory getProviderFactory()
