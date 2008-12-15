@@ -1,5 +1,15 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.net.URI;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -10,13 +20,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -41,17 +44,17 @@ public class ReponseInfoTest
    {
       @Path("/simple")
       @GET
-      public String get(@QueryParam("abs")String abs)
+      public String get(@QueryParam("abs") String abs)
       {
          System.out.println("abs query: " + abs);
          URI base = null;
          if (abs == null)
          {
-            base = URI.create("http://localhost:8081/new/one");
+            base = createURI("/new/one");
          }
          else
          {
-            base = URI.create("http://localhost:8081/" + abs + "/new/one");
+            base = createURI("/" + abs + "/new/one");
          }
          Response response = Response.temporaryRedirect(URI.create("new/one")).build();
          URI uri = (URI) response.getMetadata().getFirst(HttpHeaderNames.LOCATION);
@@ -61,10 +64,10 @@ public class ReponseInfoTest
       }
    }
 
-   private void _test(HttpClient client, String uri)
+   private void _test(HttpClient client, String path)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -85,7 +88,7 @@ public class ReponseInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
-         _test(new HttpClient(), "http://localhost:8081/simple");
+         _test(new HttpClient(), "/simple");
       }
       finally
       {
@@ -100,13 +103,12 @@ public class ReponseInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
-         _test(new HttpClient(), "http://localhost:8081/resteasy/simple?abs=resteasy");
+         _test(new HttpClient(), "/resteasy/simple?abs=resteasy");
       }
       finally
       {
          EmbeddedContainer.stop();
       }
    }
-
 
 }

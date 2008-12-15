@@ -1,15 +1,17 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class ClientFormParamTest
 {
@@ -36,11 +38,11 @@ public class ClientFormParamTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(FormResourceImpl.class);
-         final FormResource client = ProxyFactory.create(FormResource.class, "http://localhost:8081");
+         final FormResource client = ProxyFactory.create(FormResource.class, generateBaseUrl());
          final String result = client.put("value");
          Assert.assertEquals(result, "value");
-         final String result1 = new ClientRequest("http://localhost:8081/form")
-               .formParameter("value", "value").post(String.class).getEntity();
+         final String result1 = createClientRequest("/form").formParameter("value", "value").post(
+               String.class).getEntity();
          Assert.assertEquals(result1, "value");
       }
       finally
@@ -48,5 +50,5 @@ public class ClientFormParamTest
          EmbeddedContainer.stop();
       }
    }
-   
+
 }

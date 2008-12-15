@@ -1,5 +1,25 @@
 package org.jboss.resteasy.test.regression;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -12,23 +32,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -79,7 +82,8 @@ public class RegressionTest
       @GET
       public Object getComplex()
       {
-         Response.ResponseBuilder builder = Response.status(HttpResponseCodes.SC_FOUND).entity("hello world".getBytes());
+         Response.ResponseBuilder builder = Response.status(HttpResponseCodes.SC_FOUND)
+               .entity("hello world".getBytes());
          builder.header("CoNtEnT-type", "text/plain");
          return builder.build();
       }
@@ -132,12 +136,15 @@ public class RegressionTest
          return type.equals(Customer.class);
       }
 
-      public long getSize(Customer customer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      public long getSize(Customer customer, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType)
       {
          return -1;
       }
 
-      public void writeTo(Customer customer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+      public void writeTo(Customer customer, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException
       {
          String out = "<customer><name>" + customer.getName() + "</name></customer>";
          entityStream.write(out.getBytes());
@@ -157,7 +164,7 @@ public class RegressionTest
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
          HttpClient client = new HttpClient();
-         GetMethod method = new GetMethod("http://localhost:8081/implicit");
+         GetMethod method = createGetMethod("/implicit");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals(method.getResponseHeader("content-type").getValue(), "application/xml");
@@ -165,11 +172,11 @@ public class RegressionTest
          String response = new String(responseBody, "US-ASCII");
          Assert.assertEquals("<customer><name>bill</name></customer>", response);
 
-         DeleteMethod del = new DeleteMethod("http://localhost:8081/implicit");
+         DeleteMethod del = createDeleteMethod("/implicit");
          status = client.executeMethod(del);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
 
-         SimpleClient proxy = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
+         SimpleClient proxy = ProxyFactory.create(SimpleClient.class, generateBaseUrl());
          proxy.deleteCustomer();
 
          Assert.assertEquals(204, proxy.deleteComplex().getStatus());
@@ -191,7 +198,7 @@ public class RegressionTest
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
          HttpClient client = new HttpClient();
-         GetMethod method = new GetMethod("http://localhost:8081/simple");
+         GetMethod method = createGetMethod("/simple");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals(method.getResponseHeader("content-type").getValue(), "text/plain");
@@ -214,14 +221,13 @@ public class RegressionTest
       dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
-         URL url = new URL("http://localhost:8081/simple");
+         URL url = createURL("/simple");
          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
          @SuppressWarnings("unused")
          Object obj = conn.getContent();
       }
       EmbeddedContainer.stop();
    }
-
 
    /**
     * Test JIRA bug RESTEASY-24 and 139
@@ -233,7 +239,7 @@ public class RegressionTest
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
          HttpClient client = new HttpClient();
-         GetMethod method = new GetMethod("http://localhost:8081/complex");
+         GetMethod method = createGetMethod("/complex");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_FOUND, status);
          Assert.assertEquals(method.getResponseHeader("content-type").getValue(), "text/plain");
@@ -263,7 +269,7 @@ public class RegressionTest
       dispatcher = EmbeddedContainer.start();
       try
       {
-         NowhereClient client = ProxyFactory.create(NowhereClient.class, "http://localhost:8081");
+         NowhereClient client = ProxyFactory.create(NowhereClient.class, generateBaseUrl());
          client.read();
       }
       finally

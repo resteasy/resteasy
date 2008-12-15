@@ -1,5 +1,14 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.CacheControl;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.annotations.cache.Cache;
@@ -8,12 +17,6 @@ import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.CacheControl;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -48,13 +51,12 @@ public class CacheControlAnnotationTest extends BaseResourceTest
       addPerRequestResource(Resource.class);
    }
 
-
    @Test
    public void testResource() throws Exception
    {
 
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/maxage");
+      GetMethod method = createGetMethod("/maxage");
       try
       {
          int status = client.executeMethod(method);
@@ -77,7 +79,7 @@ public class CacheControlAnnotationTest extends BaseResourceTest
    {
 
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/nocache");
+      GetMethod method = createGetMethod("/nocache");
       try
       {
          int status = client.executeMethod(method);

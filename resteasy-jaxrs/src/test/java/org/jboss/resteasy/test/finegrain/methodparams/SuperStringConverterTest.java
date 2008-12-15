@@ -1,16 +1,18 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.ext.Provider;
+
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.ext.Provider;
 
 public class SuperStringConverterTest extends BaseResourceTest
 {
@@ -127,7 +129,7 @@ public class SuperStringConverterTest extends BaseResourceTest
    @Test
    public void testPerson() throws Exception
    {
-      MyClient client = ProxyFactory.create(MyClient.class, "http://localhost:8081");
+      MyClient client = ProxyFactory.create(MyClient.class, generateBaseUrl());
       Person person = new Person("name");
       client.put(person);
    }
@@ -135,7 +137,7 @@ public class SuperStringConverterTest extends BaseResourceTest
    @Test
    public void testCompany() throws Exception
    {
-      MyClient client = ProxyFactory.create(MyClient.class, "http://localhost:8081");
+      MyClient client = ProxyFactory.create(MyClient.class, generateBaseUrl());
       Company company = new Company("name");
       client.putCompany(company);
    }

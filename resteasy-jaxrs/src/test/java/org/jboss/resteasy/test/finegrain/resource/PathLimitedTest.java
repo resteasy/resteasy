@@ -1,5 +1,14 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
@@ -10,12 +19,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -47,7 +50,7 @@ public class PathLimitedTest
 
       @Path(value = "/uriparam/{param:.*}")
       @GET
-      public String get(@PathParam("param")String param, @QueryParam("expected")String expected)
+      public String get(@PathParam("param") String param, @QueryParam("expected") String expected)
       {
          System.out.println("expected: " + expected);
          Assert.assertEquals(param, expected);
@@ -65,7 +68,7 @@ public class PathLimitedTest
       }
 
       @Path(value = "/locator2/{param:.*}")
-      public Object get(@PathParam("param")String param, @QueryParam("expected")String expected)
+      public Object get(@PathParam("param") String param, @QueryParam("expected") String expected)
       {
          Assert.assertEquals(param, expected);
          return new Resource();
@@ -82,7 +85,7 @@ public class PathLimitedTest
       }
 
       @Path("/locator3/uriparam/{param}")
-      public Object uriParam(@PathParam("param")String param, @QueryParam("firstExpected")String expected)
+      public Object uriParam(@PathParam("param") String param, @QueryParam("firstExpected") String expected)
       {
          Assert.assertEquals(param, expected);
          return new UnlimitedResource();
@@ -97,7 +100,6 @@ public class PathLimitedTest
          return "hello world";
       }
    }
-
 
    @BeforeClass
    public static void before() throws Exception
@@ -115,10 +117,10 @@ public class PathLimitedTest
       EmbeddedContainer.stop();
    }
 
-   private void _test(HttpClient client, String uri)
+   private void _test(HttpClient client, String path)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -133,10 +135,10 @@ public class PathLimitedTest
    }
 
    @SuppressWarnings("unused")
-   private void _testPut(HttpClient client, String uri)
+   private void _testPut(HttpClient client, String path)
    {
       {
-         PutMethod method = new PutMethod(uri);
+         PutMethod method = createPutMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -154,28 +156,28 @@ public class PathLimitedTest
    public void testUnlimitedOnClass()
    {
       HttpClient client = new HttpClient();
-      _test(client, "http://localhost:8081/unlimited");
-      _test(client, "http://localhost:8081/unlimited/on/and/on");
+      _test(client, "/unlimited");
+      _test(client, "/unlimited/on/and/on");
    }
 
    @Test
    public void testUnlimitedOnMethod()
    {
       HttpClient client = new HttpClient();
-      _test(client, "http://localhost:8081/unlimited2/on/and/on");
-      _test(client, "http://localhost:8081/uriparam/on/and/on?expected=on%2Fand%2Fon");
+      _test(client, "/unlimited2/on/and/on");
+      _test(client, "/uriparam/on/and/on?expected=on%2Fand%2Fon");
    }
 
    @Test
    public void testLocator()
    {
       HttpClient client = new HttpClient();
-      _test(client, "http://localhost:8081/locator");
-      _test(client, "http://localhost:8081/locator/on/and/on");
-      _test(client, "http://localhost:8081/locator2/on/and/on?expected=on%2Fand%2Fon");
-      _test(client, "http://localhost:8081/locator3/unlimited/unlimited2/on/and/on");
-      _test(client, "http://localhost:8081/locator3/unlimited/uriparam/on/and/on?expected=on%2Fand%2Fon");
-      _test(client, "http://localhost:8081/locator3/uriparam/1/uriparam/on/and/on?firstExpected=1&expected=on%2Fand%2Fon");
+      _test(client, "/locator");
+      _test(client, "/locator/on/and/on");
+      _test(client, "/locator2/on/and/on?expected=on%2Fand%2Fon");
+      _test(client, "/locator3/unlimited/unlimited2/on/and/on");
+      _test(client, "/locator3/unlimited/uriparam/on/and/on?expected=on%2Fand%2Fon");
+      _test(client, "/locator3/uriparam/1/uriparam/on/and/on?firstExpected=1&expected=on%2Fand%2Fon");
 
    }
 }

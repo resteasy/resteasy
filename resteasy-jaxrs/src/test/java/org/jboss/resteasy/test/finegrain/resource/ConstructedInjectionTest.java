@@ -1,5 +1,16 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.net.URI;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -9,14 +20,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
-import java.net.URI;
 
 /**
  * Test POJO constructor/field injection.
@@ -42,9 +45,10 @@ public class ConstructedInjectionTest
    public static class ConstructedResource
    {
       UriInfo myInfo;
+
       String abs;
 
-      public ConstructedResource(@Context UriInfo myInfo, @QueryParam("abs")String abs)
+      public ConstructedResource(@Context UriInfo myInfo, @QueryParam("abs") String abs)
       {
          this.myInfo = myInfo;
          this.abs = abs;
@@ -58,11 +62,11 @@ public class ConstructedInjectionTest
          URI base = null;
          if (abs == null)
          {
-            base = URI.create("http://localhost:8081/");
+            base = createURI("/");
          }
          else
          {
-            base = URI.create("http://localhost:8081/" + abs + "/");
+            base = createURI("/" + abs + "/");
          }
 
          System.out.println("BASE URI: " + myInfo.getBaseUri());
@@ -74,10 +78,10 @@ public class ConstructedInjectionTest
 
    }
 
-   private void _test(HttpClient client, String uri)
+   private void _test(HttpClient client, String path)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -98,7 +102,7 @@ public class ConstructedInjectionTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(ConstructedResource.class);
-         _test(new HttpClient(), "http://localhost:8081/simple");
+         _test(new HttpClient(), "/simple");
       }
       finally
       {

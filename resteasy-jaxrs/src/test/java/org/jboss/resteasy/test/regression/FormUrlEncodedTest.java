@@ -1,5 +1,16 @@
 package org.jboss.resteasy.test.regression;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.StreamingOutput;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -10,14 +21,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.StreamingOutput;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -44,7 +47,7 @@ public class FormUrlEncodedTest
    {
       @Path("/simple")
       @POST
-      public StreamingOutput post(@QueryParam("hello")String abs, InputStream entityStream) throws IOException
+      public StreamingOutput post(@QueryParam("hello") String abs, InputStream entityStream) throws IOException
       {
          Assert.assertNull(abs);
          final InputStream is = entityStream;
@@ -70,8 +73,9 @@ public class FormUrlEncodedTest
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       HttpClient client = new HttpClient();
       {
-         PostMethod method = new PostMethod("http://localhost:8081/simple");
-         NameValuePair[] params = {new NameValuePair("hello", "world")};
+         PostMethod method = createPostMethod("/simple");
+         NameValuePair[] params =
+         {new NameValuePair("hello", "world")};
          method.setRequestBody(params);
          try
          {

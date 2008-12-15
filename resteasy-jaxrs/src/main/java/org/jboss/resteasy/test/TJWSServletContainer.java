@@ -26,7 +26,7 @@ public class TJWSServletContainer
    {
       tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setDispatcher(dispatcher);
-      tjws.setPort(8081);
+      tjws.setPort(TestPortProvider.getPort());
       tjws.setRootResourcePath("");
       tjws.setSecurityDomain(null);
       tjws.start();
@@ -35,7 +35,7 @@ public class TJWSServletContainer
    public static Dispatcher start(String bindPath, SecurityDomain domain) throws Exception
    {
       tjws = new TJWSEmbeddedJaxrsServer();
-      tjws.setPort(8081);
+      tjws.setPort(TestPortProvider.getPort());
       tjws.setRootResourcePath(bindPath);
       tjws.setSecurityDomain(domain);
       tjws.start();

@@ -1,5 +1,18 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -13,16 +26,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -54,7 +57,7 @@ public class ClientErrorTest
       @Produces("text/xml")
       @GET
       @Path("complex/{uriparam: [^/]+}")
-      public String getXml(@PathParam("uriparam")String param)
+      public String getXml(@PathParam("uriparam") String param)
       {
          return "<" + param + "/>";
       }
@@ -90,7 +93,7 @@ public class ClientErrorTest
    public void testComplex()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/complex/match");
+      GetMethod method = createGetMethod("/complex/match");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/xml");
       try
       {
@@ -108,7 +111,7 @@ public class ClientErrorTest
    public void testNotFound()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/foo/notthere");
+      GetMethod method = createGetMethod("/foo/notthere");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/foo");
       try
       {
@@ -127,7 +130,7 @@ public class ClientErrorTest
    {
       HttpClient client = new HttpClient();
 
-      GetMethod method = new GetMethod("http://localhost:8081");
+      GetMethod method = createGetMethod("");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/foo");
       try
       {
@@ -146,7 +149,7 @@ public class ClientErrorTest
    public void testNotAcceptable()
    {
       HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod("http://localhost:8081");
+      PostMethod method = new PostMethod(generateBaseUrl());
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/bar");
       try
       {
@@ -166,7 +169,7 @@ public class ClientErrorTest
    public void testNoContentPost()
    {
       HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod("http://localhost:8081/nocontent");
+      PostMethod method = createPostMethod("/nocontent");
       try
       {
          method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
@@ -185,7 +188,7 @@ public class ClientErrorTest
    public void testNoContent()
    {
       HttpClient client = new HttpClient();
-      DeleteMethod method = new DeleteMethod("http://localhost:8081");
+      DeleteMethod method = new DeleteMethod(generateBaseUrl());
       try
       {
          int status = client.executeMethod(method);
@@ -203,7 +206,7 @@ public class ClientErrorTest
    public void testUnsupportedMediaType()
    {
       HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod("http://localhost:8081");
+      PostMethod method = new PostMethod(generateBaseUrl());
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/foo");
       try
       {

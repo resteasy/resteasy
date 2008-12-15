@@ -1,5 +1,14 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -9,12 +18,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -57,10 +60,10 @@ public class WebApplicationExceptionTest
       EmbeddedContainer.stop();
    }
 
-   private void _test(HttpClient client, String uri, int code)
+   private void _test(HttpClient client, String path, int code)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -77,7 +80,7 @@ public class WebApplicationExceptionTest
    @Test
    public void testException()
    {
-      _test(new HttpClient(), "http://localhost:8081/exception", HttpResponseCodes.SC_UNAUTHORIZED);
+      _test(new HttpClient(), "/exception", HttpResponseCodes.SC_UNAUTHORIZED);
    }
 
    /**
@@ -86,8 +89,7 @@ public class WebApplicationExceptionTest
    @Test
    public void testExceptionWithEntity()
    {
-      _test(new HttpClient(), "http://localhost:8081/exception/entity", HttpResponseCodes.SC_UNAUTHORIZED);
+      _test(new HttpClient(), "/exception/entity", HttpResponseCodes.SC_UNAUTHORIZED);
    }
-
 
 }

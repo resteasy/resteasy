@@ -138,7 +138,7 @@ public class ResourceLocatorTest
 
       /*
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/base/1/resources");
+      GetMethod method = createGetMethod("/base/1/resources");
       try
       {
          int status = client.executeMethod(method);

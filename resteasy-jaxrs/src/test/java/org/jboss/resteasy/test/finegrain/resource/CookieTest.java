@@ -1,15 +1,8 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -20,7 +13,17 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -63,7 +66,7 @@ public class CookieTest
 
       @Path("/param")
       @GET
-      public int param(@CookieParam("meaning")int value)
+      public int param(@CookieParam("meaning") int value)
       {
          Assert.assertEquals(value, 42);
          return value;
@@ -71,7 +74,7 @@ public class CookieTest
 
       @Path("/cookieparam")
       @GET
-      public String param(@CookieParam("meaning")Cookie value)
+      public String param(@CookieParam("meaning") Cookie value)
       {
          Assert.assertEquals(value.getValue(), "42");
          return value.getValue();
@@ -79,7 +82,7 @@ public class CookieTest
 
       @Path("/default")
       @GET
-      public int defaultValue(@CookieParam("defaulted") @DefaultValue("24")int value)
+      public int defaultValue(@CookieParam("defaulted") @DefaultValue("24") int value)
       {
          Assert.assertEquals(value, 24);
          return value;
@@ -99,10 +102,10 @@ public class CookieTest
       EmbeddedContainer.stop();
    }
 
-   private void _test(HttpClient client, String uri)
+   private void _test(HttpClient client, String path)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -116,24 +119,23 @@ public class CookieTest
 
    }
 
-
    @Test
    public void testIt()
    {
       HttpClient client = new HttpClient();
-      _test(client, "http://localhost:8081/set");
-      _test(client, "http://localhost:8081/headers");
-      _test(client, "http://localhost:8081/headers/fromField");
-      _test(client, "http://localhost:8081/cookieparam");
-      _test(client, "http://localhost:8081/param");
-      _test(client, "http://localhost:8081/default");
+      _test(client, "/set");
+      _test(client, "/headers");
+      _test(client, "/headers/fromField");
+      _test(client, "/cookieparam");
+      _test(client, "/param");
+      _test(client, "/default");
    }
 
    public static interface CookieProxy
    {
       @Path("/param")
       @GET
-      public int param(@CookieParam("meaning")int value);
+      public int param(@CookieParam("meaning") int value);
 
       @Path("/param")
       @GET
@@ -144,15 +146,14 @@ public class CookieTest
    public void testProxy()
    {
       {
-         CookieProxy proxy = ProxyFactory.create(CookieProxy.class, "http://localhost:8081");
+         CookieProxy proxy = ProxyFactory.create(CookieProxy.class, generateBaseUrl());
          proxy.param(42);
       }
       {
-         CookieProxy proxy = ProxyFactory.create(CookieProxy.class, "http://localhost:8081");
+         CookieProxy proxy = ProxyFactory.create(CookieProxy.class, generateBaseUrl());
          Cookie cookie = new Cookie("meaning", "42");
          proxy.param(cookie);
       }
-
 
    }
 

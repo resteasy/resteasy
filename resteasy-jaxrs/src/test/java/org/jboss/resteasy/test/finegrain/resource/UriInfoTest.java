@@ -1,5 +1,19 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -10,17 +24,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,17 +48,17 @@ public class UriInfoTest
    {
       @Path("/simple")
       @GET
-      public String get(@Context UriInfo info, @QueryParam("abs")String abs)
+      public String get(@Context UriInfo info, @QueryParam("abs") String abs)
       {
          System.out.println("abs query: " + abs);
          URI base = null;
          if (abs == null)
          {
-            base = URI.create("http://localhost:8081/");
+            base = createURI("/");
          }
          else
          {
-            base = URI.create("http://localhost:8081/" + abs + "/");
+            base = createURI("/" + abs + "/");
          }
 
          System.out.println("BASE URI: " + info.getBaseUri());
@@ -70,17 +73,17 @@ public class UriInfoTest
 
       @Path("/simple/fromField")
       @GET
-      public String get(@QueryParam("abs")String abs)
+      public String get(@QueryParam("abs") String abs)
       {
          System.out.println("abs query: " + abs);
          URI base = null;
          if (abs == null)
          {
-            base = URI.create("http://localhost:8081/");
+            base = createURI("/");
          }
          else
          {
-            base = URI.create("http://localhost:8081/" + abs + "/");
+            base = createURI("/" + abs + "/");
          }
 
          System.out.println("BASE URI: " + myInfo.getBaseUri());
@@ -92,10 +95,10 @@ public class UriInfoTest
 
    }
 
-   private void _test(HttpClient client, String uri)
+   private void _test(HttpClient client, String path)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -116,7 +119,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addResourceFactory(new SingletonResource(new SimpleResource()));
-         _test(new HttpClient(), "http://localhost:8081/simple/fromField");
+         _test(new HttpClient(), "/simple/fromField");
       }
       finally
       {
@@ -132,8 +135,8 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
-         _test(new HttpClient(), "http://localhost:8081/simple");
-         _test(new HttpClient(), "http://localhost:8081/simple/fromField");
+         _test(new HttpClient(), "/simple");
+         _test(new HttpClient(), "/simple/fromField");
       }
       finally
       {
@@ -148,7 +151,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
-         _test(new HttpClient(), "http://localhost:8081/resteasy/simple?abs=resteasy");
+         _test(new HttpClient(), "/resteasy/simple?abs=resteasy");
       }
       finally
       {
@@ -160,10 +163,7 @@ public class UriInfoTest
    public static class EncodedTemplateResource
    {
       @GET
-      public String doGet(
-              @PathParam("a")String a,
-              @PathParam("b")String b,
-              @Context UriInfo info)
+      public String doGet(@PathParam("a") String a, @PathParam("b") String b, @Context UriInfo info)
       {
          Assert.assertEquals("a b", a);
          Assert.assertEquals("x y", b);
@@ -192,7 +192,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(EncodedTemplateResource.class);
-         _test(new HttpClient(), "http://localhost:8081/a%20b/x%20y");
+         _test(new HttpClient(), "/a%20b/x%20y");
       }
       finally
       {
@@ -204,7 +204,7 @@ public class UriInfoTest
    public static class EncodedQueryResource
    {
       @GET
-      public String doGet(@QueryParam("a")String a, @Context UriInfo info)
+      public String doGet(@QueryParam("a") String a, @Context UriInfo info)
       {
          Assert.assertEquals("a b", a);
          Assert.assertEquals("a b", info.getQueryParameters().getFirst("a"));
@@ -220,7 +220,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(EncodedQueryResource.class);
-         _test(new HttpClient(), "http://localhost:8081/query?a=a%20b");
+         _test(new HttpClient(), "/query?a=a%20b");
       }
       finally
       {

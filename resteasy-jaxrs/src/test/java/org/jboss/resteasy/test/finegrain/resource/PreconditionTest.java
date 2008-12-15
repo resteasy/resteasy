@@ -1,5 +1,17 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.util.GregorianCalendar;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -11,15 +23,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.GregorianCalendar;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -28,7 +31,6 @@ public class PreconditionTest
 {
 
    private static Dispatcher dispatcher;
-
 
    @BeforeClass
    public static void before() throws Exception
@@ -64,7 +66,7 @@ public class PreconditionTest
    public void testIfUnmodifiedSinceBeforeLastModified()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       try
       {
@@ -82,7 +84,7 @@ public class PreconditionTest
    public void testIfUnmodifiedSinceAfterLastModified()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       try
       {
@@ -100,7 +102,7 @@ public class PreconditionTest
    public void testIfModifiedSinceBeforeLastModified()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       try
       {
@@ -118,7 +120,7 @@ public class PreconditionTest
    public void testIfModifiedSinceAfterLastModified()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       try
       {
@@ -136,7 +138,7 @@ public class PreconditionTest
    public void testIfUnmodifiedSinceBeforeLastModified_IfModifiedSinceBeforeLastModified()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       try
@@ -155,7 +157,7 @@ public class PreconditionTest
    public void testIfUnmodifiedSinceBeforeLastModified_IfModifiedSinceAfterLastModified()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       try
@@ -174,7 +176,7 @@ public class PreconditionTest
    public void testIfUnmodifiedSinceAfterLastModified_IfModifiedSinceAfterLastModified()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       try
@@ -193,7 +195,7 @@ public class PreconditionTest
    public void testIfUnmodifiedSinceAfterLastModified_IfModifiedSinceBeforeLastModified()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       try
@@ -309,12 +311,12 @@ public class PreconditionTest
       testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag("/fromField");
    }
 
-////////////
+   ////////////
 
    public void testIfMatchWithMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "\"1\"");
       try
       {
@@ -331,7 +333,7 @@ public class PreconditionTest
    public void testIfMatchWithoutMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "\"2\"");
       try
       {
@@ -348,7 +350,7 @@ public class PreconditionTest
    public void testIfMatchWildCard(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "*");
       try
       {
@@ -365,7 +367,7 @@ public class PreconditionTest
    public void testIfNonMatchWithMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "\"1\"");
       try
       {
@@ -383,7 +385,7 @@ public class PreconditionTest
    public void testIfNonMatchWithoutMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
       try
       {
@@ -400,7 +402,7 @@ public class PreconditionTest
    public void testIfNonMatchWildCard(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "*");
       try
       {
@@ -418,7 +420,7 @@ public class PreconditionTest
    public void testIfMatchWithMatchingETag_IfNonMatchWithMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "1");
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "1");
       try
@@ -437,7 +439,7 @@ public class PreconditionTest
    public void testIfMatchWithMatchingETag_IfNonMatchWithoutMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "1");
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
       try
@@ -455,7 +457,7 @@ public class PreconditionTest
    public void testIfMatchWithoutMatchingETag_IfNonMatchWithMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "2");
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "1");
       try
@@ -472,7 +474,7 @@ public class PreconditionTest
    public void testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag(String fromField)
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/etag" + fromField);
+      GetMethod method = createGetMethod("/etag" + fromField);
       method.addRequestHeader(HttpHeaderNames.IF_MATCH, "2");
       method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
       try

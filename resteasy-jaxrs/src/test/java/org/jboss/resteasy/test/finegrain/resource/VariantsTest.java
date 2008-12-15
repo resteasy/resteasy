@@ -1,5 +1,19 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -10,17 +24,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -50,11 +53,8 @@ public class VariantsTest
       @GET
       public Response doGet(@Context Request r)
       {
-         List<Variant> vs = Variant.VariantListBuilder.newInstance().
-                 languages(new Locale("zh")).
-                 languages(new Locale("fr")).
-                 languages(new Locale("en")).add().
-                 build();
+         List<Variant> vs = Variant.VariantListBuilder.newInstance().languages(new Locale("zh")).languages(
+               new Locale("fr")).languages(new Locale("en")).add().build();
 
          Variant v = r.selectVariant(vs);
          if (v == null)
@@ -68,7 +68,7 @@ public class VariantsTest
    public void testGetLanguageEn() throws IOException
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "en");
       try
       {
@@ -88,7 +88,7 @@ public class VariantsTest
    public void testGetLanguageZh() throws IOException
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "zh");
       try
       {
@@ -108,7 +108,7 @@ public class VariantsTest
    public void testGetLanguageMultiple() throws IOException
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/");
+      GetMethod method = createGetMethod("/");
       method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "en;q=0.3, zh;q=0.4, fr");
       try
       {
@@ -130,12 +130,10 @@ public class VariantsTest
       @GET
       public Response doGet(@Context Request r)
       {
-         List<Variant> vs = Variant.VariantListBuilder.newInstance().
-                 mediaTypes(MediaType.valueOf("image/jpeg")).add().
-                 mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().
-                 mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en")).add().
-                 mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().
-                 build();
+         List<Variant> vs = Variant.VariantListBuilder.newInstance().mediaTypes(MediaType.valueOf("image/jpeg")).add()
+               .mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().mediaTypes(
+                     MediaType.valueOf("text/xml")).languages(new Locale("en")).add().mediaTypes(
+                     MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().build();
 
          Variant v = r.selectVariant(vs);
          if (v == null)
@@ -149,7 +147,7 @@ public class VariantsTest
    public void testGetComplex1() throws IOException
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/complex");
+      GetMethod method = createGetMethod("/complex");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/xml");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xml");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
@@ -177,7 +175,7 @@ public class VariantsTest
    public void testGetComplex2() throws IOException
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/complex");
+      GetMethod method = createGetMethod("/complex");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/xml");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xml");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
@@ -204,7 +202,7 @@ public class VariantsTest
    public void testGetComplex3() throws IOException
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/complex");
+      GetMethod method = createGetMethod("/complex");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xml");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/xml");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
@@ -232,7 +230,7 @@ public class VariantsTest
    {
       {
          HttpClient client = new HttpClient();
-         GetMethod method = new GetMethod("http://localhost:8081/complex");
+         GetMethod method = createGetMethod("/complex");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/atom+xml");
          method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en");
          try
@@ -253,7 +251,7 @@ public class VariantsTest
 
       {
          HttpClient client = new HttpClient();
-         GetMethod method = new GetMethod("http://localhost:8081/complex");
+         GetMethod method = createGetMethod("/complex");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xml");
          method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "fr");
          try

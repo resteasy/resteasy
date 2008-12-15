@@ -1,5 +1,15 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+
+import javax.ws.rs.Encoded;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -9,13 +19,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.Encoded;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,7 +42,8 @@ public class EncodedParamsTest
    public static class SimpleResource
    {
       @GET
-      public String get(@QueryParam("hello world")int num, @QueryParam("stuff") @Encoded String stuff, @QueryParam("stuff")String unStuff)
+      public String get(@QueryParam("hello world") int num, @QueryParam("stuff") @Encoded String stuff,
+            @QueryParam("stuff") String unStuff)
       {
          Assert.assertEquals(5, num);
          System.out.println("Hello " + num + " times");
@@ -64,7 +68,7 @@ public class EncodedParamsTest
    {
       @GET
       @Encoded
-      public String get(@QueryParam("stuff")String stuff)
+      public String get(@QueryParam("stuff") String stuff)
       {
          Assert.assertEquals("hello%20world", stuff);
          return "HELLO";
@@ -73,7 +77,7 @@ public class EncodedParamsTest
       @GET
       @Encoded
       @Path("/{param}")
-      public String goodbye(@PathParam("param")String stuff)
+      public String goodbye(@PathParam("param") String stuff)
       {
          System.out.println("Goodbye");
          Assert.assertEquals("hello%20world", stuff);
@@ -81,10 +85,10 @@ public class EncodedParamsTest
       }
    }
 
-   private void _test(HttpClient client, String uri)
+   private void _test(HttpClient client, String path)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -106,10 +110,10 @@ public class EncodedParamsTest
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
          dispatcher.getRegistry().addPerRequestResource(SimpleResource2.class);
-         _test(new HttpClient(), "http://localhost:8081/encodedParam?hello%20world=5&stuff=hello%20world");
-         _test(new HttpClient(), "http://localhost:8081/encodedParam/hello%20world");
-         _test(new HttpClient(), "http://localhost:8081/encodedMethod?hello%20world=5&stuff=hello%20world");
-         _test(new HttpClient(), "http://localhost:8081/encodedMethod/hello%20world");
+         _test(new HttpClient(), "/encodedParam?hello%20world=5&stuff=hello%20world");
+         _test(new HttpClient(), "/encodedParam/hello%20world");
+         _test(new HttpClient(), "/encodedMethod?hello%20world=5&stuff=hello%20world");
+         _test(new HttpClient(), "/encodedMethod/hello%20world");
       }
       finally
       {

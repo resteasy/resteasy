@@ -1,5 +1,13 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -11,11 +19,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import java.io.IOException;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -23,11 +26,12 @@ import java.io.IOException;
 public class UriParamAsPrimitiveTest
 {
    private static HttpClient client = new HttpClient();
+
    private static Dispatcher dispatcher;
 
    private static IResourceUriBoolean resourceUriBoolean;
-   private static IResourceUriByte resourceUriByte;
 
+   private static IResourceUriByte resourceUriByte;
 
    @BeforeClass
    public static void before() throws Exception
@@ -47,8 +51,8 @@ public class UriParamAsPrimitiveTest
       dispatcher.getRegistry().addPerRequestResource(ResourceUriLongWrapper.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceUriFloatWrapper.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceUriDoubleWrapper.class);
-      resourceUriBoolean = ProxyFactory.create(IResourceUriBoolean.class, "http://localhost:8081");
-      resourceUriByte = ProxyFactory.create(IResourceUriByte.class, "http://localhost:8081");
+      resourceUriBoolean = ProxyFactory.create(IResourceUriBoolean.class, generateBaseUrl());
+      resourceUriByte = ProxyFactory.create(IResourceUriByte.class, generateBaseUrl());
    }
 
    @AfterClass
@@ -61,7 +65,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriBoolean
    {
       @GET
-      public String doGet(@PathParam("arg")boolean v)
+      public String doGet(@PathParam("arg") boolean v)
       {
          Assert.assertEquals(true, v);
          return "content";
@@ -72,14 +76,14 @@ public class UriParamAsPrimitiveTest
    public static interface IResourceUriBoolean
    {
       @GET
-      public String doGet(@PathParam("arg")boolean v);
+      public String doGet(@PathParam("arg") boolean v);
    }
 
    @Path("/byte/{arg}")
    public static class ResourceUriByte
    {
       @GET
-      public String doGet(@PathParam("arg")byte v)
+      public String doGet(@PathParam("arg") byte v)
       {
          Assert.assertTrue(127 == v);
          return "content";
@@ -90,14 +94,14 @@ public class UriParamAsPrimitiveTest
    public static interface IResourceUriByte
    {
       @GET
-      public String doGet(@PathParam("arg")byte v);
+      public String doGet(@PathParam("arg") byte v);
    }
 
    @Path("/short/{arg}")
    public static class ResourceUriShort
    {
       @GET
-      public String doGet(@PathParam("arg")short v)
+      public String doGet(@PathParam("arg") short v)
       {
          Assert.assertTrue(32767 == v);
          return "content";
@@ -108,7 +112,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriInt
    {
       @GET
-      public String doGet(@PathParam("arg")int v)
+      public String doGet(@PathParam("arg") int v)
       {
          Assert.assertEquals(2147483647, v);
          return "content";
@@ -119,7 +123,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriLong
    {
       @GET
-      public String doGet(@PathParam("arg")long v)
+      public String doGet(@PathParam("arg") long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
          return "content";
@@ -130,7 +134,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriFloat
    {
       @GET
-      public String doGet(@PathParam("arg")float v)
+      public String doGet(@PathParam("arg") float v)
       {
          Assert.assertEquals(3.14159265f, v);
          return "content";
@@ -141,19 +145,18 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriDouble
    {
       @GET
-      public String doGet(@PathParam("arg")double v)
+      public String doGet(@PathParam("arg") double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
          return "content";
       }
    }
 
-
    @Path("/boolean/wrapper/{arg}")
    public static class ResourceUriBooleanWrapper
    {
       @GET
-      public String doGet(@PathParam("arg")Boolean v)
+      public String doGet(@PathParam("arg") Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
          return "content";
@@ -164,7 +167,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriByteWrapper
    {
       @GET
-      public String doGet(@PathParam("arg")Byte v)
+      public String doGet(@PathParam("arg") Byte v)
       {
          Assert.assertTrue(127 == v.byteValue());
          return "content";
@@ -175,7 +178,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriShortWrapper
    {
       @GET
-      public String doGet(@PathParam("arg")Short v)
+      public String doGet(@PathParam("arg") Short v)
       {
          Assert.assertTrue(32767 == v.shortValue());
          return "content";
@@ -186,7 +189,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriIntWrapper
    {
       @GET
-      public String doGet(@PathParam("arg")Integer v)
+      public String doGet(@PathParam("arg") Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
          return "content";
@@ -197,7 +200,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriLongWrapper
    {
       @GET
-      public String doGet(@PathParam("arg")Long v)
+      public String doGet(@PathParam("arg") Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
          return "content";
@@ -208,7 +211,7 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriFloatWrapper
    {
       @GET
-      public String doGet(@PathParam("arg")Float v)
+      public String doGet(@PathParam("arg") Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
          return "content";
@@ -219,18 +222,17 @@ public class UriParamAsPrimitiveTest
    public static class ResourceUriDoubleWrapper
    {
       @GET
-      public String doGet(@PathParam("arg")Double v)
+      public String doGet(@PathParam("arg") Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
          return "content";
       }
    }
 
-
    void _test(String type, String value)
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/" + type + "/" + value);
+         GetMethod method = createGetMethod("/" + type + "/" + value);
          try
          {
             int status = client.executeMethod(method);
@@ -242,7 +244,7 @@ public class UriParamAsPrimitiveTest
          }
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081/" + type + "/wrapper/" + value);
+         GetMethod method = createGetMethod("/" + type + "/wrapper/" + value);
          try
          {
             int status = client.executeMethod(method);
@@ -302,7 +304,7 @@ public class UriParamAsPrimitiveTest
    public void testBadPrimitiveValue()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/int/abcdef");
+         GetMethod method = createGetMethod("/int/abcdef");
          method.setQueryString("int=abcdef");
          try
          {
@@ -319,7 +321,7 @@ public class UriParamAsPrimitiveTest
    public void testBadPrimitiveWrapperValue()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/int/wrapper/abcdef");
+         GetMethod method = createGetMethod("/int/wrapper/abcdef");
          method.setQueryString("int=abcdef");
          try
          {

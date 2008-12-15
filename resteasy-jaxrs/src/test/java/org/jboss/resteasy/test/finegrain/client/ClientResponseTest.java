@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.finegrain.client;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
@@ -18,7 +18,6 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.smoke.SimpleResource;
@@ -101,51 +100,40 @@ public class ClientResponseTest
    @Test
    public void testClientResponse() throws Exception
    {
-      Client client = ProxyFactory
-            .create(Client.class, "http://localhost:8081");
+      Client client = ProxyFactory.create(Client.class, generateBaseUrl());
 
       Assert.assertEquals("basic", client.getBasic().getEntity());
       client.putBasic("hello world");
-      Assert.assertEquals("hello world", client.getQueryParam("hello world")
-            .getEntity());
+      Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
 
-      String queryResult = new ClientRequest("http://localhost:8081/queryParam")
-            .queryParameter("param", "hello world").get(String.class).getEntity();
+      String queryResult = createClientRequest("/queryParam").queryParameter("param", "hello world").get(String.class)
+            .getEntity();
       Assert.assertEquals("hello world", queryResult);
 
-      Assert
-            .assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
+      Assert.assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
 
-      ClientResponse<Integer> paramPathResult = new ClientRequest(
-            "http://localhost:8081/uriParam/{param}").accept("text/plain")
+      ClientResponse<Integer> paramPathResult = createClientRequest("/uriParam/{param}").accept("text/plain")
             .pathParameter("param", 1234).get(Integer.class);
       Assert.assertEquals(1234, paramPathResult.getEntity().intValue());
 
-      Assert.assertEquals(Response.Status.OK, client
-            .putBasicReturnCode("hello world"));
-      ClientResponse putResponse = new ClientRequest(
-            "http://localhost:8081/basic").body("text/plain", "hello world").put();
+      Assert.assertEquals(Response.Status.OK, client.putBasicReturnCode("hello world"));
+      ClientResponse putResponse = createClientRequest("/basic").body("text/plain", "hello world").put();
 
       Assert.assertEquals(Response.Status.OK, putResponse.getResponseStatus());
 
-      Assert.assertEquals("headervalue", client.getHeader().getHeaders()
-            .getFirst("header"));
-      ClientResponse getHeaderResponse = new ClientRequest(
-            "http://localhost:8081/header").get();
-      Assert.assertEquals("headervalue", getHeaderResponse.getHeaders()
-            .getFirst("header"));
+      Assert.assertEquals("headervalue", client.getHeader().getHeaders().getFirst("header"));
+      ClientResponse getHeaderResponse = createClientRequest("/header").get();
+      Assert.assertEquals("headervalue", getHeaderResponse.getHeaders().getFirst("header"));
 
       final byte[] entity = client.getBasicBytes().getEntity();
       Assert.assertTrue(Arrays.equals("basic".getBytes(), entity));
 
-      ClientResponse<byte[]> getBasicResponse = new ClientRequest(
-         "http://localhost:8081/basic").get(byte[].class);
+      ClientResponse<byte[]> getBasicResponse = createClientRequest("/basic").get(byte[].class);
       Assert.assertTrue(Arrays.equals("basic".getBytes(), getBasicResponse.getEntity()));
 
       Assert.assertEquals("basic", client.getBasic2().getEntity(String.class, null));
 
-      getBasicResponse = new ClientRequest(
-         "http://localhost:8081/basic").get(byte[].class);
+      getBasicResponse = createClientRequest("/basic").get(byte[].class);
       Assert.assertEquals("basic", getBasicResponse.getEntity(String.class, null));
    }
 
@@ -153,7 +141,7 @@ public class ClientResponseTest
    public void testErrorResponse() throws Exception
    {
       Client client = null;
-      client = ProxyFactory.create(Client.class, "http://localhost:8081/shite");
+      client = createProxy(Client.class, "/shite");
       ClientResponse<String> response = client.getBasic();
       Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
       response = client.getError();
@@ -169,10 +157,9 @@ public class ClientResponseTest
       {
          try
          {
-            return Response.seeOther(
-                  new URI("http://localhost:8081/redirect/data")).build();
+            return Response.seeOther(createURI("/redirect/data")).build();
          }
-         catch (URISyntaxException e)
+         catch (IllegalArgumentException e)
          {
             throw new RuntimeException(e);
          }
@@ -198,12 +185,12 @@ public class ClientResponseTest
    {
       dispatcher.getRegistry().addPerRequestResource(RedirectResource.class);
       {
-         testRedirect(ProxyFactory.create(RedirectClient.class, "http://localhost:8081").get());
-         testRedirect(new ClientRequest("http://localhost:8081/redirect").get());
+         testRedirect(ProxyFactory.create(RedirectClient.class, generateBaseUrl()).get());
+         testRedirect(createClientRequest("/redirect").get());
       }
       System.out.println("*****");
       {
-         URL url = new URL("http://localhost:8081/redirect");
+         URL url = createURL("/redirect");
          // HttpURLConnection.setFollowRedirects(false);
          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
          conn.setInstanceFollowRedirects(false);
@@ -224,10 +211,9 @@ public class ClientResponseTest
       for (Object name : response.getHeaders().keySet())
       {
          System.out.print(name);
-         System.out.println(":"
-               + response.getHeaders().getFirst(name.toString()));
+         System.out.println(":" + response.getHeaders().getFirst(name.toString()));
       }
-      Assert.assertEquals((String) response.getHeaders().getFirst("location"), "http://localhost:8081/redirect/data");
+      Assert.assertEquals((String) response.getHeaders().getFirst("location"), generateURL("/redirect/data"));
    }
 
 }

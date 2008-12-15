@@ -1,5 +1,12 @@
 package org.jboss.resteasy.test.regression;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -9,10 +16,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -86,12 +89,11 @@ public class MatchedResourceTest
       }
    }
 
-
    @Test
    public void testPost()
    {
-      _test("http://localhost:8081/test1/foo.xml.en", "complex");
-      _test("http://localhost:8081/test2/foo.xml.en", "complex2");
+      _test(generateURL("/test1/foo.xml.en"), "complex");
+      _test(generateURL("/test2/foo.xml.en"), "complex2");
    }
 
 }
