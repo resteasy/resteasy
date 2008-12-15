@@ -33,7 +33,7 @@ public class TJWSChunkTest
       dispatcher.getRegistry().addPerRequestResource(BookStore.class);
 
       HttpClient httpClient = new HttpClient();
-      BookStoreClient client = ProxyFactory.create(BookStoreClient.class, "http://localhost:8081", httpClient);
+      BookStoreClient client = ProxyFactory.create(BookStoreClient.class, generateBaseUrl(), httpClient);
 
       Book book = client.getBookByISBN("596529260");
       Assert.assertNotNull(book);
@@ -47,7 +47,7 @@ public class TJWSChunkTest
       book = new Book("Bill Burke", "666", "EJB 3.0");
       client.addBook(book);
       {
-         PutMethod method = new PutMethod("http://localhost:8081/basic");
+         PutMethod method = createPutMethod("/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          httpClient.executeMethod(method);
       }

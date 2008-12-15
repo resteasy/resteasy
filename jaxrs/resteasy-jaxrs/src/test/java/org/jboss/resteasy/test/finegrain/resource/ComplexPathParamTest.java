@@ -1,5 +1,16 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -10,14 +21,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -32,11 +35,8 @@ public class ComplexPathParamTest
    {
       @GET
       @Path("/{1},{2}/{3}/blah{4}-{5}ttt")
-      public String get(@PathParam("1") int one,
-                        @PathParam("2") int two,
-                        @PathParam("3") int three,
-                        @PathParam("4") int four,
-                        @PathParam("5") int five)
+      public String get(@PathParam("1") int one, @PathParam("2") int two, @PathParam("3") int three,
+            @PathParam("4") int four, @PathParam("5") int five)
       {
          Assert.assertEquals(one, 1);
          Assert.assertEquals(two, 2);
@@ -59,11 +59,9 @@ public class ComplexPathParamTest
          return "hello";
       }
 
-
       @GET
       @Path("{1},{2}")
-      public String get2Groups(@PathParam("1") int one,
-                               @PathParam("2") int two)
+      public String get2Groups(@PathParam("1") int one, @PathParam("2") int two)
       {
          Assert.assertEquals(1, one);
          Assert.assertEquals(2, two);
@@ -84,8 +82,7 @@ public class ComplexPathParamTest
    {
       @Path("{1}-{rest:.*}")
       @GET
-      public String get(@PathParam("1") int one,
-                        @PathParam("rest") String rest)
+      public String get(@PathParam("1") int one, @PathParam("rest") String rest)
       {
          Assert.assertEquals(1, one);
          Assert.assertEquals("on/and/on", rest);
@@ -126,7 +123,6 @@ public class ComplexPathParamTest
          return new Sub2();
       }
 
-
    }
 
    @BeforeClass
@@ -147,13 +143,14 @@ public class ComplexPathParamTest
       segments.add(new SegmentInfo("foo{hello}"));
       segments.add(new SegmentInfo("{goodbye}foo{hello}"));
       Collections.sort(segments);
-      for (SegmentInfo segment : segments) System.out.println(segment.getExpression());
+      for (SegmentInfo segment : segments)
+         System.out.println(segment.getExpression());
    }
 
-   private void _test(HttpClient client, String uri, String body)
+   private void _test(HttpClient client, String path, String body)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -168,7 +165,6 @@ public class ComplexPathParamTest
 
    }
 
-
    @Test
    public void testIt() throws Exception
    {
@@ -180,12 +176,12 @@ public class ComplexPathParamTest
          dispatcher.getRegistry().addPerRequestResource(UnlimitedResource.class);
          dispatcher.getRegistry().addPerRequestResource(Resteasy145.class);
          HttpClient client = new HttpClient();
-         _test(client, "http://localhost:8081/1,2/3/blah4-5ttt", "hello");
-         _test(client, "http://localhost:8081/tricky/1,2", "2Groups");
-         _test(client, "http://localhost:8081/tricky/h1", "prefixed");
-         _test(client, "http://localhost:8081/tricky/1", "hello");
-         _test(client, "http://localhost:8081/unlimited/1-on/and/on", "ok");
-         _test(client, "http://localhost:8081/repository/workspaces/aaaaaaxvi/wdddd", "sub2");
+         _test(client, "/1,2/3/blah4-5ttt", "hello");
+         _test(client, "/tricky/1,2", "2Groups");
+         _test(client, "/tricky/h1", "prefixed");
+         _test(client, "/tricky/1", "hello");
+         _test(client, "/unlimited/1-on/and/on", "ok");
+         _test(client, "/repository/workspaces/aaaaaaxvi/wdddd", "sub2");
       }
       finally
       {

@@ -1,5 +1,16 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -11,14 +22,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import java.io.IOException;
-import java.util.List;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -26,10 +29,10 @@ import java.util.List;
 public class MatrixParamAsPrimitive
 {
    private static HttpClient client = new HttpClient();
+
    private static Dispatcher dispatcher;
 
    //private static IResourceUriBoolean resourceUriBoolean;
-
 
    @BeforeClass
    public static void before() throws Exception
@@ -51,7 +54,7 @@ public class MatrixParamAsPrimitive
       dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveArrayDefault.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveArrayDefaultNull.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceMatrixPrimitiveArrayDefaultOverride.class);
-      //resourceUriBoolean = ProxyFactory.create(IResourceUriBoolean.class, "http://localhost:8081");
+      //resourceUriBoolean = ProxyFactory.create(IResourceUriBoolean.class, generateBaseUrl());
    }
 
    @AfterClass
@@ -65,7 +68,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@MatrixParam("boolean")boolean v)
+      public String doGet(@MatrixParam("boolean") boolean v)
       {
          Assert.assertEquals(true, v);
          return "content";
@@ -73,7 +76,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGet(@MatrixParam("byte")byte v)
+      public String doGet(@MatrixParam("byte") byte v)
       {
          Assert.assertTrue((byte) 127 == v);
          return "content";
@@ -81,7 +84,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGet(@MatrixParam("short")short v)
+      public String doGet(@MatrixParam("short") short v)
       {
          Assert.assertTrue((short) 32767 == v);
          return "content";
@@ -89,7 +92,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGet(@MatrixParam("int")int v)
+      public String doGet(@MatrixParam("int") int v)
       {
          Assert.assertEquals(2147483647, v);
          return "content";
@@ -97,7 +100,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGet(@MatrixParam("long")long v)
+      public String doGet(@MatrixParam("long") long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
          return "content";
@@ -105,7 +108,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGet(@MatrixParam("float")float v)
+      public String doGet(@MatrixParam("float") float v)
       {
          Assert.assertEquals(3.14159265f, v);
          return "content";
@@ -113,7 +116,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGet(@MatrixParam("double")double v)
+      public String doGet(@MatrixParam("double") double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
          return "content";
@@ -125,7 +128,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@MatrixParam("boolean")boolean v)
+      public String doGet(@MatrixParam("boolean") boolean v)
       {
          Assert.assertEquals(false, v);
          return "content";
@@ -133,7 +136,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGet(@MatrixParam("byte")byte v)
+      public String doGet(@MatrixParam("byte") byte v)
       {
          Assert.assertTrue(0 == v);
          return "content";
@@ -141,7 +144,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGet(@MatrixParam("short")short v)
+      public String doGet(@MatrixParam("short") short v)
       {
          Assert.assertTrue(0 == v);
          return "content";
@@ -149,7 +152,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGet(@MatrixParam("int")int v)
+      public String doGet(@MatrixParam("int") int v)
       {
          Assert.assertEquals(0, v);
          return "content";
@@ -157,7 +160,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGet(@MatrixParam("long")long v)
+      public String doGet(@MatrixParam("long") long v)
       {
          Assert.assertEquals(0l, v);
          return "content";
@@ -165,7 +168,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGet(@MatrixParam("float")float v)
+      public String doGet(@MatrixParam("float") float v)
       {
          Assert.assertEquals(0.0f, v);
          return "content";
@@ -173,7 +176,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGet(@MatrixParam("double")double v)
+      public String doGet(@MatrixParam("double") double v)
       {
          Assert.assertEquals(0.0d, v);
          return "content";
@@ -185,7 +188,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@MatrixParam("boolean") @DefaultValue("true")boolean v)
+      public String doGet(@MatrixParam("boolean") @DefaultValue("true") boolean v)
       {
          Assert.assertEquals(true, v);
          return "content";
@@ -193,7 +196,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGet(@MatrixParam("byte") @DefaultValue("127")byte v)
+      public String doGet(@MatrixParam("byte") @DefaultValue("127") byte v)
       {
          Assert.assertTrue((byte) 127 == v);
          return "content";
@@ -201,7 +204,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGet(@MatrixParam("short") @DefaultValue("32767")short v)
+      public String doGet(@MatrixParam("short") @DefaultValue("32767") short v)
       {
          Assert.assertTrue((short) 32767 == v);
          return "content";
@@ -209,7 +212,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGet(@MatrixParam("int") @DefaultValue("2147483647")int v)
+      public String doGet(@MatrixParam("int") @DefaultValue("2147483647") int v)
       {
          Assert.assertEquals(2147483647, v);
          return "content";
@@ -217,7 +220,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGet(@MatrixParam("long") @DefaultValue("9223372036854775807")long v)
+      public String doGet(@MatrixParam("long") @DefaultValue("9223372036854775807") long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
          return "content";
@@ -225,7 +228,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGet(@MatrixParam("float") @DefaultValue("3.14159265")float v)
+      public String doGet(@MatrixParam("float") @DefaultValue("3.14159265") float v)
       {
          Assert.assertEquals(3.14159265f, v);
          return "content";
@@ -233,7 +236,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGet(@MatrixParam("double") @DefaultValue("3.14159265358979")double v)
+      public String doGet(@MatrixParam("double") @DefaultValue("3.14159265358979") double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
          return "content";
@@ -245,7 +248,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@MatrixParam("boolean") @DefaultValue("false")boolean v)
+      public String doGet(@MatrixParam("boolean") @DefaultValue("false") boolean v)
       {
          Assert.assertEquals(true, v);
          return "content";
@@ -253,7 +256,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGet(@MatrixParam("byte") @DefaultValue("1")byte v)
+      public String doGet(@MatrixParam("byte") @DefaultValue("1") byte v)
       {
          Assert.assertTrue((byte) 127 == v);
          return "content";
@@ -261,7 +264,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGet(@MatrixParam("short") @DefaultValue("1")short v)
+      public String doGet(@MatrixParam("short") @DefaultValue("1") short v)
       {
          Assert.assertTrue((short) 32767 == v);
          return "content";
@@ -269,7 +272,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGet(@MatrixParam("int") @DefaultValue("1")int v)
+      public String doGet(@MatrixParam("int") @DefaultValue("1") int v)
       {
          Assert.assertEquals(2147483647, v);
          return "content";
@@ -277,7 +280,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGet(@MatrixParam("long") @DefaultValue("1")long v)
+      public String doGet(@MatrixParam("long") @DefaultValue("1") long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
          return "content";
@@ -285,7 +288,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGet(@MatrixParam("float") @DefaultValue("0.0")float v)
+      public String doGet(@MatrixParam("float") @DefaultValue("0.0") float v)
       {
          Assert.assertEquals(3.14159265f, v);
          return "content";
@@ -293,7 +296,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGet(@MatrixParam("double") @DefaultValue("0.0")double v)
+      public String doGet(@MatrixParam("double") @DefaultValue("0.0") double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
          return "content";
@@ -305,7 +308,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@MatrixParam("boolean")Boolean v)
+      public String doGet(@MatrixParam("boolean") Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
          return "content";
@@ -313,7 +316,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGet(@MatrixParam("byte")Byte v)
+      public String doGet(@MatrixParam("byte") Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
          return "content";
@@ -321,7 +324,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGet(@MatrixParam("short")Short v)
+      public String doGet(@MatrixParam("short") Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
          return "content";
@@ -329,7 +332,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGet(@MatrixParam("int")Integer v)
+      public String doGet(@MatrixParam("int") Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
          return "content";
@@ -337,7 +340,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGet(@MatrixParam("long")Long v)
+      public String doGet(@MatrixParam("long") Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
          return "content";
@@ -345,7 +348,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGet(@MatrixParam("float")Float v)
+      public String doGet(@MatrixParam("float") Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
          return "content";
@@ -353,7 +356,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGet(@MatrixParam("double")Double v)
+      public String doGet(@MatrixParam("double") Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
          return "content";
@@ -365,7 +368,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@MatrixParam("boolean")Boolean v)
+      public String doGet(@MatrixParam("boolean") Boolean v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -373,7 +376,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGet(@MatrixParam("byte")Byte v)
+      public String doGet(@MatrixParam("byte") Byte v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -381,7 +384,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGet(@MatrixParam("short")Short v)
+      public String doGet(@MatrixParam("short") Short v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -389,7 +392,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGet(@MatrixParam("int")Integer v)
+      public String doGet(@MatrixParam("int") Integer v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -397,7 +400,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGet(@MatrixParam("long")Long v)
+      public String doGet(@MatrixParam("long") Long v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -405,7 +408,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGet(@MatrixParam("float")Float v)
+      public String doGet(@MatrixParam("float") Float v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -413,7 +416,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGet(@MatrixParam("double")Double v)
+      public String doGet(@MatrixParam("double") Double v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -425,7 +428,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@MatrixParam("boolean") @DefaultValue("true")Boolean v)
+      public String doGet(@MatrixParam("boolean") @DefaultValue("true") Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
          return "content";
@@ -433,7 +436,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGet(@MatrixParam("byte") @DefaultValue("127")Byte v)
+      public String doGet(@MatrixParam("byte") @DefaultValue("127") Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
          return "content";
@@ -441,7 +444,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGet(@MatrixParam("short") @DefaultValue("32767")Short v)
+      public String doGet(@MatrixParam("short") @DefaultValue("32767") Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
          return "content";
@@ -449,7 +452,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGet(@MatrixParam("int") @DefaultValue("2147483647")Integer v)
+      public String doGet(@MatrixParam("int") @DefaultValue("2147483647") Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
          return "content";
@@ -457,7 +460,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGet(@MatrixParam("long") @DefaultValue("9223372036854775807")Long v)
+      public String doGet(@MatrixParam("long") @DefaultValue("9223372036854775807") Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
          return "content";
@@ -465,7 +468,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGet(@MatrixParam("float") @DefaultValue("3.14159265")Float v)
+      public String doGet(@MatrixParam("float") @DefaultValue("3.14159265") Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
          return "content";
@@ -473,7 +476,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGet(@MatrixParam("double") @DefaultValue("3.14159265358979")Double v)
+      public String doGet(@MatrixParam("double") @DefaultValue("3.14159265358979") Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
          return "content";
@@ -485,7 +488,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@MatrixParam("boolean") @DefaultValue("false")Boolean v)
+      public String doGet(@MatrixParam("boolean") @DefaultValue("false") Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
          return "content";
@@ -493,7 +496,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGet(@MatrixParam("byte") @DefaultValue("1")Byte v)
+      public String doGet(@MatrixParam("byte") @DefaultValue("1") Byte v)
       {
          Assert.assertTrue((byte) 127 == v.byteValue());
          return "content";
@@ -501,7 +504,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGet(@MatrixParam("short") @DefaultValue("1")Short v)
+      public String doGet(@MatrixParam("short") @DefaultValue("1") Short v)
       {
          Assert.assertTrue((short) 32767 == v.shortValue());
          return "content";
@@ -509,7 +512,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGet(@MatrixParam("int") @DefaultValue("1")Integer v)
+      public String doGet(@MatrixParam("int") @DefaultValue("1") Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
          return "content";
@@ -517,7 +520,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGet(@MatrixParam("long") @DefaultValue("1")Long v)
+      public String doGet(@MatrixParam("long") @DefaultValue("1") Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
          return "content";
@@ -525,7 +528,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGet(@MatrixParam("float") @DefaultValue("0.0")Float v)
+      public String doGet(@MatrixParam("float") @DefaultValue("0.0") Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
          return "content";
@@ -533,7 +536,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGet(@MatrixParam("double") @DefaultValue("0.0")Double v)
+      public String doGet(@MatrixParam("double") @DefaultValue("0.0") Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
          return "content";
@@ -545,7 +548,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@MatrixParam("boolean")List<Boolean> v)
+      public String doGetBoolean(@MatrixParam("boolean") List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
          Assert.assertEquals(true, v.get(1).booleanValue());
@@ -555,7 +558,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@MatrixParam("byte")List<Byte> v)
+      public String doGetByte(@MatrixParam("byte") List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
          Assert.assertTrue((byte) 127 == v.get(1).byteValue());
@@ -565,7 +568,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@MatrixParam("short")List<Short> v)
+      public String doGetShort(@MatrixParam("short") List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
          Assert.assertTrue((short) 32767 == v.get(1).shortValue());
@@ -575,7 +578,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@MatrixParam("int")List<Integer> v)
+      public String doGetInteger(@MatrixParam("int") List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
          Assert.assertEquals(2147483647, v.get(1).intValue());
@@ -585,7 +588,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@MatrixParam("long")List<Long> v)
+      public String doGetLong(@MatrixParam("long") List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
          Assert.assertEquals(9223372036854775807L, v.get(1).longValue());
@@ -595,7 +598,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@MatrixParam("float")List<Float> v)
+      public String doGetFloat(@MatrixParam("float") List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
          Assert.assertEquals(3.14159265f, v.get(1).floatValue());
@@ -605,7 +608,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@MatrixParam("double")List<Double> v)
+      public String doGetDouble(@MatrixParam("double") List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
          Assert.assertEquals(3.14159265358979d, v.get(1).doubleValue());
@@ -619,7 +622,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@MatrixParam("boolean")List<Boolean> v)
+      public String doGetBoolean(@MatrixParam("boolean") List<Boolean> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -627,7 +630,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@MatrixParam("byte")List<Byte> v)
+      public String doGetByte(@MatrixParam("byte") List<Byte> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -635,7 +638,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@MatrixParam("short")List<Short> v)
+      public String doGetShort(@MatrixParam("short") List<Short> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -643,7 +646,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@MatrixParam("int")List<Integer> v)
+      public String doGetInteger(@MatrixParam("int") List<Integer> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -651,7 +654,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@MatrixParam("long")List<Long> v)
+      public String doGetLong(@MatrixParam("long") List<Long> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -659,7 +662,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@MatrixParam("float")List<Float> v)
+      public String doGetFloat(@MatrixParam("float") List<Float> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -667,7 +670,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@MatrixParam("double")List<Double> v)
+      public String doGetDouble(@MatrixParam("double") List<Double> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -679,7 +682,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("true")List<Boolean> v)
+      public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("true") List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
          return "content";
@@ -687,7 +690,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@MatrixParam("byte") @DefaultValue("127")List<Byte> v)
+      public String doGetByte(@MatrixParam("byte") @DefaultValue("127") List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
          return "content";
@@ -695,7 +698,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@MatrixParam("short") @DefaultValue("32767")List<Short> v)
+      public String doGetShort(@MatrixParam("short") @DefaultValue("32767") List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
          return "content";
@@ -703,7 +706,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@MatrixParam("int") @DefaultValue("2147483647")List<Integer> v)
+      public String doGetInteger(@MatrixParam("int") @DefaultValue("2147483647") List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
          return "content";
@@ -711,7 +714,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@MatrixParam("long") @DefaultValue("9223372036854775807")List<Long> v)
+      public String doGetLong(@MatrixParam("long") @DefaultValue("9223372036854775807") List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
          return "content";
@@ -719,7 +722,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@MatrixParam("float") @DefaultValue("3.14159265")List<Float> v)
+      public String doGetFloat(@MatrixParam("float") @DefaultValue("3.14159265") List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
          return "content";
@@ -727,7 +730,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@MatrixParam("double") @DefaultValue("3.14159265358979")List<Double> v)
+      public String doGetDouble(@MatrixParam("double") @DefaultValue("3.14159265358979") List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
          return "content";
@@ -739,7 +742,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("false")List<Boolean> v)
+      public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("false") List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
          return "content";
@@ -747,7 +750,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@MatrixParam("byte") @DefaultValue("0")List<Byte> v)
+      public String doGetByte(@MatrixParam("byte") @DefaultValue("0") List<Byte> v)
       {
          Assert.assertTrue((byte) 127 == v.get(0).byteValue());
          return "content";
@@ -755,7 +758,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@MatrixParam("short") @DefaultValue("0")List<Short> v)
+      public String doGetShort(@MatrixParam("short") @DefaultValue("0") List<Short> v)
       {
          Assert.assertTrue((short) 32767 == v.get(0).shortValue());
          return "content";
@@ -763,7 +766,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@MatrixParam("int") @DefaultValue("0")List<Integer> v)
+      public String doGetInteger(@MatrixParam("int") @DefaultValue("0") List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
          return "content";
@@ -771,7 +774,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@MatrixParam("long") @DefaultValue("0")List<Long> v)
+      public String doGetLong(@MatrixParam("long") @DefaultValue("0") List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
          return "content";
@@ -779,7 +782,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@MatrixParam("float") @DefaultValue("0.0")List<Float> v)
+      public String doGetFloat(@MatrixParam("float") @DefaultValue("0.0") List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
          return "content";
@@ -787,7 +790,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@MatrixParam("double") @DefaultValue("0.0")List<Double> v)
+      public String doGetDouble(@MatrixParam("double") @DefaultValue("0.0") List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
          return "content";
@@ -799,7 +802,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@MatrixParam("boolean")boolean[] v)
+      public String doGetBoolean(@MatrixParam("boolean") boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
          Assert.assertEquals(true, v[1]);
@@ -809,7 +812,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@MatrixParam("byte")byte[] v)
+      public String doGetByte(@MatrixParam("byte") byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
          Assert.assertTrue((byte) 127 == v[1]);
@@ -819,7 +822,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@MatrixParam("short")short[] v)
+      public String doGetShort(@MatrixParam("short") short[] v)
       {
          Assert.assertTrue(32767 == v[0]);
          Assert.assertTrue(32767 == v[1]);
@@ -829,7 +832,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@MatrixParam("int")int[] v)
+      public String doGetInteger(@MatrixParam("int") int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
          Assert.assertEquals(2147483647, v[1]);
@@ -839,7 +842,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@MatrixParam("long")long[] v)
+      public String doGetLong(@MatrixParam("long") long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
          Assert.assertEquals(9223372036854775807L, v[1]);
@@ -849,7 +852,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@MatrixParam("float")float[] v)
+      public String doGetFloat(@MatrixParam("float") float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
          Assert.assertEquals(3.14159265f, v[1]);
@@ -859,7 +862,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@MatrixParam("double")double[] v)
+      public String doGetDouble(@MatrixParam("double") double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);
          Assert.assertEquals(3.14159265358979d, v[1]);
@@ -873,7 +876,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@MatrixParam("boolean")boolean[] v)
+      public String doGetBoolean(@MatrixParam("boolean") boolean[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -881,7 +884,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@MatrixParam("byte")byte[] v)
+      public String doGetByte(@MatrixParam("byte") byte[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -889,7 +892,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@MatrixParam("short")short[] v)
+      public String doGetShort(@MatrixParam("short") short[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -897,7 +900,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@MatrixParam("int")int[] v)
+      public String doGetInteger(@MatrixParam("int") int[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -905,7 +908,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@MatrixParam("long")long[] v)
+      public String doGetLong(@MatrixParam("long") long[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -913,7 +916,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@MatrixParam("float")float[] v)
+      public String doGetFloat(@MatrixParam("float") float[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -921,7 +924,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@MatrixParam("double")double[] v)
+      public String doGetDouble(@MatrixParam("double") double[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -933,7 +936,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("true")boolean[] v)
+      public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("true") boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
          return "content";
@@ -941,7 +944,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@MatrixParam("byte") @DefaultValue("127")byte[] v)
+      public String doGetByte(@MatrixParam("byte") @DefaultValue("127") byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
          return "content";
@@ -949,7 +952,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@MatrixParam("short") @DefaultValue("32767")short[] v)
+      public String doGetShort(@MatrixParam("short") @DefaultValue("32767") short[] v)
       {
          Assert.assertTrue((short) 32767 == v[0]);
          return "content";
@@ -957,7 +960,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@MatrixParam("int") @DefaultValue("2147483647")int[] v)
+      public String doGetInteger(@MatrixParam("int") @DefaultValue("2147483647") int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
          return "content";
@@ -965,7 +968,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@MatrixParam("long") @DefaultValue("9223372036854775807")long[] v)
+      public String doGetLong(@MatrixParam("long") @DefaultValue("9223372036854775807") long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
          return "content";
@@ -973,7 +976,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@MatrixParam("float") @DefaultValue("3.14159265")float[] v)
+      public String doGetFloat(@MatrixParam("float") @DefaultValue("3.14159265") float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
          return "content";
@@ -981,7 +984,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@MatrixParam("double") @DefaultValue("3.14159265358979")double[] v)
+      public String doGetDouble(@MatrixParam("double") @DefaultValue("3.14159265358979") double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);
          return "content";
@@ -993,7 +996,7 @@ public class MatrixParamAsPrimitive
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("false")boolean[] v)
+      public String doGetBoolean(@MatrixParam("boolean") @DefaultValue("false") boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
          return "content";
@@ -1001,7 +1004,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@MatrixParam("byte") @DefaultValue("0")byte[] v)
+      public String doGetByte(@MatrixParam("byte") @DefaultValue("0") byte[] v)
       {
          Assert.assertTrue((byte) 127 == v[0]);
          return "content";
@@ -1009,7 +1012,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@MatrixParam("short") @DefaultValue("0")short[] v)
+      public String doGetShort(@MatrixParam("short") @DefaultValue("0") short[] v)
       {
          Assert.assertTrue((short) 32767 == v[0]);
          return "content";
@@ -1017,7 +1020,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@MatrixParam("int") @DefaultValue("0")int[] v)
+      public String doGetInteger(@MatrixParam("int") @DefaultValue("0") int[] v)
       {
          Assert.assertEquals(2147483647, v[0]);
          return "content";
@@ -1025,7 +1028,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@MatrixParam("long") @DefaultValue("0")long[] v)
+      public String doGetLong(@MatrixParam("long") @DefaultValue("0") long[] v)
       {
          Assert.assertEquals(9223372036854775807L, v[0]);
          return "content";
@@ -1033,7 +1036,7 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@MatrixParam("float") @DefaultValue("0.0")float[] v)
+      public String doGetFloat(@MatrixParam("float") @DefaultValue("0.0") float[] v)
       {
          Assert.assertEquals(3.14159265f, v[0]);
          return "content";
@@ -1041,19 +1044,18 @@ public class MatrixParamAsPrimitive
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@MatrixParam("double") @DefaultValue("0.0")double[] v)
+      public String doGetDouble(@MatrixParam("double") @DefaultValue("0.0") double[] v)
       {
          Assert.assertEquals(3.14159265358979d, v[0]);
          return "content";
       }
    }
 
-
    public void _test(String type, String value)
    {
       String param = ";" + type + "=" + value;
       {
-         GetMethod method = new GetMethod("http://localhost:8081/" + param);
+         GetMethod method = createGetMethod("/" + param);
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1066,7 +1068,7 @@ public class MatrixParamAsPrimitive
          }
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081/wrappers" + param);
+         GetMethod method = createGetMethod("/wrappers" + param);
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1079,7 +1081,7 @@ public class MatrixParamAsPrimitive
          }
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081/list" + param + param + param);
+         GetMethod method = createGetMethod("/list" + param + param + param);
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1092,7 +1094,7 @@ public class MatrixParamAsPrimitive
          }
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081/array" + param + param + param);
+         GetMethod method = createGetMethod("/array" + param + param + param);
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1109,7 +1111,7 @@ public class MatrixParamAsPrimitive
    public void _testDefault(String base, String type, String value)
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081" + base + "default/null");
+         GetMethod method = createGetMethod("" + base + "default/null");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1122,7 +1124,7 @@ public class MatrixParamAsPrimitive
          }
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081" + base + "default");
+         GetMethod method = createGetMethod("" + base + "default");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1137,7 +1139,7 @@ public class MatrixParamAsPrimitive
 
       String param = ";" + type + "=" + value;
       {
-         GetMethod method = new GetMethod("http://localhost:8081" + base + "default/override" + param);
+         GetMethod method = createGetMethod("" + base + "default/override" + param);
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1350,7 +1352,7 @@ public class MatrixParamAsPrimitive
    public void testBadPrimitiveValue()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/;int=abcdef");
+         GetMethod method = createGetMethod("/;int=abcdef");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
          try
          {
@@ -1368,7 +1370,7 @@ public class MatrixParamAsPrimitive
    public void testBadPrimitiveWrapperValue()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/wrappers;int=abcdef");
+         GetMethod method = createGetMethod("/wrappers;int=abcdef");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
          try
          {
@@ -1386,7 +1388,7 @@ public class MatrixParamAsPrimitive
    public void testBadPrimitiveListValue()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/list;int=abcdef;int=abcdef");
+         GetMethod method = createGetMethod("/list;int=abcdef;int=abcdef");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
          try
          {

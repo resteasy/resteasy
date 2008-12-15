@@ -3,6 +3,12 @@
  */
 package org.jboss.resteasy.test.providers.datasource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.File;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.FileRequestEntity;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -13,9 +19,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a> Jun 23,
  *         2008
@@ -23,7 +26,7 @@ import java.io.File;
 public class TestDataSourceProvider extends BaseResourceTest
 {
 
-   private static final String TEST_URI = "http://localhost:8081/jaf";
+   private static final String TEST_URI = generateURL("/jaf");
 
    /**
     * @throws java.lang.Exception

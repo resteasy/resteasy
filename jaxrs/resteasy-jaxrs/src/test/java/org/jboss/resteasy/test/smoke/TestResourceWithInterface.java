@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.smoke;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
@@ -38,13 +40,12 @@ public class TestResourceWithInterface
       POJOResourceFactory noDefaults = new POJOResourceFactory(ResourceWithInterface.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
-      SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
+      SimpleClient client = ProxyFactory.create(SimpleClient.class, generateBaseUrl());
 
       Assert.assertEquals("basic", client.getBasic());
       client.putBasic("hello world");
       Assert.assertEquals("hello world", client.getQueryParam("hello world"));
       Assert.assertEquals(1234, client.getUriParam(1234));
-
 
    }
 }

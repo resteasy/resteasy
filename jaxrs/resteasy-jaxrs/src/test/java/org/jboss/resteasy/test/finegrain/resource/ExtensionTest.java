@@ -1,5 +1,20 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -9,18 +24,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -96,10 +99,10 @@ public class ExtensionTest
       EmbeddedContainer.stop();
    }
 
-   private void _test(HttpClient client, String uri, String body)
+   private void _test(HttpClient client, String path, String body)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         GetMethod method = createGetMethod(path);
          try
          {
             int status = client.executeMethod(method);
@@ -114,17 +117,16 @@ public class ExtensionTest
 
    }
 
-
    @Test
    public void testIt()
    {
       HttpClient client = new HttpClient();
-      _test(client, "http://localhost:8081/extension.xml", "xml");
-      _test(client, "http://localhost:8081/extension.html.en", "html");
-      _test(client, "http://localhost:8081/extension.en.html", "html");
-      _test(client, "http://localhost:8081/extension/stuff.old.en.txt", "plain");
-      _test(client, "http://localhost:8081/extension/stuff.en.old.txt", "plain");
-      _test(client, "http://localhost:8081/extension/stuff.en.txt.old", "plain");
+      _test(client, "/extension.xml", "xml");
+      _test(client, "/extension.html.en", "html");
+      _test(client, "/extension.en.html", "html");
+      _test(client, "/extension/stuff.old.en.txt", "plain");
+      _test(client, "/extension/stuff.en.old.txt", "plain");
+      _test(client, "/extension/stuff.en.txt.old", "plain");
    }
 
    @Test
@@ -132,7 +134,7 @@ public class ExtensionTest
    {
       HttpClient client = new HttpClient();
       {
-         GetMethod method = new GetMethod("http://localhost:8081/extension.junk");
+         GetMethod method = createGetMethod("/extension.junk");
          try
          {
             int status = client.executeMethod(method);

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.providers.atom;
+package org.jboss.restasy.test.providers.atom;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,6 +12,5 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AbstractData")
 @XmlSeeAlso(DataCollectionPackage.class)
-public class AbstractData
-{
+public class AbstractData {
 }

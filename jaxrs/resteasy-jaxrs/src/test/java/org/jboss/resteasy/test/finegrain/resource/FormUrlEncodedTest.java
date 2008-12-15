@@ -1,5 +1,20 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.StreamingOutput;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -13,18 +28,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.StreamingOutput;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -52,7 +55,7 @@ public class FormUrlEncodedTest
    {
       @Path("/simple")
       @POST
-      public StreamingOutput post(@QueryParam("hello")String abs, InputStream entityStream) throws IOException
+      public StreamingOutput post(@QueryParam("hello") String abs, InputStream entityStream) throws IOException
       {
          Assert.assertNull(abs);
          final InputStream is = entityStream;
@@ -102,7 +105,6 @@ public class FormUrlEncodedTest
          Assert.assertEquals(form.getFirst("zip"), "12345");
       }
 
-
    }
 
    /**
@@ -113,10 +115,11 @@ public class FormUrlEncodedTest
    {
       HttpClient client = new HttpClient();
       {
-         PostMethod method = new PostMethod("http://localhost:8081/RESTEASY-109");
+         PostMethod method = createPostMethod("/RESTEASY-109");
          try
          {
-            method.setRequestEntity(new StringRequestEntity("name=jon&address1=123+Main+St&address2=&zip=12345", MediaType.APPLICATION_FORM_URLENCODED, null));
+            method.setRequestEntity(new StringRequestEntity("name=jon&address1=123+Main+St&address2=&zip=12345",
+                  MediaType.APPLICATION_FORM_URLENCODED, null));
             int status = client.executeMethod(method);
             Assert.assertEquals(status, 204);
          }
@@ -133,8 +136,9 @@ public class FormUrlEncodedTest
    {
       HttpClient client = new HttpClient();
       {
-         PostMethod method = new PostMethod("http://localhost:8081/simple");
-         NameValuePair[] params = {new NameValuePair("hello", "world")};
+         PostMethod method = createPostMethod("/simple");
+         NameValuePair[] params =
+         {new NameValuePair("hello", "world")};
          method.setRequestBody(params);
          try
          {
@@ -156,8 +160,9 @@ public class FormUrlEncodedTest
    {
       HttpClient client = new HttpClient();
       {
-         PostMethod method = new PostMethod("http://localhost:8081/form");
-         NameValuePair[] params = {new NameValuePair("hello", "world")};
+         PostMethod method = createPostMethod("/form");
+         NameValuePair[] params =
+         {new NameValuePair("hello", "world")};
          method.setRequestBody(params);
          try
          {
@@ -179,8 +184,9 @@ public class FormUrlEncodedTest
    {
       HttpClient client = new HttpClient();
       {
-         PostMethod method = new PostMethod("http://localhost:8081/form/twoparams");
-         NameValuePair[] params = {new NameValuePair("hello", "world"), new NameValuePair("yo", "mama")};
+         PostMethod method = createPostMethod("/form/twoparams");
+         NameValuePair[] params =
+         {new NameValuePair("hello", "world"), new NameValuePair("yo", "mama")};
          method.setRequestBody(params);
          try
          {
@@ -217,7 +223,7 @@ public class FormUrlEncodedTest
    @Test
    public void testProxy()
    {
-      TestProxy proxy = ProxyFactory.create(TestProxy.class, "http://localhost:8081");
+      TestProxy proxy = ProxyFactory.create(TestProxy.class, generateBaseUrl());
       MultivaluedMapImpl<String, String> form = new MultivaluedMapImpl<String, String>();
       form.add("hello", "world");
       String body = proxy.post(form);

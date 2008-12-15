@@ -1,5 +1,18 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.HashSet;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.OptionsMethod;
@@ -12,16 +25,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.HashSet;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -32,8 +35,7 @@ public class OptionsTest
 
    @HttpMethod("OPTIONS")
    @Retention(RetentionPolicy.RUNTIME)
-   private static @interface OPTIONS
-   {
+   private static @interface OPTIONS {
    }
 
    @Path("/")
@@ -74,14 +76,12 @@ public class OptionsTest
       EmbeddedContainer.stop();
    }
 
-
    @Test
    public void testOptions() throws Exception
    {
       HttpClient client = new HttpClient();
       {
-         String uri = "http://localhost:8081/options";
-         OptionsMethod method = new OptionsMethod(uri);
+         OptionsMethod method = createOptionsMethod("/options");
          try
          {
             int status = client.executeMethod(method);
@@ -102,8 +102,7 @@ public class OptionsTest
    {
       HttpClient client = new HttpClient();
       {
-         String uri = "http://localhost:8081/stuff";
-         OptionsMethod method = new OptionsMethod(uri);
+         OptionsMethod method = createOptionsMethod("/stuff");
          try
          {
             int status = client.executeMethod(method);
@@ -112,7 +111,8 @@ public class OptionsTest
             Assert.assertNotNull(headers);
             String value = headers[0].getValue();
             HashSet<String> vals = new HashSet<String>();
-            for (String v : value.split(",")) vals.add(v.trim());
+            for (String v : value.split(","))
+               vals.add(v.trim());
             Assert.assertEquals(2, vals.size());
             Assert.assertTrue(vals.contains("GET"));
             Assert.assertTrue(vals.contains("DELETE"));
@@ -129,8 +129,7 @@ public class OptionsTest
    {
       HttpClient client = new HttpClient();
       {
-         String uri = "http://localhost:8081/stuff";
-         PostMethod method = new PostMethod(uri);
+         PostMethod method = createPostMethod("/stuff");
          try
          {
             int status = client.executeMethod(method);
@@ -139,7 +138,8 @@ public class OptionsTest
             Assert.assertNotNull(headers);
             String value = headers[0].getValue();
             HashSet<String> vals = new HashSet<String>();
-            for (String v : value.split(",")) vals.add(v.trim());
+            for (String v : value.split(","))
+               vals.add(v.trim());
             Assert.assertEquals(2, vals.size());
             Assert.assertTrue(vals.contains("GET"));
             Assert.assertTrue(vals.contains("DELETE"));

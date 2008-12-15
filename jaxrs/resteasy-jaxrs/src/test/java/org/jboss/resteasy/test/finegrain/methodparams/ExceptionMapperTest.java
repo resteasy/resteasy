@@ -1,5 +1,17 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
@@ -10,15 +22,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -117,7 +120,7 @@ public class ExceptionMapperTest
    public void testProvidersInjection()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/providers");
+      GetMethod method = createGetMethod("/providers");
       try
       {
          int status = client.executeMethod(method);
@@ -135,7 +138,7 @@ public class ExceptionMapperTest
    public void testMapping()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081");
+      GetMethod method = createGetMethod("");
       try
       {
          int status = client.executeMethod(method);
@@ -153,7 +156,7 @@ public class ExceptionMapperTest
    public void testSubclassMapping()
    {
       HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod("http://localhost:8081/subclass");
+      GetMethod method = createGetMethod("/subclass");
       try
       {
          int status = client.executeMethod(method);

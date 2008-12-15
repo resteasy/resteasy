@@ -1,5 +1,22 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -12,20 +29,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -35,21 +38,37 @@ public class HeaderParamsAsPrimitivesTest
    private static HttpClient client = new HttpClient();
 
    private static Dispatcher dispatcher;
+
    private static IResourceHeaderPrimitives resourceHeaderPrimitives;
+
    private static IResourceHeaderPrimitivesDefault resourceHeaderPrimitivesDefault;
+
    private static IResourceHeaderPrimitivesDefaultOverride resourceHeaderPrimitivesDefaultOverride;
+
    private static IResourceHeaderPrimitivesDefaultNull resourceHeaderPrimitivesDefaultNull;
+
    private static IResourceHeaderPrimitiveWrappers resourceHeaderPrimitiveWrappers;
+
    private static IResourceHeaderPrimitiveWrappersDefault resourceHeaderPrimitiveWrappersDefault;
+
    private static IResourceHeaderPrimitiveWrappersDefaultOverride resourceHeaderPrimitiveWrappersDefaultOverride;
+
    private static IResourceHeaderPrimitiveWrappersDefaultNull resourceHeaderPrimitiveWrappersDefaultNull;
+
    private static IResourceHeaderPrimitiveList resourceHeaderPrimitiveList;
+
    private static IResourceHeaderPrimitiveListDefault resourceHeaderPrimitiveListDefault;
+
    private static IResourceHeaderPrimitiveListDefaultOverride resourceHeaderPrimitiveListDefaultOverride;
+
    private static IResourceHeaderPrimitiveListDefaultNull resourceHeaderPrimitiveListDefaultNull;
+
    private static IResourceHeaderPrimitiveArray resourceHeaderPrimitiveArray;
+
    private static IResourceHeaderPrimitiveArrayDefault resourceHeaderPrimitiveArrayDefault;
+
    private static IResourceHeaderPrimitiveArrayDefaultOverride resourceHeaderPrimitiveArrayDefaultOverride;
+
    private static IResourceHeaderPrimitiveArrayDefaultNull resourceHeaderPrimitiveArrayDefaultNull;
 
    @BeforeClass
@@ -74,22 +93,35 @@ public class HeaderParamsAsPrimitivesTest
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveArrayDefault.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveArrayDefaultNull.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveArrayDefaultOverride.class);
-      resourceHeaderPrimitives = ProxyFactory.create(IResourceHeaderPrimitives.class, "http://localhost:8081");
-      resourceHeaderPrimitivesDefault = ProxyFactory.create(IResourceHeaderPrimitivesDefault.class, "http://localhost:8081");
-      resourceHeaderPrimitivesDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitivesDefaultOverride.class, "http://localhost:8081");
-      resourceHeaderPrimitivesDefaultNull = ProxyFactory.create(IResourceHeaderPrimitivesDefaultNull.class, "http://localhost:8081");
-      resourceHeaderPrimitiveWrappers = ProxyFactory.create(IResourceHeaderPrimitiveWrappers.class, "http://localhost:8081");
-      resourceHeaderPrimitiveWrappersDefault = ProxyFactory.create(IResourceHeaderPrimitiveWrappersDefault.class, "http://localhost:8081");
-      resourceHeaderPrimitiveWrappersDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitiveWrappersDefaultOverride.class, "http://localhost:8081");
-      resourceHeaderPrimitiveWrappersDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveWrappersDefaultNull.class, "http://localhost:8081");
-      resourceHeaderPrimitiveList = ProxyFactory.create(IResourceHeaderPrimitiveList.class, "http://localhost:8081");
-      resourceHeaderPrimitiveListDefault = ProxyFactory.create(IResourceHeaderPrimitiveListDefault.class, "http://localhost:8081");
-      resourceHeaderPrimitiveListDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitiveListDefaultOverride.class, "http://localhost:8081");
-      resourceHeaderPrimitiveListDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveListDefaultNull.class, "http://localhost:8081");
-      resourceHeaderPrimitiveArray = ProxyFactory.create(IResourceHeaderPrimitiveArray.class, "http://localhost:8081");
-      resourceHeaderPrimitiveArrayDefault = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefault.class, "http://localhost:8081");
-      resourceHeaderPrimitiveArrayDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefaultOverride.class, "http://localhost:8081");
-      resourceHeaderPrimitiveArrayDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefaultNull.class, "http://localhost:8081");
+      resourceHeaderPrimitives = ProxyFactory.create(IResourceHeaderPrimitives.class, generateBaseUrl());
+      resourceHeaderPrimitivesDefault = ProxyFactory.create(IResourceHeaderPrimitivesDefault.class,
+            generateBaseUrl());
+      resourceHeaderPrimitivesDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitivesDefaultOverride.class,
+            generateBaseUrl());
+      resourceHeaderPrimitivesDefaultNull = ProxyFactory.create(IResourceHeaderPrimitivesDefaultNull.class,
+            generateBaseUrl());
+      resourceHeaderPrimitiveWrappers = ProxyFactory.create(IResourceHeaderPrimitiveWrappers.class,
+            generateBaseUrl());
+      resourceHeaderPrimitiveWrappersDefault = ProxyFactory.create(IResourceHeaderPrimitiveWrappersDefault.class,
+            generateBaseUrl());
+      resourceHeaderPrimitiveWrappersDefaultOverride = ProxyFactory.create(
+            IResourceHeaderPrimitiveWrappersDefaultOverride.class, generateBaseUrl());
+      resourceHeaderPrimitiveWrappersDefaultNull = ProxyFactory.create(
+            IResourceHeaderPrimitiveWrappersDefaultNull.class, generateBaseUrl());
+      resourceHeaderPrimitiveList = ProxyFactory.create(IResourceHeaderPrimitiveList.class, generateBaseUrl());
+      resourceHeaderPrimitiveListDefault = ProxyFactory.create(IResourceHeaderPrimitiveListDefault.class,
+            generateBaseUrl());
+      resourceHeaderPrimitiveListDefaultOverride = ProxyFactory.create(
+            IResourceHeaderPrimitiveListDefaultOverride.class, generateBaseUrl());
+      resourceHeaderPrimitiveListDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveListDefaultNull.class,
+            generateBaseUrl());
+      resourceHeaderPrimitiveArray = ProxyFactory.create(IResourceHeaderPrimitiveArray.class, generateBaseUrl());
+      resourceHeaderPrimitiveArrayDefault = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefault.class,
+            generateBaseUrl());
+      resourceHeaderPrimitiveArrayDefaultOverride = ProxyFactory.create(
+            IResourceHeaderPrimitiveArrayDefaultOverride.class, generateBaseUrl());
+      resourceHeaderPrimitiveArrayDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefaultNull.class,
+            generateBaseUrl());
 
    }
 
@@ -122,7 +154,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@HeaderParam("boolean")boolean v)
+      public String doGet(@HeaderParam("boolean") boolean v)
       {
          Assert.assertEquals(true, v);
          return "content";
@@ -130,7 +162,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGet(@HeaderParam("byte")byte v)
+      public String doGet(@HeaderParam("byte") byte v)
       {
          Assert.assertTrue(127 == v);
          return "content";
@@ -138,7 +170,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGet(@HeaderParam("short")short v)
+      public String doGet(@HeaderParam("short") short v)
       {
          Assert.assertTrue(v == 32767);
          return "content";
@@ -146,7 +178,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGet(@HeaderParam("int")int v)
+      public String doGet(@HeaderParam("int") int v)
       {
          Assert.assertEquals(2147483647, v);
          return "content";
@@ -154,7 +186,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGet(@HeaderParam("long")long v)
+      public String doGet(@HeaderParam("long") long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
          return "content";
@@ -162,7 +194,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGet(@HeaderParam("float")float v)
+      public String doGet(@HeaderParam("float") float v)
       {
          Assert.assertEquals(3.14159265f, v);
          return "content";
@@ -170,7 +202,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGet(@HeaderParam("double")double v)
+      public String doGet(@HeaderParam("double") double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
          return "content";
@@ -182,7 +214,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@HeaderParam("boolean")boolean v)
+      public String doGet(@HeaderParam("boolean") boolean v)
       {
          Assert.assertEquals(false, v);
          return "content";
@@ -190,7 +222,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGet(@HeaderParam("byte")byte v)
+      public String doGet(@HeaderParam("byte") byte v)
       {
          Assert.assertTrue(0 == v);
          return "content";
@@ -198,7 +230,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGet(@HeaderParam("short")short v)
+      public String doGet(@HeaderParam("short") short v)
       {
          Assert.assertTrue(0 == v);
          return "content";
@@ -206,7 +238,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGet(@HeaderParam("int")int v)
+      public String doGet(@HeaderParam("int") int v)
       {
          Assert.assertEquals(0, v);
          return "content";
@@ -214,7 +246,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGet(@HeaderParam("long")long v)
+      public String doGet(@HeaderParam("long") long v)
       {
          Assert.assertEquals(0l, v);
          return "content";
@@ -222,7 +254,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGet(@HeaderParam("float")float v)
+      public String doGet(@HeaderParam("float") float v)
       {
          Assert.assertEquals(0.0f, v);
          return "content";
@@ -230,7 +262,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGet(@HeaderParam("double")double v)
+      public String doGet(@HeaderParam("double") double v)
       {
          Assert.assertEquals(0.0d, v);
          return "content";
@@ -242,7 +274,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@HeaderParam("boolean") @DefaultValue("true")boolean v)
+      public String doGet(@HeaderParam("boolean") @DefaultValue("true") boolean v)
       {
          Assert.assertEquals(true, v);
          return "content";
@@ -250,7 +282,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGet(@HeaderParam("byte") @DefaultValue("127")byte v)
+      public String doGet(@HeaderParam("byte") @DefaultValue("127") byte v)
       {
          Assert.assertTrue(127 == v);
          return "content";
@@ -258,7 +290,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGet(@HeaderParam("short") @DefaultValue("32767")short v)
+      public String doGet(@HeaderParam("short") @DefaultValue("32767") short v)
       {
          Assert.assertTrue(32767 == v);
          return "content";
@@ -266,7 +298,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGet(@HeaderParam("int") @DefaultValue("2147483647")int v)
+      public String doGet(@HeaderParam("int") @DefaultValue("2147483647") int v)
       {
          Assert.assertEquals(2147483647, v);
          return "content";
@@ -274,7 +306,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGet(@HeaderParam("long") @DefaultValue("9223372036854775807")long v)
+      public String doGet(@HeaderParam("long") @DefaultValue("9223372036854775807") long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
          return "content";
@@ -282,7 +314,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGet(@HeaderParam("float") @DefaultValue("3.14159265")float v)
+      public String doGet(@HeaderParam("float") @DefaultValue("3.14159265") float v)
       {
          Assert.assertEquals(3.14159265f, v);
          return "content";
@@ -290,7 +322,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGet(@HeaderParam("double") @DefaultValue("3.14159265358979")double v)
+      public String doGet(@HeaderParam("double") @DefaultValue("3.14159265358979") double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
          return "content";
@@ -302,7 +334,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@HeaderParam("boolean") @DefaultValue("false")boolean v)
+      public String doGet(@HeaderParam("boolean") @DefaultValue("false") boolean v)
       {
          Assert.assertEquals(true, v);
          return "content";
@@ -310,7 +342,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGet(@HeaderParam("byte") @DefaultValue("1")byte v)
+      public String doGet(@HeaderParam("byte") @DefaultValue("1") byte v)
       {
          Assert.assertTrue(127 == v);
          return "content";
@@ -318,7 +350,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGet(@HeaderParam("short") @DefaultValue("1")short v)
+      public String doGet(@HeaderParam("short") @DefaultValue("1") short v)
       {
          Assert.assertTrue(32767 == v);
          return "content";
@@ -326,7 +358,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGet(@HeaderParam("int") @DefaultValue("1")int v)
+      public String doGet(@HeaderParam("int") @DefaultValue("1") int v)
       {
          Assert.assertEquals(2147483647, v);
          return "content";
@@ -334,7 +366,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGet(@HeaderParam("long") @DefaultValue("1")long v)
+      public String doGet(@HeaderParam("long") @DefaultValue("1") long v)
       {
          Assert.assertEquals(9223372036854775807L, v);
          return "content";
@@ -342,7 +374,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGet(@HeaderParam("float") @DefaultValue("0.0")float v)
+      public String doGet(@HeaderParam("float") @DefaultValue("0.0") float v)
       {
          Assert.assertEquals(3.14159265f, v);
          return "content";
@@ -350,7 +382,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGet(@HeaderParam("double") @DefaultValue("0.0")double v)
+      public String doGet(@HeaderParam("double") @DefaultValue("0.0") double v)
       {
          Assert.assertEquals(3.14159265358979d, v);
          return "content";
@@ -362,7 +394,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@HeaderParam("boolean")Boolean v)
+      public String doGet(@HeaderParam("boolean") Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
          return "content";
@@ -370,7 +402,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGet(@HeaderParam("byte")Byte v)
+      public String doGet(@HeaderParam("byte") Byte v)
       {
          Assert.assertTrue(127 == v.byteValue());
 
@@ -379,7 +411,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGet(@HeaderParam("short")Short v)
+      public String doGet(@HeaderParam("short") Short v)
       {
          Assert.assertTrue(32767 == v.shortValue());
          return "content";
@@ -387,7 +419,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGet(@HeaderParam("int")Integer v)
+      public String doGet(@HeaderParam("int") Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
          return "content";
@@ -395,7 +427,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGet(@HeaderParam("long")Long v)
+      public String doGet(@HeaderParam("long") Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
          return "content";
@@ -403,7 +435,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGet(@HeaderParam("float")Float v)
+      public String doGet(@HeaderParam("float") Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
          return "content";
@@ -411,7 +443,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGet(@HeaderParam("double")Double v)
+      public String doGet(@HeaderParam("double") Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
          return "content";
@@ -423,7 +455,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@HeaderParam("boolean")Boolean v)
+      public String doGet(@HeaderParam("boolean") Boolean v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -431,7 +463,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGet(@HeaderParam("byte")Byte v)
+      public String doGet(@HeaderParam("byte") Byte v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -439,7 +471,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGet(@HeaderParam("short")Short v)
+      public String doGet(@HeaderParam("short") Short v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -447,7 +479,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGet(@HeaderParam("int")Integer v)
+      public String doGet(@HeaderParam("int") Integer v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -455,7 +487,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGet(@HeaderParam("long")Long v)
+      public String doGet(@HeaderParam("long") Long v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -463,7 +495,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGet(@HeaderParam("float")Float v)
+      public String doGet(@HeaderParam("float") Float v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -471,7 +503,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGet(@HeaderParam("double")Double v)
+      public String doGet(@HeaderParam("double") Double v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -483,7 +515,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@HeaderParam("boolean") @DefaultValue("true")Boolean v)
+      public String doGet(@HeaderParam("boolean") @DefaultValue("true") Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
          return "content";
@@ -491,7 +523,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGet(@HeaderParam("byte") @DefaultValue("127")Byte v)
+      public String doGet(@HeaderParam("byte") @DefaultValue("127") Byte v)
       {
          Assert.assertTrue(127 == v.byteValue());
 
@@ -500,7 +532,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGet(@HeaderParam("short") @DefaultValue("32767")Short v)
+      public String doGet(@HeaderParam("short") @DefaultValue("32767") Short v)
       {
          Assert.assertTrue(32767 == v.shortValue());
          return "content";
@@ -508,7 +540,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGet(@HeaderParam("int") @DefaultValue("2147483647")Integer v)
+      public String doGet(@HeaderParam("int") @DefaultValue("2147483647") Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
          return "content";
@@ -516,7 +548,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGet(@HeaderParam("long") @DefaultValue("9223372036854775807")Long v)
+      public String doGet(@HeaderParam("long") @DefaultValue("9223372036854775807") Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
          return "content";
@@ -524,7 +556,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGet(@HeaderParam("float") @DefaultValue("3.14159265")Float v)
+      public String doGet(@HeaderParam("float") @DefaultValue("3.14159265") Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
          return "content";
@@ -532,7 +564,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGet(@HeaderParam("double") @DefaultValue("3.14159265358979")Double v)
+      public String doGet(@HeaderParam("double") @DefaultValue("3.14159265358979") Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
          return "content";
@@ -540,11 +572,13 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/wrappers/default/override")
-   public static class ResourceHeaderPrimitiveWrappersDefaultOverride implements IResourceHeaderPrimitiveWrappersDefaultOverride
+   public static class ResourceHeaderPrimitiveWrappersDefaultOverride
+         implements
+            IResourceHeaderPrimitiveWrappersDefaultOverride
    {
       @GET
       @Produces("application/boolean")
-      public String doGet(@HeaderParam("boolean") @DefaultValue("false")Boolean v)
+      public String doGet(@HeaderParam("boolean") @DefaultValue("false") Boolean v)
       {
          Assert.assertEquals(true, v.booleanValue());
          return "content";
@@ -552,7 +586,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGet(@HeaderParam("byte") @DefaultValue("1")Byte v)
+      public String doGet(@HeaderParam("byte") @DefaultValue("1") Byte v)
       {
          Assert.assertTrue(127 == v.byteValue());
          return "content";
@@ -560,7 +594,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGet(@HeaderParam("short") @DefaultValue("1")Short v)
+      public String doGet(@HeaderParam("short") @DefaultValue("1") Short v)
       {
          Assert.assertTrue(32767 == v.shortValue());
          return "content";
@@ -568,7 +602,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGet(@HeaderParam("int") @DefaultValue("1")Integer v)
+      public String doGet(@HeaderParam("int") @DefaultValue("1") Integer v)
       {
          Assert.assertEquals(2147483647, v.intValue());
          return "content";
@@ -576,7 +610,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGet(@HeaderParam("long") @DefaultValue("1")Long v)
+      public String doGet(@HeaderParam("long") @DefaultValue("1") Long v)
       {
          Assert.assertEquals(9223372036854775807L, v.longValue());
          return "content";
@@ -584,7 +618,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGet(@HeaderParam("float") @DefaultValue("0.0")Float v)
+      public String doGet(@HeaderParam("float") @DefaultValue("0.0") Float v)
       {
          Assert.assertEquals(3.14159265f, v.floatValue());
          return "content";
@@ -592,7 +626,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGet(@HeaderParam("double") @DefaultValue("0.0")Double v)
+      public String doGet(@HeaderParam("double") @DefaultValue("0.0") Double v)
       {
          Assert.assertEquals(3.14159265358979d, v.doubleValue());
          return "content";
@@ -604,7 +638,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("boolean")List<Boolean> v)
+      public String doGetBoolean(@HeaderParam("boolean") List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
          Assert.assertEquals(true, v.get(1).booleanValue());
@@ -614,7 +648,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@HeaderParam("byte")List<Byte> v)
+      public String doGetByte(@HeaderParam("byte") List<Byte> v)
       {
          Assert.assertTrue(127 == v.get(0).byteValue());
          Assert.assertTrue(127 == v.get(1).byteValue());
@@ -624,7 +658,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@HeaderParam("short")List<Short> v)
+      public String doGetShort(@HeaderParam("short") List<Short> v)
       {
          Assert.assertTrue(32767 == v.get(0).shortValue());
          Assert.assertTrue(32767 == v.get(1).shortValue());
@@ -634,7 +668,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@HeaderParam("int")List<Integer> v)
+      public String doGetInteger(@HeaderParam("int") List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
          Assert.assertEquals(2147483647, v.get(1).intValue());
@@ -644,7 +678,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@HeaderParam("long")List<Long> v)
+      public String doGetLong(@HeaderParam("long") List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
          Assert.assertEquals(9223372036854775807L, v.get(1).longValue());
@@ -654,7 +688,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@HeaderParam("float")List<Float> v)
+      public String doGetFloat(@HeaderParam("float") List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
          Assert.assertEquals(3.14159265f, v.get(1).floatValue());
@@ -664,7 +698,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@HeaderParam("double")List<Double> v)
+      public String doGetDouble(@HeaderParam("double") List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
          Assert.assertEquals(3.14159265358979d, v.get(1).doubleValue());
@@ -678,7 +712,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("boolean")List<Boolean> v)
+      public String doGetBoolean(@HeaderParam("boolean") List<Boolean> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -686,7 +720,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@HeaderParam("byte")List<Byte> v)
+      public String doGetByte(@HeaderParam("byte") List<Byte> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -694,7 +728,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@HeaderParam("short")List<Short> v)
+      public String doGetShort(@HeaderParam("short") List<Short> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -702,7 +736,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@HeaderParam("int")List<Integer> v)
+      public String doGetInteger(@HeaderParam("int") List<Integer> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -710,7 +744,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@HeaderParam("long")List<Long> v)
+      public String doGetLong(@HeaderParam("long") List<Long> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -718,7 +752,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@HeaderParam("float")List<Float> v)
+      public String doGetFloat(@HeaderParam("float") List<Float> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -726,7 +760,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@HeaderParam("double")List<Double> v)
+      public String doGetDouble(@HeaderParam("double") List<Double> v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -738,7 +772,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("true")List<Boolean> v)
+      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("true") List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
          return "content";
@@ -746,7 +780,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@HeaderParam("byte") @DefaultValue("127")List<Byte> v)
+      public String doGetByte(@HeaderParam("byte") @DefaultValue("127") List<Byte> v)
       {
          Assert.assertTrue(127 == v.get(0).byteValue());
          return "content";
@@ -754,7 +788,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@HeaderParam("short") @DefaultValue("32767")List<Short> v)
+      public String doGetShort(@HeaderParam("short") @DefaultValue("32767") List<Short> v)
       {
          Assert.assertTrue(32767 == v.get(0).shortValue());
          return "content";
@@ -762,7 +796,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@HeaderParam("int") @DefaultValue("2147483647")List<Integer> v)
+      public String doGetInteger(@HeaderParam("int") @DefaultValue("2147483647") List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
          return "content";
@@ -770,7 +804,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@HeaderParam("long") @DefaultValue("9223372036854775807")List<Long> v)
+      public String doGetLong(@HeaderParam("long") @DefaultValue("9223372036854775807") List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
          return "content";
@@ -778,7 +812,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@HeaderParam("float") @DefaultValue("3.14159265")List<Float> v)
+      public String doGetFloat(@HeaderParam("float") @DefaultValue("3.14159265") List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
          return "content";
@@ -786,7 +820,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@HeaderParam("double") @DefaultValue("3.14159265358979")List<Double> v)
+      public String doGetDouble(@HeaderParam("double") @DefaultValue("3.14159265358979") List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
          return "content";
@@ -794,11 +828,13 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/list/default/override")
-   public static class ResourceHeaderPrimitiveListDefaultOverride implements IResourceHeaderPrimitiveListDefaultOverride
+   public static class ResourceHeaderPrimitiveListDefaultOverride
+         implements
+            IResourceHeaderPrimitiveListDefaultOverride
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false")List<Boolean> v)
+      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false") List<Boolean> v)
       {
          Assert.assertEquals(true, v.get(0).booleanValue());
          return "content";
@@ -806,7 +842,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/byte")
-      public String doGetByte(@HeaderParam("byte") @DefaultValue("0")List<Byte> v)
+      public String doGetByte(@HeaderParam("byte") @DefaultValue("0") List<Byte> v)
       {
          Assert.assertTrue(127 == v.get(0).byteValue());
          return "content";
@@ -814,7 +850,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@HeaderParam("short") @DefaultValue("0")List<Short> v)
+      public String doGetShort(@HeaderParam("short") @DefaultValue("0") List<Short> v)
       {
          Assert.assertTrue(32767 == v.get(0).shortValue());
          return "content";
@@ -822,7 +858,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/int")
-      public String doGetInteger(@HeaderParam("int") @DefaultValue("0")List<Integer> v)
+      public String doGetInteger(@HeaderParam("int") @DefaultValue("0") List<Integer> v)
       {
          Assert.assertEquals(2147483647, v.get(0).intValue());
          return "content";
@@ -830,7 +866,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/long")
-      public String doGetLong(@HeaderParam("long") @DefaultValue("0")List<Long> v)
+      public String doGetLong(@HeaderParam("long") @DefaultValue("0") List<Long> v)
       {
          Assert.assertEquals(9223372036854775807L, v.get(0).longValue());
          return "content";
@@ -838,7 +874,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/float")
-      public String doGetFloat(@HeaderParam("float") @DefaultValue("0.0")List<Float> v)
+      public String doGetFloat(@HeaderParam("float") @DefaultValue("0.0") List<Float> v)
       {
          Assert.assertEquals(3.14159265f, v.get(0).floatValue());
          return "content";
@@ -846,20 +882,19 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/double")
-      public String doGetDouble(@HeaderParam("double") @DefaultValue("0.0")List<Double> v)
+      public String doGetDouble(@HeaderParam("double") @DefaultValue("0.0") List<Double> v)
       {
          Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
          return "content";
       }
    }
 
-
    @Path("/set")
    public static class ResourceHeaderPrimitiveSet implements IResourceHeaderPrimitiveSet
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("header")Set<String> v)
+      public String doGetBoolean(@HeaderParam("header") Set<String> v)
       {
          Assert.assertEquals(2, v.size());
          Assert.assertTrue(v.contains("one"));
@@ -873,7 +908,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("header")SortedSet<String> v)
+      public String doGetBoolean(@HeaderParam("header") SortedSet<String> v)
       {
          Assert.assertEquals(2, v.size());
          Assert.assertTrue(v.contains("one"));
@@ -887,7 +922,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("boolean")boolean[] v)
+      public String doGetBoolean(@HeaderParam("boolean") boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
          Assert.assertEquals(true, v[1]);
@@ -897,7 +932,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@HeaderParam("short")short[] v)
+      public String doGetShort(@HeaderParam("short") short[] v)
       {
          Assert.assertTrue(32767 == v[0]);
          Assert.assertTrue(32767 == v[0]);
@@ -911,7 +946,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("boolean")boolean[] v)
+      public String doGetBoolean(@HeaderParam("boolean") boolean[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -919,7 +954,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@HeaderParam("short")short[] v)
+      public String doGetShort(@HeaderParam("short") short[] v)
       {
          Assert.assertEquals(null, v);
          return "content";
@@ -931,7 +966,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("true")boolean[] v)
+      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("true") boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
          return "content";
@@ -939,7 +974,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@HeaderParam("short") @DefaultValue("32767")short[] v)
+      public String doGetShort(@HeaderParam("short") @DefaultValue("32767") short[] v)
       {
          Assert.assertTrue(32767 == v[0]);
          return "content";
@@ -947,11 +982,13 @@ public class HeaderParamsAsPrimitivesTest
    }
 
    @Path("/array/default/override")
-   public static class ResourceHeaderPrimitiveArrayDefaultOverride implements IResourceHeaderPrimitiveArrayDefaultOverride
+   public static class ResourceHeaderPrimitiveArrayDefaultOverride
+         implements
+            IResourceHeaderPrimitiveArrayDefaultOverride
    {
       @GET
       @Produces("application/boolean")
-      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false")boolean[] v)
+      public String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false") boolean[] v)
       {
          Assert.assertEquals(true, v[0]);
          return "content";
@@ -959,7 +996,7 @@ public class HeaderParamsAsPrimitivesTest
 
       @GET
       @Produces("application/short")
-      public String doGetShort(@HeaderParam("int") @DefaultValue("0")short[] v)
+      public String doGetShort(@HeaderParam("int") @DefaultValue("0") short[] v)
       {
          Assert.assertTrue(32767 == v[0]);
          return "content";
@@ -969,7 +1006,7 @@ public class HeaderParamsAsPrimitivesTest
    public void _test(String type, String value)
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/");
+         GetMethod method = createGetMethod("/");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          method.addRequestHeader(type, value);
          try
@@ -984,7 +1021,7 @@ public class HeaderParamsAsPrimitivesTest
       }
 
       {
-         GetMethod method = new GetMethod("http://localhost:8081/wrappers");
+         GetMethod method = createGetMethod("/wrappers");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          method.addRequestHeader(type, value);
          try
@@ -999,7 +1036,7 @@ public class HeaderParamsAsPrimitivesTest
       }
 
       {
-         GetMethod method = new GetMethod("http://localhost:8081/list");
+         GetMethod method = createGetMethod("/list");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          method.addRequestHeader(type, value);
          method.addRequestHeader(type, value);
@@ -1019,7 +1056,7 @@ public class HeaderParamsAsPrimitivesTest
    public void _testDefault(String base, String type, String value)
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081" + base + "default/null");
+         GetMethod method = createGetMethod("" + base + "default/null");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1032,7 +1069,7 @@ public class HeaderParamsAsPrimitivesTest
          }
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081" + base + "default");
+         GetMethod method = createGetMethod("" + base + "default");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
@@ -1045,7 +1082,7 @@ public class HeaderParamsAsPrimitivesTest
          }
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081" + base + "default/override");
+         GetMethod method = createGetMethod("" + base + "default/override");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
          method.addRequestHeader(type, value);
          try
@@ -1079,7 +1116,7 @@ public class HeaderParamsAsPrimitivesTest
    public void testSet()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/set");
+         GetMethod method = createGetMethod("/set");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/boolean");
          method.addRequestHeader("header", "one");
          method.addRequestHeader("header", "one");
@@ -1094,14 +1131,15 @@ public class HeaderParamsAsPrimitivesTest
          {
             throw new RuntimeException(e);
          }
-         IResourceHeaderPrimitiveSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSet.class, "http://localhost:8081");
+         IResourceHeaderPrimitiveSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSet.class,
+               generateBaseUrl());
          HashSet<String> set = new HashSet<String>();
          set.add("one");
          set.add("two");
          setClient.doGetBoolean(set);
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081/sortedset");
+         GetMethod method = createGetMethod("/sortedset");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/boolean");
          method.addRequestHeader("header", "one");
          method.addRequestHeader("header", "one");
@@ -1116,7 +1154,8 @@ public class HeaderParamsAsPrimitivesTest
          {
             throw new RuntimeException(e);
          }
-         IResourceHeaderPrimitiveSortedSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSortedSet.class, "http://localhost:8081");
+         IResourceHeaderPrimitiveSortedSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSortedSet.class,
+               generateBaseUrl());
          TreeSet<String> set = new TreeSet<String>();
          set.add("one");
          set.add("two");
@@ -1135,7 +1174,8 @@ public class HeaderParamsAsPrimitivesTest
       list.add(Boolean.TRUE);
       list.add(Boolean.TRUE);
       resourceHeaderPrimitiveList.doGetBoolean(list);
-      boolean[] array = {true, true, true};
+      boolean[] array =
+      {true, true, true};
       resourceHeaderPrimitiveArray.doGetBoolean(array);
    }
 
@@ -1168,7 +1208,8 @@ public class HeaderParamsAsPrimitivesTest
       resourceHeaderPrimitiveListDefaultOverride.doGetBoolean(list);
       resourceHeaderPrimitiveArrayDefault.doGetBoolean();
       resourceHeaderPrimitiveArrayDefaultNull.doGetBoolean();
-      boolean[] array = {true};
+      boolean[] array =
+      {true};
       resourceHeaderPrimitiveArrayDefaultOverride.doGetBoolean(array);
    }
 
@@ -1345,7 +1386,7 @@ public class HeaderParamsAsPrimitivesTest
    public void testBadPrimitiveValue()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/");
+         GetMethod method = createGetMethod("/");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
          method.addRequestHeader("int", "abcdef");
          try
@@ -1364,7 +1405,7 @@ public class HeaderParamsAsPrimitivesTest
    public void testBadPrimitiveWrapperValue()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/wrappers");
+         GetMethod method = createGetMethod("/wrappers");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
          method.addRequestHeader("int", "abcdef");
          try
@@ -1383,7 +1424,7 @@ public class HeaderParamsAsPrimitivesTest
    public void testBadPrimitiveListValue()
    {
       {
-         GetMethod method = new GetMethod("http://localhost:8081/list");
+         GetMethod method = createGetMethod("/list");
          method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
          method.addRequestHeader("int", "abcdef");
          method.addRequestHeader("int", "abcdef");
@@ -1405,31 +1446,31 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGet(@HeaderParam("boolean")boolean v);
+      String doGet(@HeaderParam("boolean") boolean v);
 
       @GET
       @Produces("application/byte")
-      String doGet(@HeaderParam("byte")byte v);
+      String doGet(@HeaderParam("byte") byte v);
 
       @GET
       @Produces("application/short")
-      String doGet(@HeaderParam("short")short v);
+      String doGet(@HeaderParam("short") short v);
 
       @GET
       @Produces("application/int")
-      String doGet(@HeaderParam("int")int v);
+      String doGet(@HeaderParam("int") int v);
 
       @GET
       @Produces("application/long")
-      String doGet(@HeaderParam("long")long v);
+      String doGet(@HeaderParam("long") long v);
 
       @GET
       @Produces("application/float")
-      String doGet(@HeaderParam("float")float v);
+      String doGet(@HeaderParam("float") float v);
 
       @GET
       @Produces("application/double")
-      String doGet(@HeaderParam("double")double v);
+      String doGet(@HeaderParam("double") double v);
    }
 
    @Path("/default/null")
@@ -1501,31 +1542,31 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGet(@HeaderParam("boolean") @DefaultValue("false")boolean v);
+      String doGet(@HeaderParam("boolean") @DefaultValue("false") boolean v);
 
       @GET
       @Produces("application/byte")
-      String doGet(@HeaderParam("byte") @DefaultValue("1")byte v);
+      String doGet(@HeaderParam("byte") @DefaultValue("1") byte v);
 
       @GET
       @Produces("application/short")
-      String doGet(@HeaderParam("short") @DefaultValue("1")short v);
+      String doGet(@HeaderParam("short") @DefaultValue("1") short v);
 
       @GET
       @Produces("application/int")
-      String doGet(@HeaderParam("int") @DefaultValue("1")int v);
+      String doGet(@HeaderParam("int") @DefaultValue("1") int v);
 
       @GET
       @Produces("application/long")
-      String doGet(@HeaderParam("long") @DefaultValue("1")long v);
+      String doGet(@HeaderParam("long") @DefaultValue("1") long v);
 
       @GET
       @Produces("application/float")
-      String doGet(@HeaderParam("float") @DefaultValue("0.0")float v);
+      String doGet(@HeaderParam("float") @DefaultValue("0.0") float v);
 
       @GET
       @Produces("application/double")
-      String doGet(@HeaderParam("double") @DefaultValue("0.0")double v);
+      String doGet(@HeaderParam("double") @DefaultValue("0.0") double v);
    }
 
    @Path("/wrappers")
@@ -1533,31 +1574,31 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGet(@HeaderParam("boolean")Boolean v);
+      String doGet(@HeaderParam("boolean") Boolean v);
 
       @GET
       @Produces("application/byte")
-      String doGet(@HeaderParam("byte")Byte v);
+      String doGet(@HeaderParam("byte") Byte v);
 
       @GET
       @Produces("application/short")
-      String doGet(@HeaderParam("short")Short v);
+      String doGet(@HeaderParam("short") Short v);
 
       @GET
       @Produces("application/int")
-      String doGet(@HeaderParam("int")Integer v);
+      String doGet(@HeaderParam("int") Integer v);
 
       @GET
       @Produces("application/long")
-      String doGet(@HeaderParam("long")Long v);
+      String doGet(@HeaderParam("long") Long v);
 
       @GET
       @Produces("application/float")
-      String doGet(@HeaderParam("float")Float v);
+      String doGet(@HeaderParam("float") Float v);
 
       @GET
       @Produces("application/double")
-      String doGet(@HeaderParam("double")Double v);
+      String doGet(@HeaderParam("double") Double v);
    }
 
    @Path("/wrappers/default/null")
@@ -1629,31 +1670,31 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGet(@HeaderParam("boolean") @DefaultValue("false")Boolean v);
+      String doGet(@HeaderParam("boolean") @DefaultValue("false") Boolean v);
 
       @GET
       @Produces("application/byte")
-      String doGet(@HeaderParam("byte") @DefaultValue("1")Byte v);
+      String doGet(@HeaderParam("byte") @DefaultValue("1") Byte v);
 
       @GET
       @Produces("application/short")
-      String doGet(@HeaderParam("short") @DefaultValue("1")Short v);
+      String doGet(@HeaderParam("short") @DefaultValue("1") Short v);
 
       @GET
       @Produces("application/int")
-      String doGet(@HeaderParam("int") @DefaultValue("1")Integer v);
+      String doGet(@HeaderParam("int") @DefaultValue("1") Integer v);
 
       @GET
       @Produces("application/long")
-      String doGet(@HeaderParam("long") @DefaultValue("1")Long v);
+      String doGet(@HeaderParam("long") @DefaultValue("1") Long v);
 
       @GET
       @Produces("application/float")
-      String doGet(@HeaderParam("float") @DefaultValue("0.0")Float v);
+      String doGet(@HeaderParam("float") @DefaultValue("0.0") Float v);
 
       @GET
       @Produces("application/double")
-      String doGet(@HeaderParam("double") @DefaultValue("0.0")Double v);
+      String doGet(@HeaderParam("double") @DefaultValue("0.0") Double v);
    }
 
    @Path("/set")
@@ -1661,7 +1702,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGetBoolean(@HeaderParam("header")Set<String> v);
+      String doGetBoolean(@HeaderParam("header") Set<String> v);
    }
 
    @Path("/sortedset")
@@ -1669,7 +1710,7 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGetBoolean(@HeaderParam("header")SortedSet<String> v);
+      String doGetBoolean(@HeaderParam("header") SortedSet<String> v);
    }
 
    @Path("/list")
@@ -1677,31 +1718,31 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGetBoolean(@HeaderParam("boolean")List<Boolean> v);
+      String doGetBoolean(@HeaderParam("boolean") List<Boolean> v);
 
       @GET
       @Produces("application/byte")
-      String doGetByte(@HeaderParam("byte")List<Byte> v);
+      String doGetByte(@HeaderParam("byte") List<Byte> v);
 
       @GET
       @Produces("application/short")
-      String doGetShort(@HeaderParam("short")List<Short> v);
+      String doGetShort(@HeaderParam("short") List<Short> v);
 
       @GET
       @Produces("application/int")
-      String doGetInteger(@HeaderParam("int")List<Integer> v);
+      String doGetInteger(@HeaderParam("int") List<Integer> v);
 
       @GET
       @Produces("application/long")
-      String doGetLong(@HeaderParam("long")List<Long> v);
+      String doGetLong(@HeaderParam("long") List<Long> v);
 
       @GET
       @Produces("application/float")
-      String doGetFloat(@HeaderParam("float")List<Float> v);
+      String doGetFloat(@HeaderParam("float") List<Float> v);
 
       @GET
       @Produces("application/double")
-      String doGetDouble(@HeaderParam("double")List<Double> v);
+      String doGetDouble(@HeaderParam("double") List<Double> v);
    }
 
    @Path("/list/default/null")
@@ -1773,31 +1814,31 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false")List<Boolean> v);
+      String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false") List<Boolean> v);
 
       @GET
       @Produces("application/byte")
-      String doGetByte(@HeaderParam("byte") @DefaultValue("0")List<Byte> v);
+      String doGetByte(@HeaderParam("byte") @DefaultValue("0") List<Byte> v);
 
       @GET
       @Produces("application/short")
-      String doGetShort(@HeaderParam("short") @DefaultValue("0")List<Short> v);
+      String doGetShort(@HeaderParam("short") @DefaultValue("0") List<Short> v);
 
       @GET
       @Produces("application/int")
-      String doGetInteger(@HeaderParam("int") @DefaultValue("0")List<Integer> v);
+      String doGetInteger(@HeaderParam("int") @DefaultValue("0") List<Integer> v);
 
       @GET
       @Produces("application/long")
-      String doGetLong(@HeaderParam("long") @DefaultValue("0")List<Long> v);
+      String doGetLong(@HeaderParam("long") @DefaultValue("0") List<Long> v);
 
       @GET
       @Produces("application/float")
-      String doGetFloat(@HeaderParam("float") @DefaultValue("0.0")List<Float> v);
+      String doGetFloat(@HeaderParam("float") @DefaultValue("0.0") List<Float> v);
 
       @GET
       @Produces("application/double")
-      String doGetDouble(@HeaderParam("double") @DefaultValue("0.0")List<Double> v);
+      String doGetDouble(@HeaderParam("double") @DefaultValue("0.0") List<Double> v);
    }
 
    @Path("/array")
@@ -1805,11 +1846,11 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGetBoolean(@HeaderParam("boolean")boolean[] v);
+      String doGetBoolean(@HeaderParam("boolean") boolean[] v);
 
       @GET
       @Produces("application/short")
-      String doGetShort(@HeaderParam("short")short[] v);
+      String doGetShort(@HeaderParam("short") short[] v);
    }
 
    @Path("/array/default/null")
@@ -1841,10 +1882,10 @@ public class HeaderParamsAsPrimitivesTest
    {
       @GET
       @Produces("application/boolean")
-      String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false")boolean[] v);
+      String doGetBoolean(@HeaderParam("boolean") @DefaultValue("false") boolean[] v);
 
       @GET
       @Produces("application/short")
-      String doGetShort(@HeaderParam("int") @DefaultValue("0")short[] v);
+      String doGetShort(@HeaderParam("int") @DefaultValue("0") short[] v);
    }
 }

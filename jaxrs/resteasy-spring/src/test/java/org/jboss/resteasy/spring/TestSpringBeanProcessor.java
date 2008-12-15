@@ -1,6 +1,25 @@
 package org.jboss.resteasy.spring;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
 import junit.framework.Assert;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.httpclient.HttpClient;
@@ -13,21 +32,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -63,12 +67,15 @@ public class TestSpringBeanProcessor extends BaseResourceTest
          return Customer.class.isAssignableFrom(type);
       }
 
-      public long getSize(Customer customer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      public long getSize(Customer customer, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType)
       {
          return -1;
       }
 
-      public void writeTo(Customer customer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+      public void writeTo(Customer customer, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException
       {
          entityStream.write(customer.getName().getBytes());
       }
@@ -105,6 +112,7 @@ public class TestSpringBeanProcessor extends BaseResourceTest
    public static class MyPrototypedResource
    {
       private Customer customer;
+
       private int counter = 0;
 
       @PathParam("id")
@@ -171,7 +179,6 @@ public class TestSpringBeanProcessor extends BaseResourceTest
       }
    }
 
-
    public static class MyInterceptor implements MethodInterceptor
    {
       public static boolean invoked = false;
@@ -183,7 +190,6 @@ public class TestSpringBeanProcessor extends BaseResourceTest
          return methodInvocation.proceed();
       }
    }
-
 
    @Before
    public void setUp() throws Exception
@@ -200,7 +206,7 @@ public class TestSpringBeanProcessor extends BaseResourceTest
    public void testAutoProxy() throws Exception
    {
       HttpClient client = new HttpClient();
-      GetMethod get = new GetMethod("http://localhost:8081/intercepted");
+      GetMethod get = createGetMethod("/intercepted");
       int status = client.executeMethod(get);
       Assert.assertEquals(200, status);
       Assert.assertEquals(get.getResponseBodyAsString(), "bill");
@@ -211,7 +217,7 @@ public class TestSpringBeanProcessor extends BaseResourceTest
    public void testProcessor() throws Exception
    {
       HttpClient client = new HttpClient();
-      GetMethod get = new GetMethod("http://localhost:8081");
+      GetMethod get = createGetMethod("");
       int status = client.executeMethod(get);
       Assert.assertEquals(200, status);
       Assert.assertEquals(get.getResponseBodyAsString(), "bill");
@@ -221,7 +227,7 @@ public class TestSpringBeanProcessor extends BaseResourceTest
    public void testPrototyped() throws Exception
    {
       HttpClient client = new HttpClient();
-      GetMethod get = new GetMethod("http://localhost:8081/prototyped/1");
+      GetMethod get = createGetMethod("/prototyped/1");
       int status = client.executeMethod(get);
       Assert.assertEquals(200, status);
       Assert.assertEquals(get.getResponseBodyAsString(), "bill0");
@@ -234,13 +240,12 @@ public class TestSpringBeanProcessor extends BaseResourceTest
    public void testRegistration() throws Exception
    {
       HttpClient client = new HttpClient();
-      PostMethod post = new PostMethod("http://localhost:8081/registered/singleton/count");
+      PostMethod post = createPostMethod("/registered/singleton/count");
       int status = client.executeMethod(post);
       Assert.assertEquals(200, status);
       Assert.assertEquals(post.getResponseBodyAsString(), "0");
 
-
-      post = new PostMethod("http://localhost:8081/count");
+      post = createPostMethod("/count");
       status = client.executeMethod(post);
       Assert.assertEquals(404, status);
    }
@@ -249,7 +254,7 @@ public class TestSpringBeanProcessor extends BaseResourceTest
    public void testScanned() throws Exception
    {
       HttpClient client = new HttpClient();
-      GetMethod get = new GetMethod("http://localhost:8081/scanned");
+      GetMethod get = createGetMethod("/scanned");
       int status = client.executeMethod(get);
       Assert.assertEquals(200, status);
       Assert.assertEquals(get.getResponseBodyAsString(), "Hello");

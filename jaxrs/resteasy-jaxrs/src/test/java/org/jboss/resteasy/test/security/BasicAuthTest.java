@@ -1,5 +1,15 @@
 package org.jboss.resteasy.test.security;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -13,14 +23,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -28,7 +30,6 @@ import javax.ws.rs.core.SecurityContext;
 public class BasicAuthTest
 {
    private static Dispatcher dispatcher;
-
 
    @Path("/secured")
    public static class BaseResource
@@ -62,13 +63,14 @@ public class BasicAuthTest
       }
    }
 
-
    @BeforeClass
    public static void before() throws Exception
    {
       SimpleSecurityDomain domain = new SimpleSecurityDomain();
-      String[] roles = {"admin"};
-      String[] basic = {"user"};
+      String[] roles =
+      {"admin"};
+      String[] basic =
+      {"user"};
       domain.addUser("bill", "password", roles);
       domain.addUser("mo", "password", basic);
       dispatcher = TJWSServletContainer.start("", domain);
@@ -88,12 +90,10 @@ public class BasicAuthTest
       client.getParams().setAuthenticationPreemptive(true);
 
       client.getState().setCredentials(
-              //new AuthScope(null, 8080, "Test"),
-              new AuthScope(AuthScope.ANY),
-              new UsernamePasswordCredentials("bill", "password")
-      );
+      //new AuthScope(null, 8080, "Test"),
+            new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
       {
-         GetMethod method = new GetMethod("http://localhost:8081/secured");
+         GetMethod method = createGetMethod("/secured");
          method.setDoAuthentication(true);
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
@@ -101,7 +101,7 @@ public class BasicAuthTest
          method.releaseConnection();
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081/secured/authorized");
+         GetMethod method = createGetMethod("/secured/authorized");
          method.setDoAuthentication(true);
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
@@ -109,7 +109,7 @@ public class BasicAuthTest
          method.releaseConnection();
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8081/secured/deny");
+         GetMethod method = createGetMethod("/secured/deny");
          method.setDoAuthentication(true);
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, status);
@@ -123,7 +123,7 @@ public class BasicAuthTest
       HttpClient client = new HttpClient();
 
       {
-         GetMethod method = new GetMethod("http://localhost:8081/secured");
+         GetMethod method = createGetMethod("/secured");
          int status = client.executeMethod(method);
          Assert.assertEquals(401, status);
          method.releaseConnection();
@@ -132,12 +132,10 @@ public class BasicAuthTest
       client.getParams().setAuthenticationPreemptive(true);
 
       client.getState().setCredentials(
-              //new AuthScope(null, 8080, "Test"),
-              new AuthScope(AuthScope.ANY),
-              new UsernamePasswordCredentials("mo", "password")
-      );
+      //new AuthScope(null, 8080, "Test"),
+            new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("mo", "password"));
       {
-         GetMethod method = new GetMethod("http://localhost:8081/secured/authorized");
+         GetMethod method = createGetMethod("/secured/authorized");
          method.setDoAuthentication(true);
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, status);

@@ -3,6 +3,18 @@
  */
 package org.jboss.resteasy.test.providers.iioimage;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.FileRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -12,15 +24,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a> Jun 23,
  *         2008
@@ -28,7 +31,7 @@ import java.io.OutputStream;
 public class TestIIOImageProvider extends BaseResourceTest
 {
 
-   private static final String TEST_URI = "http://localhost:8081/image";
+   private static final String TEST_URI = generateURL("/image");
 
    private static final String OUTPUT_ROOT = "./target/test-data/";
 
@@ -68,8 +71,7 @@ public class TestIIOImageProvider extends BaseResourceTest
       Assert.assertEquals(HttpServletResponse.SC_OK, status);
       InputStream response = method.getResponseBodyAsStream();
       BufferedInputStream in = new BufferedInputStream(response);
-      String contentType = method.getResponseHeader("content-type")
-              .getValue();
+      String contentType = method.getResponseHeader("content-type").getValue();
       Assert.assertEquals("image/png", contentType);
 
       ByteArrayOutputStream fromServer = new ByteArrayOutputStream();
@@ -106,8 +108,7 @@ public class TestIIOImageProvider extends BaseResourceTest
       Assert.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, status);
    }
 
-   public void writeTo(final InputStream in, final OutputStream out)
-           throws IOException
+   public void writeTo(final InputStream in, final OutputStream out) throws IOException
    {
       int read;
       final byte[] buf = new byte[2048];

@@ -6,6 +6,21 @@
  */
 package org.jboss.resteasy.test.form;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.annotations.Form;
@@ -16,18 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A TestFormResource.
@@ -49,10 +52,9 @@ public class TestFormResource extends BaseResourceTest
 
    private static final String BOOLEAN_VALUE_FIELD = "booleanValue";
 
-   private static final String TEST_URI = "http://localhost:8081/form/42?query=42";
+   private static final String TEST_URI = generateURL("/form/42?query=42");
 
-   private static final Logger logger = LoggerFactory
-           .getLogger(TestFormResource.class);
+   private static final Logger logger = LoggerFactory.getLogger(TestFormResource.class);
 
    @Path("/form/{id}")
    public interface FormClientProxy
@@ -76,7 +78,7 @@ public class TestFormResource extends BaseResourceTest
    @Test
    public void testProxy() throws Exception
    {
-      FormClientProxy proxy = ProxyFactory.create(FormClientProxy.class, "http://localhost:8081");
+      FormClientProxy proxy = ProxyFactory.create(FormClientProxy.class, generateBaseUrl());
       ClientForm form = new ClientForm();
       form.setBooleanValue(true);
       form.setName("This is My Name");
@@ -125,8 +127,8 @@ public class TestFormResource extends BaseResourceTest
          }
          else if (index > 0)
          {
-            values.put(URLDecoder.decode(pair.substring(0, index), "UTF-8"),
-                    URLDecoder.decode(pair.substring(index + 1), "UTF-8"));
+            values.put(URLDecoder.decode(pair.substring(0, index), "UTF-8"), URLDecoder.decode(pair
+                  .substring(index + 1), "UTF-8"));
          }
       }
       Assert.assertEquals(values.get(BOOLEAN_VALUE_FIELD), "true");

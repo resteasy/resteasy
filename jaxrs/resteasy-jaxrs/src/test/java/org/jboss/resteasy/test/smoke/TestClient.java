@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.smoke;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.UriFor;
 import org.jboss.resteasy.core.Dispatcher;
@@ -39,7 +41,7 @@ public class TestClient
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
-      SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
+      SimpleClient client = ProxyFactory.create(SimpleClient.class, generateBaseUrl());
 
       Assert.assertEquals("basic", client.getBasic());
       Assert.assertEquals("/basic", UriFor.resolve(SimpleClient.class, "getBasic"));
@@ -50,6 +52,5 @@ public class TestClient
       dispatcher.getRegistry().removeRegistrations(SimpleResource.class);
       Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }
-
 
 }

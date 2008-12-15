@@ -1,5 +1,16 @@
 package org.jboss.resteasy.test.asynch;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -9,19 +20,12 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.TJWSServletContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -30,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 public class AsynchTest
 {
    private static CountDownLatch latch;
+
    private static AsynchronousDispatcher dispatcher;
 
    @Path("/")
@@ -55,14 +60,13 @@ public class AsynchTest
       }
    }
 
-
    @BeforeClass
    public static void before() throws Exception
    {
       TJWSServletContainer.tjws = new TJWSEmbeddedJaxrsServer();
       dispatcher = new AsynchronousDispatcher(TJWSServletContainer.tjws.getFactory());
       TJWSServletContainer.tjws.setDispatcher(dispatcher);
-      TJWSServletContainer.tjws.setPort(8081);
+      TJWSServletContainer.tjws.setPort(TestPortProvider.getPort());
       TJWSServletContainer.tjws.setRootResourcePath("");
       TJWSServletContainer.tjws.setSecurityDomain(null);
       TJWSServletContainer.tjws.start();
@@ -82,7 +86,7 @@ public class AsynchTest
       HttpClient client = new HttpClient();
       {
          latch = new CountDownLatch(1);
-         PutMethod method = new PutMethod("http://localhost:8081?oneway=true");
+         PutMethod method = createPutMethod("?oneway=true");
          method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
          long start = System.currentTimeMillis();
          int status = client.executeMethod(method);
@@ -90,7 +94,6 @@ public class AsynchTest
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
          Assert.assertTrue(end < 1000);
          Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
-
 
          method.releaseConnection();
       }
@@ -102,7 +105,7 @@ public class AsynchTest
       HttpClient client = new HttpClient();
       {
          latch = new CountDownLatch(1);
-         PostMethod method = new PostMethod("http://localhost:8081?asynch=true");
+         PostMethod method = createPostMethod("?asynch=true");
          method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
          long start = System.currentTimeMillis();
          int status = client.executeMethod(method);
@@ -138,7 +141,7 @@ public class AsynchTest
       {
          dispatcher.setMaxCacheSize(1);
          latch = new CountDownLatch(1);
-         PostMethod method = new PostMethod("http://localhost:8081?asynch=true");
+         PostMethod method = createPostMethod("?asynch=true");
          method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
@@ -153,7 +156,6 @@ public class AsynchTest
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
 
          Assert.assertTrue(!jobUrl1.equals(jobUrl2));
-
 
          GetMethod get = new GetMethod(jobUrl1);
          status = client.executeMethod(get);
@@ -179,7 +181,7 @@ public class AsynchTest
       {
          dispatcher.setMaxCacheSize(10);
          latch = new CountDownLatch(1);
-         PostMethod method = new PostMethod("http://localhost:8081?asynch=true");
+         PostMethod method = createPostMethod("?asynch=true");
          method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
@@ -199,6 +201,5 @@ public class AsynchTest
          method.releaseConnection();
       }
    }
-
 
 }

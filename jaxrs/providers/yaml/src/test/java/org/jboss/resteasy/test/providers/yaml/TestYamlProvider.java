@@ -1,6 +1,8 @@
 package org.jboss.resteasy.test.providers.yaml;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import junit.framework.Assert;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -10,86 +12,74 @@ import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestYamlProvider extends BaseResourceTest
-{
+public class TestYamlProvider extends BaseResourceTest {
 
+    private static final String TEST_URI = generateURL("/yaml");
 
-   private static final String TEST_URI = "http://localhost:8081/yaml";
+    HttpClient client;
 
+    @Before
+    public void setUp() {
 
-   HttpClient client;
+        addPerRequestResource(YamlResource.class);
 
+        client = new HttpClient();
 
-   @Before
-   public void setUp()
-   {
+    }
 
-      addPerRequestResource(YamlResource.class);
+    @Test
+    public void testGet() throws Exception {
 
-      client = new HttpClient();
+        GetMethod get = new GetMethod(TEST_URI);
 
-   }
+        MyObject o1 = YamlResource.createMyObject();
 
+        String s1 = Yaml.dump(o1);
 
-   @Test
-   public void testGet() throws Exception
-   {
+        client.executeMethod(get);
 
-      GetMethod get = new GetMethod(TEST_URI);
+        Assert.assertEquals(200, get.getStatusCode());
 
-      MyObject o1 = YamlResource.createMyObject();
+        Assert.assertEquals("text/x-yaml", get.getResponseHeader("Content-Type").getValue());
 
-      String s1 = Yaml.dump(o1);
+        String s = get.getResponseBodyAsString();
 
-      client.executeMethod(get);
+        Assert.assertEquals(s1, s);
 
-      Assert.assertEquals(200, get.getStatusCode());
+    }
 
-      Assert.assertEquals("text/x-yaml", get.getResponseHeader("Content-Type").getValue());
+    @Test
+    public void testPost() throws Exception {
 
-      String s = get.getResponseBodyAsString();
+        PostMethod post = new PostMethod(TEST_URI);
 
-      Assert.assertEquals(s1, s);
+        MyObject o1 = YamlResource.createMyObject();
 
-   }
+        String s1 = Yaml.dump(o1);
 
+        post.setRequestEntity(new StringRequestEntity(s1, "text/x-yaml", "utf-8"));
 
-   @Test
-   public void testPost() throws Exception
-   {
+        client.executeMethod(post);
 
-      PostMethod post = new PostMethod(TEST_URI);
+        Assert.assertEquals(200, post.getStatusCode());
 
-      MyObject o1 = YamlResource.createMyObject();
+        Assert.assertEquals("text/x-yaml", post.getResponseHeader("Content-Type").getValue());
 
-      String s1 = Yaml.dump(o1);
+        Assert.assertEquals(s1, post.getResponseBodyAsString());
 
-      post.setRequestEntity(new StringRequestEntity(s1, "text/x-yaml", "utf-8"));
+    }
 
-      client.executeMethod(post);
+    @Test
+    public void testBadPost() throws Exception {
 
-      Assert.assertEquals(200, post.getStatusCode());
+        PostMethod post = new PostMethod(TEST_URI);
 
-      Assert.assertEquals("text/x-yaml", post.getResponseHeader("Content-Type").getValue());
+        post.setRequestEntity(new StringRequestEntity("---! bad", "text/x-yaml", "utf-8"));
 
-      Assert.assertEquals(s1, post.getResponseBodyAsString());
+        client.executeMethod(post);
 
-   }
+        Assert.assertEquals(400, post.getStatusCode());
 
-
-   @Test
-   public void testBadPost() throws Exception
-   {
-
-      PostMethod post = new PostMethod(TEST_URI);
-
-      post.setRequestEntity(new StringRequestEntity("---! bad", "text/x-yaml", "utf-8"));
-
-      client.executeMethod(post);
-
-      Assert.assertEquals(400, post.getStatusCode());
-
-   }
-
+    }
 
 }

@@ -1,7 +1,8 @@
 package org.jboss.resteasy.test.finegrain.client;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -17,9 +18,9 @@ import javax.ws.rs.core.Response;
 import junit.framework.Assert;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.core.ClientInterceptor;
 import org.jboss.resteasy.client.core.ClientResponseImpl;
 import org.jboss.resteasy.core.Dispatcher;
@@ -37,6 +38,7 @@ public class TestClientInterceptor
    private final class MyClientInterceptor implements ClientInterceptor
    {
       private int postExecuted = 0;
+
       public void postExecute(ClientResponseImpl clientResponseImpl)
       {
          postExecuted++;
@@ -46,13 +48,12 @@ public class TestClientInterceptor
       {
          return postExecuted;
       }
-      
+
       public void postUnMarshalling(ClientResponseImpl clientResponseImpl)
       {
       }
 
-      public void preBaseMethodConstruction(
-            ClientResponseImpl clientResponseImpl)
+      public void preBaseMethodConstruction(ClientResponseImpl clientResponseImpl)
       {
       }
 
@@ -126,14 +127,14 @@ public class TestClientInterceptor
       MyClientInterceptor interceptor = new MyClientInterceptor();
       Collection<ClientInterceptor> interceptors = Arrays.<ClientInterceptor> asList(interceptor);
       final HttpClient httpClient = new HttpClient();
-      final URI uri = new URI("http://localhost:8081");
-      Client client = ProxyFactory
-         .create(Client.class, uri, httpClient, ResteasyProviderFactory.getInstance(), interceptors);
+      final URI uri = new URI(generateBaseUrl());
+      Client client = ProxyFactory.create(Client.class, uri, httpClient, ResteasyProviderFactory.getInstance(),
+            interceptors);
       client.getBasic();
       Assert.assertEquals(1, interceptor.getPostExecuted());
       client.getBasic();
       Assert.assertEquals(2, interceptor.getPostExecuted());
-      new ClientRequest("http://localhost:8081/basic").interceptor(interceptor).get();
+      createClientRequest("/basic").interceptor(interceptor).get();
       Assert.assertEquals(3, interceptor.getPostExecuted());
    }
 }
