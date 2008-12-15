@@ -1,4 +1,4 @@
-package org.jboss.restasy.test.providers.atom;
+package org.jboss.resteasy.test.providers.atom;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
