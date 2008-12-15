@@ -1,4 +1,4 @@
-package org.jboss.restasy.test.providers.atom;
+package org.jboss.resteasy.test.providers.atom;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
