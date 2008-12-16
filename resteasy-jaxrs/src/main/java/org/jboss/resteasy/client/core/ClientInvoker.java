@@ -79,7 +79,8 @@ public class ClientInvoker
       if (interceptors != null)
          clientResponse.setInterceptors(interceptors);
 
-      clientResponse.setUrl(urlRetriever.buildUrl(uri, false, args));
+      String url = urlRetriever.buildUrl(uri, false, args);
+      clientResponse.setUrl(url);
       return clientResponse;
    }
 

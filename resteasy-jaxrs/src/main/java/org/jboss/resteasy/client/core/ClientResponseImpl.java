@@ -206,7 +206,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
          {
             mediaType = alternateMediaType;
          }
-         MediaType media = MediaType.valueOf(mediaType);
+         MediaType media = mediaType == null ? null : MediaType.valueOf(mediaType);
 
          Annotation[] annotations = null;
          if (this.returnType == type && this.genericReturnType == genericType)
