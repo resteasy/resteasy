@@ -84,6 +84,7 @@ public class TestContact
     public void testFindAllContacts()
     {
 	Assert.assertTrue(!contactDao.findAllContacts().isEmpty());
+	Assert.assertEquals(3, contactDao.findAllContacts().size());
     }
     
     @Test
