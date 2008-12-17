@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.asynch;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.createPostMethod;
+import static org.jboss.resteasy.test.TestPortProvider.createPutMethod;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -20,8 +21,8 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.TJWSServletContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -57,6 +58,7 @@ public class AsynchTest
          Thread.sleep(500);
          System.out.println("******* countdown ****");
          latch.countDown();
+         System.out.println("******* countdown complete ****");
       }
    }
 
@@ -118,6 +120,9 @@ public class AsynchTest
          status = client.executeMethod(get);
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
+         // there's a lag between when the latch completes and the executor
+         // registers the completion of the call 
+         Thread.sleep(150);
          status = client.executeMethod(get);
          Assert.assertEquals(HttpServletResponse.SC_OK, status);
          Assert.assertEquals(get.getResponseBodyAsString(), "content");
