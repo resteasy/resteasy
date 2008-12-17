@@ -354,7 +354,7 @@ public class RootSegment extends Segment
          }
       }
       if (lastFailure != null) throw lastFailure;
-      throw new NoResourceFoundFailure("Could not find resource for path: " + path, HttpResponseCodes.SC_NOT_FOUND);
+      throw new NoResourceFoundFailure("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri(), HttpResponseCodes.SC_NOT_FOUND);
    }
 
 

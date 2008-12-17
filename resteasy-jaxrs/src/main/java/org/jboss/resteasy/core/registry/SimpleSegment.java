@@ -33,7 +33,7 @@ public class SimpleSegment extends RootSegment
       {
          ResourceInvoker invoker = match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
          if (invoker == null)
-            throw new NoResourceFoundFailure("Could not find resource for path: " + path, HttpResponseCodes.SC_NOT_FOUND);
+            throw new NoResourceFoundFailure("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri(), HttpResponseCodes.SC_NOT_FOUND);
 
          uriInfo.pushMatchedURI(path, Encode.decode(path));
          return invoker;

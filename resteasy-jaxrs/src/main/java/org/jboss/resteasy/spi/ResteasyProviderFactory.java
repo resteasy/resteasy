@@ -156,13 +156,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public static void setInstance(ResteasyProviderFactory factory)
    {
-      pfr.set(factory);
       RuntimeDelegate.setInstance(factory);
    }
 
    public static ResteasyProviderFactory getInstance()
    {
-      return pfr.get();
+      return (ResteasyProviderFactory) RuntimeDelegate.getInstance();
    }
 
    public static ResteasyProviderFactory initializeInstance()

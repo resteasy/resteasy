@@ -26,31 +26,36 @@ public class RegisterBuiltin
       DataSourceProvider dataSourceProvider = new DataSourceProvider();
       factory.addMessageBodyReader(dataSourceProvider);
       factory.addMessageBodyWriter(dataSourceProvider);
-      logger.info("Added {}", dataSourceProvider.getClass().getSimpleName());
+      logger.info("Added built in provider {}", dataSourceProvider.getClass().getSimpleName());
 
       DefaultTextPlain plainText = new DefaultTextPlain();
       factory.addMessageBodyReader(plainText);
       factory.addMessageBodyWriter(plainText);
-      logger.info("Added {}", plainText.getClass().getSimpleName());
+      logger.info("Added built in provider {}", plainText.getClass().getSimpleName());
 
       StringTextStar stringTextStar = new StringTextStar();
       factory.addMessageBodyReader(stringTextStar);
       factory.addMessageBodyWriter(stringTextStar);
+      logger.info("Added built in provider {}", StringTextStar.class.getName());
 
 
       InputStreamProvider inputStreamProvider = new InputStreamProvider();
       factory.addMessageBodyReader(inputStreamProvider);
       factory.addMessageBodyWriter(inputStreamProvider);
+      logger.info("Added built in provider {}", InputStreamProvider.class.getName());
 
       ByteArrayProvider byteArrayProvider = new ByteArrayProvider();
       factory.addMessageBodyReader(byteArrayProvider);
       factory.addMessageBodyWriter(byteArrayProvider);
+      logger.info("Added built in provider {}", ByteArrayProvider.class.getName());
 
       FormUrlEncodedProvider formProvider = new FormUrlEncodedProvider();
       factory.addMessageBodyReader(formProvider);
       factory.addMessageBodyWriter(formProvider);
+      logger.info("Added built in provider {}", FormUrlEncodedProvider.class.getName());
 
       factory.addMessageBodyWriter(new StreamingOutputProvider());
+      logger.info("Added built in provider {}", StreamingOutputProvider.class.getName());
 
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", factory);
@@ -84,7 +89,7 @@ public class RegisterBuiltin
    {
       if (isAvailable(dependency))
       {
-         logger.info("Adding " + providerClass);
+         logger.info("Adding built in provider " + providerClass);
          Object provider = instantiate(providerClass);
          factory.addMessageBodyReader((MessageBodyReader<?>) provider);
          factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
@@ -96,7 +101,7 @@ public class RegisterBuiltin
    {
       if (isAvailable(dependency))
       {
-         logger.info("Adding " + providerClass);
+         logger.info("Adding built in provider " + providerClass);
          Object provider = instantiate(providerClass);
          factory.addMessageBodyReader((MessageBodyReader<?>) provider);
       }
@@ -107,7 +112,7 @@ public class RegisterBuiltin
    {
       if (isAvailable(dependency))
       {
-         logger.info("Adding " + providerClass);
+         logger.info("Adding built in provider" + providerClass);
          Object provider = instantiate(providerClass);
          factory.addMessageBodyWriter((MessageBodyWriter<?>) provider);
       }
@@ -118,7 +123,7 @@ public class RegisterBuiltin
    {
       if (isAvailable(dependency))
       {
-         logger.info("Adding " + providerClass);
+         logger.info("Adding built in provider " + providerClass);
          factory.registerProviderInstance(instantiate(providerClass));
       }
 
