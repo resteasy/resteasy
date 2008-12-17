@@ -9,14 +9,18 @@ package org.jboss.resteasy.spring;
 import static org.junit.Assert.*;
 
 import java.beans.PropertyEditor;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
+import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.spring.MediaTypePropertyEditor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class TestMediaTypePropertyEditor
 {
@@ -33,6 +37,17 @@ public class TestMediaTypePropertyEditor
    public void setupEditor()
    {
       propertyEditor = new MediaTypePropertyEditor();
+   }
+
+   @Test
+   public void validateTypeMappingsExistInSpring()
+   {
+      ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-typemapping-test-server.xml");
+      SynchronousDispatcher dispatcher = (SynchronousDispatcher) ctx.getBean("resteasy.dispatcher");
+      Map<String, MediaType> mappings = dispatcher.getMediaTypeMappings();
+      assertEquals(2, mappings.size());
+      assertEquals("application/xml", mappings.get("xml").toString());
+      assertEquals("application/json", mappings.get("json").toString());
    }
 
    @Test
