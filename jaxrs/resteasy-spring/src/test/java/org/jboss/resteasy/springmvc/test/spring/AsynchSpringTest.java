@@ -90,7 +90,6 @@ public class AsynchSpringTest
       }
    }
 
-   @Ignore
    @Test
    public void testAsynch() throws Exception
    {
