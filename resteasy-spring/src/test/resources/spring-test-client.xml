@@ -6,11 +6,11 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean class="org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServerBean"
-		p:port="9091" p:applicationContextConfiguration="classpath:spring-test-server.xml" />
+		p:port="9092" p:applicationContextConfiguration="classpath:spring-test-server.xml" />
 
 	<bean class="org.jboss.resteasy.client.ProxyFactory"
 		factory-method="create">
 		<constructor-arg value="org.jboss.resteasy.springmvc.test.client.BasicResource" />
-		<constructor-arg value="http://localhost:9091/" />
+		<constructor-arg value="http://localhost:9092/" />
 	</bean>
 </beans>

@@ -4,44 +4,61 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.NoResourceFoundFailure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
 /**
-* 
-* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
-* @version $Revision: 1 $
-*/
-public class ResteasyHandlerMapping implements HandlerMapping, Ordered
+ * 
+ * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
+ * @version $Revision: 1 $
+ */
+public class ResteasyHandlerMapping implements HandlerMapping, Ordered, InitializingBean
 {
+   private static Logger logger = LoggerFactory
+         .getLogger(ResteasyHandlerMapping.class);
 
-   private int order = -1;
+   private int order = Integer.MAX_VALUE;
+   private SynchronousDispatcher dispatcher;
+
+   @Deprecated
    private ResourceMethodRegistry registry;
+   
    private String prefix = "";
    private HandlerInterceptor[] interceptors;
+   private boolean throwNotFound = false; 
 
+   public ResteasyHandlerMapping(SynchronousDispatcher dispatcher)
+   {
+      super();
+      this.dispatcher = dispatcher;
+   }
+   
+   @Deprecated
    public ResteasyHandlerMapping(ResourceMethodRegistry registry)
    {
       super();
       this.registry = registry;
+      logger.warn("You're using a deprecated ResteasyHandlerMapping constructor.  Use the ResteasyHandlerMapping(SynchronousDispatcher) constructor");
    }
 
-   public void setRegistry(ResourceMethodRegistry registry)
+
+   public SynchronousDispatcher getDispatcher()
    {
-      this.registry = registry;
+      return dispatcher;
    }
 
    public void setOrder(int order)
    {
       this.order = order;
-   }
-
-   public String getPrefix()
-   {
-      return prefix;
    }
 
    public HandlerInterceptor[] getInterceptors()
@@ -54,46 +71,50 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered
       this.interceptors = interceptors;
    }
 
-   public ResourceMethodRegistry getRegistry()
-   {
-      return registry;
-   }
-
-   public void setPrefix(String prefix)
-   {
-      this.prefix = prefix;
-   }
-
    public HandlerExecutionChain getHandler(HttpServletRequest request)
          throws Exception
    {
+      ResteasyRequestWrapper requestWrapper = RequestUtil.getRequestWrapper(
+            request, request.getMethod(), prefix);
       try
       {
-         ResteasyRequestWrapper responseWrapper = RequestUtil
-               .getRequestWrapper(request, request.getMethod(), prefix);
-
-         // TODO: remove null response requirement? The "response" parameter
-         // isn't currently used in the registry
-         ResourceInvoker invoker = registry.getResourceInvoker(responseWrapper
-               .getHttpRequest(), null);
-
-         if (invoker == null)
+         // NOTE: if invoker isn't found, RESTEasy throw NoReourceFoundFailure
+         HttpRequest httpRequest = requestWrapper.getHttpRequest();
+         if( !httpRequest.isInitial() )
          {
-            // if we don't have a JAX-RS invoker, let Spring MVC handle the
-            // request.
-            return null;
+            String message = httpRequest.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.";
+            logger.error(message);
+            requestWrapper.setError(500, message);
+         } 
+         else
+         {
+            requestWrapper.setInvoker(getInvoker(httpRequest));
          }
-
-         responseWrapper.setInvoker(invoker);
-         return new HandlerExecutionChain(responseWrapper, interceptors);
+         return new HandlerExecutionChain(requestWrapper, interceptors);
+      }
+      catch (NoResourceFoundFailure e)
+      {
+         if( throwNotFound )
+         {
+            throw e;
+         } 
+         logger.error("Resource Not Found: " + e.getMessage(), e);
       }
       catch (Failure e)
       {
-         // TODO: proper handling?
-         // handleFailure(in, response, e);
-         // logger.info(e.getMessage());
-         return null;
+         logger.error("ResourceFailure: " + e.getMessage(), e);
+         throw e;
       }
+      return null;
+   }
+
+   private ResourceInvoker getInvoker(HttpRequest httpRequest)
+   {
+      if( dispatcher != null )
+         return dispatcher.getInvoker(httpRequest, null);
+      if( registry != null )
+         return registry.getResourceInvoker(httpRequest, null);
+      return null;
    }
 
    public int getOrder()
@@ -101,4 +122,31 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered
       return order;
    }
 
+   public boolean isThrowNotFound()
+   {
+      return throwNotFound;
+   }
+
+   public void setThrowNotFound(boolean throwNotFound)
+   {
+      this.throwNotFound = throwNotFound;
+   }
+
+   public String getPrefix()
+   {
+      return prefix;
+   }
+
+   public void setPrefix(String prefix)
+   {
+      this.prefix = prefix;
+   }
+
+   public void afterPropertiesSet() throws Exception
+   {
+      if( !throwNotFound && order == Integer.MAX_VALUE )
+      {
+         logger.info("ResteasyHandlerMapping has the default order and throwNotFound settings.  Consider adding explicit ordering to your HandlerMappings, with ResteasyHandlerMapping being lsat, and set throwNotFound = true.");
+      }
+   }
 }

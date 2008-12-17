@@ -1,26 +1,25 @@
 package org.jboss.resteasy.plugins.spring;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InjectorFactory;
-import org.jboss.resteasy.spi.PropertyInjector;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResourceFactory;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.GetRestful;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
-import javax.ws.rs.ext.Provider;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
+import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.PropertyInjector;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.GetRestful;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
  * The processor will register any bean annotated with @Path or @Provider into the Resteasy framework.
@@ -41,53 +40,6 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
    protected Dispatcher dispatcher;
 
    protected Map<String, SpringResourceFactory> resourceFactories = new HashMap<String, SpringResourceFactory>();
-
-   protected static class SpringResourceFactory implements ResourceFactory
-   {
-
-      protected BeanFactory beanFactory;
-      protected String beanName;
-      protected Class scannableClass;
-      protected PropertyInjector propertyInjector;
-
-      public SpringResourceFactory(String beanName, BeanFactory beanFactory, Class scannable)
-      {
-         this.beanName = beanName;
-         this.beanFactory = beanFactory;
-         this.scannableClass = scannable;
-      }
-
-      public PropertyInjector getPropertyInjector()
-      {
-         return propertyInjector;
-      }
-
-      public Object createResource(HttpRequest request, HttpResponse response,
-                                   InjectorFactory factory)
-      {
-         return beanFactory.getBean(beanName);
-      }
-
-      public Class<?> getScannableClass()
-      {
-         return scannableClass;
-      }
-
-      public void registered(InjectorFactory factory)
-      {
-         this.propertyInjector = factory.createPropertyInjector(getScannableClass());
-      }
-
-      public void requestFinished(HttpRequest request, HttpResponse response,
-                                  Object resource)
-      {
-      }
-
-      public void unregistered()
-      {
-      }
-
-   }
 
    protected class ResteasyBeanPostProcessor implements BeanPostProcessor
    {
@@ -118,7 +70,11 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
       }
    }
 
-
+   public SpringBeanProcessor(Dispatcher dispatcher)
+   {
+      this(dispatcher, dispatcher.getRegistry(), dispatcher.getProviderFactory());
+   }
+   
    public SpringBeanProcessor(Dispatcher dispatcher, Registry registry, ResteasyProviderFactory providerFactory)
    {
       this.setRegistry(registry);
@@ -137,6 +93,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
    {
    }
 
+   @Required
    public Registry getRegistry()
    {
       return registry;
@@ -167,6 +124,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
       this.dispatcher = dispatcher;
    }
 
+   @SuppressWarnings("unchecked")
    private Collection<String> createIgnoreList(
            final ConfigurableListableBeanFactory beanFactory)
    {
@@ -184,20 +142,12 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
          {
             beanClass = Thread.currentThread().getContextClassLoader().loadClass(beanDef.getBeanClassName());
             SpringResourceFactory reg = new SpringResourceFactory(beanName, beanFactory, beanClass);
-            if (registration.getContext() != null)
-            {
-               getRegistry().addResourceFactory(reg, registration.getContext());
-            }
-            else
-            {
-               getRegistry().addResourceFactory(reg);
-            }
+            getRegistry().addResourceFactory(reg, registration.getContext());
          }
          catch (ClassNotFoundException e)
          {
             throw new RuntimeException(e);
          }
-
       }
       return ignoreBeansList;
    }
@@ -221,7 +171,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
          BeanDefinition beanDef = beanFactory.getBeanDefinition(name);
          if (beanDef.getBeanClassName() == null) continue;
          if (beanDef.isAbstract()) continue;
-         Class beanClass = null;
+         Class<?> beanClass = null;
          try
          {
             beanClass = Thread.currentThread().getContextClassLoader().loadClass(beanDef.getBeanClassName());
@@ -242,5 +192,4 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
          }
       }
    }
-
 }

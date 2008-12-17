@@ -44,7 +44,8 @@ public class TJWSServletContainer
 
    public static void stop() throws Exception
    {
-      tjws.stop();
+      if( tjws != null )
+         tjws.stop();
       tjws = null;
    }
 

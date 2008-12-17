@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.spring;
 
 import java.util.Collection;
 

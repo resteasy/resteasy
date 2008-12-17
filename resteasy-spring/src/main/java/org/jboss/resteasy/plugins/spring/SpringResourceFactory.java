@@ -3,10 +3,9 @@ package org.jboss.resteasy.plugins.spring;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 
 /**
 * 
@@ -15,45 +14,48 @@ import org.springframework.beans.factory.BeanFactoryAware;
 * @version $Revision: 1 $
 */
 
-public class SpringResourceFactory implements ResourceFactory, BeanFactoryAware {
+public class SpringResourceFactory implements ResourceFactory 
+{
 
-	private BeanFactory beanFactory;
-	private String beanName;
-	private Class<?> scannableClass;
+   protected BeanFactory beanFactory;
+   protected String beanName;
+   protected Class<?> scannableClass;
+   protected PropertyInjector propertyInjector;
 
-	public SpringResourceFactory(String beanName) {
-		this.beanName = beanName;
-	}
-
-	public Object createResource(HttpRequest request, HttpResponse response,
-			InjectorFactory factory) {
-		return beanFactory.getBean(beanName);
-	}
-
-	public Class<?> getScannableClass() {
-		return scannableClass != null ? scannableClass : beanFactory.getType(this.beanName);
-	}
-
-	public void registered(InjectorFactory factory) {
-		// do nothing.  Rely on Spring. 
-	}
-
-	public void requestFinished(HttpRequest request, HttpResponse response,
-			Object resource) {
-		// do nothing
-	}
-
-	public void unregistered() {
-		// do nothing
-	}
-
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
-
-   public void setScannableClass(Class<?> scannableClass)
+   public SpringResourceFactory(String beanName, BeanFactory beanFactory, Class<?> scannable)
    {
-      this.scannableClass = scannableClass;
+      this.beanName = beanName;
+      this.beanFactory = beanFactory;
+      this.scannableClass = scannable;
    }
 
+   public PropertyInjector getPropertyInjector()
+   {
+      return propertyInjector;
+   }
+
+   public Object createResource(HttpRequest request, HttpResponse response,
+                                InjectorFactory factory)
+   {
+      return beanFactory.getBean(beanName);
+   }
+
+   public Class<?> getScannableClass()
+   {
+      return scannableClass;
+   }
+
+   public void registered(InjectorFactory factory)
+   {
+      this.propertyInjector = factory.createPropertyInjector(getScannableClass());
+   }
+
+   public void requestFinished(HttpRequest request, HttpResponse response,
+                               Object resource)
+   {
+   }
+
+   public void unregistered()
+   {
+   }
 }

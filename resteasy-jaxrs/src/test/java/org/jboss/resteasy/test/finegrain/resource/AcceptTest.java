@@ -1,14 +1,8 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.jboss.resteasy.core.ResourceMethod;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.mock.MockHttpRequest;
-import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -18,9 +12,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.mock.MockHttpRequest;
+import org.jboss.resteasy.specimpl.PathSegmentImpl;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -93,7 +95,7 @@ public class AcceptTest
    @Test
    public void testAcceptGet() throws Exception
    {
-      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(WebResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
@@ -172,7 +174,7 @@ public class AcceptTest
    @Test
    public void testConsume() throws Exception
    {
-      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(XmlResource.class);
 
       MediaType contentType = MediaType.valueOf("application/xml;schema=bar");
@@ -218,7 +220,7 @@ public class AcceptTest
    @Test
    public void testConsume2() throws Exception
    {
-      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(XmlResource2.class);
 
       MediaType contentType = MediaType.valueOf("application/xml;schema=bar");
@@ -237,7 +239,7 @@ public class AcceptTest
    @Test
    public void testConsume3() throws Exception
    {
-      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(XmlResource2.class);
 
       MediaType contentType = MediaType.valueOf("application/xml;schema=blah");
@@ -256,7 +258,7 @@ public class AcceptTest
    @Test
    public void testAcceptGetWildCard() throws Exception
    {
-      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(WebResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
@@ -288,7 +290,7 @@ public class AcceptTest
    @Test
    public void testAcceptMultiple() throws Exception
    {
-      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(MultipleResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
@@ -363,7 +365,7 @@ public class AcceptTest
    @Test
    public void testContentTypeMatching() throws Exception
    {
-      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(ConsumeResource.class);
 
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
@@ -414,7 +416,7 @@ public class AcceptTest
    @Test
    public void testComplex() throws Exception
    {
-      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
+      Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(ComplexResource.class);
 
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");

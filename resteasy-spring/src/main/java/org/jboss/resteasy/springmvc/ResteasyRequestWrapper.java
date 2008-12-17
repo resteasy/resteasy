@@ -1,15 +1,16 @@
 package org.jboss.resteasy.springmvc;
 
-import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
-import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
-import org.jboss.resteasy.spi.HttpRequest;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
+
+import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
+import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.spi.HttpRequest;
 
 /**
  * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
@@ -19,7 +20,10 @@ public class ResteasyRequestWrapper
 {
 
    private HttpRequest httpRequest = null;
+   private HttpServletRequest httpServletRequest;
    private ResourceInvoker invoker;
+   private Integer errorCode = null;
+   private String errorMessage;
 
    public ResteasyRequestWrapper(HttpServletRequest request) throws ServletException, IOException
    {
@@ -29,6 +33,7 @@ public class ResteasyRequestWrapper
    public ResteasyRequestWrapper(HttpServletRequest request, String httpMethod, String prefix)
            throws ServletException, IOException
    {
+      this.httpServletRequest = request;
       HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
       UriInfo uriInfo = ServletUtil.extractUriInfo(request, prefix);
       // TODO: how are we supposed to get the response to create the
@@ -46,6 +51,11 @@ public class ResteasyRequestWrapper
               .toUpperCase(), null);
    }
 
+   public HttpServletRequest getHttpServletRequest()
+   {
+      return httpServletRequest;
+   }
+
    public HttpRequest getHttpRequest()
    {
       return httpRequest;
@@ -60,4 +70,32 @@ public class ResteasyRequestWrapper
    {
       this.invoker = invoker;
    }
+
+   public Integer getErrorCode()
+   {
+      return errorCode;
+   }
+
+   public void setErrorCode(Integer errorCode)
+   {
+      this.errorCode = errorCode;
+   }
+
+   public String getErrorMessage()
+   {
+      return errorMessage;
+   }
+
+   public void setErrorMessage(String errorMessage)
+   {
+      this.errorMessage = errorMessage;
+   }
+
+   public void setError(Integer errorCode, String errorMessage)
+   {
+      setErrorCode(errorCode);
+      setErrorMessage(errorMessage);
+   }
+   
+   
 }

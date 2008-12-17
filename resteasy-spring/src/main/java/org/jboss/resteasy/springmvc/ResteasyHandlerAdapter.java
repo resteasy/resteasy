@@ -6,23 +6,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
+import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.DispatcherUtilities;
-import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceLocator;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.core.ResponseInvoker;
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.plugins.server.servlet.HttpServletResponseWrapper;
-import org.jboss.resteasy.plugins.server.servlet.ServletSecurityContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.LoggableFailure;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.springframework.util.ReflectionUtils;
+import org.jboss.resteasy.spi.UnhandledException;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,14 +26,12 @@ import org.springframework.web.servlet.ModelAndView;
 // TODO: Right now there's a problematic relationship between Dispatcher and
 // Registry. Ideally, the Registry shouldn't be owned by the Dispatcher, and the
 // methods needed from SynchronousDispatcher should move into a shared class.
-public class ResteasyHandlerAdapter implements HandlerAdapter
+public class ResteasyHandlerAdapter extends ResteasyWebHandlerTemplate<ModelAndView> implements HandlerAdapter
 {
-
-   private SynchronousDispatcher dispatcher;
 
    public ResteasyHandlerAdapter(SynchronousDispatcher dispatcher)
    {
-      this.dispatcher = dispatcher;
+      super(dispatcher);
    }
 
    public long getLastModified(HttpServletRequest request, Object handler)
@@ -52,116 +42,102 @@ public class ResteasyHandlerAdapter implements HandlerAdapter
    public ModelAndView handle(HttpServletRequest servletRequest,
          HttpServletResponse servletResponse, Object handler) throws Exception
    {
+      ResteasyRequestWrapper requestWrapper = (ResteasyRequestWrapper) handler;
+      // super.handle wraps the handle call you see below
+      return super.handle(requestWrapper, servletResponse);
+   }
 
-      ResteasyRequestWrapper responseWrapper = (ResteasyRequestWrapper) handler;
+   protected ModelAndView handle(ResteasyRequestWrapper requestWrapper,
+         HttpResponse response) throws IOException
+   {
+      if( requestWrapper.getErrorCode() != null )
+      {
+         try
+         {
+            response.sendError(requestWrapper.getErrorCode(), requestWrapper
+                  .getErrorMessage());
+         }
+         catch (Exception e)
+         {
+            throw new UnhandledException(e);
+         }
+         return null;
+      }
+      HttpRequest request = requestWrapper.getHttpRequest();
+      if( dispatcher instanceof AsynchronousDispatcher )
+      {
+         AsynchronousDispatcher asyncDispatcher = (AsynchronousDispatcher)dispatcher;
+         if(asyncDispatcher.isAsynchrnousRequest(request))
+         {
+            asyncDispatcher.invoke(request, response);
+            return null;
+         }
+      }
+      return createModelAndView(requestWrapper, response);
+   }
 
-      HttpResponse response = new HttpServletResponseWrapper(servletResponse,
-            dispatcher.getProviderFactory());
+   protected ModelAndView createModelAndView(
+         ResteasyRequestWrapper requestWrapper, HttpResponse response)
+   {
+      HttpRequest request = requestWrapper.getHttpRequest();
+      dispatcher.getDispatcherUtilities().pushContextObjects(request,
+            response);
+
+      Response jaxrsResponse = null;
+      try
+      {
+         jaxrsResponse = requestWrapper.getInvoker().invoke(request, response);
+      }
+      catch (Exception e)
+      {
+         dispatcher.handleInvokerException(request, response, e);
+      }
 
       try
       {
-         ResteasyProviderFactory.pushContext(HttpServletRequest.class,
-               servletRequest);
-         ResteasyProviderFactory.pushContext(HttpServletResponse.class,
-               servletResponse);
-         ResteasyProviderFactory.pushContext(SecurityContext.class,
-               new ServletSecurityContext(servletRequest));
-
-         // TODO: copied from SynchronousDispatcher!
-         HttpRequest request = responseWrapper.getHttpRequest();
-         dispatcher.getDispatcherUtilities().pushContextObjects(request,
-               response);
-
-         Response jaxrsResponse = null;
-         try
+         if (jaxrsResponse != null)
          {
-            ResourceInvoker invoker = responseWrapper.getInvoker();
-            if (invoker instanceof ResourceMethod)
-            {
-               ReflectionUtils.makeAccessible(((ResourceMethod) invoker)
-                     .getMethod());
-            }
-            else if (invoker instanceof ResourceLocator)
-            {
-               ReflectionUtils.makeAccessible(((ResourceLocator) invoker)
-                     .getMethod());
-            }
-            jaxrsResponse = invoker.invoke(request, response);
+            ResponseInvoker responseInvoker = writeHeaders(response, jaxrsResponse);
+            if (responseInvoker == null)
+               return null;
+            if (jaxrsResponse.getEntity() instanceof ModelAndView)
+               return (ModelAndView) jaxrsResponse.getEntity();
+            else
+               return createModelAndView(responseInvoker);
          }
-         catch (Exception e)
-         {
-            dispatcher.handleInvokerException(request, response, e);
-         }
-
-         try
-         {
-            if (jaxrsResponse != null)
-               return createModelAndView(response, jaxrsResponse);
-         }
-         catch (Exception e)
-         {
-            dispatcher.handleWriteResponseException(request, response, e);
-         }
-
       }
-      finally
+      catch (Exception e)
       {
-         ResteasyProviderFactory.clearContextData();
+         dispatcher.handleWriteResponseException(request, response, e);
       }
       return null;
    }
 
-   public ModelAndView createModelAndView(HttpResponse response,
-         Response jaxrsResponse) throws IOException, WebApplicationException
+   private ResponseInvoker writeHeaders(HttpResponse response,
+         Response jaxrsResponse)
    {
-      final DispatcherUtilities dispatcherUtilities = dispatcher
+      DispatcherUtilities dispatcherUtilities = dispatcher
             .getDispatcherUtilities();
-      dispatcherUtilities.writeCookies(response, jaxrsResponse);
-
-      if (jaxrsResponse.getEntity() == null)
+      ResponseInvoker responseInvoker = null;
+      try
       {
-         response.setStatus(jaxrsResponse.getStatus());
-         dispatcherUtilities.outputHeaders(response, jaxrsResponse);
-         return null;
-      }
-
-      dispatcherUtilities.writeCookies(response, jaxrsResponse);
-      ResponseInvoker responseInvoker = new ResponseInvoker(
-            dispatcherUtilities, jaxrsResponse);
-
-      if (!(responseInvoker.getEntity() instanceof ModelAndView)
-            && responseInvoker.getWriter() == null)
+         responseInvoker = dispatcherUtilities.writeHeaders(response, jaxrsResponse);
+      } 
+      catch( NoMessageBodyWriterFoundFailure e)
       {
-         throw new LoggableFailure(
-               String
-                     .format(
-                           "Could not find MessageBodyWriter for response object of type: %s of media type: %s",
-                           responseInvoker.getType().getName(), responseInvoker
-                                 .getContentType()),
-               HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+         if(e.getResponseInvoker().getEntity() instanceof ModelAndView)
+         {
+            responseInvoker = e.getResponseInvoker();
+            dispatcherUtilities.outputHeaders(response, jaxrsResponse);
+         }
       }
-
-      response.setStatus(jaxrsResponse.getStatus());
-      dispatcherUtilities.outputHeaders(response, jaxrsResponse);
-
-      String contentLength = String.valueOf(responseInvoker.getResponseSize());
-      response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH,
-            contentLength);
-
-      if (responseInvoker.getEntity() instanceof ModelAndView)
-      {
-         return (ModelAndView) responseInvoker.getEntity();
-      }
-      else
-      {
-         return createModelAndView(responseInvoker);
-      }
+      return responseInvoker;
    }
 
    protected ModelAndView createModelAndView(ResponseInvoker responseInvoker)
    {
       return new ModelAndView(createView(responseInvoker))
-            .addObject(responseInvoker);
+            .addObject("responseInvoker", responseInvoker);
    }
 
    protected ResteasyView createView(ResponseInvoker responseInvoker)

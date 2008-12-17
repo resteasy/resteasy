@@ -1,6 +1,7 @@
 package org.jboss.resteasy.spring;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.createGetMethod;
+import static org.jboss.resteasy.test.TestPortProvider.createPostMethod;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,19 +26,18 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.ClassPathResource;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TestSpringBeanProcessor extends BaseResourceTest
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:/spring-bean-processor-test.xml" })
+public class TestSpringBeanProcessor 
 {
    public static class Customer
    {
@@ -70,7 +70,7 @@ public class TestSpringBeanProcessor extends BaseResourceTest
       public long getSize(Customer customer, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType)
       {
-         return -1;
+         return customer.getName().getBytes().length;
       }
 
       public void writeTo(Customer customer, Class<?> type, Type genericType, Annotation[] annotations,
@@ -189,17 +189,6 @@ public class TestSpringBeanProcessor extends BaseResourceTest
          invoked = true;
          return methodInvocation.proceed();
       }
-   }
-
-   @Before
-   public void setUp() throws Exception
-   {
-      GenericApplicationContext ctx = new GenericApplicationContext();
-      ctx.setClassLoader(Customer.class.getClassLoader());
-      ctx.addBeanFactoryPostProcessor(new SpringBeanProcessor(getRegistry(), getProviderFactory()));
-      XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
-      xmlReader.loadBeanDefinitions(new ClassPathResource("spring-bean-processor-test.xml"));
-      ctx.refresh();
    }
 
    @Test

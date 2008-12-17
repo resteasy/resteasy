@@ -125,6 +125,7 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public UriBuilder path(Class resource) throws IllegalArgumentException
    {
@@ -137,6 +138,7 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public UriBuilder path(Class resource, String method) throws IllegalArgumentException
    {
