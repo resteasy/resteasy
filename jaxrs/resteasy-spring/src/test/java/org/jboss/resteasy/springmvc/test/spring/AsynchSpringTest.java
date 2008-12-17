@@ -112,6 +112,9 @@ public class AsynchSpringTest
          status = client.executeMethod(get);
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
+         // there's a lag between when the latch completes and the executor
+         // registers the completion of the call 
+         Thread.sleep(150);
          status = client.executeMethod(get);
          Assert.assertEquals(HttpServletResponse.SC_OK, status);
          Assert.assertEquals(get.getResponseBodyAsString(), "content");
