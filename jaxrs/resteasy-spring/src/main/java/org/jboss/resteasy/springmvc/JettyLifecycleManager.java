@@ -8,7 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 /**
 * 
-* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
 * @version $Revision: 1 $
 */
 
