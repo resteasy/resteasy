@@ -22,11 +22,12 @@ public class BasicSpringTest
    @Test
    public void testBasic() throws HttpException, IOException
    {
+//      ClientResponse<BasicJaxbObject> result = br.getWrongContentTypeBasicObject();
+//      Assert.assertEquals(-1, result.getStatus());
       Assert.assertEquals("/basic/url", br.getURL());
 
       Assert.assertEquals("test", br.getBasicString());
-
-      Assert.assertEquals("test", br.getBasicObject().getSomething());
+      Assert.assertEquals("something", br.getBasicObject().getSomething());
 
       Assert.assertEquals("Hi, I'm custom!", br.getSpringMvcValue());
 
@@ -41,6 +42,7 @@ public class BasicSpringTest
       Integer interceptorCount = br
             .getSpringInterceptorCount("afterCompletion");
       
-      Assert.assertEquals(Integer.valueOf(9), interceptorCount);
+      Assert.assertEquals(new Integer(9), interceptorCount);
+      br.testBogusUrl();
    }
 }

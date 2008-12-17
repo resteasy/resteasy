@@ -1,8 +1,6 @@
 package org.jboss.resteasy.springmvc.test.resources;
 
-import org.jboss.resteasy.springmvc.test.jaxb.BasicJaxbObject;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.ModelAndView;
+import java.util.Date;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -10,7 +8,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
-import java.util.Date;
+
+import org.jboss.resteasy.springmvc.test.jaxb.BasicJaxbObject;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ModelAndView;
 
 @Path("/basic")
 @Component
@@ -34,10 +35,11 @@ public class BasicResourceImpl
    }
 
    @GET
-   @Produces("application/json")
+   @Produces("application/xml")
+   @Path("object")
    public BasicJaxbObject getBasicObject()
    {
-      return new BasicJaxbObject("test", new Date());
+      return new BasicJaxbObject("something", new Date());
    }
 
    /**

@@ -18,6 +18,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
@@ -223,13 +224,20 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       super.invoke(request, response);
    }
 
+   public boolean isAsynchrnousRequest(HttpRequest in)
+   {
+      MultivaluedMap<String, String> queryParameters = in.getUri().getQueryParameters();
+      return queryParameters.get("asynch") != null || queryParameters.get("oneway") != null;      
+   }
+   
    public void invoke(HttpRequest in, HttpResponse response)
    {
-      if (in.getUri().getQueryParameters().get("asynch") != null)
+      MultivaluedMap<String, String> queryParameters = in.getUri().getQueryParameters();
+      if (queryParameters.get("asynch") != null)
       {
          postJob(in, response);
       }
-      else if (in.getUri().getQueryParameters().get("oneway") != null)
+      else if (queryParameters.get("oneway") != null)
       {
          oneway(in, response);
       }

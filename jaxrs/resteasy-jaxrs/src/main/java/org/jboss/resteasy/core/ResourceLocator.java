@@ -1,5 +1,13 @@
 package org.jboss.resteasy.core;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.ws.rs.core.Response;
+
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -8,6 +16,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.MethodInjector;
+import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -16,17 +25,11 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.Response;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class ResourceLocator implements ResourceInvoker
 {
 
@@ -37,7 +40,7 @@ public class ResourceLocator implements ResourceInvoker
    protected ResourceFactory resource;
    protected ResteasyProviderFactory providerFactory;
    protected Method method;
-   protected ConcurrentHashMap<Class, ResourceMethodRegistry> cachedSubresources = new ConcurrentHashMap<Class, ResourceMethodRegistry>();
+   protected ConcurrentHashMap<Class, Registry> cachedSubresources = new ConcurrentHashMap<Class, Registry>();
 
    public ResourceLocator(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, Class root, Method method)
    {
@@ -72,7 +75,7 @@ public class ResourceLocator implements ResourceInvoker
       {
          throw new LoggableFailure(e);
       }
-      catch (InvocationTargetException e)
+       catch (InvocationTargetException e)
       {
          throw new ApplicationException(e.getCause());
       }
@@ -119,7 +122,7 @@ public class ResourceLocator implements ResourceInvoker
       {
          throw new Failure("Null subresource for path: " + request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
       }
-      ResourceMethodRegistry registry = cachedSubresources.get(target.getClass());
+      Registry registry = cachedSubresources.get(target.getClass());
       if (registry == null)
       {
          registry = new ResourceMethodRegistry(providerFactory);

@@ -9,12 +9,6 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		">
 
-	<bean id="embeddedContainer" class="org.jboss.resteasy.plugins.spring.EmbeddedContainerBean" />
-	<bean id="dispatcher" factory-bean="embeddedContainer" factory-method="getDispatcher" />
-	<bean id="springBeanProcessor" class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor">
-		<constructor-arg ref="dispatcher"/>
-	</bean> 
-
     <context:component-scan base-package="org.jboss.resteasy.spring.scanned" >
         <context:include-filter type="annotation" expression="javax.ws.rs.Path"/>
     </context:component-scan>

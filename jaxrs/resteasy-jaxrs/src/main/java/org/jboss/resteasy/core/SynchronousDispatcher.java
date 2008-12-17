@@ -1,19 +1,8 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Failure;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.LoggableFailure;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.util.LocaleHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
@@ -21,9 +10,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+
+import org.jboss.resteasy.specimpl.PathSegmentImpl;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.UnhandledException;
+import org.jboss.resteasy.util.LocaleHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -33,7 +31,7 @@ import java.util.Map;
 public class SynchronousDispatcher implements Dispatcher
 {
    protected ResteasyProviderFactory providerFactory;
-   protected ResourceMethodRegistry registry;
+   protected Registry registry;
    protected Map<String, MediaType> mediaTypeMappings;
    protected Map<String, String> languageMappings;
 
@@ -351,7 +349,16 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          getDispatcherUtilities().pushContextObjects(request, response);
-         Response jaxrsResponse = getJaxrsResponseInternal(request, response, invoker);
+
+         Response jaxrsResponse = null;
+         try
+         {
+            jaxrsResponse = getDispatcherUtilities().getJaxrsResponse(request, response, invoker);
+         }
+         catch (Exception e)
+         {
+            handleInvokerException(request, response, e);
+         }
 
          try
          {
@@ -366,32 +373,6 @@ public class SynchronousDispatcher implements Dispatcher
       {
          getDispatcherUtilities().clearContextData();
       }
-   }
-
-   private Response getJaxrsResponseInternal(HttpRequest request,
-                                             HttpResponse response, ResourceInvoker invoker)
-   {
-      Response jaxrsResponse = null;
-      try
-      {
-         jaxrsResponse = invoker.invoke(request, response);
-         if (request.isSuspended())
-         {
-            /**
-             * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
-             * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
-             * asychronous HTTP.
-             *
-             */
-            request.initialRequestThreadFinished();
-            return null; // we're handing response asynchronously
-         }
-      }
-      catch (Exception e)
-      {
-         handleInvokerException(request, response, e);
-      }
-      return jaxrsResponse;
    }
 
    public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse)
@@ -417,29 +398,9 @@ public class SynchronousDispatcher implements Dispatcher
    protected void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
            throws IOException, WebApplicationException
    {
-      this.dispatcherUtilities.writeCookies(response, jaxrsResponse);
-      ResponseInvoker responseInvoker = new ResponseInvoker(dispatcherUtilities, jaxrsResponse);
-
-      if (jaxrsResponse.getEntity() == null)
+      ResponseInvoker responseInvoker = getDispatcherUtilities().writeHeaders(response, jaxrsResponse);
+      if( responseInvoker != null )
       {
-         response.setStatus(jaxrsResponse.getStatus());
-         this.dispatcherUtilities.outputHeaders(response, jaxrsResponse);
-      }
-      if (jaxrsResponse.getEntity() != null)
-      {
-         if (responseInvoker.getWriter() == null)
-         {
-            throw new LoggableFailure(String.format(
-                    "Could not find MessageBodyWriter for response object of type: %s of media type: %s",
-                    responseInvoker.getType().getName(),
-                    responseInvoker.getContentType()),
-                    HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
-         }
-
-         response.setStatus(jaxrsResponse.getStatus());
-         this.dispatcherUtilities.outputHeaders(response, jaxrsResponse);
-         long size = responseInvoker.getResponseSize();
-         if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
          responseInvoker.writeTo(response);
       }
    }
