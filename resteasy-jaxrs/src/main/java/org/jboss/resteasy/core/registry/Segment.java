@@ -1,14 +1,5 @@
 package org.jboss.resteasy.core.registry;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
@@ -16,6 +7,14 @@ import org.jboss.resteasy.spi.NoResourceFoundFailure;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -81,6 +80,14 @@ public class Segment
          {
             HashSet<String> allowed = new HashSet<String>();
             for (ResourceMethod invoker : methods) allowed.addAll(invoker.getHttpMethods());
+
+            if (httpMethod.equalsIgnoreCase("HEAD") && allowed.contains("GET"))
+            {
+               return match("GET", contentType, oldaccepts);
+            }
+
+            if (allowed.contains("GET")) allowed.add("HEAD");
+            allowed.add("OPTIONS");
             String allowHeaderValue = "";
             boolean first = true;
             for (String allow : allowed)
@@ -101,7 +108,7 @@ public class Segment
                throw new NoResourceFoundFailure("No resource method found for " + httpMethod + ", return 405 with Allow header", res);
             }
          }
-         if (!consumeMatch)
+         else if (!consumeMatch)
          {
             throw new NoResourceFoundFailure("Cannot consume content type", HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE);
          }

@@ -11,6 +11,7 @@ public class UriHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
    public Object fromString(String value) throws IllegalArgumentException
    {
+      if (value == null) throw new IllegalArgumentException("URI value is null");
       return URI.create(value);
    }
 

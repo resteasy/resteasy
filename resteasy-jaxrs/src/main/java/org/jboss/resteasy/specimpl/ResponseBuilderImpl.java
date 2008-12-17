@@ -199,6 +199,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder cookie(NewCookie... cookies)
    {
+      if (cookies == null)
+      {
+         metadata.remove(HttpHeaderNames.SET_COOKIE);
+         return this;
+      }
       for (NewCookie cookie : cookies)
       {
          metadata.add(HttpHeaderNames.SET_COOKIE, cookie);

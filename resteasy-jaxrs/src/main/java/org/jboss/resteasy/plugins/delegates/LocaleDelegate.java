@@ -13,6 +13,7 @@ public class LocaleDelegate implements RuntimeDelegate.HeaderDelegate<Locale>
 {
    public Locale fromString(String value) throws IllegalArgumentException
    {
+      if (value == null) throw new IllegalArgumentException("Locale value is null");
       return LocaleHelper.extractLocale(value);
    }
 

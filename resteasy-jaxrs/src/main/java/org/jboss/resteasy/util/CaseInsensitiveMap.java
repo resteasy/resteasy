@@ -3,12 +3,12 @@ package org.jboss.resteasy.util;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -38,7 +38,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
 
       public boolean contains(Object o)
       {
-         return keys.contains(o);
+         return keys.contains(new CaseInsensitiveKey((String) o));
       }
 
       public Iterator<String> iterator()
@@ -46,6 +46,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
          return new Iterator<String>()
          {
             private Iterator<CaseInsensitiveKey> it = keys.iterator();
+
             public boolean hasNext()
             {
                return it.hasNext();
@@ -73,7 +74,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
          int i = 0;
          for (CaseInsensitiveKey key : keys)
          {
-            ks[i++] = (T)key.key;
+            ks[i++] = (T) key.key;
          }
          return ks;
       }
@@ -166,7 +167,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
       public boolean contains(Object o)
       {
          if (!(o instanceof Entry)) return false;
-         final Entry<String, V> entry = (Entry<String, V>)o;
+         final Entry<String, V> entry = (Entry<String, V>) o;
 
          Entry<CaseInsensitiveKey, V> wrapped = new EntryWrapper<V>(entry);
 
@@ -204,13 +205,13 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
 
       public <T> T[] toArray(T[] ts)
       {
-         Entry<String, V>[] array = (Entry<String, V>[])ts;
+         Entry<String, V>[] array = (Entry<String, V>[]) ts;
          int i = 0;
          for (Entry<CaseInsensitiveKey, V> entry : entrySet)
          {
             array[i++] = new EntryDelegate(entry);
          }
-         return (T[])array;
+         return (T[]) array;
       }
 
       public boolean add(Entry<String, V> stringVEntry)
@@ -221,12 +222,12 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
 
       public boolean remove(Object o)
       {
-         return entrySet.remove(new EntryWrapper<V>((Entry<String,V>)o));
+         return entrySet.remove(new EntryWrapper<V>((Entry<String, V>) o));
       }
 
       public boolean containsAll(Collection<?> objects)
       {
-         Collection<Entry<String, V>> list = (Collection<Entry<String, V>>)objects;
+         Collection<Entry<String, V>> list = (Collection<Entry<String, V>>) objects;
          HashSet<Entry<CaseInsensitiveKey, V>> set = new HashSet<Entry<CaseInsensitiveKey, V>>();
          for (Entry<String, V> entry : list)
          {
@@ -247,7 +248,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
 
       public boolean retainAll(Collection<?> objects)
       {
-         Collection<Entry<String, V>> list = (Collection<Entry<String, V>>)objects;
+         Collection<Entry<String, V>> list = (Collection<Entry<String, V>>) objects;
          HashSet<Entry<CaseInsensitiveKey, V>> set = new HashSet<Entry<CaseInsensitiveKey, V>>();
          for (Entry<String, V> entry : list)
          {
@@ -258,7 +259,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
 
       public boolean removeAll(Collection<?> objects)
       {
-         Collection<Entry<String, V>> list = (Collection<Entry<String, V>>)objects;
+         Collection<Entry<String, V>> list = (Collection<Entry<String, V>>) objects;
          HashSet<Entry<CaseInsensitiveKey, V>> set = new HashSet<Entry<CaseInsensitiveKey, V>>();
          for (Entry<String, V> entry : list)
          {
