@@ -1,5 +1,15 @@
 package org.jboss.resteasy.client.core;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Providers;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.client.ClientResponse;
@@ -7,15 +17,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.Types;
-
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Providers;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -38,8 +39,10 @@ public class ClientInvoker
    {
       this.declaring = declaring;
       this.method = method;
-      this.urlRetriever = new WebRequestIntializer(method, providerFactory);
+      Marshaller[] marshallers = ClientMarshallerFactory.createMarshallers(method,
+            providerFactory);
       this.providerFactory = providerFactory;
+      this.urlRetriever = new WebRequestIntializer(marshallers);
       accepts = MediaTypeHelper.getProduces(declaring, method);
       this.client = client;
       this.interceptors = interceptors;
@@ -79,7 +82,7 @@ public class ClientInvoker
       if (interceptors != null)
          clientResponse.setInterceptors(interceptors);
 
-      String url = urlRetriever.buildUrl(uri, false, args);
+      String url = urlRetriever.buildUrl(uri, false, method, args);
       clientResponse.setUrl(url);
       return clientResponse;
    }
