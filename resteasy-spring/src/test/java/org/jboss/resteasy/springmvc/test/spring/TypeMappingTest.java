@@ -9,19 +9,13 @@ package org.jboss.resteasy.springmvc.test.spring;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import static org.junit.Assert.*;
 
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 
 public class TypeMappingTest
 {
@@ -114,17 +108,6 @@ public class TypeMappingTest
    public void stopServer()
    {
       server.stop();
-   }
-
-   @Test
-   public void validateTypeMappingsExist()
-   {
-      ApplicationContext ctx = server.getApplicationContext();
-      SynchronousDispatcher dispatcher = (SynchronousDispatcher) ctx.getBean("resteasy.dispatcher");
-      Map<String, MediaType> mappings = dispatcher.getMediaTypeMappings();
-      assertEquals(2, mappings.size());
-      assertEquals("application/xml", mappings.get("xml").toString());
-      assertEquals("application/json", mappings.get("json").toString());
    }
 
    private void requestAndAssert(String path, String extension, String accept, String expectedContentType)
