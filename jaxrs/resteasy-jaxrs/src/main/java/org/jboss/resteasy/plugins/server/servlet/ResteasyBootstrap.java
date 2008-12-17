@@ -8,6 +8,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -33,6 +35,7 @@ public class ResteasyBootstrap implements ServletContextListener
    private ResteasyProviderFactory factory = new ResteasyProviderFactory();
    private Registry registry;
    private Dispatcher dispatcher;
+   private final static Logger logger = LoggerFactory.getLogger(ResteasyBootstrap.class);
 
 
    public void contextInitialized(ServletContextEvent event)
@@ -45,6 +48,15 @@ public class ResteasyBootstrap implements ServletContextListener
       event.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
       event.getServletContext().setAttribute(Registry.class.getName(), registry);
       String applicationConfig = event.getServletContext().getInitParameter(Application.class.getName());
+      if (applicationConfig == null)
+      {
+         // stupid spec doesn't use FQN of Application class name
+         applicationConfig = event.getServletContext().getInitParameter("javax.ws.rs.Application");
+      }
+      else
+      {
+         logger.warn("The use of " + Application.class.getName() + " is deprecated, please use javax.ws.rs.Application as a context-param instead");
+      }
 
       String providers = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_PROVIDERS);
 
@@ -175,12 +187,21 @@ public class ResteasyBootstrap implements ServletContextListener
 
    public static void processApplication(Application config, Registry registry, ResteasyProviderFactory factory)
    {
+      logger.info("Deploying " + Application.class.getName() + ": " + config.getClass());
       if (config.getClasses() != null)
       {
          for (Class clazz : config.getClasses())
          {
-            if (clazz.isAnnotationPresent(Path.class)) registry.addPerRequestResource(clazz);
-            else factory.registerProvider(clazz);
+            if (clazz.isAnnotationPresent(Path.class))
+            {
+               logger.info("Adding class resource " + clazz.getName() + " from Application " + Application.class.getName());
+               registry.addPerRequestResource(clazz);
+            }
+            else
+            {
+               logger.info("Adding class @Provider " + clazz.getName() + " from Application " + Application.class.getName());
+               factory.registerProvider(clazz);
+            }
          }
       }
       if (config.getSingletons() != null)
@@ -189,10 +210,12 @@ public class ResteasyBootstrap implements ServletContextListener
          {
             if (obj.getClass().isAnnotationPresent(Path.class))
             {
+               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + Application.class.getName());
                registry.addSingletonResource(obj);
             }
             else
             {
+               logger.info("Adding singleton @Provider " + obj.getClass().getName() + " from Application " + Application.class.getName());
                factory.registerProviderInstance(obj);
             }
          }
@@ -217,6 +240,7 @@ public class ResteasyBootstrap implements ServletContextListener
       String[] resources = jndiResources.trim().split(",");
       for (String resource : resources)
       {
+         logger.info("Adding jndi resource " + resource);
          registry.addJndiResource(resource.trim());
       }
    }
@@ -229,6 +253,7 @@ public class ResteasyBootstrap implements ServletContextListener
          try
          {
             Class clazz = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
+            logger.info("Adding listed resource class: " + resource);
             registry.addPerRequestResource(clazz);
          }
          catch (ClassNotFoundException e)
@@ -244,6 +269,7 @@ public class ResteasyBootstrap implements ServletContextListener
       if (classes == null) return;
       for (String clazz : classes)
       {
+         logger.info("Adding scanned @Provider: " + clazz);
          registerProvider(clazz);
       }
    }
@@ -259,7 +285,6 @@ public class ResteasyBootstrap implements ServletContextListener
       {
          throw new RuntimeException(e);
       }
-      System.out.println("FOUND JAX-RS @Provider: " + clazz);
       factory.registerProvider(provider);
    }
 
@@ -270,6 +295,7 @@ public class ResteasyBootstrap implements ServletContextListener
       if (paths != null) classes.addAll(paths);
       for (String clazz : classes)
       {
+         logger.info("Adding scanned resource: " + clazz);
          processResource(clazz);
       }
    }
@@ -297,6 +323,7 @@ public class ResteasyBootstrap implements ServletContextListener
       String[] p = providers.split(",");
       for (String provider : p)
       {
+         logger.info("Adding listed @Provider class " + provider);
          provider = provider.trim();
          registerProvider(provider);
       }
