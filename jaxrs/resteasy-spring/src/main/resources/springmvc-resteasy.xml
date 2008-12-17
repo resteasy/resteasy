@@ -116,4 +116,15 @@
 
 	<bean id="reateasy.error.view.resolver"
 		class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+        
+    
+    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <description>Bean that registers our custom MediaType PropertyEditor</description>
+        <property name="customEditors">
+            <map>
+                <entry key="javax.ws.rs.core.MediaType"
+                    value="org.jboss.resteasy.plugins.spring.MediaTypePropertyEditor" />
+            </map>
+        </property>
+    </bean>
 </beans>
