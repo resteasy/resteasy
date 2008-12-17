@@ -50,6 +50,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder uri(URI uri) throws IllegalArgumentException
    {
+      if (uri == null) throw new IllegalArgumentException("URI was null");
       if (uri.getHost() != null) host = uri.getHost();
       if (uri.getScheme() != null) scheme = uri.getScheme();
       if (uri.getHost() != null) port = uri.getPort();
@@ -70,6 +71,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder schemeSpecificPart(String ssp) throws IllegalArgumentException
    {
+      if (ssp == null) throw new IllegalArgumentException("schemeSpecificPart was null");
       StringBuffer uriStr = new StringBuffer();
       if (scheme != null) uriStr.append(scheme).append(":");
       uriStr.append(ssp);
@@ -81,7 +83,7 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    @Override
-   public UriBuilder userInfo(String ui) throws IllegalArgumentException
+   public UriBuilder userInfo(String ui)
    {
       this.userInfo = ui;
       return this;
@@ -90,6 +92,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder host(String host) throws IllegalArgumentException
    {
+      if (host == null) throw new IllegalArgumentException("schemeSpecificPart was null");
       this.host = host;
       return this;
    }
@@ -121,6 +124,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(String segment) throws IllegalArgumentException
    {
+      if (segment == null) throw new IllegalArgumentException("path was null");
       path = paths(true, path, segment);
       return this;
    }
@@ -129,6 +133,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(Class resource) throws IllegalArgumentException
    {
+      if (resource == null) throw new IllegalArgumentException("path was null");
       Path ann = (Path) resource.getAnnotation(Path.class);
       if (ann != null)
       {
@@ -142,6 +147,8 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(Class resource, String method) throws IllegalArgumentException
    {
+      if (resource == null) throw new IllegalArgumentException("resource was null");
+      if (method == null) throw new IllegalArgumentException("method was null");
       for (Method m : resource.getMethods())
       {
          if (m.getName().equals(method))
@@ -155,6 +162,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(Method method) throws IllegalArgumentException
    {
+      if (method == null) throw new IllegalArgumentException("method was null");
       Path ann = method.getAnnotation(Path.class);
       if (ann != null)
       {
@@ -548,6 +556,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder replacePath(String path)
    {
+      if (path == null) throw new IllegalArgumentException("path was null");
       this.path = Encode.encodePath(path, true);
       return this;
    }

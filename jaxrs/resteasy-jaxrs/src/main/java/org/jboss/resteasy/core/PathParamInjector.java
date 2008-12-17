@@ -65,7 +65,14 @@ public class PathParamInjector implements ValueInjector
       else
       {
          List<String> list = request.getUri().getPathParameters(!encode).get(paramName);
-         return extractor.extractValue(list.get(list.size() - 1));
+         if (extractor.isCollectionOrArray())
+         {
+            return extractor.extractValues(list);
+         }
+         else
+         {
+            return extractor.extractValue(list.get(list.size() - 1));
+         }
       }
    }
 

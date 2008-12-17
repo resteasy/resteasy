@@ -11,6 +11,7 @@ public class EntityTagDelegate implements RuntimeDelegate.HeaderDelegate<EntityT
 {
    public EntityTag fromString(String value) throws IllegalArgumentException
    {
+      if (value == null) throw new IllegalArgumentException("value of EntityTag is null");
       if (value.startsWith("\""))
       {
          value = value.substring(1);

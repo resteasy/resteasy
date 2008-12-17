@@ -1,29 +1,27 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.HashSet;
-
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.OptionsMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.HashSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -35,7 +33,8 @@ public class OptionsTest
 
    @HttpMethod("OPTIONS")
    @Retention(RetentionPolicy.RUNTIME)
-   private static @interface OPTIONS {
+   private static @interface OPTIONS
+   {
    }
 
    @Path("/")
@@ -113,9 +112,11 @@ public class OptionsTest
             HashSet<String> vals = new HashSet<String>();
             for (String v : value.split(","))
                vals.add(v.trim());
-            Assert.assertEquals(2, vals.size());
+            Assert.assertEquals(4, vals.size());
             Assert.assertTrue(vals.contains("GET"));
             Assert.assertTrue(vals.contains("DELETE"));
+            Assert.assertTrue(vals.contains("HEAD"));
+            Assert.assertTrue(vals.contains("OPTIONS"));
          }
          catch (IOException e)
          {
@@ -140,7 +141,9 @@ public class OptionsTest
             HashSet<String> vals = new HashSet<String>();
             for (String v : value.split(","))
                vals.add(v.trim());
-            Assert.assertEquals(2, vals.size());
+            Assert.assertEquals(4, vals.size());
+            Assert.assertTrue(vals.contains("HEAD"));
+            Assert.assertTrue(vals.contains("OPTIONS"));
             Assert.assertTrue(vals.contains("GET"));
             Assert.assertTrue(vals.contains("DELETE"));
          }

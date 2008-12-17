@@ -52,6 +52,11 @@ public class StringParameterInjector
       initialize(type, genericType, paramName, paramType, defaultValue, target, factory);
    }
 
+   public boolean isCollectionOrArray()
+   {
+      return isCollection || type.isArray();
+   }
+
    protected void initialize(Class type, Type genericType, String paramName, Class paramType, String defaultValue, AccessibleObject target, ResteasyProviderFactory factory)
    {
       this.type = type;

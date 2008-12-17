@@ -12,6 +12,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
    public Object fromString(String type) throws IllegalArgumentException
    {
+      if (type == null) throw new IllegalArgumentException("MediaType value is null");
       return parse(type);
    }
 

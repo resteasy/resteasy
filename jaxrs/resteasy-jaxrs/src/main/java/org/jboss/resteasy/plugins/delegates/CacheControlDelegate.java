@@ -12,6 +12,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
 {
    public CacheControl fromString(String value) throws IllegalArgumentException
    {
+      if (value == null) throw new IllegalArgumentException("Cache-Control value is null");
       CacheControl result = new CacheControl();
 
       String[] directives = value.split(",");
