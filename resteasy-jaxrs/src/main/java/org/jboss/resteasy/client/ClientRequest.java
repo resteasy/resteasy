@@ -192,7 +192,7 @@ public class ClientRequest
       ClientResponseImpl<T> clientResponse = createResponseImpl(restVerb,
             returnType, genericReturnType);
       
-      WebRequestIntializer urlRetriever = new WebRequestIntializer(marshallers);
+      WebRequestIntializer urlRetriever = new WebRequestIntializer(marshallers.toArray(new Marshaller[marshallers.size()]));
       clientResponse.setUrl(urlRetriever.buildUrl(uriTemplate, true, args.toArray()));
        
       HttpMethodBase baseMethod = clientResponse.getHttpBaseMethod();

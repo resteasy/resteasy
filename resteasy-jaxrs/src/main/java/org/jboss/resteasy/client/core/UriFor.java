@@ -46,11 +46,17 @@ public class UriFor
    public static String resolve(URI baseUri, boolean allowRelative,
          Method method, Object... args)
    {
-      ResteasyProviderFactory providerFactory = ResteasyProviderFactory
-            .getInstance();
-      WebRequestIntializer urlRetriever = new WebRequestIntializer(
-            method, providerFactory);
-      return urlRetriever.buildUrl(baseUri, allowRelative, args);
+      return resolve(baseUri, allowRelative, method, ResteasyProviderFactory
+            .getInstance(), args);
+   }
+
+   public static String resolve(URI baseUri, boolean allowRelative,
+         Method method, ResteasyProviderFactory providerFactory, Object... args)
+   {
+      Marshaller[] marshallers = ClientMarshallerFactory.createMarshallers(method,
+            providerFactory);
+      WebRequestIntializer urlRetriever = new WebRequestIntializer(marshallers);
+      return urlRetriever.buildUrl(baseUri, allowRelative, method, args);
    }
 
    public static Method getMethod(final Class<? extends Object> clazz,

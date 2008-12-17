@@ -1,8 +1,6 @@
 package org.jboss.resteasy.client.core;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,24 +8,21 @@ import java.util.Collection;
 
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.IsHttpMethod;
+/**
+ * this class is used  
+ * 
+ * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
+ * @version $Revision: 1 $
+ */
+
 
 public class WebRequestIntializer
 {
    private Marshaller[] params;
-   private Method method;
 
-   public WebRequestIntializer(Method method, ResteasyProviderFactory providerFactory)
+   public WebRequestIntializer(Marshaller[] marshallers)
    {
-      this.method = method;
-      params = ClientMarshallerFactory.createMarshallers(method,
-            providerFactory);
-   }
-
-   public WebRequestIntializer(Collection<Marshaller> marshallers)
-   {
-      this.params = marshallers.toArray(new Marshaller[0]);
+      this.params = marshallers;
    }
 
    public Marshaller[] getParams()
@@ -50,36 +45,33 @@ public class WebRequestIntializer
       }
    }
 
-   public String buildUrl(String uri, boolean allowRelative, Object... args) throws IllegalArgumentException, URISyntaxException
+   public String buildUrl(String uriTemplate, boolean allowRelative, Object... args) throws IllegalArgumentException, URISyntaxException
    {
       UriBuilderImpl builder = new UriBuilderImpl();
-      int index = uri.indexOf("//");
+      int index = uriTemplate.indexOf("//");
       if( index != -1 )
       {
-         int index2 = uri.indexOf("/", index + 2);
-         builder.uri(new URI(uri.substring(0, index2)));
+         int index2 = uriTemplate.indexOf("/", index + 2);
+         builder.uri(new URI(uriTemplate.substring(0, index2)));
          index = index2;
       } 
       else
       {
          index = 0;
       }
-      String[] segments = uri.substring(index).split("/");
+      String[] segments = uriTemplate.substring(index).split("/");
       if(segments.length > 0 )
          builder.segment(segments);
       
       return buildUrl(builder, allowRelative, args);
    }
    
-   public String buildUrl(URI uri, boolean allowRelative, Object... args)
+   public String buildUrl(URI uri, boolean allowRelative, Method method, Object... args)
    {
       UriBuilderImpl builder = new UriBuilderImpl();
-      builder.uri(uri);
-      if( method != null )
-      {
-         builder.path(method.getDeclaringClass());
-         builder.path(method);
-      }
+      builder.uri(uri)
+         .path(method.getDeclaringClass())
+         .path(method);
       return buildUrl(builder, allowRelative, args);
    }
 
@@ -106,5 +98,4 @@ public class WebRequestIntializer
          throw new RuntimeException("Unable to build URL from uri", e);
       }
    }
-
 }
