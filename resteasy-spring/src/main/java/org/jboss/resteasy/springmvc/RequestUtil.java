@@ -11,7 +11,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
 * 
-* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+* @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
 * @version $Revision: 1 $
 */
 
