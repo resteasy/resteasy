@@ -18,20 +18,17 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
-/*@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations =
-{"classpath:spring-typemapping-test-server.xml"})*/
 public class TypeMappingTest
 {
 
    private HttpClient hc = new HttpClient();
 
-   private static TJWSEmbeddedSpringMVCServer server;
+   private TJWSEmbeddedSpringMVCServer server;
 
    @Test
    public void acceptJSONAndXMLRequestNoProducesJSONExtension() throws Exception
@@ -105,16 +102,16 @@ public class TypeMappingTest
       requestAndAssert("noproduces", "xml", "application/xml", "application/xml");
    }
 
-   @BeforeClass
-   public static void startServer()
+   @Before
+   public void startServer()
    {
       server = new TJWSEmbeddedSpringMVCServer("classpath:spring-typemapping-test-server.xml", TestPortProvider
             .getPort());
       server.start();
    }
 
-   @AfterClass
-   public static void stopServer()
+   @After
+   public void stopServer()
    {
       server.stop();
    }
