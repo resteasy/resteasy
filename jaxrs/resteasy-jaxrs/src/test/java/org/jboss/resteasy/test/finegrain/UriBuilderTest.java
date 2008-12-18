@@ -323,6 +323,7 @@ public class UriBuilderTest
             pass = false;
             sb.append("Test failed for expected uri: " + uris[j] +
                     " Got " + uri.toString() + " instead");
+            throw new Exception(sb.toString());
          }
          j++;
       }
