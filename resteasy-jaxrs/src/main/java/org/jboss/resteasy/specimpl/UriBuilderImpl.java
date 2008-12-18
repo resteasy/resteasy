@@ -54,6 +54,8 @@ public class UriBuilderImpl extends UriBuilder
    {
       if (uri == null) throw new IllegalArgumentException("URI was null");
 
+      if (uri.getScheme() != null) scheme = uri.getScheme();
+
       if (uri.getRawSchemeSpecificPart() != null && uri.getRawPath() == null)
       {
          ssp = uri.getRawSchemeSpecificPart();
@@ -62,7 +64,6 @@ public class UriBuilderImpl extends UriBuilder
       {
          this.ssp = null;
          if (uri.getHost() != null) host = uri.getHost();
-         if (uri.getScheme() != null) scheme = uri.getScheme();
          if (uri.getPort() != -1) port = uri.getPort();
          if (uri.getUserInfo() != null) userInfo = uri.getRawUserInfo();
          if (uri.getPath() != null && !uri.getPath().equals("")) path = uri.getRawPath();
@@ -279,7 +280,7 @@ public class UriBuilderImpl extends UriBuilder
          buffer.append("//");
          if (userInfo != null) replaceParameter(paramMap, isEncoded, userInfo, buffer).append("@");
          if (host != null) replaceParameter(paramMap, isEncoded, host, buffer);
-         if (port != -1 && port != 80) buffer.append(":").append(Integer.toString(port));
+         if (port != -1) buffer.append(":").append(Integer.toString(port));
       }
       if (path != null) replaceParameter(paramMap, isEncoded, path, buffer);
       if (query != null)
