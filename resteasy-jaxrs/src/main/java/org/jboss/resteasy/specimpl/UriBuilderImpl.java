@@ -31,6 +31,7 @@ public class UriBuilderImpl extends UriBuilder
    private String path;
    private String query;
    private String fragment;
+   private String ssp;
 
 
    public UriBuilder clone()
@@ -43,6 +44,7 @@ public class UriBuilderImpl extends UriBuilder
       impl.path = path;
       impl.query = query;
       impl.fragment = fragment;
+      impl.ssp = ssp;
 
       return impl;
    }
@@ -51,13 +53,22 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder uri(URI uri) throws IllegalArgumentException
    {
       if (uri == null) throw new IllegalArgumentException("URI was null");
-      if (uri.getHost() != null) host = uri.getHost();
-      if (uri.getScheme() != null) scheme = uri.getScheme();
-      if (uri.getHost() != null) port = uri.getPort();
-      if (uri.getUserInfo() != null) userInfo = uri.getRawUserInfo();
-      if (uri.getPath() != null && !uri.getPath().equals("")) path = uri.getRawPath();
-      if (uri.getFragment() != null) fragment = uri.getRawFragment();
-      if (uri.getQuery() != null) query = uri.getRawQuery();
+
+      if (uri.getRawSchemeSpecificPart() != null && uri.getRawPath() == null)
+      {
+         ssp = uri.getRawSchemeSpecificPart();
+      }
+      else
+      {
+         this.ssp = null;
+         if (uri.getHost() != null) host = uri.getHost();
+         if (uri.getScheme() != null) scheme = uri.getScheme();
+         if (uri.getPort() != -1) port = uri.getPort();
+         if (uri.getUserInfo() != null) userInfo = uri.getRawUserInfo();
+         if (uri.getPath() != null && !uri.getPath().equals("")) path = uri.getRawPath();
+         if (uri.getQuery() != null) query = uri.getRawQuery();
+         if (uri.getFragment() != null) fragment = uri.getRawFragment();
+      }
       return this;
    }
 
@@ -72,14 +83,30 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder schemeSpecificPart(String ssp) throws IllegalArgumentException
    {
       if (ssp == null) throw new IllegalArgumentException("schemeSpecificPart was null");
-      StringBuffer uriStr = new StringBuffer();
-      if (scheme != null) uriStr.append(scheme).append(":");
-      uriStr.append(ssp);
-      if (fragment != null)
+
+      StringBuilder sb = new StringBuilder();
+      if (scheme != null) sb.append(scheme).append(':');
+      if (ssp != null)
+         sb.append(ssp);
+      if (fragment != null && fragment.length() > 0) sb.append('#').append(fragment);
+      URI uri = URI.create(sb.toString());
+
+      if (uri.getRawSchemeSpecificPart() != null && uri.getRawPath() == null)
       {
-         uriStr.append("#").append(fragment);
+         this.ssp = uri.getRawSchemeSpecificPart();
       }
-      return uri(URI.create(uriStr.toString()));
+      else
+      {
+         this.ssp = null;
+         userInfo = uri.getRawUserInfo();
+         host = uri.getHost();
+         port = uri.getPort();
+         path = uri.getRawPath();
+         query = uri.getRawQuery();
+
+      }
+      return this;
+
    }
 
    @Override
@@ -242,10 +269,18 @@ public class UriBuilderImpl extends UriBuilder
    {
       StringBuffer buffer = new StringBuffer();
 
-      if (scheme != null) replaceParameter(paramMap, isEncoded, scheme, buffer).append("://");
-      if (userInfo != null) replaceParameter(paramMap, isEncoded, userInfo, buffer).append("@");
-      if (host != null) replaceParameter(paramMap, isEncoded, host, buffer);
-      if (port != -1 && port != 80) buffer.append(":").append(Integer.toString(port));
+      if (scheme != null) replaceParameter(paramMap, isEncoded, scheme, buffer).append(":");
+      if (ssp != null)
+      {
+         buffer.append(ssp);
+      }
+      else if (userInfo != null || host != null || port != -1)
+      {
+         buffer.append("//");
+         if (userInfo != null) replaceParameter(paramMap, isEncoded, userInfo, buffer).append("@");
+         if (host != null) replaceParameter(paramMap, isEncoded, host, buffer);
+         if (port != -1 && port != 80) buffer.append(":").append(Integer.toString(port));
+      }
       if (path != null) replaceParameter(paramMap, isEncoded, path, buffer);
       if (query != null)
       {

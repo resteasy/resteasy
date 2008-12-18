@@ -291,4 +291,41 @@ public class UriBuilderTest
 
    }
 
+   /*
+   * Create an UriBuilder instance using
+   *                 uriBuilder.fromUri(String)
+   */
+   @Test
+   public void FromUriTest3() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      URI uri;
+
+      String[] uris = {
+              "mailto:java-net@java.sun.com",
+              "ftp://ftp.is.co.za/rfc/rfc1808.txt", "news:comp.lang.java",
+              "urn:isbn:096139210x",
+              "http://www.ietf.org/rfc/rfc2396.txt",
+              "ldap://[2001:db8::7]/c=GB?objectClass?one",
+              "tel:+1-816-555-1212",
+              "telnet://192.0.2.16:80/",
+              "foo://example.com:8042/over/there?name=ferret#nose"
+              ,
+      };
+
+      int j = 0;
+      while (j < 9)
+      {
+         uri = UriBuilder.fromUri(uris[j]).build();
+         if (uri.toString().trim().compareToIgnoreCase(uris[j]) != 0)
+         {
+            pass = false;
+            sb.append("Test failed for expected uri: " + uris[j] +
+                    " Got " + uri.toString() + " instead");
+         }
+         j++;
+      }
+   }
+
 }
