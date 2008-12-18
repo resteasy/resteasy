@@ -20,7 +20,7 @@ import java.net.URLEncoder;
 public class TestSmoke
 {
 
-   
+
    @Test
    public void testNoDefaultsResource() throws Exception
    {
@@ -48,7 +48,7 @@ public class TestSmoke
          dispatcher.invoke(request, response);
 
 
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(204, response.getStatus());
       }
       {
          MockHttpRequest request = MockHttpRequest.get("/queryParam?" + "param=" + URLEncoder.encode("hello world", "UTF-8"));
@@ -99,7 +99,7 @@ public class TestSmoke
          dispatcher.invoke(request, response);
 
 
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(204, response.getStatus());
       }
       {
          MockHttpRequest request = MockHttpRequest.get("/locating/queryParam?" + "param=" + URLEncoder.encode("hello world", "UTF-8"));
@@ -147,7 +147,7 @@ public class TestSmoke
 
    }
 
-   
+
    @Test
    public void testNotLocating() throws Exception
    {
@@ -168,7 +168,7 @@ public class TestSmoke
 
    }
 
-   
+
    @Test
    public void testNotMappedInSubresource() throws Exception
    {
@@ -189,7 +189,7 @@ public class TestSmoke
 
    }
 
-   
+
    @Test
    public void testSubSubresource() throws Exception
    {
@@ -210,8 +210,7 @@ public class TestSmoke
 
    }
 
-   
-   
+
    @Test
    public void testContextParam() throws Exception
    {
@@ -221,18 +220,18 @@ public class TestSmoke
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
       {
-         
-         System.out.println( "Expect to see WARN about not injecting in subresources" );
-         
+
+         System.out.println("Expect to see WARN about not injecting in subresources");
+
          MockHttpRequest request = MockHttpRequest.get("/subresource/testContextParam");
          MockHttpResponse response = new MockHttpResponse();
 
          dispatcher.invoke(request, response);
 
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(204, response.getStatus());
       }
 
    }
 
-   
+
 }

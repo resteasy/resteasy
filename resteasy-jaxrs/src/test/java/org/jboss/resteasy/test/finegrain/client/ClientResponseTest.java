@@ -1,11 +1,16 @@
 package org.jboss.resteasy.test.finegrain.client;
 
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Map;
+import org.jboss.resteasy.test.smoke.SimpleResource;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,21 +20,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.smoke.SimpleResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Simple smoke test
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -107,19 +105,19 @@ public class ClientResponseTest
       Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
 
       String queryResult = createClientRequest("/queryParam").queryParameter("param", "hello world").get(String.class)
-            .getEntity();
+              .getEntity();
       Assert.assertEquals("hello world", queryResult);
 
       Assert.assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
 
       ClientResponse<Integer> paramPathResult = createClientRequest("/uriParam/{param}").accept("text/plain")
-            .pathParameter("param", 1234).get(Integer.class);
+              .pathParameter("param", 1234).get(Integer.class);
       Assert.assertEquals(1234, paramPathResult.getEntity().intValue());
 
-      Assert.assertEquals(Response.Status.OK, client.putBasicReturnCode("hello world"));
+      Assert.assertEquals(Response.Status.NO_CONTENT, client.putBasicReturnCode("hello world"));
       ClientResponse putResponse = createClientRequest("/basic").body("text/plain", "hello world").put();
 
-      Assert.assertEquals(Response.Status.OK, putResponse.getResponseStatus());
+      Assert.assertEquals(Response.Status.NO_CONTENT, putResponse.getResponseStatus());
 
       Assert.assertEquals("headervalue", client.getHeader().getHeaders().getFirst("header"));
       ClientResponse getHeaderResponse = createClientRequest("/header").get();
