@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.smoke;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -11,10 +7,13 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Simple smoke test
@@ -59,13 +58,13 @@ public class TestWireSmoke
          PutMethod method = createPutMethod("/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
+         Assert.assertEquals(204, status);
          method.releaseConnection();
       }
       {
          GetMethod method = createGetMethod("/queryParam");
          NameValuePair[] params =
-         {new NameValuePair("param", "hello world")};
+                 {new NameValuePair("param", "hello world")};
          method.setQueryString(params);
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpServletResponse.SC_OK, status);
@@ -103,13 +102,13 @@ public class TestWireSmoke
          PutMethod method = createPutMethod("/locating/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
+         Assert.assertEquals(204, status);
          method.releaseConnection();
       }
       {
          GetMethod method = createGetMethod("/locating/queryParam");
          NameValuePair[] params =
-         {new NameValuePair("param", "hello world")};
+                 {new NameValuePair("param", "hello world")};
          method.setQueryString(params);
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpServletResponse.SC_OK, status);

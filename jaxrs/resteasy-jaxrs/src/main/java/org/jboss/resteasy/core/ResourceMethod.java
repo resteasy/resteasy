@@ -13,7 +13,6 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.Consumes;
@@ -250,14 +249,12 @@ public class ResourceMethod implements ResourceInvoker
       }
       if (method.getReturnType().equals(void.class))
       {
-         if (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST"))
-            return Response.noContent().build();
-         else return Response.ok().build();
+         return Response.noContent().build();
       }
       Response.ResponseBuilder builder = null;
-      if (rtn == null && (request.getHttpMethod().toUpperCase().equals("DELETE") || request.getHttpMethod().toUpperCase().equals("POST")))
+      if (rtn == null)
       {
-         builder = Response.status(HttpResponseCodes.SC_NO_CONTENT);
+         builder = Response.noContent();
       }
       else
       {
