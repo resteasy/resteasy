@@ -121,37 +121,65 @@ public class ResourceMethodRegistry implements Registry
       if (ref != null) ref.registered(new InjectorFactoryImpl(providerFactory));
       for (Method method : clazz.getMethods())
       {
-         Path path = method.getAnnotation(Path.class);
-         Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
-         if (path == null && httpMethods == null) continue;
-
-         UriBuilderImpl builder = new UriBuilderImpl();
-         if (base != null) builder.path(base);
-         if (clazz.isAnnotationPresent(Path.class))
-         {
-            builder.path(clazz);
-         }
-         if (path != null)
-         {
-            builder.path(method);
-         }
-         String pathExpression = builder.getPath();
-         if (pathExpression == null) pathExpression = "";
-
-         InjectorFactory injectorFactory = new InjectorFactoryImpl(providerFactory);
-         if (httpMethods == null)
-         {
-            ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, clazz, method);
-            rootSegment.addPath(pathExpression, locator);
-         }
-         else
-         {
-            ResourceMethod invoker = new ResourceMethod(clazz, method, injectorFactory, ref, providerFactory, httpMethods);
-            rootSegment.addPath(pathExpression, invoker);
-         }
-         size++;
+         processMethod(ref, base, clazz, method);
 
       }
+   }
+
+   protected void processMethod(ResourceFactory ref, String base, Class<?> clazz, Method method)
+   {
+      Path path = method.getAnnotation(Path.class);
+      Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
+      if (path == null && httpMethods == null)
+      {
+         if (clazz.isInterface()) return;
+
+         Method intfMethod = null;
+         for (Class intf : clazz.getInterfaces())
+         {
+            try
+            {
+               Method tmp = intf.getMethod(method.getName(), method.getParameterTypes());
+               if (intfMethod != null)
+                  throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + method);
+               path = tmp.getAnnotation(Path.class);
+               httpMethods = IsHttpMethod.getHttpMethods(tmp);
+               if (path != null || httpMethods != null) intfMethod = tmp;
+            }
+            catch (NoSuchMethodException ignored)
+            {
+            }
+         }
+         if (intfMethod == null) return;
+         processMethod(ref, base, clazz, intfMethod);
+         return;
+      }
+
+      UriBuilderImpl builder = new UriBuilderImpl();
+      if (base != null) builder.path(base);
+      if (clazz.isAnnotationPresent(Path.class))
+      {
+         builder.path(clazz);
+      }
+      if (path != null)
+      {
+         builder.path(method);
+      }
+      String pathExpression = builder.getPath();
+      if (pathExpression == null) pathExpression = "";
+
+      InjectorFactory injectorFactory = new InjectorFactoryImpl(providerFactory);
+      if (httpMethods == null)
+      {
+         ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, clazz, method);
+         rootSegment.addPath(pathExpression, locator);
+      }
+      else
+      {
+         ResourceMethod invoker = new ResourceMethod(clazz, method, injectorFactory, ref, providerFactory, httpMethods);
+         rootSegment.addPath(pathExpression, invoker);
+      }
+      size++;
    }
 
    /**
