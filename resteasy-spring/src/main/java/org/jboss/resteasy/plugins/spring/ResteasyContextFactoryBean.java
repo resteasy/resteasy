@@ -1,14 +1,5 @@
 package org.jboss.resteasy.plugins.spring;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWorkers;
-import javax.ws.rs.ext.Providers;
-
 import org.jboss.resteasy.core.ContextParameterInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -19,25 +10,31 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.Ordered;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.Providers;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- * 
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
 
 public class ResteasyContextFactoryBean implements BeanFactoryPostProcessor,
-      Ordered
+        Ordered
 {
 
    private static List<Class<?>> DEFAULT_OBJECT_TYPES = Arrays
-         .<Class<?>> asList(UriInfo.class, HttpHeaders.class, Request.class,
-               MessageBodyWorkers.class, Providers.class, HttpRequest.class);
+           .<Class<?>>asList(UriInfo.class, HttpHeaders.class, Request.class,
+                   Providers.class, Providers.class, HttpRequest.class);
 
    private List<Class<?>> objectTypes = DEFAULT_OBJECT_TYPES;
 
    private int order = 0;
    private ResteasyProviderFactory factory = ResteasyProviderFactory
-         .getInstance();
+           .getInstance();
 
    @Required
    public List<Class<?>> getObjectTypes()
@@ -61,7 +58,7 @@ public class ResteasyContextFactoryBean implements BeanFactoryPostProcessor,
    }
 
    public void postProcessBeanFactory(
-         ConfigurableListableBeanFactory beanFactory) throws BeansException
+           ConfigurableListableBeanFactory beanFactory) throws BeansException
    {
       for (final Class<?> clazz : objectTypes)
       {

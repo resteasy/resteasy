@@ -6,7 +6,7 @@ import org.jboss.resteasy.util.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWorkers;
+import javax.ws.rs.ext.Providers;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,13 +28,13 @@ public class MultipartInputImpl implements MultipartInput
    protected List<InputPart> parts = new ArrayList<InputPart>();
    protected PartImpl currPart;
    protected int preambleEnd;
-   protected MessageBodyWorkers workers;
+   protected Providers workers;
    protected static final Annotation[] empty = {};
 
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
    protected byte[] buffer;
 
-   public MultipartInputImpl(String boundary, MessageBodyWorkers workers)
+   public MultipartInputImpl(String boundary, Providers workers)
    {
       this.boundary = "--" + boundary;
       boundaryBytes = this.boundary.getBytes();

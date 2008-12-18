@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.util.GenericType;
 
-import javax.ws.rs.ext.MessageBodyWorkers;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -20,7 +20,7 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements Mu
    protected Map<String, InputPart> formData = new HashMap<String, InputPart>();
    protected static final Pattern DISPOSITION = Pattern.compile("form-data;.*name=\"?([^\"\\s;]*)\"?.*");
 
-   public MultipartFormDataInputImpl(String boundary, MessageBodyWorkers workers)
+   public MultipartFormDataInputImpl(String boundary, Providers workers)
    {
       super(boundary, workers);
    }
