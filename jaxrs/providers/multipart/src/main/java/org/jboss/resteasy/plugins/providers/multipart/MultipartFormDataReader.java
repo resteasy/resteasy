@@ -6,8 +6,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWorkers;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -23,7 +23,7 @@ public class MultipartFormDataReader implements MessageBodyReader<MultipartFormD
 {
    protected
    @Context
-   MessageBodyWorkers workers;
+   Providers workers;
 
 
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

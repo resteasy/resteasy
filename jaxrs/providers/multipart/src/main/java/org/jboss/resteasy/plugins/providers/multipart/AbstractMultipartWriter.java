@@ -6,8 +6,8 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWorkers;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 public class AbstractMultipartWriter
 {
    @Context
-   protected MessageBodyWorkers workers;
+   protected Providers workers;
 
    protected void write(MultipartOutput multipartOutput, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
            throws IOException

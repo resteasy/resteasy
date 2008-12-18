@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.finegrain;
 
-import org.jboss.resteasy.specimpl.MessageBodyWorkersImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -13,7 +12,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWorkers;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -38,7 +37,7 @@ public class ProviderInjectionTest
       public HttpHeaders headers;
 
       @Context
-      public MessageBodyWorkers workers;
+      public Providers workers;
 
       public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
@@ -59,7 +58,7 @@ public class ProviderInjectionTest
 
       Assert.assertNotNull(reader.headers);
       Assert.assertNotNull(reader.workers);
-      Assert.assertEquals(reader.workers.getClass(), MessageBodyWorkersImpl.class);
+      Assert.assertEquals(reader.workers.getClass(), ResteasyProviderFactory.class);
    }
 
 }
