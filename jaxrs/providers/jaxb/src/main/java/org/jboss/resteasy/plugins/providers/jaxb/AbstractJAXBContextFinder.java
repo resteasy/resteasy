@@ -79,12 +79,27 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
       return jaxb;
    }
 
+   public static String getPackageName(Class<?> type)
+   {
+      String packageName;
+      int packageSeparator = type.getName().lastIndexOf('.');
+      if (packageSeparator != -1)
+      {
+         packageName = type.getName().substring(0, packageSeparator);
+      }
+      else
+      {
+         packageName = type.getName();
+      }
+      return packageName;
+   }
+
    public static Class<?> findDefaultObjectFactoryClass(Class<?> type)
    {
       XmlType typeAnnotation = type.getAnnotation(XmlType.class);
       if (typeAnnotation == null) return null;
       if (!typeAnnotation.factoryClass().equals(XmlType.DEFAULT.class)) return null;
-      StringBuilder b = new StringBuilder(type.getPackage().getName());
+      StringBuilder b = new StringBuilder(getPackageName(type));
       b.append(OBJECT_FACTORY_NAME);
       Class<?> factoryClass = null;
       try
