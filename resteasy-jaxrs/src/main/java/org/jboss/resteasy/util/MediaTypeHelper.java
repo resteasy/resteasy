@@ -166,15 +166,20 @@ public class MediaTypeHelper
 
    public static void sortByWeight(List<MediaType> types)
    {
-      if (types.size() <= 1) return;
+      if (types == null || types.size() <= 1) return;
       Collections.sort(types, new MediaTypeComparator());
    }
 
    public static MediaType getBestMatch(List<MediaType> desired, List<MediaType> provided)
    {
       sortByWeight(desired);
-      if (provided == null || provided.size() == 0) return desired.get(0);
       sortByWeight(provided);
+      boolean emptyDesired = desired == null || desired.size() == 0;
+      boolean emptyProvided = provided == null || provided.size() == 0;
+      
+      if (emptyDesired && emptyProvided) return null;
+      if (emptyDesired && !emptyProvided) return provided.get(0);
+      if (emptyProvided && !emptyDesired) return desired.get(0);
 
       for (MediaType desire : desired)
       {
