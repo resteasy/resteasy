@@ -12,6 +12,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.jboss.resteasy.specimpl.ResponseImpl;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 @SuppressWarnings("unchecked")
 public class ResponseInvoker
@@ -21,27 +22,26 @@ public class ResponseInvoker
    private Object entity;
    private Type genericType = null;
    private Annotation[] annotations = null;
-   private DispatcherUtilities dispatcherUtilities;
+   private ResteasyProviderFactory providerFactory;
    private Class<? extends Object> type;
    private MediaType contentType;
    private MessageBodyWriter writer;
 
-   public ResponseInvoker(DispatcherUtilities dispatcherUtilities,
-         Response jaxrsResponse)
+   public ResponseInvoker(Response jaxrsResponse,
+         MediaType contentType, ResteasyProviderFactory providerFactory)
    {
       this.jaxrsResponse = jaxrsResponse;
       this.entity = jaxrsResponse.getEntity();
-      this.dispatcherUtilities = dispatcherUtilities;
+      this.providerFactory = providerFactory;
       if (entity != null)
       {
+         this.contentType = contentType;
          initialize();
       }
    }
 
    protected void initialize()
    {
-      contentType = this.dispatcherUtilities
-            .resolveContentType(jaxrsResponse);
       if (entity instanceof GenericEntity)
       {
          GenericEntity ge = (GenericEntity) entity;
@@ -58,8 +58,13 @@ public class ResponseInvoker
          annotations = ((ResponseImpl) jaxrsResponse).getAnnotations();
       }
       type = entity.getClass();
-      writer = dispatcherUtilities.getProviderFactory().getMessageBodyWriter(
+      writer = getProviderFactory().getMessageBodyWriter(
             type, genericType, annotations, contentType);
+   }
+
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return this.providerFactory;
    }
 
    public MessageBodyWriter getWriter()

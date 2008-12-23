@@ -81,5 +81,10 @@ public interface BasicResource
    @Produces("text/plain")
    @Path("bogus-rul-test")
    public ClientResponse<String> testBogusUrl();
+   
+   @GET
+   @Produces("application/xml")
+   @Path("spring/object/xml")
+   public BasicJaxbObject testSpringXml();
 
 }

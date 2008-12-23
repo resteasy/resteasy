@@ -34,10 +34,11 @@ public class DispatcherUtilities
    public MediaType resolveContentType(Response jaxrsResponse)
    {
       MediaType responseContentType = null;
-      Object type = jaxrsResponse.getMetadata().getFirst(
-              HttpHeaderNames.CONTENT_TYPE);
+      Object type = jaxrsResponse.getMetadata().getFirst(HttpHeaderNames.CONTENT_TYPE);
       if (type == null)
-         return MediaType.valueOf("*/*");
+      {
+         return MediaType.WILDCARD_TYPE;
+      }
       if (type instanceof MediaType)
       {
          responseContentType = (MediaType) type;
@@ -59,7 +60,7 @@ public class DispatcherUtilities
       }
    }
 
-   private void writeCookies(HttpResponse response, Response jaxrsResponse)
+   public void outputCookies(HttpResponse response, Response jaxrsResponse)
    {
       if (jaxrsResponse.getMetadata() != null)
       {
@@ -95,10 +96,10 @@ public class DispatcherUtilities
       ResteasyProviderFactory.pushContext(Registry.class, registry);
    }
    
-   public ResponseInvoker writeHeaders(HttpResponse response,
+   public ResponseInvoker resolveResponseInvoker(HttpResponse response,
          Response jaxrsResponse)
    {
-      writeCookies(response, jaxrsResponse);
+      outputCookies(response, jaxrsResponse);
 
       ResponseInvoker responseInvoker = null;
       if (jaxrsResponse.getEntity() == null)
@@ -107,19 +108,30 @@ public class DispatcherUtilities
       }
       else
       {
-         responseInvoker = new ResponseInvoker(this, jaxrsResponse);
+         responseInvoker = createResponseInvoker(jaxrsResponse);
          if (responseInvoker.getWriter() == null)
          {
             throw new NoMessageBodyWriterFoundFailure(responseInvoker);
          }
          outputHeaders(response, jaxrsResponse);
-         if (responseInvoker != null )
-         {
-            long size = responseInvoker.getResponseSize();
-            if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
-         }
+         outputSizeHeader(response, responseInvoker);
       }
       return responseInvoker;
+   }
+
+   public ResponseInvoker createResponseInvoker(Response jaxrsResponse)
+   {
+      return new ResponseInvoker(jaxrsResponse, resolveContentType(jaxrsResponse), getProviderFactory());
+   }
+
+   private void outputSizeHeader(HttpResponse response,
+         ResponseInvoker responseInvoker)
+   {
+      if (responseInvoker != null )
+      {
+         long size = responseInvoker.getResponseSize();
+         if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
+      }
    }
 
 
