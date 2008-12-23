@@ -398,7 +398,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
            throws IOException, WebApplicationException
    {
-      ResponseInvoker responseInvoker = getDispatcherUtilities().writeHeaders(response, jaxrsResponse);
+      ResponseInvoker responseInvoker = dispatcherUtilities.resolveResponseInvoker(response, jaxrsResponse);
       if( responseInvoker != null )
       {
          responseInvoker.writeTo(response);

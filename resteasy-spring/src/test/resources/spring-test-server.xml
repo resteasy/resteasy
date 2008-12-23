@@ -52,4 +52,10 @@
         <ref local="myTestInterceptor"/>
     </util:list>
 
+	<bean id="jsonView" class="org.jboss.resteasy.springmvc.ResteasyView"
+		p:contentType="application/json" p:dispatcher-ref="resteasy.dispatcher" />
+
+	<bean id="xmlView" class="org.jboss.resteasy.springmvc.ResteasyView"
+		p:contentType="application/xml" p:dispatcher-ref="resteasy.dispatcher" />
+
 </beans>
