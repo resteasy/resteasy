@@ -125,18 +125,19 @@ public class ServletUtil
       return acceptable;
    }
 
+   @SuppressWarnings("unchecked")
    public static MultivaluedMap<String, String> extractRequestHeaders(HttpServletRequest request)
    {
       Headers<String> requestHeaders = new Headers<String>();
 
-      Enumeration headerNames = request.getHeaderNames();
+      Enumeration<String> headerNames = request.getHeaderNames();
       while (headerNames.hasMoreElements())
       {
-         String headerName = (String) headerNames.nextElement();
-         Enumeration headerValues = request.getHeaders(headerName);
+         String headerName = headerNames.nextElement();
+         Enumeration<String> headerValues = request.getHeaders(headerName);
          while (headerValues.hasMoreElements())
          {
-            String headerValue = (String) headerValues.nextElement();
+            String headerValue = headerValues.nextElement();
             //System.out.println("ADDING HEADER: " + headerName + " value: " + headerValue);
             requestHeaders.add(headerName, headerValue);
          }
