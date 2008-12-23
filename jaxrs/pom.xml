@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <name>RESTEasy JAX-RS</name>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>1.0-RC1</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -23,15 +22,9 @@
     </licenses>
 
     <scm>
-        <connection>
-            scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs
-        </connection>
-        <developerConnection>
-            scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs
-        </developerConnection>
-        <url>
-            http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs
-        </url>
+        <connection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/branches/RESTEASY_JAXRS_1_1</connection>
+        <developerConnection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/branches/RESTEASY_JAXRS_1_1</developerConnection>
+        <url>http://resteasy.svn.sourceforge.net/viewvc/resteasy/branches/RESTEASY_JAXRS_1_1</url>
     </scm>
 
     <issueManagement>
@@ -313,7 +306,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>cobertura-maven-plugin</artifactId>
-                    <configuration></configuration>
+                    <configuration />
                     <executions>
                         <execution>
                             <goals>
