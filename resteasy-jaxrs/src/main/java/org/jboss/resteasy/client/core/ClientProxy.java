@@ -43,7 +43,8 @@ public class ClientProxy implements InvocationHandler
       {
          return this.hashCode();
       }
-      return methodMap.get(method).invoke(args);
+      ClientInvoker clientInvoker = methodMap.get(method);
+      return clientInvoker.invoke(args);
    }
 
    @Override
