@@ -20,10 +20,10 @@ import java.lang.reflect.Proxy;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class ContextParameterInjector implements ValueInjector
 {
    private Class type;
-   @SuppressWarnings("unused")
    private ResteasyProviderFactory factory;
 
    public ContextParameterInjector(Class type, ResteasyProviderFactory factory)
