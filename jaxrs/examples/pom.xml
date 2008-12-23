@@ -1,0 +1,22 @@
+<project>
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>1.0-RC1</version>
+    </parent>
+    <name>Resteasy Examples</name>
+    <url>http://wiki.jboss.org/wiki/Wiki.jsp?page=RESTeasyJAXRS</url>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>examples-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>ejb-integration</module>
+        <module>javaee-addressbook</module>
+        <module>jaxb-json</module>
+        <module>jms-facade</module>
+        <module>spring-hibernate-contacts</module>
+    </modules>
+</project>
