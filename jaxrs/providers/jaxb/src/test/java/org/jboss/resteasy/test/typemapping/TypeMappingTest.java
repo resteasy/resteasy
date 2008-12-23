@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
+import org.jboss.resteasy.util.HttpHeaderNames;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,7 +118,7 @@ public class TypeMappingTest {
         }
         GetMethod gm = new GetMethod(url);
         if (accept != null) {
-            gm.setRequestHeader("Accept", accept);
+            gm.setRequestHeader(HttpHeaderNames.ACCEPT, accept);
         }
         int status = hc.executeMethod(gm);
         assertEquals("Request for " + url + " returned a non-200 status", 200, status);
