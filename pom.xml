@@ -22,9 +22,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/branches/RESTEASY_JAXRS_1_1</connection>
-        <developerConnection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/branches/RESTEASY_JAXRS_1_1</developerConnection>
-        <url>http://resteasy.svn.sourceforge.net/viewvc/resteasy/branches/RESTEASY_JAXRS_1_1</url>
+        <connection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs</connection>
+        <developerConnection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs</developerConnection>
+        <url>http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs</url>
     </scm>
 
     <issueManagement>
