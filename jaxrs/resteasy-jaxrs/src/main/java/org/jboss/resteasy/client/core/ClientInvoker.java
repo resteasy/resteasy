@@ -13,6 +13,7 @@ import javax.ws.rs.ext.Providers;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseType;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -107,7 +108,8 @@ public class ClientInvoker
 
    private Object extractEntity(ClientResponseImpl clientResponse)
    {
-      if (ClientResponse.class.isAssignableFrom(method.getReturnType()))
+      final Class<?> returnType = method.getReturnType();
+      if (ClientResponse.class.isAssignableFrom(returnType))
       {
          Type methodGenericReturnType = method.getGenericReturnType();
          if (methodGenericReturnType instanceof ParameterizedType)
@@ -122,21 +124,45 @@ public class ClientInvoker
          return clientResponse;
       }
 
-      if (method.getReturnType().equals(Response.Status.class))
+      if (returnType.equals(Response.Status.class))
       {
          clientResponse.releaseConnection();
-         return Response.Status.fromStatusCode(clientResponse.getStatus());
+         return clientResponse.getResponseStatus();
       }
 
+      if( Response.class.isAssignableFrom(returnType))
+      {
+         ClientResponseType responseHint = method.getAnnotation(ClientResponseType.class);
+         if (responseHint != null)
+         {
+            final Class clazz = responseHint.entityType();
+            final Class type = responseHint.genericType();
+            if (clazz != Void.class && clazz != null && clazz != void.class)
+            {
+               clientResponse
+                     .getEntity(clazz, type == Void.class ? null : type);
+            }
+            else
+            {
+               clientResponse.releaseConnection();
+            }
+         }
+         else 
+         {
+            clientResponse.getEntity(byte[].class, null);
+         }
+         return clientResponse.asResponse();
+      }
+      
       clientResponse.checkFailureStatus();
 
-      if (method.getReturnType() == null || method.getReturnType().equals(void.class))
+      if (returnType == null || returnType.equals(void.class))
       {
          clientResponse.releaseConnection();
          return null;
       }
 
-      clientResponse.setReturnType(method.getReturnType());
+      clientResponse.setReturnType(returnType);
       clientResponse.setGenericReturnType(method.getGenericReturnType());
 
       // TODO: Bill, why do we need this?

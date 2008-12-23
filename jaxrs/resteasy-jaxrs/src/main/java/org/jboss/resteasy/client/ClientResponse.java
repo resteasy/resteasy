@@ -64,4 +64,5 @@ public interface ClientResponse<T>
     */
    <T2> T2 getEntity(GenericType<T2> type);
 
+   Response asResponse();
 }
