@@ -83,7 +83,7 @@
         <module>async-http-jbossweb</module>
         <module>async-http-servlet-3.0</module>
         <module>async-http-tomcat</module>
-        <module>examples</module>
+        <!--module>examples</module-->
     </modules>
 
     <dependencyManagement>
