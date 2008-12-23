@@ -156,7 +156,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>RestEasy Spring MVC</finalName>
+        <finalName>resteasy-spring</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
