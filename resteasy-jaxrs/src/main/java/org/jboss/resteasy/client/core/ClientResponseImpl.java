@@ -1,5 +1,19 @@
 package org.jboss.resteasy.client.core;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.ext.MessageBodyReader;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -9,22 +23,12 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.MessageBodyReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collections;
 
 //import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
@@ -206,7 +210,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
          {
             mediaType = alternateMediaType;
          }
-         MediaType media = mediaType == null ? null : MediaType.valueOf(mediaType);
+         MediaType media = mediaType == null ? MediaType.WILDCARD_TYPE : MediaType.valueOf(mediaType);
 
          Annotation[] annotations = null;
          if (this.returnType == type && this.genericReturnType == genericType)
@@ -241,11 +245,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       }
       finally
       {
-         if (!wasReleased)
-         {
-            baseMethod.releaseConnection();
-            wasReleased = true;
-         }
+         releaseConnection();
       }
    }
 
@@ -387,12 +387,42 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
 
    public void releaseConnection()
    {
-      baseMethod.releaseConnection();
+      if( !wasReleased)
+      {
+         baseMethod.releaseConnection();
+         wasReleased = true;
+      }
    }
 
    public Status getResponseStatus()
    {
       return Response.Status.fromStatusCode(getStatus());
+   }
+
+   public Response asResponse()
+   {
+      try
+      {
+         ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
+         for (Entry<String, List<String>> entry : getHeaders().entrySet())
+         {
+            List<String> values = entry.getValue();
+            for (String value : values)
+            {
+               responseBuilder.header(entry.getKey(), value);
+            }
+         }
+         responseBuilder.status(getStatus());
+         if(unmarshaledEntity != null)
+         {
+            responseBuilder.entity(unmarshaledEntity);
+         }
+         return responseBuilder.build();
+      } 
+      finally
+      {
+         releaseConnection();
+      }
    }
 
 }

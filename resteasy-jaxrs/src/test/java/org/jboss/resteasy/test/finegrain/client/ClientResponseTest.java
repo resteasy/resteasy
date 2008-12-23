@@ -1,16 +1,16 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.jboss.resteasy.test.smoke.SimpleResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
+import static org.jboss.resteasy.test.TestPortProvider.createProxy;
+import static org.jboss.resteasy.test.TestPortProvider.createURI;
+import static org.jboss.resteasy.test.TestPortProvider.createURL;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -20,10 +20,18 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Map;
+
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.ClientResponseType;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.smoke.SimpleResource;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Simple smoke test
@@ -31,6 +39,7 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class ClientResponseTest
 {
 
@@ -43,6 +52,11 @@ public class ClientResponseTest
       @Path("basic")
       @Produces("text/plain")
       ClientResponse<String> getBasic();
+
+      @GET
+      @Path("basic")
+      @ClientResponseType(entityType=String.class)
+      Response getBasicResponseString();
 
       @GET
       @Path("basic")
@@ -73,8 +87,17 @@ public class ClientResponseTest
       ClientResponse<Void> getHeader();
 
       @GET
+      @Path("header")
+      @ClientResponseType(entityType=Void.class)
+      Response getHeaderResponse();
+
+      @GET
       @Path("basic")
       ClientResponse<byte[]> getBasicBytes();
+
+      @GET
+      @Path("basic")
+      Response getBasicResponse();
 
       @GET
       @Path("error")
@@ -94,13 +117,13 @@ public class ClientResponseTest
       EmbeddedContainer.stop();
    }
 
-   @SuppressWarnings("unchecked")
    @Test
    public void testClientResponse() throws Exception
    {
       Client client = ProxyFactory.create(Client.class, generateBaseUrl());
 
       Assert.assertEquals("basic", client.getBasic().getEntity());
+      Assert.assertEquals("basic", client.getBasicResponseString().getEntity());
       client.putBasic("hello world");
       Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
 
@@ -122,13 +145,16 @@ public class ClientResponseTest
       Assert.assertEquals("headervalue", client.getHeader().getHeaders().getFirst("header"));
       ClientResponse getHeaderResponse = createClientRequest("/header").get();
       Assert.assertEquals("headervalue", getHeaderResponse.getHeaders().getFirst("header"));
+      Assert.assertEquals("headervalue", client.getHeaderResponse().getMetadata().getFirst("header"));
 
       final byte[] entity = client.getBasicBytes().getEntity();
       Assert.assertTrue(Arrays.equals("basic".getBytes(), entity));
+      Assert.assertTrue(Arrays.equals("basic".getBytes(), (byte[]) client.getBasicResponse().getEntity()));
 
       ClientResponse<byte[]> getBasicResponse = createClientRequest("/basic").get(byte[].class);
       Assert.assertTrue(Arrays.equals("basic".getBytes(), getBasicResponse.getEntity()));
 
+      
       Assert.assertEquals("basic", client.getBasic2().getEntity(String.class, null));
 
       getBasicResponse = createClientRequest("/basic").get(byte[].class);
