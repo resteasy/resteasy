@@ -22,8 +22,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.ClientResponseType;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.ClientResponseImpl;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.smoke.SimpleResource;
@@ -84,11 +85,10 @@ public class ClientResponseTest
 
       @GET
       @Path("header")
-      ClientResponse<Void> getHeader();
+      ClientResponse<Void> getHeaderClientResponse();
 
       @GET
       @Path("header")
-      @ClientResponseType(entityType=Void.class)
       Response getHeaderResponse();
 
       @GET
@@ -97,6 +97,7 @@ public class ClientResponseTest
 
       @GET
       @Path("basic")
+      @ClientResponseType(entityType=byte[].class)
       Response getBasicResponse();
 
       @GET
@@ -142,9 +143,8 @@ public class ClientResponseTest
 
       Assert.assertEquals(Response.Status.NO_CONTENT, putResponse.getResponseStatus());
 
-      Assert.assertEquals("headervalue", client.getHeader().getHeaders().getFirst("header"));
-      ClientResponse getHeaderResponse = createClientRequest("/header").get();
-      Assert.assertEquals("headervalue", getHeaderResponse.getHeaders().getFirst("header"));
+      Assert.assertEquals("headervalue", ((ClientResponseImpl)client.getHeaderClientResponse()).getHeaders().getFirst("header"));
+      Assert.assertEquals("headervalue", createClientRequest("/header").get().getHeaders().getFirst("header"));
       Assert.assertEquals("headervalue", client.getHeaderResponse().getMetadata().getFirst("header"));
 
       final byte[] entity = client.getBasicBytes().getEntity();

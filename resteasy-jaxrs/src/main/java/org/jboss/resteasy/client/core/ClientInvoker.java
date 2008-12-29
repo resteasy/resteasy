@@ -14,6 +14,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseType;
+import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -66,7 +67,8 @@ public class ClientInvoker
          ClientResponseImpl clientResponse = createClientResponse(args);
          initBaseMethod(args, clientResponse);
          clientResponse.execute(client);
-         return extractEntity(clientResponse);
+         Object extractedEntity = extractEntity(clientResponse);
+         return extractedEntity;
       }
       finally
       {
@@ -135,28 +137,18 @@ public class ClientInvoker
          ClientResponseType responseHint = method.getAnnotation(ClientResponseType.class);
          if (responseHint != null)
          {
-            final Class clazz = responseHint.entityType();
-            final Class type = responseHint.genericType();
-            if (clazz != Void.class && clazz != null && clazz != void.class)
-            {
-               clientResponse
-                     .getEntity(clazz, type == Void.class ? null : type);
-            }
-            else
-            {
-               clientResponse.releaseConnection();
-            }
-         }
-         else 
+            handleResponseHint(clientResponse, responseHint);
+         } 
+         else
          {
-            clientResponse.getEntity(byte[].class, null);
+            clientResponse.releaseConnection();
          }
-         return clientResponse.asResponse();
+         return clientResponse;
       }
       
       clientResponse.checkFailureStatus();
 
-      if (returnType == null || returnType.equals(void.class))
+      if (returnType == null || isVoidReturnType(returnType))
       {
          clientResponse.releaseConnection();
          return null;
@@ -165,7 +157,6 @@ public class ClientInvoker
       clientResponse.setReturnType(returnType);
       clientResponse.setGenericReturnType(method.getGenericReturnType());
 
-      // TODO: Bill, why do we need this?
       if (clientResponse.getContentType() == null)
       {
          Produces produce = method.getAnnotation(Produces.class);
@@ -177,6 +168,45 @@ public class ClientInvoker
          clientResponse.setAlternateMediaType(produce.value()[0]);
       }
       return clientResponse.getEntity();
+   }
+
+   private boolean isVoidReturnType(final Class<?> returnType)
+   {
+      return void.class.equals(returnType) || Void.class.equals(returnType);
+   }
+
+   private void handleResponseHint(ClientResponseImpl clientResponse,
+         ClientResponseType responseHint)
+   {
+      Class returnType = responseHint.entityType();
+      Class<? extends EntityTypeFactory> entityTypeFactory = responseHint.entityTypeFactory();
+      if (isVoidReturnType(returnType))
+      {
+         EntityTypeFactory factory = null;
+         try
+         {
+            factory = entityTypeFactory.newInstance();
+         }
+         catch (InstantiationException e)
+         {
+            throw clientResponse
+                  .createResponseFailure("Could not create a default entity type factory of type "
+                        + entityTypeFactory.getClass().getName());
+         }
+         catch (IllegalAccessException e)
+         {
+            throw clientResponse
+                  .createResponseFailure("Could not create a default entity type factory of type "
+                        + entityTypeFactory.getClass().getName()
+                        + ". "
+                        + e.getMessage());
+         }
+         returnType = factory.getEntityType(clientResponse.getStatus(), clientResponse.getMetadata());
+      }
+      if(!isVoidReturnType(returnType))
+      {
+         clientResponse.setReturnType(returnType);
+      }
    }
 
    public String getRestVerb()
