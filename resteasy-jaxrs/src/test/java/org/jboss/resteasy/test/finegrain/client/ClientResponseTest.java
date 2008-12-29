@@ -19,10 +19,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseType;
+import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.ClientResponseImpl;
 import org.jboss.resteasy.core.Dispatcher;
@@ -58,6 +60,11 @@ public class ClientResponseTest
       @Path("basic")
       @ClientResponseType(entityType=String.class)
       Response getBasicResponseString();
+
+      @GET
+      @Path("basic")
+      @ClientResponseType(entityTypeFactory=StringEntityTypeFactory.class)
+      Response getBasicResponseStringFactory();
 
       @GET
       @Path("basic")
@@ -104,6 +111,17 @@ public class ClientResponseTest
       @Path("error")
       ClientResponse<String> getError();
    }
+   
+   public static class StringEntityTypeFactory implements EntityTypeFactory
+   {
+
+      public Class getEntityType(int status,
+            MultivaluedMap<String, Object> metadata)
+      {
+         return String.class;
+      }
+      
+   }
 
    @BeforeClass
    public static void before() throws Exception
@@ -125,6 +143,7 @@ public class ClientResponseTest
 
       Assert.assertEquals("basic", client.getBasic().getEntity());
       Assert.assertEquals("basic", client.getBasicResponseString().getEntity());
+      Assert.assertEquals("basic", client.getBasicResponseStringFactory().getEntity());
       client.putBasic("hello world");
       Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
 
