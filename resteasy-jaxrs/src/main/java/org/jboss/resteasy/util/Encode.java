@@ -45,16 +45,13 @@ public class Encode
       boolean first = true;
       for (String segment : segments)
       {
-         if (first)
-         {
-            first = false;
-         }
-         else
+         if (!first)
          {
             buffer.append("/");
          }
          segment = encodeSegment(segment, ignorePathParams);
          buffer.append(segment);
+         first = false;
       }
       String result = buffer.toString();
       if (value.endsWith("/")) result += "/";
@@ -154,7 +151,10 @@ public class Encode
       int i = 0;
       while (matcher.find())
       {
-         matcher.appendReplacement(newSegment, params.get(i++));
+         String replacement = params.get(i++);
+         // double encode slashes, so that slashes stay where they are 
+         replacement = replacement.replace("\\", "\\\\"); 
+         matcher.appendReplacement(newSegment, replacement);
       }
       matcher.appendTail(newSegment);
       segment = newSegment.toString();
