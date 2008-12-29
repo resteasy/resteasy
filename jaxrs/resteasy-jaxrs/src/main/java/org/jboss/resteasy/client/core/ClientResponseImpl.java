@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -11,7 +12,6 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.MessageBodyReader;
 
 import org.apache.commons.httpclient.Header;
@@ -36,7 +36,7 @@ import org.jboss.resteasy.util.HttpResponseCodes;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientResponseImpl<T> implements ClientResponse<T>
+public class ClientResponseImpl<T> extends ClientResponse<T>
 {
    protected ResteasyProviderFactory providerFactory;
 
@@ -76,6 +76,11 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    public void setReturnType(Class<T> returnType)
    {
       this.returnType = returnType;
+   }
+   
+   public Class<?> getReturnType()
+   {
+      return returnType;
    }
 
    public void setGenericReturnType(Type genericReturnType)
@@ -165,6 +170,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    }
 
    @SuppressWarnings("unchecked")
+   @Override
    public T getEntity()
    {
       if (exception != null)
@@ -181,6 +187,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    }
 
    @SuppressWarnings("unchecked")
+   @Override
    public <T2> T2 getEntity(Class<T2> type, Type genericType)
    {
       if (streamWasRead)
@@ -254,6 +261,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       return baseMethod.getResponseBodyAsStream();
    }
 
+   @Override
    public <T2> T2 getEntity(GenericType<T2> genericType)
    {
       return getEntity(genericType.getType(), genericType.getGenericType());
@@ -264,6 +272,21 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       return headers;
    }
 
+
+   @Override
+   public MultivaluedMap<String, Object> getMetadata()
+   {
+      CaseInsensitiveMap<Object> metadata = new CaseInsensitiveMap<Object>();
+      for (Entry<String, List<String>> entry : headers.entrySet())
+      {
+         List<Object> values = new ArrayList<Object>();
+         values.addAll(entry.getValue());
+         metadata.put(entry.getKey(), values);
+      };
+      return metadata;
+   }
+
+   @Override
    public int getStatus()
    {
       return status;
@@ -272,11 +295,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
    @Override
    protected void finalize() throws Throwable
    {
-      if (!wasReleased)
-      {
-         baseMethod.releaseConnection();
-         wasReleased = true;
-      }
+      releaseConnection();
    }
 
    public String getRestVerb()
@@ -394,6 +413,7 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       }
    }
 
+   @Override
    public Status getResponseStatus()
    {
       return Response.Status.fromStatusCode(getStatus());
@@ -425,4 +445,8 @@ public class ClientResponseImpl<T> implements ClientResponse<T>
       }
    }
 
+   public boolean wasReleased()
+   {
+      return wasReleased;
+   }
 }

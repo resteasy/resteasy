@@ -1,26 +1,25 @@
 package org.jboss.resteasy.client;
 
-import org.jboss.resteasy.util.GenericType;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import java.lang.reflect.Type;
+import org.jboss.resteasy.util.GenericType;
 
 /**
- * Response interface for the RESTEasy client framework.  Use this in your client proxy interface method return type
- * declarations if you want access to the response entity as well as status and header information.
- *
+ * Response extension for the RESTEasy client framework. Use this, or Response
+ * in your client proxy interface method return type declarations if you want
+ * access to the response entity as well as status and header information.
+ * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface ClientResponse<T>
+public abstract class ClientResponse<T> extends Response
 {
-   MultivaluedMap<String, String> getHeaders();
+   public abstract MultivaluedMap<String, String> getHeaders();
 
-   int getStatus();
-   
-   Response.Status getResponseStatus();
+   public abstract Response.Status getResponseStatus();
 
    /**
     * Unmarshal the target entity from the response OutputStream.  You must have type information set via <T>
@@ -31,7 +30,7 @@ public interface ClientResponse<T>
     *
     * @return
     */
-   T getEntity();
+   public abstract T getEntity();
 
    /**
     * Extract the response body with the provided type information
@@ -44,7 +43,7 @@ public interface ClientResponse<T>
     * @param <T2>
     * @return
     */
-   <T2> T2 getEntity(Class<T2> type, Type genericType);
+   public abstract <T2> T2 getEntity(Class<T2> type, Type genericType);
 
    /**
     * Extract the response body with the provided type information.  GenericType is a trick used to
@@ -62,7 +61,5 @@ public interface ClientResponse<T>
     * @param <T2>
     * @return
     */
-   <T2> T2 getEntity(GenericType<T2> type);
-
-   Response asResponse();
+   public abstract <T2> T2 getEntity(GenericType<T2> type);
 }
