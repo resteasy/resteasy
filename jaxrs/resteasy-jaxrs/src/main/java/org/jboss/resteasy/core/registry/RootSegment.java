@@ -395,6 +395,8 @@ public class RootSegment extends Segment
       {
          String name = matcher.group(1);
          String val = pathParamExpr.get(name).remove(0);
+         // double encode slashes, so that slashes stay where they are 
+         val = val.replace("\\", "\\\\");
          matcher.appendReplacement(newPath, "{$1:" + val + "}");
       }
       matcher.appendTail(newPath);
