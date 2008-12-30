@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 /**
  * Tests to make sure that standard segment mapping work correctly, especially
@@ -37,7 +37,7 @@ public class SegmentTest
       @Produces("text/plain")
       public String doNothing()
       {
-         throw new NotImplementedException();
+         throw new RuntimeException("Not Implemented");
       }
 
       @GET
@@ -45,7 +45,7 @@ public class SegmentTest
       @Path("child")
       public String childDoNothing()
       {
-         throw new NotImplementedException();
+         throw new RuntimeException("Not Implemented");
       }
 
       @GET
@@ -53,7 +53,7 @@ public class SegmentTest
       @Path("child/{name:[A-Za-z]+}")
       public String childWithName(@PathParam("name") String name)
       {
-         throw new NotImplementedException();
+         throw new RuntimeException("Not Implemented");
       }
 
       @GET
@@ -61,7 +61,7 @@ public class SegmentTest
       @Path("child/{id:[0-9]+}")
       public String childWithId(@PathParam("id") String id)
       {
-         throw new NotImplementedException();
+         throw new RuntimeException("Not Implemented");
       }
 
       @GET
@@ -69,7 +69,7 @@ public class SegmentTest
       @Path("child1/{id:\\d+}")
       public String child1WithId(@PathParam("id") String id)
       {
-         throw new NotImplementedException();
+         throw new RuntimeException("Not Implemented");
       }
 }
 
