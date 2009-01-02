@@ -67,6 +67,8 @@ public class UriBuilderTest
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c").
               replacePath("/x/y/z").build();
       Assert.assertEquals(URI.create("http://localhost:8080/x/y/z"), bu);
+      bu = UriBuilder.fromUri("http://localhost:8080/").path("{a}/{b}/{c}").build("x", "y", "z");
+      Assert.assertEquals(URI.create("http://localhost:8080/x/y/z"), bu);
    }
 
    @Test

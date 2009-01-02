@@ -1,21 +1,15 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.core.PropertyInjectorImpl;
-import org.jboss.resteasy.core.ResourceMethodCacheControlInterceptor;
-import org.jboss.resteasy.core.interception.InterceptorRegistry;
-import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
-import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
-import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
-import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
-import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
-import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
-import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
-import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
-import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
-import org.jboss.resteasy.util.Types;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -34,16 +28,23 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.RuntimeDelegate;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.core.ResourceMethodCacheControlInterceptor;
+import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
+import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
+import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
+import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
+import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
+import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
+import org.jboss.resteasy.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -113,30 +114,84 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
-   private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
-   private static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
+   private static ThreadLocal<LinkedList<Map<Class<?>, Object>>> contextualData = new ThreadLocal<LinkedList<Map<Class<?>, Object>>>();
    private InterceptorRegistry interceptorRegistry = new InterceptorRegistry();
 
-   public static <T> void pushContext(Class<T> type, T data)
+   private static LinkedList<Map<Class<?>, Object>> getContextDataList(boolean create)
    {
-      Map<Class<?>, Object> map = getContextDataMap();
-      map.put(type, data);
+      LinkedList<Map<Class<?>, Object>> list = contextualData.get();
+      if(list == null && create)
+      {
+         contextualData.set(list = new LinkedList<Map<Class<?>, Object>>());
+      }
+      return list;
+   }
+
+   private static void setContextData(Map<Class<?>, Object> map)
+   {
+      List<Map<Class<?>, Object>> list = getContextDataList(map != null);
+      if(list != null)
+         if(list.size() > 0)
+            setLast(list, map);
+         else
+            list.add(map);
+         
+   }
+
+   private static void setLast(List<Map<Class<?>, Object>> list,
+         Map<Class<?>, Object> map)
+   {
+      list.set(list.size() - 1, map);
    }
 
    public static void pushContextDataMap(Map<Class<?>, Object> map)
    {
-      contextualData.set(map);
+      setContextData(map);
+   }
+
+   public static void addContextDataLevel()
+   {
+      getContextDataList(true).add(null);
+   }
+
+   public static void removeContextDataLevel()
+   {
+      LinkedList<Map<Class<?>, Object>> list = getContextDataList(false);
+      if( list == null || list.isEmpty() ) return;
+      Map<Class<?>, Object> removedMap = list.removeLast();
+      if(removedMap != null) removedMap.clear();
+   }
+
+   private static Map<Class<?>, Object> getContextMap(boolean create)
+   {
+      LinkedList<Map<Class<?>, Object>> list = getContextDataList(create);
+      if(list == null)
+         return null;
+
+      if( create )
+      {
+         if( list.isEmpty() )
+            list.add(new HashMap<Class<?>, Object>());
+         else if( list.getLast() == null && create )
+            setLast(list, new HashMap<Class<?>, Object>());
+      }
+      return list.getLast();
+   }
+
+   public static void clearContextData()
+   {
+      Map<Class<?>, Object> map = getContextMap(false);
+      if( map != null ) map.clear();
+   }
+   
+   public static <T> void pushContext(Class<T> type, T data)
+   {
+      getContextDataMap().put(type, data);
    }
 
    public static Map<Class<?>, Object> getContextDataMap()
    {
-      Map<Class<?>, Object> map = contextualData.get();
-      if (map == null)
-      {
-         map = new HashMap<Class<?>, Object>();
-         contextualData.set(map);
-      }
-      return map;
+      return getContextMap(true);
    }
 
    public static <T> T getContextData(Class<T> type)
@@ -146,12 +201,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public static <T> T popContextData(Class<T> type)
    {
-      return (T) contextualData.get().remove(type);
-   }
-
-   public static void clearContextData()
-   {
-      contextualData.set(null);
+      Map<Class<?>, Object> map = getContextMap(false);
+      if (map == null ) return null;
+      return (T) map.remove(type);
    }
 
    public static void setInstance(ResteasyProviderFactory factory)

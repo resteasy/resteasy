@@ -6,12 +6,17 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
+import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -194,6 +199,36 @@ public class SynchronousDispatcher implements Dispatcher
       return registry.getResourceInvoker(request, response);
    }
 
+   public void pushContextObjects(HttpRequest request, HttpResponse response)
+   {
+      ResteasyProviderFactory.pushContext(HttpRequest.class, request);
+      ResteasyProviderFactory.pushContext(HttpResponse.class, response);
+      ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
+      ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
+      ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
+      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
+      ResteasyProviderFactory.pushContext(Registry.class, registry);
+      ResteasyProviderFactory.pushContext(Dispatcher.class, this);
+   }
+
+   public Response internalInvocation(HttpRequest request, HttpResponse response)
+   {
+      try
+      {
+         ResteasyProviderFactory.addContextDataLevel();
+         ResourceInvoker invoker = getInvoker(request, response);
+         if( invoker == null )
+            return null;
+         pushContextObjects(request, response);
+         return getResponse(request, response, invoker);
+      }
+      finally
+      {
+         ResteasyProviderFactory.removeContextDataLevel();
+      }
+      
+   }
+
    /**
     * Called if method invoke was unsuccessful
     *
@@ -348,17 +383,8 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
-         getDispatcherUtilities().pushContextObjects(request, response);
-
-         Response jaxrsResponse = null;
-         try
-         {
-            jaxrsResponse = getDispatcherUtilities().getJaxrsResponse(request, response, invoker);
-         }
-         catch (Exception e)
-         {
-            handleInvokerException(request, response, e);
-         }
+         pushContextObjects(request, response);
+         Response jaxrsResponse = getResponse(request, response, invoker);
 
          try
          {
@@ -375,11 +401,25 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
+   private Response getResponse(HttpRequest request, HttpResponse response,
+         ResourceInvoker invoker)
+   {
+      try
+      {
+         return getDispatcherUtilities().getJaxrsResponse(request, response, invoker);
+      }
+      catch (Exception e)
+      {
+         handleInvokerException(request, response, e);
+      }
+      return null;
+   }
+
    public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse)
    {
       try
       {
-         getDispatcherUtilities().pushContextObjects(request, response);
+         pushContextObjects(request, response);
          try
          {
             if (jaxrsResponse != null) writeJaxrsResponse(response, jaxrsResponse);

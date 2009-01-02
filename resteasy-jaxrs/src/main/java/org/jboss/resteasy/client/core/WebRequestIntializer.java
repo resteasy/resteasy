@@ -47,6 +47,12 @@ public class WebRequestIntializer
 
    public String buildUrl(String uriTemplate, boolean allowRelative, Object... args) throws IllegalArgumentException, URISyntaxException
    {
+      return buildUrl(createBuilder(uriTemplate), allowRelative, args);
+   }
+
+   public static UriBuilderImpl createBuilder(String uriTemplate)
+         throws URISyntaxException
+   {
       UriBuilderImpl builder = new UriBuilderImpl();
       int index = uriTemplate.indexOf("//");
       if( index != -1 )
@@ -62,8 +68,7 @@ public class WebRequestIntializer
       String[] segments = uriTemplate.substring(index).split("/");
       if(segments.length > 0 )
          builder.segment(segments);
-      
-      return buildUrl(builder, allowRelative, args);
+      return builder;
    }
    
    public String buildUrl(URI uri, boolean allowRelative, Method method, Object... args)

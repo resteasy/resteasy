@@ -6,6 +6,8 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import java.util.Map;
 
 /**
@@ -27,4 +29,8 @@ public interface Dispatcher
    Map<String, String> getLanguageMappings();
 
    void invoke(HttpRequest in, HttpResponse response);
+
+   public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse);
+
+   Response internalInvocation(HttpRequest request, HttpResponse response);
 }

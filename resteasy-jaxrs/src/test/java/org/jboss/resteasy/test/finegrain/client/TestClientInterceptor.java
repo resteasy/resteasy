@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -18,7 +19,6 @@ import javax.ws.rs.core.Response;
 import junit.framework.Assert;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.ClientInterceptor;

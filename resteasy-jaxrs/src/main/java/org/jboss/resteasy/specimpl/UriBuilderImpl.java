@@ -348,7 +348,7 @@ public class UriBuilderImpl extends UriBuilder
     *
     * @return
     */
-   protected List<String> getPathParamNamesInDeclarationOrder()
+   public List<String> getPathParamNamesInDeclarationOrder()
    {
       List<String> params = new ArrayList<String>();
       HashSet<String> set = new HashSet<String>();

@@ -1,5 +1,17 @@
 package org.jboss.resteasy.core;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.Encoded;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
@@ -7,21 +19,46 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.ws.rs.Encoded;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class MessageBodyParameterInjector implements ValueInjector
 {
+   private static ThreadLocal<List<Object>> bodyData = new ThreadLocal<List<Object>>();
+
+   public static void pushBody(Object o)
+   {
+      List<Object> list = bodyData.get();
+      if (list == null)
+         bodyData.set(list = new ArrayList<Object>());
+      list.add(o);
+   }
+
+   public static Object getBody()
+   {
+      List<Object> list = bodyData.get();
+      if (list == null || list.isEmpty())
+         return null;
+      return list.get(list.size() - 1);
+   }
+
+   public static Object popBody()
+   {
+      List<Object> list = bodyData.get();
+      try
+      {
+         if (list == null || list.isEmpty())
+            return null;
+         return list.remove(list.size() - 1);
+      }
+      finally
+      {
+         if (list == null || list.isEmpty())
+            bodyData.set(null);
+      }
+   }
+
    private Class type;
    private Type genericType;
    private Annotation[] annotations;
@@ -52,6 +89,9 @@ public class MessageBodyParameterInjector implements ValueInjector
    {
       try
       {
+         Object o = getBody();
+         if( o != null )
+            return o;
          MediaType mediaType = request.getHttpHeaders().getMediaType();
          if (mediaType == null)
          {
