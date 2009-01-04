@@ -9,18 +9,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@XmlRootElement(namespace = "http://jboss.org/Customer")
+@XmlRootElement(name = "customer", namespace = "http://jboss.org/Customer")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Customer
+public class CustomerAtom
 {
    @XmlElement
    private String name;
 
-   public Customer()
+   public CustomerAtom()
    {
    }
 
-   public Customer(String name)
+   public CustomerAtom(String name)
    {
       this.name = name;
    }

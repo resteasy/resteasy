@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.WebApplicationException;
 import java.lang.annotation.Annotation;
@@ -38,10 +39,23 @@ public class MethodInjectorImpl implements MethodInjector
       this.invokedMethod = findInterfaceBasedMethod(root, method);
       this.factory = factory;
       params = new ValueInjector[method.getParameterTypes().length];
+      /*
+          We get the genericParameterTypes for the case of:
+
+          interface Foo<T> {
+             @PUT
+             void put(List<T> l);
+          }
+
+          public class FooImpl implements Foo<Customer> {
+              public void put(List<Customer> l) {...}
+          }
+       */
+      Type[] genericParameterTypes = Types.getGenericParameterTypesOfGenericInterfaceMethod(root, method);
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
          Class type = method.getParameterTypes()[i];
-         Type genericType = method.getGenericParameterTypes()[i];
+         Type genericType = genericParameterTypes[i];
          Annotation[] annotations = method.getParameterAnnotations()[i];
          params[i] = InjectorFactoryImpl.getParameterExtractor(type, genericType, annotations, method, factory);
       }
