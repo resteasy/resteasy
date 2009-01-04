@@ -6,6 +6,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Before;
@@ -85,10 +86,61 @@ public class TestCollection extends BaseResourceTest
       }
    }
 
+   public static interface Store<T>
+   {
+      @GET
+      @Path("/intf")
+      @Produces("application/json")
+      @BadgerFish
+      @Wrapped
+      public abstract List<T> list();
+
+      @PUT
+      @Path("/intf")
+      @Consumes("application/json")
+      public abstract void put(@Wrapped @BadgerFish List<T> list);
+   }
+
+   public static interface Accounts extends Store<Customer>
+   {
+   }
+
+   @Path("/")
+   public static class MyResource2 implements Accounts
+   {
+      public List<Customer> list()
+      {
+         ArrayList<Customer> set = new ArrayList<Customer>();
+         set.add(new Customer("bill"));
+         set.add(new Customer("monica"));
+
+         return set;
+      }
+
+      public void put(List<Customer> customers)
+      {
+         Assert.assertEquals("bill", customers.get(0).getName());
+         Assert.assertEquals("monica", customers.get(1).getName());
+      }
+   }
+
+   public static class Parent<T>
+   {
+      public List<T> get()
+      {
+         return null;
+      }
+   }
+
+   public static class Child extends Parent<Customer>
+   {
+   }
+
    @Before
    public void setUp() throws Exception
    {
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
+      dispatcher.getRegistry().addPerRequestResource(MyResource2.class);
    }
 
    @Test
@@ -121,5 +173,26 @@ public class TestCollection extends BaseResourceTest
       status = client.executeMethod(put);
       Assert.assertEquals(204, status);
 
+   }
+
+   /**
+    * RESTEASY-167
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testIntfTempalte() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      GetMethod get = createGetMethod("/intf");
+      int status = client.executeMethod(get);
+      Assert.assertEquals(200, status);
+      String str = get.getResponseBodyAsString();
+      System.out.println(str);
+
+      PutMethod put = createPutMethod("/intf");
+      put.setRequestEntity(new StringRequestEntity(str, "application/json", null));
+      status = client.executeMethod(put);
+      Assert.assertEquals(204, status);
    }
 }

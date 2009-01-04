@@ -46,8 +46,8 @@ public class ModelTest
    {
 
       Content content = new Content();
-      content.setJAXBObject(new Customer("bill"));
-      JAXBContext ctx = JAXBContext.newInstance(Content.class, Customer.class);
+      content.setJAXBObject(new CustomerAtom("bill"));
+      JAXBContext ctx = JAXBContext.newInstance(Content.class, CustomerAtom.class);
 
       Marshaller marshaller = ctx.createMarshaller();
 
@@ -90,7 +90,7 @@ public class ModelTest
       //JAXBElement<Customer> cust = ctx.createUnmarshaller().unmarshal(node, Customer.class);
       //System.out.println(cust.getValue().getName());
 
-      Customer cust = content.getJAXBObject(Customer.class);
+      CustomerAtom cust = content.getJAXBObject(CustomerAtom.class);
       System.out.println(cust.getName());
    }
 

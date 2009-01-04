@@ -13,6 +13,7 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.Types;
 import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.Consumes;
@@ -21,6 +22,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +51,7 @@ public class ResourceMethod implements ResourceInvoker
    protected Class<?> resourceClass;
    protected ResourceMethodInterceptor[] interceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
+   protected Type genericReturnType;
 
 
    public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods)
@@ -90,6 +93,19 @@ public class ResourceMethod implements ResourceInvoker
       Collections.sort(preferredConsumes);
       interceptors = providerFactory.getInterceptorRegistry().bind(this);
       if (interceptors != null && interceptors.length == 0) interceptors = null;
+      /*
+          We get the genericReturnType for the case of:
+          
+          interface Foo<T> {
+             @GET
+             List<T> get();
+          }
+
+          public class FooImpl implements Foo<Customer> {
+              public List<Customer> get() {...}
+          }
+       */
+      genericReturnType = Types.getGenericReturnTypeOfGenericInterfaceMethod(clazz, method);
    }
 
    protected void incrementMethodCount(String httpMethod)
@@ -262,7 +278,7 @@ public class ResourceMethod implements ResourceInvoker
       }
       builder.type(resolveContentType(request));
       ResponseImpl jaxrsResponse = (ResponseImpl) builder.build();
-      jaxrsResponse.setGenericType(method.getGenericReturnType());
+      jaxrsResponse.setGenericType(genericReturnType);
       jaxrsResponse.setAnnotations(method.getAnnotations());
       return jaxrsResponse;
    }
