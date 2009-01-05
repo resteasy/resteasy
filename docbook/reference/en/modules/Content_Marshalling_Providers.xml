@@ -402,12 +402,14 @@ public class MyJAXBContextResolver implements ContextResolver&lt;JAXBContext&gt;
          <para>
 
             RESTEasy allows you to marshall JAXB annotated POJOs to and from JSON. This provider wraps the Jettison JSON
-            library to accomplish this. Jettison has two mapping formats. One is BadgerFish the other is a Jettison
-            Mapped Convention format.
+            library to accomplish this.  You can obtain more information about Jettison and how it works from:
          </para>
+	 <para>
+	    http://jettison.codehaus.org/
+	 </para>
          <para>
-
-            The Mapped Convention is the default mapping.
+	   Jettison has two mapping formats. One is BadgerFish the other is a Jettison
+           Mapped Convention format.  The Mapped Convention is the default mapping.
          </para>
          <para>
 
@@ -589,7 +591,41 @@ document.getElementById("zone").innerHTML += data.book.author;
 
             The Mapped Convention allows you to fine tune the JAXB mapping using the
             @org.jboss.resteasy.annotations.providers.jaxb.json.Mapped annotation. You can provide an XML Namespace to
-            JSON namespace mapping. You can also force @XmlAttribute's to be marshaled as XMLElements.
+            JSON namespace mapping. For example, if you defined your JAXB namespace within your package-info.java class like this:
+	 </para>
+<programlisting>
+@javax.xml.bind.annotation.XmlSchema(namespace="http://jboss.org/books")
+package org.jboss.resteasy.test.books;
+</programlisting>
+	 <para>
+         You would have to define a JSON to XML namespace mapping or you would receive an exception of something like this:
+	 </para>
+<programlisting>
+java.lang.IllegalStateException: Invalid JSON namespace: http://jboss.org/books
+at org.codehaus.jettison.mapped.MappedNamespaceConvention.getJSONNamespace(MappedNamespaceConvention.java:151)
+at org.codehaus.jettison.mapped.MappedNamespaceConvention.createKey(MappedNamespaceConvention.java:158)
+at org.codehaus.jettison.mapped.MappedXMLStreamWriter.writeStartElement(MappedXMLStreamWriter.java:241) 
+</programlisting>
+         <para>
+           To fix this problem you need another annotation, @Mapped.  You use the @Mapped annotation on your JAXB classes, on your JAX-RS resource method, or on
+           the parameter you are unmarshalling
+	 </para>
+<programlisting>
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
+
+...
+
+   @GET
+   @Produces("application/json")
+   @Mapped(namespaceMap = {
+           @XmlNsMap(namespace = "http://jboss.org/books", jsonName = "books")
+   })
+   public Book get() {...}
+
+</programlisting>
+         <para>
+         Besides mapping XML to JSON namespaces, you can also force @XmlAttribute's to be marshaled as XMLElements.
          </para>
          <para>
 
