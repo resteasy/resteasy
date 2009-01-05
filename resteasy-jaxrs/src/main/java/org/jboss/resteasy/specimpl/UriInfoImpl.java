@@ -178,7 +178,8 @@ public class UriInfoImpl implements UriInfo
       encodedPathParameters.add(name, value);
       try
       {
-         pathParameters.add(name, URLDecoder.decode(value, "UTF-8"));
+         String value1 = URLDecoder.decode(value, "UTF-8");
+         pathParameters.add(name, value1);
       }
       catch (UnsupportedEncodingException e)
       {

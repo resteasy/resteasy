@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Context;
+import org.junit.Assert;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -20,6 +21,10 @@ import javax.ws.rs.core.Context;
 @Path("/")
 public class SimpleResource
 {
+
+   private final static String encodedPart = "foo+bar%20gee@foo.com";
+   private final static String decodedPart = "foo+bar gee@foo.com";
+   private final static String queryDecodedPart = "foo bar gee@foo.com";
 
    @GET
    @Path("basic")
@@ -93,5 +98,14 @@ public class SimpleResource
    public Customer getCustomer()
    {
       return new Customer("Bill Burke");
+   }
+
+   @Path("/simple/{bar}")
+   @GET
+   public String get(@PathParam("bar") String pathParam, @QueryParam("foo") String queryParam)
+   {
+      Assert.assertEquals(decodedPart, pathParam);
+      Assert.assertEquals(queryDecodedPart, queryParam);
+      return pathParam;
    }
 }
