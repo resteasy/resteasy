@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.finegrain;
 
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.AcceptableVariant;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -21,7 +20,6 @@ public class VariantTest
    @BeforeClass
    public static void start()
    {
-      ResteasyProviderFactory.initializeInstance();
    }
 
    @Test

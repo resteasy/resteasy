@@ -20,11 +20,6 @@ public class MediaTypeMapTest
    @Test
    public void testMatching()
    {
-      ResteasyProviderFactory.setInstance(new ResteasyProviderFactory());
-      //RegisterBuiltin.register(ResteasyProviderFactory.initializeInstance());
-
-      //ResteasyProviderFactory.getInstance().createHeaderDelegate()
-
       MediaTypeMap<String> map = new MediaTypeMap<String>();
       String defaultPlainText = "defaultPlainText";
       map.add(new MediaType("text", "plain"), defaultPlainText);
@@ -77,8 +72,7 @@ public class MediaTypeMapTest
    @Test
    public void testMatching2()
    {
-      //ResteasyProviderFactory.initializeInstance();
-      RegisterBuiltin.register(ResteasyProviderFactory.initializeInstance());
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
 
       MessageBodyWriter<Integer> writer = ResteasyProviderFactory.getInstance().getMessageBodyWriter(Integer.class, null, null, new MediaType("text", "plain"));
       Assert.assertNotNull(writer);

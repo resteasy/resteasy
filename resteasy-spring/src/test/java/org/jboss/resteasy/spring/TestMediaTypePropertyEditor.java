@@ -6,21 +6,18 @@
  */
 package org.jboss.resteasy.spring;
 
-import static org.junit.Assert.*;
-
-import java.beans.PropertyEditor;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.spring.MediaTypePropertyEditor;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.ws.rs.core.MediaType;
+import java.beans.PropertyEditor;
+import java.util.Map;
 
 public class TestMediaTypePropertyEditor
 {
@@ -30,7 +27,6 @@ public class TestMediaTypePropertyEditor
    @BeforeClass
    public static void setup()
    {
-      ResteasyProviderFactory.initializeInstance();
    }
 
    @Before
