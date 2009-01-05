@@ -35,11 +35,10 @@ public class ServletUtil
       String contextPath = request.getContextPath();
       if (servletPrefix != null && servletPrefix.length() > 0)
       {
-         if (!contextPath.endsWith("/"))
+         if (!contextPath.endsWith("/") && !servletPrefix.startsWith("/"))
             contextPath += "/";
          contextPath += servletPrefix;
       }
-      String path = PathHelper.getEncodedPathInfo(request.getRequestURI(), contextPath);
       URI absolutePath = null;
       try
       {
@@ -58,6 +57,7 @@ public class ServletUtil
          throw new RuntimeException(e);
       }
 
+      String path = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path);
       UriInfoImpl uriInfo = new UriInfoImpl(absolutePath, path, request.getQueryString(), pathSegments);
       return uriInfo;

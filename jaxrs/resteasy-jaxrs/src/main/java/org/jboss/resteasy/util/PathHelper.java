@@ -51,7 +51,7 @@ public class PathHelper
 
    public static String getEncodedPathInfo(String path, String contextPath)
    {
-      if (contextPath != null && !"".equals(contextPath))
+      if (contextPath != null && !"".equals(contextPath) && path.startsWith(contextPath))
       {
          path = path.substring(contextPath.length());
       }

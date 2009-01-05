@@ -153,4 +153,35 @@ public class SmokeTest
       @Consumes("application/x-www-form-urlencoded")
       public String putForm(MultivaluedMap<String, String> value);
    }
+
+
+   private final static String encodedPart = "foo+bar%20gee@foo.com";
+   private final static String decodedPart = "foo+bar gee@foo.com";
+   private final static String queryDecodedPart = "foo bar gee@foo.com";
+
+      /**
+       * RESTEASY_137
+       */
+      @Test
+      public void testGet() throws Exception
+      {
+         HttpClient client = new HttpClient();
+         {
+            GetMethod method = new GetMethod("http://localhost:8080/basic-integration-test/simple/"+encodedPart);
+            method.setQueryString("foo="+encodedPart);
+            System.out.println(method.getURI());
+            try
+            {
+               int status = client.executeMethod(method);
+               Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+               String body = method.getResponseBodyAsString();
+               Assert.assertEquals(decodedPart, body);
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+
 }
