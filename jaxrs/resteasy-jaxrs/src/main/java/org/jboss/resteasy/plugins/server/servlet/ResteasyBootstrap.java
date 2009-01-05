@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -40,7 +41,20 @@ public class ResteasyBootstrap implements ServletContextListener
 
    public void contextInitialized(ServletContextEvent event)
    {
-      ResteasyProviderFactory.setInstance(factory);
+
+      String deploymentSensitive = event.getServletContext().getInitParameter("resteasy.use.deployment.sensitive.factory");
+      if (deploymentSensitive == null || Boolean.valueOf(deploymentSensitive.trim()))
+      {
+         ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
+         if (!(defaultInstance instanceof ThreadLocalResteasyProviderFactory))
+         {
+            ResteasyProviderFactory.setInstance(new ThreadLocalResteasyProviderFactory(defaultInstance));
+         }
+      }
+      else
+      {
+         ResteasyProviderFactory.setInstance(factory);
+      }
 
       event.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), factory);
       dispatcher = new SynchronousDispatcher(factory);

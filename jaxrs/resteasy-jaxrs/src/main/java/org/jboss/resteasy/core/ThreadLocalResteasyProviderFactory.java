@@ -42,6 +42,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory
       return factory;
    }
 
+   @Override
+   protected void initialize()
+   {
+
+   }
+
    public static void push(ResteasyProviderFactory factory)
    {
       delegate.push(factory);

@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -26,6 +27,7 @@ import java.io.IOException;
 public class HttpServletDispatcher extends HttpServlet
 {
    protected Dispatcher dispatcher;
+   protected ResteasyProviderFactory providerFactory;
    private final static Logger logger = LoggerFactory.getLogger(HttpServletDispatcher.class);
    private String servletMappingPrefix = "";
 
@@ -37,7 +39,7 @@ public class HttpServletDispatcher extends HttpServlet
 
    public void init(ServletConfig servletConfig) throws ServletException
    {
-      ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
+      providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
       if (providerFactory == null)
       {
          providerFactory = new ResteasyProviderFactory();
@@ -68,22 +70,41 @@ public class HttpServletDispatcher extends HttpServlet
 
    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException
    {
-      HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-      UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
-
-      HttpResponse theResponse = createServletResponse(response);
-      HttpRequest in = createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);
-
       try
       {
-         ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
-         ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
-         ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
-         dispatcher.invoke(in, theResponse);
+         // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
+         // ResteasyProviderFactory.getInstance()
+         ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
+         if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
+         {
+            ThreadLocalResteasyProviderFactory.push(providerFactory);
+         }
+         HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
+         UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
+
+         HttpResponse theResponse = createServletResponse(response);
+         HttpRequest in = createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);
+
+         try
+         {
+            ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
+            ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+            ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
+            dispatcher.invoke(in, theResponse);
+         }
+         finally
+         {
+            ResteasyProviderFactory.clearContextData();
+         }
       }
       finally
       {
-         ResteasyProviderFactory.clearContextData();
+         ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
+         if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
+         {
+            ThreadLocalResteasyProviderFactory.pop();
+         }
+
       }
    }
 
