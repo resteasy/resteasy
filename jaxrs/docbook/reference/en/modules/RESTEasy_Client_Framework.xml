@@ -59,7 +59,6 @@
          import org.resteasy.plugins.client.httpclient.ProxyFactory;
          ...
          // this initialization only needs to be done once per VM
-         ResteasyProviderFactory.initializeInstance();
          RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
 
 
