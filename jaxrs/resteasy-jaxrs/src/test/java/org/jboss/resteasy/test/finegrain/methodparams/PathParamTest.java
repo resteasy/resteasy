@@ -30,7 +30,6 @@ public class PathParamTest extends BaseResourceTest
    @Path(value = "/PathParamTest")
    public static class Resource
    {
-
       @GET
       @Path("/{id}")
       public Response single(@PathParam("id") String id)
@@ -112,9 +111,22 @@ public class PathParamTest extends BaseResourceTest
       }
    }
 
+   @Path("/digits")
+   public static class Digits
+   {
+      @Path("{id:\\d+}")
+      @GET
+      public String get(@PathParam("id") int id)
+      {
+         Assert.assertEquals(5150, id);
+         return Integer.toString(id);
+      }
+   }
+
    @Before
    public void setUp() throws Exception
    {
+      dispatcher.getRegistry().addPerRequestResource(Digits.class);
       dispatcher.getRegistry().addPerRequestResource(Resource.class);
    }
 
@@ -138,6 +150,25 @@ public class PathParamTest extends BaseResourceTest
          Assert.assertEquals(200, status);
          Assert.assertEquals(header, method.getResponseBodyAsString());
       }
+   }
+
+   @Test
+   public void test178() throws Exception
+   {
+      {
+         HttpClient client = new HttpClient();
+         GetMethod method = new GetMethod(TestPortProvider.generateURL("/digits/5150"));
+         int status = client.executeMethod(method);
+         Assert.assertEquals(200, status);
+      }
+
+      {
+         HttpClient client = new HttpClient();
+         GetMethod method = new GetMethod(TestPortProvider.generateURL("/digits/5150A"));
+         int status = client.executeMethod(method);
+         Assert.assertEquals(404, status);
+      }
+
    }
 
 
