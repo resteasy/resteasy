@@ -1,5 +1,13 @@
 package org.jboss.resteasy.client;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.jboss.resteasy.client.core.ClientInterceptor;
+import org.jboss.resteasy.client.core.ClientInvoker;
+import org.jboss.resteasy.client.core.ClientProxy;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.IsHttpMethod;
+
+import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -8,15 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
-
-import javax.ws.rs.HttpMethod;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.client.core.ClientInterceptor;
-import org.jboss.resteasy.client.core.ClientInvoker;
-import org.jboss.resteasy.client.core.ClientProxy;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.IsHttpMethod;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -44,7 +43,8 @@ public class ProxyFactory
       }
    }
 
-   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory){
+   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory)
+   {
       return create(clazz, baseUri, httpClient, providerFactory, ProxyFactory.interceptors);
    }
 
@@ -89,10 +89,10 @@ public class ProxyFactory
          return "POST";
       else if (httpMethods.contains(HttpMethod.DELETE))
          return "DELETE";
-      else 
+      else
          throw new RuntimeException("@" + httpMethods.iterator().next() + " is not supported yet");
    }
-   
+
    public static void addInterceptor(ClientInterceptor clientInterceptor)
    {
       interceptors.add(clientInterceptor);
