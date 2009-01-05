@@ -60,6 +60,13 @@
                 <configuration>
                     <defaultJavaBundleDir>lib/</defaultJavaBundleDir>
                     <finalName>ejb-integration-test</finalName>
+                    <modules>
+                        <webModule>
+                            <groupId>org.jboss.resteasy</groupId>
+                            <artifactId>ejb-test-war</artifactId>
+                            <context-root>/test-war</context-root>
+                        </webModule>
+                    </modules>
                 </configuration>
                 <executions>
                     <execution>

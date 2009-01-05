@@ -22,21 +22,21 @@ public class SmokeTest
       HttpClient client = new HttpClient();
 
       {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/basic");
+         GetMethod method = new GetMethod("http://localhost:8080/test-war/basic");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals("basic", method.getResponseBodyAsString());
          method.releaseConnection();
       }
       {
-         PutMethod method = new PutMethod("http://localhost:8080/ejb-test-war/basic");
+         PutMethod method = new PutMethod("http://localhost:8080/test-war/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          int status = client.executeMethod(method);
          Assert.assertEquals(204, status);
          method.releaseConnection();
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/queryParam");
+         GetMethod method = new GetMethod("http://localhost:8080/test-war/queryParam");
          NameValuePair[] params = {new NameValuePair("param", "hello world")};
          method.setQueryString(params);
          int status = client.executeMethod(method);
@@ -45,7 +45,7 @@ public class SmokeTest
          method.releaseConnection();
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/uriParam/1234");
+         GetMethod method = new GetMethod("http://localhost:8080/test-war/uriParam/1234");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals("1234", method.getResponseBodyAsString());
@@ -59,21 +59,21 @@ public class SmokeTest
       HttpClient client = new HttpClient();
 
       {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/locating/basic");
+         GetMethod method = new GetMethod("http://localhost:8080/test-war/locating/basic");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals("basic", method.getResponseBodyAsString());
          method.releaseConnection();
       }
       {
-         PutMethod method = new PutMethod("http://localhost:8080/ejb-test-war/locating/basic");
+         PutMethod method = new PutMethod("http://localhost:8080/test-war/locating/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          int status = client.executeMethod(method);
          Assert.assertEquals(204, status);
          method.releaseConnection();
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/locating/queryParam");
+         GetMethod method = new GetMethod("http://localhost:8080/test-war/locating/queryParam");
          NameValuePair[] params = {new NameValuePair("param", "hello world")};
          method.setQueryString(params);
          int status = client.executeMethod(method);
@@ -82,7 +82,7 @@ public class SmokeTest
          method.releaseConnection();
       }
       {
-         GetMethod method = new GetMethod("http://localhost:8080/ejb-test-war/locating/uriParam/1234");
+         GetMethod method = new GetMethod("http://localhost:8080/test-war/locating/uriParam/1234");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals("1234", method.getResponseBodyAsString());
