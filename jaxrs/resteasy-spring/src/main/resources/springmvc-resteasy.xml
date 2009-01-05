@@ -10,28 +10,28 @@
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<description>
-		Import this file in a Spring MVC dispatcher XML
-		environment to get the default implementation of the Spring
-		MVC/RestEasy integration. You can also use this as a template for more
-		advanced functionality, such as configuring multiple RestEasy
-		factories/dispatchers/registries for different scenarios.
-	</description>
+    <description>
+        Import this file in a Spring MVC dispatcher XML
+        environment to get the default implementation of the Spring
+        MVC/RestEasy integration. You can also use this as a template for more
+        advanced functionality, such as configuring multiple RestEasy
+        factories/dispatchers/registries for different scenarios.
+    </description>
 
     <!-- ========== Resteasy setup ================ -->
 
-	<bean id="resteasy.providerFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory"
-		factory-method="initializeInstance">
-		<description>
-			This bean manages all of the JAX-RS @Providers.
-			@Providers convert from the inputStream to a java object and from a
-			Java object to an output stream. The SpringBeanPreprocessor scans
-			through the context for all @Provider, and adds them to this
-			instance.
+    <bean id="resteasy.providerFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory"
+          factory-method="getInstance">
+        <description>
+            This bean manages all of the JAX-RS @Providers.
+            @Providers convert from the inputStream to a java object and from a
+            Java object to an output stream. The SpringBeanPreprocessor scans
+            through the context for all @Provider, and adds them to this
+            instance.
         </description>
-	</bean>
+    </bean>
 
-    <bean id="resteasy.intializer" class="org.jboss.resteasy.springmvc.ResteasyIntializer">
+    <bean id="resteasy.intializer" class="org.jboss.resteasy.springmvc.ResteasyInitializer">
         <constructor-arg ref="resteasy.providerFactory"/>
     </bean>
 
@@ -52,7 +52,7 @@
     <bean class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor"
           depends-on="resteasy.intializer">
         <description>
-        	Add Resources and @Providers to the appropriate places
+            Add Resources and @Providers to the appropriate places
             in Resteasy's infrastructure
         </description>
         <constructor-arg ref="resteasy.dispatcher"/>
@@ -65,18 +65,18 @@
         <description>
             Tap into the RestEasy registry to find out if any of it's
             Resources handle a specific URL.
-            
-            This abstract bean has default settings.  You can optimize settings for
-            this handler mappings by overriding the "resteasy.handlerMapping" bean 
+
+            This abstract bean has default settings. You can optimize settings for
+            this handler mappings by overriding the "resteasy.handlerMapping" bean
             and customizing the following:
-            
-            1) setting a list of interceptors into the "interceptors" property.  
+
+            1) setting a list of interceptors into the "interceptors" property.
             This is useful when you want to do things like use the OpenSessionInViewInterceptor
 
-            2) set order and/or throwNotFound=true which will return the HTTP status 
-            codes that core RESTEasy recommends back to the client.  It works in conjunction
-            with the "resteasy.exception.handler"    
-            
+            2) set order and/or throwNotFound=true which will return the HTTP status
+            codes that core RESTEasy recommends back to the client. It works in conjunction
+            with the "resteasy.exception.handler"
+
         </description>
         <constructor-arg ref="resteasy.dispatcher"/>
         <property name="interceptors">
@@ -89,7 +89,7 @@
         </property>
     </bean>
 
-	<bean id="resteasy.handlerMapping" parent="abstract.resteasy.handlerMapping" />
+    <bean id="resteasy.handlerMapping" parent="abstract.resteasy.handlerMapping"/>
 
     <bean id="resteasy.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter">
         <description>
@@ -101,29 +101,29 @@
         <constructor-arg ref="resteasy.dispatcher"/>
     </bean>
 
-	<bean id="resteasy.exception.handler"
-		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"
-		p:exceptionMappings="org.jboss.resteasy.spi.NoResourceFoundFailure=resteasy.no.resource.found.view"
-		p:exceptionAttribute="exception">
-		<description>
-		This will be invoked if an end user overrides resteasy.handlerMapping with throwNotFound=true
-		</description>
-	</bean>
+    <bean id="resteasy.exception.handler"
+          class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"
+          p:exceptionMappings="org.jboss.resteasy.spi.NoResourceFoundFailure=resteasy.no.resource.found.view"
+          p:exceptionAttribute="exception">
+        <description>
+            This will be invoked if an end user overrides resteasy.handlerMapping with throwNotFound=true
+        </description>
+    </bean>
 
-	<bean id="resteasy.no.resource.found.view"
-		class="org.jboss.resteasy.springmvc.ResteasyNoResourceFoundView"
-		p:dispatcher-ref="resteasy.dispatcher" />
+    <bean id="resteasy.no.resource.found.view"
+          class="org.jboss.resteasy.springmvc.ResteasyNoResourceFoundView"
+          p:dispatcher-ref="resteasy.dispatcher"/>
 
-	<bean id="reateasy.error.view.resolver"
-		class="org.springframework.web.servlet.view.BeanNameViewResolver" />
-        
-    
+    <bean id="reateasy.error.view.resolver"
+          class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+
+
     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
         <description>Bean that registers our custom MediaType PropertyEditor</description>
         <property name="customEditors">
             <map>
                 <entry key="javax.ws.rs.core.MediaType"
-                    value="org.jboss.resteasy.plugins.spring.MediaTypePropertyEditor" />
+                       value="org.jboss.resteasy.plugins.spring.MediaTypePropertyEditor"/>
             </map>
         </property>
     </bean>

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedMediaType;
 import org.junit.Assert;
@@ -22,7 +21,6 @@ public class MediaTypeTest
    @BeforeClass
    public static void start()
    {
-      ResteasyProviderFactory.initializeInstance();
    }
 
    @Test

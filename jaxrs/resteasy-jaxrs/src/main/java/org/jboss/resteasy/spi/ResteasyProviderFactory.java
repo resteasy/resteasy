@@ -164,12 +164,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return (ResteasyProviderFactory) RuntimeDelegate.getInstance();
    }
 
-   public static ResteasyProviderFactory initializeInstance()
-   {
-      setInstance(new ResteasyProviderFactory());
-      return getInstance();
-   }
-
    public ResteasyProviderFactory()
    {
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());

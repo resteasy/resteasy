@@ -8,11 +8,9 @@ import org.jboss.resteasy.plugins.providers.atom.Content;
 import org.jboss.resteasy.plugins.providers.atom.Feed;
 import org.jboss.resteasy.plugins.providers.atom.Link;
 import org.jboss.resteasy.plugins.providers.atom.Person;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -186,7 +184,6 @@ public class ModelTest
    @Test
    public void testRFC() throws Exception
    {
-      ResteasyProviderFactory.initializeInstance();
       JAXBContext ctx = JAXBContext.newInstance(Feed.class);
       Feed feed = (Feed) ctx.createUnmarshaller().unmarshal(new StringReader(RFC_COMPLEX_XML));
       Marshaller marshaller = ctx.createMarshaller();
@@ -207,48 +204,5 @@ public class ModelTest
       marshaller.marshal(feed, System.out);
 
 
-   }
-
-   /*
-   @Test
-   public void testBench() throws Exception
-   {
-      ResteasyProviderFactory.initializeInstance();
-      JAXBContext ctx = JAXBContext.newInstance(Feed.class);
-      HashMap map = new HashMap();
-
-      {
-      long start = System.currentTimeMillis();
-      for (int i = 0; i < 500; i++)
-      {
-         String foo = Feed.class.getName() + Entry.class.getName();
-         map.get(foo);
-         marshal(ctx);
-      }
-      System.out.println("Time took cached: " + (System.currentTimeMillis() - start));
-      }
-
-
-      {
-      long start = System.currentTimeMillis();
-      for (int i = 0; i < 500; i++)
-      {
-         ctx = JAXBContext.newInstance(Feed.class);
-         marshal(ctx);
-      }
-      System.out.println("Time took uncached: " + (System.currentTimeMillis() - start));
-      }
-
-
-   }
-   */
-
-   private void marshal(JAXBContext ctx)
-           throws JAXBException
-   {
-      Feed feed = (Feed) ctx.createUnmarshaller().unmarshal(new StringReader(RFC_COMPLEX_XML));
-      Marshaller marshaller = ctx.createMarshaller();
-      StringWriter writer = new StringWriter();
-      marshaller.marshal(feed, writer);
    }
 }

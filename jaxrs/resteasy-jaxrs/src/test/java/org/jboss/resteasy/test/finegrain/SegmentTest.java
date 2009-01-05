@@ -1,14 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
-import java.net.URISyntaxException;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.registry.RootSegment;
@@ -18,12 +10,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import java.net.URISyntaxException;
 
 
 /**
  * Tests to make sure that standard segment mapping work correctly, especially
  * regexes that contain "\"
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
@@ -71,7 +68,7 @@ public class SegmentTest
       {
          throw new RuntimeException("Not Implemented");
       }
-}
+   }
 
    ResourceMethodRegistry registry;
    RootSegment root = null;
@@ -79,14 +76,13 @@ public class SegmentTest
    @BeforeClass
    public static void initEnv()
    {
-      ResteasyProviderFactory.initializeInstance();
    }
 
    @Before
    public void init()
    {
       registry = new ResourceMethodRegistry(ResteasyProviderFactory
-            .getInstance());
+              .getInstance());
       root = registry.getRoot();
       registry.addSingletonResource(new NullResource());
    }
@@ -113,7 +109,7 @@ public class SegmentTest
 
 
    private void assertMatchRoot(final String url, final String methodName,
-         final Class<?> clazz) throws URISyntaxException
+                                final Class<?> clazz) throws URISyntaxException
    {
       ResourceMethod matchRoot = getResourceMethod(url);
       Assert.assertEquals(clazz, matchRoot.getResourceClass());
@@ -121,7 +117,7 @@ public class SegmentTest
    }
 
    private ResourceMethod getResourceMethod(String url)
-         throws URISyntaxException
+           throws URISyntaxException
    {
       return (ResourceMethod) root.matchRoot(MockHttpRequest.get(url));
    }
