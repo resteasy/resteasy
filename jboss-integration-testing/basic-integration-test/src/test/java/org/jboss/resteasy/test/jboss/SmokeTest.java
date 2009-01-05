@@ -50,7 +50,7 @@ public class SmokeTest
          PutMethod method = new PutMethod("http://localhost:8080/basic-integration-test/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         Assert.assertEquals(204, status);
          method.releaseConnection();
       }
       {
@@ -98,7 +98,7 @@ public class SmokeTest
          PutMethod method = new PutMethod("http://localhost:8080/basic-integration-test/locating/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         Assert.assertEquals(204, status);
          method.releaseConnection();
       }
       {
@@ -131,7 +131,6 @@ public class SmokeTest
    @Test
    public void testFormParam()
    {
-      ResteasyProviderFactory.initializeInstance();
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       final FormResource client = ProxyFactory.create(FormResource.class, "http://localhost:8080/basic-integration-test");
       String result = client.postForm("value");

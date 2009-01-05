@@ -44,7 +44,6 @@ public class SmokeTest
    @Test
    public void testFormParam()
    {
-      ResteasyProviderFactory.initializeInstance();
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       final FormResource client = ProxyFactory.create(FormResource.class, "http://localhost:8080/resteasy/rest");
       final String result = client.postForm("value");

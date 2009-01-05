@@ -166,6 +166,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public ResteasyProviderFactory()
    {
+      // NOTE!!! It is important to put all initialization into initialize() as ThreadLocalResteasyProviderFactory
+      // subclasses and delegates to this class.  
+      initialize();
+   }
+
+   protected void initialize()
+   {
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
       addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
       addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
