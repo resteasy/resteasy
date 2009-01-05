@@ -1,15 +1,5 @@
 package org.jboss.resteasy.client;
 
-import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.client.core.ClientInterceptor;
@@ -23,10 +13,16 @@ import org.jboss.resteasy.client.core.PathParamMarshaller;
 import org.jboss.resteasy.client.core.QueryParamMarshaller;
 import org.jboss.resteasy.client.core.WebRequestIntializer;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import static org.jboss.resteasy.util.HttpHeaderNames.*;
+
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * 
- * 
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
@@ -34,25 +30,28 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 @SuppressWarnings("unchecked")
 public class ClientRequest
 {
-   protected ResteasyProviderFactory providerFactory = ResteasyProviderFactory
-         .getInstance();
+   protected ResteasyProviderFactory providerFactory;
    private String uriTemplate;
-   private HttpClient httpClient = new HttpClient();
+   private HttpClient httpClient;
    private Collection<ClientInterceptor> interceptors = new ArrayList<ClientInterceptor>();
    private List<Marshaller> marshallers = new ArrayList<Marshaller>();
    private List<Object> args = new ArrayList<Object>();
 
    public ClientRequest(String uriTemplate)
    {
-      super();
-      this.uriTemplate = uriTemplate;
+      this(uriTemplate, new HttpClient(), ResteasyProviderFactory.getInstance());
    }
 
    public ClientRequest(String uriTemplate, HttpClient httpClient)
    {
-      super();
+      this(uriTemplate, httpClient, ResteasyProviderFactory.getInstance());
+   }
+
+   public ClientRequest(String uriTemplate, HttpClient httpClient, ResteasyProviderFactory providerFactory)
+   {
       this.uriTemplate = uriTemplate;
       this.httpClient = httpClient;
+      this.providerFactory = providerFactory;
    }
 
    public ClientRequest interceptor(ClientInterceptor clientInterceptor)
@@ -62,7 +61,7 @@ public class ClientRequest
    }
 
    public ClientRequest interceptors(
-         Collection<ClientInterceptor> clientInterceptors)
+           Collection<ClientInterceptor> clientInterceptors)
    {
       interceptors.addAll(clientInterceptors);
       return this;
@@ -81,19 +80,19 @@ public class ClientRequest
    public ClientRequest formParameter(String parameterName, Object value)
    {
       return marshaller(
-            new FormParamMarshaller(parameterName, providerFactory), value);
+              new FormParamMarshaller(parameterName, providerFactory), value);
    }
 
    public ClientRequest queryParameter(String parameterName, Object value)
    {
       return marshaller(
-            new QueryParamMarshaller(parameterName, providerFactory), value);
+              new QueryParamMarshaller(parameterName, providerFactory), value);
    }
 
    public ClientRequest header(String headerName, Object value)
    {
       return marshaller(new HeaderParamMarshaller(headerName, providerFactory),
-            value);
+              value);
    }
 
    public ClientRequest cookie(String cookieName, Object value)
@@ -112,17 +111,16 @@ public class ClientRequest
    }
 
    public ClientRequest pathParameter(String parameterName, Object value,
-         boolean encoded)
+                                      boolean encoded)
    {
       return marshaller(new PathParamMarshaller(parameterName, encoded,
-            providerFactory), value);
+              providerFactory), value);
    }
 
    /**
     * This is mostly used internally, but the Marshaller can be used as an
     * "interceptor"
-    * 
-    * 
+    *
     * @param marshaller
     * @param value
     * @return
@@ -133,12 +131,12 @@ public class ClientRequest
       args.add(value);
       return this;
    }
-   
+
    public ClientRequest body(String contentType, Object data)
    {
       MessageBodyParameterMarshaller marshaller = new MessageBodyParameterMarshaller(
-            MediaType.valueOf(contentType), data.getClass(), null, null,
-            this.providerFactory);
+              MediaType.valueOf(contentType), data.getClass(), null, null,
+              this.providerFactory);
       return marshaller(marshaller, data);
    }
 
@@ -148,7 +146,7 @@ public class ClientRequest
    }
 
    public <T> ClientResponse<T> get(Class<T> returnType)
-         throws Exception
+           throws Exception
    {
       return (ClientResponse<T>) getResponse(returnType, null, true, "GET");
    }
@@ -187,39 +185,39 @@ public class ClientRequest
    }
 
    private <T> Object getResponse(Class<T> returnType, Type genericReturnType,
-         boolean isClientResponse, String restVerb) throws Exception
+                                  boolean isClientResponse, String restVerb) throws Exception
    {
       ClientResponseImpl<T> clientResponse = createResponseImpl(restVerb,
-            returnType, genericReturnType);
-      
+              returnType, genericReturnType);
+
       WebRequestIntializer urlRetriever = new WebRequestIntializer(marshallers.toArray(new Marshaller[marshallers.size()]));
       clientResponse.setUrl(urlRetriever.buildUrl(uriTemplate, true, args.toArray()));
-       
+
       HttpMethodBase baseMethod = clientResponse.getHttpBaseMethod();
-      if( isClientResponse )
+      if (isClientResponse)
       {
          baseMethod.setFollowRedirects(false);
       }
-      
+
       urlRetriever.setHeadersAndRequestBody(baseMethod, args.toArray());
       clientResponse.execute(this.httpClient);
       if (isClientResponse)
       {
          return clientResponse;
-      } 
+      }
       else if (returnType == null || returnType.equals(void.class))
       {
          clientResponse.releaseConnection();
          return null;
-      } 
-      else 
+      }
+      else
       {
          return clientResponse.getEntity();
       }
    }
 
    private <T> ClientResponseImpl<T> createResponseImpl(String restVerb,
-         Class<T> returnType, Type genericReturnType) throws Exception
+                                                        Class<T> returnType, Type genericReturnType) throws Exception
    {
       ClientResponseImpl<T> clientResponse = new ClientResponseImpl<T>();
       clientResponse.setReturnType(returnType);
@@ -231,5 +229,5 @@ public class ClientRequest
       return clientResponse;
    }
 
-   
+
 }

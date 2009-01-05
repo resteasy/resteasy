@@ -54,6 +54,11 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(formProvider);
       logger.info("Added built in provider {}", FormUrlEncodedProvider.class.getName());
 
+      FileProvider fileProvider = new FileProvider();
+      factory.addMessageBodyReader(fileProvider);
+      factory.addMessageBodyWriter(fileProvider);
+      logger.info("Added built in provider {}", FormUrlEncodedProvider.class.getName());
+
       factory.addMessageBodyWriter(new StreamingOutputProvider());
       logger.info("Added built in provider {}", StreamingOutputProvider.class.getName());
 
