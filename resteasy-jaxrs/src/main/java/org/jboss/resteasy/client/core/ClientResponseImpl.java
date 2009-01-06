@@ -1,19 +1,5 @@
 package org.jboss.resteasy.client.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyReader;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -23,12 +9,21 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
 
 //import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
@@ -77,7 +72,7 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    {
       this.returnType = returnType;
    }
-   
+
    public Class<?> getReturnType()
    {
       return returnType;
@@ -136,6 +131,7 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
 
    public String getResponseHeader(String headerKey)
    {
+      if (headers == null) return null;
       return headers.getFirst(headerKey);
    }
 
@@ -276,14 +272,8 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    @Override
    public MultivaluedMap<String, Object> getMetadata()
    {
-      CaseInsensitiveMap<Object> metadata = new CaseInsensitiveMap<Object>();
-      for (Entry<String, List<String>> entry : headers.entrySet())
-      {
-         List<Object> values = new ArrayList<Object>();
-         values.addAll(entry.getValue());
-         metadata.put(entry.getKey(), values);
-      };
-      return metadata;
+      MultivaluedMap map = headers;
+      return (MultivaluedMap<String, Object>) map;
    }
 
    @Override
@@ -406,7 +396,7 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
 
    public void releaseConnection()
    {
-      if( !wasReleased)
+      if (!wasReleased)
       {
          baseMethod.releaseConnection();
          wasReleased = true;
@@ -417,32 +407,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    public Status getResponseStatus()
    {
       return Response.Status.fromStatusCode(getStatus());
-   }
-
-   public Response asResponse()
-   {
-      try
-      {
-         ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
-         for (Entry<String, List<String>> entry : getHeaders().entrySet())
-         {
-            List<String> values = entry.getValue();
-            for (String value : values)
-            {
-               responseBuilder.header(entry.getKey(), value);
-            }
-         }
-         responseBuilder.status(getStatus());
-         if(unmarshaledEntity != null)
-         {
-            responseBuilder.entity(unmarshaledEntity);
-         }
-         return responseBuilder.build();
-      } 
-      finally
-      {
-         releaseConnection();
-      }
    }
 
    public boolean wasReleased()

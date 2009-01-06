@@ -6,6 +6,10 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <!-- This class initializes Built In Providers -->
+    <bean id="resteasyClientInitializer"
+          class="org.jboss.resteasy.plugins.spring.ResteasyClientInitializer"/>
+
     <bean id="client" class="org.jboss.resteasy.client.ProxyFactory" factory-method="create">
         <constructor-arg value="org.jboss.resteasy.examples.contacts.client.ContactClient"/>
         <constructor-arg value="http://localhost:9095/services"/>
