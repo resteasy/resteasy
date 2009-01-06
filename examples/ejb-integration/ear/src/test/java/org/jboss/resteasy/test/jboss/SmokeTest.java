@@ -32,7 +32,7 @@ public class SmokeTest
          PutMethod method = new PutMethod("http://localhost:8080/ejb-integration-war/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         Assert.assertEquals(204, status);
          method.releaseConnection();
       }
       {
@@ -69,7 +69,7 @@ public class SmokeTest
          PutMethod method = new PutMethod("http://localhost:8080/ejb-integration-war/locating/basic");
          method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         Assert.assertEquals(204, status);
          method.releaseConnection();
       }
       {
