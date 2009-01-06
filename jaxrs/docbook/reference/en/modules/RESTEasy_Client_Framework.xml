@@ -1,164 +1,189 @@
 <chapter id="RESTEasy_Client_Framework">
-   <title>Client Framework</title>
+    <title>Client Framework</title>
 
-   <para>
+    <para>
 
-      The Resteasy Client Framework is the mirror opposite of the JAX-RS server-side specification. Instead of using
-      JAX-RS annotations to map an incoming request to your RESTFul Web Service method, the client framework builds an
-      HTTP request that it uses to invoke on a remote RESTful Web Service. This remote service does not have to be a
-      JAX-RS service and can be any web resource that accepts HTTP requests.
-   </para>
-   <para>
+        The Resteasy Client Framework is the mirror opposite of the JAX-RS server-side specification. Instead of using
+        JAX-RS annotations to map an incoming request to your RESTFul Web Service method, the client framework builds an
+        HTTP request that it uses to invoke on a remote RESTful Web Service. This remote service does not have to be a
+        JAX-RS service and can be any web resource that accepts HTTP requests.
+    </para>
+    <para>
 
-      Resteasy has a client proxy framework that allows you to use JAX-RS annotations to invoke on a remote HTTP
-      resource.
-      The way it works is that you write a Java interface and use JAX-RS annotations on methods and the interface. For
-      example:
-   </para>
-   <para>
+        Resteasy has a client proxy framework that allows you to use JAX-RS annotations to invoke on a remote HTTP
+        resource.
+        The way it works is that you write a Java interface and use JAX-RS annotations on methods and the interface. For
+        example:
+    </para>
+    <para>
 
-      <programlisting>
- public interface SimpleClient
-{
-   @GET
-   @Path("basic")
-   @Produces("text/plain")
-   String getBasic();
+        <programlisting>
+            public interface SimpleClient
+            {
+            @GET
+            @Path("basic")
+            @Produces("text/plain")
+            String getBasic();
 
-   @PUT
-   @Path("basic")
-   @Consumes("text/plain")
-   void putBasic(String body);
+            @PUT
+            @Path("basic")
+            @Consumes("text/plain")
+            void putBasic(String body);
 
-   @GET
-   @Path("queryParam")
-   @Produces("text/plain")
-   String getQueryParam(@QueryParam("param")String param);
+            @GET
+            @Path("queryParam")
+            @Produces("text/plain")
+            String getQueryParam(@QueryParam("param")String param);
 
-   @GET
-   @Path("matrixParam")
-   @Produces("text/plain")
-   String getMatrixParam(@MatrixParam("param")String param);
+            @GET
+            @Path("matrixParam")
+            @Produces("text/plain")
+            String getMatrixParam(@MatrixParam("param")String param);
 
-   @GET
-   @Path("uriParam/{param}")
-   @Produces("text/plain")
-   int getUriParam(@PathParam("param")int param);
-}
-      </programlisting>
-   </para>
-   <para>
+            @GET
+            @Path("uriParam/{param}")
+            @Produces("text/plain")
+            int getUriParam(@PathParam("param")int param);
+            }
+        </programlisting>
+    </para>
+    <para>
 
-      Resteasy has a simple API based on Apache HttpClient. You generate a proxy then you can invoke methods on the
-      proxy. The invoked method gets translated to an HTTP request based on how you annotated the method and posted to
-      the server. Here's how you would set this up:
-   </para>
-   <para>
+        Resteasy has a simple API based on Apache HttpClient. You generate a proxy then you can invoke methods on the
+        proxy. The invoked method gets translated to an HTTP request based on how you annotated the method and posted to
+        the server. Here's how you would set this up:
+    </para>
+    <para>
 
-      <programlisting>
-         import org.resteasy.plugins.client.httpclient.ProxyFactory;
-         ...
-         // this initialization only needs to be done once per VM
-         RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-
-
-         SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
-         client.putBasic("hello world");
-      </programlisting>
-   </para>
-   <para>
-
-      Please see the ProxyFactory javadoc for more options. For instance, you may want to fine tune the HttpClient
-      configuration.
-   </para>
-   <para>
+        <programlisting>
+            import org.resteasy.plugins.client.httpclient.ProxyFactory;
+            ...
+            // this initialization only needs to be done once per VM
+            RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
 
 
-   </para>
-   <para>
+            SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
+            client.putBasic("hello world");
+        </programlisting>
+    </para>
+    <para>
 
-      @CookieParam works the mirror opposite of its server-side counterpart and creates a cookie header to send to the
-      server. You do not need to use @CookieParam if you allocate your own javax.ws.rs.core.Cookie object and pass it as
-      a parameter to a client proxy method. The client framework understands that you are passing a cookie to the server
-      so no extra metadata is needed.
-   </para>
-   <para>
-
-
-   </para>
-   <para>
-
-      The client framework can use the same providers available on the server. You must manually register them through
-      the ResteasyProviderSingleton using the addMessageBodyReader() and addMessageBodyWriter() methods.
-   </para>
-   <para>
+        Please see the ProxyFactory javadoc for more options. For instance, you may want to fine tune the HttpClient
+        configuration.
+    </para>
+    <para>
 
 
-   </para>
-   <sect1 id="Custom_client-side_responses">
-      <title>Custom client-side responses</title>
+    </para>
+    <para>
 
-      <para>
-
-         Sometimes you are interested not only in the response body of a client request, but also either the response
-         code and/or response headers. The Client-Proxy framework has two ways to get at this information
-      </para>
-      <para>
-
-
-      </para>
-      <para>
-
-         You may return a javax.ws.rs.core.Response.Status enumeration from your method calls:
-      </para>
-      <para>
-
-         <programlisting>
-@Path("/")
-public interface MyProxy {
-   @POST
-   Response.Status updateSite(MyPojo pojo);
-}
-         </programlisting>
-      </para>
-      <para>
-
-         Interally, after invoking on the server, the client proxy internals will convert the HTTP response code into a
-         Response.Status enum.
-      </para>
-      <para>
+        @CookieParam works the mirror opposite of its server-side counterpart and creates a cookie header to send to the
+        server. You do not need to use @CookieParam if you allocate your own javax.ws.rs.core.Cookie object and pass it
+        as
+        a parameter to a client proxy method. The client framework understands that you are passing a cookie to the
+        server
+        so no extra metadata is needed.
+    </para>
+    <para>
 
 
-      </para>
-      <para>
+    </para>
+    <para>
 
-         If you are interested in everything, you can get it with the org.resteasy.spi.ClientResponse interface:
-      </para>
-<programlisting><![CDATA[
+        The client framework can use the same providers available on the server. You must manually register them through
+        the ResteasyProviderFactory singleton using the addMessageBodyReader() and addMessageBodyWriter() methods.
+    </para>
+    <programlisting>
+        ResteasyProviderFactory.getInstance().addMessageBodyReader(MyReader.class);
+    </programlisting>
+    <para>
+
+
+    </para>
+    <sect1 id="Custom_client-side_responses">
+        <title>Abstract Responses</title>
+
+        <para>
+
+            Sometimes you are interested not only in the response body of a client request, but also either the response
+            code and/or response headers. The Client-Proxy framework has two ways to get at this information
+        </para>
+        <para>
+
+
+        </para>
+        <para>
+
+            You may return a javax.ws.rs.core.Response.Status enumeration from your method calls:
+        </para>
+        <para>
+
+            <programlisting>
+                @Path("/")
+                public interface MyProxy {
+                @POST
+                Response.Status updateSite(MyPojo pojo);
+                }
+            </programlisting>
+        </para>
+        <para>
+
+            Interally, after invoking on the server, the client proxy internals will convert the HTTP response code into
+            a
+            Response.Status enum.
+        </para>
+        <para>
+
+
+        </para>
+        <para>
+
+            If you are interested in everything, you can get it with the org.resteasy.spi.ClientResponse interface:
+        </para>
+        <programlisting><![CDATA[
 /**
- * Response interface for the RESTEasy client framework.  Use this in your client proxy interface method return type
- * declarations if you want access to the response entity as well as status and header information.
+ * Response extension for the RESTEasy client framework. Use this, or Response
+ * in your client proxy interface method return type declarations if you want
+ * access to the response entity as well as status and header information.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface ClientResponse<T>
+public abstract class ClientResponse<T> extends Response
 {
-   T getEntity();
+   /**
+    * This method returns the same exact map as Response.getMetadata() except as a map of strings 
+    * rather than objects.
+    *
+    * @return
+    */
+   public abstract MultivaluedMap<String, String> getHeaders();
 
-   MultivaluedMap<String, String> getHeaders();
+   public abstract Response.Status getResponseStatus();
 
-   int getStatus();
+   /**
+    * Unmarshal the target entity from the response OutputStream.  You must have type information
+    * set via <T> otherwise, this will not work.
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  
+    * Afterwards, it will cache the result and return the cached result.
+    *
+    * @return
+    */
+   public abstract T getEntity();
 
    /**
     * Extract the response body with the provided type information
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  
+    * Afterwards, it will cache the result and return the cached result.
     *
     * @param type
     * @param genericType
     * @param <T2>
     * @return
     */
-   <T2> T2 getEntity(Class<T2> type, Type genericType);
+   public abstract <T2> T2 getEntity(Class<T2> type, Type genericType);
 
    /**
     * Extract the response body with the provided type information.  GenericType is a trick used to
@@ -167,64 +192,124 @@ public interface ClientResponse<T>
     * For example:
     * <pre>
     * List<String> list = response.getEntity(new GenericType<List<String>() {});
+    * <p/>
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
+    * cache the result and return the cached result.
     *
     * @param type
     * @param <T2>
     * @return
     */
-   <T2> T2 getBody(GenericType<T2> type);
-
+   public abstract <T2> T2 getEntity(GenericType<T2> type);
 }
 ]]>
-</programlisting>
-      <para>
-         All the getEntity() methods are deferred until you invoke them.  In other words, the response OutputStream is not read
-         untily you call one of these methods.   The empty paramed getBody() method can only be used if you have templated the ClientResponse within your method declaration.  Resteasy uses this generic type information to know what type to unmarshal the raw OutputStream into.  The other two getEntity() methods that take parameters, allow you to specify which Object types you want to marshal the response into.  These methods allow you to dynamically extract whatever types you want at runtime.  Here's an example:
-      </para>
-      <para>
+        </programlisting>
+        <para>
+            All the getEntity() methods are deferred until you invoke them. In other words, the response OutputStream is
+            not read
+            until you call one of these methods. The empty paramed getEntity() method can only be used if you have
+            templated the ClientResponse within your method declaration. Resteasy uses this generic type information to
+            know what type to unmarshal the raw OutputStream into. The other two getEntity() methods that take
+            parameters, allow you to specify which Object types you want to marshal the response into. These methods
+            allow you to dynamically extract whatever types you want at runtime. Here's an example:
+        </para>
+        <para>
 
- <programlisting>
-@Path("/")
-public interface LibraryService {
+            <programlisting>
+                @Path("/")
+                public interface LibraryService {
 
-   @GET
-   @Produces("application/xml")
-   ClientResponse&lt;LibraryPojo&gt; getAllBooks();
-}
-         </programlisting>
-      </para>
-      <para>
+                @GET
+                @Produces("application/xml")
+                ClientResponse&lt;LibraryPojo&gt; getAllBooks();
+                }
+            </programlisting>
+        </para>
+        <para>
 
-         We need to include the LibraryPojo in ClientResponse's generic declaration so that the client proxy framework
-         knows how to unmarshal the HTTP response body.
-      </para>
-      <para>
+            We need to include the LibraryPojo in ClientResponse's generic declaration so that the client proxy
+            framework
+            knows how to unmarshal the HTTP response body.
+        </para>
+        <para>
 
 
-      </para>
-   </sect1>
-   <sect1 id="Client_error_handling">
-      <title>Client error handling</title>
+        </para>
+    </sect1>
+    <sect1 id="Sharing_interfaces">
+        <title>Sharing an interface between client and server</title>
+        <para>
+            It is generally possible to share an interface between the client and server. In this scenario, you just
+            have your JAX-RS services implement an annotated interface
+            and then reuse that same interface to create client proxies to invoke on on the client-side. One caveat to
+            this is when your JAX-RS methods return a Response object.
+            The problem on the client is that the client does not have any type information with a raw Response return
+            type declaration. There are two ways of getting around
+            this. The first is to use the @ClientResponseType annotation.
+        </para>
+        <programlisting>
+            import org.jboss.resteasy.annotations.ClientResponseType;
+            import javax.ws.rs.core.Response;
 
-      <para>
+            @Path("/")
+            public interface MyInterface {
 
-         If you are using the Client Framework and your proxy methods return something other than a
-         ClientResponse, then the default client error handling comes into play. Any response code that is greater tha
-         399 will automatically cause a org.jboss.resteasy.client.ClientResponseFailure exception
-      </para>
-      <para>
-
-         <programlisting>
             @GET
-            ClientResponse&lt;String&gt; get() // will throw an exception if you call getEntity()
+            @ClientResponseType(String.class)
+            @Produces("text/plain")
+            public Response get();
+            }
+        </programlisting>
+        <para>
+            This approach isn't always good enough. The problem is that some MessageBodyReaders and Writers need generic
+            type information in order to match and service a request.
+        </para>
+        <programlisting>
+            @Path("/")
+            public interface MyInterface {
 
             @GET
-            MyObject get(); // will throw a ClientResponseFailure on response code &gt; 399
-         </programlisting>
-      </para>
-      <para>
+            @Produces("application/xml")
+            public Response getMyListOfJAXBObjects();
+            }
+
+        </programlisting>
+        <para>
+            In this case, your client code can cast the returned Response object to a ClientResponse and use one of the
+            typed getEntity() methods.
+        </para>
+        <programlisting><![CDATA[
+MyInterface proxy = ProxyFactory.create(MyInterface.class, "http://localhost:8081");
+ClientResponse response = (ClientResponse)proxy.getMyListOfJAXBObjects();
+List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>());
+]]>
+        </programlisting>
+
+    </sect1>
+    <sect1 id="Client_error_handling">
+        <title>Client error handling</title>
+
+        <para>
+
+            If you are using the Client Framework and your proxy methods return something other than a
+            ClientResponse, then the default client error handling comes into play. Any response code that is greater
+            tha
+            399 will automatically cause a org.jboss.resteasy.client.ClientResponseFailure exception
+        </para>
+        <para>
+
+            <programlisting>
+                @GET
+                ClientResponse&lt;String&gt; get() // will throw an exception if you call getEntity()
+
+                @GET
+                MyObject get(); // will throw a ClientResponseFailure on response code &gt; 399
+            </programlisting>
+        </para>
+        <para>
 
 
-      </para>
-   </sect1>
+        </para>
+    </sect1>
 </chapter>
