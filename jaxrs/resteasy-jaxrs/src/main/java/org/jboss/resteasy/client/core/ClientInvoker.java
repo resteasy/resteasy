@@ -1,24 +1,23 @@
 package org.jboss.resteasy.client.core;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.URI;
-
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Providers;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
+import org.jboss.resteasy.annotations.ClientResponseType;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ClientResponseType;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.Types;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Providers;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -42,7 +41,7 @@ public class ClientInvoker
       this.declaring = declaring;
       this.method = method;
       Marshaller[] marshallers = ClientMarshallerFactory.createMarshallers(method,
-            providerFactory);
+              providerFactory);
       this.providerFactory = providerFactory;
       this.urlRetriever = new WebRequestIntializer(marshallers);
       accepts = MediaTypeHelper.getProduces(declaring, method);
@@ -132,20 +131,20 @@ public class ClientInvoker
          return clientResponse.getResponseStatus();
       }
 
-      if( Response.class.isAssignableFrom(returnType))
+      if (Response.class.isAssignableFrom(returnType))
       {
          ClientResponseType responseHint = method.getAnnotation(ClientResponseType.class);
          if (responseHint != null)
          {
             handleResponseHint(clientResponse, responseHint);
-         } 
+         }
          else
          {
             clientResponse.releaseConnection();
          }
          return clientResponse;
       }
-      
+
       clientResponse.checkFailureStatus();
 
       if (returnType == null || isVoidReturnType(returnType))
@@ -176,7 +175,7 @@ public class ClientInvoker
    }
 
    private void handleResponseHint(ClientResponseImpl clientResponse,
-         ClientResponseType responseHint)
+                                   ClientResponseType responseHint)
    {
       Class returnType = responseHint.entityType();
       Class<? extends EntityTypeFactory> entityTypeFactory = responseHint.entityTypeFactory();
@@ -190,20 +189,20 @@ public class ClientInvoker
          catch (InstantiationException e)
          {
             throw clientResponse
-                  .createResponseFailure("Could not create a default entity type factory of type "
-                        + entityTypeFactory.getClass().getName());
+                    .createResponseFailure("Could not create a default entity type factory of type "
+                            + entityTypeFactory.getClass().getName());
          }
          catch (IllegalAccessException e)
          {
             throw clientResponse
-                  .createResponseFailure("Could not create a default entity type factory of type "
-                        + entityTypeFactory.getClass().getName()
-                        + ". "
-                        + e.getMessage());
+                    .createResponseFailure("Could not create a default entity type factory of type "
+                            + entityTypeFactory.getClass().getName()
+                            + ". "
+                            + e.getMessage());
          }
          returnType = factory.getEntityType(clientResponse.getStatus(), clientResponse.getMetadata());
       }
-      if(!isVoidReturnType(returnType))
+      if (!isVoidReturnType(returnType))
       {
          clientResponse.setReturnType(returnType);
       }

@@ -55,7 +55,7 @@ public abstract class ClientResponse<T> extends Response
     * <p/>
     * For example:
     * <pre>
-    * List<String> list = response.getBody(new GenericType<List<String>() {});
+    * List<String> list = response.getEntity(new GenericType<List<String>() {});
     * <p/>
     * <p/>
     * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
