@@ -1,22 +1,26 @@
 package org.jboss.resteasy.client;
 
-import java.lang.reflect.Type;
+import org.jboss.resteasy.util.GenericType;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
-import org.jboss.resteasy.util.GenericType;
+import java.lang.reflect.Type;
 
 /**
  * Response extension for the RESTEasy client framework. Use this, or Response
  * in your client proxy interface method return type declarations if you want
  * access to the response entity as well as status and header information.
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public abstract class ClientResponse<T> extends Response
 {
+   /**
+    * This method returns the same exact map as Response.getMetadata() except as a map of strings rather than objects
+    *
+    * @return
+    */
    public abstract MultivaluedMap<String, String> getHeaders();
 
    public abstract Response.Status getResponseStatus();
