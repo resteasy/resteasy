@@ -28,7 +28,11 @@
             <outputDirectory>examples/jms-facade</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../docbook/build/reference/en</directory>
+            <directory>../examples/simple</directory>
+            <outputDirectory>examples/simple</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../docbook/target/docbook/publish/en-US</directory>
             <outputDirectory>docs/userguide</outputDirectory>
         </fileSet>
     </fileSets>

@@ -27,10 +27,6 @@
             <name>jboss repo</name>
             <url>http://repository.jboss.org/maven2</url>
         </repository>
-        <repository>
-            <id>scannotation</id>
-            <url>http://scannotation.sf.net/maven2</url>
-        </repository>
     </repositories>
 
     <dependencies>
