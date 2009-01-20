@@ -1,6 +1,5 @@
-<?xml version='1.0' encoding="iso-8859-1"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
-        "../../../../docbook-support/support/docbook-dtd/docbookx.dtd"
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+                         "http://www.docbook.org/xml/4.4/docbookx.dtd"
         [
                 <!ENTITY Overview SYSTEM "modules/Overview.xml">
                 <!ENTITY Installation_Configuration SYSTEM "modules/Installation_Configuration.xml">
@@ -36,12 +35,12 @@
                 <!ENTITY Atom SYSTEM "modules/Atom.xml">
                 ]>
 
-<book lang="en">
+<book>
 
    <bookinfo>
       <title>RESTEasy JAX-RS</title>
-      <subtitle>RESTFul Web Service for Java</subtitle>
-      <releaseinfo>1.0-RC1</releaseinfo>
+      <subtitle>RESTFul Web Services for Java</subtitle>
+      <releaseinfo>1.0.0.GA</releaseinfo>
    </bookinfo>
 
    <toc/>
@@ -71,6 +70,9 @@
          </programlisting>
       </para>
    </preface>
+
+
+
    &Overview;
    &Installation_Configuration;
    &Using__Path_and__GET___POST__etc.;

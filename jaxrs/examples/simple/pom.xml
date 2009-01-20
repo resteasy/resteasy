@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>simple</artifactId>
-    <version>1.0-RC1</version>
+    <version>1.0.0.GA</version>
     <packaging>war</packaging>
     <name/>
     <description/>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.0-RC1</version>
+            <version>1.0.0.GA</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>

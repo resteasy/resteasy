@@ -11,7 +11,7 @@ JBoss's Maven Repository is at:
    </para>
    <para>
 
-      Here's the pom.xml fragment to use. Please replace 1.0-RC1 with the current Resteasy version you want to use.
+      Here's the pom.xml fragment to use. Please replace 1.0.0.GA with the current Resteasy version you want to use.
    </para>
    <para>
 
@@ -26,7 +26,7 @@ JBoss's Maven Repository is at:
    &lt;dependency&gt;
       &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
       &lt;artifactId&gt;resteasy-jaxrs&lt;/artifactId&gt;
-      &lt;version&gt;1.0-RC1&lt;/version&gt;
+      &lt;version&gt;1.0.0.GA&lt;/version&gt;
    &lt;/dependency&gt;
 &lt;/dependencies&gt;
       </programlisting>
