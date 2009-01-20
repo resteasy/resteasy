@@ -22,7 +22,7 @@
             </listitem>
 
             <listitem>
-               @Produce/Consumes annotations have been renamed @Produces/@Consumes respectively
+               @ProduceMime/ConsumeMime annotations have been renamed @Produces/@Consumes respectively
             </listitem>
 
             <listitem>
