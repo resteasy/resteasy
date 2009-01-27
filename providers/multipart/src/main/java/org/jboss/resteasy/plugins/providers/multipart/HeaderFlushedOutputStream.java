@@ -14,6 +14,7 @@ public class HeaderFlushedOutputStream extends OutputStream
 {
    private MultivaluedMap<String, Object> headers;
    private OutputStream stream;
+   private boolean headersFlushed = false;
 
    public HeaderFlushedOutputStream(MultivaluedMap<String, Object> headers, OutputStream delegate)
    {
@@ -23,6 +24,9 @@ public class HeaderFlushedOutputStream extends OutputStream
 
    protected void flushHeaders() throws IOException
    {
+      if (headersFlushed) return;
+
+      headersFlushed = true;
       RuntimeDelegate delegate = RuntimeDelegate.getInstance();
 
       for (String key : headers.keySet())
