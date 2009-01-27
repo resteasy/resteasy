@@ -62,6 +62,7 @@ public class RegisterBuiltin
       factory.addMessageBodyWriter(new StreamingOutputProvider());
       logger.info("Added built in provider {}", StreamingOutputProvider.class.getName());
 
+      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider", factory);
