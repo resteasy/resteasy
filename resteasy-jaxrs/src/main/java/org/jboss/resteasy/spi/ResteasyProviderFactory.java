@@ -64,7 +64,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public Class<? extends T> readerClass;
       public T obj;
 
-      boolean isGeneric = false;
+      public boolean isGeneric = false;
+
+      public boolean isBuiltin = false;
+
+
+      private MessageBodyKey(Class<? extends T> readerClass, T reader, boolean isBuiltin)
+      {
+         this(readerClass, reader);
+         this.isBuiltin = isBuiltin;
+      }
+
 
       private MessageBodyKey(Class<? extends T> readerClass, T reader)
       {
@@ -97,9 +107,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public int compareTo(MessageBodyKey<T> tMessageBodyKey)
       {
          if (this == tMessageBodyKey) return 0;
-         if (isGeneric == tMessageBodyKey.isGeneric) return 0;
-         if (isGeneric) return 1;
-         return -1;
+         if (isGeneric != tMessageBodyKey.isGeneric)
+         {
+            if (isGeneric) return 1;
+            else return -1;
+         }
+         if (isBuiltin == tMessageBodyKey.isBuiltin) return 0;
+         if (isBuiltin) return 1;
+         else return -1;
       }
    }
 
@@ -228,11 +243,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyReader(MessageBodyReader provider)
    {
+      addMessageBodyReader(provider, false);
+   }
+
+   public void addBuiltInMessageBodyReader(MessageBodyReader provider)
+   {
+      addMessageBodyReader(provider, true);
+   }
+
+   public void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
+   {
+      MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(provider.getClass(), provider, isBuiltin);
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
       injector.inject(provider);
       providers.put(provider.getClass(), provider);
       Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
-      MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(provider.getClass(), provider);
       if (consumeMime != null)
       {
          for (String consume : consumeMime.value())
@@ -267,11 +292,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyWriter(MessageBodyWriter provider)
    {
+      addMessageBodyWriter(provider, false);
+   }
+
+   public void addBuiltInMessageBodyWriter(MessageBodyWriter provider)
+   {
+      addMessageBodyWriter(provider, true);
+   }
+
+   public void addMessageBodyWriter(MessageBodyWriter provider, boolean isBuiltin)
+   {
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
       providers.put(provider.getClass(), provider);
       injector.inject(provider);
       Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
-      MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(provider.getClass(), provider);
+      MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(provider.getClass(), provider, isBuiltin);
       if (consumeMime != null)
       {
          for (String consume : consumeMime.value())

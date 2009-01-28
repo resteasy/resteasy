@@ -7,8 +7,16 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -69,14 +77,115 @@ public class MediaTypeMapTest
       Assert.assertTrue(list.get(3) == wildcard);
    }
 
+   @Provider
+   @Produces("text/plain")
+   public static class PlainTextWriter implements MessageBodyWriter
+   {
+      public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return true;
+      }
+
+      public long getSize(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return 0;
+      }
+
+      public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+      {
+      }
+   }
+
+   @Provider
+   @Produces("text/plain")
+   public static class IntegerPlainTextWriter implements MessageBodyWriter<Integer>
+   {
+      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return true;
+      }
+
+      public long getSize(Integer integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return 0;
+      }
+
+      public void writeTo(Integer integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+      {
+      }
+   }
+
    @Test
    public void testMatching2()
    {
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
+      RegisterBuiltin.register(factory);
 
-      MessageBodyWriter<Integer> writer = ResteasyProviderFactory.getInstance().getMessageBodyWriter(Integer.class, null, null, new MediaType("text", "plain"));
+      MessageBodyWriter<Integer> writer = factory.getMessageBodyWriter(Integer.class, null, null, new MediaType("text", "plain"));
       Assert.assertNotNull(writer);
       Assert.assertEquals(writer.getClass(), DefaultTextPlain.class);
+   }
+
+   @Test
+   public void testUserPrecendence1() throws Exception
+   {
+      // Register Built In first
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
+      RegisterBuiltin.register(factory);
+
+      factory.addMessageBodyWriter(new PlainTextWriter());
+
+      // Test that application providers take precedence over builtin
+      verifyPlainWriter(factory);
+
+      factory.addMessageBodyWriter(new IntegerPlainTextWriter());
+      verifyIntegerWriter(factory);
+
+   }
+
+   @Test
+   public void testUserPrecendence2() throws Exception
+   {
+      // register PlainTextWriter first
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
+
+      factory.addMessageBodyWriter(new PlainTextWriter());
+      RegisterBuiltin.register(factory);
+
+      verifyPlainWriter(factory);
+
+      factory.addMessageBodyWriter(new IntegerPlainTextWriter());
+      verifyIntegerWriter(factory);
+
+   }
+
+   @Test
+   public void testUserPrecendence3() throws Exception
+   {
+      // register PlainTextWriter first
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
+
+      factory.addMessageBodyWriter(new IntegerPlainTextWriter());
+      factory.addMessageBodyWriter(new PlainTextWriter());
+      RegisterBuiltin.register(factory);
+
+      verifyIntegerWriter(factory);
+
+   }
+
+   private void verifyPlainWriter(ResteasyProviderFactory factory)
+   {
+      MessageBodyWriter writer2 = factory.getMessageBodyWriter(Integer.class, null, null, MediaType.TEXT_PLAIN_TYPE);
+      Assert.assertNotNull(writer2);
+      Assert.assertTrue(writer2 instanceof PlainTextWriter);
+   }
+
+   private void verifyIntegerWriter(ResteasyProviderFactory factory)
+   {
+      MessageBodyWriter writer2;// Test that type specific template providers take precedence over others
+      writer2 = factory.getMessageBodyWriter(Integer.class, null, null, MediaType.TEXT_PLAIN_TYPE);
+      Assert.assertNotNull(writer2);
+      Assert.assertTrue(writer2.getClass().getName(), writer2 instanceof IntegerPlainTextWriter);
    }
 
 
