@@ -106,6 +106,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
       public int compareTo(MessageBodyKey<T> tMessageBodyKey)
       {
+         // Sort more specific template parameter types before non-specific
+         // Sort user provider before builtins
          if (this == tMessageBodyKey) return 0;
          if (isGeneric != tMessageBodyKey.isGeneric)
          {
