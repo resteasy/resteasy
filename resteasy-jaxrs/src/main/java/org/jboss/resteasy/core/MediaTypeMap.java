@@ -32,7 +32,12 @@ public class MediaTypeMap<T>
 
       public int compareTo(Entry entry)
       {
-         return MediaTypeHelper.compareWeight(mediaType, entry.mediaType);
+         int val = MediaTypeHelper.compareWeight(mediaType, entry.mediaType);
+         if (val == 0 && object instanceof Comparable && entry.object instanceof Comparable)
+         {
+            return ((Comparable) object).compareTo(entry.object);
+         }
+         return val;
       }
    }
 

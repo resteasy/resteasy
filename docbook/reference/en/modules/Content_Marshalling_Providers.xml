@@ -772,6 +772,40 @@ public class MyResource
 ]]>
 </programlisting>
    </sect2>
+   <sect2 id="JAXB_INTERFACES">
+      <title>Interfaces, Abstract Classes, and JAXB</title>
+      <para>
+       Some objects models use abstract classes and interfaces heavily.  Unfortunately, JAXB doesn't work with interfaces
+       that are root elements and RESTEasy can't unmarshal parameters that are interfaces or raw abstract classes because
+       it doesn't have enough information to create a JAXBContext.  For example:
+      </para>
+<programlisting>
+public interface IFoo {}
+
+@XmlRootElement
+public class RealFoo implements IFoo {}
+
+@Path("/jaxb")
+public class MyResource {
+
+   @PUT
+   @Consumes("application/xml")
+   public void put(IFoo foo) {...}
+}
+</programlisting>
+   <para>
+     In this example, you would get an error from RESTEasy of something like "Cannot find a MessageBodyReader for...".  This is because
+     RESTEasy does not know that implementations of IFoo are JAXB classes and doesn't know how to create a JAXBContext for it.  As a workaround,
+    RESTEasy allows you to use the JAXB annotation @XmlSeeAlso on the interface to correct the problem.  (NOTE, this will not work with manual, hand-coded JAXB).
+   </para>
+<programlisting>
+@XmlSeeAlso(RealFoo.class)
+public interface IFoo {}
+</programlisting>
+   <para>
+   The extra @XmlSeeAlso on IFoo allows RESTEasy to create a JAXBContext that knows how to unmarshal RealFoo instances.
+   </para>
+   </sect2>
    </sect1>
    <sect1 id="Built_in_YAML_Provider">
       <title>YAML Provider</title>
