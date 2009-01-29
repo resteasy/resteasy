@@ -33,6 +33,6 @@ public class ThreadLocalStack<T>
    public void pop()
    {
       ArrayList<T> stack = local.get();
-      stack.remove(stack.size() - 1);
+      if (stack != null && !stack.isEmpty()) stack.remove(stack.size() - 1);
    }
 }
