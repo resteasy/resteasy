@@ -2,7 +2,7 @@
    <parent>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs-all</artifactId>
-      <version>1.0.0.GA</version>
+      <version>1.0.1.GA</version>
    </parent>
    <name>Async Http JBossWeb</name>
    <url>http://www.attainware.com/</url>

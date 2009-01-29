@@ -5,7 +5,7 @@
    <parent>
       <artifactId>resteasy-jaxrs-all</artifactId>
       <groupId>org.jboss.resteasy</groupId>
-      <version>1.0.0.GA</version>
+      <version>1.0.1.GA</version>
    </parent>
 
    <artifactId>resteasy-common</artifactId>

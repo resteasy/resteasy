@@ -40,7 +40,7 @@
    <bookinfo>
       <title>RESTEasy JAX-RS</title>
       <subtitle>RESTFul Web Services for Java</subtitle>
-      <releaseinfo>1.0.0.GA</releaseinfo>
+      <releaseinfo>1.0.1.GA</releaseinfo>
    </bookinfo>
 
    <toc/>
