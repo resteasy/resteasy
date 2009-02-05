@@ -30,6 +30,7 @@
       </para>
       <programlisting><![CDATA[
 import org.jboss.resteasy.plugins.providers.atom.Content;
+import org.jboss.resteasy.plugins.providers.atom.Entry;
 import org.jboss.resteasy.plugins.providers.atom.Feed;
 import org.jboss.resteasy.plugins.providers.atom.Link;
 import org.jboss.resteasy.plugins.providers.atom.Person;
@@ -41,7 +42,7 @@ public class MyAtomService
    @GET
    @Path("feed")
    @Produces("application/atom+xml")
-   public Feed getFeed()
+   public Feed getFeed() throws URISyntaxException
    {
       Feed feed = new Feed();
       feed.setId(new URI("http://example.com/42"));
@@ -57,7 +58,8 @@ public class MyAtomService
       Content content = new Content();
       content.setType(MediaType.TEXT_HTML_TYPE);
       content.setText("Nothing much");
-      feed.getEntries().add(content);
+      entry.setContent(content);
+      feed.getEntries().add(entry);
       return feed;
    }
 }
