@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.core;
 
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.client.ClientRequest;
 
 import javax.ws.rs.core.Cookie;
 
@@ -23,20 +22,16 @@ public class CookieParamMarshaller implements Marshaller
       return cookieName;
    }
 
-   public void buildUri(Object object, UriBuilderImpl uri)
+   public void build(ClientRequest request, Object object)
    {
-   }
-
-   public void setHeaders(Object object, HttpMethodBase httpMethod)
-   {
-      Cookie cookie = null;
-      if (object instanceof Cookie) cookie = (Cookie) object;
-      else cookie = new Cookie(cookieName, object.toString());
-
-      httpMethod.setRequestHeader("Cookie", cookie.toString());
-   }
-
-   public void buildRequest(Object object, HttpMethodBase httpMethod)
-   {
+      if (object instanceof Cookie)
+      {
+         Cookie cookie = (Cookie) object;
+         request.cookie(cookie);
+      }
+      else
+      {
+         request.cookie(cookieName, object);
+      }
    }
 }

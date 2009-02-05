@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.core;
 
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.client.ClientRequest;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -9,9 +8,5 @@ import org.jboss.resteasy.specimpl.UriBuilderImpl;
  */
 public interface Marshaller
 {
-   void buildUri(Object object, UriBuilderImpl uri);
-
-   void setHeaders(Object object, HttpMethodBase httpMethod);
-
-   void buildRequest(Object object, HttpMethodBase httpMethod);
+   void build(ClientRequest request, Object target);
 }

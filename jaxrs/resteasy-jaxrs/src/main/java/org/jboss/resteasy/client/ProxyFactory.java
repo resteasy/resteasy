@@ -1,19 +1,15 @@
 package org.jboss.resteasy.client;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.client.core.ClientInterceptor;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientProxy;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 
-import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -23,8 +19,6 @@ import java.util.Set;
  */
 public class ProxyFactory
 {
-
-   private static Collection<ClientInterceptor> interceptors = new ArrayList<ClientInterceptor>();
 
    public static <T> T create(Class<T> clazz, String base)
    {
@@ -43,13 +37,8 @@ public class ProxyFactory
       }
    }
 
-   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory)
-   {
-      return create(clazz, baseUri, httpClient, providerFactory, ProxyFactory.interceptors);
-   }
-
    @SuppressWarnings("unchecked")
-   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory, Collection<ClientInterceptor> interceptors)
+   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory)
    {
       HashMap<Method, ClientInvoker> methodMap = new HashMap<Method, ClientInvoker>();
 
@@ -57,14 +46,11 @@ public class ProxyFactory
       {
          ClientInvoker invoker = null;
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
-         if (httpMethods == null)
-            throw new RuntimeException("Method must be annotated with an http method annotation @GET, etc..");
          if (httpMethods.size() != 1)
-            throw new RuntimeException("You may only annotate a method with only one http method annotation");
+            throw new RuntimeException("You must use at least one, but no more than one http method annotation");
 
-         invoker = new ClientInvoker(clazz, method, providerFactory, httpClient, interceptors);
-         invoker.setBaseUri(baseUri);
-         invoker.setRestVerb(getRestVerb(httpMethods));
+         invoker = new ClientInvoker(baseUri, clazz, method, providerFactory, httpClient);
+         invoker.setHttpMethod(httpMethods.iterator().next());
          methodMap.put(method, invoker);
       }
 
@@ -79,22 +65,4 @@ public class ProxyFactory
       return (T) Proxy.newProxyInstance(clazz.getClassLoader(), intfs, clientProxy);
    }
 
-   private static String getRestVerb(Set<String> httpMethods)
-   {
-      if (httpMethods.contains(HttpMethod.GET))
-         return "GET";
-      else if (httpMethods.contains(HttpMethod.PUT))
-         return "PUT";
-      else if (httpMethods.contains(HttpMethod.POST))
-         return "POST";
-      else if (httpMethods.contains(HttpMethod.DELETE))
-         return "DELETE";
-      else
-         throw new RuntimeException("@" + httpMethods.iterator().next() + " is not supported yet");
-   }
-
-   public static void addInterceptor(ClientInterceptor clientInterceptor)
-   {
-      interceptors.add(clientInterceptor);
-   }
 }

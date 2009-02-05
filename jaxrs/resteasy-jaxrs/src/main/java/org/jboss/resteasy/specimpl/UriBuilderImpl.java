@@ -49,6 +49,33 @@ public class UriBuilderImpl extends UriBuilder
       return impl;
    }
 
+   private static final Pattern uriPattern = Pattern.compile("([^:]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
+
+   /**
+    * Must follow the patter scheme://host:port/path?query#fragment
+    * <p/>
+    * port, path, query and fragment are optional. Scheme and host must be specified.
+    * <p/>
+    * You may put path parameters anywhere within the uriTemplate except port
+    *
+    * @param uriTemplate
+    * @return
+    */
+   public UriBuilder uriTemplate(String uriTemplate)
+   {
+      Matcher match = uriPattern.matcher(uriTemplate);
+      if (!match.matches()) throw new RuntimeException("Illegal uri template: " + uriTemplate);
+      scheme(match.group(1));
+      host(match.group(2));
+      if (match.group(4) != null) port(Integer.valueOf(match.group(4)));
+      if (match.group(5) != null) path(match.group(5));
+      if (match.group(7) != null) replaceQuery(match.group(6));
+      if (match.group(9) != null) fragment(match.group(8));
+
+      return this;
+
+   }
+
    @Override
    public UriBuilder uri(URI uri) throws IllegalArgumentException
    {
@@ -194,8 +221,7 @@ public class UriBuilderImpl extends UriBuilder
       Path ann = method.getAnnotation(Path.class);
       if (ann != null)
       {
-         String[] segments = new String[]{ann.value()};
-         path = paths(true, path, segments);
+         path = paths(true, path, ann.value());
       }
       return this;
    }

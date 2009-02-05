@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.core;
 
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -40,8 +39,8 @@ public class FormMarshaller implements Marshaller
       public Marshaller marshaller;
    }
 
-   protected List<GetterMethod> setters = new ArrayList<GetterMethod>();
-   protected HashMap<Long, Method> setterhashes = new HashMap<Long, Method>();
+   protected List<GetterMethod> getters = new ArrayList<GetterMethod>();
+   protected HashMap<Long, Method> getterHashes = new HashMap<Long, Method>();
    protected Class clazz;
 
    public FormMarshaller(Class clazz, ResteasyProviderFactory factory)
@@ -138,7 +137,7 @@ public class FormMarshaller implements Marshaller
          Type genericType = field.getGenericType();
 
          Marshaller marshaller = ClientMarshallerFactory.createMarshaller(
-               clazz, factory, type, annotations, genericType, field, true);
+                 clazz, factory, type, annotations, genericType, field, true);
          if (marshaller != null)
          {
             if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
@@ -158,8 +157,8 @@ public class FormMarshaller implements Marshaller
          Type genericType = method.getGenericReturnType();
 
          Marshaller marshaller = ClientMarshallerFactory
-         .createMarshaller(clazz, factory, type, annotations,
-               genericType, method, true);
+                 .createMarshaller(clazz, factory, type, annotations,
+                         genericType, method, true);
          if (marshaller != null)
          {
             long hash = 0;
@@ -173,13 +172,13 @@ public class FormMarshaller implements Marshaller
             }
             if (!Modifier.isPrivate(method.getModifiers()))
             {
-               Method older = setterhashes.get(hash);
+               Method older = getterHashes.get(hash);
                if (older != null) continue;
             }
 
             if (!Modifier.isPublic(method.getModifiers())) method.setAccessible(true);
-            setters.add(new GetterMethod(method, marshaller));
-            setterhashes.put(hash, method);
+            getters.add(new GetterMethod(method, marshaller));
+            getterHashes.put(hash, method);
          }
 
       }
@@ -189,7 +188,7 @@ public class FormMarshaller implements Marshaller
 
    }
 
-   public void buildUri(Object object, UriBuilderImpl uri)
+   public void build(ClientRequest request, Object object)
    {
       for (Map.Entry<Field, Marshaller> entry : fieldMap.entrySet())
       {
@@ -197,19 +196,19 @@ public class FormMarshaller implements Marshaller
          try
          {
             Object val = entry.getKey().get(object);
-            entry.getValue().buildUri(val, uri);
+            entry.getValue().build(request, val);
          }
          catch (IllegalAccessException e)
          {
             throw new LoggableFailure(e);
          }
       }
-      for (GetterMethod setter : setters)
+      for (GetterMethod getter : getters)
       {
          Object val = null;
          try
          {
-            val = setter.method.invoke(object);
+            val = getter.method.invoke(object);
          }
          catch (IllegalAccessException e)
          {
@@ -219,75 +218,8 @@ public class FormMarshaller implements Marshaller
          {
             throw new RuntimeException(e);
          }
-         setter.marshaller.buildUri(val, uri);
+         getter.marshaller.build(request, val);
       }
    }
 
-   public void setHeaders(Object object, HttpMethodBase httpMethod)
-   {
-      for (Map.Entry<Field, Marshaller> entry : fieldMap.entrySet())
-      {
-
-         try
-         {
-            Object val = entry.getKey().get(object);
-            entry.getValue().setHeaders(val, httpMethod);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new LoggableFailure(e);
-         }
-      }
-      for (GetterMethod setter : setters)
-      {
-         Object val = null;
-         try
-         {
-            val = setter.method.invoke(object);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new RuntimeException(e);
-         }
-         setter.marshaller.setHeaders(val, httpMethod);
-      }
-   }
-
-   public void buildRequest(Object object, HttpMethodBase httpMethod)
-   {
-      for (Map.Entry<Field, Marshaller> entry : fieldMap.entrySet())
-      {
-
-         try
-         {
-            Object val = entry.getKey().get(object);
-            entry.getValue().buildRequest(val, httpMethod);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new LoggableFailure(e);
-         }
-      }
-      for (GetterMethod setter : setters)
-      {
-         Object val = null;
-         try
-         {
-            val = setter.method.invoke(object);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new RuntimeException(e);
-         }
-         setter.marshaller.buildRequest(val, httpMethod);
-      }
-   }
 }
