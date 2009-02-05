@@ -1,12 +1,6 @@
 package org.jboss.resteasy.client.core;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -23,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 
 //import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
@@ -36,11 +29,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    protected ResteasyProviderFactory providerFactory;
 
    protected String attributeExceptionsTo;
-   protected Iterable<ClientInterceptor> interceptors = Collections.emptyList();
-
-   protected String restVerb;
-   protected String url;
-   protected HttpMethodBase baseMethod;
    protected CaseInsensitiveMap<String> headers;
 
    protected String alternateMediaType;
@@ -58,10 +46,26 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    protected Exception exception;
 
    // These can only be set by an interceptor
-   protected boolean allowRereads = false;
    protected boolean performExecute = true;
 
    protected boolean cacheInputStream;
+
+   protected HttpMethodBase httpMethod;
+
+   public void setStatus(int status)
+   {
+      this.status = status;
+   }
+
+   public void setHttpMethod(HttpMethodBase httpMethod)
+   {
+      this.httpMethod = httpMethod;
+   }
+
+   public void setHeaders(CaseInsensitiveMap<String> headers)
+   {
+      this.headers = headers;
+   }
 
    public void setProviderFactory(ResteasyProviderFactory providerFactory)
    {
@@ -108,22 +112,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
       this.exception = exception;
    }
 
-   public void setInterceptors(Iterable<ClientInterceptor> interceptors)
-   {
-      this.interceptors = interceptors;
-   }
-
-   public Header getContentTypeHeader()
-   {
-      return baseMethod.getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
-   }
-
-   public String getContentType()
-   {
-      Header contentTypeHeader = getContentTypeHeader();
-      return contentTypeHeader == null ? null : contentTypeHeader.getValue();
-   }
-
    public Annotation[] getAnnotations()
    {
       return this.annotations;
@@ -138,31 +126,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    public void setAlternateMediaType(String alternateMediaType)
    {
       this.alternateMediaType = alternateMediaType;
-   }
-
-   public HttpMethodBase getHttpBaseMethod()
-   {
-      return this.baseMethod;
-   }
-
-   public boolean isAllowRereads()
-   {
-      return allowRereads;
-   }
-
-   public void setAllowRereads(boolean allowRereads)
-   {
-      this.allowRereads = allowRereads;
-   }
-
-   public boolean isPerformExecute()
-   {
-      return performExecute;
-   }
-
-   public void setPerformExecute(boolean performExecute)
-   {
-      this.performExecute = performExecute;
    }
 
    @SuppressWarnings("unchecked")
@@ -232,10 +195,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
          {
             streamWasRead = true;
             unmarshaledEntity = reader.readFrom(type, genericType, annotations, media, headers, getInputStream());
-            for (ClientInterceptor clientInterceptor : interceptors)
-            {
-               clientInterceptor.postUnMarshalling(this);
-            }
             return (T2) unmarshaledEntity;
          }
          catch (Exception e)
@@ -250,11 +209,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
       {
          releaseConnection();
       }
-   }
-
-   private InputStream getInputStream() throws IOException
-   {
-      return baseMethod.getResponseBodyAsStream();
    }
 
    @Override
@@ -288,87 +242,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
       releaseConnection();
    }
 
-   public String getRestVerb()
-   {
-      return restVerb;
-   }
-
-   public void setRestVerb(String restVerb)
-   {
-      this.restVerb = restVerb;
-   }
-
-   public void setUrl(String url)
-   {
-      this.url = url;
-      for (ClientInterceptor clientInterceptor : interceptors)
-      {
-         clientInterceptor.preBaseMethodConstruction(this);
-      }
-      this.baseMethod = createBaseMethodHelper(url);
-   }
-
-   public int execute(HttpClient client)
-   {
-      try
-      {
-         for (ClientInterceptor clientInterceptor : interceptors)
-         {
-            clientInterceptor.preExecute(this);
-         }
-
-         // one of the interceptors can set performExecute to false, for
-         // example, a caching interceptor.
-         if (performExecute)
-         {
-            status = client.executeMethod(baseMethod);
-            headers = extractHeaders(baseMethod);
-            for (ClientInterceptor clientInterceptor : interceptors)
-            {
-               clientInterceptor.postExecute(this);
-            }
-         }
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException("Failed to execute GET request: " + url, e);
-      }
-      return status;
-   }
-
-   public static CaseInsensitiveMap<String> extractHeaders(
-           HttpMethodBase baseMethod)
-   {
-      final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
-
-      for (Header header : baseMethod.getResponseHeaders())
-      {
-         headers.add(header.getName(), header.getValue());
-      }
-      return headers;
-   }
-
-   private HttpMethodBase createBaseMethodHelper(String url)
-   {
-      if ("GET".equals(restVerb))
-      {
-         return new GetMethod(url);
-      }
-      else if ("POST".equals(restVerb))
-      {
-         return new PostMethod(url);
-      }
-      else if ("PUT".equals(restVerb))
-      {
-         return new PutMethod(url);
-      }
-      else if ("DELETE".equals(restVerb))
-      {
-         return new DeleteMethod(url);
-      }
-      return null;
-   }
-
    public void checkFailureStatus()
    {
       if (status > 399 && status < 599)
@@ -394,15 +267,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
               (ClientResponse<byte[]>) this);
    }
 
-   public void releaseConnection()
-   {
-      if (!wasReleased)
-      {
-         baseMethod.releaseConnection();
-         wasReleased = true;
-      }
-   }
-
    @Override
    public Status getResponseStatus()
    {
@@ -413,4 +277,19 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    {
       return wasReleased;
    }
+
+   protected InputStream getInputStream() throws IOException
+   {
+      return httpMethod.getResponseBodyAsStream();
+   }
+
+   public void releaseConnection()
+   {
+      if (!wasReleased)
+      {
+         httpMethod.releaseConnection();
+         wasReleased = true;
+      }
+   }
+
 }
