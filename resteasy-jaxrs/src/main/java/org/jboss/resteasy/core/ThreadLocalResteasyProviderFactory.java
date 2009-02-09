@@ -101,6 +101,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory
    }
 
    @Override
+   public void addBuiltInMessageBodyReader(MessageBodyReader provider)
+   {
+      getDelegate().addBuiltInMessageBodyReader(provider);
+   }
+
+   @Override
    public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider)
    {
       getDelegate().addMessageBodyWriter(provider);
@@ -110,6 +116,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory
    public void addMessageBodyWriter(MessageBodyWriter provider)
    {
       getDelegate().addMessageBodyWriter(provider);
+   }
+
+   @Override
+   public void addBuiltInMessageBodyWriter(MessageBodyWriter provider)
+   {
+      getDelegate().addBuiltInMessageBodyWriter(provider);
    }
 
    @Override
