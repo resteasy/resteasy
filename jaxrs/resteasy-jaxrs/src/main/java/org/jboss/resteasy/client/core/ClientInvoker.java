@@ -163,6 +163,7 @@ public class ClientInvoker
 
    private Object extractEntity(BaseClientResponse clientResponse)
    {
+      clientResponse.setAnnotations(method.getAnnotations());
       final Class<?> returnType = method.getReturnType();
       if (ClientResponse.class.isAssignableFrom(returnType))
       {
@@ -175,7 +176,6 @@ public class ClientInvoker
             clientResponse.setGenericReturnType(genericReturnType);
          }
 
-         clientResponse.setAnnotations(method.getAnnotations());
          return clientResponse;
       }
       else if (returnType.equals(Response.Status.class))
