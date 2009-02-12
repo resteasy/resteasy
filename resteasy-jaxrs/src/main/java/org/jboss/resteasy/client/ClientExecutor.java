@@ -6,5 +6,5 @@ package org.jboss.resteasy.client;
  */
 public interface ClientExecutor
 {
-   ClientResponse execute(String verb, ClientRequest request) throws Exception;
+   ClientResponse execute(ClientRequest request) throws Exception;
 }

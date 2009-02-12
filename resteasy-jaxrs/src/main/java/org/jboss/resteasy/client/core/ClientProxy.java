@@ -29,7 +29,7 @@ public class ClientProxy implements InvocationHandler
    }
 
    public Object invoke(Object o, Method method, Object[] args)
-         throws Throwable
+           throws Throwable
    {
       // equals and hashCode were added for cases where the proxy is added to
       // collections. The Spring transaction management, for example, adds
@@ -42,6 +42,10 @@ public class ClientProxy implements InvocationHandler
       else if (method.getName().equals("hashCode"))
       {
          return this.hashCode();
+      }
+      else if (method.getName().equals("getResteasyClientInvokers"))
+      {
+         return methodMap.values();
       }
       ClientInvoker clientInvoker = methodMap.get(method);
       return clientInvoker.invoke(args);

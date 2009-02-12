@@ -1,8 +1,13 @@
 package org.jboss.resteasy.client;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.client.core.ClientResponseImpl;
-import org.jboss.resteasy.client.core.HttpClientExecutor;
+import org.jboss.resteasy.client.core.ApacheHttpClientExecutor;
+import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
+import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
+import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -15,7 +20,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -46,6 +54,12 @@ public class ClientRequest
    private Annotation[] bodyAnnotations;
    private MediaType bodyContentType;
    private boolean followRedirects;
+   private MessageBodyReaderInterceptor[] readerInterceptors;
+   private MessageBodyWriterInterceptor[] writerInterceptors;
+   private ClientExecutionInterceptor[] executionInterceptors;
+   private MessageBodyWriter writer;
+   private String httpMethod;
+   private String finalUri;
 
    public ClientRequest(String uriTemplate)
    {
@@ -59,7 +73,7 @@ public class ClientRequest
 
    public ClientRequest(String uriTemplate, HttpClient httpClient, ResteasyProviderFactory providerFactory)
    {
-      this(new UriBuilderImpl().uriTemplate(uriTemplate), new HttpClientExecutor(httpClient), providerFactory);
+      this(new UriBuilderImpl().uriTemplate(uriTemplate), new ApacheHttpClientExecutor(httpClient), providerFactory);
    }
 
    public ClientRequest(UriBuilder uri, ClientExecutor executor, ResteasyProviderFactory providerFactory)
@@ -80,6 +94,36 @@ public class ClientRequest
       return this;
    }
 
+   public MessageBodyReaderInterceptor[] getReaderInterceptors()
+   {
+      return readerInterceptors;
+   }
+
+   public MessageBodyWriterInterceptor[] getWriterInterceptors()
+   {
+      return writerInterceptors;
+   }
+
+   public ClientExecutionInterceptor[] getExecutionInterceptors()
+   {
+      return executionInterceptors;
+   }
+
+   public void setReaderInterceptors(MessageBodyReaderInterceptor[] readerInterceptors)
+   {
+      this.readerInterceptors = readerInterceptors;
+   }
+
+   public void setWriterInterceptors(MessageBodyWriterInterceptor[] writerInterceptors)
+   {
+      this.writerInterceptors = writerInterceptors;
+   }
+
+   public void setExecutionInterceptors(ClientExecutionInterceptor[] executionInterceptors)
+   {
+      this.executionInterceptors = executionInterceptors;
+   }
+
    public ClientRequest accept(MediaType accepts)
    {
       return header(ACCEPT, accepts.toString());
@@ -87,7 +131,11 @@ public class ClientRequest
 
    public ClientRequest accept(String accept)
    {
-      return header(ACCEPT, accept);
+      String curr = getHeaders().getFirst(ACCEPT);
+      if (curr != null) curr += "," + accept;
+      else curr = accept;
+      getHeaders().putSingle(ACCEPT, curr);
+      return this;
    }
 
    protected String toString(Object object)
@@ -112,29 +160,25 @@ public class ClientRequest
 
    public ClientRequest formParameter(String parameterName, Object value)
    {
-      if (formParameters == null) formParameters = new MultivaluedMapImpl<String, String>();
-      formParameters.add(parameterName, toString(value));
+      getFormParameters().add(parameterName, toString(value));
       return this;
    }
 
    public ClientRequest queryParameter(String parameterName, Object value)
    {
-      if (queryParameters == null) queryParameters = new MultivaluedMapImpl<String, String>();
-      queryParameters.add(parameterName, toString(value));
+      getQueryParameters().add(parameterName, toString(value));
       return this;
    }
 
    public ClientRequest matrixParameter(String parameterName, Object value)
    {
-      if (matrixParameters == null) matrixParameters = new MultivaluedMapImpl<String, String>();
-      matrixParameters.add(parameterName, toString(value));
+      getMatrixParameters().add(parameterName, toString(value));
       return this;
    }
 
    public ClientRequest header(String headerName, Object value)
    {
-      if (headers == null) headers = new MultivaluedMapImpl<String, String>();
-      headers.add(headerName, toHeaderString(value));
+      getHeaders().add(headerName, toHeaderString(value));
       return this;
    }
 
@@ -150,8 +194,7 @@ public class ClientRequest
 
    public ClientRequest pathParameter(String parameterName, Object value)
    {
-      if (pathParameters == null) pathParameters = new MultivaluedMapImpl<String, String>();
-      pathParameters.add(parameterName, toString(value));
+      getPathParameters().add(parameterName, toString(value));
       return this;
    }
 
@@ -198,26 +241,31 @@ public class ClientRequest
 
    public MultivaluedMap<String, String> getHeaders()
    {
+      if (headers == null) headers = new MultivaluedMapImpl<String, String>();
       return headers;
    }
 
    public MultivaluedMap<String, String> getQueryParameters()
    {
+      if (queryParameters == null) queryParameters = new MultivaluedMapImpl<String, String>();
       return queryParameters;
    }
 
    public MultivaluedMap<String, String> getFormParameters()
    {
+      if (formParameters == null) formParameters = new MultivaluedMapImpl<String, String>();
       return formParameters;
    }
 
    public MultivaluedMap<String, String> getPathParameters()
    {
+      if (pathParameters == null) pathParameters = new MultivaluedMapImpl<String, String>();
       return pathParameters;
    }
 
    public MultivaluedMap<String, String> getMatrixParameters()
    {
+      if (matrixParameters == null) matrixParameters = new MultivaluedMapImpl<String, String>();
       return matrixParameters;
    }
 
@@ -246,15 +294,71 @@ public class ClientRequest
       return bodyContentType;
    }
 
+   public String getHttpMethod()
+   {
+      return httpMethod;
+   }
+
+   public void setHttpMethod(String httpMethod)
+   {
+      this.httpMethod = httpMethod;
+   }
+
+   public ClientResponse execute() throws Exception
+   {
+      if (readerInterceptors == null)
+         readerInterceptors = providerFactory.getClientInterceptorRegistry().bindMessageBodyReaderInterceptors(null, null);
+
+      if (executionInterceptors == null)
+      {
+         executionInterceptors = providerFactory.getClientInterceptorRegistry().bindExecutionInterceptors(null, null);
+      }
+
+      BaseClientResponse response = null;
+      if (executionInterceptors == null || executionInterceptors.length == 0)
+      {
+         response = (BaseClientResponse) executor.execute(this);
+      }
+      else
+      {
+         ClientExecutionContextImpl ctx = new ClientExecutionContextImpl(executionInterceptors, executor, this);
+         response = (BaseClientResponse) ctx.proceed();
+      }
+      response.setMessageBodyReaderInterceptors(readerInterceptors);
+      return response;
+   }
+
+   public void writeRequestBody(MultivaluedMap<String, Object> headers, OutputStream outputStream) throws IOException
+   {
+      if (body == null) return;
+      if (writerInterceptors == null)
+         writerInterceptors = providerFactory.getClientInterceptorRegistry().bindMessageBodyWriterInterceptors(null, null);
+      if (writer == null)
+      {
+         writer = providerFactory.getMessageBodyWriter(getBodyType(), getBodyGenericType(), getBodyAnnotations(), getBodyContentType());
+      }
+
+      if (writerInterceptors != null && writerInterceptors.length > 0)
+      {
+         MessageBodyWriterContextImpl ctx = new MessageBodyWriterContextImpl(writerInterceptors, writer, body, bodyType, bodyGenericType, bodyAnnotations, bodyContentType, headers, outputStream);
+         ctx.proceed();
+      }
+      else
+      {
+         writer.writeTo(body, bodyType, bodyGenericType, bodyAnnotations, bodyContentType, headers, outputStream);
+      }
+
+   }
+
    public ClientResponse get() throws Exception
    {
-      return executor.execute("GET", this);
+      return httpMethod("GET");
    }
 
    public <T> ClientResponse<T> get(Class<T> returnType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) get();
+      BaseClientResponse response = (BaseClientResponse) get();
       response.setReturnType(returnType);
       return response;
    }
@@ -262,7 +366,7 @@ public class ClientRequest
    public <T> ClientResponse<T> get(Class<T> returnType, Type genericType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) get();
+      BaseClientResponse response = (BaseClientResponse) get();
       response.setReturnType(returnType);
       response.setGenericReturnType(genericType);
       return response;
@@ -271,7 +375,7 @@ public class ClientRequest
    public <T> ClientResponse<T> get(GenericType type)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) get();
+      BaseClientResponse response = (BaseClientResponse) get();
       response.setReturnType(type.getType());
       response.setGenericReturnType(type.getGenericType());
       return response;
@@ -279,18 +383,18 @@ public class ClientRequest
 
    public ClientResponse head() throws Exception
    {
-      return executor.execute("HEAD", this);
+      return httpMethod("HEAD");
    }
 
    public ClientResponse put() throws Exception
    {
-      return executor.execute("PUT", this);
+      return httpMethod("PUT");
    }
 
    public <T> ClientResponse<T> put(Class<T> returnType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) put();
+      BaseClientResponse response = (BaseClientResponse) put();
       response.setReturnType(returnType);
       return response;
    }
@@ -298,7 +402,7 @@ public class ClientRequest
    public <T> ClientResponse<T> put(Class<T> returnType, Type genericType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) put();
+      BaseClientResponse response = (BaseClientResponse) put();
       response.setReturnType(returnType);
       response.setGenericReturnType(genericType);
       return response;
@@ -307,7 +411,7 @@ public class ClientRequest
    public <T> ClientResponse<T> put(GenericType type)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) put();
+      BaseClientResponse response = (BaseClientResponse) put();
       response.setReturnType(type.getType());
       response.setGenericReturnType(type.getGenericType());
       return response;
@@ -315,13 +419,13 @@ public class ClientRequest
 
    public ClientResponse post() throws Exception
    {
-      return executor.execute("POST", this);
+      return httpMethod("POST");
    }
 
    public <T> ClientResponse<T> post(Class<T> returnType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) post();
+      BaseClientResponse response = (BaseClientResponse) post();
       response.setReturnType(returnType);
       return response;
    }
@@ -329,7 +433,7 @@ public class ClientRequest
    public <T> ClientResponse<T> post(Class<T> returnType, Type genericType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) post();
+      BaseClientResponse response = (BaseClientResponse) post();
       response.setReturnType(returnType);
       response.setGenericReturnType(genericType);
       return response;
@@ -338,7 +442,7 @@ public class ClientRequest
    public <T> ClientResponse<T> post(GenericType type)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) post();
+      BaseClientResponse response = (BaseClientResponse) post();
       response.setReturnType(type.getType());
       response.setGenericReturnType(type.getGenericType());
       return response;
@@ -346,13 +450,13 @@ public class ClientRequest
 
    public ClientResponse delete() throws Exception
    {
-      return executor.execute("DELETE", this);
+      return httpMethod("DELETE");
    }
 
    public <T> ClientResponse<T> delete(Class<T> returnType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) delete();
+      BaseClientResponse response = (BaseClientResponse) delete();
       response.setReturnType(returnType);
       return response;
    }
@@ -360,7 +464,7 @@ public class ClientRequest
    public <T> ClientResponse<T> delete(Class<T> returnType, Type genericType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) delete();
+      BaseClientResponse response = (BaseClientResponse) delete();
       response.setReturnType(returnType);
       response.setGenericReturnType(genericType);
       return response;
@@ -369,7 +473,7 @@ public class ClientRequest
    public <T> ClientResponse<T> delete(GenericType type)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) delete();
+      BaseClientResponse response = (BaseClientResponse) delete();
       response.setReturnType(type.getType());
       response.setGenericReturnType(type.getGenericType());
       return response;
@@ -377,13 +481,13 @@ public class ClientRequest
 
    public ClientResponse options() throws Exception
    {
-      return executor.execute("OPTIONS", this);
+      return httpMethod("OPTIONS");
    }
 
    public <T> ClientResponse<T> options(Class<T> returnType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) options();
+      BaseClientResponse response = (BaseClientResponse) options();
       response.setReturnType(returnType);
       return response;
    }
@@ -391,7 +495,7 @@ public class ClientRequest
    public <T> ClientResponse<T> options(Class<T> returnType, Type genericType)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) options();
+      BaseClientResponse response = (BaseClientResponse) options();
       response.setReturnType(returnType);
       response.setGenericReturnType(genericType);
       return response;
@@ -400,16 +504,57 @@ public class ClientRequest
    public <T> ClientResponse<T> options(GenericType type)
            throws Exception
    {
-      ClientResponseImpl response = (ClientResponseImpl) options();
+      BaseClientResponse response = (BaseClientResponse) options();
+      response.setReturnType(type.getType());
+      response.setGenericReturnType(type.getGenericType());
+      return response;
+   }
+
+   public ClientResponse httpMethod(String httpMethod) throws Exception
+   {
+      this.httpMethod = httpMethod;
+      return execute();
+   }
+
+   public <T> ClientResponse<T> httpMethod(String method, Class<T> returnType)
+           throws Exception
+   {
+      BaseClientResponse response = (BaseClientResponse) httpMethod(method);
+      response.setReturnType(returnType);
+      return response;
+   }
+
+   public <T> ClientResponse<T> httpmethod(String method, Class<T> returnType, Type genericType)
+           throws Exception
+   {
+      BaseClientResponse response = (BaseClientResponse) httpMethod(method);
+      response.setReturnType(returnType);
+      response.setGenericReturnType(genericType);
+      return response;
+   }
+
+   public <T> ClientResponse<T> httpMethod(String method, GenericType type)
+           throws Exception
+   {
+      BaseClientResponse response = (BaseClientResponse) httpMethod(method);
       response.setReturnType(type.getType());
       response.setGenericReturnType(type.getGenericType());
       return response;
    }
 
 
+   /**
+    * This method populates all path, matrix, and query parameters and saves it internally.
+    * Once its called once it returns the cached value.
+    *
+    * @return
+    * @throws Exception
+    */
    public String getUri() throws Exception
 
    {
+      if (finalUri != null) return finalUri;
+
       UriBuilderImpl builder = (UriBuilderImpl) uri.clone();
       if (pathParameters != null)
       {
@@ -439,7 +584,8 @@ public class ClientRequest
          }
       }
 
-      return builder.build().toString();
+      finalUri = builder.build().toString();
+      return finalUri;
    }
 
 }

@@ -5,6 +5,9 @@ import org.jboss.resteasy.annotations.ClientResponseType;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.EntityTypeFactory;
+import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -35,6 +38,10 @@ public class ClientInvoker
    protected MediaType accepts;
    protected Marshaller[] marshallers;
    protected HttpClient client;
+   protected MessageBodyReaderInterceptor[] readerInterceptors;
+   protected MessageBodyWriterInterceptor[] writerInterceptors;
+   protected ClientExecutionInterceptor[] executionInterceptors;
+
 
    public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, HttpClient client)
    {
@@ -49,6 +56,59 @@ public class ClientInvoker
       uri.uri(baseUri);
       if (declaring.isAnnotationPresent(Path.class)) uri.path(declaring);
       if (method.isAnnotationPresent(Path.class)) uri.path(method);
+      readerInterceptors = providerFactory.getClientInterceptorRegistry().bindMessageBodyReaderInterceptors(declaring, method);
+      writerInterceptors = providerFactory.getClientInterceptorRegistry().bindMessageBodyWriterInterceptors(declaring, method);
+      executionInterceptors = providerFactory.getClientInterceptorRegistry().bindExecutionInterceptors(declaring, method);
+   }
+
+   public MediaType getAccepts()
+   {
+      return accepts;
+   }
+
+   public MessageBodyReaderInterceptor[] getReaderInterceptors()
+   {
+      return readerInterceptors;
+   }
+
+   public void setReaderInterceptors(MessageBodyReaderInterceptor[] readerInterceptors)
+   {
+      this.readerInterceptors = readerInterceptors;
+   }
+
+   public MessageBodyWriterInterceptor[] getWriterInterceptors()
+   {
+      return writerInterceptors;
+   }
+
+   public void setWriterInterceptors(MessageBodyWriterInterceptor[] writerInterceptors)
+   {
+      this.writerInterceptors = writerInterceptors;
+   }
+
+   public ClientExecutionInterceptor[] getExecutionInterceptors()
+   {
+      return executionInterceptors;
+   }
+
+   public void setExecutionInterceptors(ClientExecutionInterceptor[] executionInterceptors)
+   {
+      this.executionInterceptors = executionInterceptors;
+   }
+
+   public Method getMethod()
+   {
+      return method;
+   }
+
+   public Class getDeclaring()
+   {
+      return declaring;
+   }
+
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return providerFactory;
    }
 
    public Object invoke(Object[] args)
@@ -60,8 +120,11 @@ public class ClientInvoker
       {
          if (uri == null) throw new RuntimeException("You have not set a base URI for the client proxy");
 
-         ClientRequest request = new ClientRequest(uri, new HttpClientExecutor(client), providerFactory);
+         ClientRequest request = new ClientRequest(uri, new ApacheHttpClientExecutor(client), providerFactory);
          if (accepts != null) request.header(HttpHeaders.ACCEPT, accepts.toString());
+         request.setWriterInterceptors(writerInterceptors);
+         request.setReaderInterceptors(readerInterceptors);
+         request.setExecutionInterceptors(executionInterceptors);
 
          boolean isClientResponseResult = ClientResponse.class.isAssignableFrom(method.getReturnType());
          if (isClientResponseResult)
@@ -79,10 +142,10 @@ public class ClientInvoker
          }
 
 
-         ClientResponseImpl clientResponse = null;
+         BaseClientResponse clientResponse = null;
          try
          {
-            clientResponse = (ClientResponseImpl) request.getExecutor().execute(httpMethod, request);
+            clientResponse = (BaseClientResponse) request.httpMethod(httpMethod);
          }
          catch (Exception e)
          {
@@ -98,7 +161,7 @@ public class ClientInvoker
       }
    }
 
-   private Object extractEntity(ClientResponseImpl clientResponse)
+   private Object extractEntity(BaseClientResponse clientResponse)
    {
       final Class<?> returnType = method.getReturnType();
       if (ClientResponse.class.isAssignableFrom(returnType))
@@ -155,7 +218,7 @@ public class ClientInvoker
       return void.class.equals(returnType) || Void.class.equals(returnType);
    }
 
-   private void handleResponseHint(ClientResponseImpl clientResponse,
+   private void handleResponseHint(BaseClientResponse clientResponse,
                                    ClientResponseType responseHint)
    {
       Class returnType = responseHint.entityType();

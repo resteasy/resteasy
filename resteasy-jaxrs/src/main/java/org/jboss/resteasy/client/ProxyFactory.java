@@ -3,6 +3,7 @@ package org.jboss.resteasy.client;
 import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientProxy;
+import org.jboss.resteasy.client.core.ResteasyClientProxy;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -54,7 +55,7 @@ public class ProxyFactory
          methodMap.put(method, invoker);
       }
 
-      Class<?>[] intfs = {clazz};
+      Class<?>[] intfs = {clazz, ResteasyClientProxy.class};
 
       ClientProxy clientProxy = new ClientProxy(methodMap);
       // this is done so that equals and hashCode work ok. Adding the proxy to a

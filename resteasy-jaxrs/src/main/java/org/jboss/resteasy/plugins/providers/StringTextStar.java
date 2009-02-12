@@ -20,14 +20,14 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWriter<Object>
+public class StringTextStar implements MessageBodyReader<String>, MessageBodyWriter<String>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return String.class.equals(type);
    }
 
-   public Object readFrom(Class<Object> type,
+   public String readFrom(Class<String> type,
                           Type genericType,
                           Annotation[] annotations,
                           MediaType mediaType,
@@ -43,12 +43,12 @@ public class StringTextStar implements MessageBodyReader<Object>, MessageBodyWri
       return String.class.equals(type);
    }
 
-   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(String o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   public void writeTo(Object o,
+   public void writeTo(String o,
                        Class<?> type,
                        Type genericType,
                        Annotation[] annotations,

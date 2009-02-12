@@ -4,7 +4,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -12,12 +12,8 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface MessageBodyWriterContext
+public interface MessageBodyReaderContext
 {
-   Object getEntity();
-
-   void setEntity(Object entity);
-
    Class getType();
 
    void setType(Class type);
@@ -34,13 +30,11 @@ public interface MessageBodyWriterContext
 
    void setMediaType(MediaType mediaType);
 
-   MultivaluedMap<String, Object> getHeaders();
+   MultivaluedMap<String, String> getHeaders();
 
-   OutputStream getOutputStream();
+   InputStream getInputStream();
 
-   public void setOutputStream(OutputStream os);
+   void setInputStream(InputStream is);
 
-   void proceed() throws IOException, WebApplicationException;
-
-
+   Object proceed() throws IOException, WebApplicationException;
 }

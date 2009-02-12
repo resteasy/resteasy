@@ -1,6 +1,11 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.core.ResourceMethodCacheControlInterceptor;
+import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPInterceptor;
+import org.jboss.resteasy.plugins.interceptors.encoding.ClientContentEncodingHeaderInterceptor;
+import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
@@ -16,7 +21,31 @@ public class RegisterBuiltin
 
    private final static Logger logger = LoggerCategories.getProviderLogger();
 
+   public static void registerServerInterceptors(ResteasyProviderFactory factory)
+   {
+      factory.getInterceptorRegistry().registerResourceMethodInterceptor(ResourceMethodCacheControlInterceptor.class);
+      factory.getInterceptorRegistry().registerMessageBodyReaderInterceptor(new GZIPDecodingInterceptor());
+      factory.getInterceptorRegistry().registerMessageBodyWriterInterceptor(new GZIPEncodingInterceptor());
+
+   }
+
+   public static void registerClientInterceptors(ResteasyProviderFactory factory)
+   {
+      factory.getClientInterceptorRegistry().registerMessageBodyReaderInterceptor(new GZIPDecodingInterceptor());
+      factory.getClientInterceptorRegistry().registerMessageBodyWriterInterceptor(ClientContentEncodingHeaderInterceptor.class);
+      factory.getClientInterceptorRegistry().registerMessageBodyWriterInterceptor(new GZIPEncodingInterceptor());
+      factory.getClientInterceptorRegistry().registerExecutionInterceptor(new AcceptEncodingGZIPInterceptor());
+
+   }
+
    public static void register(ResteasyProviderFactory factory)
+   {
+      registerMessageBodyReadersWriters(factory);
+      registerServerInterceptors(factory);
+      registerClientInterceptors(factory);
+   }
+
+   public static void registerMessageBodyReadersWriters(ResteasyProviderFactory factory)
    {
 
       // Spec required providers.

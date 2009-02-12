@@ -4,6 +4,7 @@ import org.jboss.resteasy.util.TypeConverter;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -22,42 +23,32 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("text/plain")
 @Consumes("text/plain")
-public class DefaultTextPlain implements MessageBodyReader<Object>, MessageBodyWriter<Object>
+public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
 {
-
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return TypeConverter.isConvertable(type);
+      // StringTextStar should pick up strings
+      return !String.class.equals(type) && TypeConverter.isConvertable(type);
    }
 
-   public Object readFrom(Class<Object> type,
-                          Type genericType,
-                          Annotation[] annotations,
-                          MediaType mediaType,
-                          MultivaluedMap<String, String> httpHeaders,
-                          InputStream entityStream) throws IOException
+   public Object readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       String value = ProviderHelper.readString(entityStream, mediaType);
       return TypeConverter.getType(type, value);
    }
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return !type.isArray();
+      // StringTextStar should pick up strings
+      return !String.class.equals(type) && !type.isArray();
    }
 
-   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return o.toString().getBytes().length;
    }
 
-   public void writeTo(Object o,
-                       Class<?> type,
-                       Type genericType,
-                       Annotation[] annotations,
-                       MediaType mediaType,
-                       MultivaluedMap<String, Object> httpHeaders,
-                       OutputStream entityStream) throws IOException
+   public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       entityStream.write(o.toString().getBytes());
    }
