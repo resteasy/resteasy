@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class MultipartFormDataInputImpl extends MultipartInputImpl implements MultipartFormDataInput
 {
    protected Map<String, InputPart> formData = new HashMap<String, InputPart>();
-   protected static final Pattern DISPOSITION = Pattern.compile("form-data;.*name=\"?([^\"\\s;]*)\"?.*");
+   protected static final Pattern DISPOSITION = Pattern.compile(";\\s*name=\"?([^\";]*)\"?");
 
    public MultipartFormDataInputImpl(String boundary, Providers workers)
    {
@@ -51,9 +51,9 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements Mu
       String disposition = currPart.getHeaders().getFirst("Content-Disposition");
       if (disposition == null) throw new RuntimeException("Could find no Content-Disposition header within part");
       Matcher matcher = DISPOSITION.matcher(disposition);
-      if (matcher.matches())
+      if (matcher.find())
       {
-         formData.put(matcher.group(1), currPart);
+         formData.put(matcher.group(1).trim(), currPart);
       }
       else
       {
