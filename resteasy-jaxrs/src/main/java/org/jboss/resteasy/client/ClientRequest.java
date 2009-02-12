@@ -10,6 +10,7 @@ import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.util.GenericType;
@@ -80,6 +81,10 @@ public class ClientRequest
    {
       this.uri = (UriBuilderImpl) uri;
       this.executor = executor;
+      if (providerFactory instanceof ProviderFactoryDelegate)
+      {
+         providerFactory = ((ProviderFactoryDelegate) providerFactory).getDelegate();
+      }
       this.providerFactory = providerFactory;
    }
 

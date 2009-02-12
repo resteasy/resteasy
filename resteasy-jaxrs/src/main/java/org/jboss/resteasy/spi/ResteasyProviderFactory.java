@@ -63,7 +63,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * This helps out a lot when the desired media type is a wildcard and to weed out all the possible
     * default mappings.
     */
-   private static class MessageBodyKey<T> implements Comparable<MessageBodyKey<T>>, MediaTypeMap.Typed
+   protected static class MessageBodyKey<T> implements Comparable<MessageBodyKey<T>>, MediaTypeMap.Typed
    {
       public Class readerClass;
       public T obj;
@@ -144,19 +144,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
 
-   private MediaTypeMap<MessageBodyKey<MessageBodyReader>> messageBodyReaders = new MediaTypeMap<MessageBodyKey<MessageBodyReader>>();
-   private MediaTypeMap<MessageBodyKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<MessageBodyKey<MessageBodyWriter>>();
-   private Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
-   private Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
-   private Map<Class<?>, MediaTypeMap<ContextResolver>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<ContextResolver>>();
-   private Map<Class<?>, StringConverter> stringConverters = new HashMap<Class<?>, StringConverter>();
+   protected MediaTypeMap<MessageBodyKey<MessageBodyReader>> messageBodyReaders = new MediaTypeMap<MessageBodyKey<MessageBodyReader>>();
+   protected MediaTypeMap<MessageBodyKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<MessageBodyKey<MessageBodyWriter>>();
+   protected Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
+   protected Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
+   protected Map<Class<?>, MediaTypeMap<ContextResolver>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<ContextResolver>>();
+   protected Map<Class<?>, StringConverter> stringConverters = new HashMap<Class<?>, StringConverter>();
 
-   private Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
+   protected Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
-   private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
-   private static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
-   private InterceptorRegistry interceptorRegistry = new InterceptorRegistry();
-   private ClientInterceptorRegistry clientInterceptorRegistry = new ClientInterceptorRegistry();
+   protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
+   protected static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
+   protected InterceptorRegistry interceptorRegistry = new InterceptorRegistry();
+   protected ClientInterceptorRegistry clientInterceptorRegistry = new ClientInterceptorRegistry();
+   protected boolean builtinsRegistered = false;
 
    public static <T> void pushContext(Class<T> type, T data)
    {
@@ -221,6 +222,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
       addHeaderDelegate(Locale.class, new LocaleDelegate());
+   }
+
+   public boolean isBuiltinsRegistered()
+   {
+      return builtinsRegistered;
+   }
+
+   public void setBuiltinsRegistered(boolean builtinsRegistered)
+   {
+      this.builtinsRegistered = builtinsRegistered;
    }
 
    public UriBuilder createUriBuilder()

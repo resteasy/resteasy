@@ -1,6 +1,8 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.ClientInterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.util.ThreadLocalStack;
@@ -24,7 +26,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory
+public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory implements ProviderFactoryDelegate
 {
    private static final ThreadLocalStack<ResteasyProviderFactory> delegate = new ThreadLocalStack<ResteasyProviderFactory>();
 
@@ -40,6 +42,36 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory
       ResteasyProviderFactory factory = delegate.get();
       if (factory == null) return defaultFactory;
       return factory;
+   }
+
+   @Override
+   public boolean isBuiltinsRegistered()
+   {
+      return getDelegate().isBuiltinsRegistered();
+   }
+
+   @Override
+   public void setBuiltinsRegistered(boolean builtinsRegistered)
+   {
+      getDelegate().setBuiltinsRegistered(builtinsRegistered);
+   }
+
+   @Override
+   public void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
+   {
+      getDelegate().addMessageBodyReader(provider, isBuiltin);
+   }
+
+   @Override
+   public void addMessageBodyWriter(MessageBodyWriter provider, boolean isBuiltin)
+   {
+      getDelegate().addMessageBodyWriter(provider, isBuiltin);
+   }
+
+   @Override
+   public ClientInterceptorRegistry getClientInterceptorRegistry()
+   {
+      return getDelegate().getClientInterceptorRegistry();
    }
 
    @Override
