@@ -110,6 +110,7 @@ public class ClientInvoker
    private Object extractEntity(ClientResponseImpl clientResponse)
    {
       final Class<?> returnType = method.getReturnType();
+      clientResponse.setAnnotations(method.getAnnotations());
       if (ClientResponse.class.isAssignableFrom(returnType))
       {
          Type methodGenericReturnType = method.getGenericReturnType();
@@ -121,7 +122,6 @@ public class ClientInvoker
             clientResponse.setGenericReturnType(genericReturnType);
          }
 
-         clientResponse.setAnnotations(method.getAnnotations());
          return clientResponse;
       }
 
