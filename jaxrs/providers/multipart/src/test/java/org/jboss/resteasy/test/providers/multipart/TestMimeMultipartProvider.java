@@ -13,6 +13,8 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
@@ -216,21 +218,27 @@ public class TestMimeMultipartProvider extends BaseResourceTest
       method.releaseConnection();
    }
 
-   // @Test
-   // public void testPostList() throws Exception {
-   // HttpClient client = new HttpClient();
-   // List<Part> partsList = new ArrayList<Part>();
-   // partsList.add(new StringPart("part1", "This is Value 1"));
-   // partsList.add(new StringPart("part2", "This is Value 2"));
-   // Part[] parts = partsList.toArray(new Part[partsList.size()]);
-   // PostMethod method = new PostMethod(TEST_URI);
-   // RequestEntity entity = new MultipartRequestEntity(parts,
-   // method.getParams());
-   // method.setRequestEntity(entity);
-   // int status = client.executeMethod(method);
-   // Assert.assertEquals(HttpServletResponse.SC_OK, status);
-   // String responseBody = method.getResponseBodyAsString();
-   // //Assert.assertEquals(responseBody, "Count: 2");
-   // method.releaseConnection();
+   @Test
+   public void testFile() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TEST_URI + "/file/test");
+      request.body("multipart/form-data; boundary=---------------------------52524491016334132001492192799", form);
+      ClientResponse response = request.post();
+      Assert.assertEquals(200, response.getStatus());
+
+   }
+
+   private static final String form =
+           "-----------------------------52524491016334132001492192799\r\n" +
+                   "Content-Disposition: form-data; name=\"submit-name\"\r\n" +
+                   "\r\n" +
+                   "Bill\r\n" +
+                   "-----------------------------52524491016334132001492192799\r\n" +
+                   "Content-Disposition: form-data; name=\"files\"; filename=\"stuff.txt\"\r\n" +
+                   "Content-Type: text/plain\r\n" +
+                   "\r\n" +
+                   "hello world\r\n" +
+                   "\r\n" +
+                   "-----------------------------52524491016334132001492192799--";
    // }
 }

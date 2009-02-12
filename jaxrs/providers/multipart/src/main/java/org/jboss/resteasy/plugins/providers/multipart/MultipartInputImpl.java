@@ -68,7 +68,7 @@ public class MultipartInputImpl implements MultipartInput
          end = index;
          String mime = headers.getFirst("content-type");
          if (mime == null) mediaType = MediaType.TEXT_PLAIN_TYPE;
-         mediaType = MediaType.valueOf(mime);
+         else mediaType = MediaType.valueOf(mime);
       }
 
       public void addHeader(String header)

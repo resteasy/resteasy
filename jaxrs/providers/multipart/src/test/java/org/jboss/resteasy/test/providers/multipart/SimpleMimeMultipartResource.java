@@ -17,9 +17,11 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +63,27 @@ public class SimpleMimeMultipartResource
       }
    }
 
+   public static class Form2
+   {
+      @FormParam("submit-name")
+      public String name;
+
+      @FormParam("files")
+      public byte[] file;
+   }
+
    private static final Logger logger = LoggerFactory.getLogger(SimpleMimeMultipartResource.class);
+
+   @POST
+   @Path("file/test")
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces("text/html")
+   public String post(@MultipartForm Form2 form)
+   {
+      Assert.assertEquals("Bill", form.name.trim());
+      Assert.assertEquals("hello world", new String(form.file).trim());
+      return "hello world";
+   }
 
    /**
     * @param multipart
