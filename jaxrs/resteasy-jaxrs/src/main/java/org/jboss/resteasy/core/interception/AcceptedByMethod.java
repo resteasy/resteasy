@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface AllowedByMethod
+public interface AcceptedByMethod
 {
    public boolean accept(Class declaring, Method method);
 }

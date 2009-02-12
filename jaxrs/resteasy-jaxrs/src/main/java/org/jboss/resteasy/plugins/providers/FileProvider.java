@@ -26,8 +26,8 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-public class FileProvider implements MessageBodyReader<Object>,
-        MessageBodyWriter<Object>
+public class FileProvider implements MessageBodyReader<File>,
+        MessageBodyWriter<File>
 {
    private static final String PREFIX = "pfx";
 
@@ -43,9 +43,9 @@ public class FileProvider implements MessageBodyReader<Object>,
       return File.class == type;
    }
 
-   public Object readFrom(Class<Object> type, Type genericType,
-                          Annotation[] annotations, MediaType mediaType,
-                          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+   public File readFrom(Class<File> type, Type genericType,
+                        Annotation[] annotations, MediaType mediaType,
+                        MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
            throws IOException
    {
       File downloadedFile = null;
@@ -92,7 +92,7 @@ public class FileProvider implements MessageBodyReader<Object>,
       return File.class.isAssignableFrom(type); // catch subtypes
    }
 
-   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(File o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (o instanceof File)
       {
@@ -107,7 +107,7 @@ public class FileProvider implements MessageBodyReader<Object>,
       }
    }
 
-   public void writeTo(Object o, Class<?> type, Type genericType,
+   public void writeTo(File o, Class<?> type, Type genericType,
                        Annotation[] annotations, MediaType mediaType,
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException

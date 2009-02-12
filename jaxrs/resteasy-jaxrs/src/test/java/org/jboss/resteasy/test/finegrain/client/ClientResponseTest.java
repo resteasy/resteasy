@@ -4,7 +4,7 @@ import org.jboss.resteasy.annotations.ClientResponseType;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.ClientResponseImpl;
+import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -155,7 +155,7 @@ public class ClientResponseTest
 
       Assert.assertEquals(Response.Status.NO_CONTENT, putResponse.getResponseStatus());
 
-      Assert.assertEquals("headervalue", ((ClientResponseImpl) client.getHeaderClientResponse()).getHeaders().getFirst("header"));
+      Assert.assertEquals("headervalue", ((BaseClientResponse) client.getHeaderClientResponse()).getHeaders().getFirst("header"));
       Assert.assertEquals("headervalue", createClientRequest("/header").get().getHeaders().getFirst("header"));
       Assert.assertEquals("headervalue", client.getHeaderResponse().getMetadata().getFirst("header"));
 

@@ -1,68 +1,55 @@
 package org.jboss.resteasy.client.core;
 
-import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
+import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-//import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientResponseImpl<T> extends ClientResponse<T>
+public abstract class BaseClientResponse<T> extends ClientResponse<T>
 {
    protected ResteasyProviderFactory providerFactory;
-
    protected String attributeExceptionsTo;
-   protected CaseInsensitiveMap<String> headers;
-
+   protected MultivaluedMap<String, String> headers;
    protected String alternateMediaType;
    protected Class<?> returnType;
    protected Type genericReturnType;
    protected Annotation[] annotations;
-
    protected int status;
-
    protected boolean wasReleased = false;
    protected boolean streamWasRead = false;
    protected byte[] rawResults;
    protected Object unmarshaledEntity;
-
-   protected Exception exception;
-
-   // These can only be set by an interceptor
-   protected boolean performExecute = true;
-
+   protected MessageBodyReaderInterceptor[] messageBodyReaderInterceptors;
+   protected Exception exception;// These can only be set by an interceptor
    protected boolean cacheInputStream;
 
-   protected HttpMethodBase httpMethod;
+   public void setMessageBodyReaderInterceptors(MessageBodyReaderInterceptor[] messageBodyReaderInterceptors)
+   {
+      this.messageBodyReaderInterceptors = messageBodyReaderInterceptors;
+   }
 
    public void setStatus(int status)
    {
       this.status = status;
    }
 
-   public void setHttpMethod(HttpMethodBase httpMethod)
-   {
-      this.httpMethod = httpMethod;
-   }
-
-   public void setHeaders(CaseInsensitiveMap<String> headers)
+   public void setHeaders(MultivaluedMap<String, String> headers)
    {
       this.headers = headers;
    }
@@ -194,7 +181,7 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
          try
          {
             streamWasRead = true;
-            unmarshaledEntity = reader.readFrom(type, genericType, annotations, media, headers, getInputStream());
+            unmarshaledEntity = readFrom(type, genericType, media, annotations, reader);
             return (T2) unmarshaledEntity;
          }
          catch (Exception e)
@@ -211,6 +198,21 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
       }
    }
 
+   protected <T2> Object readFrom(Class<T2> type, Type genericType, MediaType media, Annotation[] annotations, MessageBodyReader<T2> reader)
+           throws IOException
+   {
+      if (messageBodyReaderInterceptors != null && messageBodyReaderInterceptors.length > 0)
+      {
+         MessageBodyReaderContextImpl ctx = new MessageBodyReaderContextImpl(messageBodyReaderInterceptors, reader,
+                 type, genericType, annotations, media, headers, getInputStream());
+         return ctx.proceed();
+      }
+      else
+      {
+         return reader.readFrom(type, genericType, annotations, media, headers, getInputStream());
+      }
+   }
+
    @Override
    public <T2> T2 getEntity(GenericType<T2> genericType)
    {
@@ -221,7 +223,6 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    {
       return headers;
    }
-
 
    @Override
    public MultivaluedMap<String, Object> getMetadata()
@@ -236,18 +237,12 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
       return status;
    }
 
-   @Override
-   protected void finalize() throws Throwable
-   {
-      releaseConnection();
-   }
-
    public void checkFailureStatus()
    {
       if (status > 399 && status < 599)
       {
          throw createResponseFailure("Error status " + status + " "
-                 + Response.Status.fromStatusCode(status) + " returned");
+                 + Status.fromStatusCode(status) + " returned");
       }
    }
 
@@ -270,7 +265,7 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
    @Override
    public Status getResponseStatus()
    {
-      return Response.Status.fromStatusCode(getStatus());
+      return Status.fromStatusCode(getStatus());
    }
 
    public boolean wasReleased()
@@ -278,18 +273,7 @@ public class ClientResponseImpl<T> extends ClientResponse<T>
       return wasReleased;
    }
 
-   protected InputStream getInputStream() throws IOException
-   {
-      return httpMethod.getResponseBodyAsStream();
-   }
+   public abstract InputStream getInputStream() throws IOException;
 
-   public void releaseConnection()
-   {
-      if (!wasReleased)
-      {
-         httpMethod.releaseConnection();
-         wasReleased = true;
-      }
-   }
-
+   public abstract void releaseConnection();
 }

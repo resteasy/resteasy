@@ -2,9 +2,13 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
-import org.jboss.resteasy.core.ResourceMethodCacheControlInterceptor;
+import org.jboss.resteasy.core.interception.ClientInterceptor;
+import org.jboss.resteasy.core.interception.ClientInterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
+import org.jboss.resteasy.core.interception.ServerInterceptor;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
@@ -38,7 +42,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -59,28 +63,33 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * This helps out a lot when the desired media type is a wildcard and to weed out all the possible
     * default mappings.
     */
-   private static class MessageBodyKey<T> implements Comparable<MessageBodyKey<T>>
+   private static class MessageBodyKey<T> implements Comparable<MessageBodyKey<T>>, MediaTypeMap.Typed
    {
-      public Class<? extends T> readerClass;
+      public Class readerClass;
       public T obj;
 
       public boolean isGeneric = false;
 
       public boolean isBuiltin = false;
 
+      public Class template = null;
 
-      private MessageBodyKey(Class<? extends T> readerClass, T reader, boolean isBuiltin)
+
+      private MessageBodyKey(Class intf, T reader, boolean isBuiltin)
       {
-         this(readerClass, reader);
+         this(intf, reader);
          this.isBuiltin = isBuiltin;
       }
 
 
-      private MessageBodyKey(Class<? extends T> readerClass, T reader)
+      private MessageBodyKey(Class intf, T reader)
       {
-         this.readerClass = readerClass;
+         this.readerClass = reader.getClass();
          this.obj = reader;
          // check the super class for the generic type 1st
+         template = Types.getTemplateParameterOfInterface(readerClass, intf);
+         isGeneric = template == null || Object.class.equals(template);
+         /*
          Type impl = readerClass.getGenericSuperclass();
          // if it's null or object, check the interfaces
          // TODO: we may need more refinement here.
@@ -102,6 +111,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             isGeneric = true;
          }
+         */
+      }
+
+      public class MessageBodyKeyComparator implements Comparator<MessageBodyKey>
+      {
+         public int compare(MessageBodyKey messageBodyKey, MessageBodyKey messageBodyKey1)
+         {
+            return 0;
+         }
       }
 
       public int compareTo(MessageBodyKey<T> tMessageBodyKey)
@@ -118,6 +136,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          if (isBuiltin) return 1;
          else return -1;
       }
+
+      public Class getType()
+      {
+         return template;
+      }
    }
 
 
@@ -133,6 +156,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    private static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
    private InterceptorRegistry interceptorRegistry = new InterceptorRegistry();
+   private ClientInterceptorRegistry clientInterceptorRegistry = new ClientInterceptorRegistry();
 
    public static <T> void pushContext(Class<T> type, T data)
    {
@@ -197,7 +221,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
       addHeaderDelegate(Locale.class, new LocaleDelegate());
-      interceptorRegistry.registerResourceMethodInterceptor(ResourceMethodCacheControlInterceptor.class);
    }
 
    public UriBuilder createUriBuilder()
@@ -255,7 +278,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
    {
-      MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(provider.getClass(), provider, isBuiltin);
+      MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(MessageBodyReader.class, provider, isBuiltin);
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
       injector.inject(provider);
       providers.put(provider.getClass(), provider);
@@ -308,7 +331,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       providers.put(provider.getClass(), provider);
       injector.inject(provider);
       Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
-      MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(provider.getClass(), provider, isBuiltin);
+      MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(MessageBodyWriter.class, provider, isBuiltin);
       if (consumeMime != null)
       {
          for (String consume : consumeMime.value())
@@ -325,11 +348,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<MessageBodyKey<MessageBodyReader>> readers = messageBodyReaders.getPossible(mediaType);
+      List<MessageBodyKey<MessageBodyReader>> readers = messageBodyReaders.getPossible(mediaType, type);
 
-      // if the desired media type is */* then sort the readers by their parameterized type to weed out less generic types
-      // This helps with default mappings
-      if (mediaType.isWildcardType()) Collections.sort(readers);
       for (MessageBodyKey<MessageBodyReader> reader : readers)
       {
          if (reader.obj.isReadable(type, genericType, annotations, mediaType))
@@ -530,6 +550,38 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          interceptorRegistry.registerResourceMethodInterceptor(provider);
       }
+      if (MessageBodyWriterInterceptor.class.isAssignableFrom(provider))
+      {
+         if (provider.isAnnotationPresent(ServerInterceptor.class))
+         {
+            interceptorRegistry.registerMessageBodyWriterInterceptor(provider);
+         }
+         if (provider.isAnnotationPresent(ClientInterceptor.class))
+         {
+            clientInterceptorRegistry.registerMessageBodyWriterInterceptor(provider);
+         }
+         if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
+         {
+            throw new RuntimeException("Interceptor class must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+         }
+
+      }
+      if (MessageBodyReaderInterceptor.class.isAssignableFrom(provider))
+      {
+         if (provider.isAnnotationPresent(ServerInterceptor.class))
+         {
+            interceptorRegistry.registerMessageBodyReaderInterceptor(provider);
+         }
+         if (provider.isAnnotationPresent(ClientInterceptor.class))
+         {
+            clientInterceptorRegistry.registerMessageBodyReaderInterceptor(provider);
+         }
+         if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
+         {
+            throw new RuntimeException("Interceptor class must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+         }
+
+      }
       if (ContextResolver.class.isAssignableFrom(provider))
       {
          try
@@ -602,6 +654,38 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          interceptorRegistry.registerResourceMethodInterceptor((ResourceMethodInterceptor) provider);
       }
+      if (provider instanceof MessageBodyWriterInterceptor)
+      {
+         if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
+         {
+            interceptorRegistry.registerMessageBodyWriterInterceptor((MessageBodyWriterInterceptor) provider);
+         }
+         if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
+         {
+            clientInterceptorRegistry.registerMessageBodyWriterInterceptor((MessageBodyWriterInterceptor) provider);
+         }
+         if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
+         {
+            throw new RuntimeException("Interceptor class " + provider.getClass() + " must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+         }
+
+      }
+      if (provider instanceof MessageBodyReaderInterceptor)
+      {
+         if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
+         {
+            interceptorRegistry.registerMessageBodyReaderInterceptor((MessageBodyReaderInterceptor) provider);
+         }
+         if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
+         {
+            clientInterceptorRegistry.registerMessageBodyReaderInterceptor((MessageBodyReaderInterceptor) provider);
+         }
+         if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
+         {
+            throw new RuntimeException("Interceptor class " + provider.getClass() + " must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+         }
+
+      }
       if (provider instanceof StringConverter)
       {
          addStringConverter((StringConverter) provider);
@@ -624,10 +708,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<MessageBodyKey<MessageBodyWriter>> writers = messageBodyWriters.getPossible(mediaType);
-      // if the desired media type is */* then sort the readers by their parameterized type to weed out less generic types
-      // This helps with default mappings
-      if (mediaType.isWildcardType()) Collections.sort(writers);
+      List<MessageBodyKey<MessageBodyWriter>> writers = messageBodyWriters.getPossible(mediaType, type);
       for (MessageBodyKey<MessageBodyWriter> writer : writers)
       {
          //System.out.println("matching: " + writer.obj.getClass());
@@ -657,6 +738,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public InterceptorRegistry getInterceptorRegistry()
    {
       return interceptorRegistry;
+   }
+
+   public ClientInterceptorRegistry getClientInterceptorRegistry()
+   {
+      return clientInterceptorRegistry;
    }
 
    public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)

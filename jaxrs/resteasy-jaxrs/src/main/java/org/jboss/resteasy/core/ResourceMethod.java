@@ -270,17 +270,17 @@ public class ResourceMethod implements ResourceInvoker
       Response.ResponseBuilder builder = null;
       if (rtn == null)
       {
-         builder = Response.noContent();
+         return Response.noContent().build();
       }
       else
       {
          builder = Response.ok(rtn);
+         builder.type(resolveContentType(request));
+         ResponseImpl jaxrsResponse = (ResponseImpl) builder.build();
+         jaxrsResponse.setGenericType(genericReturnType);
+         jaxrsResponse.setAnnotations(method.getAnnotations());
+         return jaxrsResponse;
       }
-      builder.type(resolveContentType(request));
-      ResponseImpl jaxrsResponse = (ResponseImpl) builder.build();
-      jaxrsResponse.setGenericType(genericReturnType);
-      jaxrsResponse.setAnnotations(method.getAnnotations());
-      return jaxrsResponse;
    }
 
    public boolean doesProduce(List<? extends MediaType> accepts)
@@ -342,12 +342,19 @@ public class ResourceMethod implements ResourceInvoker
       MediaType responseContentType = matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
       if (responseContentType == null)
       {
-         responseContentType = MediaType.valueOf("*/*");
+         responseContentType = MediaType.WILDCARD_TYPE;
       }
+      //NOTE: This should be the real behavior, but the stupid spec says it should default to */*
+      /*
+      if (responseContentType == null || responseContentType.isWildcardType())
+      {
+         throw new LoggableFailure("There is no Content-Type set.  Annotate your method with @Produces or set the content type in the Response object for method: " + method, 500);
+      }
+      */
       return responseContentType;
    }
 
-   public MediaType matchByType(List<MediaType> accepts)
+   protected MediaType matchByType(List<MediaType> accepts)
    {
       if (accepts == null || accepts.size() == 0)
       {

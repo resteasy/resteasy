@@ -13,13 +13,9 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +23,11 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpClientExecutor implements ClientExecutor
+public class ApacheHttpClientExecutor implements ClientExecutor
 {
-   private HttpClient httpClient;
+   protected HttpClient httpClient;
 
-   public HttpClientExecutor(HttpClient httpClient)
+   public ApacheHttpClientExecutor(HttpClient httpClient)
    {
       this.httpClient = httpClient;
    }
@@ -49,16 +45,16 @@ public class HttpClientExecutor implements ClientExecutor
    }
 
 
-   public ClientResponse execute(String verb, ClientRequest request) throws Exception
+   public ClientResponse execute(ClientRequest request) throws Exception
    {
       String uri = request.getUri();
-      HttpMethodBase httpMethod = createHttpMethod(uri, verb);
+      HttpMethodBase httpMethod = createHttpMethod(uri, request.getHttpMethod());
       loadHttpMethod(request, httpMethod);
 
       int status = httpClient.executeMethod(httpMethod);
 
 
-      ClientResponseImpl response = new ClientResponseImpl();
+      ApacheHttpClientResponse response = new ApacheHttpClientResponse();
       response.setStatus(status);
       response.setHttpMethod(httpMethod);
       response.setHeaders(extractHeaders(httpMethod));
@@ -97,15 +93,15 @@ public class HttpClientExecutor implements ClientExecutor
    private static class ClientRequestEntity implements RequestEntity
    {
       private byte[] bytes;
-      private MediaType bodyContentType;
+      private ClientRequest request;
 
-      public ClientRequestEntity(HttpClientHeaderWrapper wrapper, MessageBodyWriter writer, MediaType bodyContentType, Object body, Class bodyType, Type bodyGenericType, Annotation[] bodyAnnotations)
+      public ClientRequestEntity(HttpClientHeaderWrapper wrapper, ClientRequest request)
       {
-         this.bodyContentType = bodyContentType;
          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         this.request = request;
          try
          {
-            writer.writeTo(body, bodyType, bodyGenericType, bodyAnnotations, bodyContentType, wrapper, baos);
+            request.writeRequestBody(wrapper, baos);
             bytes = baos.toByteArray();
          }
          catch (IOException e)
@@ -135,7 +131,7 @@ public class HttpClientExecutor implements ClientExecutor
 
       public String getContentType()
       {
-         return bodyContentType.toString();
+         return request.getBodyContentType().toString();
       }
    }
 
@@ -155,10 +151,10 @@ public class HttpClientExecutor implements ClientExecutor
             }
          }
       }
-      if (request.getBody() != null && request.getFormParameters() != null)
+      if (request.getBody() != null && !request.getFormParameters().isEmpty())
          throw new RuntimeException("You cannot send both form parameters and an entity body");
 
-      if (request.getFormParameters() != null)
+      if (!request.getFormParameters().isEmpty())
       {
          PostMethod post = (PostMethod) httpMethod;
 
@@ -173,8 +169,7 @@ public class HttpClientExecutor implements ClientExecutor
       }
       if (request.getBody() != null)
       {
-         MessageBodyWriter writer = request.getProviderFactory().getMessageBodyWriter(request.getBodyType(), request.getBodyGenericType(), request.getBodyAnnotations(), request.getBodyContentType());
-         ClientRequestEntity requestEntity = new ClientRequestEntity(new HttpClientHeaderWrapper(httpMethod, request.getProviderFactory()), writer, request.getBodyContentType(), request.getBody(), request.getBodyType(), request.getBodyGenericType(), request.getBodyAnnotations());
+         ClientRequestEntity requestEntity = new ClientRequestEntity(new HttpClientHeaderWrapper(httpMethod, request.getProviderFactory()), request);
          EntityEnclosingMethod post = (EntityEnclosingMethod) httpMethod;
          post.setRequestEntity(requestEntity);
       }

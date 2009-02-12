@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.plugins.providers.DefaultTextPlain;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.Types;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -113,6 +114,59 @@ public class MediaTypeMapTest
       public void writeTo(Integer integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
       {
       }
+   }
+
+   public static class Base<T> implements MessageBodyWriter<T>
+   {
+      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return true;
+      }
+
+      public long getSize(T integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return 0;
+      }
+
+      public void writeTo(T integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+      {
+      }
+   }
+
+   @Provider
+   @Produces("text/plain")
+   public static class Concrete extends Base<Double>
+   {
+   }
+
+
+   public static class Base2<X> extends Base<X>
+   {
+   }
+
+   @Provider
+   @Produces("text/plain")
+   public static class Concrete2 extends Base<Boolean>
+   {
+   }
+
+   public static class BaseMultiple<V, X> extends Base<X>
+   {
+   }
+
+   public static class ConcreteMultiple extends BaseMultiple<String, Short>
+   {
+   }
+
+
+   @Test
+   public void testTypes()
+   {
+      Assert.assertNull(Types.getTemplateParameterOfInterface(PlainTextWriter.class, MessageBodyWriter.class));
+      Assert.assertEquals(Integer.class, Types.getTemplateParameterOfInterface(IntegerPlainTextWriter.class, MessageBodyWriter.class));
+      Assert.assertEquals(Double.class, Types.getTemplateParameterOfInterface(Concrete.class, MessageBodyWriter.class));
+      Assert.assertEquals(Boolean.class, Types.getTemplateParameterOfInterface(Concrete2.class, MessageBodyWriter.class));
+      Assert.assertEquals(Short.class, Types.getTemplateParameterOfInterface(ConcreteMultiple.class, MessageBodyWriter.class));
    }
 
    @Test

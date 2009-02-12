@@ -75,9 +75,12 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
          {
             result.setProxyRevalidate(true);
          }
+         else if ("public".equals(lowercase))
+         {
+            // do nothing
+         }
          else
          {
-            result.setNoCache(true);
             if (val == null) val = "";
             result.getCacheExtension().put(name, val);
          }

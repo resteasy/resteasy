@@ -5,6 +5,7 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,74 @@ import java.util.regex.Pattern;
  */
 public class MediaTypeMap<T>
 {
+   public static interface Typed
+   {
+      Class getType();
+   }
+
+   public static class TypedEntryComparator implements Comparator<Entry>
+   {
+      private Class type;
+
+      public TypedEntryComparator(Class type)
+      {
+         this.type = type;
+      }
+
+      private boolean isAssignableFrom(Typed typed)
+      {
+         if (typed.getType() == null) return false;
+         return typed.getType().isAssignableFrom(type);
+      }
+
+      private int compareTypes(Entry entry, Entry entry1)
+      {
+         int val = 0;
+         if (entry.object instanceof Typed && entry1.object instanceof Typed && type != null)
+         {
+            Typed one = (Typed) entry.object;
+            Typed two = (Typed) entry1.object;
+
+
+            boolean oneTyped = isAssignableFrom(one);
+            boolean twoTyped = isAssignableFrom(two);
+            if (oneTyped == twoTyped && (!oneTyped && !twoTyped))
+            {
+               // both are false
+               val = 0;
+            }
+            else if (oneTyped == twoTyped)
+            {
+               // both are true.
+               // test for better assignability
+               if (one.getType().equals(two.getType()))
+               {
+                  val = 0;
+               }
+               else if (one.getType().isAssignableFrom(two.getType()))
+               {
+                  val = 1;
+               }
+               else
+               {
+                  val = -1;
+               }
+            }
+            else if (oneTyped) val = -1;
+            else val = 1;
+         }
+         return val;
+
+      }
+
+      public int compare(Entry entry, Entry entry1)
+      {
+         int val = compareTypes(entry, entry1);
+         if (val == 0) val = entry.compareTo(entry1);
+         return val;
+      }
+   }
+
    private static class Entry<T> implements Comparable<Entry>
    {
       public MediaType mediaType;
@@ -196,6 +265,27 @@ public class MediaTypeMap<T>
       }
       Collections.sort(matches);
       return convert(matches);
+   }
+
+   public List<T> getPossible(MediaType accept, Class type)
+   {
+      List<Entry<T>> matches = new ArrayList<Entry<T>>();
+      if (accept.isWildcardType())
+      {
+         matches.addAll(all);
+      }
+      else
+      {
+         matches.addAll(wildcards);
+         SubtypeMap<T> indexed = index.get(accept.getType());
+         if (indexed != null)
+         {
+            matches.addAll(indexed.getPossible(accept));
+         }
+      }
+      Collections.sort(matches, new TypedEntryComparator(type));
+      return convert(matches);
+
    }
 
 }
