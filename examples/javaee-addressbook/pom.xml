@@ -210,7 +210,7 @@
          <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>jaxrs-api</artifactId>
-            <version>1.0.1.GA</version>
+            <version>1.0.2.GA</version>
          </dependency>
          <dependency>
             <groupId>net.java.dev.jaxb2-commons</groupId>
@@ -230,7 +230,7 @@
          <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.0.1.GA</version>
+            <version>1.0.2.GA</version>
          </dependency>
          <dependency>
             <groupId>commons-httpclient</groupId>
