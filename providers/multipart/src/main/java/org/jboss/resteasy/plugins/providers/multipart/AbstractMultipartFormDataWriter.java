@@ -19,6 +19,7 @@ public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter
       MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
       for (Map.Entry<String, OutputPart> entry : form.getFormData().entrySet())
       {
+         if (entry.getValue().getEntity() == null) continue;
          MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
          headers.putSingle("Content-Disposition", "form-data; name=\"" + entry.getKey() + "\"");
          writePart(entityStream, boundaryBytes, entry.getValue(), headers);

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
-import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
@@ -73,7 +72,8 @@ public class MultipartFormAnnotationReader implements MessageBodyReader
          {
             FormParam param = method.getAnnotation(FormParam.class);
             InputPart part = input.getFormData().get(param.value());
-            if (part == null) throw new LoggableFailure("Unable to find @FormParam in multipart: " + param.value());
+            //if (part == null) throw new LoggableFailure("Unable to find @FormParam in multipart: " + param.value());
+            if (part == null) continue;
             Object data = part.getBody(method.getParameterTypes()[0], method.getGenericParameterTypes()[0]);
             try
             {
@@ -103,7 +103,8 @@ public class MultipartFormAnnotationReader implements MessageBodyReader
             field.setAccessible(true);
             FormParam param = field.getAnnotation(FormParam.class);
             InputPart part = input.getFormData().get(param.value());
-            if (part == null) throw new LoggableFailure("Unable to find @FormParam in multipart: " + param.value());
+            //if (part == null) throw new LoggableFailure("Unable to find @FormParam in multipart: " + param.value());
+            if (part == null) continue;
             Object data = part.getBody(field.getType(), field.getGenericType());
             try
             {
