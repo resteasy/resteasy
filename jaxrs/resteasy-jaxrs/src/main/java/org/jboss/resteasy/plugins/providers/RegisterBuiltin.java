@@ -40,9 +40,11 @@ public class RegisterBuiltin
 
    public static void register(ResteasyProviderFactory factory)
    {
+      if (factory.isBuiltinsRegistered()) return;
       registerMessageBodyReadersWriters(factory);
       registerServerInterceptors(factory);
       registerClientInterceptors(factory);
+      factory.setBuiltinsRegistered(true);
    }
 
    public static void registerMessageBodyReadersWriters(ResteasyProviderFactory factory)

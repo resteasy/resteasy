@@ -4,6 +4,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientProxy;
 import org.jboss.resteasy.client.core.ResteasyClientProxy;
+import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -42,6 +43,11 @@ public class ProxyFactory
    public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory)
    {
       HashMap<Method, ClientInvoker> methodMap = new HashMap<Method, ClientInvoker>();
+
+      if (providerFactory instanceof ProviderFactoryDelegate)
+      {
+         providerFactory = ((ProviderFactoryDelegate) providerFactory).getDelegate();
+      }
 
       for (Method method : clazz.getMethods())
       {
