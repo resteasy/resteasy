@@ -18,6 +18,7 @@ public class RegisterBuiltin
 
    public static void register(ResteasyProviderFactory factory)
    {
+      if (factory.isBuiltinsRegistered()) return;
 
       // Spec required providers.
 
@@ -89,6 +90,8 @@ public class RegisterBuiltin
       optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", "org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.YamlProvider", "org.jboss.resteasy.plugins.providers.YamlProvider", factory);
+
+      factory.setBuiltinsRegistered(true);
    }
 
    private static void optionalProvider(String dependency, String providerClass, ResteasyProviderFactory factory)

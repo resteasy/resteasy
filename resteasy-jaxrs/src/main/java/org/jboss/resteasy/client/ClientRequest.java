@@ -12,6 +12,7 @@ import org.jboss.resteasy.client.core.MessageBodyParameterMarshaller;
 import org.jboss.resteasy.client.core.PathParamMarshaller;
 import org.jboss.resteasy.client.core.QueryParamMarshaller;
 import org.jboss.resteasy.client.core.WebRequestIntializer;
+import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import static org.jboss.resteasy.util.HttpHeaderNames.*;
 
@@ -51,6 +52,10 @@ public class ClientRequest
    {
       this.uriTemplate = uriTemplate;
       this.httpClient = httpClient;
+      if (providerFactory instanceof ProviderFactoryDelegate)
+      {
+         providerFactory = ((ProviderFactoryDelegate) providerFactory).getDelegate();
+      }
       this.providerFactory = providerFactory;
    }
 

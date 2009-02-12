@@ -133,6 +133,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    private static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    private static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
    private InterceptorRegistry interceptorRegistry = new InterceptorRegistry();
+   private boolean builtinsRegistered = false;
 
    public static <T> void pushContext(Class<T> type, T data)
    {
@@ -198,6 +199,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
       addHeaderDelegate(Locale.class, new LocaleDelegate());
       interceptorRegistry.registerResourceMethodInterceptor(ResourceMethodCacheControlInterceptor.class);
+   }
+
+   public boolean isBuiltinsRegistered()
+   {
+      return builtinsRegistered;
+   }
+
+   public void setBuiltinsRegistered(boolean builtinsRegistered)
+   {
+      this.builtinsRegistered = builtinsRegistered;
    }
 
    public UriBuilder createUriBuilder()
