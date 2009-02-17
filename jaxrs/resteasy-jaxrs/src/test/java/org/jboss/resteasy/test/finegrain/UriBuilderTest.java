@@ -202,6 +202,14 @@ public class UriBuilderTest
    }
 
    @Test
+   public void testQueryParamsEncoding()
+   {
+      URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c?a=x&b=y").
+              queryParam("c", "z=z/z").build();
+      Assert.assertEquals(URI.create("http://localhost:8080/a/b/c?a=x&b=y&c=z%3Dz%2Fz"), bu);
+   }
+
+   @Test
    public void testAppendMatrixParams()
    {
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").
