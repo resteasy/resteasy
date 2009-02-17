@@ -525,7 +525,7 @@ public class UriBuilderImpl extends UriBuilder
       {
          if (query == null) query = "";
          else query += "&";
-         query += Encode.encodeSegment(name, false) + "=" + Encode.encodeSegment(value.toString(), true);
+         query += Encode.encodeQueryString(name) + "=" + Encode.encodeQueryString(value.toString());
       }
       return this;
    }
