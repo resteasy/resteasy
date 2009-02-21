@@ -9,7 +9,7 @@ import org.jboss.resteasy.spi.Failure;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.HttpHeaders;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -71,13 +71,14 @@ public class ResourceMethodCacheControlInterceptor implements ResourceMethodInte
       cacheControl.setProxyRevalidate(methodCached.proxyRevalidate());
    }
 
-   public Response invoke(ResourceMethodContext ctx) throws Failure, ApplicationException, WebApplicationException
+   public ServerResponse invoke(ResourceMethodContext ctx) throws Failure, ApplicationException, WebApplicationException
    {
 
-      Response response = ctx.proceed();
+      ServerResponse response = ctx.proceed();
       if (response.getStatus() == 200)
       {
-         return Response.fromResponse(response).cacheControl(cacheControl).build();
+         response.getMetadata().putSingle(HttpHeaders.CACHE_CONTROL, cacheControl);
+         return response;
       }
       return response;
    }

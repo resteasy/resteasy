@@ -1,9 +1,6 @@
 package org.jboss.resteasy.springmvc;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -16,40 +13,29 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
- * 
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
 public class ResteasyHandlerMapping implements HandlerMapping, Ordered, InitializingBean
 {
    private static Logger logger = LoggerFactory
-         .getLogger(ResteasyHandlerMapping.class);
+           .getLogger(ResteasyHandlerMapping.class);
 
    private int order = Integer.MAX_VALUE;
    private SynchronousDispatcher dispatcher;
 
-   @Deprecated
-   private ResourceMethodRegistry registry;
-   
    private String prefix = "";
    private HandlerInterceptor[] interceptors;
-   private boolean throwNotFound = false; 
+   private boolean throwNotFound = false;
 
    public ResteasyHandlerMapping(SynchronousDispatcher dispatcher)
    {
       super();
       this.dispatcher = dispatcher;
    }
-   
-   @Deprecated
-   public ResteasyHandlerMapping(ResourceMethodRegistry registry)
-   {
-      super();
-      this.registry = registry;
-      logger.warn("You're using a deprecated ResteasyHandlerMapping constructor.  Use the ResteasyHandlerMapping(SynchronousDispatcher) constructor");
-   }
-
 
    public SynchronousDispatcher getDispatcher()
    {
@@ -72,20 +58,20 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
    }
 
    public HandlerExecutionChain getHandler(HttpServletRequest request)
-         throws Exception
+           throws Exception
    {
       ResteasyRequestWrapper requestWrapper = RequestUtil.getRequestWrapper(
-            request, request.getMethod(), prefix);
+              request, request.getMethod(), prefix);
       try
       {
          // NOTE: if invoker isn't found, RESTEasy throw NoReourceFoundFailure
          HttpRequest httpRequest = requestWrapper.getHttpRequest();
-         if( !httpRequest.isInitial() )
+         if (!httpRequest.isInitial())
          {
             String message = httpRequest.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.";
             logger.error(message);
             requestWrapper.setError(500, message);
-         } 
+         }
          else
          {
             requestWrapper.setInvoker(getInvoker(httpRequest));
@@ -94,10 +80,10 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
       }
       catch (NoResourceFoundFailure e)
       {
-         if( throwNotFound )
+         if (throwNotFound)
          {
             throw e;
-         } 
+         }
          logger.error("Resource Not Found: " + e.getMessage(), e);
       }
       catch (Failure e)
@@ -110,10 +96,8 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
 
    private ResourceInvoker getInvoker(HttpRequest httpRequest)
    {
-      if( dispatcher != null )
+      if (dispatcher != null)
          return dispatcher.getInvoker(httpRequest, null);
-      if( registry != null )
-         return registry.getResourceInvoker(httpRequest, null);
       return null;
    }
 
@@ -144,7 +128,7 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
 
    public void afterPropertiesSet() throws Exception
    {
-      if( !throwNotFound && order == Integer.MAX_VALUE )
+      if (!throwNotFound && order == Integer.MAX_VALUE)
       {
          logger.info("ResteasyHandlerMapping has the default order and throwNotFound settings.  Consider adding explicit ordering to your HandlerMappings, with ResteasyHandlerMapping being lsat, and set throwNotFound = true.");
       }

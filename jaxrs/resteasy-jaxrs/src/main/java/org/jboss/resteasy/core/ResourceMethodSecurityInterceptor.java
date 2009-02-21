@@ -11,7 +11,6 @@ import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 /**
@@ -39,7 +38,7 @@ public class ResourceMethodSecurityInterceptor implements ResourceMethodIntercep
       return rolesAllowed != null || denyAll;
    }
 
-   public Response invoke(ResourceMethodContext ctx) throws Failure, ApplicationException, WebApplicationException
+   public ServerResponse invoke(ResourceMethodContext ctx) throws Failure, ApplicationException, WebApplicationException
    {
       if (denyAll) throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
       if (rolesAllowed != null)

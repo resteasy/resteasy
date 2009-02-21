@@ -1,13 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -24,6 +16,12 @@ import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -75,7 +73,7 @@ public class ResourceLocator implements ResourceInvoker
       {
          throw new LoggableFailure(e);
       }
-       catch (InvocationTargetException e)
+      catch (InvocationTargetException e)
       {
          throw new ApplicationException(e.getCause());
       }
@@ -86,7 +84,7 @@ public class ResourceLocator implements ResourceInvoker
       return method;
    }
 
-   public Response invoke(HttpRequest request, HttpResponse response)
+   public ServerResponse invoke(HttpRequest request, HttpResponse response)
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       try
@@ -101,7 +99,7 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   public Response invoke(HttpRequest request, HttpResponse response, Object locator)
+   public ServerResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       try
@@ -116,7 +114,7 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   protected Response invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
+   protected ServerResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
    {
       if (target == null)
       {

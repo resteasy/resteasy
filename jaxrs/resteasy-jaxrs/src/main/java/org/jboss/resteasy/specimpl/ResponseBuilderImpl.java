@@ -1,6 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -13,7 +14,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -27,18 +27,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    private Object entity;
    private int status;
    private Headers<Object> metadata = new Headers<Object>();
-   private List<NewCookie> cookies = new ArrayList<NewCookie>();
 
    @Override
    public Response build()
    {
-      NewCookie[] newCookies = null;
-      if (cookies.size() > 0)
-      {
-         newCookies = new NewCookie[cookies.size()];
-         newCookies = cookies.toArray(newCookies);
-      }
-      return new ResponseImpl(entity, status, metadata, newCookies);
+      return new ServerResponse(entity, status, metadata);
    }
 
    @Override
@@ -47,7 +40,6 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       ResponseBuilderImpl impl = new ResponseBuilderImpl();
       impl.metadata.putAll(metadata);
       impl.entity = entity;
-      impl.cookies.addAll(cookies);
       impl.status = status;
       return impl;
    }
