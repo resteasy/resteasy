@@ -2,7 +2,6 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.ResourceMethodContext;
 import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
-import org.jboss.resteasy.specimpl.ResponseImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -160,7 +159,7 @@ public class ResourceMethod implements ResourceInvoker
       return method;
    }
 
-   public Response invoke(HttpRequest request, HttpResponse response)
+   public ServerResponse invoke(HttpRequest request, HttpResponse response)
    {
       Object target = resource.createResource(request, response, injector);
       return invoke(request, response, target);
@@ -204,7 +203,7 @@ public class ResourceMethod implements ResourceInvoker
          return ResourceMethod.this;
       }
 
-      public Response proceed() throws Failure, WebApplicationException, ApplicationException
+      public ServerResponse proceed() throws Failure, WebApplicationException, ApplicationException
       {
          if (index >= interceptors.length) return invokeOnTarget(request, response, target);
          try
@@ -219,14 +218,14 @@ public class ResourceMethod implements ResourceInvoker
    }
 
 
-   public Response invoke(HttpRequest request, HttpResponse response, Object target)
+   public ServerResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
       incrementMethodCount(request.getHttpMethod());
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       uriInfo.pushCurrentResource(target);
       try
       {
-         Response jaxrsResponse = null;
+         ServerResponse jaxrsResponse = null;
          if (interceptors == null || interceptors.length == 0)
          {
             jaxrsResponse = invokeOnTarget(request, response, target);
@@ -255,32 +254,27 @@ public class ResourceMethod implements ResourceInvoker
       }
    }
 
-   protected Response invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
+   protected ServerResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
       Object rtn = methodInjector.invoke(request, response, target);
       if (request.isSuspended()) return null;
+      if (rtn == null || method.getReturnType().equals(void.class))
+      {
+         return (ServerResponse) Response.noContent().build();
+      }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
-         return (Response) rtn;
+         ServerResponse serverResponse = ServerResponse.copyIfNotServerResponse((Response) rtn);
+         serverResponse.setAnnotations(method.getAnnotations());
+         return serverResponse;
       }
-      if (method.getReturnType().equals(void.class))
-      {
-         return Response.noContent().build();
-      }
-      Response.ResponseBuilder builder = null;
-      if (rtn == null)
-      {
-         return Response.noContent().build();
-      }
-      else
-      {
-         builder = Response.ok(rtn);
-         builder.type(resolveContentType(request));
-         ResponseImpl jaxrsResponse = (ResponseImpl) builder.build();
-         jaxrsResponse.setGenericType(genericReturnType);
-         jaxrsResponse.setAnnotations(method.getAnnotations());
-         return jaxrsResponse;
-      }
+
+      Response.ResponseBuilder builder = Response.ok(rtn);
+      builder.type(resolveContentType(request));
+      ServerResponse jaxrsResponse = (ServerResponse) builder.build();
+      jaxrsResponse.setGenericType(genericReturnType);
+      jaxrsResponse.setAnnotations(method.getAnnotations());
+      return jaxrsResponse;
    }
 
    public boolean doesProduce(List<? extends MediaType> accepts)

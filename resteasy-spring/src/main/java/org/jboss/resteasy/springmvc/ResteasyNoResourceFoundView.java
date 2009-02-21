@@ -1,14 +1,13 @@
 package org.jboss.resteasy.springmvc;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.springframework.web.servlet.View;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 public class ResteasyNoResourceFoundView implements View
 {
@@ -31,24 +30,25 @@ public class ResteasyNoResourceFoundView implements View
 
    @SuppressWarnings("unchecked")
    public void render(Map model, HttpServletRequest request,
-         HttpServletResponse response) throws Exception
+                      HttpServletResponse response) throws Exception
    {
       final Failure failure = getFailure(model);
-      new ResteasyWebHandlerTemplate<Void>(dispatcher){
+      new ResteasyWebHandlerTemplate<Void>(dispatcher.getProviderFactory())
+      {
          protected Void handle(ResteasyRequestWrapper requestWrapper,
-               HttpResponse response) throws Exception
+                               HttpResponse response) throws Exception
          {
             dispatcher.handleFailure(requestWrapper.getHttpRequest(), response, failure);
             return null;
          }
-         
+
       };
    }
 
    @SuppressWarnings("unchecked")
    private Failure getFailure(Map model)
    {
-      for(Object value: model.values())
+      for (Object value : model.values())
          if (value instanceof Failure)
             return (Failure) value;
       return null;

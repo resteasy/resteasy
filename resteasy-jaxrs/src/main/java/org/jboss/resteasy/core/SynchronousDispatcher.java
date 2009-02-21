@@ -1,17 +1,7 @@
 package org.jboss.resteasy.core;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
+import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -22,6 +12,20 @@ import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Providers;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -35,16 +39,12 @@ public class SynchronousDispatcher implements Dispatcher
    protected Map<String, MediaType> mediaTypeMappings;
    protected Map<String, String> languageMappings;
 
-   // this should be overridable
-   protected DispatcherUtilities dispatcherUtilities;
-
    private final static Logger logger = LoggerFactory.getLogger(SynchronousDispatcher.class);
 
    public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
-      dispatcherUtilities = new DispatcherUtilities(providerFactory, registry);
    }
 
    public ResteasyProviderFactory getProviderFactory()
@@ -344,16 +344,44 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
+   public void pushContextObjects(HttpRequest request, HttpResponse response)
+   {
+      ResteasyProviderFactory.pushContext(HttpRequest.class, request);
+      ResteasyProviderFactory.pushContext(HttpResponse.class, response);
+      ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
+      ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
+      ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
+      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
+      ResteasyProviderFactory.pushContext(Registry.class, registry);
+   }
+
+   public void clearContextData()
+   {
+      ResteasyProviderFactory.clearContextData();
+   }
+
+
    public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
       try
       {
-         getDispatcherUtilities().pushContextObjects(request, response);
+         pushContextObjects(request, response);
 
          Response jaxrsResponse = null;
          try
          {
-            jaxrsResponse = getDispatcherUtilities().getJaxrsResponse(request, response, invoker);
+            jaxrsResponse = invoker.invoke(request, response);
+            if (request.isSuspended())
+            {
+               /**
+                * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
+                * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
+                * asychronous HTTP.
+                *
+                */
+               request.initialRequestThreadFinished();
+               jaxrsResponse = null; // we're handing response asynchronously
+            }
          }
          catch (Exception e)
          {
@@ -371,7 +399,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         getDispatcherUtilities().clearContextData();
+         clearContextData();
       }
    }
 
@@ -379,7 +407,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
-         getDispatcherUtilities().pushContextObjects(request, response);
+         pushContextObjects(request, response);
          try
          {
             if (jaxrsResponse != null) writeJaxrsResponse(response, jaxrsResponse);
@@ -391,27 +419,15 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         getDispatcherUtilities().clearContextData();
+         clearContextData();
       }
    }
 
    protected void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
            throws IOException, WebApplicationException
    {
-      ResponseInvoker responseInvoker = dispatcherUtilities.resolveResponseInvoker(response, jaxrsResponse);
-      if( responseInvoker != null )
-      {
-         responseInvoker.writeTo(response);
-      }
+      ServerResponse serverResponse = (ServerResponse) jaxrsResponse;
+      serverResponse.writeTo(response, providerFactory);
    }
 
-   public DispatcherUtilities getDispatcherUtilities()
-   {
-      return dispatcherUtilities;
-   }
-
-   public void setDispatcherUtilities(DispatcherUtilities dispatcherUtilities)
-   {
-      this.dispatcherUtilities = dispatcherUtilities;
-   }
 }

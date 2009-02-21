@@ -1,28 +1,23 @@
 package org.jboss.resteasy.springmvc;
 
+import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.MediaTypeHelper;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.View;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-
-import org.jboss.resteasy.core.ResponseInvoker;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.specimpl.ResponseImpl;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.LoggableFailure;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.util.MediaTypeHelper;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.View;
-
 /**
- * 
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
@@ -80,38 +75,37 @@ public class ResteasyView implements View
 
    @SuppressWarnings("unchecked")
    public void render(final Map model, final HttpServletRequest servletRequest,
-         final HttpServletResponse servletResponse) throws Exception
+                      final HttpServletResponse servletResponse) throws Exception
    {
-      ResteasyWebHandlerTemplate template = new ResteasyWebHandlerTemplate<Void>(dispatcher){
+      ResteasyWebHandlerTemplate template = new ResteasyWebHandlerTemplate<Void>(dispatcher.getProviderFactory())
+      {
          protected Void handle(ResteasyRequestWrapper requestWrapper,
-               HttpResponse response) throws Exception
+                               HttpResponse response) throws Exception
          {
             HttpRequest httpRequest = requestWrapper.getHttpRequest();
+            dispatcher.pushContextObjects(httpRequest, response);
             try
             {
-               MediaType resolvedContentType = resolveContentType(httpRequest,
-                     httpRequest.getHttpHeaders().getMediaType());
-               if(resolvedContentType != null )
-                  servletResponse.setContentType(resolvedContentType.toString());
-               ResponseInvoker responseInvoker = getResponse(model, resolvedContentType);
-               if (responseInvoker != null)
+               try
                {
-                  
-                  if (responseInvoker.getWriter() == null)
+                  MediaType resolvedContentType = resolveContentType(httpRequest,
+                          httpRequest.getHttpHeaders().getMediaType());
+                  ServerResponse responseInvoker = getResponse(model, resolvedContentType);
+                  if (responseInvoker != null)
                   {
-                     String message = "Could not find MessageBodyWriter for response object of type: %s of media type: %s";
-                     throw new LoggableFailure(String.format(message, responseInvoker
-                           .getType().getName(), resolvedContentType),
-                           HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+                     responseInvoker.writeTo(response, dispatcher.getProviderFactory());
                   }
-                  responseInvoker.writeTo(response);
                }
-            } 
-            catch (Exception e)
-            {
-               dispatcher.handleWriteResponseException(httpRequest, response, e);
+               catch (Exception e)
+               {
+                  dispatcher.handleWriteResponseException(httpRequest, response, e);
+               }
+               return null;
             }
-            return null;
+            finally
+            {
+               dispatcher.clearContextData();
+            }
          }
       };
       ResteasyRequestWrapper requestWrapper = RequestUtil.getRequestWrapper(servletRequest);
@@ -123,9 +117,9 @@ public class ResteasyView implements View
       if (mt == null || MediaType.MEDIA_TYPE_WILDCARD.equals(mt.getType()))
       {
          List<MediaType> acceptableMediaTypes = jaxrsRequest.getHttpHeaders()
-               .getAcceptableMediaTypes();
-         
-         if(contentType != null && isAcceptable(acceptableMediaTypes, contentType))
+                 .getAcceptableMediaTypes();
+
+         if (contentType != null && isAcceptable(acceptableMediaTypes, contentType))
          {
             return contentType;
          }
@@ -136,14 +130,14 @@ public class ResteasyView implements View
    }
 
    private boolean isAcceptable(List<MediaType> acceptableMediaTypes,
-         MediaType potentialContentType)
+                                MediaType potentialContentType)
    {
       boolean isAcceptable = false;
       for (MediaType acceptableMediaType : acceptableMediaTypes)
       {
          if (acceptableMediaType.isCompatible(potentialContentType))
          {
-            isAcceptable=true;
+            isAcceptable = true;
             break;
          }
       }
@@ -151,20 +145,20 @@ public class ResteasyView implements View
    }
 
    @SuppressWarnings("unchecked")
-   protected ResponseInvoker getResponse(Map model, MediaType mt)
+   protected ServerResponse getResponse(Map model, MediaType mt)
    {
       Collection modelValues = model.values();
       for (Object value : modelValues)
       {
-         if (value instanceof ResponseInvoker)
+         if (value instanceof ServerResponse)
          {
-            return (ResponseInvoker) value;
+            return (ServerResponse) value;
          }
       }
-      
+
       if (model.size() == 1)
       {
-         return createResponseInvoker(modelValues.iterator().next(), mt);
+         return createResponse(modelValues.iterator().next(), mt);
       }
       if (model.size() == 2)
       {
@@ -172,20 +166,20 @@ public class ResteasyView implements View
          {
             if (!(value instanceof BindingResult))
             {
-               return createResponseInvoker(value, mt);
+               return createResponse(value, mt);
             }
          }
       }
       return null;
    }
 
-   private ResponseInvoker createResponseInvoker(Object value, MediaType contentType)
+   private ServerResponse createResponse(Object value, MediaType contentType)
    {
-      ResponseImpl responseImpl = new ResponseImpl();
+      ServerResponse responseImpl = new ServerResponse();
       responseImpl.setEntity(value);
-      if( contentType != null )
+      if (contentType != null)
          responseImpl.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, contentType);
-      return dispatcher.getDispatcherUtilities().createResponseInvoker(responseImpl);
+      return responseImpl;
    }
 
    public void setContentType(String contentType)

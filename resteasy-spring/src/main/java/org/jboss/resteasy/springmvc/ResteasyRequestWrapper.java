@@ -1,16 +1,15 @@
 package org.jboss.resteasy.springmvc;
 
-import java.io.IOException;
+import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
+import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
-
-import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
-import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
-import org.jboss.resteasy.spi.HttpRequest;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
@@ -42,7 +41,6 @@ public class ResteasyRequestWrapper
 
       // HttpServletResponseWrapper theResponse = new
       // HttpServletResponseWrapper(httpServletResponse, dispatcher
-      // .getProviderFactory());
       // TODO: the two nulls are the response and the dispatcher. Those
       // are not needed here... They are only needed for asynchronous
       // invocations. Suggest Core RESTEasy refactoring to change the
@@ -96,6 +94,6 @@ public class ResteasyRequestWrapper
       setErrorCode(errorCode);
       setErrorMessage(errorMessage);
    }
-   
-   
+
+
 }
