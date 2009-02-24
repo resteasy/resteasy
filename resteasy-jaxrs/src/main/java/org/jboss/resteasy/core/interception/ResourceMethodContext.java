@@ -1,10 +1,10 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -18,11 +18,9 @@ public interface ResourceMethodContext
 
    void setRequest(HttpRequest request);
 
-   Object getTarget();
+   HttpResponse getResponse();
 
-   void setTarget(Object target);
-
-   ResourceMethod getMethod();
+   void setResponse(HttpResponse response);
 
    ServerResponse proceed() throws Failure, WebApplicationException, ApplicationException;
 }

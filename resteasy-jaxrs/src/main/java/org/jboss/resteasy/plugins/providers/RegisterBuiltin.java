@@ -6,6 +6,7 @@ import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPInterc
 import org.jboss.resteasy.plugins.interceptors.encoding.ClientContentEncodingHeaderInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.encoding.ServerContentEncodingHeaderInterceptor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
@@ -25,6 +26,7 @@ public class RegisterBuiltin
    {
       factory.getInterceptorRegistry().registerResourceMethodInterceptor(ResourceMethodCacheControlInterceptor.class);
       factory.getInterceptorRegistry().registerMessageBodyReaderInterceptor(new GZIPDecodingInterceptor());
+      factory.getInterceptorRegistry().registerMessageBodyWriterInterceptor(ServerContentEncodingHeaderInterceptor.class);
       factory.getInterceptorRegistry().registerMessageBodyWriterInterceptor(new GZIPEncodingInterceptor());
 
    }

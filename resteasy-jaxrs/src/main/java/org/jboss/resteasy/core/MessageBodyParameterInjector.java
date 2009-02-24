@@ -1,5 +1,7 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
+import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
@@ -13,6 +15,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -26,13 +29,15 @@ public class MessageBodyParameterInjector implements ValueInjector
    private Type genericType;
    private Annotation[] annotations;
    private ResteasyProviderFactory factory;
+   private MessageBodyReaderInterceptor[] interceptors;
 
-   public MessageBodyParameterInjector(Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
+   public MessageBodyParameterInjector(Class declaringClass, AccessibleObject target, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       this.type = type;
       this.factory = factory;
       this.genericType = genericType;
       this.annotations = annotations;
+      interceptors = factory.getInterceptorRegistry().bindMessageBodyReaderInterceptors(declaringClass, target);
    }
 
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -73,7 +78,11 @@ public class MessageBodyParameterInjector implements ValueInjector
             MessageBodyReader reader = factory.getMessageBodyReader(type, genericType, annotations, mediaType);
             if (reader == null)
                throw new LoggableFailure("Could not find message body reader for type: " + genericType + " of content type: " + mediaType, HttpResponseCodes.SC_BAD_REQUEST);
-            return reader.readFrom(type, genericType, annotations, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
+            if (interceptors == null || interceptors.length == 0)
+               return reader.readFrom(type, genericType, annotations, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
+            MessageBodyReaderContextImpl ctx = new MessageBodyReaderContextImpl(interceptors, reader, type, genericType,
+                    annotations, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
+            return ctx.proceed();
          }
       }
       catch (IOException e)
