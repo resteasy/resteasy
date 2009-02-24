@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.core.interception.ResourceMethodContext;
 import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
@@ -49,6 +50,7 @@ public class ResourceMethod implements ResourceInvoker
    protected Method method;
    protected Class<?> resourceClass;
    protected ResourceMethodInterceptor[] interceptors;
+   protected MessageBodyWriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
    protected Type genericReturnType;
 
@@ -90,7 +92,8 @@ public class ResourceMethod implements ResourceInvoker
       }
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
-      interceptors = providerFactory.getInterceptorRegistry().bind(this);
+      interceptors = providerFactory.getInterceptorRegistry().bindResourceMethodInterceptors(resourceClass, method);
+      writerInterceptors = providerFactory.getInterceptorRegistry().bindMessageBodyWriterInterceptors(resourceClass, method);
       if (interceptors != null && interceptors.length == 0) interceptors = null;
       /*
           We get the genericReturnType for the case of:
@@ -181,26 +184,22 @@ public class ResourceMethod implements ResourceInvoker
 
       public HttpRequest getRequest()
       {
-         return null;
+         return request;
       }
 
       public void setRequest(HttpRequest request)
       {
+         this.request = request;
       }
 
-      public Object getTarget()
+      public HttpResponse getResponse()
       {
-         return target;
+         return response;
       }
 
-      public void setTarget(Object target)
+      public void setResponse(HttpResponse response)
       {
-         this.target = target;
-      }
-
-      public ResourceMethod getMethod()
-      {
-         return ResourceMethod.this;
+         this.response = response;
       }
 
       public ServerResponse proceed() throws Failure, WebApplicationException, ApplicationException
@@ -266,6 +265,7 @@ public class ResourceMethod implements ResourceInvoker
       {
          ServerResponse serverResponse = ServerResponse.copyIfNotServerResponse((Response) rtn);
          serverResponse.setAnnotations(method.getAnnotations());
+         serverResponse.setInterceptors(writerInterceptors);
          return serverResponse;
       }
 
@@ -274,6 +274,7 @@ public class ResourceMethod implements ResourceInvoker
       ServerResponse jaxrsResponse = (ServerResponse) builder.build();
       jaxrsResponse.setGenericType(genericReturnType);
       jaxrsResponse.setAnnotations(method.getAnnotations());
+      jaxrsResponse.setInterceptors(writerInterceptors);
       return jaxrsResponse;
    }
 

@@ -57,7 +57,7 @@ public class MethodInjectorImpl implements MethodInjector
          Class type = method.getParameterTypes()[i];
          Type genericType = genericParameterTypes[i];
          Annotation[] annotations = method.getParameterAnnotations()[i];
-         params[i] = InjectorFactoryImpl.getParameterExtractor(type, genericType, annotations, method, factory);
+         params[i] = InjectorFactoryImpl.getParameterExtractor(root, method, type, genericType, annotations, factory);
       }
    }
 

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.core.ResourceMethod;
-
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,40 +39,13 @@ public class InterceptorRegistry
       resourceMethodIntercptors.add(interceptor);
    }
 
-   public ResourceMethodInterceptor[] bind(ResourceMethod method)
+   public ResourceMethodInterceptor[] bindResourceMethodInterceptors(Class declaring, Method method)
    {
-      List<ResourceMethodInterceptor> list = new ArrayList<ResourceMethodInterceptor>();
-      for (Class<ResourceMethodInterceptor> clazz : perResourceMethodInterceptorClasses)
-      {
-         ResourceMethodInterceptor interceptor = null;
-         try
-         {
-            interceptor = clazz.newInstance();
-         }
-         catch (InstantiationException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
-         if (interceptor.accepted(method))
-         {
-            list.add(interceptor);
-         }
-      }
-      for (ResourceMethodInterceptor interceptor : resourceMethodIntercptors)
-      {
-         if (interceptor.accepted(method))
-         {
-            list.add(interceptor);
-         }
-      }
+      List<ResourceMethodInterceptor> list = bindInterceptors(perResourceMethodInterceptorClasses, resourceMethodIntercptors, declaring, method);
       return list.toArray(new ResourceMethodInterceptor[0]);
    }
 
-   protected List bindInterceptors(List<Class> classes, List singletons, Class declaring, Method method)
+   protected List bindInterceptors(List<Class> classes, List singletons, Class declaring, AccessibleObject target)
    {
       List list = new ArrayList();
       for (Class clazz : classes)
@@ -91,18 +63,19 @@ public class InterceptorRegistry
          {
             throw new RuntimeException(e);
          }
-         bindInterceptor(interceptor, declaring, method, list);
+         bindInterceptor(interceptor, declaring, target, list);
       }
-      for (Object interceptor : singletons) bindInterceptor(interceptor, declaring, method, list);
+      for (Object interceptor : singletons) bindInterceptor(interceptor, declaring, target, list);
       return list;
    }
 
-   protected void bindInterceptor(Object interceptor, Class declaring, Method method, List list)
+   protected void bindInterceptor(Object interceptor, Class declaring, AccessibleObject target, List list)
    {
       if (interceptor instanceof AcceptedByMethod)
       {
+         if (target == null || !(target instanceof Method)) return;
          AcceptedByMethod accepted = (AcceptedByMethod) interceptor;
-         if (accepted.accept(declaring, method))
+         if (accepted.accept(declaring, (Method) target))
          {
             list.add(interceptor);
          }
@@ -141,9 +114,9 @@ public class InterceptorRegistry
       readerInterceptors.add(interceptor);
    }
 
-   public MessageBodyReaderInterceptor[] bindMessageBodyReaderInterceptors(Class declaring, Method method)
+   public MessageBodyReaderInterceptor[] bindMessageBodyReaderInterceptors(Class declaring, AccessibleObject target)
    {
-      List<MessageBodyReaderInterceptor> list = bindInterceptors(readerInterceptorClasses, readerInterceptors, declaring, method);
+      List<MessageBodyReaderInterceptor> list = bindInterceptors(readerInterceptorClasses, readerInterceptors, declaring, target);
       return list.toArray(new MessageBodyReaderInterceptor[0]);
    }
 
@@ -175,9 +148,9 @@ public class InterceptorRegistry
       writerInterceptors.add(interceptor);
    }
 
-   public MessageBodyWriterInterceptor[] bindMessageBodyWriterInterceptors(Class declaring, Method method)
+   public MessageBodyWriterInterceptor[] bindMessageBodyWriterInterceptors(Class declaring, AccessibleObject target)
    {
-      List<MessageBodyReaderInterceptor> list = bindInterceptors(writerInterceptorClasses, writerInterceptors, declaring, method);
+      List<MessageBodyReaderInterceptor> list = bindInterceptors(writerInterceptorClasses, writerInterceptors, declaring, target);
       return list.toArray(new MessageBodyWriterInterceptor[0]);
    }
 

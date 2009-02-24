@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class ClientInterceptorRegistry
 {
-   protected List bindInterceptors(List<Class> classes, List singletons, Class declaring, Method method)
+   protected List bindInterceptors(List<Class> classes, List singletons, Class declaring, AccessibleObject target)
    {
       List list = new ArrayList();
       for (Class clazz : classes)
@@ -28,18 +29,20 @@ public class ClientInterceptorRegistry
          {
             throw new RuntimeException(e);
          }
-         bindInterceptor(interceptor, declaring, method, list);
+         bindInterceptor(interceptor, declaring, target, list);
       }
-      for (Object interceptor : singletons) bindInterceptor(interceptor, declaring, method, list);
+      for (Object interceptor : singletons) bindInterceptor(interceptor, declaring, target, list);
       return list;
    }
 
-   protected void bindInterceptor(Object interceptor, Class declaring, Method method, List list)
+   protected void bindInterceptor(Object interceptor, Class declaring, AccessibleObject target, List list)
    {
       if (interceptor instanceof AcceptedByMethod)
       {
+         if (target == null || !(target instanceof Method)) return;
+
          AcceptedByMethod accepted = (AcceptedByMethod) interceptor;
-         if (accepted.accept(declaring, method))
+         if (accepted.accept(declaring, (Method) target))
          {
             list.add(interceptor);
          }

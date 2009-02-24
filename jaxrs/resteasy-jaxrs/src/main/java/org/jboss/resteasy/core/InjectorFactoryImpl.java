@@ -53,11 +53,11 @@ public class InjectorFactoryImpl implements InjectorFactory
       return new MethodInjectorImpl(root, method, factory);
    }
 
-   public static ValueInjector getParameterExtractor(Class type, Type genericType, Annotation[] annotations, AccessibleObject target, ResteasyProviderFactory providerFactory)
+   public static ValueInjector getParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
    {
 
       DefaultValue defaultValue = FindAnnotation.findAnnotation(annotations, DefaultValue.class);
-      boolean encode = FindAnnotation.findAnnotation(annotations, Encoded.class) != null || target.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
+      boolean encode = FindAnnotation.findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
       String defaultVal = null;
       if (defaultValue != null) defaultVal = defaultValue.value();
 
@@ -73,23 +73,23 @@ public class InjectorFactoryImpl implements InjectorFactory
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
       {
-         return new QueryParamInjector(type, genericType, target, query.value(), defaultVal, encode, providerFactory);
+         return new QueryParamInjector(type, genericType, injectTarget, query.value(), defaultVal, encode, providerFactory);
       }
       else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
       {
-         return new HeaderParamInjector(type, genericType, target, header.value(), defaultVal, providerFactory);
+         return new HeaderParamInjector(type, genericType, injectTarget, header.value(), defaultVal, providerFactory);
       }
       else if ((formParam = FindAnnotation.findAnnotation(annotations, FormParam.class)) != null)
       {
-         return new FormParamInjector(type, genericType, target, formParam.value(), defaultVal, providerFactory);
+         return new FormParamInjector(type, genericType, injectTarget, formParam.value(), defaultVal, providerFactory);
       }
       else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
       {
-         return new CookieParamInjector(type, genericType, target, cookie.value(), defaultVal, providerFactory);
+         return new CookieParamInjector(type, genericType, injectTarget, cookie.value(), defaultVal, providerFactory);
       }
       else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
       {
-         return new PathParamInjector(type, genericType, target, uriParam.value(), defaultVal, encode, providerFactory);
+         return new PathParamInjector(type, genericType, injectTarget, uriParam.value(), defaultVal, encode, providerFactory);
       }
       else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
       {
@@ -97,7 +97,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
       {
-         return new MatrixParamInjector(type, genericType, target, matrix.value(), defaultVal, providerFactory);
+         return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, providerFactory);
       }
       else if ((suspend = FindAnnotation.findAnnotation(annotations, Suspend.class)) != null)
       {
@@ -109,7 +109,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else
       {
-         return new MessageBodyParameterInjector(type, genericType, annotations, providerFactory);
+         return new MessageBodyParameterInjector(injectTargetClass, injectTarget, type, genericType, annotations, providerFactory);
       }
 
    }

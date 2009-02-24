@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.AcceptedByMethod;
 import org.jboss.resteasy.core.interception.ResourceMethodContext;
 import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -12,27 +13,31 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.SecurityContext;
+import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceMethodSecurityInterceptor implements ResourceMethodInterceptor
+public class ResourceMethodSecurityInterceptor implements ResourceMethodInterceptor, AcceptedByMethod
 {
    protected String[] rolesAllowed;
    protected boolean denyAll;
 
-   public boolean accepted(ResourceMethod resourceMethod)
+   public boolean accept(Class declaring, Method method)
    {
-      RolesAllowed allowed = resourceMethod.getResourceClass().getAnnotation(RolesAllowed.class);
-      RolesAllowed methodAllowed = resourceMethod.getMethod().getAnnotation(RolesAllowed.class);
+      if (declaring == null || method == null) return false;
+      RolesAllowed allowed = (RolesAllowed) declaring.getAnnotation(RolesAllowed.class);
+      RolesAllowed methodAllowed = method.getAnnotation(RolesAllowed.class);
       if (methodAllowed != null) allowed = methodAllowed;
       if (allowed != null)
       {
          rolesAllowed = allowed.value();
       }
 
-      denyAll = (resourceMethod.getResourceClass().isAnnotationPresent(DenyAll.class) && resourceMethod.getMethod().isAnnotationPresent(RolesAllowed.class) == false && resourceMethod.getMethod().isAnnotationPresent(PermitAll.class) == false) || resourceMethod.getMethod().isAnnotationPresent(DenyAll.class);
+      denyAll = (declaring.isAnnotationPresent(DenyAll.class)
+              && method.isAnnotationPresent(RolesAllowed.class) == false
+              && method.isAnnotationPresent(PermitAll.class) == false) || method.isAnnotationPresent(DenyAll.class);
 
 
       return rolesAllowed != null || denyAll;
