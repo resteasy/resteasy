@@ -8,7 +8,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.zip.GZIPInputStream;
 
 
 /**
@@ -39,6 +44,46 @@ public class SmokeTest
          Customer cust = (Customer) ctx.createUnmarshaller().unmarshal(new StringReader(result));
          Assert.assertEquals("Bill Burke", cust.getName());
          method.releaseConnection();
+      }
+
+   }
+
+   public String readString(InputStream in) throws IOException
+   {
+      char[] buffer = new char[1024];
+      StringBuilder builder = new StringBuilder();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      int wasRead = 0;
+      do
+      {
+         wasRead = reader.read(buffer, 0, 1024);
+         if (wasRead > 0)
+         {
+            builder.append(buffer, 0, wasRead);
+         }
+      }
+      while (wasRead > -1);
+
+      return builder.toString();
+   }
+
+
+   @Test
+   public void testGzip() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      {
+         GetMethod get = new GetMethod("http://localhost:8080/async-http-servlet-3.0-test/gzip");
+         get.addRequestHeader("Accept-Encoding", "gzip, deflate");
+         int status = client.executeMethod(get);
+         Assert.assertEquals(200, status);
+         Assert.assertEquals("gzip", get.getResponseHeader("Content-Encoding").getValue());
+         GZIPInputStream gzip = new GZIPInputStream(get.getResponseBodyAsStream());
+         String response = readString(gzip);
+
+
+         // test that it is actually zipped
+         Assert.assertEquals(response, "HELLO WORLD");
       }
 
    }

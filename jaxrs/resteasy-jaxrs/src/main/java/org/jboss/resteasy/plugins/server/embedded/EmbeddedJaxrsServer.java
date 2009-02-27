@@ -25,5 +25,4 @@ public interface EmbeddedJaxrsServer
 
    void addApplicationConfig(Application config);
 
-   void setDefaultResourceMethodInterceptors(Class[] interceptorClasses);
 }

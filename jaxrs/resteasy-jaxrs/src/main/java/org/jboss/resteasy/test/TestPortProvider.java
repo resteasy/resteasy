@@ -6,10 +6,6 @@
  */
 package org.jboss.resteasy.test;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.OptionsMethod;
@@ -18,9 +14,13 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ProxyFactory;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+
 /**
  * Utility class that provides a port number for the Resteasy embedded container.
- * 
+ *
  * @author <a href="justin@justinedelson.com">Justin Edelson</a>
  * @version $Revision$
  */
@@ -34,7 +34,7 @@ public class TestPortProvider
 
    /**
     * Create a Resteasy ClientRequest object using the configured port.
-    * 
+    *
     * @param path the request path
     * @return the ClientRequest object
     */
@@ -45,7 +45,7 @@ public class TestPortProvider
 
    /**
     * Create a commons-httpclient DeleteMethod object.
-    * 
+    *
     * @param path the request path
     * @return a DeleteMethod object
     */
@@ -56,7 +56,7 @@ public class TestPortProvider
 
    /**
     * Create a commons-httpclient GetMethod object.
-    * 
+    *
     * @param path the request path
     * @return a GetMethod object
     */
@@ -67,7 +67,7 @@ public class TestPortProvider
 
    /**
     * Create a commons-httpclient OptionsMethod object.
-    * 
+    *
     * @param path the request path
     * @return an OptionsMethod object
     */
@@ -78,7 +78,7 @@ public class TestPortProvider
 
    /**
     * Create a commons-httpclient PostMethod object.
-    * 
+    *
     * @param path the request path
     * @return a PostMethod object
     */
@@ -89,9 +89,9 @@ public class TestPortProvider
 
    /**
     * Create a Resteasy client proxy with an empty base request path.
-    * 
+    *
     * @param clazz the client interface class
-    * @return the proxy object 
+    * @return the proxy object
     */
    public static <T> T createProxy(Class<T> clazz)
    {
@@ -100,10 +100,10 @@ public class TestPortProvider
 
    /**
     * Create a Resteasy client proxy.
-    * 
+    *
     * @param clazz the client interface class
+    * @return the proxy object
     * @path the base request path
-    * @return the proxy object 
     */
    public static <T> T createProxy(Class<T> clazz, String path)
    {
@@ -112,7 +112,7 @@ public class TestPortProvider
 
    /**
     * Create a commons-httpclient PutMethod object.
-    * 
+    *
     * @param path the request path
     * @return a PutMethod object
     */
@@ -123,7 +123,7 @@ public class TestPortProvider
 
    /**
     * Create a URI for the provided path, using the configured port
-    * 
+    *
     * @param path the request path
     * @return a full URI
     */
@@ -134,7 +134,7 @@ public class TestPortProvider
 
    /**
     * Create a URL for the provided path, using the configured port
-    * 
+    *
     * @param path the request path
     * @return a full URL
     */
@@ -145,7 +145,7 @@ public class TestPortProvider
 
    /**
     * Generate a base URL incorporating the configured port.
-    * 
+    *
     * @return a full URL
     */
    public static String generateBaseUrl()
@@ -155,8 +155,8 @@ public class TestPortProvider
 
    /**
     * Generate a URL incorporating the configured port.
-    * 
-    * @param path the path 
+    *
+    * @param path the path
     * @return a full URL
     */
    public static String generateURL(String path)
@@ -167,7 +167,7 @@ public class TestPortProvider
    /**
     * Look up the configured port number, first checking an environment variable (RESTEASY_PORT),
     * then a system property (org.jboss.resteasy.port), and finally the default port (8081).
-    * 
+    *
     * @return the port number specified in either the environment or system properties
     */
    public static int getPort()

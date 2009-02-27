@@ -2,12 +2,13 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.core.interception.ClientInterceptor;
-import org.jboss.resteasy.core.interception.ClientInterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
+import org.jboss.resteasy.core.interception.PostProcessInterceptor;
+import org.jboss.resteasy.core.interception.PreProcessInterceptor;
 import org.jboss.resteasy.core.interception.ServerInterceptor;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
@@ -155,8 +156,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    protected static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
-   protected InterceptorRegistry interceptorRegistry = new InterceptorRegistry();
-   protected ClientInterceptorRegistry clientInterceptorRegistry = new ClientInterceptorRegistry();
+
+   protected InterceptorRegistry<MessageBodyReaderInterceptor> serverMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
+   protected InterceptorRegistry<MessageBodyWriterInterceptor> serverMessageBodyWriterInterceptorRegistry = new InterceptorRegistry<MessageBodyWriterInterceptor>(MessageBodyWriterInterceptor.class, this);
+   protected InterceptorRegistry<PreProcessInterceptor> serverPreProcessInterceptorRegistry = new InterceptorRegistry<PreProcessInterceptor>(PreProcessInterceptor.class, this);
+   protected InterceptorRegistry<PostProcessInterceptor> serverPostProcessInterceptorRegistry = new InterceptorRegistry<PostProcessInterceptor>(PostProcessInterceptor.class, this);
+
+   protected InterceptorRegistry<MessageBodyReaderInterceptor> clientMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
+   protected InterceptorRegistry<MessageBodyWriterInterceptor> clientMessageBodyWriterInterceptorRegistry = new InterceptorRegistry<MessageBodyWriterInterceptor>(MessageBodyWriterInterceptor.class, this);
+   protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
+
    protected boolean builtinsRegistered = false;
 
    public static <T> void pushContext(Class<T> type, T data)
@@ -222,6 +231,41 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
       addHeaderDelegate(Locale.class, new LocaleDelegate());
+   }
+
+   public InterceptorRegistry<MessageBodyReaderInterceptor> getServerMessageBodyReaderInterceptorRegistry()
+   {
+      return serverMessageBodyReaderInterceptorRegistry;
+   }
+
+   public InterceptorRegistry<MessageBodyWriterInterceptor> getServerMessageBodyWriterInterceptorRegistry()
+   {
+      return serverMessageBodyWriterInterceptorRegistry;
+   }
+
+   public InterceptorRegistry<PreProcessInterceptor> getServerPreProcessInterceptorRegistry()
+   {
+      return serverPreProcessInterceptorRegistry;
+   }
+
+   public InterceptorRegistry<PostProcessInterceptor> getServerPostProcessInterceptorRegistry()
+   {
+      return serverPostProcessInterceptorRegistry;
+   }
+
+   public InterceptorRegistry<MessageBodyReaderInterceptor> getClientMessageBodyReaderInterceptorRegistry()
+   {
+      return clientMessageBodyReaderInterceptorRegistry;
+   }
+
+   public InterceptorRegistry<MessageBodyWriterInterceptor> getClientMessageBodyWriterInterceptorRegistry()
+   {
+      return clientMessageBodyWriterInterceptorRegistry;
+   }
+
+   public InterceptorRegistry<ClientExecutionInterceptor> getClientExecutionInterceptorRegistry()
+   {
+      return clientExecutionInterceptorRegistry;
    }
 
    public boolean isBuiltinsRegistered()
@@ -557,19 +601,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
          }
       }
-      if (ResourceMethodInterceptor.class.isAssignableFrom(provider))
+      if (PreProcessInterceptor.class.isAssignableFrom(provider))
       {
-         interceptorRegistry.registerResourceMethodInterceptor(provider);
+         serverPreProcessInterceptorRegistry.register(provider);
+      }
+      if (PostProcessInterceptor.class.isAssignableFrom(provider))
+      {
+         serverPostProcessInterceptorRegistry.register(provider);
       }
       if (MessageBodyWriterInterceptor.class.isAssignableFrom(provider))
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
-            interceptorRegistry.registerMessageBodyWriterInterceptor(provider);
+            serverMessageBodyWriterInterceptorRegistry.register(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptorRegistry.registerMessageBodyWriterInterceptor(provider);
+            clientMessageBodyWriterInterceptorRegistry.register(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
@@ -581,11 +629,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
-            interceptorRegistry.registerMessageBodyReaderInterceptor(provider);
+            serverMessageBodyReaderInterceptorRegistry.register(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptorRegistry.registerMessageBodyReaderInterceptor(provider);
+            clientMessageBodyReaderInterceptorRegistry.register(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
@@ -661,19 +709,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Unable to instantiate ContextResolver", e);
          }
       }
-      if (provider instanceof ResourceMethodInterceptor)
+      if (provider instanceof PreProcessInterceptor)
       {
-         interceptorRegistry.registerResourceMethodInterceptor((ResourceMethodInterceptor) provider);
+         serverPreProcessInterceptorRegistry.register((PreProcessInterceptor) provider);
+      }
+      if (provider instanceof PostProcessInterceptor)
+      {
+         serverPostProcessInterceptorRegistry.register((PostProcessInterceptor) provider);
       }
       if (provider instanceof MessageBodyWriterInterceptor)
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
-            interceptorRegistry.registerMessageBodyWriterInterceptor((MessageBodyWriterInterceptor) provider);
+            serverMessageBodyWriterInterceptorRegistry.register((MessageBodyWriterInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptorRegistry.registerMessageBodyWriterInterceptor((MessageBodyWriterInterceptor) provider);
+            clientMessageBodyWriterInterceptorRegistry.register((MessageBodyWriterInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
@@ -685,11 +737,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
-            interceptorRegistry.registerMessageBodyReaderInterceptor((MessageBodyReaderInterceptor) provider);
+            serverMessageBodyReaderInterceptorRegistry.register((MessageBodyReaderInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptorRegistry.registerMessageBodyReaderInterceptor((MessageBodyReaderInterceptor) provider);
+            clientMessageBodyReaderInterceptorRegistry.register((MessageBodyReaderInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
@@ -744,16 +796,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T> T createEndpoint(Application applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
    {
       throw new UnsupportedOperationException();
-   }
-
-   public InterceptorRegistry getInterceptorRegistry()
-   {
-      return interceptorRegistry;
-   }
-
-   public ClientInterceptorRegistry getClientInterceptorRegistry()
-   {
-      return clientInterceptorRegistry;
    }
 
    public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)

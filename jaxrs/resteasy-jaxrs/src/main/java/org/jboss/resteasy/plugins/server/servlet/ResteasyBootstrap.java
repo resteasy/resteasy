@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -78,7 +79,18 @@ public class ResteasyBootstrap implements ServletContextListener
 
       String resourceMethodInterceptors = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS);
 
-      if (resourceMethodInterceptors != null) setProviders(resourceMethodInterceptors);
+      if (resourceMethodInterceptors != null)
+      {
+         throw new RuntimeException(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS + " is no longer a supported context param.  See documentation for more details");
+      }
+
+      String resteasySecurity = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
+
+      // MUST COME BEFORE REGISTER BUILTINS!!!!!
+      if (resteasySecurity != null && Boolean.valueOf(resteasySecurity.trim()))
+      {
+         factory.getServerPreProcessInterceptorRegistry().registerFirst(SecurityInterceptor.class);
+      }
 
       String builtin = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
       if (builtin == null || Boolean.valueOf(builtin.trim())) RegisterBuiltin.register(factory);

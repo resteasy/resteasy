@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.core.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -31,7 +32,8 @@ public class ServerResponse extends Response
    protected Headers<Object> metadata = new Headers<Object>();
    protected Annotation[] annotations;
    protected Type genericType;
-   protected MessageBodyWriterInterceptor[] interceptors;
+   protected PostProcessInterceptor[] postProcessInterceptors;
+   protected MessageBodyWriterInterceptor[] messageBodyWriterInterceptors;
 
    public ServerResponse(Object entity, int status, Headers<Object> metadata)
    {
@@ -57,14 +59,24 @@ public class ServerResponse extends Response
       return serverResponse;
    }
 
-   public MessageBodyWriterInterceptor[] getInterceptors()
+   public MessageBodyWriterInterceptor[] getMessageBodyWriterInterceptors()
    {
-      return interceptors;
+      return messageBodyWriterInterceptors;
    }
 
-   public void setInterceptors(MessageBodyWriterInterceptor[] interceptors)
+   public void setMessageBodyWriterInterceptors(MessageBodyWriterInterceptor[] messageBodyWriterInterceptors)
    {
-      this.interceptors = interceptors;
+      this.messageBodyWriterInterceptors = messageBodyWriterInterceptors;
+   }
+
+   public PostProcessInterceptor[] getPostProcessInterceptors()
+   {
+      return postProcessInterceptors;
+   }
+
+   public void setPostProcessInterceptors(PostProcessInterceptor[] postProcessInterceptors)
+   {
+      this.postProcessInterceptors = postProcessInterceptors;
    }
 
    @Override
@@ -123,6 +135,13 @@ public class ServerResponse extends Response
 
    public void writeTo(HttpResponse response, ResteasyProviderFactory providerFactory) throws WebApplicationException, IOException
    {
+      if (postProcessInterceptors != null)
+      {
+         for (PostProcessInterceptor interceptor : postProcessInterceptors)
+         {
+            interceptor.postProcess(this);
+         }
+      }
       if (entity == null)
       {
          outputHeaders(response);
@@ -152,7 +171,7 @@ public class ServerResponse extends Response
       long size = writer.getSize(ent, type, generic, annotations, contentType);
       if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
 
-      if (interceptors == null || interceptors.length == 0)
+      if (messageBodyWriterInterceptors == null || messageBodyWriterInterceptors.length == 0)
       {
          writer.writeTo(ent, type, generic, annotations,
                  contentType, response.getOutputHeaders(), response
@@ -160,7 +179,7 @@ public class ServerResponse extends Response
       }
       else
       {
-         MessageBodyWriterContextImpl ctx = new MessageBodyWriterContextImpl(interceptors, writer, ent, type, generic,
+         MessageBodyWriterContextImpl ctx = new MessageBodyWriterContextImpl(messageBodyWriterInterceptors, writer, ent, type, generic,
                  annotations, contentType, response.getOutputHeaders(), response.getOutputStream());
          ctx.proceed();
       }

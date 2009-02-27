@@ -3,39 +3,39 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-   <display-name>Archetype Created Web Application</display-name>
-   <context-param>
-      <param-name>resteasy.scan</param-name>
-      <param-value>true</param-value>
-   </context-param>
+    <display-name>Archetype Created Web Application</display-name>
+    <context-param>
+        <param-name>resteasy.scan</param-name>
+        <param-value>true</param-value>
+    </context-param>
 
-   <!-- set this if you map the Resteasy servlet to something other than /*
-   <context-param>
-      <param-name>resteasy.servlet.mapping.prefix</param-name>
-      <param-value>/resteasy</param-value>
-   </context-param>
-   -->
-   <!-- if you are using Spring, Seam or EJB as your component model, remove the ResourceMethodSecurityInterceptor -->
-   <context-param>
-      <param-name>resteasy.resource.method-interceptors</param-name>
-      <param-value>
-         org.jboss.resteasy.core.ResourceMethodSecurityInterceptor
-      </param-value>
-   </context-param>
+    <!-- set this if you map the Resteasy servlet to something other than /*
+    <context-param>
+       <param-name>resteasy.servlet.mapping.prefix</param-name>
+       <param-value>/resteasy</param-value>
+    </context-param>
+    -->
+    <!-- if you are using Spring, Seam or EJB as your component model, remove the ResourceMethodSecurityInterceptor -->
+    <context-param>
+        <param-name>resteasy.resource.method-interceptors</param-name>
+        <param-value>
+            org.jboss.resteasy.plugins.interceptors.SecurityInterceptor
+        </param-value>
+    </context-param>
 
-   <listener>
-      <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-   </listener>
+    <listener>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
 
-   <servlet>
-      <servlet-name>Resteasy</servlet-name>
-      <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
-   </servlet>
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
 
-   <servlet-mapping>
-      <servlet-name>Resteasy</servlet-name>
-      <url-pattern>/*</url-pattern>
-   </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 
 
 </web-app>

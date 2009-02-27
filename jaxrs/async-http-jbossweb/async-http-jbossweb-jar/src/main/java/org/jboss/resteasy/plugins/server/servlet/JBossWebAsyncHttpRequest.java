@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.core.AbstractAsynchronousResponse;
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -35,12 +37,13 @@ public class JBossWebAsyncHttpRequest extends HttpServletInputMessage
    {
       suspended = true;
       event.setTimeout((int) l);
-      return new AsynchronousResponse()
+      asynchronousResponse = new AbstractAsynchronousResponse()
       {
          public void setResponse(Response response)
          {
             try
             {
+               setupResponse((ServerResponse) response);
                dispatcher.asynchronousDelivery(JBossWebAsyncHttpRequest.this, httpResponse, response);
             }
             finally
@@ -55,6 +58,7 @@ public class JBossWebAsyncHttpRequest extends HttpServletInputMessage
             }
          }
       };
+      return asynchronousResponse;
    }
 
 

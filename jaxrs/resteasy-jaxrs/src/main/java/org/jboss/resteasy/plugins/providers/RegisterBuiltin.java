@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.core.LoggerCategories;
-import org.jboss.resteasy.core.ResourceMethodCacheControlInterceptor;
+import org.jboss.resteasy.plugins.interceptors.CacheControlInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.ClientContentEncodingHeaderInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
@@ -24,19 +24,19 @@ public class RegisterBuiltin
 
    public static void registerServerInterceptors(ResteasyProviderFactory factory)
    {
-      factory.getInterceptorRegistry().registerResourceMethodInterceptor(ResourceMethodCacheControlInterceptor.class);
-      factory.getInterceptorRegistry().registerMessageBodyReaderInterceptor(new GZIPDecodingInterceptor());
-      factory.getInterceptorRegistry().registerMessageBodyWriterInterceptor(ServerContentEncodingHeaderInterceptor.class);
-      factory.getInterceptorRegistry().registerMessageBodyWriterInterceptor(new GZIPEncodingInterceptor());
+      factory.getServerPostProcessInterceptorRegistry().register(CacheControlInterceptor.class);
+      factory.getServerMessageBodyReaderInterceptorRegistry().register(new GZIPDecodingInterceptor());
+      factory.getServerMessageBodyWriterInterceptorRegistry().register(ServerContentEncodingHeaderInterceptor.class);
+      factory.getServerMessageBodyWriterInterceptorRegistry().register(new GZIPEncodingInterceptor());
 
    }
 
    public static void registerClientInterceptors(ResteasyProviderFactory factory)
    {
-      factory.getClientInterceptorRegistry().registerMessageBodyReaderInterceptor(new GZIPDecodingInterceptor());
-      factory.getClientInterceptorRegistry().registerMessageBodyWriterInterceptor(ClientContentEncodingHeaderInterceptor.class);
-      factory.getClientInterceptorRegistry().registerMessageBodyWriterInterceptor(new GZIPEncodingInterceptor());
-      factory.getClientInterceptorRegistry().registerExecutionInterceptor(new AcceptEncodingGZIPInterceptor());
+      factory.getClientMessageBodyReaderInterceptorRegistry().register(new GZIPDecodingInterceptor());
+      factory.getClientMessageBodyWriterInterceptorRegistry().register(ClientContentEncodingHeaderInterceptor.class);
+      factory.getClientMessageBodyWriterInterceptorRegistry().register(new GZIPEncodingInterceptor());
+      factory.getClientExecutionInterceptorRegistry().register(new AcceptEncodingGZIPInterceptor());
 
    }
 

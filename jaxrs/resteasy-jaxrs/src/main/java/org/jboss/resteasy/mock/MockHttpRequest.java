@@ -291,6 +291,11 @@ public class MockHttpRequest implements HttpRequest
       throw new UnsupportedOperationException("NOT SUPPORTED");
    }
 
+   public AsynchronousResponse getAsynchronousResponse()
+   {
+      throw new UnsupportedOperationException("NOT SUPPORTED");
+   }
+
    public void initialRequestThreadFinished()
    {
    }

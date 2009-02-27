@@ -1,10 +1,10 @@
-package org.jboss.resteasy.core;
+package org.jboss.resteasy.plugins.interceptors;
 
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.AcceptedByMethod;
-import org.jboss.resteasy.core.interception.ResourceMethodContext;
-import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
-import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.core.interception.PreProcessInterceptor;
 import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceMethodSecurityInterceptor implements ResourceMethodInterceptor, AcceptedByMethod
+public class SecurityInterceptor implements PreProcessInterceptor, AcceptedByMethod
 {
    protected String[] rolesAllowed;
    protected boolean denyAll;
@@ -43,7 +43,7 @@ public class ResourceMethodSecurityInterceptor implements ResourceMethodIntercep
       return rolesAllowed != null || denyAll;
    }
 
-   public ServerResponse invoke(ResourceMethodContext ctx) throws Failure, ApplicationException, WebApplicationException
+   public ServerResponse preProcess(HttpRequest request) throws Failure, WebApplicationException
    {
       if (denyAll) throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
       if (rolesAllowed != null)
@@ -53,11 +53,11 @@ public class ResourceMethodSecurityInterceptor implements ResourceMethodIntercep
          {
             for (String role : rolesAllowed)
             {
-               if (context.isUserInRole(role)) return ctx.proceed();
+               if (context.isUserInRole(role)) return null;
             }
             throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
          }
       }
-      return ctx.proceed();
+      return null;
    }
 }

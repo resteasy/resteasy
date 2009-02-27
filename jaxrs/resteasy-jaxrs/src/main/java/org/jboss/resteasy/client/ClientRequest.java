@@ -312,11 +312,11 @@ public class ClientRequest
    public ClientResponse execute() throws Exception
    {
       if (readerInterceptors == null)
-         readerInterceptors = providerFactory.getClientInterceptorRegistry().bindMessageBodyReaderInterceptors(null, null);
+         readerInterceptors = providerFactory.getClientMessageBodyReaderInterceptorRegistry().bind(null, null);
 
       if (executionInterceptors == null)
       {
-         executionInterceptors = providerFactory.getClientInterceptorRegistry().bindExecutionInterceptors(null, null);
+         executionInterceptors = providerFactory.getClientExecutionInterceptorRegistry().bind(null, null);
       }
 
       BaseClientResponse response = null;
@@ -337,7 +337,7 @@ public class ClientRequest
    {
       if (body == null) return;
       if (writerInterceptors == null)
-         writerInterceptors = providerFactory.getClientInterceptorRegistry().bindMessageBodyWriterInterceptors(null, null);
+         writerInterceptors = providerFactory.getClientMessageBodyWriterInterceptorRegistry().bind(null, null);
       if (writer == null)
       {
          writer = providerFactory.getMessageBodyWriter(getBodyType(), getBodyGenericType(), getBodyAnnotations(), getBodyContentType());

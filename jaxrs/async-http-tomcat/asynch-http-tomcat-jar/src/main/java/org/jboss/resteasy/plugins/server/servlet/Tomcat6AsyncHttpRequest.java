@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
 import org.apache.catalina.CometEvent;
+import org.jboss.resteasy.core.AbstractAsynchronousResponse;
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -47,12 +49,13 @@ public class Tomcat6AsyncHttpRequest extends HttpServletInputMessage
       {
          throw new RuntimeException(e);
       }
-      return new AsynchronousResponse()
+      asynchronousResponse = new AbstractAsynchronousResponse()
       {
          public void setResponse(Response response)
          {
             try
             {
+               setupResponse((ServerResponse) response);
                dispatcher.asynchronousDelivery(Tomcat6AsyncHttpRequest.this, httpResponse, response);
                try
                {
@@ -75,5 +78,6 @@ public class Tomcat6AsyncHttpRequest extends HttpServletInputMessage
             }
          }
       };
+      return asynchronousResponse;
    }
 }

@@ -1,6 +1,10 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,51 +13,42 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class InterceptorRegistry
+public class InterceptorRegistry<T>
 {
-   private List<Class> perResourceMethodInterceptorClasses = new ArrayList<Class>();
-   private List<ResourceMethodInterceptor> resourceMethodIntercptors = new ArrayList<ResourceMethodInterceptor>();
-
-   public List<Class> getPerResourceMethodInterceptorClasses()
+   protected static interface InterceptorFactory
    {
-      return perResourceMethodInterceptorClasses;
+      Object createInterceptor();
    }
 
-   public List<ResourceMethodInterceptor> getResourceMethodInterceptors()
+   protected static class SingletonInterceptorFactory implements InterceptorFactory
    {
-      return resourceMethodIntercptors;
-   }
+      private Object target;
 
-   public void registerResourceMethodInterceptor(Class clazz)
-   {
-      perResourceMethodInterceptorClasses.add(clazz);
-   }
-
-   public void registerResourceMethodInterceptors(Class[] classes)
-   {
-      for (Class clazz : classes) registerResourceMethodInterceptor(clazz);
-   }
-
-   public void registerResourceMethodInterceptor(ResourceMethodInterceptor interceptor)
-   {
-      resourceMethodIntercptors.add(interceptor);
-   }
-
-   public ResourceMethodInterceptor[] bindResourceMethodInterceptors(Class declaring, Method method)
-   {
-      List<ResourceMethodInterceptor> list = bindInterceptors(perResourceMethodInterceptorClasses, resourceMethodIntercptors, declaring, method);
-      return list.toArray(new ResourceMethodInterceptor[0]);
-   }
-
-   protected List bindInterceptors(List<Class> classes, List singletons, Class declaring, AccessibleObject target)
-   {
-      List list = new ArrayList();
-      for (Class clazz : classes)
+      public SingletonInterceptorFactory(Object target)
       {
-         Object interceptor = null;
+         this.target = target;
+      }
+
+      public Object createInterceptor()
+      {
+         return target;
+      }
+   }
+
+   protected static class PerMethodInterceptorFactory implements InterceptorFactory
+   {
+      private Class clazz;
+
+      public PerMethodInterceptorFactory(Class clazz)
+      {
+         this.clazz = clazz;
+      }
+
+      public Object createInterceptor()
+      {
          try
          {
-            interceptor = clazz.newInstance();
+            return clazz.newInstance();
          }
          catch (InstantiationException e)
          {
@@ -63,95 +58,69 @@ public class InterceptorRegistry
          {
             throw new RuntimeException(e);
          }
-         bindInterceptor(interceptor, declaring, target, list);
       }
-      for (Object interceptor : singletons) bindInterceptor(interceptor, declaring, target, list);
-      return list;
    }
 
-   protected void bindInterceptor(Object interceptor, Class declaring, AccessibleObject target, List list)
+   protected ResteasyProviderFactory providerFactory;
+   protected Class<T> intf;
+   protected List<InterceptorFactory> interceptors = new ArrayList<InterceptorFactory>();
+
+   public InterceptorRegistry(Class<T> intf, ResteasyProviderFactory providerFactory)
    {
-      if (interceptor instanceof AcceptedByMethod)
+      this.providerFactory = providerFactory;
+      this.intf = intf;
+   }
+
+   public T[] bind(Class declaring, AccessibleObject target)
+   {
+      List<T> list = new ArrayList<T>();
+      for (InterceptorFactory factory : interceptors)
       {
-         if (target == null || !(target instanceof Method)) return;
-         AcceptedByMethod accepted = (AcceptedByMethod) interceptor;
-         if (accepted.accept(declaring, (Method) target))
+         Object interceptor = factory.createInterceptor();
+
+         if (interceptor instanceof AcceptedByMethod)
          {
-            list.add(interceptor);
+            if (target == null || !(target instanceof Method)) continue;
+
+            AcceptedByMethod accepted = (AcceptedByMethod) interceptor;
+            if (accepted.accept(declaring, (Method) target))
+            {
+               addNewInterceptor(list, interceptor);
+            }
+         }
+         else
+         {
+            addNewInterceptor(list, interceptor);
          }
       }
-      else
-      {
-         list.add(interceptor);
-      }
+      return list.toArray((T[]) Array.newInstance(intf, list.size()));
    }
 
-   private List<Class> readerInterceptorClasses = new ArrayList<Class>();
-   private List<MessageBodyReaderInterceptor> readerInterceptors = new ArrayList<MessageBodyReaderInterceptor>();
-
-   public List<Class> getMessageBodyReaderInterceptorClasses()
+   protected void addNewInterceptor(List<T> list, Object interceptor)
    {
-      return readerInterceptorClasses;
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(interceptor.getClass(), providerFactory);
+      injector.inject(interceptor);
+      list.add((T) interceptor);
    }
 
-   public List<MessageBodyReaderInterceptor> getMessageBodyReaderInterceptorInterceptors()
+   public void register(Class clazz)
    {
-      return readerInterceptors;
+      interceptors.add(new PerMethodInterceptorFactory(clazz));
    }
 
-   public void registerMessageBodyReaderInterceptor(Class clazz)
+   public void register(T interceptor)
    {
-      readerInterceptorClasses.add(clazz);
+      interceptors.add(new SingletonInterceptorFactory(interceptor));
    }
 
-   public void registerMessageBodyReaderInterceptors(Class[] classes)
+
+   public void registerFirst(Class clazz)
    {
-      for (Class clazz : classes) registerMessageBodyReaderInterceptor(clazz);
+      interceptors.add(0, new PerMethodInterceptorFactory(clazz));
    }
 
-   public void registerMessageBodyReaderInterceptor(MessageBodyReaderInterceptor interceptor)
+   public void registerFirst(T interceptor)
    {
-      readerInterceptors.add(interceptor);
+      interceptors.add(0, new SingletonInterceptorFactory(interceptor));
    }
-
-   public MessageBodyReaderInterceptor[] bindMessageBodyReaderInterceptors(Class declaring, AccessibleObject target)
-   {
-      List<MessageBodyReaderInterceptor> list = bindInterceptors(readerInterceptorClasses, readerInterceptors, declaring, target);
-      return list.toArray(new MessageBodyReaderInterceptor[0]);
-   }
-
-   private List<Class> writerInterceptorClasses = new ArrayList<Class>();
-   private List<MessageBodyWriterInterceptor> writerInterceptors = new ArrayList<MessageBodyWriterInterceptor>();
-
-   public List<Class> getMessageBodyWriterInterceptorClasses()
-   {
-      return writerInterceptorClasses;
-   }
-
-   public List<MessageBodyWriterInterceptor> getMessageBodyWriterInterceptorInterceptors()
-   {
-      return writerInterceptors;
-   }
-
-   public void registerMessageBodyWriterInterceptor(Class clazz)
-   {
-      writerInterceptorClasses.add(clazz);
-   }
-
-   public void registerMessageBodyWriterInterceptors(Class[] classes)
-   {
-      for (Class clazz : classes) registerMessageBodyWriterInterceptor(clazz);
-   }
-
-   public void registerMessageBodyWriterInterceptor(MessageBodyWriterInterceptor interceptor)
-   {
-      writerInterceptors.add(interceptor);
-   }
-
-   public MessageBodyWriterInterceptor[] bindMessageBodyWriterInterceptors(Class declaring, AccessibleObject target)
-   {
-      List<MessageBodyReaderInterceptor> list = bindInterceptors(writerInterceptorClasses, writerInterceptors, declaring, target);
-      return list.toArray(new MessageBodyWriterInterceptor[0]);
-   }
-
 }
