@@ -1,11 +1,9 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.core.interception.ResourceMethodContext;
-import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
+import org.jboss.resteasy.core.interception.PostProcessInterceptor;
+import org.jboss.resteasy.core.interception.PreProcessInterceptor;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -18,7 +16,6 @@ import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
@@ -49,7 +46,8 @@ public class ResourceMethod implements ResourceInvoker
    protected ResteasyProviderFactory providerFactory;
    protected Method method;
    protected Class<?> resourceClass;
-   protected ResourceMethodInterceptor[] interceptors;
+   protected PreProcessInterceptor[] preProcessInterceptors;
+   protected PostProcessInterceptor[] postProcessInterceptors;
    protected MessageBodyWriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
    protected Type genericReturnType;
@@ -92,9 +90,9 @@ public class ResourceMethod implements ResourceInvoker
       }
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
-      interceptors = providerFactory.getInterceptorRegistry().bindResourceMethodInterceptors(resourceClass, method);
-      writerInterceptors = providerFactory.getInterceptorRegistry().bindMessageBodyWriterInterceptors(resourceClass, method);
-      if (interceptors != null && interceptors.length == 0) interceptors = null;
+      preProcessInterceptors = providerFactory.getServerPreProcessInterceptorRegistry().bind(resourceClass, method);
+      postProcessInterceptors = providerFactory.getServerPostProcessInterceptorRegistry().bind(resourceClass, method);
+      writerInterceptors = providerFactory.getServerMessageBodyWriterInterceptorRegistry().bind(resourceClass, method);
       /*
           We get the genericReturnType for the case of:
           
@@ -168,55 +166,6 @@ public class ResourceMethod implements ResourceInvoker
       return invoke(request, response, target);
    }
 
-   protected class ResourceContext implements ResourceMethodContext
-   {
-      protected HttpRequest request;
-      protected HttpResponse response;
-      protected Object target;
-      protected int index;
-
-      public ResourceContext(HttpRequest request, HttpResponse response, Object target)
-      {
-         this.request = request;
-         this.response = response;
-         this.target = target;
-      }
-
-      public HttpRequest getRequest()
-      {
-         return request;
-      }
-
-      public void setRequest(HttpRequest request)
-      {
-         this.request = request;
-      }
-
-      public HttpResponse getResponse()
-      {
-         return response;
-      }
-
-      public void setResponse(HttpResponse response)
-      {
-         this.response = response;
-      }
-
-      public ServerResponse proceed() throws Failure, WebApplicationException, ApplicationException
-      {
-         if (index >= interceptors.length) return invokeOnTarget(request, response, target);
-         try
-         {
-            return interceptors[index++].invoke(this);
-         }
-         finally
-         {
-            index--;
-         }
-      }
-   }
-
-
    public ServerResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
       incrementMethodCount(request.getHttpMethod());
@@ -224,15 +173,7 @@ public class ResourceMethod implements ResourceInvoker
       uriInfo.pushCurrentResource(target);
       try
       {
-         ServerResponse jaxrsResponse = null;
-         if (interceptors == null || interceptors.length == 0)
-         {
-            jaxrsResponse = invokeOnTarget(request, response, target);
-         }
-         else
-         {
-            jaxrsResponse = new ResourceContext(request, response, target).proceed();
-         }
+         ServerResponse jaxrsResponse = invokeOnTarget(request, response, target);
 
          if (jaxrsResponse != null && jaxrsResponse.getEntity() != null)
          {
@@ -255,8 +196,22 @@ public class ResourceMethod implements ResourceInvoker
 
    protected ServerResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
+      for (PreProcessInterceptor preInterceptor : preProcessInterceptors)
+      {
+         ServerResponse serverResponse = preInterceptor.preProcess(request);
+         if (serverResponse != null) return serverResponse;
+      }
+
       Object rtn = methodInjector.invoke(request, response, target);
-      if (request.isSuspended()) return null;
+      if (request.isSuspended())
+      {
+         AbstractAsynchronousResponse asyncResponse = (AbstractAsynchronousResponse) request.getAsynchronousResponse();
+         if (asyncResponse == null) return null;
+         asyncResponse.setAnnotations(method.getAnnotations());
+         asyncResponse.setMessageBodyWriterInterceptors(writerInterceptors);
+         asyncResponse.setPostProcessInterceptors(postProcessInterceptors);
+         return null;
+      }
       if (rtn == null || method.getReturnType().equals(void.class))
       {
          return (ServerResponse) Response.noContent().build();
@@ -265,7 +220,8 @@ public class ResourceMethod implements ResourceInvoker
       {
          ServerResponse serverResponse = ServerResponse.copyIfNotServerResponse((Response) rtn);
          serverResponse.setAnnotations(method.getAnnotations());
-         serverResponse.setInterceptors(writerInterceptors);
+         serverResponse.setMessageBodyWriterInterceptors(writerInterceptors);
+         serverResponse.setPostProcessInterceptors(postProcessInterceptors);
          return serverResponse;
       }
 
@@ -274,7 +230,8 @@ public class ResourceMethod implements ResourceInvoker
       ServerResponse jaxrsResponse = (ServerResponse) builder.build();
       jaxrsResponse.setGenericType(genericReturnType);
       jaxrsResponse.setAnnotations(method.getAnnotations());
-      jaxrsResponse.setInterceptors(writerInterceptors);
+      jaxrsResponse.setMessageBodyWriterInterceptors(writerInterceptors);
+      jaxrsResponse.setPostProcessInterceptors(postProcessInterceptors);
       return jaxrsResponse;
    }
 

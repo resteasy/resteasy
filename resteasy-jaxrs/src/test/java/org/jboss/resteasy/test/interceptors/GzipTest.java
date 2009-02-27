@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientInterceptorTest extends BaseResourceTest
+public class GzipTest extends BaseResourceTest
 {
 
    @Path("/")
@@ -127,6 +127,23 @@ public class ClientInterceptorTest extends BaseResourceTest
          // test that it is actually zipped
          Assert.assertNotSame(response, "HELLO WORLD");
       }
+   }
+
+   @Test
+   public void testWithoutAcceptEncoding() throws Exception
+   {
+      // test that if there is no accept-encoding: gzip header that result isn't encoded
+
+      HttpClient client = new HttpClient();
+      GetMethod get = new GetMethod(TestPortProvider.generateURL("/encoded/text"));
+      int status = client.executeMethod(get);
+      Assert.assertEquals(200, status);
+      String response = get.getResponseBodyAsString();
+      Assert.assertNull(get.getResponseHeader("Content-Encoding"));
+
+      // test that it is actually zipped
+      Assert.assertEquals(response, "HELLO WORLD");
+
    }
 
 

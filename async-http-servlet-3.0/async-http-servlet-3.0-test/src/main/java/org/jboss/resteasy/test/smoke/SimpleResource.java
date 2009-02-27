@@ -46,6 +46,34 @@ public class SimpleResource
    }
 
    @GET
+   @Path("gzip")
+   @Produces("text/plain")
+   public void getGzip(final @Suspend(100000) AsynchronousResponse response) throws Exception
+   {
+      Thread t = new Thread()
+      {
+         @Override
+         public void run()
+         {
+            try
+            {
+               System.out.println("STARTED Gzip !!!!");
+               Thread.sleep(5000);
+               Response jaxrs = Response.ok("HELLO WORLD").type(MediaType.TEXT_PLAIN).header("Content-Encoding", "gzip").build();
+               response.setResponse(jaxrs);
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         }
+      };
+      t.start();
+
+   }
+
+
+   @GET
    @Path("xml")
    @Produces("application/xml")
    public Customer getCustomer()

@@ -37,7 +37,7 @@ public class MessageBodyParameterInjector implements ValueInjector
       this.factory = factory;
       this.genericType = genericType;
       this.annotations = annotations;
-      interceptors = factory.getInterceptorRegistry().bindMessageBodyReaderInterceptors(declaringClass, target);
+      interceptors = factory.getServerMessageBodyReaderInterceptorRegistry().bind(declaringClass, target);
    }
 
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

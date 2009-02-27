@@ -56,9 +56,9 @@ public class ClientInvoker
       uri.uri(baseUri);
       if (declaring.isAnnotationPresent(Path.class)) uri.path(declaring);
       if (method.isAnnotationPresent(Path.class)) uri.path(method);
-      readerInterceptors = providerFactory.getClientInterceptorRegistry().bindMessageBodyReaderInterceptors(declaring, method);
-      writerInterceptors = providerFactory.getClientInterceptorRegistry().bindMessageBodyWriterInterceptors(declaring, method);
-      executionInterceptors = providerFactory.getClientInterceptorRegistry().bindExecutionInterceptors(declaring, method);
+      readerInterceptors = providerFactory.getClientMessageBodyReaderInterceptorRegistry().bind(declaring, method);
+      writerInterceptors = providerFactory.getClientMessageBodyWriterInterceptorRegistry().bind(declaring, method);
+      executionInterceptors = providerFactory.getClientExecutionInterceptorRegistry().bind(declaring, method);
    }
 
    public MediaType getAccepts()

@@ -1,7 +1,11 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.ClientInterceptorRegistry;
+import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.core.interception.PostProcessInterceptor;
+import org.jboss.resteasy.core.interception.PreProcessInterceptor;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
@@ -69,9 +73,46 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public ClientInterceptorRegistry getClientInterceptorRegistry()
+   public InterceptorRegistry<MessageBodyReaderInterceptor> getServerMessageBodyReaderInterceptorRegistry()
    {
-      return getDelegate().getClientInterceptorRegistry();
+      return getDelegate().getServerMessageBodyReaderInterceptorRegistry();
+   }
+
+   @Override
+   public InterceptorRegistry<ClientExecutionInterceptor> getClientExecutionInterceptorRegistry()
+   {
+      return getDelegate().getClientExecutionInterceptorRegistry();
+   }
+
+   @Override
+   public InterceptorRegistry<MessageBodyWriterInterceptor> getClientMessageBodyWriterInterceptorRegistry()
+   {
+      return getDelegate().getClientMessageBodyWriterInterceptorRegistry();
+   }
+
+   @Override
+   public InterceptorRegistry<MessageBodyReaderInterceptor> getClientMessageBodyReaderInterceptorRegistry()
+   {
+      return getDelegate().getClientMessageBodyReaderInterceptorRegistry();
+   }
+
+   @Override
+   public InterceptorRegistry<PreProcessInterceptor> getServerPreProcessInterceptorRegistry()
+   {
+      return getDelegate().getServerPreProcessInterceptorRegistry();
+   }
+
+   @Override
+   public InterceptorRegistry<PostProcessInterceptor> getServerPostProcessInterceptorRegistry()
+   {
+      return getDelegate().getServerPostProcessInterceptorRegistry();
+   }
+
+
+   @Override
+   public InterceptorRegistry<MessageBodyWriterInterceptor> getServerMessageBodyWriterInterceptorRegistry()
+   {
+      return getDelegate().getServerMessageBodyWriterInterceptorRegistry();
    }
 
    @Override
@@ -245,12 +286,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
            throws IllegalArgumentException, UnsupportedOperationException
    {
       return getDelegate().createEndpoint(applicationConfig, endpointType);
-   }
-
-   @Override
-   public InterceptorRegistry getInterceptorRegistry()
-   {
-      return getDelegate().getInterceptorRegistry();
    }
 
    @Override

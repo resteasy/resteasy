@@ -1,19 +1,21 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.core.AbstractAsynchronousResponse;
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.Encode;
-import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -43,6 +45,7 @@ public class HttpServletInputMessage implements HttpRequest
    protected String preProcessedPath;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
+   protected AbstractAsynchronousResponse asynchronousResponse;
 
 
    public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
@@ -178,12 +181,13 @@ public class HttpServletInputMessage implements HttpRequest
       suspended = true;
       latch = new CountDownLatch(1);
       this.suspendTimeout = suspendTimeout;
-      return new AsynchronousResponse()
+      asynchronousResponse = new AbstractAsynchronousResponse()
       {
          public void setResponse(Response response)
          {
             try
             {
+               setupResponse((ServerResponse) response);
                dispatcher.asynchronousDelivery(HttpServletInputMessage.this, httpResponse, response);
             }
             finally
@@ -192,6 +196,12 @@ public class HttpServletInputMessage implements HttpRequest
             }
          }
       };
+      return asynchronousResponse;
+   }
+
+   public AsynchronousResponse getAsynchronousResponse()
+   {
+      return asynchronousResponse;
    }
 
    public boolean isInitial()

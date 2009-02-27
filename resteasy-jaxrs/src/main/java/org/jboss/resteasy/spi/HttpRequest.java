@@ -61,6 +61,13 @@ public interface HttpRequest
    public AsynchronousResponse createAsynchronousResponse(long suspendTimeout);
 
    /**
+    * Returns the AsynchronousResponse created by createAsynchronousResponse
+    *
+    * @return
+    */
+   public AsynchronousResponse getAsynchronousResponse();
+
+   /**
     * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
     * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
     * asychronous HTTP.

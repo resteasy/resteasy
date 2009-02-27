@@ -1,8 +1,8 @@
 package org.jboss.resteasy.util;
 
-import java.io.InputStream;
-import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

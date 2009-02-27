@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
-import org.jboss.resteasy.core.DefaultInterceptors;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -22,7 +22,6 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    protected Registry registry;
    protected Dispatcher dispatcher;
    protected TJWSServletDispatcher servlet = new TJWSServletDispatcher();
-   protected Class[] defaultResourceMethodInterceptors = DefaultInterceptors.defaultInterceptors;
 
    protected String rootResourcePath = "";
 
@@ -33,11 +32,6 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
 
    public TJWSEmbeddedJaxrsServer()
    {
-   }
-
-   public void setDefaultResourceMethodInterceptors(Class[] interceptorClasses)
-   {
-      defaultResourceMethodInterceptors = interceptorClasses;
    }
 
    @Override
@@ -69,8 +63,10 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
       {
          factory = new ResteasyProviderFactory();
          ResteasyProviderFactory.setInstance(factory);
+
+         // enable security
+         factory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
          RegisterBuiltin.register(factory);
-         factory.getInterceptorRegistry().registerResourceMethodInterceptors(defaultResourceMethodInterceptors);
       }
       return factory;
    }

@@ -1,15 +1,12 @@
-package org.jboss.resteasy.core;
+package org.jboss.resteasy.plugins.interceptors;
 
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.annotations.cache.NoCache;
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.AcceptedByMethod;
-import org.jboss.resteasy.core.interception.ResourceMethodContext;
-import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.core.interception.PostProcessInterceptor;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.HttpHeaders;
 import java.lang.reflect.Method;
@@ -18,7 +15,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceMethodCacheControlInterceptor implements ResourceMethodInterceptor, AcceptedByMethod
+public class CacheControlInterceptor implements PostProcessInterceptor, AcceptedByMethod
 {
    protected CacheControl cacheControl;
 
@@ -76,15 +73,11 @@ public class ResourceMethodCacheControlInterceptor implements ResourceMethodInte
       cacheControl.setProxyRevalidate(methodCached.proxyRevalidate());
    }
 
-   public ServerResponse invoke(ResourceMethodContext ctx) throws Failure, ApplicationException, WebApplicationException
+   public void postProcess(ServerResponse response)
    {
-
-      ServerResponse response = ctx.proceed();
-      if (response.getStatus() == 200)
+      if (response != null && response.getStatus() == 200)
       {
          response.getMetadata().putSingle(HttpHeaders.CACHE_CONTROL, cacheControl);
-         return response;
       }
-      return response;
    }
 }
