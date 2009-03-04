@@ -89,6 +89,21 @@ public class HttpServletInputMessage implements HttpRequest
    }
 
 
+   public Object getAttribute(String attribute)
+   {
+      return request.getAttribute(attribute);
+   }
+
+   public void setAttribute(String name, Object value)
+   {
+      request.setAttribute(name, value);
+   }
+
+   public void removeAttribute(String name)
+   {
+      request.removeAttribute(name);
+   }
+
    public MultivaluedMap<String, String> getFormParameters()
    {
       // Tomcat does not set getParameters() if it is a PUT request

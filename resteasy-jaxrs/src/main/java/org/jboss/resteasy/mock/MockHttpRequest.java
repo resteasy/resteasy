@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -40,6 +41,7 @@ public class MockHttpRequest implements HttpRequest
    protected String preprocessedPath;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
+   protected Map<String, Object> attributes = new HashMap<String, Object>();
 
 
    protected MockHttpRequest()
@@ -300,4 +302,18 @@ public class MockHttpRequest implements HttpRequest
    {
    }
 
+   public Object getAttribute(String attribute)
+   {
+      return attributes.get(attribute);
+   }
+
+   public void setAttribute(String name, Object value)
+   {
+      attributes.put(name, value);
+   }
+
+   public void removeAttribute(String name)
+   {
+      attributes.remove(name);
+   }
 }
