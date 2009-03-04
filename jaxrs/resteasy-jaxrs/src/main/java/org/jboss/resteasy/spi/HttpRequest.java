@@ -41,6 +41,17 @@ public interface HttpRequest
 
    MultivaluedMap<String, String> getDecodedFormParameters();
 
+   /**
+    * Map of contextual data.  Similar to HttpServletRequest attributes
+    *
+    * @return
+    */
+   Object getAttribute(String attribute);
+
+   void setAttribute(String name, Object value);
+
+   void removeAttribute(String name);
+
 
    /**
     * Asynchronous HTTP support.  Mirrors Servlet 3.0 API

@@ -199,7 +199,13 @@ public class ResourceMethod implements ResourceInvoker
       for (PreProcessInterceptor preInterceptor : preProcessInterceptors)
       {
          ServerResponse serverResponse = preInterceptor.preProcess(request);
-         if (serverResponse != null) return serverResponse;
+         if (serverResponse != null)
+         {
+            serverResponse.setAnnotations(method.getAnnotations());
+            serverResponse.setMessageBodyWriterInterceptors(writerInterceptors);
+            serverResponse.setPostProcessInterceptors(postProcessInterceptors);
+            return serverResponse;
+         }
       }
 
       Object rtn = methodInjector.invoke(request, response, target);

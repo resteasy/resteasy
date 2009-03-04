@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CacheTest extends BaseResourceTest
+public class ClientCacheTest extends BaseResourceTest
 {
    private static int count = 0;
 
