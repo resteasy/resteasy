@@ -1,6 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.util.LocaleHelper;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
@@ -43,6 +44,7 @@ public class HttpHeadersImpl implements HttpHeaders
    public void setAcceptableMediaTypes(List<MediaType> acceptableMediaTypes)
    {
       this.acceptableMediaTypes = acceptableMediaTypes;
+      if (acceptableMediaTypes != null) MediaTypeHelper.sortByWeight(acceptableMediaTypes);
    }
 
    public MediaType getMediaType()

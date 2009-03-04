@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.interceptors;
 
+import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.AcceptedByMethod;
 import org.jboss.resteasy.core.interception.PreProcessInterceptor;
@@ -43,7 +44,7 @@ public class SecurityInterceptor implements PreProcessInterceptor, AcceptedByMet
       return rolesAllowed != null || denyAll;
    }
 
-   public ServerResponse preProcess(HttpRequest request) throws Failure, WebApplicationException
+   public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
    {
       if (denyAll) throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
       if (rolesAllowed != null)

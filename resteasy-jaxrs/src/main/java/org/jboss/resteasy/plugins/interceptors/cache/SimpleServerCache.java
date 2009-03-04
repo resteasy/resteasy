@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.interceptors.cache;
 
 
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,17 +59,29 @@ public class SimpleServerCache implements ServerCache
    }
 
 
-   private Map<String, CacheEntry> cache = new ConcurrentHashMap<String, CacheEntry>();
+   private Map<String, Map<MediaType, CacheEntry>> cache = new ConcurrentHashMap<String, Map<MediaType, CacheEntry>>();
 
-   public Entry get(String uri)
+   public Entry get(String uri, MediaType accept)
    {
-      return cache.get(uri);
+      Map<MediaType, CacheEntry> entry = cache.get(uri);
+      if (entry == null || entry.isEmpty()) return null;
+      for (MediaType produce : entry.keySet())
+      {
+         if (accept.isCompatible(produce)) return entry.get(produce);
+      }
+      return null;
    }
 
-   public Entry add(String uri, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag)
+   public Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag)
    {
       CacheEntry cacheEntry = new CacheEntry(headers, entity, cc.getMaxAge(), etag);
-      cache.put(uri, cacheEntry);
+      Map<MediaType, CacheEntry> entry = cache.get(uri);
+      if (entry == null)
+      {
+         entry = new ConcurrentHashMap<MediaType, CacheEntry>();
+         cache.put(uri, entry);
+      }
+      entry.put(mediaType, cacheEntry);
       return cacheEntry;
    }
 

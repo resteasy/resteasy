@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.interceptors.cache;
 
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
@@ -22,9 +23,9 @@ public interface ServerCache
       MultivaluedMap<String, Object> getHeaders();
    }
 
-   Entry add(String uri, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag);
+   Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag);
 
-   Entry get(String uri);
+   Entry get(String uri, MediaType accept);
 
    void remove(String uri);
 
