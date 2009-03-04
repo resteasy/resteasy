@@ -121,7 +121,7 @@ public class ServerCacheInterceptor implements MessageBodyWriterInterceptor
          {
             etag = etagObject.toString();
          }
-         cache.add(request.getUri().getRequestUri().toString(), cc, context.getHeaders(), entity, etag);
+         cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag);
          old.write(entity);
       }
       finally

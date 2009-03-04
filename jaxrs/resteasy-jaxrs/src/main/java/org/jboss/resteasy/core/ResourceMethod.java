@@ -198,7 +198,7 @@ public class ResourceMethod implements ResourceInvoker
    {
       for (PreProcessInterceptor preInterceptor : preProcessInterceptors)
       {
-         ServerResponse serverResponse = preInterceptor.preProcess(request);
+         ServerResponse serverResponse = preInterceptor.preProcess(request, this);
          if (serverResponse != null)
          {
             serverResponse.setAnnotations(method.getAnnotations());
@@ -312,11 +312,11 @@ public class ResourceMethod implements ResourceInvoker
       return responseContentType;
    }
 
-   protected MediaType matchByType(List<MediaType> accepts)
+   public MediaType matchByType(List<MediaType> accepts)
    {
       if (accepts == null || accepts.size() == 0)
       {
-         if (produces == null) return MediaType.valueOf("*/*");
+         if (produces == null) return MediaType.WILDCARD_TYPE;
          else return produces[0];
       }
 

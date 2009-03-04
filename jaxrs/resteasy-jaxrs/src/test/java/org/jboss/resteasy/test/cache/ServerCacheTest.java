@@ -25,6 +25,8 @@ import javax.ws.rs.core.Response;
 public class ServerCacheTest extends BaseResourceTest
 {
    private static int count = 0;
+   private static int plainCount = 0;
+   private static int htmlCount = 0;
 
    @Path("/cache")
    public static class MyService
@@ -36,6 +38,27 @@ public class ServerCacheTest extends BaseResourceTest
       {
          count++;
          return "hello world" + count;
+      }
+
+
+      @GET
+      @Produces("text/plain")
+      @Path("accepts")
+      @Cache(maxAge = 2)
+      public String getPlain()
+      {
+         plainCount++;
+         return "plain" + plainCount;
+      }
+
+      @GET
+      @Produces("text/html")
+      @Path("accepts")
+      @Cache(maxAge = 2)
+      public String getHtml()
+      {
+         htmlCount++;
+         return "html" + htmlCount;
       }
    }
 
@@ -66,6 +89,7 @@ public class ServerCacheTest extends BaseResourceTest
    @Test
    public void testCache() throws Exception
    {
+      count = 0;
       String etag = null;
       {
          ClientRequest request = new ClientRequest(generateURL("/cache"));
@@ -113,6 +137,149 @@ public class ServerCacheTest extends BaseResourceTest
 
    }
 
+
+   @Test
+   public void testAccepts() throws Exception
+   {
+      count = 0;
+      plainCount = 0;
+      htmlCount = 0;
+      String etag = null;
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.accept("text/plain");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "plain" + 1);
+      }
+
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.accept("text/plain");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "plain" + 1);
+      }
+
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.accept("text/html");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "html" + 1);
+      }
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.accept("text/html");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "html" + 1);
+      }
+   }
+
+   @Test
+   public void testPreferredAccepts() throws Exception
+   {
+      count = 0;
+      plainCount = 0;
+      htmlCount = 0;
+      String etag = null;
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.accept("text/plain");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "plain" + 1);
+      }
+
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.accept("text/html");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "html" + 1);
+      }
+
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.header(HttpHeaders.ACCEPT, "text/html;q=0.5, text/plain");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "plain" + 1);
+      }
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.header(HttpHeaders.ACCEPT, "text/plain;q=0.5, text/html");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "html" + 1);
+      }
+   }
+
+   @Test
+   public void testPreferredButNotCachedAccepts() throws Exception
+   {
+      count = 0;
+      plainCount = 0;
+      htmlCount = 0;
+      String etag = null;
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.accept("text/plain");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "plain" + 1);
+      }
+
+      // we test that the preferred can be handled
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/accepts"));
+         request.header(HttpHeaders.ACCEPT, "text/plain;q=0.5, text/html");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "html" + 1);
+      }
+   }
 
    @Test
    public void testProxy() throws Exception

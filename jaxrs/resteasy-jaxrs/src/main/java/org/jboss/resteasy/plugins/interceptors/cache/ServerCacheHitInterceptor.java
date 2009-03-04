@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.interceptors.cache;
 
+import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.PreProcessInterceptor;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
@@ -31,12 +33,13 @@ public class ServerCacheHitInterceptor implements PreProcessInterceptor
    @Context
    protected Request validation;
 
-   public ServerResponse preProcess(HttpRequest request) throws Failure, WebApplicationException
+   public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
    {
       if (!request.getHttpMethod().equalsIgnoreCase("GET")) return null;
 
       String key = request.getUri().getRequestUri().toString();
-      ServerCache.Entry entry = cache.get(key);
+      MediaType chosenType = method.matchByType(request.getHttpHeaders().getAcceptableMediaTypes());
+      ServerCache.Entry entry = cache.get(key, chosenType);
       if (entry != null)
       {
          if (entry.isExpired())
