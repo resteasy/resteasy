@@ -60,6 +60,16 @@ public class ServerCacheTest extends BaseResourceTest
          htmlCount++;
          return "html" + htmlCount;
       }
+
+      @GET
+      @Produces("text/plain")
+      @Path("stuff")
+      @Cache(maxAge = 2)
+      public String getStuff()
+      {
+         count++;
+         return "stuff";
+      }
    }
 
    @Path("/cache")
@@ -83,6 +93,36 @@ public class ServerCacheTest extends BaseResourceTest
       getProviderFactory().getServerMessageBodyWriterInterceptorRegistry().register(interceptor);
 
       addPerRequestResource(MyService.class);
+   }
+
+   @Test
+   public void testNoCacheHitValidation() throws Exception
+   {
+      // test that after a cache expiration NOT MODIFIED is still returned if matching etags
+
+      count = 0;
+      String etag = null;
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/stuff"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "stuff");
+      }
+
+
+      Thread.sleep(2000);
+
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache/stuff"));
+         request.header(HttpHeaders.IF_NONE_MATCH, etag);
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(), response.getStatus());
+         Assert.assertEquals(2, count);
+      }
    }
 
 
