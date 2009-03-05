@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
@@ -242,6 +243,10 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void handleFailure(HttpRequest request, HttpResponse response, Exception e)
    {
+      if (((Failure) e).isLoggable())
+         logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+      else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+
       Failure failure = (Failure) e;
       if (failure.getResponse() != null)
       {
@@ -272,9 +277,6 @@ public class SynchronousDispatcher implements Dispatcher
             throw new UnhandledException(e1);
          }
       }
-      if (((Failure) e).isLoggable())
-         logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
-      else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
    }
 
    public void handleApplicationException(HttpResponse response, ApplicationException e)
@@ -322,7 +324,7 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void handleWebApplicationException(HttpResponse response, WebApplicationException wae)
    {
-      logger.error("failed to execute", wae);
+      if (!(wae instanceof NoLogWebApplicationException)) logger.error("failed to execute", wae);
       if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
       response.reset();
       try

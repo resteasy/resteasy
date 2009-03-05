@@ -3,11 +3,15 @@ package org.jboss.resteasy.plugins.interceptors.cache;
 import org.jboss.resteasy.core.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.NoLogWebApplicationException;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,6 +33,9 @@ public class ServerCacheInterceptor implements MessageBodyWriterInterceptor
 
    @Context
    protected HttpRequest request;
+
+   @Context
+   protected Request validation;
 
 
    private static final String pseudo[] = {"0", "1", "2",
@@ -122,6 +129,14 @@ public class ServerCacheInterceptor implements MessageBodyWriterInterceptor
             etag = etagObject.toString();
          }
          cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag);
+
+         // check to see if ETags are the same.  If they are, we don't need to send a response back.
+         Response.ResponseBuilder validatedResponse = validation.evaluatePreconditions(new EntityTag(etag));
+         if (validatedResponse != null)
+         {
+            throw new NoLogWebApplicationException(validatedResponse.status(Response.Status.NOT_MODIFIED).cacheControl(cc).header(HttpHeaders.ETAG, etag).build());
+         }
+
          old.write(entity);
       }
       finally
