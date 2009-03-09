@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.interceptors.cache;
+package org.jboss.resteasy.plugins.cache.server;
 
 
 import javax.ws.rs.core.CacheControl;
@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public class SimpleServerCache implements ServerCache
 {
    public static class CacheEntry implements Entry

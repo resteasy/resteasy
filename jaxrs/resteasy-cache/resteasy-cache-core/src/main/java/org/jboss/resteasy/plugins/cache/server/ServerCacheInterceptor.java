@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.interceptors.cache;
+package org.jboss.resteasy.plugins.cache.server;
 
 import org.jboss.resteasy.core.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;

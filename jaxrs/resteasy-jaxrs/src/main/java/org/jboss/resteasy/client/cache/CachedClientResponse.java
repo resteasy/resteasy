@@ -13,9 +13,9 @@ import java.io.InputStream;
  */
 public class CachedClientResponse extends BaseClientResponse
 {
-   protected BrowserCache.CacheEntry entry;
+   protected BrowserCache.Entry entry;
 
-   public CachedClientResponse(BrowserCache.CacheEntry entry, ResteasyProviderFactory factory)
+   public CachedClientResponse(BrowserCache.Entry entry, ResteasyProviderFactory factory)
    {
       this.entry = entry;
       this.headers = entry.getHeaders();

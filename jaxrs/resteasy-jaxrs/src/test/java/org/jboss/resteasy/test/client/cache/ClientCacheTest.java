@@ -1,8 +1,9 @@
-package org.jboss.resteasy.test.cache;
+package org.jboss.resteasy.test.client.cache;
 
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.cache.CacheFactory;
+import org.jboss.resteasy.client.cache.LightweightBrowserCache;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
@@ -84,6 +86,16 @@ public class ClientCacheTest extends BaseResourceTest
          return Response.ok("hello" + count).tag("42").build();
       }
 
+      @Path("/cacheit/{id}")
+      @GET
+      @Produces("text/plain")
+      @Cache(maxAge = 3000)
+      public String getCacheit(@PathParam("id") String id)
+      {
+         count++;
+         return "cachecache" + count;
+      }
+
    }
 
    @Path("/cache")
@@ -107,6 +119,12 @@ public class ClientCacheTest extends BaseResourceTest
       @GET
       @Produces("text/plain")
       public String getValidateEtagged();
+
+      @Path("/cacheit/{id}")
+      @GET
+      @Produces("text/plain")
+      @Cache(maxAge = 3000)
+      public String getCacheit(@PathParam("id") String id);
    }
 
 
@@ -184,6 +202,38 @@ public class ClientCacheTest extends BaseResourceTest
       rtn = proxy.getValidateEtagged();
       Assert.assertEquals("hello1", rtn);
       Assert.assertEquals(4, count);
+   }
+
+   @Test
+   public void testMaxSize() throws Exception
+   {
+      MyProxy proxy = ProxyFactory.create(MyProxy.class, generateBaseUrl());
+      LightweightBrowserCache cache = CacheFactory.makeCacheable(proxy);
+      cache.setMaxBytes(20);
+
+      count = 0;
+
+      String rtn = proxy.getCacheit("1");
+      Assert.assertEquals("cachecache" + 1, rtn);
+      Assert.assertEquals(1, count);
+
+      rtn = proxy.getCacheit("1");
+      Assert.assertEquals("cachecache" + 1, rtn);
+      Assert.assertEquals(1, count);
+
+      rtn = proxy.getCacheit("2");
+      Assert.assertEquals("cachecache" + 2, rtn);
+      Assert.assertEquals(2, count);
+
+      rtn = proxy.getCacheit("2");
+      Assert.assertEquals("cachecache" + 2, rtn);
+      Assert.assertEquals(2, count);
+
+      rtn = proxy.getCacheit("1");
+      Assert.assertEquals("cachecache" + 3, rtn);
+      Assert.assertEquals(3, count);
+
+
    }
 
 }

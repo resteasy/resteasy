@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.interceptors.cache;
+package org.jboss.resteasy.plugins.cache.server;
 
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
