@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.interceptors.cache;
+package org.jboss.resteasy.plugins.cache.server;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;

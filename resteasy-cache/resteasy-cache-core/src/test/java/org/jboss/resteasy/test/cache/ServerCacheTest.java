@@ -3,9 +3,7 @@ package org.jboss.resteasy.test.cache;
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.interceptors.cache.ServerCacheHitInterceptor;
-import org.jboss.resteasy.plugins.interceptors.cache.ServerCacheInterceptor;
-import org.jboss.resteasy.plugins.interceptors.cache.SimpleServerCache;
+import org.jboss.resteasy.plugins.cache.server.JBossCache;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -85,13 +83,9 @@ public class ServerCacheTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      SimpleServerCache cache = new SimpleServerCache();
-      ServerCacheHitInterceptor hit = new ServerCacheHitInterceptor(cache);
-      ServerCacheInterceptor interceptor = new ServerCacheInterceptor(cache);
-
-      getProviderFactory().getServerPreProcessInterceptorRegistry().register(hit);
-      getProviderFactory().getServerMessageBodyWriterInterceptorRegistry().register(interceptor);
-
+      JBossCache cache = new JBossCache();
+      cache.setProviderFactory(getProviderFactory());
+      cache.start();
       addPerRequestResource(MyService.class);
    }
 

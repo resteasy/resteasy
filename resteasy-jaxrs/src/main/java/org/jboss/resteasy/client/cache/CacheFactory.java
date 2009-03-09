@@ -17,9 +17,9 @@ public class CacheFactory
     * @param clientProxy
     * @return
     */
-   public static BrowserCache makeCacheable(Object clientProxy)
+   public static LightweightBrowserCache makeCacheable(Object clientProxy)
    {
-      BrowserCache cache = new BrowserCache();
+      LightweightBrowserCache cache = new LightweightBrowserCache();
       makeCacheable(clientProxy, cache);
       return cache;
    }
