@@ -84,7 +84,6 @@
    &_FormParam;
    &_Form;
    &_DefaultValue;
-   &Cache_NoCache_CacheControl;
    &_Encoded_and_encoding;
    &_Context;
    &JAX-RS_Resource_Locators_and_Sub_Resources;
@@ -94,6 +93,7 @@
    &Responses_using_javax.ws.rs.core.Response;
    &ExceptionMappers;
    &Configuring_Individual_JAX-RS_Resource_Beans;
+   &Cache_NoCache_CacheControl;
    &Asynchronous_HTTP;
    &RESTEasy_Embedded_Container;
    &RESTEasy_Server-side_Mock_Framework;
