@@ -3,7 +3,7 @@
 
 <para>
 
-Because Resteasy is deployed as a servlet, you must use standard web.xml constraints to set up authentication and authorization.  
+Because Resteasy is deployed as a servlet, you must use standard web.xml constraints to enable authentication and authorization.  
 </para>
 <para>
 
@@ -31,7 +31,23 @@ To get around this problem you will need to use the security annotations defined
 </para>
 <para>
 
-Resteasy JAX-RS supports the @RolesAllowed, @PermitAll and @DenyAll annotations on JAX-RS methods.   There is a bit of quirkiness with this approach.   You will have to declare all roles used within the Resteasy JAX-RS war file that you are using in your JAX-RS classes and set up a security constraint that permits all of these roles access to every URL handled by the JAX-RS runtime.  You'll just have to trust that Resteasy JAX-RS authorizes properly.
+Resteasy JAX-RS supports the @RolesAllowed, @PermitAll and @DenyAll annotations on JAX-RS methods.   By default though, Resteasy does not recognize these annotations.  You have to 
+configure Resteasy to turn on role-based security by setting a context parameter.  NOTE!!!  Do not turn on this switch if you are using EJBs.  The EJB container will provide this
+functionality instead of Resteasy.
+
+</para>
+<programlisting>
+<![CDATA[
+<web-app>
+...
+   <context-param>
+      <context-name>resteasy.role.based.security</context-name>
+      <context-value>true</context-value>
+   </context-param>
+</web-app>]]>
+</programlisting>
+
+<para>There is a bit of quirkiness with this approach.   You will have to declare all roles used within the Resteasy JAX-RS war file that you are using in your JAX-RS classes and set up a security constraint that permits all of these roles access to every URL handled by the JAX-RS runtime.  You'll just have to trust that Resteasy JAX-RS authorizes properly.
 </para>
 <para>
 
@@ -46,10 +62,10 @@ So, here's an example of a modified RESTEasy WAR file.  You'll notice that every
 <programlisting>
 
 &lt;web-app&gt;
-   &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
+
    &lt;context-param&gt;
-      &lt;param-name&gt;resteasy.scan&lt;/param-name&gt;
-      &lt;param-value&gt;true&lt;/param-value&gt;
+      &lt;context-name>resteasy.role.based.security&lt;/context-name&gt;
+      &lt;context-value>true&lt;/context-value&gt;
    &lt;/context-param&gt;
 
    &lt;listener&gt;
