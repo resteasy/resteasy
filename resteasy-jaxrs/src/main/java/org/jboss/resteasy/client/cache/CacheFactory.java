@@ -24,6 +24,12 @@ public class CacheFactory
       return cache;
    }
 
+   /**
+    * Makes the client proxy cacheable.  This method allows you to pass in a shared cache that the proxy should use
+    *
+    * @param clientProxy
+    * @param cache
+    */
    public static void makeCacheable(Object clientProxy, BrowserCache cache)
    {
       ResteasyClientProxy proxy = (ResteasyClientProxy) clientProxy;
@@ -49,6 +55,12 @@ public class CacheFactory
       }
    }
 
+   /**
+    * Make a raw ClientRequest cache results in the provided cache.
+    *
+    * @param request
+    * @param cache
+    */
    public static void makeCacheable(ClientRequest request, BrowserCache cache)
    {
       CacheInterceptor interceptor = new CacheInterceptor(cache);
