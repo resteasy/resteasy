@@ -7,6 +7,7 @@
                 <!ENTITY _PathParam SYSTEM "modules/_PathParam.xml">
                 <!ENTITY _QueryParam SYSTEM "modules/_QueryParam.xml">
                 <!ENTITY _HeaderParam SYSTEM "modules/_HeaderParam.xml">
+                <!ENTITY GZIP SYSTEM "modules/gzip.xml">
                 <!ENTITY _MatrixParam SYSTEM "modules/_MatrixParam.xml">
                 <!ENTITY _CookieParam SYSTEM "modules/_CookieParam.xml">
                 <!ENTITY _FormParam SYSTEM "modules/_FormParam.xml">
@@ -23,6 +24,7 @@
                 <!ENTITY ExceptionMappers SYSTEM "modules/ExceptionMappers.xml">
                 <!ENTITY Configuring_Individual_JAX-RS_Resource_Beans SYSTEM "modules/Configuring_Individual_JAX-RS_Resource_Beans.xml">
                 <!ENTITY Asynchronous_HTTP SYSTEM "modules/Asynchronous_HTTP.xml">
+                <!ENTITY Asynchronous_Job SYSTEM "modules/Async_job_service.xml">
                 <!ENTITY RESTEasy_Embedded_Container SYSTEM "modules/RESTEasy_Embedded_Container.xml">
                 <!ENTITY RESTEasy_Server-side_Mock_Framework SYSTEM "modules/RESTEasy_Server-side_Mock_Framework.xml">
                 <!ENTITY Securing_JAX-RS_and_RESTeasy SYSTEM "modules/Securing_JAX-RS_and_RESTeasy.xml">
@@ -93,8 +95,10 @@
    &Responses_using_javax.ws.rs.core.Response;
    &ExceptionMappers;
    &Configuring_Individual_JAX-RS_Resource_Beans;
+   &GZIP;
    &Cache_NoCache_CacheControl;
    &Asynchronous_HTTP;
+   &Asynchronous_Job;
    &RESTEasy_Embedded_Container;
    &RESTEasy_Server-side_Mock_Framework;
    &Securing_JAX-RS_and_RESTeasy;

@@ -1,50 +1,102 @@
 <chapter id="Maven_and_RESTEasy">
    <title>Maven and RESTEasy</title>
-
-   <para>
-
-
-   </para>
    <para>
 JBoss's Maven Repository is at:
       http://repository.jboss.org/maven2
    </para>
    <para>
 
-      Here's the pom.xml fragment to use. Please replace 1.1-RC1 with the current Resteasy version you want to use.
+      Here's the pom.xml fragment to use. Resteasy is modularized into various components.  Mix and max as you see fit.  Please replace 1.1-RC1 with the current Resteasy version you want to use.
    </para>
-   <para>
+<programlisting>
+<![CDATA[
+<repositories>
+   <repository>
+      <id>jboss</id>
+      <url>http://repository.jboss.org/maven2</url>
+   </repository>
+</repositories>
+<dependencies>
+   <!-- core library -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
 
-      <programlisting>
-&lt;repositories&gt;
-   &lt;repository&gt;
-      &lt;id&gt;jboss&lt;/id&gt;
-      &lt;url&gt;http://repository.jboss.org/maven2&lt;/url&gt;
-   &lt;/repository&gt;
-&lt;/repositories&gt;
-&lt;dependencies&gt;
-   &lt;dependency&gt;
-      &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-      &lt;artifactId&gt;resteasy-jaxrs&lt;/artifactId&gt;
-      &lt;version&gt;1.1-RC1&lt;/version&gt;
-   &lt;/dependency&gt;
-&lt;/dependencies&gt;
-      </programlisting>
-   </para>
-   <para>
+   <!-- optional modules -->
 
-   </para>
-   <para>
+   <!-- JAXB support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxb-provider</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
+   <!-- multipart/form-data and multipart/mixed support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-multipart-provider</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
+   <!-- Resteasy Server Cache -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-cache-core</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
+   <!-- Ruby YAML support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-yaml-provider</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
+   <!-- JAXB + Atom support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-atom-provider</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
+   <!-- JAXB + Atom support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-atom-provider</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
+   <!-- Apache Abdera Integration -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>abdera-atom-provider</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
+   <!-- Spring integration -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-spring</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
 
+   <!-- Asynchronous HTTP support with JBossWeb -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>async-http-jbossweb</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
 
-   </para>
-   <para>
+   <!-- Asynchronous HTTP support with Servlet 3.0 (Jetty 7 pre5) -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>async-http-servlet-3.0</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
 
-      Please download the RESTEasy JAX-RS source and view our testsuite. Everything is done in maven and we use our
-      Embedded JAX-RS Container to do our testing.
-   </para>
-   <para>
+   <!-- Asynchronous HTTP support with Tomcat 6 -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>async-http-tomcat6</artifactId>
+      <version>1.1-RC1</version>
+   </dependency>
 
-
-   </para>
+</dependencies>
+]]>
+</programlisting>
 </chapter>
