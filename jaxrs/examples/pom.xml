@@ -9,14 +9,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>examples-pom</artifactId>
+    <artifactId>testable-examples-pom</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>ejb-integration</module>
-        <module>javaee-addressbook</module>
         <module>jaxb-json</module>
-        <module>jms-facade</module>
         <module>spring-hibernate-contacts</module>
+        <module>simple</module>
+        <module>async-job-service</module>
     </modules>
 </project>

@@ -62,7 +62,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    }
 
    protected ExecutorService executor;
-   private int threadPoolSize = 1000;
+   private int threadPoolSize = 100;
    private Map<String, Future<MockHttpResponse>> jobs;
    private Cache cache;
    private String basePath = "/asynch/jobs";
@@ -143,35 +143,33 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
    @Path("{job-id}")
    @DELETE
-   public void remove(@PathParam("job-id")String jobId)
+   public void remove(@PathParam("job-id") String jobId)
    {
       jobs.remove(jobId);
    }
 
    @Path("{job-id}")
    @POST
-   public Response readAndRemove(@QueryParam("wait") @DefaultValue("-1")long wait,
-                                 @QueryParam("nowait") @DefaultValue("false")boolean nowait,
-                                 @PathParam("job-id")String jobId)
+   public Response readAndRemove(@QueryParam("wait") @DefaultValue("-1") long wait,
+                                 @PathParam("job-id") String jobId)
    {
-      return process(wait, nowait, jobId, true);
+      return process(wait, jobId, true);
    }
 
    @Path("{job-id}")
    @GET
-   public Response get(@QueryParam("wait") @DefaultValue("-1")long wait,
-                       @QueryParam("nowait") @DefaultValue("false")boolean nowait,
-                       @PathParam("job-id")String jobId)
+   public Response get(@QueryParam("wait") @DefaultValue("-1") long wait,
+                       @PathParam("job-id") String jobId)
    {
-      return process(wait, nowait, jobId, false);
+      return process(wait, jobId, false);
    }
 
-   protected Response process(long wait, boolean nowait, String jobId, boolean eatJob)
+   protected Response process(long wait, String jobId, boolean eatJob)
    {
       Future<MockHttpResponse> job = jobs.get(jobId);
       if (job == null) return Response.status(Response.Status.GONE).build();
       MockHttpResponse response = null;
-
+      boolean nowait = false;
       // I don't want to wait forever!
       if (wait <= 0) nowait = true;
 
@@ -227,9 +225,9 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    public boolean isAsynchrnousRequest(HttpRequest in)
    {
       MultivaluedMap<String, String> queryParameters = in.getUri().getQueryParameters();
-      return queryParameters.get("asynch") != null || queryParameters.get("oneway") != null;      
+      return queryParameters.get("asynch") != null || queryParameters.get("oneway") != null;
    }
-   
+
    public void invoke(HttpRequest in, HttpResponse response)
    {
       MultivaluedMap<String, String> queryParameters = in.getUri().getQueryParameters();

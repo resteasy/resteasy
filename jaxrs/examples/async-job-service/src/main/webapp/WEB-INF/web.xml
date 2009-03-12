@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>org.jboss.resteasy.examples.asyncjob.MyResource</param-value>
+    </context-param>
+
+
+    <context-param>
+        <param-name>resteasy.async.job.service.enabled</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.async.job.service.max.job.results</param-name>
+        <param-value>100</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.async.job.service.max.wait</param-name>
+        <param-value>300000</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.async.job.service.thread.pool.size</param-name>
+        <param-value>100</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.async.job.service.base.path</param-name>
+        <param-value>/asyncjobs</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>
+            org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
+        </listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>
+            org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+        </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
