@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
@@ -58,7 +59,42 @@ public class ResteasyBootstrap implements ServletContextListener
       }
 
       event.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), factory);
-      dispatcher = new SynchronousDispatcher(factory);
+
+      String async = event.getServletContext().getInitParameter("resteasy.async.job.service.enabled");
+
+      if (async != null && Boolean.valueOf(async.trim()))
+      {
+         AsynchronousDispatcher asyncDispatcher = new AsynchronousDispatcher(factory);
+         String maxJobResults = event.getServletContext().getInitParameter("resteasy.async.job.service.max.job.results");
+         if (maxJobResults != null)
+         {
+            int maxJobs = Integer.valueOf(maxJobResults);
+            asyncDispatcher.setMaxCacheSize(maxJobs);
+         }
+         String maxWaitStr = event.getServletContext().getInitParameter("resteasy.async.job.service.max.wait");
+         if (maxWaitStr != null)
+         {
+            long maxWait = Long.valueOf(maxWaitStr);
+            asyncDispatcher.setMaxWaitMilliSeconds(maxWait);
+         }
+         String threadPool = event.getServletContext().getInitParameter("resteasy.async.job.service.thread.pool.size");
+         if (threadPool != null)
+         {
+            int threadPoolSize = Integer.valueOf(threadPool);
+            asyncDispatcher.setThreadPoolSize(threadPoolSize);
+         }
+         String basePath = event.getServletContext().getInitParameter("resteasy.async.job.service.base.path");
+         if (basePath != null)
+         {
+            asyncDispatcher.setBasePath(basePath);
+         }
+         dispatcher = asyncDispatcher;
+         asyncDispatcher.start();
+      }
+      else
+      {
+         dispatcher = new SynchronousDispatcher(factory);
+      }
       registry = dispatcher.getRegistry();
       event.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
       event.getServletContext().setAttribute(Registry.class.getName(), registry);

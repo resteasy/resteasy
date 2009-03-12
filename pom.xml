@@ -79,7 +79,7 @@
         <module>async-http-servlet-3.0</module>
         <module>resteasy-cache</module>
         <module>async-http-tomcat</module>
-        <!--module>examples</module-->
+        <module>examples</module>
     </modules>
 
     <dependencyManagement>
