@@ -7,15 +7,13 @@
       an HTTP request? Resteasy has a proprietary @Provider interface that you can plug in:
    </para>
    <programlisting>
-      package org.jboss.resteasy.spi;
+package org.jboss.resteasy.spi;
 
-      public interface StringConverter&lt;T&gt;
-      {
-      T fromString(String str);
-
-      String toString(T value);
-      }
-
+public interface StringConverter&lt;T&gt;
+{
+   T fromString(String str);
+   String toString(T value);
+}
    </programlisting>
    <para>You implement this interface to provide your own custom string marshalling. It is registered
       within your web.xml under the resteasy.providers context-param (See Installation and Configuration chapter).
