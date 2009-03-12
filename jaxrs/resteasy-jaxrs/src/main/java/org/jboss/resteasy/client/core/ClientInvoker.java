@@ -47,7 +47,7 @@ public class ClientInvoker
    {
       this.declaring = declaring;
       this.method = method;
-      this.marshallers = ClientMarshallerFactory.createMarshallers(method,
+      this.marshallers = ClientMarshallerFactory.createMarshallers(declaring, method,
               providerFactory);
       this.providerFactory = providerFactory;
       accepts = MediaTypeHelper.getProduces(declaring, method);

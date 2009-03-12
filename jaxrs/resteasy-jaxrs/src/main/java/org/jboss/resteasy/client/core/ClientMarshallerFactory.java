@@ -22,9 +22,8 @@ import java.lang.reflect.Type;
 public class ClientMarshallerFactory
 {
 
-   public static Marshaller[] createMarshallers(Method method, ResteasyProviderFactory providerFactory)
+   public static Marshaller[] createMarshallers(Class declaringClass, Method method, ResteasyProviderFactory providerFactory)
    {
-      Class<?> declaringClass = method.getDeclaringClass();
       Marshaller[] params = new Marshaller[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
@@ -100,7 +99,7 @@ public class ClientMarshallerFactory
          if (mediaType == null)
          {
             throw new RuntimeException(
-                    "You must define a @ConsumeMime type on your client method or interface");
+                    "You must define a @Consumes type on your client method or interface");
          }
          marshaller = new MessageBodyParameterMarshaller(mediaType, type,
                  genericType, annotations);
