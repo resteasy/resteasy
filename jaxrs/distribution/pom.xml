@@ -69,6 +69,11 @@
             <artifactId>resteasy-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-cache-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
     </dependencies>
 
