@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.util.HttpHeaderNames;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -44,11 +46,18 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
 
    public void writeTo(InputStream inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
-      int c;
+      int c = inputStream.read();
+      if (c == -1)
+      {
+         httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(0));
+         entityStream.write(new byte[0]); // fix RESTEASY-204
+         return;
+      }
+      else
+         entityStream.write(c);
       while ((c = inputStream.read()) != -1)
       {
          entityStream.write(c);
       }
    }
-
 }
