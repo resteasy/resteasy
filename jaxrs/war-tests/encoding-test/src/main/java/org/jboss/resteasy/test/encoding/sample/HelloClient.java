@@ -1,4 +1,4 @@
-package sample;
+package org.jboss.resteasy.test.encoding.sample;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
