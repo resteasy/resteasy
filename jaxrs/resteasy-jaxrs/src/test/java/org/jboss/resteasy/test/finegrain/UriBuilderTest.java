@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -334,6 +335,58 @@ public class UriBuilderTest
             throw new Exception(sb.toString());
          }
          j++;
+      }
+   }
+
+   @Test
+   public void testEncoding() throws Exception
+   {
+      HashMap<String, Object> map = new HashMap<String, Object>();
+
+      {
+         map.clear();
+         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         map.put("id", "something %%20something");
+
+         URI uri = impl.buildFromMap(map);
+         Assert.assertEquals("/foo/something%20%25%20something", uri.toString());
+      }
+      {
+         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         map.clear();
+         map.put("id", "something something");
+         URI uri = impl.buildFromMap(map);
+         Assert.assertEquals("/foo/something%20something", uri.toString());
+      }
+      {
+         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         map.clear();
+         map.put("id", "something%20something");
+         URI uri = impl.buildFromEncodedMap(map);
+         Assert.assertEquals("/foo/something%20something", uri.toString());
+      }
+
+
+      {
+         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+
+         impl.substitutePathParam("id", "something %%20something", false);
+         URI uri = impl.build();
+         Assert.assertEquals("/foo/something%20%25%20something", uri.toString());
+      }
+      {
+         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+
+         impl.substitutePathParam("id", "something something", false);
+         URI uri = impl.build();
+         Assert.assertEquals("/foo/something%20something", uri.toString());
+      }
+      {
+         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+
+         impl.substitutePathParam("id", "something%20something", true);
+         URI uri = impl.build();
+         Assert.assertEquals("/foo/something%20something", uri.toString());
       }
    }
 
