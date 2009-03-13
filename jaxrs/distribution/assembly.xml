@@ -32,6 +32,10 @@
             <outputDirectory>examples/simple</outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>../examples/async-job-service</directory>
+            <outputDirectory>examples/async-job-service</outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>../docbook/target/docbook/publish/en-US</directory>
             <outputDirectory>docs/userguide</outputDirectory>
         </fileSet>
@@ -54,6 +58,7 @@
                 <include>org.jboss.resteasy:resteasy-multipart-provider</include>
                 <include>org.jboss.resteasy:resteasy-yaml-provider</include>
                 <include>org.jboss.resteasy:resteasy-spring</include>
+                <include>org.jboss.resteasy:resteasy-cache-core</include>
                 <include>org.jboss.resteasy:async-http-jbossweb</include>
                 <include>org.jboss.resteasy:async-http-servlet-3.0</include>
                 <include>org.jboss.resteasy:async-http-tomcat6</include>
