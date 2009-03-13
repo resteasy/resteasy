@@ -337,9 +337,11 @@ public class UriBuilderImpl extends UriBuilder
       {
          String param = matcher.group(1);
          if (!param.equals(name)) continue;
-         value = Encode.encodeSegment(value, false);
-         if (!isEncoded) value = value.replace("%", "%25");
-         else Encode.encodeNonCodes(value);
+         if (!isEncoded)
+         {
+            value = Encode.encodeSegment(value, false);
+            value = Encode.encodeNonCodes(value);
+         }
          matcher.appendReplacement(buffer, value);
       }
       matcher.appendTail(buffer);
@@ -355,9 +357,11 @@ public class UriBuilderImpl extends UriBuilder
          String value = paramMap.get(param).toString();
          if (value != null)
          {
-            value = Encode.encodeSegment(value, false);
-            if (!isEncoded) value = value.replace("%", "%25");
-            else Encode.encodeNonCodes(value);
+            if (!isEncoded)
+            {
+               value = Encode.encodeSegment(value, false);
+               value = Encode.encodeNonCodes(value);
+            }
             matcher.appendReplacement(buffer, value);
          }
          else
@@ -368,6 +372,7 @@ public class UriBuilderImpl extends UriBuilder
       matcher.appendTail(buffer);
       return buffer;
    }
+
 
    /**
     * Return a unique order list of path params

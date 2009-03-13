@@ -1,0 +1,17 @@
+<project>
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>1.1-RC1</version>
+    </parent>
+    <name>Resteasy WAR Tests</name>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy.test</groupId>
+    <artifactId>war-tests-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>encoding-test</module>
+    </modules>
+</project>
