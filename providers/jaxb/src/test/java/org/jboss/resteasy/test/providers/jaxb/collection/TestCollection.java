@@ -17,6 +17,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -83,6 +85,21 @@ public class TestCollection extends BaseResourceTest
          set.add(new Customer("monica"));
 
          return set;
+      }
+
+      @GET
+      @Path("list/response")
+      @Produces("application/xml")
+      @Wrapped
+      public Response getCustomerListResponse()
+      {
+         ArrayList<Customer> set = new ArrayList<Customer>();
+         set.add(new Customer("bill"));
+         set.add(new Customer("monica"));
+         GenericEntity<List<Customer>> genericEntity = new GenericEntity<List<Customer>>(set)
+         {
+         };
+         return Response.ok(genericEntity).build();
       }
    }
 
@@ -173,6 +190,17 @@ public class TestCollection extends BaseResourceTest
       status = client.executeMethod(put);
       Assert.assertEquals(204, status);
 
+   }
+
+   @Test
+   public void testResponse() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      GetMethod get = createGetMethod("/list/response");
+      int status = client.executeMethod(get);
+      Assert.assertEquals(200, status);
+      String str = get.getResponseBodyAsString();
+      System.out.println(str);
    }
 
    /**
