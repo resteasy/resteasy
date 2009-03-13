@@ -395,7 +395,7 @@
                     <maxmemory>1024m</maxmemory>
                     <quiet>false</quiet>
                     <aggregate>true</aggregate>
-                    <excludePackageNames>com.restfully.*:org.jboss.resteasy.examples.*:org.jboss.restea sy.tests.*
+                    <excludePackageNames>com.restfully.*:org.jboss.resteasy.examples.*:org.jboss.resteasy.tests.*
                     </excludePackageNames>
                 </configuration>
             </plugin>
