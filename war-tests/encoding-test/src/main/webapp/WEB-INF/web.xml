@@ -5,7 +5,7 @@
     <display-name>Archetype RestEasy Web Application</display-name>
     <context-param>
         <param-name>resteasy.resources</param-name>
-        <param-value>org.jboss.resteasy.test.encoding.sample.Hello</param-value>
+        <param-value>org.jboss.resteasy.tests.encoding.sample.Hello</param-value>
     </context-param>
 
     <listener>

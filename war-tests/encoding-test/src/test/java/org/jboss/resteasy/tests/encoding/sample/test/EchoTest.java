@@ -1,9 +1,9 @@
-package org.jboss.resteasy.test.encoding.sample.test;
+package org.jboss.resteasy.tests.encoding.sample.test;
 
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.encoding.sample.HelloClient;
+import org.jboss.resteasy.tests.encoding.sample.HelloClient;
 import org.junit.Assert;
 import org.junit.Test;
 
