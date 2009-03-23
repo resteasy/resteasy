@@ -277,7 +277,7 @@ public class VariantsTest
       @GET
       public Response doGet(@Context Request r)
       {
-         List<Variant> vs = Variant.VariantListBuilder.newInstance().languages(new Locale("en")).encodings("enc1", "enc2", "enc3").add().build();
+         List<Variant> vs = Variant.VariantListBuilder.newInstance().encodings("enc1", "enc2", "enc3").add().build();
          Variant v = r.selectVariant(vs);
          if (v == null)
             return Response.notAcceptable(vs).build();
@@ -356,9 +356,28 @@ public class VariantsTest
       {
          int status = client.executeMethod(method);
          Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         // uncomment to trigger RESTEASY-220
-         //Assert.assertEquals("enc2", method.getResponseBodyAsString());
-         //Assert.assertEquals("enc2", method.getResponseHeader(HttpHeaderNames.CONTENT_ENCODING).getValue());
+         Assert.assertEquals("enc2", method.getResponseBodyAsString());
+         Assert.assertEquals("enc2", method.getResponseHeader(HttpHeaderNames.CONTENT_ENCODING).getValue());
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      method.releaseConnection();
+   }
+
+   @Test
+   public void testGetEncodingQ2() throws IOException
+   {
+      HttpClient client = new HttpClient();
+      GetMethod method = createGetMethod("/encoding");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT_ENCODING, "enc1;q=0, enc2;q=0.888, enc3;q=0.889");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+         Assert.assertEquals("enc3", method.getResponseBodyAsString());
+         Assert.assertEquals("enc3", method.getResponseHeader(HttpHeaderNames.CONTENT_ENCODING).getValue());
       }
       catch (IOException e)
       {
