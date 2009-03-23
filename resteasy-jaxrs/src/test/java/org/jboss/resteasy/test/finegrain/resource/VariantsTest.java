@@ -346,6 +346,27 @@ public class VariantsTest
       method.releaseConnection();
    }
 
+   @Test
+   public void testGetEncodingQ() throws IOException
+   {
+      HttpClient client = new HttpClient();
+      GetMethod method = createGetMethod("/encoding");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT_ENCODING, "enc1;q=0.5, enc2;q=0.9");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+         // uncomment to trigger RESTEASY-220
+         //Assert.assertEquals("enc2", method.getResponseBodyAsString());
+         //Assert.assertEquals("enc2", method.getResponseHeader(HttpHeaderNames.CONTENT_ENCODING).getValue());
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      method.releaseConnection();
+   }
+
    private boolean contains(String l, String v)
    {
       String[] vs = l.split(",");
