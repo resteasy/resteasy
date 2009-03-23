@@ -5,6 +5,7 @@ import javax.ws.rs.core.Variant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -33,7 +34,8 @@ public class AcceptableVariant implements Comparable<AcceptableVariant>
 
    public AcceptableVariant(MediaType type, String language, String encoding)
    {
-      this.variant = new Variant(type, LocaleHelper.extractLocale(language.toLowerCase()), encoding);
+      final Locale locale = language == null ? null : LocaleHelper.extractLocale(language.toLowerCase()); 
+      this.variant = new Variant(type, locale, encoding);
       this.type = type;
       if (language != null) this.language = QualifiedStringHeader.parse(language);
       if (encoding != null) this.encoding = QualifiedStringHeader.parse(encoding);
