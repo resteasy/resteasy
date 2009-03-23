@@ -291,7 +291,6 @@ public class VariantsTest
    {
       HttpClient client = new HttpClient();
       GetMethod method = createGetMethod("/encoding");
-      method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "en");
       method.addRequestHeader(HttpHeaderNames.ACCEPT_ENCODING, "enc1");
       try
       {
@@ -312,7 +311,6 @@ public class VariantsTest
    {
       HttpClient client = new HttpClient();
       GetMethod method = createGetMethod("/encoding");
-      method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "en");
       method.addRequestHeader(HttpHeaderNames.ACCEPT_ENCODING, "enc2");
       try
       {
@@ -333,7 +331,6 @@ public class VariantsTest
    {
       HttpClient client = new HttpClient();
       GetMethod method = createGetMethod("/encoding");
-      method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "en");
       method.addRequestHeader(HttpHeaderNames.ACCEPT_ENCODING, "enc3");
       try
       {
