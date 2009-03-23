@@ -68,7 +68,7 @@ public class AcceptableVariant implements Comparable<AcceptableVariant>
       else if (encoding == null) return 1;
       else if (encoding != null) return -1;
 
-      return 0;
+      return compare;
    }
 
    public Variant getVariant()
