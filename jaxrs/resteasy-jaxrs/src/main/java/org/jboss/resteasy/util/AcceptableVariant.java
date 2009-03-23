@@ -127,7 +127,7 @@ public class AcceptableVariant implements Comparable<AcceptableVariant>
             if (produce.getEncoding() == null || accept.getEncoding() == null) match = true;
             else match = produce.getEncoding().equals(accept.getEncoding());
 
-            return produce.getVariant();
+            if (match) return produce.getVariant();
          }
       }
       return null;
