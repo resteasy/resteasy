@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -89,6 +90,8 @@ public class HttpServletDispatcher extends HttpServlet
          {
             ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
             ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+            ResteasyProviderFactory.pushContext(ServletContext.class, getServletContext());
+            ResteasyProviderFactory.pushContext(ServletConfig.class, getServletConfig());
             ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
             dispatcher.invoke(in, theResponse);
          }
