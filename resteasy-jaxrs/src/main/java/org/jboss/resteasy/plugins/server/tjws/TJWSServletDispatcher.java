@@ -3,6 +3,8 @@ package org.jboss.resteasy.plugins.server.tjws;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -41,5 +43,17 @@ public class TJWSServletDispatcher extends HttpServletDispatcher
    public void setSecurityDomain(SecurityDomain domain)
    {
       requestPreProcessor.setSecurityDomain(domain);
+   }
+
+   @Override
+   public ServletConfig getServletConfig()
+   {
+      return null;  // it will never be initialized
+   }
+
+   @Override
+   public ServletContext getServletContext()
+   {
+      return null;  // it will never be initialized
    }
 }
