@@ -1,10 +1,12 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -31,13 +33,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,7 +44,7 @@ import java.util.Set;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-public class CollectionProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
+public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
    @Context
    protected Providers providers;
@@ -65,11 +63,15 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 
    protected boolean isWrapped(Class<?> type, Type genericType, Annotation[] annotations)
    {
-      if ((Collection.class.isAssignableFrom(type) || type.isArray()) && genericType != null)
+      if (Map.class.isAssignableFrom(type) && genericType != null)
       {
-         Class baseType = Types.getCollectionBaseType(type, genericType);
-         if (baseType == null) return false;
-         return baseType.isAnnotationPresent(XmlRootElement.class) || baseType.isAnnotationPresent(XmlType.class) || JAXBElement.class.equals(type);
+         Class keyType = Types.getMapKeyType(genericType);
+         if (keyType == null) return false;
+         if (!keyType.equals(String.class)) return false;
+
+         Class valueType = Types.getMapValueType(genericType);
+         if (valueType == null) return false;
+         return valueType.isAnnotationPresent(XmlRootElement.class) || valueType.isAnnotationPresent(XmlType.class) || JAXBElement.class.equals(type);
       }
       return false;
    }
@@ -88,75 +90,65 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          throw new LoggableFailure("Unable to find JAXBContext for media type: " + mediaType, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
       }
-      Class baseType = Types.getCollectionBaseType(type, genericType);
-      JaxbCollection col = null;
+      Class valueType = Types.getMapValueType(genericType);
+      JaxbMap jaxbMap = null;
       try
       {
          StreamSource source = new StreamSource(entityStream);
-         JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
-         JAXBElement<JaxbCollection> ele = ctx.createUnmarshaller().unmarshal(source, JaxbCollection.class);
+         JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
+         JAXBElement<JaxbMap> ele = ctx.createUnmarshaller().unmarshal(source, JaxbMap.class);
 
-         Wrapped wrapped = FindAnnotation.findAnnotation(annotations, Wrapped.class);
+         WrappedMap wrapped = FindAnnotation.findAnnotation(annotations, WrappedMap.class);
          if (wrapped != null)
          {
-            if (!wrapped.element().equals(ele.getName().getLocalPart()))
+            if (!wrapped.map().equals(ele.getName().getLocalPart()))
             {
-               throw new LoggableFailure("Collection wrapping failed, expected root element name of " + wrapped.element() + " got " + ele.getName().getLocalPart(), Response.Status.BAD_REQUEST.getStatusCode());
+               throw new LoggableFailure("Map wrapping failed, expected root element name of " + wrapped.map() + " got " + ele.getName().getLocalPart(), Response.Status.BAD_REQUEST.getStatusCode());
             }
             if (!wrapped.namespace().equals(ele.getName().getNamespaceURI()))
             {
-               throw new LoggableFailure("Collection wrapping failed, expect namespace of " + wrapped.namespace() + " got " + ele.getName().getNamespaceURI(), Response.Status.BAD_REQUEST.getStatusCode());
+               throw new LoggableFailure("Map wrapping failed, expect namespace of " + wrapped.namespace() + " got " + ele.getName().getNamespaceURI(), Response.Status.BAD_REQUEST.getStatusCode());
             }
          }
 
-         col = ele.getValue();
-      }
-      catch (JAXBException e)
-      {
-         throw new LoggableFailure(e);
-      }
+         jaxbMap = ele.getValue();
 
-      try
-      {
-         JAXBContext ctx = finder.findCachedContext(baseType, mediaType, null);
+         HashMap map = new HashMap();
+
          Unmarshaller unmarshaller = ctx.createUnmarshaller();
-         if (type.isArray())
+
+         for (int i = 0; i < jaxbMap.getValue().size(); i++)
          {
-            Object array = Array.newInstance(baseType, col.getValue().size());
-            for (int i = 0; i < col.getValue().size(); i++)
+            Element element = (Element) jaxbMap.getValue().get(i);
+            NamedNodeMap attributeMap = element.getAttributes();
+            String keyValue = null;
+            if (wrapped != null)
             {
-               Element val = (Element) col.getValue().get(i);
-               Array.set(array, i, unmarshaller.unmarshal(val));
-            }
-            return array;
-         }
-         else
-         {
-            Collection outCol = null;
-            if (type.isInterface())
-            {
-               if (List.class.isAssignableFrom(type)) outCol = new ArrayList();
-               else if (Set.class.isAssignableFrom(type)) outCol = new HashSet();
-               else outCol = new ArrayList();
+               keyValue = element.getAttribute(wrapped.key());
+
             }
             else
             {
-               try
+               if (attributeMap.getLength() == 0)
+                  throw new LoggableFailure("Map wrapped failed, could not find map entry key attribute");
+               for (int j = 0; j < attributeMap.getLength(); j++)
                {
-                  outCol = (Collection) type.newInstance();
+                  Attr key = (Attr) attributeMap.item(j);
+                  if (!key.getName().startsWith("xmlns"))
+                  {
+                     keyValue = key.getValue();
+                     break;
+                  }
                }
-               catch (Exception e)
-               {
-                  throw new LoggableFailure(e);
-               }
+
             }
-            for (Object obj : col.getValue())
-            {
-               Element val = (Element) obj;
-               outCol.add(unmarshaller.unmarshal(val));
-            }
-            return outCol;
+
+
+            Object value = unmarshaller.unmarshal(element.getFirstChild());
+
+            map.put(keyValue, value);
          }
+         return map;
       }
       catch (JAXBException e)
       {
@@ -174,48 +166,45 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       return -1;
    }
 
-   public void writeTo(Object entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+   public void writeTo(Object target, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
          throw new LoggableFailure("Unable to find JAXBContext for media type: " + mediaType, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
       }
-      Class baseType = Types.getCollectionBaseType(type, genericType);
+      Class valueType = Types.getMapValueType(genericType);
       try
       {
-         JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbCollection.class, baseType);
-         JaxbCollection col = new JaxbCollection();
-         if (type.isArray())
-         {
-            Object[] array = (Object[]) entry;
-            for (Object obj : array)
-            {
-               col.getValue().add(obj);
-            }
-         }
-         else
-         {
-            Collection collection = (Collection) entry;
-            for (Object obj : collection) col.getValue().add(obj);
-         }
+         JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
 
-         String element = "collection";
+         String mapName = "map";
+         String entryName = "entry";
+         String keyName = "key";
          String namespaceURI = "http://jboss.org/resteasy";
          String prefix = "resteasy";
 
-         Wrapped wrapped = FindAnnotation.findAnnotation(annotations, Wrapped.class);
+         WrappedMap wrapped = FindAnnotation.findAnnotation(annotations, WrappedMap.class);
          if (wrapped != null)
          {
-            element = wrapped.element();
+            mapName = wrapped.map();
+            entryName = wrapped.entry();
             namespaceURI = wrapped.namespace();
             prefix = wrapped.prefix();
+            keyName = wrapped.key();
          }
 
+         JaxbMap map = new JaxbMap(entryName, keyName, namespaceURI);
 
-         JAXBElement<JaxbCollection> collection = new JAXBElement<JaxbCollection>(new QName(namespaceURI, element, prefix), JaxbCollection.class, col);
+         Map<Object, Object> targetMap = (Map) target;
+         for (Map.Entry mapEntry : targetMap.entrySet())
+         {
+            map.addEntry(mapEntry.getKey().toString(), mapEntry.getValue());
+         }
+
+         JAXBElement<JaxbMap> jaxbMap = new JAXBElement<JaxbMap>(new QName(namespaceURI, mapName, prefix), JaxbMap.class, map);
          Marshaller marshaller = ctx.createMarshaller();
-         marshaller.marshal(collection, entityStream);
+         marshaller.marshal(jaxbMap, entityStream);
       }
       catch (JAXBException e)
       {

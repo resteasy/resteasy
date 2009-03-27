@@ -4,6 +4,7 @@ import org.jboss.resteasy.util.GenericType;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
@@ -50,6 +51,15 @@ public abstract class ClientResponse<T> extends Response
    public abstract <T2> T2 getEntity(Class<T2> type, Type genericType);
 
    /**
+    * @param type
+    * @param genericType
+    * @param annotations
+    * @param <T2>
+    * @return
+    */
+   public abstract <T2> T2 getEntity(Class<T2> type, Type genericType, Annotation[] annotations);
+
+   /**
     * Extract the response body with the provided type information.  GenericType is a trick used to
     * pass in generic type information to the resteasy runtime.
     * <p/>
@@ -66,4 +76,12 @@ public abstract class ClientResponse<T> extends Response
     * @return
     */
    public abstract <T2> T2 getEntity(GenericType<T2> type);
+
+   /**
+    * @param type
+    * @param annotations
+    * @param <T2>
+    * @return
+    */
+   public abstract <T2> T2 getEntity(GenericType<T2> type, Annotation[] annotations);
 }
