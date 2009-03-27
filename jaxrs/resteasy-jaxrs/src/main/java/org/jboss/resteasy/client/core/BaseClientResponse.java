@@ -136,6 +136,18 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
    @Override
    public <T2> T2 getEntity(Class<T2> type, Type genericType)
    {
+      Annotation[] annotations = null;
+      if (this.returnType == type && this.genericReturnType == genericType)
+      {
+         annotations = this.annotations;
+      }
+      return getEntity(type, genericType, annotations);
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public <T2> T2 getEntity(Class<T2> type, Type genericType, Annotation[] anns)
+   {
       if (streamWasRead)
       {
          if (unmarshaledEntity != null)
@@ -165,14 +177,8 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
          }
          MediaType media = mediaType == null ? MediaType.WILDCARD_TYPE : MediaType.valueOf(mediaType);
 
-         Annotation[] annotations = null;
-         if (this.returnType == type && this.genericReturnType == genericType)
-         {
-            annotations = this.annotations;
-         }
-
          MessageBodyReader<T2> reader = providerFactory.getMessageBodyReader(
-                 type, genericType, annotations, media);
+                 type, genericType, anns, media);
          if (reader == null)
          {
             throw createResponseFailure("Unable to find a MessageBodyReader of content-type "
@@ -181,7 +187,7 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
          try
          {
             streamWasRead = true;
-            unmarshaledEntity = readFrom(type, genericType, media, annotations, reader);
+            unmarshaledEntity = readFrom(type, genericType, media, anns, reader);
             return (T2) unmarshaledEntity;
          }
          catch (Exception e)
@@ -217,6 +223,12 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
    public <T2> T2 getEntity(GenericType<T2> genericType)
    {
       return getEntity(genericType.getType(), genericType.getGenericType());
+   }
+
+   @Override
+   public <T2> T2 getEntity(GenericType<T2> genericType, Annotation[] ann)
+   {
+      return getEntity(genericType.getType(), genericType.getGenericType(), ann);
    }
 
    public MultivaluedMap<String, String> getHeaders()

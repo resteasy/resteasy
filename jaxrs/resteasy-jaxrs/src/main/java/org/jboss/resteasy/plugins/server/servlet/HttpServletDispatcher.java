@@ -90,8 +90,25 @@ public class HttpServletDispatcher extends HttpServlet
          {
             ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
             ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
-            ResteasyProviderFactory.pushContext(ServletContext.class, getServletContext());
-            ResteasyProviderFactory.pushContext(ServletConfig.class, getServletConfig());
+            try
+            {
+               // embedded TJWS and Jetty might not have these things initialized
+               ServletConfig config1 = getServletConfig();
+               ResteasyProviderFactory.pushContext(ServletConfig.class, config1);
+            }
+            catch (Exception ignored)
+            {
+            }
+            try
+            {
+               // embedded TJWS and Jetty might not have these things initialized
+               ServletContext servletContext = getServletContext();
+               ResteasyProviderFactory.pushContext(ServletContext.class, servletContext);
+            }
+            catch (Exception ignored)
+            {
+
+            }
             ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
             dispatcher.invoke(in, theResponse);
          }

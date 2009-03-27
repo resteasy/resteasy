@@ -243,4 +243,25 @@ public class Types
    }
 
 
+   public static Class getMapKeyType(Type genericType)
+   {
+      if (genericType instanceof ParameterizedType)
+      {
+         ParameterizedType parameterizedType = (ParameterizedType) genericType;
+         Type componentGenericType = parameterizedType.getActualTypeArguments()[0];
+         return getRawType(componentGenericType);
+      }
+      return null;
+   }
+
+   public static Class getMapValueType(Type genericType)
+   {
+      if (genericType instanceof ParameterizedType)
+      {
+         ParameterizedType parameterizedType = (ParameterizedType) genericType;
+         Type componentGenericType = parameterizedType.getActualTypeArguments()[1];
+         return getRawType(componentGenericType);
+      }
+      return null;
+   }
 }
