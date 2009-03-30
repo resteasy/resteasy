@@ -2,7 +2,7 @@ package org.jboss.resteasy.examples.flickr;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.net.URL;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,21 +30,22 @@ public class FlickrClient {
 		@XmlAttribute
 		public String server, id, secret, title;
 
-		public URL getURL() throws Exception {
-			return new URL(String.format(photoUrl, server, id, secret));
+		public URI getURI() throws Exception {
+			return new URI(String.format(photoUrl, server, id, secret));
 		}
 	}
 
 	public static void main(String args[]) throws Exception {
 		final String photoSearchUrl = "http://www.flickr.com/services/rest?method=flickr.photos.search&per_page=10&sort=interestingness-desc";
-		final String searchTerm = getString(Arrays.asList(args).subList(1, args.length));
+		final String searchTerm = getString(Arrays.asList(args).subList(1,
+				args.length));
 
 		RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
 
 		// apply for api key at - http://www.flickr.com/services/api/keys/apply
 		ClientRequest request = new ClientRequest(photoSearchUrl)
-			.queryParameter("api key", args[0])
-			.queryParameter("tags", searchTerm);
+				.queryParameter("api key", args[0]).queryParameter("tags",
+						searchTerm);
 		Rsp photos = request.get(Rsp.class).getEntity();
 
 		JFrame frame = new JFrame(searchTerm + " photos");
@@ -52,7 +53,8 @@ public class FlickrClient {
 		for (Photo photo : photos.photo) {
 			JPanel panel = new JPanel(new BorderLayout());
 			panel.add(new JLabel(photo.title), BorderLayout.NORTH);
-			panel.add(new JLabel(new ImageIcon(photo.getURL())), BorderLayout.CENTER);
+			panel.add(new JLabel(new ImageIcon(photo.getURI().toURL())),
+					BorderLayout.CENTER);
 			frame.add(panel);
 		}
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,6 +68,7 @@ public class FlickrClient {
 		for (String term : list) {
 			sb.append(append).append(term);
 			append = " ";
+
 		}
 		return sb.toString();
 	}
