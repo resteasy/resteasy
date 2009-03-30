@@ -1,6 +1,5 @@
 package org.jboss.resteasy.examples.twitter;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -81,7 +80,7 @@ public class TwitterClient {
 		// uncomment to perform a 'write' operation 
 //		String status = "I programmatically tweeted with the RESTEasy Client at "
 //				+ new Date();
-//		display(new ClientRequest(
+//		System.out.println(new ClientRequest(
 //				"http://twitter.com/statuses/update.xml", httpClient)
 //				.formParameter("status", status).post(Status.class).getEntity());
 		 
@@ -89,11 +88,7 @@ public class TwitterClient {
 
 	private static void displayStatuses(Statuses statuses) {
 		for (Status status : statuses.status) {
-			display(status);
+			System.out.println(status);
 		}
-	}
-
-	private static void display(Status status) {
-		System.out.println(status);
 	}
 }
