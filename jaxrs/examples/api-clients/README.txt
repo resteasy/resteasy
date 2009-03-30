@@ -10,11 +10,11 @@ Building the project:
 ====================
 In root directoy
 
-mvn clean install
+mvn clean compile
 
 Flickr Client:
 1. apply for an API key from Flickr - http://www.flickr.com/services/api/keys/apply 
-2. mvn exec:java -Dexec.mainClass="org.jboss.resteasy.examples.flickr.FlickrClient" -Dexec.args="<apiKey> <searchTerm>"
+2. mvn exec:java -Dexec.mainClass="org.jboss.resteasy.examples.flickr.FlickrClient" -Dexec.args="<apiKey>"
 
 Twitter Client
 mvn exec:java -Dexec.mainClass="org.jboss.resteasy.examples.twitter.Twitter" -Dexec.args="<userId> <password>"
