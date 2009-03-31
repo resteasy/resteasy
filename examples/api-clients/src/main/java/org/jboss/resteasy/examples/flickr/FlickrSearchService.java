@@ -58,7 +58,10 @@ public class FlickrSearchService {
 				return super.executeMethod(method);
 			}
 		};
+		
+		// create a proxy using the JAX-RS annotation
 		photoResource = ProxyFactory.create(PhotoResource.class, photoServer, client);
+		// add caching to the proxy
 		CacheFactory.makeCacheable(photoResource, cache);
 	}
 
@@ -73,6 +76,11 @@ public class FlickrSearchService {
 		request.setExecutionInterceptors(getForcedCachingInterceptors());
 		
 		System.out.println(new Date() + " search for " + searchTerm);
+
+		// first, print out the raw XML
+		System.out.println(request.get(String.class).getEntity());
+		
+		// second, convert the XML to a JAXB object
 		FlickrResponse photos = request.get(FlickrResponse.class).getEntity();
 		prefetchImages(photos);
 		return photos;
@@ -94,12 +102,16 @@ public class FlickrSearchService {
 				MultivaluedMap headers = response.getHeaders();
 				Object date = headers.getFirst(HttpHeaderNames.DATE);
 				if (date != null && headers.getFirst(HttpHeaderNames.EXPIRES) == null) {
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(DateUtil.parseDate(date.toString()));
-					cal.add(Calendar.MINUTE, 10);
-					headers.add(HttpHeaderNames.EXPIRES, DateUtil
-							.formatDate(cal.getTime()));
+					String later = DateUtil.formatDate(add10Minutes(date));
+					headers.add(HttpHeaderNames.EXPIRES, later);
 				}
+			}
+
+			private Date add10Minutes(Object date) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(DateUtil.parseDate(date.toString()));
+				cal.add(Calendar.MINUTE, 10);
+				return cal.getTime();
 			}
 		};
 		ClientExecutionInterceptor[] interceptors = new ClientExecutionInterceptor[] { interceptor };

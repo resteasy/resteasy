@@ -3,6 +3,7 @@ package org.jboss.resteasy.examples.flickr;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
@@ -12,16 +13,19 @@ import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.plaf.synth.SynthLookAndFeel;
 
 import org.jboss.resteasy.client.cache.LightweightBrowserCache;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -37,6 +41,11 @@ public class FlickrClient {
 		FlickrSearchService flickrSearchService = new FlickrSearchService(
 				args[0], new LightweightBrowserCache());
 
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+
+		}
 		new FlickrClient(flickrSearchService);
 	}
 
@@ -46,6 +55,7 @@ public class FlickrClient {
 	JPanel dataPanel = null;
 	JTextField textField = null;
 	JPanel glassPane = null;
+	ButtonGroup type = null;
 
 	public FlickrClient(FlickrSearchService flickrSearchService) {
 		this.flickrSearchService = flickrSearchService;
@@ -86,8 +96,14 @@ public class FlickrClient {
 		textField = new JTextField();
 		queryPanel.add(textField, BorderLayout.CENTER);
 
+		JPanel eastPanel = new JPanel(new FlowLayout());
 		JButton searchButton = new JButton("Search");
-		queryPanel.add(searchButton, BorderLayout.EAST);
+		this.type = new ButtonGroup();
+		addJCheckbox("tags", eastPanel, true);
+		addJCheckbox("text", eastPanel, false);
+		eastPanel.add(searchButton, BorderLayout.EAST);
+
+		queryPanel.add(eastPanel, BorderLayout.EAST);
 
 		textField.addKeyListener(new KeyAdapter() {
 			@Override
@@ -104,7 +120,18 @@ public class FlickrClient {
 			}
 		});
 
+		queryPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createEtchedBorder(), BorderFactory.createEmptyBorder(5, 5, 5,
+				5)));
+
 		return queryPanel;
+	}
+
+	private void addJCheckbox(String string, JPanel panel, boolean selected) {
+		JRadioButton radioButton = new JRadioButton(string);
+		radioButton.setSelected(selected);
+		type.add(radioButton);
+		panel.add(radioButton);
 	}
 
 	private void updatePhotos() {
@@ -114,7 +141,15 @@ public class FlickrClient {
 				String searchTerm = textField.getText();
 				try {
 					frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-					displayPhotos(flickrSearchService.searchPhotos("tags",
+					String searchType = null;
+					for(Enumeration<AbstractButton> elements = type.getElements(); elements.hasMoreElements(); ){
+						AbstractButton button = elements.nextElement();
+						if (button.isSelected()) {
+							searchType = button.getText();
+							break;
+						}
+					}
+					displayPhotos(flickrSearchService.searchPhotos(searchType,
 							searchTerm));
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -139,11 +174,20 @@ public class FlickrClient {
 		dataPanel.setLayout(new GridLayout(2, photos.photo.size() / 2));
 
 		Collections.shuffle(photos.photo);
-		
-		for (Photo photo : photos.photo) {
-			JLabel label = new JLabel(flickrSearchService.getImageIcon(photo));
-			label.setBorder(BorderFactory.createTitledBorder(photo.title));
-			dataPanel.add(label);
+
+		for (final Photo photo : photos.photo) {
+			JPanel photopanel = new JPanel(new BorderLayout());
+			JButton button = new JButton(flickrSearchService
+					.getImageIcon(photo));
+			button.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					BareBonesBrowserLaunch.openURL(photo.getPublicURL());
+				}
+			});
+			photopanel.setBorder(BorderFactory.createTitledBorder(photo.title));
+			photopanel.add(button, BorderLayout.CENTER);
+			dataPanel.add(photopanel);
 		}
 		frame.add(dataPanel, BorderLayout.CENTER);
 	}
