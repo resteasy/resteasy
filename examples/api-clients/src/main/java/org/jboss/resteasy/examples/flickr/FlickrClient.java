@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 import java.util.Date;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,12 +24,12 @@ import org.jboss.resteasy.client.cache.LightweightBrowserCache;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
+
 public class FlickrClient {
 
-	FlickrSearchService flickrSearchService;
-
 	public static void main(String args[]) throws Exception {
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		ResteasyProviderFactory instance = ResteasyProviderFactory
 				.getInstance();
 		RegisterBuiltin.register(instance);
@@ -45,9 +46,12 @@ public class FlickrClient {
 		client.frame.setVisible(true);
 	}
 
+	FlickrSearchService flickrSearchService;
+
 	JFrame frame = null;
 	JPanel dataPanel = null;
 	JTextField textField = null;
+	JPanel glassPane = null;
 
 	public FlickrClient(FlickrSearchService flickrSearchService) {
 		this.flickrSearchService = flickrSearchService;
@@ -57,6 +61,9 @@ public class FlickrClient {
 		frame.add(createQueryPanel(), BorderLayout.NORTH);
 		frame.add(dataPanel = new JPanel(), BorderLayout.CENTER);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setGlassPane(glassPane = new JPanel());
+		glassPane.setOpaque(true);
+		glassPane.setVisible(false);
 	}
 
 	private JPanel createQueryPanel() {
@@ -90,18 +97,22 @@ public class FlickrClient {
 	private void updatePhotos() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				glassPane.setVisible(true);
 				String searchTerm = textField.getText();
 				try {
 					frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 					displayPhotos(flickrSearchService.searchPhotos("tags",
 							searchTerm));
+					System.out.println(new Date() + " finished search for "
+							+ searchTerm);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				} finally {
-					System.out.println(new Date() + " finished search for "
-							+ searchTerm);
 					frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					frame.pack();
+					glassPane.setVisible(false);
+					System.out.println(new Date() + " finished search for "
+							+ searchTerm);
 				}
 			}
 		});
@@ -116,11 +127,9 @@ public class FlickrClient {
 		dataPanel.setLayout(new GridLayout(2, photos.photo.size() / 2));
 
 		for (Photo photo : photos.photo) {
-			JPanel panel = new JPanel(new BorderLayout());
-			panel.add(new JLabel(photo.title), BorderLayout.NORTH);
-			panel.add(new JLabel(flickrSearchService.getImageIcon(photo)),
-					BorderLayout.CENTER);
-			dataPanel.add(panel);
+			JLabel label = new JLabel(flickrSearchService.getImageIcon(photo));
+			label.setBorder(BorderFactory.createTitledBorder(photo.title));
+			dataPanel.add(label);
 		}
 		frame.add(dataPanel, BorderLayout.CENTER);
 	}
