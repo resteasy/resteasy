@@ -1,5 +1,7 @@
 package org.jboss.resteasy.examples.flickr;
 
+import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -10,29 +12,37 @@ import javax.swing.ImageIcon;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.cache.BrowserCache;
 import org.jboss.resteasy.client.cache.CacheFactory;
+import org.jboss.resteasy.client.cache.CacheInterceptor;
+import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.HttpHeaderNames;
 
-@Path("/services/rest")
 public class FlickrSearchService {
-	static final String photoSearchUrl = "http://www.flickr.com/services/rest?method=flickr.photos.search&per_page=8&sort=interestingness-desc";
+	static final String photoSearchUrl = "http://www.flickr.com/services/rest";
 	static final String photoServer = "http://static.flickr.com";
 	static final String photoPath = "/{server}/{id}_{secret}_m.jpg";
 
 	String apiKey;
 	PhotoResource photoResource;
 	BrowserCache cache;
-	HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+	HttpClient client = null;
 	Executor executor = Executors.newFixedThreadPool(10);
 
-	@Path(photoPath)
 	static interface PhotoResource {
 		@GET
+		@Path(photoPath)
 		ImageIcon read(@PathParam("server") String server,
 				@PathParam("id") String id, @PathParam("secret") String secret);
 	}
@@ -40,55 +50,75 @@ public class FlickrSearchService {
 	public FlickrSearchService(String apiKey, BrowserCache browserCache) {
 		this.apiKey = apiKey;
 		this.cache = browserCache;
-		photoResource = ProxyFactory.create(PhotoResource.class, photoServer,
-				client);
+		client = new HttpClient(new MultiThreadedHttpConnectionManager()) {
+			@Override
+			public int executeMethod(HttpMethod method) throws IOException,
+					HttpException {
+				System.out.println(new Date() + " reading " + method.getURI());
+				return super.executeMethod(method);
+			}
+		};
+		photoResource = ProxyFactory.create(PhotoResource.class, photoServer, client);
 		CacheFactory.makeCacheable(photoResource, cache);
 	}
 
 	public FlickrResponse searchPhotos(String type, String searchTerm)
 			throws Exception {
 		ClientRequest request = new ClientRequest(photoSearchUrl, client)
-				.queryParameter("api key", apiKey).queryParameter(type,
-						searchTerm);
-		CacheFactory.makeCacheable(request, cache);
-
+				.queryParameter("method", "flickr.photos.search")
+				.queryParameter("per_page", 8).queryParameter("sort",
+						"interestingness-desc").queryParameter("api key",
+						apiKey).queryParameter(type, searchTerm);
+		
+		request.setExecutionInterceptors(getForcedCachingInterceptors());
+		
 		System.out.println(new Date() + " search for " + searchTerm);
-
 		FlickrResponse photos = request.get(FlickrResponse.class).getEntity();
+		prefetchImages(photos);
+		return photos;
+	}
 
+	private ClientExecutionInterceptor[] getForcedCachingInterceptors() {
+		// I wouldn't recommend this everywhere... This overrides Flickr's
+		// Caching behavior to cache for 10 minutes
+		@SuppressWarnings("unchecked")
+		CacheInterceptor interceptor = new CacheInterceptor(cache) {
+			@Override
+			public ClientResponse cacheIfPossible(ClientRequest request,
+					BaseClientResponse response) throws Exception {
+				setExpiredToTheFuture(response);
+				return super.cacheIfPossible(request, response);
+			}
+
+			private void setExpiredToTheFuture(BaseClientResponse response) {
+				MultivaluedMap headers = response.getHeaders();
+				Object date = headers.getFirst(HttpHeaderNames.DATE);
+				if (date != null && headers.getFirst(HttpHeaderNames.EXPIRES) == null) {
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(DateUtil.parseDate(date.toString()));
+					cal.add(Calendar.MINUTE, 10);
+					headers.add(HttpHeaderNames.EXPIRES, DateUtil
+							.formatDate(cal.getTime()));
+				}
+			}
+		};
+		ClientExecutionInterceptor[] interceptors = new ClientExecutionInterceptor[] { interceptor };
+		return interceptors;
+	}
+
+	private void prefetchImages(FlickrResponse photos) {
 		for (final Photo photo : photos.photo) {
 			photo.image = new FutureTask<ImageIcon>(new Callable<ImageIcon>() {
 				public ImageIcon call() throws Exception {
-					try{
-						System.out.println(new Date() + " reading " + photo.id);
-						return photoResource.read(photo.server, photo.id,
+					return photoResource.read(photo.server, photo.id,
 							photo.secret);
-					}finally{
-						synchronized (FlickrSearchService.this) {
-							FlickrSearchService.this.notifyAll();
-						}
-						System.out.println(new Date() + " done reading " + photo.id);
-					}
 				}
 			});
 			executor.execute(photo.image);
 		}
-		System.out.println(new Date() + " got " + photos.photo.size()
-				+ " results for " + searchTerm);
-
-		photos.searchTerm = searchTerm;
-		return photos;
 	}
 
-	public synchronized ImageIcon getImageIcon(Photo photo) throws Exception {
-		// try every 10 seconds
-		while (!photo.image.isDone()) {
-			try {
-				wait(1000);
-			} catch (InterruptedException ie) {
-			}
-		}
+	public ImageIcon getImageIcon(Photo photo) throws Exception {
 		return photo.image.get();
-
 	}
 }

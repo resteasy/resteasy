@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
@@ -30,22 +31,15 @@ import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 public class FlickrClient {
 
 	public static void main(String args[]) throws Exception {
-		UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		ResteasyProviderFactory instance = ResteasyProviderFactory
 				.getInstance();
 		RegisterBuiltin.register(instance);
 		instance.registerProvider(ImageIconMessageBodyReader.class);
-
 		FlickrSearchService flickrSearchService = new FlickrSearchService(
 				args[0], new LightweightBrowserCache());
 
-		FlickrClient client = new FlickrClient(flickrSearchService);
-		client.frame.pack();
-		Dimension preferredSize = client.frame.getPreferredSize();
-		client.frame.setSize(new Dimension(preferredSize.width + 500,
-				preferredSize.height));
-		client.center();
-		client.frame.setVisible(true);
+		UIManager.setLookAndFeel(new NimbusLookAndFeel());
+		new FlickrClient(flickrSearchService);
 	}
 
 	FlickrSearchService flickrSearchService;
@@ -66,20 +60,27 @@ public class FlickrClient {
 		frame.setGlassPane(glassPane = new JPanel());
 		glassPane.setOpaque(true);
 		glassPane.setVisible(false);
+
+		frame.pack();
+		Dimension preferredSize = frame.getPreferredSize();
+		frame.setSize(new Dimension(preferredSize.width + 500,
+				preferredSize.height));
+		center();
+		frame.setVisible(true);
 	}
 
-	public void center(){
+	public void center() {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		Dimension screenSize = toolkit.getScreenSize(); 
+		Dimension screenSize = toolkit.getScreenSize();
 
-		//Calculate the frame location
+		// Calculate the frame location
 		int x = (screenSize.width - frame.getWidth()) / 2;
 		int y = (screenSize.height - frame.getHeight()) / 2;
 
-		//Set the new frame location
-		frame.setLocation(x, y); 
+		// Set the new frame location
+		frame.setLocation(x, y);
 	}
-	
+
 	private JPanel createQueryPanel() {
 		JPanel queryPanel = new JPanel(new BorderLayout());
 		queryPanel.add(new JLabel("Query:"), BorderLayout.WEST);
@@ -117,8 +118,6 @@ public class FlickrClient {
 					frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 					displayPhotos(flickrSearchService.searchPhotos("tags",
 							searchTerm));
-					System.out.println(new Date() + " finished search for "
-							+ searchTerm);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				} finally {
@@ -141,6 +140,8 @@ public class FlickrClient {
 		dataPanel = new JPanel();
 		dataPanel.setLayout(new GridLayout(2, photos.photo.size() / 2));
 
+		Collections.shuffle(photos.photo);
+		
 		for (Photo photo : photos.photo) {
 			JLabel label = new JLabel(flickrSearchService.getImageIcon(photo));
 			label.setBorder(BorderFactory.createTitledBorder(photo.title));
