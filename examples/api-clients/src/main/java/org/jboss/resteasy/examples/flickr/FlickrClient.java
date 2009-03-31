@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -43,6 +44,7 @@ public class FlickrClient {
 		Dimension preferredSize = client.frame.getPreferredSize();
 		client.frame.setSize(new Dimension(preferredSize.width + 500,
 				preferredSize.height));
+		client.center();
 		client.frame.setVisible(true);
 	}
 
@@ -66,6 +68,18 @@ public class FlickrClient {
 		glassPane.setVisible(false);
 	}
 
+	public void center(){
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize(); 
+
+		//Calculate the frame location
+		int x = (screenSize.width - frame.getWidth()) / 2;
+		int y = (screenSize.height - frame.getHeight()) / 2;
+
+		//Set the new frame location
+		frame.setLocation(x, y); 
+	}
+	
 	private JPanel createQueryPanel() {
 		JPanel queryPanel = new JPanel(new BorderLayout());
 		queryPanel.add(new JLabel("Query:"), BorderLayout.WEST);
@@ -110,6 +124,7 @@ public class FlickrClient {
 				} finally {
 					frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					frame.pack();
+					center();
 					glassPane.setVisible(false);
 					System.out.println(new Date() + " finished search for "
 							+ searchTerm);
