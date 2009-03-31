@@ -28,7 +28,7 @@ public class ImageIconMessageBodyReader implements MessageBodyReader<ImageIcon> 
 			Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
 			throws IOException, WebApplicationException {
-		return new ImageIcon(ReadFromStream.readFromStream(1024 * 4, entityStream));
+		return new ImageIcon(ReadFromStream.readFromStream(1024 * 16, entityStream));
 	}
 
 }

@@ -13,8 +13,6 @@ import javax.xml.bind.annotation.XmlTransient;
 public class FlickrResponse {
 	@XmlElementWrapper(name = "photos")
 	public List<Photo> photo;
-	@XmlTransient
-	public String searchTerm;
 }
 
 class Photo {
