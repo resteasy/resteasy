@@ -20,7 +20,7 @@ import org.jboss.resteasy.client.cache.CacheFactory;
 
 @Path("/services/rest")
 public class FlickrSearchService {
-	static final String photoSearchUrl = "http://www.flickr.com/services/rest?method=flickr.photos.search&per_page=10&sort=interestingness-desc";
+	static final String photoSearchUrl = "http://www.flickr.com/services/rest?method=flickr.photos.search&per_page=8&sort=interestingness-desc";
 	static final String photoServer = "http://static.flickr.com";
 	static final String photoPath = "/{server}/{id}_{secret}_m.jpg";
 
