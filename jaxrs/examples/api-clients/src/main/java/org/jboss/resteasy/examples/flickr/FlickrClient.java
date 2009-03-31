@@ -21,12 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.plaf.synth.SynthLookAndFeel;
 
 import org.jboss.resteasy.client.cache.LightweightBrowserCache;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public class FlickrClient {
 
@@ -38,7 +37,6 @@ public class FlickrClient {
 		FlickrSearchService flickrSearchService = new FlickrSearchService(
 				args[0], new LightweightBrowserCache());
 
-		UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		new FlickrClient(flickrSearchService);
 	}
 
@@ -134,7 +132,7 @@ public class FlickrClient {
 
 	private void displayPhotos(FlickrResponse photos)
 			throws MalformedURLException, Exception {
-		frame.setTitle("Flickr Search for " + photos.searchTerm);
+		frame.setTitle("Flickr Search for " + textField.getText());
 		if (dataPanel != null)
 			frame.remove(dataPanel);
 		dataPanel = new JPanel();
