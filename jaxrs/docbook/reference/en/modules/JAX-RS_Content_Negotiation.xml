@@ -117,7 +117,7 @@
       A variant in JAX-RS is a combination of media type, content-language, and content encoding as well as etags, last
       modified headers, and other preconditions. This is a more complex form of content negotiation that is done
       programmatically by the application developer using the javax.ws.rs.Variant, VarianListBuilder, and Request
-      objects. Request is injected via @HttpContext. Read the javadoc for more info on these.
+      objects. Request is injected via @Context. Read the javadoc for more info on these.
    </para>
    <para>
 

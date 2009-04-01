@@ -3,7 +3,7 @@
 
 <para>
 
-The @HttpContext annotation allows you to inject instances of javax.ws.rs.core.HttpHeaders, javax.ws.rs.core.UriInfo, javax.ws.rs.core.Request, javax.servlet.HttpServletRequest, javax.servlet.HttpServletResponse, and javax.ws.rs.core.SecurityContext objects.
+The @Context annotation allows you to inject instances of javax.ws.rs.core.HttpHeaders, javax.ws.rs.core.UriInfo, javax.ws.rs.core.Request, javax.servlet.HttpServletRequest, javax.servlet.HttpServletResponse, javax.servlet.ServletConfig, javax.servlet.ServletContext, and javax.ws.rs.core.SecurityContext objects.
 </para>
 <para>
 
