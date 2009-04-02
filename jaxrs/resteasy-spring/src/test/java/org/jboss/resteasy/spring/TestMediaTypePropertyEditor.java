@@ -7,7 +7,6 @@
 package org.jboss.resteasy.spring;
 
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.plugins.spring.MediaTypePropertyEditor;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -16,6 +15,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MediaTypeEditor;
+
 import java.beans.PropertyEditor;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class TestMediaTypePropertyEditor
    @Before
    public void setupEditor()
    {
-      propertyEditor = new MediaTypePropertyEditor();
+      propertyEditor = new MediaTypeEditor();
    }
 
    @Test

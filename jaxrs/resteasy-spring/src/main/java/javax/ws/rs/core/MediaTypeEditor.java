@@ -4,19 +4,20 @@
  * Distributable under LGPL license.
  * See terms of license at gnu.org.
  */
-package org.jboss.resteasy.plugins.spring;
+package javax.ws.rs.core;
 
 import java.beans.PropertyEditorSupport;
 
 import javax.ws.rs.core.MediaType;
 
 /**
- * A MediaType PropertyEditor.
+ * A MediaType PropertyEditor. Spring automatically looks for a class
+ * "<classname>Editor"
  * 
  * @author <a href="justin@justinedelson.com">Justin Edelson</a>
  * @version $Revision$
  */
-public class MediaTypePropertyEditor extends PropertyEditorSupport
+public class MediaTypeEditor extends PropertyEditorSupport
 {
 
    /**
