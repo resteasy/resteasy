@@ -49,8 +49,8 @@
         </description>
     </bean>
 
-    <bean class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor"
-          depends-on="resteasy.intializer">
+    <bean id="resteasy.spring.bean.processor" class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor"
+          depends-on="resteasy.intializer" p:order="100">
         <description>
             Add Resources and @Providers to the appropriate places
             in Resteasy's infrastructure
@@ -116,15 +116,5 @@
 
     <bean id="reateasy.error.view.resolver"
           class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
-
-
-    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
-        <description>Bean that registers our custom MediaType PropertyEditor</description>
-        <property name="customEditors">
-            <map>
-                <entry key="javax.ws.rs.core.MediaType"
-                       value="org.jboss.resteasy.plugins.spring.MediaTypePropertyEditor"/>
-            </map>
-        </property>
-    </bean>
+    
 </beans>
