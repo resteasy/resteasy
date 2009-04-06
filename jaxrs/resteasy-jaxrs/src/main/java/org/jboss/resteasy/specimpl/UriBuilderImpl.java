@@ -69,7 +69,7 @@ public class UriBuilderImpl extends UriBuilder
       host(match.group(2));
       if (match.group(4) != null) port(Integer.valueOf(match.group(4)));
       if (match.group(5) != null) path(match.group(5));
-      if (match.group(7) != null) replaceQuery(match.group(6));
+      if (match.group(7) != null) replaceQuery(match.group(7));
       if (match.group(9) != null) fragment(match.group(8));
 
       return this;
