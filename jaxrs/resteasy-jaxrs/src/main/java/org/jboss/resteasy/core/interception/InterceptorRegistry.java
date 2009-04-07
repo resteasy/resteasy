@@ -1,18 +1,19 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.core.PropertyInjectorImpl;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class InterceptorRegistry<T>
 {
    protected static interface InterceptorFactory
@@ -73,7 +74,12 @@ public class InterceptorRegistry<T>
 
    public T[] bind(Class declaring, AccessibleObject target)
    {
-      List<T> list = new ArrayList<T>();
+	  List<T> list = bindForList(declaring, target);
+	  return list.toArray((T[]) Array.newInstance(intf, list.size()));
+   }
+
+   public List<T> bindForList(Class declaring, AccessibleObject target) {
+	  List<T> list = new ArrayList<T>();
       for (InterceptorFactory factory : interceptors)
       {
          Object interceptor = factory.createInterceptor();
@@ -93,8 +99,8 @@ public class InterceptorRegistry<T>
             addNewInterceptor(list, interceptor);
          }
       }
-      return list.toArray((T[]) Array.newInstance(intf, list.size()));
-   }
+      return list;
+}
 
    protected void addNewInterceptor(List<T> list, Object interceptor)
    {
