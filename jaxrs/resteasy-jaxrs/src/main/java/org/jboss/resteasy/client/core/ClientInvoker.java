@@ -1,34 +1,32 @@
 package org.jboss.resteasy.client.core;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.annotations.ClientResponseType;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.EntityTypeFactory;
-import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
-import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.MediaTypeHelper;
-import org.jboss.resteasy.util.Types;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Providers;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.URI;
+
+import org.jboss.resteasy.annotations.ClientResponseType;
+import org.jboss.resteasy.client.ClientExecutor;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.EntityTypeFactory;
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.MediaTypeHelper;
+import org.jboss.resteasy.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class ClientInvoker
+public class ClientInvoker extends ClientInterceptorRepositoryImpl
 {
    protected ResteasyProviderFactory providerFactory;
    protected String httpMethod;
@@ -37,65 +35,27 @@ public class ClientInvoker
    protected Class declaring;
    protected MediaType accepts;
    protected Marshaller[] marshallers;
-   protected HttpClient client;
-   protected MessageBodyReaderInterceptor[] readerInterceptors;
-   protected MessageBodyWriterInterceptor[] writerInterceptors;
-   protected ClientExecutionInterceptor[] executionInterceptors;
+   protected ClientExecutor executor;
 
 
-   public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, HttpClient client)
-   {
+   public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor){
       this.declaring = declaring;
       this.method = method;
       this.marshallers = ClientMarshallerFactory.createMarshallers(declaring, method,
               providerFactory);
       this.providerFactory = providerFactory;
+      this.executor = executor;
       accepts = MediaTypeHelper.getProduces(declaring, method);
-      this.client = client;
       this.uri = new UriBuilderImpl();
       uri.uri(baseUri);
       if (declaring.isAnnotationPresent(Path.class)) uri.path(declaring);
       if (method.isAnnotationPresent(Path.class)) uri.path(method);
-      readerInterceptors = providerFactory.getClientMessageBodyReaderInterceptorRegistry().bind(declaring, method);
-      writerInterceptors = providerFactory.getClientMessageBodyWriterInterceptorRegistry().bind(declaring, method);
-      executionInterceptors = providerFactory.getClientExecutionInterceptorRegistry().bind(declaring, method);
    }
 
    public MediaType getAccepts()
    {
       return accepts;
    }
-
-   public MessageBodyReaderInterceptor[] getReaderInterceptors()
-   {
-      return readerInterceptors;
-   }
-
-   public void setReaderInterceptors(MessageBodyReaderInterceptor[] readerInterceptors)
-   {
-      this.readerInterceptors = readerInterceptors;
-   }
-
-   public MessageBodyWriterInterceptor[] getWriterInterceptors()
-   {
-      return writerInterceptors;
-   }
-
-   public void setWriterInterceptors(MessageBodyWriterInterceptor[] writerInterceptors)
-   {
-      this.writerInterceptors = writerInterceptors;
-   }
-
-   public ClientExecutionInterceptor[] getExecutionInterceptors()
-   {
-      return executionInterceptors;
-   }
-
-   public void setExecutionInterceptors(ClientExecutionInterceptor[] executionInterceptors)
-   {
-      this.executionInterceptors = executionInterceptors;
-   }
-
    public Method getMethod()
    {
       return method;
@@ -120,11 +80,9 @@ public class ClientInvoker
       {
          if (uri == null) throw new RuntimeException("You have not set a base URI for the client proxy");
 
-         ClientRequest request = new ClientRequest(uri, new ApacheHttpClientExecutor(client), providerFactory);
+			ClientRequest request = new ClientRequest(uri, executor, providerFactory);
          if (accepts != null) request.header(HttpHeaders.ACCEPT, accepts.toString());
-         request.setWriterInterceptors(writerInterceptors);
-         request.setReaderInterceptors(readerInterceptors);
-         request.setExecutionInterceptors(executionInterceptors);
+         this.copyClientInterceptorsTo(request);
 
          boolean isClientResponseResult = ClientResponse.class.isAssignableFrom(method.getReturnType());
          if (isClientResponseResult)
