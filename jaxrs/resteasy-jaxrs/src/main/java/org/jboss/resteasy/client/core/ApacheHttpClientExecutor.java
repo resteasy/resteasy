@@ -45,6 +45,7 @@ public class ApacheHttpClientExecutor implements ClientExecutor
    }
 
 
+   @SuppressWarnings("unchecked")
    public ClientResponse execute(ClientRequest request) throws Exception
    {
       String uri = request.getUri();
