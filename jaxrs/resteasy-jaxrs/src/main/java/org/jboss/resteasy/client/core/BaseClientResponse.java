@@ -1,5 +1,14 @@
 package org.jboss.resteasy.client.core;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
@@ -8,14 +17,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -129,10 +130,11 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
          throw new RuntimeException(
                  "No type information to extract entity with, use other getEntity() methods");
       }
+      if( genericReturnType == null )
+         genericReturnType = returnType;
       return (T) getEntity(returnType, genericReturnType);
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public <T2> T2 getEntity(Class<T2> type, Type genericType)
    {
@@ -236,6 +238,7 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
       return headers;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public MultivaluedMap<String, Object> getMetadata()
    {
