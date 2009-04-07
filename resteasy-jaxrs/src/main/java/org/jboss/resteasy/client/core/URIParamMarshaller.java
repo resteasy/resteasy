@@ -6,6 +6,12 @@ import java.net.URL;
 
 import org.jboss.resteasy.client.ClientRequest;
 
+/**
+ * allows a user to specify the url.
+ *
+ * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
+ * @version $Revision: 1 $
+ */
 public class URIParamMarshaller implements Marshaller
 {
    public void build(ClientRequest request, Object target)
