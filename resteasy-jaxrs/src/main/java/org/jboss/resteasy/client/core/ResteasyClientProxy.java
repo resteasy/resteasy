@@ -11,4 +11,5 @@ import java.util.Collection;
 public interface ResteasyClientProxy
 {
    Collection<ClientInvoker> getResteasyClientInvokers();
+   void applyClientInvokerModifier(ClientInvokerModifier modifier);
 }
