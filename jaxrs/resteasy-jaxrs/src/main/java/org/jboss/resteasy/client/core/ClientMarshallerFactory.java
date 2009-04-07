@@ -1,9 +1,9 @@
 package org.jboss.resteasy.client.core;
 
-import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.MediaTypeHelper;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.Encoded;
@@ -14,10 +14,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.client.ClientURI;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 public class ClientMarshallerFactory
 {
@@ -92,6 +94,11 @@ public class ClientMarshallerFactory
       else if (type.equals(Cookie.class))
       {
          marshaller = new CookieParamMarshaller(null);
+      }
+      // this is for HATEAOS clients
+      else if (FindAnnotation.findAnnotation(annotations, ClientURI.class) != null)
+      {
+         marshaller = new URIParamMarshaller();
       }
       else if (!ignoreBody)
       {
