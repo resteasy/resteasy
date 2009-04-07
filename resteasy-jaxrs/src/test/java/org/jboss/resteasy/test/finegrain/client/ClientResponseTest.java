@@ -1,19 +1,17 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import org.jboss.resteasy.annotations.ClientResponseType;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.EntityTypeFactory;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.BaseClientResponse;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.jboss.resteasy.test.smoke.SimpleResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
+import static org.jboss.resteasy.test.TestPortProvider.createProxy;
+import static org.jboss.resteasy.test.TestPortProvider.createURI;
+import static org.jboss.resteasy.test.TestPortProvider.createURL;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -24,10 +22,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Map;
+
+import org.jboss.resteasy.annotations.ClientResponseType;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientURI;
+import org.jboss.resteasy.client.EntityTypeFactory;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.smoke.SimpleResource;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Simple smoke test
@@ -58,6 +67,13 @@ public class ClientResponseTest
       @Path("basic")
       @ClientResponseType(entityTypeFactory = StringEntityTypeFactory.class)
       Response getBasicResponseStringFactory();
+
+      @GET
+      String getData(@ClientURI String uri);
+      
+      @PUT
+      @Consumes("text/plain")
+      Response.Status putData(@ClientURI URI uri, String data);
 
       @GET
       @Path("basic")
@@ -137,7 +153,11 @@ public class ClientResponseTest
       Assert.assertEquals("basic", client.getBasic().getEntity());
       Assert.assertEquals("basic", client.getBasicResponseString().getEntity());
       Assert.assertEquals("basic", client.getBasicResponseStringFactory().getEntity());
+      Assert.assertEquals("basic", client.getData("/basic"));
       client.putBasic("hello world");
+      Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
+
+      client.putData(new URI("/basic"), "hello world2");
       Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
 
       String queryResult = createClientRequest("/queryParam").queryParameter("param", "hello world").get(String.class)
