@@ -50,7 +50,7 @@
     </bean>
 
     <bean id="resteasy.spring.bean.processor" class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor"
-          depends-on="resteasy.intializer" p:order="100">
+          depends-on="resteasy.intializer">
         <description>
             Add Resources and @Providers to the appropriate places
             in Resteasy's infrastructure
