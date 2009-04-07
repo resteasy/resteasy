@@ -3,6 +3,8 @@ package org.jboss.resteasy.util;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
+
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,7 +16,7 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
+public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Serializable
 {
 
    private static class KeySetWrapper implements Set<String>
@@ -328,7 +330,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
       }
    }
 
-   private static class CaseInsensitiveKey
+   private static class CaseInsensitiveKey implements Serializable
    {
       private String key;
 
