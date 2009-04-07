@@ -1,5 +1,7 @@
 package org.jboss.resteasy.core.interception;
 
+import java.util.List;
+
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -10,12 +12,12 @@ import org.jboss.resteasy.client.ClientResponse;
  */
 public class ClientExecutionContextImpl implements ClientExecutionContext
 {
-   protected ClientExecutionInterceptor[] interceptors;
+   protected List<ClientExecutionInterceptor> interceptors;
    protected ClientExecutor executor;
    protected ClientRequest request;
    protected int index = 0;
 
-   public ClientExecutionContextImpl(ClientExecutionInterceptor[] interceptors, ClientExecutor executor, ClientRequest request)
+   public ClientExecutionContextImpl(List<ClientExecutionInterceptor> interceptors, ClientExecutor executor, ClientRequest request)
    {
       this.interceptors = interceptors;
       this.executor = executor;
@@ -27,9 +29,10 @@ public class ClientExecutionContextImpl implements ClientExecutionContext
       return request;
    }
 
-   public ClientResponse proceed() throws Exception
+   @SuppressWarnings("unchecked")
+	public ClientResponse proceed() throws Exception
    {
-      if (index >= interceptors.length)
+      if (index >= interceptors.size())
       {
          return executor.execute(request);
       }
@@ -37,7 +40,7 @@ public class ClientExecutionContextImpl implements ClientExecutionContext
       {
          try
          {
-            return interceptors[index++].execute(this);
+            return interceptors.get(index++).execute(this);
          }
          finally
          {
