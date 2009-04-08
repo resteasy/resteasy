@@ -12,9 +12,11 @@ import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
  */
 public interface ClientInterceptorRepository {
 
-	public LinkedList<MessageBodyReaderInterceptor> getReaderInterceptorList();
+	LinkedList<MessageBodyReaderInterceptor> getReaderInterceptorList();
 
-	public LinkedList<MessageBodyWriterInterceptor> getWriterInterceptorList();
+	LinkedList<MessageBodyWriterInterceptor> getWriterInterceptorList();
 
-	public LinkedList<ClientExecutionInterceptor> getExecutionInterceptorList();
+	LinkedList<ClientExecutionInterceptor> getExecutionInterceptorList();
+	
+	void registerInterceptor(Object interceptor);
 }
