@@ -1,13 +1,18 @@
 package org.jboss.resteasy.test.regression;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -19,19 +24,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -83,7 +81,7 @@ public class RegressionTest
       public Object getComplex()
       {
          Response.ResponseBuilder builder = Response.status(HttpResponseCodes.SC_FOUND)
-               .entity("hello world".getBytes());
+                 .entity("hello world".getBytes());
          builder.header("CoNtEnT-type", "text/plain");
          return builder.build();
       }
@@ -137,14 +135,14 @@ public class RegressionTest
       }
 
       public long getSize(Customer customer, Class<?> type, Type genericType, Annotation[] annotations,
-            MediaType mediaType)
+                          MediaType mediaType)
       {
          return -1;
       }
 
       public void writeTo(Customer customer, Class<?> type, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-            throws IOException, WebApplicationException
+                          MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+              throws IOException, WebApplicationException
       {
          String out = "<customer><name>" + customer.getName() + "</name></customer>";
          entityStream.write(out.getBytes());
@@ -279,4 +277,44 @@ public class RegressionTest
 
    }
 
+   @Path("/spaces")
+   public static class Spaces
+   {
+
+      @Path("/with spaces")
+      public Sub sub()
+      {
+         return new Sub();
+      }
+   }
+
+   public static class Sub
+   {
+      @Path("/without")
+      @GET
+      @Produces("text/plain")
+      public String get()
+      {
+         return "hello";
+      }
+   }
+
+   /**
+    * Test JIRA bug RESTEASY-212
+    */
+   @Test
+   public void test212() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      dispatcher.getRegistry().addPerRequestResource(Spaces.class);
+      {
+         HttpClient client = new HttpClient();
+         GetMethod method = createGetMethod("/spaces/with%20spaces/without");
+         int status = client.executeMethod(method);
+         Assert.assertEquals(200, status);
+         method.releaseConnection();
+      }
+      EmbeddedContainer.stop();
+
+   }
 }
