@@ -6,7 +6,7 @@
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>spring-hibernate-contacts</artifactId>
     <packaging>pom</packaging>
-    <version>1.1-RC1</version>
+    <version>1.1-RC2</version>
     <name>RestContact Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <repositories>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.1-RC1</version>
+            <version>1.1-RC2</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-spring</artifactId>
-            <version>1.1-RC1</version>
+            <version>1.1-RC2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
