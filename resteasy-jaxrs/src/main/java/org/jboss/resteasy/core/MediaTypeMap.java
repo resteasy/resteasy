@@ -25,7 +25,7 @@ public class MediaTypeMap<T>
       Class getType();
    }
 
-   public static class TypedEntryComparator implements Comparator<Entry>
+   private static class TypedEntryComparator implements Comparator<Entry>
    {
       private Class type;
 
@@ -208,6 +208,7 @@ public class MediaTypeMap<T>
 
    public void add(MediaType type, T obj)
    {
+      type = new MediaType(type.getType().toLowerCase(), type.getSubtype().toLowerCase(), type.getParameters());
       Entry<T> entry = new Entry<T>(type, obj);
       all.add(entry);
       Collections.sort(all);
@@ -247,6 +248,7 @@ public class MediaTypeMap<T>
     */
    public List<T> getPossible(MediaType accept)
    {
+      accept = new MediaType(accept.getType().toLowerCase(), accept.getSubtype().toLowerCase(), accept.getParameters());
       List<Entry<T>> matches = new ArrayList<Entry<T>>();
       if (accept.isWildcardType())
       {
@@ -269,6 +271,7 @@ public class MediaTypeMap<T>
 
    public List<T> getPossible(MediaType accept, Class type)
    {
+      accept = new MediaType(accept.getType().toLowerCase(), accept.getSubtype().toLowerCase(), accept.getParameters());
       List<Entry<T>> matches = new ArrayList<Entry<T>>();
       if (accept.isWildcardType())
       {
