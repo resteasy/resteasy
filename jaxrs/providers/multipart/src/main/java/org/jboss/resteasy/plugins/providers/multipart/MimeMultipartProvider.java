@@ -25,11 +25,11 @@ import java.lang.reflect.Type;
  * parameter or a return value and the
  *
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
- * @ConsumeMime value is either multipart/mixed or multipart/form-data.
+ * @Consumes value is either multipart/mixed or multipart/form-data.
  * <p/>
  * <code>
  * @POST
- * @ConsumeMime("multipart/form-data") public void postData(MimeMultipart multipart) {
+ * @Consumes("multipart/form-data") public void postData(MimeMultipart multipart) {
  * ...
  * </code>
  * <p/>

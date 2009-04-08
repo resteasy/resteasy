@@ -262,8 +262,8 @@ public class SimpleMimeMultipartResource
    }
 
    //    @POST
-   //    @ConsumeMime("multipart/form-data")
-   //    @ProduceMime("text/plain")
+   //    @Consumes("multipart/form-data")
+   //    @Produces("text/plain")
    //    public String putData(MultiPartEntity entity) {
    //        StringBuilder b = new StringBuilder("Elements: ");
    //        b.append(entity.getPart(0, String.class));
