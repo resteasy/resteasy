@@ -1,8 +1,9 @@
 package org.jboss.resteasy.client.cache;
 
+import java.io.Serializable;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.Serializable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -12,6 +13,8 @@ public interface BrowserCache
 {
    public static class Header implements Serializable
    {
+      private static final long serialVersionUID = 4145981086454860081L;
+
       private String name;
       private String value;
 
@@ -39,7 +42,7 @@ public interface BrowserCache
       boolean expired();
 
       Header[] getValidationHeaders();
-
+      
       byte[] getCached();
 
       MediaType getMediaType();
@@ -51,8 +54,8 @@ public interface BrowserCache
 
    Entry put(String key, MediaType mediaType, MultivaluedMap<String, String> headers, byte[] cached, int expires, String etag, String lastModified);
 
-   void remove(String key, MediaType type);
+   Entry remove(String key, MediaType type);
 
    void clear();
-
+   
 }
