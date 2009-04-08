@@ -26,6 +26,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByMethod
 {
    protected BrowserCache cache;
@@ -52,9 +53,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
       BrowserCache.Entry entry = getEntry(request);
       if (entry == null)
       {
-         ClientResponse response = ctx.proceed();
-         if (response.getStatus() != 200) return response;
-         return cacheIfPossible(request, (BaseClientResponse) response);
+         return cache(request, ctx.proceed());
       }
 
       if (entry.expired())
@@ -65,25 +64,28 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
          {
             request.header(header.getName(), header.getValue());
          }
+         return handleExpired(ctx, request, entry);
+      }
+      
+      return new CachedClientResponse(entry, request.getProviderFactory());
+   }
 
-         ClientResponse response = ctx.proceed();
-         if (response.getStatus() == Response.Status.NOT_MODIFIED.getStatusCode())
-         {
-            return updateOnNotModified(request, entry, (BaseClientResponse) response);
-         }
-         else if (response.getStatus() == 200)
-         {
-            return cacheIfPossible(request, (BaseClientResponse) response);
-         }
-         else
-         {
-            return response;
-         }
-      }
-      else
+   protected ClientResponse handleExpired(ClientExecutionContext ctx,
+         ClientRequest request, BrowserCache.Entry entry) throws Exception
+   {
+      ClientResponse response = ctx.proceed();
+      if (response.getStatus() == Response.Status.NOT_MODIFIED.getStatusCode())
       {
-         return new CachedClientResponse(entry, request.getProviderFactory());
+         return updateOnNotModified(request, entry, (BaseClientResponse) response);
       }
+      return cache(request, response);
+   }
+
+   private ClientResponse cache(ClientRequest request, ClientResponse response)
+         throws Exception
+   {
+      if (response.getStatus() != 200) return response;
+      return cacheIfPossible(request, (BaseClientResponse) response);
    }
 
    public ClientResponse updateOnNotModified(ClientRequest request, BrowserCache.Entry old, BaseClientResponse response) throws Exception

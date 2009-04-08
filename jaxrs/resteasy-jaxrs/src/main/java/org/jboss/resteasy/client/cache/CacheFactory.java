@@ -1,9 +1,9 @@
 package org.jboss.resteasy.client.cache;
 
-import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.core.ClientInterceptorRepository;
 import org.jboss.resteasy.client.core.ClientInvoker;
+import org.jboss.resteasy.client.core.ClientInvokerModifier;
 import org.jboss.resteasy.client.core.ResteasyClientProxy;
-import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -11,73 +11,53 @@ import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
  */
 public class CacheFactory
 {
-   /**
-    * Makes the client proxy cacheable.  Returns the cache that will hold returned values from the server.
-    *
-    * @param clientProxy
-    * @return
-    */
-   public static LightweightBrowserCache makeCacheable(Object clientProxy)
-   {
-      LightweightBrowserCache cache = new LightweightBrowserCache();
-      makeCacheable(clientProxy, cache);
-      return cache;
-   }
+	/**
+	 * Makes the client proxy cacheable. Returns the cache that will hold
+	 * returned values from the server.
+	 * 
+	 * @param clientProxy
+	 * @return
+	 */
+	public static LightweightBrowserCache makeCacheable(Object clientProxy)
+	{
+		LightweightBrowserCache cache = new LightweightBrowserCache();
+		makeCacheable(clientProxy, cache);
+		return cache;
+	}
 
-   /**
-    * Makes the client proxy cacheable.  This method allows you to pass in a shared cache that the proxy should use
-    *
-    * @param clientProxy
-    * @param cache
-    */
-   public static void makeCacheable(Object clientProxy, BrowserCache cache)
-   {
-      ResteasyClientProxy proxy = (ResteasyClientProxy) clientProxy;
-      CacheInterceptor interceptor = new CacheInterceptor(cache);
+	/**
+	 * Makes the client proxy cacheable. This method allows you to pass in a
+	 * shared cache that the proxy should use
+	 * 
+	 * @param clientProxy
+	 * @param cache
+	 */
+	public static void makeCacheable(Object clientProxy, BrowserCache cache)
+	{
+		final CacheInterceptor interceptor = new CacheInterceptor(cache);
+		ResteasyClientProxy proxy = (ResteasyClientProxy) clientProxy;
+		proxy.applyClientInvokerModifier(new ClientInvokerModifier()
+		{
+			public void modify(ClientInvoker invoker)
+			{
+				if (invoker.getHttpMethod().equalsIgnoreCase("GET"))
+				{
+					invoker.getExecutionInterceptorList().addFirst(interceptor);
+				}
+			}
+		});
+	}
 
-      for (ClientInvoker invoker : proxy.getResteasyClientInvokers())
-      {
-         if (invoker.getHttpMethod().equalsIgnoreCase("GET"))
-         {
-            if (invoker.getExecutionInterceptors() == null)
-            {
-               ClientExecutionInterceptor[] interceptors = {interceptor};
-               invoker.setExecutionInterceptors(interceptors);
-            }
-            else
-            {
-               ClientExecutionInterceptor[] interceptors = new ClientExecutionInterceptor[invoker.getExecutionInterceptors().length + 1];
-               System.arraycopy(invoker.getExecutionInterceptors(), 0, interceptors, 1, invoker.getExecutionInterceptors().length);
-               interceptors[0] = interceptor;
-               invoker.setExecutionInterceptors(interceptors);
-            }
-         }
-      }
-   }
-
-   /**
-    * Make a raw ClientRequest cache results in the provided cache.
-    *
-    * @param request
-    * @param cache
-    */
-   public static void makeCacheable(ClientRequest request, BrowserCache cache)
-   {
-      CacheInterceptor interceptor = new CacheInterceptor(cache);
-      if (request.getExecutionInterceptors() == null)
-      {
-         ClientExecutionInterceptor[] interceptors = {interceptor};
-         interceptors[0] = interceptor;
-         request.setExecutionInterceptors(interceptors);
-      }
-      else
-      {
-         ClientExecutionInterceptor[] interceptors = new ClientExecutionInterceptor[request.getExecutionInterceptors().length + 1];
-         System.arraycopy(request.getExecutionInterceptors(), 0, interceptors, 1, request.getExecutionInterceptors().length);
-         interceptors[0] = interceptor;
-         request.setExecutionInterceptors(interceptors);
-      }
-   }
-
-
+	/**
+	 * Make a raw ClientRequest cache results in the provided cache.
+	 * 
+	 * @param request
+	 * @param cache
+	 */
+	public static void makeCacheable(
+			ClientInterceptorRepository interceptorRepository, BrowserCache cache)
+	{
+		interceptorRepository.getExecutionInterceptorList().addFirst(
+				new CacheInterceptor(cache));
+	}
 }
