@@ -36,6 +36,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
    protected MediaType accepts;
    protected Marshaller[] marshallers;
    protected ClientExecutor executor;
+   protected boolean followRedirects;
 
 
    public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor){
@@ -85,14 +86,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
          this.copyClientInterceptorsTo(request);
 
          boolean isClientResponseResult = ClientResponse.class.isAssignableFrom(method.getReturnType());
-         if (isClientResponseResult)
-         {
-            request.followRedirects(false);
-         }
-         else
-         {
-            request.followRedirects(true);
-         }
+         request.followRedirects(!isClientResponseResult || this.followRedirects);
 
          for (int i = 0; i < marshallers.length; i++)
          {
@@ -219,4 +213,20 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
    {
       this.httpMethod = httpMethod;
    }
+
+   public boolean isFollowRedirects()
+   {
+      return followRedirects;
+   }
+
+   public void setFollowRedirects(boolean followRedirects)
+   {
+      this.followRedirects = followRedirects;
+   }
+
+   public void followRedirects()
+   {
+      setFollowRedirects(true);
+   }
+   
 }

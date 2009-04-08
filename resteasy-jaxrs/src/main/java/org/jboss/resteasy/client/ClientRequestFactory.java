@@ -16,12 +16,13 @@ public class ClientRequestFactory
 {
    private ResteasyProviderFactory providerFactory;
    private ClientExecutor executor;
+   private URI base = null;
    private boolean applyDefaultInterceptors = false;
+   private boolean followRedirects = false;
    private ClientInterceptorRepositoryImpl prefixInterceptors = new ClientInterceptorRepositoryImpl();
    private ClientInterceptorRepositoryImpl suffixInterceptors = new ClientInterceptorRepositoryImpl();
-   private URI base = null;
 
-   ClientRequestFactory()
+   public ClientRequestFactory()
    {
       this(new HttpClient());
    }
@@ -42,6 +43,19 @@ public class ClientRequestFactory
    {
       this.providerFactory = providerFactory;
       this.executor = executor;
+   }
+
+   public ClientRequestFactory(ClientRequestFactory other)
+   {
+      this.providerFactory = other.providerFactory;
+      this.executor = other.executor;
+      this.setBase(other.getBase());
+      this.applyDefaultInterceptors = other.applyDefaultInterceptors;
+      this.followRedirects = other.followRedirects;
+      other.prefixInterceptors
+            .copyClientInterceptorsTo(this.prefixInterceptors);
+      other.suffixInterceptors
+            .copyClientInterceptorsTo(this.suffixInterceptors);
    }
 
    public URI getBase()
@@ -69,6 +83,28 @@ public class ClientRequestFactory
       return suffixInterceptors;
    }
 
+   public boolean isFollowRedirects()
+   {
+      return followRedirects;
+   }
+
+   public void setFollowRedirects(boolean followRedirects)
+   {
+      this.followRedirects = followRedirects;
+   }
+
+   private void applyInterceptors(ClientInterceptorRepositoryImpl repository)
+   {
+      prefixInterceptors.prefixClientInterceptorsTo(repository);
+      suffixInterceptors.copyClientInterceptorsTo(repository);
+   }
+   
+   public ClientRequestFactory clone()
+   {
+      return new ClientRequestFactory(this);
+   }
+
+
    public ClientRequest createRequest(String uriTemplate)
    {
       ClientRequest clientRequest = new ClientRequest(new UriBuilderImpl()
@@ -78,6 +114,10 @@ public class ClientRequestFactory
          ClientInvokerInterceptorFactory.applyDefaultInterceptors(
                clientRequest, providerFactory);
       }
+      if (followRedirects)
+      {
+         clientRequest.followRedirects();
+      }
       applyInterceptors(clientRequest);
       return clientRequest;
    }
@@ -85,15 +125,8 @@ public class ClientRequestFactory
    public <T> T get(String uriTemplate, Class<T> type, Object... params)
          throws Exception
    {
-      ClientRequest clientRequest = createRequest(uriTemplate);
-      clientRequest.pathParameters(params);
-      return clientRequest.get(type).getEntity();
-   }
-
-   private void applyInterceptors(ClientInterceptorRepositoryImpl repository)
-   {
-      prefixInterceptors.prefixClientInterceptorsTo(repository);
-      suffixInterceptors.copyClientInterceptorsTo(repository);
+      return createRequest(uriTemplate).followRedirects(true).pathParameters(
+            params).get(type).getEntity();
    }
 
    public <T> T createProxy(Class<T> clazz)
