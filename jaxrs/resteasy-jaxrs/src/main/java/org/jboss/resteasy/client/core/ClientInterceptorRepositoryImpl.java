@@ -175,4 +175,33 @@ public class ClientInterceptorRepositoryImpl implements
 		}
 	}
 
+   public void registerInterceptor(Object interceptor)
+   {
+      boolean registered = false;
+      if (interceptor instanceof ClientExecutionInterceptor)
+      {
+         getExecutionInterceptorList().add(
+               (ClientExecutionInterceptor) interceptor);
+         registered = true;
+      }
+      if (interceptor instanceof MessageBodyReaderInterceptor)
+      {
+         getReaderInterceptorList().add(
+               (MessageBodyReaderInterceptor) interceptor);
+         registered = true;
+      }
+      if (interceptor instanceof MessageBodyWriterInterceptor)
+      {
+         getWriterInterceptorList().add(
+               (MessageBodyWriterInterceptor) interceptor);
+         registered = true;
+      }
+
+      if (!registered)
+      {
+         throw new RuntimeException(
+               "The object you supplied to registerInterceptor is not of an understood type");
+      }
+   }
+
 }
