@@ -3,7 +3,7 @@
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.php
  * See the License for the specific language governing
@@ -295,8 +295,7 @@ public class MediaType
          return false;
       if (type.equals(MEDIA_TYPE_WILDCARD) || other.type.equals(MEDIA_TYPE_WILDCARD))
          return true;
-      else
-      if (type.equalsIgnoreCase(other.type) && (subtype.equals(MEDIA_TYPE_WILDCARD) || other.subtype.equals(MEDIA_TYPE_WILDCARD)))
+      else if (type.equalsIgnoreCase(other.type) && (subtype.equals(MEDIA_TYPE_WILDCARD) || other.subtype.equals(MEDIA_TYPE_WILDCARD)))
          return true;
       else
          return this.type.equalsIgnoreCase(other.type)
