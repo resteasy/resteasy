@@ -5,7 +5,7 @@
     <name>RESTEasy JAX-RS</name>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>1.1-RC1</version>
+    <version>1.1-RC2</version>
     <packaging>pom</packaging>
 
     <properties>
