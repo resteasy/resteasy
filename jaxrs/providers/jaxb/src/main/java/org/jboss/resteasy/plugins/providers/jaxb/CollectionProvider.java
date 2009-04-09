@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
@@ -69,7 +70,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          Class baseType = Types.getCollectionBaseType(type, genericType);
          if (baseType == null) return false;
-         return baseType.isAnnotationPresent(XmlRootElement.class) || baseType.isAnnotationPresent(XmlType.class) || JAXBElement.class.equals(type);
+         return baseType.isAnnotationPresent(XmlRootElement.class) || baseType.isAnnotationPresent(XmlType.class) || baseType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(type);
       }
       return false;
    }
