@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.jaxb.json;
 import org.codehaus.jettison.mapped.Configuration;
 import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
+import org.jboss.resteasy.plugins.providers.jaxb.BaseMarshaller;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
@@ -20,8 +21,6 @@ import javax.xml.validation.Schema;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,7 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JettisonMappedMarshaller implements Marshaller
+public class JettisonMappedMarshaller extends BaseMarshaller
 {
    private Marshaller marshaller;
    private MappedNamespaceConvention convention;
@@ -52,12 +51,6 @@ public class JettisonMappedMarshaller implements Marshaller
            throws JAXBException
    {
       marshaller.marshal(o, result);
-   }
-
-   public void marshal(Object o, OutputStream outputStream)
-           throws JAXBException
-   {
-      marshal(o, new OutputStreamWriter(outputStream));
    }
 
    public void marshal(Object o, File file)
@@ -108,12 +101,6 @@ public class JettisonMappedMarshaller implements Marshaller
            throws JAXBException
    {
       return marshaller.getNode(o);
-   }
-
-   public void setProperty(String s, Object o)
-           throws PropertyException
-   {
-      marshaller.setProperty(s, o);
    }
 
    public Object getProperty(String s)

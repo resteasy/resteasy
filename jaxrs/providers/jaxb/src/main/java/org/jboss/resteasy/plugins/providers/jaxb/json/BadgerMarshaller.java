@@ -1,12 +1,12 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
 import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamWriter;
+import org.jboss.resteasy.plugins.providers.jaxb.BaseMarshaller;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -18,18 +18,15 @@ import javax.xml.validation.Schema;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class BadgerMarshaller implements Marshaller
+public class BadgerMarshaller extends BaseMarshaller
 {
    private JAXBContext context;
-   private Marshaller marshaller;
 
    public BadgerMarshaller(JAXBContext context) throws JAXBException
    {
@@ -41,12 +38,6 @@ public class BadgerMarshaller implements Marshaller
            throws JAXBException
    {
       marshaller.marshal(o, result);
-   }
-
-   public void marshal(Object o, OutputStream outputStream)
-           throws JAXBException
-   {
-      marshal(o, new OutputStreamWriter(outputStream));
    }
 
    public void marshal(Object o, File file)
@@ -97,12 +88,6 @@ public class BadgerMarshaller implements Marshaller
            throws JAXBException
    {
       return marshaller.getNode(o);
-   }
-
-   public void setProperty(String s, Object o)
-           throws PropertyException
-   {
-      marshaller.setProperty(s, o);
    }
 
    public Object getProperty(String s)
