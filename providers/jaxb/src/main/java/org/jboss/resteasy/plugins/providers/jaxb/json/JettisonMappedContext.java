@@ -34,15 +34,18 @@ public class JettisonMappedContext extends JAXBContext
    public JettisonMappedContext(Mapped mapped, Class... classes)
    {
       List<QName> attributesAsElements = new ArrayList<QName>();
-      for (String name : mapped.attributesAsElements())
-      {
-         QName qName = new QName(name);
-         attributesAsElements.add(qName);
-      }
       HashMap<String, String> xmlnsToJson = new HashMap<String, String>();
-      for (XmlNsMap j : mapped.namespaceMap())
+      if (mapped != null)
       {
-         xmlnsToJson.put(j.namespace(), j.jsonName());
+         for (String name : mapped.attributesAsElements())
+         {
+            QName qName = new QName(name);
+            attributesAsElements.add(qName);
+         }
+         for (XmlNsMap j : mapped.namespaceMap())
+         {
+            xmlnsToJson.put(j.namespace(), j.jsonName());
+         }
       }
       Configuration config = new Configuration(xmlnsToJson, attributesAsElements, new ArrayList());
       //convention = new MappedNamespaceConvention(config);
