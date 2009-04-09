@@ -26,6 +26,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
@@ -71,7 +72,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 
          Class valueType = Types.getMapValueType(genericType);
          if (valueType == null) return false;
-         return valueType.isAnnotationPresent(XmlRootElement.class) || valueType.isAnnotationPresent(XmlType.class) || JAXBElement.class.equals(type);
+         return valueType.isAnnotationPresent(XmlRootElement.class) || valueType.isAnnotationPresent(XmlType.class) || valueType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(type);
       }
       return false;
    }
