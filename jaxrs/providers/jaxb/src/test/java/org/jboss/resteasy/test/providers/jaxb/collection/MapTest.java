@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.jaxb.collection;
 import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.jaxb.MapProvider;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.GenericType;
@@ -189,8 +188,6 @@ public class MapTest extends BaseResourceTest
    @Before
    public void setup()
    {
-      getProviderFactory().addMessageBodyReader(new MapProvider());
-      getProviderFactory().addMessageBodyWriter(new MapProvider());
       addPerRequestResource(MyResource.class);
 
    }
