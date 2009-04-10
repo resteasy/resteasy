@@ -54,7 +54,9 @@ public class RootSegment extends Segment
    protected void addPath(String[] segments, int index, ResourceInvoker invoker)
    {
       String segment = segments[index];
-      Matcher withPathParam = PathHelper.URI_PARAM_PATTERN.matcher(segment);
+      // Regular expressions can have '{' and '}' characters.  Replace them to do match
+      String replacedCurlySegment = PathHelper.replaceEnclosedCurlyBraces(segment);
+      Matcher withPathParam = PathHelper.URI_PARAM_PATTERN.matcher(replacedCurlySegment);
       if (withPathParam.find())
       {
          String expression = recombineSegments(segments, index);
@@ -374,13 +376,17 @@ public class RootSegment extends Segment
 
    private static StringBuffer pullPathParamExpressions(String path, MultivaluedMapImpl<String, String> pathParamExpr)
    {
+      // Regular expressions can have '{' and '}' characters.  Replace them to do match
+      path = PathHelper.replaceEnclosedCurlyBraces(path);
+
       Matcher matcher = PathHelper.URI_PARAM_WITH_REGEX_PATTERN.matcher(path);
       StringBuffer newPath = new StringBuffer();
       while (matcher.find())
       {
          String name = matcher.group(1);
          String regex = matcher.group(3);
-         pathParamExpr.add(name, regex);
+         // Regular expressions can have '{' and '}' characters.  Recover original replacement
+         pathParamExpr.add(name, PathHelper.recoverEnclosedCurlyBraces(regex));
          matcher.appendReplacement(newPath, "{$1:x}");
       }
       matcher.appendTail(newPath);
