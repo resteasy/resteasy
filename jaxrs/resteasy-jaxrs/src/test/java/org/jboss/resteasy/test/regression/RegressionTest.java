@@ -17,6 +17,7 @@ import org.junit.Test;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -310,6 +311,37 @@ public class RegressionTest
       {
          HttpClient client = new HttpClient();
          GetMethod method = createGetMethod("/spaces/with%20spaces/without");
+         int status = client.executeMethod(method);
+         Assert.assertEquals(200, status);
+         method.releaseConnection();
+      }
+      EmbeddedContainer.stop();
+
+   }
+
+   @Path("/curly")
+   public static class CurlyBraces
+   {
+      @Path("{tableName:[a-z][a-z0-9_]{0,49}}")
+      @GET
+      @Produces("text/plain")
+      public String get(@PathParam("tableName") String param)
+      {
+         return "param";
+      }
+   }
+
+   /**
+    * Test JIRA bug RESTEASY-227
+    */
+   @Test
+   public void test227() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start();
+      dispatcher.getRegistry().addPerRequestResource(CurlyBraces.class);
+      {
+         HttpClient client = new HttpClient();
+         GetMethod method = createGetMethod("/curly/abcd");
          int status = client.executeMethod(method);
          Assert.assertEquals(200, status);
          method.releaseConnection();

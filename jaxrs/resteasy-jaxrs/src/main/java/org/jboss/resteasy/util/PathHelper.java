@@ -3,7 +3,6 @@
  */
 package org.jboss.resteasy.util;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -36,19 +35,6 @@ public class PathHelper
    public static final String URI_TEMPLATE_REPLACE_PATTERN = "(.*?)";
 
 
-   public static String createRegularExpressionFromPathExpression(String path)
-   {
-      Matcher matcher = URI_TEMPLATE_PATTERN.matcher(path);
-      StringBuffer regex = new StringBuffer();
-      while (matcher.find())
-      {
-         matcher.appendReplacement(regex, Matcher.quoteReplacement("(.*?)"));
-      }
-      matcher.appendTail(regex);
-      return regex.append("$").toString();
-
-   }
-
    public static String getEncodedPathInfo(String path, String contextPath)
    {
       if (contextPath != null && !"".equals(contextPath) && path.startsWith(contextPath))
@@ -59,31 +45,42 @@ public class PathHelper
 
    }
 
-   public static String uriParam(String path, String name, String value)
-   {
-      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(path);
-      StringBuffer newPath = new StringBuffer();
-      while (matcher.find())
-      {
-         String param = matcher.group(1);
-         if (param.equals(name))
-         {
-            matcher.appendReplacement(newPath, value);
-            matcher.appendTail(newPath);
-            path = newPath.toString();
-            return path;
-         }
-         else matcher.appendReplacement(newPath, "$0");
-      }
-      matcher.appendTail(newPath);
-      path = newPath.toString();
-      return path;
+   public static final char openCurlyReplacement = 6;
+   public static final char closeCurlyReplacement = 7;
 
+   public static String replaceEnclosedCurlyBraces(String str)
+   {
+      char[] chars = str.toCharArray();
+      int open = 0;
+      for (int i = 0; i < chars.length; i++)
+      {
+         if (chars[i] == '{')
+         {
+            if (open != 0) chars[i] = openCurlyReplacement;
+            open++;
+         }
+         else if (chars[i] == '}')
+         {
+            open--;
+            if (open != 0)
+            {
+               chars[i] = closeCurlyReplacement;
+            }
+         }
+      }
+      return new String(chars);
+   }
+
+   public static String recoverEnclosedCurlyBraces(String str)
+   {
+      return str.replace(openCurlyReplacement, '{').replace(closeCurlyReplacement, '}');
    }
 
    public static void main(String[] args) throws Exception
    {
+      String str = replaceEnclosedCurlyBraces("{hello{world}}  {foo : {bar}{{blah}}}");
+      System.out.println(str);
+      System.out.println(recoverEnclosedCurlyBraces(str));
    }
-
 
 }

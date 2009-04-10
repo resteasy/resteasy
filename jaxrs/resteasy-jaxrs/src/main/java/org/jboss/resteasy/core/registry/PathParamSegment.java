@@ -86,9 +86,11 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
    public PathParamSegment(String segment)
    {
       this.pathExpression = segment;
-      literalCharacters = PathHelper.URI_PARAM_PATTERN.matcher(segment).replaceAll("").length();
-      String[] split = PathHelper.URI_PARAM_PATTERN.split(segment);
-      Matcher withPathParam = PathHelper.URI_PARAM_PATTERN.matcher(segment);
+      String replacedCurlySegment = PathHelper.replaceEnclosedCurlyBraces(segment);
+      literalCharacters = PathHelper.URI_PARAM_PATTERN.matcher(replacedCurlySegment).replaceAll("").length();
+
+      String[] split = PathHelper.URI_PARAM_PATTERN.split(replacedCurlySegment);
+      Matcher withPathParam = PathHelper.URI_PARAM_PATTERN.matcher(replacedCurlySegment);
       int i = 0;
       StringBuffer buffer = new StringBuffer();
       if (i < split.length) buffer.append(Pattern.quote(split[i++]));
@@ -106,6 +108,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
          else
          {
             String expr = withPathParam.group(3);
+            expr = PathHelper.recoverEnclosedCurlyBraces(expr);
             buffer.append(expr);
             numNonDefaultGroups++;
             groups.add(new Group(groupNumber++, name));
@@ -175,10 +178,9 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
       }
    }
 
-   public ResourceInvoker matchPattern
-           (HttpRequest
-                   request, String
-                   path, int start)
+   public ResourceInvoker matchPattern(HttpRequest
+           request, String
+           path, int start)
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       Matcher matcher = pattern.matcher(path);

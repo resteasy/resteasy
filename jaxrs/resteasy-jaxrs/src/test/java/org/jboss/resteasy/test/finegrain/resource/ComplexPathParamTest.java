@@ -1,26 +1,20 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.util.SegmentInfo;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -36,7 +30,7 @@ public class ComplexPathParamTest
       @GET
       @Path("/{1},{2}/{3}/blah{4}-{5}ttt")
       public String get(@PathParam("1") int one, @PathParam("2") int two, @PathParam("3") int three,
-            @PathParam("4") int four, @PathParam("5") int five)
+                        @PathParam("4") int four, @PathParam("5") int five)
       {
          Assert.assertEquals(one, 1);
          Assert.assertEquals(two, 2);
@@ -135,17 +129,6 @@ public class ComplexPathParamTest
    {
    }
 
-   @Test
-   public void testSegmentInfo()
-   {
-      List<SegmentInfo> segments = new ArrayList<SegmentInfo>();
-      segments.add(new SegmentInfo("{hello}"));
-      segments.add(new SegmentInfo("foo{hello}"));
-      segments.add(new SegmentInfo("{goodbye}foo{hello}"));
-      Collections.sort(segments);
-      for (SegmentInfo segment : segments)
-         System.out.println(segment.getExpression());
-   }
 
    private void _test(HttpClient client, String path, String body)
    {

@@ -95,12 +95,15 @@ public class Encode
    private static boolean savePathParams(String segment, StringBuffer newSegment, List<String> params)
    {
       boolean foundParam = false;
+      // Regular expressions can have '{' and '}' characters.  Replace them to do match
+      segment = PathHelper.replaceEnclosedCurlyBraces(segment);
       Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(segment);
       while (matcher.find())
       {
          foundParam = true;
          String group = matcher.group();
-         params.add(group);
+         // Regular expressions can have '{' and '}' characters.  Recover earlier replacement
+         params.add(PathHelper.recoverEnclosedCurlyBraces(group));
          matcher.appendReplacement(newSegment, "_resteasy_uri_parameter");
       }
       matcher.appendTail(newSegment);
@@ -153,7 +156,7 @@ public class Encode
       {
          String replacement = params.get(i++);
          // double encode slashes, so that slashes stay where they are 
-         replacement = replacement.replace("\\", "\\\\"); 
+         replacement = replacement.replace("\\", "\\\\");
          matcher.appendReplacement(newSegment, replacement);
       }
       matcher.appendTail(newSegment);
