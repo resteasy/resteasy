@@ -1,7 +1,7 @@
 <chapter id="Migration_from_older_versions">
    <title>Migration from older versions</title>
    <sect1 id="Migrating_to_Resteasy_Beta_6">
-      <title>Migrating from 1.0.x</title>
+      <title>Migrating from 1.0.x and 1.1-RC1</title>
 
       <para>
 
@@ -10,6 +10,9 @@
             <listitem>
                 You now turn on Resteasy role-based security i.e. @RolesAllowed, by using the new resteasy.role.based.security context-param.
             </listitem>
+            <listitem>
+               @Wrapped is now on by default for lists and arrays and sets of JAXB objects.  You can also change the namepace and element names using this annotation.
+            </listitem>.
          </itemizedlist>
       </para>
    </sect1>
