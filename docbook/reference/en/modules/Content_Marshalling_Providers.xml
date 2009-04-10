@@ -697,7 +697,7 @@ public void newBook(@Mapped(attributeAsElements={"title"}) Book book) {...}
       <sect2 id="JAXB_Collections">
          <title>Arrays and Collections of JAXB Objects</title>
          <para>
-            In combination with the @org.jboss.resteasy.annotations.providers.jaxb.Wrapped annotation on your methods and parameters, you can 
+            RESTEasy will automatically 
             marshal arrays, java.util.Set's, and java.util.List's of JAXB objects to and from XML, JSON, Fastinfoset (or any other new JAXB mapper Restasy comes up with).
          </para>
 <programlisting><![CDATA[
@@ -729,7 +729,7 @@ public class MyResource
       @PUT
       @Path("array")
       @Consumes("application/xml")
-      public void putCustomers(@Wrapped Customer[] customers)
+      public void putCustomers(Customer[] customers)
       {
          Assert.assertEquals("bill", customers[0].getName());
          Assert.assertEquals("monica", customers[1].getName());
@@ -738,7 +738,6 @@ public class MyResource
       @GET
       @Path("set")
       @Produces("application/xml")
-      @Wrapped
       public Set<Customer> getCustomerSet()
       {
          HashSet<Customer> set = new HashSet<Customer>();
@@ -752,7 +751,7 @@ public class MyResource
       @PUT
       @Path("list")
       @Consumes("application/xml")
-      public void putCustomers(@Wrapped List<Customer> customers)
+      public void putCustomers(List<Customer> customers)
       {
          Assert.assertEquals("bill", customers.get(0).getName());
          Assert.assertEquals("monica", customers.get(1).getName());
@@ -769,6 +768,156 @@ public class MyResource
    <customer><name>bill</name></customer>
    <customer><name>monica</name></customer>
 </resteasy:collection>
+]]>
+</programlisting>
+      <para>You can change the namespace URI, namespace tag, and collection element name by using the @org.jboss.resteasy.annotations.providers.jaxb.Wrapped annotation on a parameter or method</para>
+<programlisting>
+@Target({ElementType.PARAMETER, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Wrapped
+{
+   String element() default "collection";
+
+   String namespace() default "http://jboss.org/resteasy";
+
+   String prefix() default "resteasy";
+}
+</programlisting>
+   <para>So, if we wanted to output this XML</para>
+<programlisting><![CDATA[
+<foo:list xmlns:foo="http://foo.org">
+   <customer><name>bill</name></customer>
+   <customer><name>monica</name></customer>
+</foo:list>
+]]>
+</programlisting>
+   <para>We would use the @Wrapped annotation as follows: </para>
+<programlisting><![CDATA[
+      @GET
+      @Path("list")
+      @Produces("application/xml")
+      @Wrapped(element="list", namespace="http://foo.org", prefix="foo")
+      public List<Customer> getCustomerSet()
+      {
+         List<Customer> list = new ArrayList<Customer>();
+         list.add(new Customer("bill"));
+         list.add(new Customer("monica"));
+
+         return list;
+      }
+]]>
+</programlisting>
+   </sect2>
+      <sect2 id="JAXB_Map">
+         <title>Maps of JAXB Objects</title>
+         <para><![CDATA[
+            RESTEasy will automatically 
+            marshal maps of JAXB objects to and from XML, JSON, Fastinfoset (or any other new JAXB mapper Restasy comes up with).
+            Your parameter or method return type must be a generic with a String as the key and the JAXB object's type.
+        ]]></para>
+<programlisting><![CDATA[
+   @XmlRootElement(namespace = "http://foo.com")
+   public static class Foo
+   {
+      @XmlAttribute
+      private String name;
+
+      public Foo()
+      {
+      }
+
+      public Foo(String name)
+      {
+         this.name = name;
+      }
+
+      public String getName()
+      {
+         return name;
+      }
+   }
+
+   @Path("/map")
+   public static class MyResource
+   {
+      @POST
+      @Produces("application/xml")
+      @Consumes("application/xml")
+      public Map<String, Foo> post(Map<String, Foo> map)
+      {
+         Assert.assertEquals(2, map.size());
+         Assert.assertNotNull(map.get("bill"));
+         Assert.assertNotNull(map.get("monica"));
+         Assert.assertEquals(map.get("bill").getName(), "bill");
+         Assert.assertEquals(map.get("monica").getName(), "monica");
+         return map;
+      }
+}
+]]>
+</programlisting>
+      <para>
+         The above resource can publish and receive JAXB objects within a map.  By default, they are wrapped in a "map" element in the
+         "http://jboss.org/resteasy" namespace with the prefix of "resteasy".  Also, each "map" element has zero or more "entry" elements with a "key" attribute.
+      </para>
+<programlisting><![CDATA[
+<resteasy:map xmlns:resteasy="http://jboss.org/resteasy">
+   <resteasy:entry key="bill" xmlns="http://foo.com">
+       <foo name="bill"/>
+   </resteasy:entry>
+   <resteasy:entry key="monica" xmlns="http://foo.com">
+       <foo name="monica"/>
+   </resteasy:entry>
+</resteasy:map>
+]]>
+</programlisting>
+      <para>You can change the namespace URI, namespace prefix and map, entry, and key element and attribute names by using the @org.jboss.resteasy.annotations.providers.jaxb.WrappedMap annotation on a parameter or method</para>
+<programlisting>
+@Target({ElementType.PARAMETER, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface WrappedMap
+{
+   /**
+    * map element name
+    */
+   String map() default "map";
+
+   /**
+    * entry element name *
+    */
+   String entry() default "entry";
+
+   /**
+    * entry's key attribute name
+    */
+   String key() default "key";
+
+   String namespace() default "http://jboss.org/resteasy";
+
+   String prefix() default "resteasy";
+}
+</programlisting>
+   <para>So, if we wanted to output this XML</para>
+<programlisting><![CDATA[
+<hashmap>
+   <hashentry hashkey="bill" xmlns:foo="http://foo.com">
+       <foo:foo name="bill"/>
+   </hashentry>
+</map>
+]]>
+</programlisting>
+   <para>We would use the @WrappedMap annotation as follows: </para>
+<programlisting><![CDATA[
+   @Path("/map")
+   public static class MyResource
+   {
+      @GET
+      @Produces("application/xml")
+      @WrappedMap(map="hashmap", entry="hashentry", key="hashkey", namespace="", prefiex="")
+      public Map<String, Foo> get()
+      {
+         ...
+         return map;
+      }
 ]]>
 </programlisting>
    </sect2>
