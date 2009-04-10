@@ -76,8 +76,9 @@ public class UriBuilderTest
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").
               replaceMatrix("x=a;y=b").build();
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c;x=a;y=b"), bu);
-      bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").
-              replaceMatrixParam("a", "1", "2").build();
+      UriBuilder builder = UriBuilder.fromUri("http://localhost:8080/a").path("/{b:A{0:10}}/c;a=x;b=y");
+      builder.replaceMatrixParam("a", "1", "2");
+      bu = builder.build("b");
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c;b=y;a=1;a=2"), bu);
    }
 

@@ -332,7 +332,7 @@ public class UriBuilderImpl extends UriBuilder
 
    protected StringBuffer replaceParameter(String name, String value, boolean isEncoded, String string, StringBuffer buffer)
    {
-      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(string);
+      Matcher matcher = createUriParamMatcher(string);
       while (matcher.find())
       {
          String param = matcher.group(1);
@@ -348,9 +348,15 @@ public class UriBuilderImpl extends UriBuilder
       return buffer;
    }
 
+   protected Matcher createUriParamMatcher(String string)
+   {
+      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBraces(string));
+      return matcher;
+   }
+
    protected StringBuffer replaceParameter(Map<String, ? extends Object> paramMap, boolean isEncoded, String string, StringBuffer buffer)
    {
-      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(string);
+      Matcher matcher = createUriParamMatcher(string);
       while (matcher.find())
       {
          String param = matcher.group(1);
@@ -395,7 +401,7 @@ public class UriBuilderImpl extends UriBuilder
 
    private void addToPathParamList(List<String> params, HashSet<String> set, String string)
    {
-      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(string);
+      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBraces(string));
       while (matcher.find())
       {
          String param = matcher.group(1);
@@ -456,13 +462,13 @@ public class UriBuilderImpl extends UriBuilder
       ArrayList<String> pathParams = new ArrayList<String>();
       boolean foundParam = false;
 
-      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(path);
+      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBraces(path));
       StringBuffer newSegment = new StringBuffer();
       while (matcher.find())
       {
          foundParam = true;
          String group = matcher.group();
-         pathParams.add(group);
+         pathParams.add(PathHelper.recoverEnclosedCurlyBraces(group));
          matcher.appendReplacement(newSegment, "_resteasy_uri_parameter");
       }
       matcher.appendTail(newSegment);
