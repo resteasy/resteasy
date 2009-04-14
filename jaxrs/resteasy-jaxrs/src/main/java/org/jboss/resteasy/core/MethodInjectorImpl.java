@@ -1,13 +1,13 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.WebApplicationException;
@@ -105,7 +105,9 @@ public class MethodInjectorImpl implements MethodInjector
       }
       catch (Exception e)
       {
-         throw new LoggableFailure("Failed processing arguments of " + method.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
+         BadRequestException badRequest = new BadRequestException("Failed processing arguments of " + method.toString(), e);
+         badRequest.setLoggable(true);
+         throw badRequest;
       }
    }
 
@@ -118,7 +120,7 @@ public class MethodInjectorImpl implements MethodInjector
       }
       catch (IllegalAccessException e)
       {
-         throw new LoggableFailure("Not allowed to reflect on method: " + method.toString(), e, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+         throw new InternalServerErrorException("Not allowed to reflect on method: " + method.toString(), e);
       }
       catch (InvocationTargetException e)
       {
@@ -155,7 +157,7 @@ public class MethodInjectorImpl implements MethodInjector
             }
          }
          msg += " )";
-         throw new LoggableFailure(msg, e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new InternalServerErrorException(msg, e);
       }
    }
 

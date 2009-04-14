@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.QueryParam;
@@ -31,7 +31,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
       }
       catch (UnsupportedEncodingException e)
       {
-         throw new LoggableFailure(e);
+         throw new BadRequestException("Unable to decode query string", e);
       }
    }
 

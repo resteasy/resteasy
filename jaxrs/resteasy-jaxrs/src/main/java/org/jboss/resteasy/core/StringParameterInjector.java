@@ -1,9 +1,8 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.StringToPrimitive;
 
 import javax.ws.rs.HeaderParam;
@@ -207,15 +206,15 @@ public class StringParameterInjector
          }
          catch (InstantiationException e)
          {
-            throw new RuntimeException("Unable to extract parameter from http request for " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throw new BadRequestException("Unable to extract parameter from http request for " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (IllegalAccessException e)
          {
-            throw new RuntimeException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throw new BadRequestException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (InvocationTargetException e)
          {
-            throw new RuntimeException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throw new BadRequestException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
       }
       else if (valueOf != null)
@@ -226,11 +225,11 @@ public class StringParameterInjector
          }
          catch (IllegalAccessException e)
          {
-            throw new RuntimeException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throw new BadRequestException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (InvocationTargetException e)
          {
-            throw new LoggableFailure("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException(), HttpResponseCodes.SC_NOT_FOUND);
+            throw new BadRequestException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException());
          }
       }
       return null;

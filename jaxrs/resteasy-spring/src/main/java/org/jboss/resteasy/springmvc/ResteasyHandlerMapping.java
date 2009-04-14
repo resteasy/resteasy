@@ -4,7 +4,7 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NoResourceFoundFailure;
+import org.jboss.resteasy.spi.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -78,7 +78,7 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
          }
          return new HandlerExecutionChain(requestWrapper, interceptors);
       }
-      catch (NoResourceFoundFailure e)
+      catch (NotFoundException e)
       {
          if (throwNotFound)
          {

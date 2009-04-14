@@ -7,7 +7,7 @@ import org.jboss.resteasy.core.interception.PreProcessInterceptor;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.UnauthorizedException;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -46,7 +46,7 @@ public class SecurityInterceptor implements PreProcessInterceptor, AcceptedByMet
 
    public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
    {
-      if (denyAll) throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
+      if (denyAll) throw new UnauthorizedException();
       if (rolesAllowed != null)
       {
          SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
@@ -56,7 +56,7 @@ public class SecurityInterceptor implements PreProcessInterceptor, AcceptedByMet
             {
                if (context.isUserInRole(role)) return null;
             }
-            throw new Failure(HttpResponseCodes.SC_UNAUTHORIZED);
+            throw new UnauthorizedException();
          }
       }
       return null;

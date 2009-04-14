@@ -2,7 +2,8 @@ package org.jboss.resteasy.plugins.providers.atom;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
-import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -10,7 +11,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -55,7 +55,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new LoggableFailure("Unable to find JAXBContext for media type: " + mediaType, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
       }
 
       try
@@ -70,7 +70,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       }
       catch (JAXBException e)
       {
-         throw new LoggableFailure("Unable to unmarshal: " + mediaType, e, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         throw new JAXBUnmarshalException("Unable to unmarshal: " + mediaType, e);
       }
    }
 
@@ -89,7 +89,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new LoggableFailure("Unable to find JAXBContext for media type: " + mediaType, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
       }
       HashSet<Class> set = new HashSet<Class>();
       set.add(Feed.class);
@@ -119,7 +119,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       }
       catch (JAXBException e)
       {
-         throw new LoggableFailure("Unable to marshal: " + mediaType, e, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         throw new JAXBMarshalException("Unable to marshal: " + mediaType, e);
       }
    }
 }

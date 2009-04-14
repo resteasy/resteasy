@@ -68,7 +68,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       JAXBContext jaxb = null;
       try
       {
-         jaxb = findJAXBContext(typeArg, annotations, mediaType);
+         jaxb = findJAXBContext(typeArg, annotations, mediaType, true);
       }
       catch (JAXBException e)
       {

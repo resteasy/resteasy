@@ -5,9 +5,8 @@ import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.WebApplicationException;
 import java.lang.annotation.Annotation;
@@ -76,7 +75,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
       catch (Exception e)
       {
-         throw new LoggableFailure("Failed processing arguments of " + constructor.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new InternalServerErrorException("Failed processing arguments of " + constructor.toString(), e);
       }
       try
       {
@@ -84,11 +83,11 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
       catch (InstantiationException e)
       {
-         throw new LoggableFailure("Failed to construct " + constructor.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new InternalServerErrorException("Failed to construct " + constructor.toString(), e);
       }
       catch (IllegalAccessException e)
       {
-         throw new LoggableFailure("Failed to construct " + constructor.toString(), e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new InternalServerErrorException("Failed to construct " + constructor.toString(), e);
       }
       catch (InvocationTargetException e)
       {
@@ -120,7 +119,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
             }
             msg += " " + arg;
          }
-         throw new LoggableFailure(msg, e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new InternalServerErrorException(msg, e);
       }
    }
 
