@@ -2,18 +2,17 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
-import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.MethodInjector;
+import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +70,7 @@ public class ResourceLocator implements ResourceInvoker
       }
       catch (IllegalAccessException e)
       {
-         throw new LoggableFailure(e);
+         throw new InternalServerErrorException(e);
       }
       catch (InvocationTargetException e)
       {
@@ -118,7 +117,9 @@ public class ResourceLocator implements ResourceInvoker
    {
       if (target == null)
       {
-         throw new Failure("Null subresource for path: " + request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
+         NotFoundException notFound = new NotFoundException("Null subresource for path: " + request.getUri().getAbsolutePath());
+         notFound.setLoggable(true);
+         throw notFound;
       }
       Registry registry = cachedSubresources.get(target.getClass());
       if (registry == null)
@@ -128,7 +129,7 @@ public class ResourceLocator implements ResourceInvoker
          if (subResourceClass == null)
          {
             String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
-            throw new LoggableFailure(msg, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(msg);
          }
          registry.addResourceFactory(null, null, subResourceClass);
          cachedSubresources.putIfAbsent(target.getClass(), registry);
@@ -136,7 +137,9 @@ public class ResourceLocator implements ResourceInvoker
       ResourceInvoker invoker = registry.getResourceInvoker(request, response);
       if (invoker == null)
       {
-         throw new Failure("No path match in subresource for: " + request.getUri().getAbsolutePath(), HttpResponseCodes.SC_NOT_FOUND);
+         NotFoundException notFound = new NotFoundException("No path match in subresource for: " + request.getUri().getAbsolutePath());
+         notFound.setLoggable(true);
+         throw notFound;
       }
       else if (invoker instanceof ResourceLocator)
       {

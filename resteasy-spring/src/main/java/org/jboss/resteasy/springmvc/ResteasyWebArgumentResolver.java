@@ -1,12 +1,11 @@
 package org.jboss.resteasy.springmvc;
 
 import org.jboss.resteasy.core.CookieParamInjector;
+import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.springmvc.annotation.RestfulData;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -71,10 +70,9 @@ public class ResteasyWebArgumentResolver implements WebArgumentResolver
             MessageBodyReader reader = factory.getMessageBodyReader(type,
                     genericType, annotations, mediaType);
             if (reader == null)
-               throw new LoggableFailure(
+               throw new BadRequestException(
                        "Could not find message body reader for type: "
-                               + genericType + " of content type: " + mediaType,
-                       HttpResponseCodes.SC_BAD_REQUEST);
+                               + genericType + " of content type: " + mediaType);
             return reader.readFrom(type, genericType, annotations, mediaType,
                     request.getHttpHeaders().getRequestHeaders(), request
                             .getInputStream());

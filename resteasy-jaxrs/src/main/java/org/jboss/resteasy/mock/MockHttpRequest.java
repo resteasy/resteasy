@@ -7,8 +7,8 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.AsynchronousResponse;
+import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.LocaleHelper;
@@ -232,7 +232,7 @@ public class MockHttpRequest implements HttpRequest
          }
          catch (IOException e)
          {
-            throw new LoggableFailure(e);
+            throw new BadRequestException(e);
          }
       }
       else

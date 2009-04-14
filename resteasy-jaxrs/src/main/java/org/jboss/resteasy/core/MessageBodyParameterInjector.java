@@ -2,12 +2,11 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
 import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.core.MediaType;
@@ -60,7 +59,7 @@ public class MessageBodyParameterInjector implements ValueInjector
          MediaType mediaType = request.getHttpHeaders().getMediaType();
          if (mediaType == null)
          {
-            throw new LoggableFailure("content-type was null and expecting to extract a body", HttpResponseCodes.SC_BAD_REQUEST);
+            throw new BadRequestException("content-type was null and expecting to extract a body");
          }
 
          // We have to do this hack because of servlets and servlet filters
@@ -77,7 +76,7 @@ public class MessageBodyParameterInjector implements ValueInjector
          {
             MessageBodyReader reader = factory.getMessageBodyReader(type, genericType, annotations, mediaType);
             if (reader == null)
-               throw new LoggableFailure("Could not find message body reader for type: " + genericType + " of content type: " + mediaType, HttpResponseCodes.SC_BAD_REQUEST);
+               throw new BadRequestException("Could not find message body reader for type: " + genericType + " of content type: " + mediaType);
             if (interceptors == null || interceptors.length == 0)
                return reader.readFrom(type, genericType, annotations, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
             MessageBodyReaderContextImpl ctx = new MessageBodyReaderContextImpl(interceptors, reader, type, genericType,
@@ -87,7 +86,7 @@ public class MessageBodyParameterInjector implements ValueInjector
       }
       catch (IOException e)
       {
-         throw new LoggableFailure("Failure extracting body", e, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+         throw new BadRequestException("Failure extracting body", e);
       }
    }
 

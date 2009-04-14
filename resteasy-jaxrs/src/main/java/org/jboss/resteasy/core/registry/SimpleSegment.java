@@ -4,9 +4,8 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NoResourceFoundFailure;
+import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.util.Encode;
-import org.jboss.resteasy.util.HttpResponseCodes;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -33,7 +32,7 @@ public class SimpleSegment extends RootSegment
       {
          ResourceInvoker invoker = match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
          if (invoker == null)
-            throw new NoResourceFoundFailure("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri(), HttpResponseCodes.SC_NOT_FOUND);
+            throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
 
          uriInfo.pushMatchedURI(path, Encode.decode(path));
          return invoker;

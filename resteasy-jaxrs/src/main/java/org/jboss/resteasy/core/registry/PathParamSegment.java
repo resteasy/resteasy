@@ -2,11 +2,10 @@ package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.LoggableFailure;
-import org.jboss.resteasy.spi.NoResourceFoundFailure;
+import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.util.Encode;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.PathSegment;
@@ -164,7 +163,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
          if (segmentIndex + numSegments > request.getUri().getPathSegments().size())
          {
 
-            throw new LoggableFailure("Number of matched segments greater than actual", HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+            throw new BadRequestException("Number of matched segments greater than actual");
          }
          PathSegment[] encodedSegments = new PathSegment[numSegments];
          PathSegment[] decodedSegments = new PathSegment[numSegments];
@@ -191,14 +190,14 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
          // we consumed entire path string
          ResourceInvoker invoker = match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
          if (invoker == null)
-            throw new NoResourceFoundFailure("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri(), HttpResponseCodes.SC_NOT_FOUND);
+            throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
          uriInfo.pushMatchedURI(path, Encode.decode(path));
          populatePathParams(request, matcher, path);
          return invoker;
       }
       if (locator == null)
       {
-         throw new NoResourceFoundFailure("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri(), HttpResponseCodes.SC_NOT_FOUND);
+         throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
       }
       if (matcher.find(start) && matcher.start() == start)
       {
@@ -215,7 +214,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
             return locator;
          }
       }
-      throw new NoResourceFoundFailure("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri(), HttpResponseCodes.SC_NOT_FOUND);
+      throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
    }
 
    public static int pathSegmentIndex

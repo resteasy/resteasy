@@ -2,9 +2,9 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -254,7 +254,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       }
       catch (IOException e)
       {
-         throw new Failure(e, 500);
+         throw new InternalServerErrorException(e);
       }
       Callable<MockHttpResponse> callable = new Callable<MockHttpResponse>()
       {
@@ -293,7 +293,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       }
       catch (IOException e)
       {
-         throw new Failure(e, 500);
+         throw new InternalServerErrorException(e);
       }
       Runnable runnable = new Runnable()
       {

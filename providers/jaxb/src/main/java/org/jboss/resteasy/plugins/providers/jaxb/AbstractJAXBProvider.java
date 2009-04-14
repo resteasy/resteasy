@@ -7,7 +7,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.util.TypeConverter;
 
 import javax.ws.rs.WebApplicationException;
@@ -40,12 +39,16 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    @Context
    protected Providers providers;
 
-   public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType)
+   public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType, boolean reader)
            throws JAXBException
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, mediaType);
       JAXBContextFinder finder = resolver.getContext(type);
-      if (finder == null) throw new LoggableFailure("Could not find JAXBContextFinder for media type: " + mediaType);
+      if (finder == null)
+      {
+         if (reader) throw new JAXBUnmarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+         else throw new JAXBMarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+      }
       return finder.findCachedContext(type, mediaType, annotations);
    }
 
@@ -61,7 +64,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
-         JAXBContext jaxb = findJAXBContext(type, annotations, mediaType);
+         JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          return (T) unmarshaller.unmarshal(new StreamSource(entityStream));
       }
@@ -109,7 +112,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
-         JAXBContext jaxb = findJAXBContext(type, annotations, mediaType);
+         JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, false);
          Marshaller marshaller = jaxb.createMarshaller();
          String charset = getCharset(mediaType);
          // specify the character encoding if it is set on the media type
@@ -128,8 +131,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       catch (JAXBException e)
       {
-         Response response = Response.serverError().build();
-         throw new WebApplicationException(e, response);
+         throw new JAXBMarshalException(e);
       }
    }
 
