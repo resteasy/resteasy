@@ -13,5 +13,6 @@
 
     <modules>
         <module>encoding-test</module>
+        <module>context-test</module>
     </modules>
 </project>

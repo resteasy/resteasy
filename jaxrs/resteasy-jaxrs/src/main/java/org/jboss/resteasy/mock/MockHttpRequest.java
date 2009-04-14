@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -57,7 +58,7 @@ public class MockHttpRequest implements HttpRequest
       request.httpHeaders.setAcceptableMediaTypes(new ArrayList<MediaType>());
       request.httpHeaders.setCookies(new HashMap<String, Cookie>());
       request.httpHeaders.setRequestHeaders(new Headers<String>());
-      request.uri = new UriInfoImpl(absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery());
+      request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
       request.preprocessedPath = request.uri.getPath(false);
       return request;
 

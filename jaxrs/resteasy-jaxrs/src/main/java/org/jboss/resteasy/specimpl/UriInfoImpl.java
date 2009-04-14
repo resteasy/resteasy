@@ -36,17 +36,7 @@ public class UriInfoImpl implements UriInfo
    private List<Object> ancestors;
 
 
-   /**
-    * @param absolutePath
-    * @param path         decoded equivalent to HttpServletRequest.getPathInfo()
-    * @param queryString  encoded query string of request
-    */
-   public UriInfoImpl(URI absolutePath, String path, String queryString)
-   {
-      this(absolutePath, path, queryString, PathSegmentImpl.parseSegments(path));
-   }
-
-   public UriInfoImpl(URI absolutePath, String encodedPath, String queryString, List<PathSegment> encodedPathSegments)
+   public UriInfoImpl(URI absolutePath, URI baseUri, String encodedPath, String queryString, List<PathSegment> encodedPathSegments)
    {
       this.encodedPath = encodedPath;
       try
@@ -67,6 +57,7 @@ public class UriInfoImpl implements UriInfo
       this.pathParameters = new MultivaluedMapImpl<String, String>();
       this.encodedPathSegments = encodedPathSegments;
       this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
+      this.baseURI = baseUri;
       for (PathSegment segment : encodedPathSegments)
       {
          try
@@ -88,30 +79,6 @@ public class UriInfoImpl implements UriInfo
       {
          this.absolutePathWithQueryString = URI.create(absolutePath.toString() + "?" + queryString);
       }
-      if (encodedPath.trim().equals("")) baseURI = absolutePath;
-      else
-      {
-         String abs = absolutePath.getRawPath();
-         abs = abs.substring(0, abs.indexOf(encodedPath));
-         if (!abs.endsWith("/")) abs += "/";
-//         System.out.println("abs: " + abs);
-//         System.out.println("absolutePath: " + absolutePath);
-//         System.out.println("encodedPath: " + encodedPath);
-         try
-         {
-            baseURI = UriBuilder.fromUri(absolutePath).replacePath(abs).build();
-
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException("URI value was: " + abs + " encodedPath: " + encodedPath, e);
-         }
-      }
-   }
-
-   public UriInfoImpl clone()
-   {
-      return new UriInfoImpl(absolutePath, encodedPath, queryString, encodedPathSegments);
    }
 
    public String getPath()
