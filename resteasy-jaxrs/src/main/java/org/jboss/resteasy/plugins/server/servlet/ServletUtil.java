@@ -15,6 +15,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriBuilder;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -59,7 +60,16 @@ public class ServletUtil
 
       String path = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
       List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path);
-      UriInfoImpl uriInfo = new UriInfoImpl(absolutePath, path, request.getQueryString(), pathSegments);
+
+      URI baseURI = absolutePath;
+      if (!path.trim().equals(""))
+      {
+         String tmpContextPath = contextPath;
+         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
+         baseURI = UriBuilder.fromUri(absolutePath).replacePath(tmpContextPath).build();
+      }
+
+      UriInfoImpl uriInfo = new UriInfoImpl(absolutePath, baseURI, path, request.getQueryString(), pathSegments);
       return uriInfo;
    }
 
