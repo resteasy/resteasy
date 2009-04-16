@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.providers.jaxb.collection;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -86,8 +85,6 @@ public class JsonMapTest extends BaseResourceTest
    @Before
    public void setup()
    {
-      getProviderFactory().addMessageBodyReader(JsonMapProvider.class);
-      getProviderFactory().addMessageBodyWriter(JsonMapProvider.class);
       addPerRequestResource(MyResource.class);
 
    }

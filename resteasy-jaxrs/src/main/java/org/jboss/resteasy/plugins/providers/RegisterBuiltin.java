@@ -100,7 +100,9 @@ public class RegisterBuiltin
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider", "org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider", factory);
+      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.MapProvider", "org.jboss.resteasy.plugins.providers.jaxb.MapProvider", factory);
+      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider", factory);
       optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder", factory);
 
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartReader", factory);
