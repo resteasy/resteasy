@@ -39,7 +39,7 @@ public @interface WrappedMap
     */
    String key() default "key";
 
-   String namespace() default "http://jboss.org/resteasy";
+   String namespace() default "";
 
-   String prefix() default "resteasy";
+   String prefix() default "";
 }

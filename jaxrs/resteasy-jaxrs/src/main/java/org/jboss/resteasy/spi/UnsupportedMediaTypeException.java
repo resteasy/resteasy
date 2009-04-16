@@ -5,7 +5,7 @@ import javax.ws.rs.core.Response;
 /**
  * Thrown by RESTEasy when HTTP Unsupported Media Type (415) is encountered
  */
-public class UnsupportedMediaTypeException extends Failure
+public class UnsupportedMediaTypeException extends LoggableFailure
 {
 
    public UnsupportedMediaTypeException(String s)

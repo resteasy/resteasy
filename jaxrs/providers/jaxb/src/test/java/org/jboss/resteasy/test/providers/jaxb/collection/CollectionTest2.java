@@ -53,6 +53,33 @@ public class CollectionTest2 extends BaseResourceTest
       }
    }
 
+   @XmlRootElement(name = "foo", namespace = "http://foo.com")
+   @XmlAccessorType(XmlAccessType.FIELD)
+   public static class NamespacedFoo
+   {
+      @XmlAttribute
+      private String test;
+
+      public NamespacedFoo()
+      {
+      }
+
+      public NamespacedFoo(String test)
+      {
+         this.test = test;
+      }
+
+      public String getTest()
+      {
+         return test;
+      }
+
+      public void setTest(String test)
+      {
+         this.test = test;
+      }
+   }
+
    @Path("/")
    public static class MyResource
    {
@@ -82,10 +109,40 @@ public class CollectionTest2 extends BaseResourceTest
 
    }
 
+   @Path("/namespaced")
+   public static class MyNamespacedResource
+   {
+      @Path("/array")
+      @Produces("application/xml")
+      @Consumes("application/xml")
+      @POST
+      public NamespacedFoo[] naked(NamespacedFoo[] foo)
+      {
+         Assert.assertEquals(1, foo.length);
+         Assert.assertEquals(foo[0].getTest(), "hello");
+         return foo;
+      }
+
+      @Path("/list")
+      @POST
+      @Produces("application/xml")
+      @Consumes("application/xml")
+      @Wrapped(element = "list", namespace = "", prefix = "")
+      public List<NamespacedFoo> wrapped(@Wrapped(element = "list", namespace = "", prefix = "") List<NamespacedFoo> list)
+      {
+         Assert.assertEquals(1, list.size());
+         Assert.assertEquals(list.get(0).getTest(), "hello");
+         return list;
+      }
+
+
+   }
+
    @Before
    public void setup()
    {
       addPerRequestResource(MyResource.class);
+      addPerRequestResource(MyNamespacedResource.class);
    }
 
    @Test
@@ -117,6 +174,40 @@ public class CollectionTest2 extends BaseResourceTest
       {
       });
       Foo[] list = response.getEntity();
+      Assert.assertEquals(1, list.length);
+      Assert.assertEquals(list[0].getTest(), "hello");
+
+   }
+
+   @Test
+   public void testNamespacedNakedArray() throws Exception
+   {
+      String xml = "<collection xmlns:foo=\"http://foo.com\">"
+              + "<foo:foo test=\"hello\"/></collection>";
+
+      ClientRequest request = new ClientRequest(generateURL("/namespaced/array"));
+      request.body("application/xml", xml);
+      ClientResponse<List<NamespacedFoo>> response = request.post(new GenericType<List<NamespacedFoo>>()
+      {
+      });
+      List<NamespacedFoo> list = response.getEntity();
+      Assert.assertEquals(1, list.size());
+      Assert.assertEquals(list.get(0).getTest(), "hello");
+
+   }
+
+   @Test
+   public void testNamespacedList() throws Exception
+   {
+      String xml = "<list xmlns:foo=\"http://foo.com\">"
+              + "<foo:foo test=\"hello\"/></list>";
+
+      ClientRequest request = new ClientRequest(generateURL("/namespaced/list"));
+      request.body("application/xml", xml);
+      ClientResponse<NamespacedFoo[]> response = request.post(new GenericType<NamespacedFoo[]>()
+      {
+      });
+      NamespacedFoo[] list = response.getEntity();
       Assert.assertEquals(1, list.length);
       Assert.assertEquals(list[0].getTest(), "hello");
 

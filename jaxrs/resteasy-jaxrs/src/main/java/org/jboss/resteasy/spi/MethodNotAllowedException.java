@@ -5,7 +5,7 @@ import javax.ws.rs.core.Response;
 /**
  * Thrown by RESTEasy when HTTP Method Not Allowed (405) is encountered
  */
-public class MethodNotAllowedException extends Failure
+public class MethodNotAllowedException extends LoggableFailure
 {
 
    public MethodNotAllowedException(String s)

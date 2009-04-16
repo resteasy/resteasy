@@ -200,8 +200,8 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          }
 
          String element = "collection";
-         String namespaceURI = "http://jboss.org/resteasy";
-         String prefix = "resteasy";
+         String namespaceURI = "";
+         String prefix = "";
 
          Wrapped wrapped = FindAnnotation.findAnnotation(annotations, Wrapped.class);
          if (wrapped != null)
