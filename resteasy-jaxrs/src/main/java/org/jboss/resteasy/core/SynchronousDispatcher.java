@@ -6,7 +6,9 @@ import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
+import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
@@ -14,7 +16,6 @@ import org.jboss.resteasy.util.LocaleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -153,22 +154,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Failure e)
       {
-         handleFailure(request, response, e);
-         logger.info(e.getMessage());
-         return;
-      }
-      if (invoker == null)
-      {
-         try
-         {
-            if (response.getStatus() != 500)
-               response.sendError(HttpServletResponse.SC_NOT_FOUND);
-         }
-         catch (Exception e)
-         {
-            throw new UnhandledException(e);
-         }
-         logger.info("Could not match path: " + request.getUri().getPath());
+         handleException(request, response, e);
          return;
       }
       invoke(request, response, invoker);
@@ -180,19 +166,13 @@ public class SynchronousDispatcher implements Dispatcher
       logger.debug("PathInfo: " + request.getUri().getPath());
       if (!request.isInitial())
       {
-         try
-         {
-            logger.error(request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
-            response.sendError(500, request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
-         }
-         catch (IOException e)
-         {
-            throw new UnhandledException(e);
-         }
-         return null;
+         throw new InternalServerErrorException(request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
       }
       preprocess(request);
-      return registry.getResourceInvoker(request, response);
+      ResourceInvoker invoker = registry.getResourceInvoker(request, response);
+      if (invoker == null)
+         throw new NotFoundException("Unable to find JAX-RS resource associated with path: " + request.getUri().getPath());
+      return invoker;
    }
 
    /**
@@ -222,13 +202,18 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void handleException(HttpRequest request, HttpResponse response, Exception e)
    {
+      // ApplicationException needs to come first as it does its own executeExceptionMapper() call
+      if (e instanceof ApplicationException)
+      {
+         handleApplicationException(response, (ApplicationException) e);
+         return;
+      }
+
+      if (executeExceptionMapper(response, e)) return;
+
       if (e instanceof WebApplicationException)
       {
          handleWebApplicationException(response, (WebApplicationException) e);
-      }
-      else if (e instanceof ApplicationException)
-      {
-         handleApplicationException(response, (ApplicationException) e);
       }
       else if (e instanceof Failure)
       {
@@ -241,7 +226,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   public void handleFailure(HttpRequest request, HttpResponse response, Exception e)
+   protected void handleFailure(HttpRequest request, HttpResponse response, Exception e)
    {
       if (((Failure) e).isLoggable())
          logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
@@ -250,14 +235,7 @@ public class SynchronousDispatcher implements Dispatcher
       Failure failure = (Failure) e;
       if (failure.getResponse() != null)
       {
-         try
-         {
-            writeJaxrsResponse(response, failure.getResponse());
-         }
-         catch (Exception e1)
-         {
-            throw new UnhandledException(e1);
-         }
+         writeFailure(response, failure.getResponse());
       }
       else
       {
@@ -279,16 +257,18 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   public void handleApplicationException(HttpResponse response, ApplicationException e)
+   /**
+    * Execute an ExceptionMapper if one exists for the given exception
+    *
+    * @param response
+    * @param exception
+    * @return true if an ExceptionMapper was found and executed
+    */
+   public boolean executeExceptionMapper(HttpResponse response, Throwable exception)
    {
-      if (e.getCause() instanceof WebApplicationException)
-      {
-         handleWebApplicationException(response, (WebApplicationException) e.getCause());
-         return;
-      }
       ExceptionMapper mapper = null;
 
-      Class causeClass = e.getCause().getClass();
+      Class causeClass = exception.getClass();
       while (mapper == null)
       {
          if (causeClass == null) break;
@@ -297,39 +277,32 @@ public class SynchronousDispatcher implements Dispatcher
       }
       if (mapper != null)
       {
-         try
-         {
-            writeJaxrsResponse(response, mapper.toResponse(e.getCause()));
-         }
-         catch (WebApplicationException ex)
-         {
-            if (response.isCommitted())
-               throw new UnhandledException("Request was committed couldn't handle exception", ex);
-            // don't think I want to call writeJaxrsResponse infinately! so we'll just write the status
-            response.reset();
-            response.setStatus(ex.getResponse().getStatus());
-            logger.error("Failed to write exception response", ex);
-
-         }
-         catch (Exception e1)
-         {
-            throw new UnhandledException(e1); // we're screwed, can't handle the exception
-         }
+         writeFailure(response, mapper.toResponse(exception));
+         return true;
       }
-      else
+      return false;
+   }
+
+   protected void handleApplicationException(HttpResponse response, ApplicationException e)
+   {
+      if (e.getCause() instanceof WebApplicationException)
+      {
+         handleWebApplicationException(response, (WebApplicationException) e.getCause());
+         return;
+      }
+
+      if (!executeExceptionMapper(response, e.getCause()))
       {
          throw new UnhandledException(e.getCause());
       }
    }
 
-   public void handleWebApplicationException(HttpResponse response, WebApplicationException wae)
+   protected void writeFailure(HttpResponse response, Response jaxrsResponse)
    {
-      if (!(wae instanceof NoLogWebApplicationException)) logger.error("failed to execute", wae);
-      if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
       response.reset();
       try
       {
-         writeJaxrsResponse(response, wae.getResponse());
+         writeJaxrsResponse(response, jaxrsResponse);
       }
       catch (WebApplicationException ex)
       {
@@ -344,6 +317,14 @@ public class SynchronousDispatcher implements Dispatcher
       {
          throw new UnhandledException(e1);  // we're screwed, can't handle the exception
       }
+   }
+
+   protected void handleWebApplicationException(HttpResponse response, WebApplicationException wae)
+   {
+      if (!(wae instanceof NoLogWebApplicationException)) logger.error("failed to execute", wae);
+      if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
+
+      writeFailure(response, wae.getResponse());
    }
 
    public void pushContextObjects(HttpRequest request, HttpResponse response)

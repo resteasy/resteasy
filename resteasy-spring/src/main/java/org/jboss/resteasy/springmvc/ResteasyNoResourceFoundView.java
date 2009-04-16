@@ -38,7 +38,7 @@ public class ResteasyNoResourceFoundView implements View
          protected Void handle(ResteasyRequestWrapper requestWrapper,
                                HttpResponse response) throws Exception
          {
-            dispatcher.handleFailure(requestWrapper.getHttpRequest(), response, failure);
+            dispatcher.handleException(requestWrapper.getHttpRequest(), response, failure);
             return null;
          }
 
