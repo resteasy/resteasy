@@ -36,7 +36,7 @@ public @interface Wrapped
 {
    String element() default "collection";
 
-   String namespace() default "http://jboss.org/resteasy";
+   String namespace() default "";
 
-   String prefix() default "resteasy";
+   String prefix() default "";
 }

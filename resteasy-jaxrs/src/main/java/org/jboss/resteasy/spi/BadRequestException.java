@@ -5,7 +5,7 @@ import javax.ws.rs.core.Response;
 /**
  * Thrown by RESTEasy when HTTP Bad Request (400) is encountered
  */
-public class BadRequestException extends Failure
+public class BadRequestException extends LoggableFailure
 {
 
    public BadRequestException(String s)

@@ -103,6 +103,79 @@ public class TestCollection extends BaseResourceTest
       }
    }
 
+   @Path("/namespaced")
+   public static class MyNamespacedResource
+   {
+      @GET
+      @Path("array")
+      @Produces("application/xml")
+      @Wrapped
+      public NamespacedCustomer[] getCustomers()
+      {
+         NamespacedCustomer[] custs = {new NamespacedCustomer("bill"), new NamespacedCustomer("monica")};
+         return custs;
+      }
+
+      @PUT
+      @Path("array")
+      @Consumes("application/xml")
+      public void putCustomers(@Wrapped NamespacedCustomer[] customers)
+      {
+         Assert.assertEquals("bill", customers[0].getName());
+         Assert.assertEquals("monica", customers[1].getName());
+      }
+
+      @GET
+      @Path("set")
+      @Produces("application/xml")
+      @Wrapped
+      public Set<NamespacedCustomer> getCustomerSet()
+      {
+         HashSet<NamespacedCustomer> set = new HashSet<NamespacedCustomer>();
+         set.add(new NamespacedCustomer("bill"));
+         set.add(new NamespacedCustomer("monica"));
+
+         return set;
+      }
+
+      @PUT
+      @Path("list")
+      @Consumes("application/xml")
+      public void putCustomers(@Wrapped List<NamespacedCustomer> customers)
+      {
+         Assert.assertEquals("bill", customers.get(0).getName());
+         Assert.assertEquals("monica", customers.get(1).getName());
+      }
+
+      @GET
+      @Path("list")
+      @Produces("application/xml")
+      @Wrapped
+      public List<NamespacedCustomer> getCustomerList()
+      {
+         ArrayList<NamespacedCustomer> set = new ArrayList<NamespacedCustomer>();
+         set.add(new NamespacedCustomer("bill"));
+         set.add(new NamespacedCustomer("monica"));
+
+         return set;
+      }
+
+      @GET
+      @Path("list/response")
+      @Produces("application/xml")
+      @Wrapped
+      public Response getCustomerListResponse()
+      {
+         ArrayList<NamespacedCustomer> set = new ArrayList<NamespacedCustomer>();
+         set.add(new NamespacedCustomer("bill"));
+         set.add(new NamespacedCustomer("monica"));
+         GenericEntity<List<NamespacedCustomer>> genericEntity = new GenericEntity<List<NamespacedCustomer>>(set)
+         {
+         };
+         return Response.ok(genericEntity).build();
+      }
+   }
+
    public static interface Store<T>
    {
       @GET
@@ -157,6 +230,7 @@ public class TestCollection extends BaseResourceTest
    public void setUp() throws Exception
    {
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
+      dispatcher.getRegistry().addPerRequestResource(MyNamespacedResource.class);
       dispatcher.getRegistry().addPerRequestResource(MyResource2.class);
    }
 
@@ -197,6 +271,49 @@ public class TestCollection extends BaseResourceTest
    {
       HttpClient client = new HttpClient();
       GetMethod get = createGetMethod("/list/response");
+      int status = client.executeMethod(get);
+      Assert.assertEquals(200, status);
+      String str = get.getResponseBodyAsString();
+      System.out.println(str);
+   }
+
+   @Test
+   public void testNamespacedArray() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      GetMethod get = createGetMethod("/namespaced/array");
+      int status = client.executeMethod(get);
+      Assert.assertEquals(200, status);
+      String str = get.getResponseBodyAsString();
+      System.out.println(str);
+      PutMethod put = createPutMethod("/namespaced/array");
+      put.setRequestEntity(new StringRequestEntity(str, "application/xml", null));
+      status = client.executeMethod(put);
+      Assert.assertEquals(204, status);
+
+   }
+
+   @Test
+   public void testNamespacedList() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      GetMethod get = createGetMethod("/namespaced/list");
+      int status = client.executeMethod(get);
+      Assert.assertEquals(200, status);
+      String str = get.getResponseBodyAsString();
+      System.out.println(str);
+      PutMethod put = createPutMethod("/namespaced/list");
+      put.setRequestEntity(new StringRequestEntity(str, "application/xml", null));
+      status = client.executeMethod(put);
+      Assert.assertEquals(204, status);
+
+   }
+
+   @Test
+   public void testNamespacedResponse() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      GetMethod get = createGetMethod("/namespaced/list/response");
       int status = client.executeMethod(get);
       Assert.assertEquals(200, status);
       String str = get.getResponseBodyAsString();

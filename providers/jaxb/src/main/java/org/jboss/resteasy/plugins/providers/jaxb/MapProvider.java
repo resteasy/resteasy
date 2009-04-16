@@ -180,8 +180,8 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          String mapName = "map";
          String entryName = "entry";
          String keyName = "key";
-         String namespaceURI = "http://jboss.org/resteasy";
-         String prefix = "resteasy";
+         String namespaceURI = "";
+         String prefix = "";
 
          WrappedMap wrapped = FindAnnotation.findAnnotation(annotations, WrappedMap.class);
          if (wrapped != null)
