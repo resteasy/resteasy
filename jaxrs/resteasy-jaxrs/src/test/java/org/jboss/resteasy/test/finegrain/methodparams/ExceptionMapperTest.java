@@ -1,8 +1,17 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.NotFoundException;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,17 +20,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -93,6 +92,7 @@ public class ExceptionMapperTest
       dispatcher = EmbeddedContainer.start();
       dispatcher.getRegistry().addPerRequestResource(Throwme.class);
       ResteasyProviderFactory.getInstance().addExceptionMapper(MyExceptionMapper.class);
+      ResteasyProviderFactory.getInstance().addExceptionMapper(NotFoundMapper.class);
    }
 
    @AfterClass
@@ -114,6 +114,19 @@ public class ExceptionMapperTest
    public void testRegisteredCorrectly()
    {
       Assert.assertNotNull(ResteasyProviderFactory.getInstance().getExceptionMapper(MyException.class));
+      Assert.assertNotNull(ResteasyProviderFactory.getInstance().getExceptionMapper(NotFoundException.class));
+   }
+
+   private static boolean notFoundMapper = false;
+
+   @Provider
+   public static class NotFoundMapper implements ExceptionMapper<NotFoundException>
+   {
+      public Response toResponse(NotFoundException exception)
+      {
+         notFoundMapper = true;
+         return Response.status(410).build();
+      }
    }
 
    @Test
@@ -168,5 +181,25 @@ public class ExceptionMapperTest
          throw new RuntimeException(e);
       }
       method.releaseConnection();
+   }
+
+   @Test
+   public void testResteasyExceptionMapping()
+   {
+      HttpClient client = new HttpClient();
+      GetMethod method = createGetMethod("/notexist");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, 410);
+         Assert.assertTrue(notFoundMapper);
+      }
+      catch (IOException e)
+      {
+         method.releaseConnection();
+         throw new RuntimeException(e);
+      }
+      method.releaseConnection();
+
    }
 }
