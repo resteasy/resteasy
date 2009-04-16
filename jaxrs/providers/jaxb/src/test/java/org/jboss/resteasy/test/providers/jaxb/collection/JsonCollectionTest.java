@@ -10,7 +10,6 @@ import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -211,8 +210,6 @@ public class JsonCollectionTest extends BaseResourceTest
    @Before
    public void setup()
    {
-      getProviderFactory().addMessageBodyReader(JsonCollectionProvider.class);
-      getProviderFactory().addMessageBodyWriter(JsonCollectionProvider.class);
       addPerRequestResource(MyResource.class);
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
       dispatcher.getRegistry().addPerRequestResource(MyNamespacedResource.class);
