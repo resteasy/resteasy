@@ -19,6 +19,7 @@ import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
@@ -114,12 +115,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       {
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, false);
          Marshaller marshaller = jaxb.createMarshaller();
-         String charset = getCharset(mediaType);
-         // specify the character encoding if it is set on the media type
-         if (charset != null)
-         {
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, charset);
-         }
+         setCharset(mediaType, marshaller);
          // Pretty Print the XML response.
          Object formatted = mediaType.getParameters().get("formatted");
          if (formatted != null)
@@ -132,6 +128,17 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       catch (JAXBException e)
       {
          throw new JAXBMarshalException(e);
+      }
+   }
+
+   public static void setCharset(MediaType mediaType, Marshaller marshaller)
+           throws PropertyException
+   {
+      String charset = getCharset(mediaType);
+      // specify the character encoding if it is set on the media type
+      if (charset != null)
+      {
+         marshaller.setProperty(Marshaller.JAXB_ENCODING, charset);
       }
    }
 
@@ -169,7 +176,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
     * @param mediaType
     * @return
     */
-   public final String getCharset(final MediaType mediaType)
+   public static String getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
       {
