@@ -312,4 +312,25 @@ List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>()
 
         </para>
     </sect1>
+   <sect1 id="ClientRequest">
+   <title>Manual ClientRequest API</title>
+   <para>Resteasy has a manual API for invoking requests:  org.jboss.resteasy.client.ClientRequest  See the Javadoc for the full capabilities
+    of this class.  Here is a simple example:</para>
+<programlisting>
+
+<![CDATA[   ClientRequest request = new ClientRequest("http://localhost:8080/some/path");
+   request.header("custom-header", "value");
+
+   // We're posting XML and a JAXB object
+   request.body("application/xml", someJaxb);
+
+   // we're expecting a String back
+   ClientResponse<String> response = request.post(String.class);
+   
+   if (response.getStatus() == 200) // OK!
+   {
+      String str = response.getEntity();
+   }]]>
+</programlisting>
+   </sect1>
 </chapter>

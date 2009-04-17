@@ -1,6 +1,8 @@
-<chapter id="ExceptionMappers">
-   <title>ExceptionMappers</title>
+<chapter id="ExceptionHandling">
+   <title>Exception Handling</title>
 
+   <sect1 id="ExceptionMappers">
+   <title>Exception Mappers</title>
    <para>
 
       ExceptionMappers are custom, application provided, components that can catch thrown application exceptions and
@@ -65,4 +67,74 @@
 
 
    </para>
+   </sect1>
+   <sect1 id="builtinException">
+     <title>Resteasy Built-in Internally-Thrown Exceptions</title>
+     <para>Resteasy has a set of built-in exceptions that are thrown by it when it encounters errors during dispatching or marshalling.  They all
+           revolve around specific HTTP error codes.  You can find them in RESTEasy's javadoc under the package org.jboss.resteasy.spi.  Here's 
+           a list of them:</para>
+<table frame="topbot">
+<tgroup cols="3" rowsep="1" colsep="1">
+<thead>
+<row>
+<entry>Exception</entry>
+<entry>HTTP Code</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>BadRequestException</entry>
+<entry>400</entry>
+<entry>Bad Request.  Request wasn't formatted correctly or problem processing request input.</entry>
+</row>
+<row>
+<entry>UnauthorizedException</entry>
+<entry>401</entry>
+<entry>Unauthorized.  Security exception thrown if you're using Resteasy's simple annotation-based role-based security</entry>
+</row>
+<row>
+<entry>InternalServerErrorException</entry>
+<entry>500</entry>
+<entry>Internal Server Error.</entry>
+</row>
+<row>
+<entry>MethodNotAllowedException</entry>
+<entry>405</entry>
+<entry>Method Not Allowed.  There is no JAX-RS method for the resource that can handle the invoked HTTP operation.</entry>
+</row>
+<row>
+<entry>NotAcceptableException</entry>
+<entry>406</entry>
+<entry>Not Acceptable.  There is no JAX-RS method that can produce the media types listed in the Accept header.</entry>
+</row>
+<row>
+<entry>NotFoundException</entry>
+<entry>404</entry>
+<entry>Not Found.  There is no JAX-RS method that serves the request path/resource.</entry>
+</row>
+<row>
+<entry>Failure</entry>
+<entry>N/A</entry>
+<entry>Internal Resteasy.  Not logged</entry>
+</row>
+<row>
+<entry>LoggableFailure</entry>
+<entry>N/A</entry>
+<entry>Internal Resteasy error.  Logged</entry>
+</row>
+<row>
+<entry>DefaultOptionsMethodException</entry>
+<entry>N/A</entry>
+<entry>If the user invokes HTTP OPTIONS and no JAX-RS method for it, Resteasy provides a default behavior by throwing this exception</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+</sect1>
+<sect1 id="overring_resteasy_exceptions">
+   <title>Overriding Resteasy Builtin Exceptions</title>
+   <para>You may override Resteasy built-in exceptions by writing an ExceptionMapper for the exception.  For that matter, you can write an ExceptionMapper
+   for any thrown exception including WebApplicationException</para>
+</sect1>
 </chapter>

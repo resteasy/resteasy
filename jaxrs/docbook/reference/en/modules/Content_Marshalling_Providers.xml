@@ -807,6 +807,46 @@ public @interface Wrapped
       }
 ]]>
 </programlisting>
+     <sect3 id="json_list">
+       <title>JSON and JAXB Collections/arrays</title>
+       <para>Resteasy supports using collections with JSON.  It encloses lists, sets, or arrays of returned JAXB objects within a simple
+       JSON array.  For example:</para>
+<programlisting>
+  @XmlRootElement
+   @XmlAccessorType(XmlAccessType.FIELD)
+   public static class Foo
+   {
+      @XmlAttribute
+      private String test;
+
+      public Foo()
+      {
+      }
+
+      public Foo(String test)
+      {
+         this.test = test;
+      }
+
+      public String getTest()
+      {
+         return test;
+      }
+
+      public void setTest(String test)
+      {
+         this.test = test;
+      }
+   }
+</programlisting>
+    <para>This a List or array of this Foo class would be represented in JSON like this:</para>
+<programlisting>
+<![CDATA[
+[{"foo":{"@test":"bill"}},{"foo":{"@test":"monica}"}}]
+]]>
+</programlisting>
+    <para>It also expects this format for input</para>
+     </sect3>
    </sect2>
       <sect2 id="JAXB_Map">
          <title>Maps of JAXB Objects</title>
@@ -920,6 +960,46 @@ public @interface WrappedMap
       }
 ]]>
 </programlisting>
+     <sect3 id="json_map">
+       <title>JSON and JAXB maps</title>
+       <para>Resteasy supports using maps with JSON.  It encloses maps returned JAXB objects within a simple
+       JSON map.  For example:</para>
+<programlisting>
+  @XmlRootElement
+   @XmlAccessorType(XmlAccessType.FIELD)
+   public static class Foo
+   {
+      @XmlAttribute
+      private String test;
+
+      public Foo()
+      {
+      }
+
+      public Foo(String test)
+      {
+         this.test = test;
+      }
+
+      public String getTest()
+      {
+         return test;
+      }
+
+      public void setTest(String test)
+      {
+         this.test = test;
+      }
+   }
+</programlisting>
+    <para>This a List or array of this Foo class would be represented in JSON like this:</para>
+<programlisting>
+<![CDATA[
+{ "entry1" : {"foo":{"@test":"bill"}}, "entry2" : {"foo":{"@test":"monica}"}}}
+]]>
+</programlisting>
+    <para>It also expects this format for input</para>
+     </sect3>
    </sect2>
    <sect2 id="JAXB_INTERFACES">
       <title>Interfaces, Abstract Classes, and JAXB</title>
