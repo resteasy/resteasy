@@ -760,14 +760,13 @@ public class MyResource
 ]]>
 </programlisting>
       <para>
-         The above resource can publish and receive JAXB objects.  It is assumed that are wrapped in a collection element in the
-         http://jboss.org/resteasy namespace.
+         The above resource can publish and receive JAXB objects.  It is assumed that are wrapped in a collection element
       </para>
 <programlisting><![CDATA[
-<resteasy:collection xmlns:resteasy="http://jboss.org/resteasy">
+<collection>
    <customer><name>bill</name></customer>
    <customer><name>monica</name></customer>
-</resteasy:collection>
+<collection>
 ]]>
 </programlisting>
       <para>You can change the namespace URI, namespace tag, and collection element name by using the @org.jboss.resteasy.annotations.providers.jaxb.Wrapped annotation on a parameter or method</para>
@@ -897,17 +896,17 @@ public @interface Wrapped
 </programlisting>
       <para>
          The above resource can publish and receive JAXB objects within a map.  By default, they are wrapped in a "map" element in the
-         "http://jboss.org/resteasy" namespace with the prefix of "resteasy".  Also, each "map" element has zero or more "entry" elements with a "key" attribute.
+         default namespace.  Also, each "map" element has zero or more "entry" elements with a "key" attribute.
       </para>
 <programlisting><![CDATA[
-<resteasy:map xmlns:resteasy="http://jboss.org/resteasy">
-   <resteasy:entry key="bill" xmlns="http://foo.com">
+<map>
+   <entry key="bill" xmlns="http://foo.com">
        <foo name="bill"/>
-   </resteasy:entry>
-   <resteasy:entry key="monica" xmlns="http://foo.com">
+   </entry>
+   <entry key="monica" xmlns="http://foo.com">
        <foo name="monica"/>
-   </resteasy:entry>
-</resteasy:map>
+   </entry>
+</map>
 ]]>
 </programlisting>
       <para>You can change the namespace URI, namespace prefix and map, entry, and key element and attribute names by using the @org.jboss.resteasy.annotations.providers.jaxb.WrappedMap annotation on a parameter or method</para>
@@ -931,9 +930,9 @@ public @interface WrappedMap
     */
    String key() default "key";
 
-   String namespace() default "http://jboss.org/resteasy";
+   String namespace() default "";
 
-   String prefix() default "resteasy";
+   String prefix() default "";
 }
 </programlisting>
    <para>So, if we wanted to output this XML</para>
@@ -952,7 +951,7 @@ public @interface WrappedMap
    {
       @GET
       @Produces("application/xml")
-      @WrappedMap(map="hashmap", entry="hashentry", key="hashkey", namespace="", prefiex="")
+      @WrappedMap(map="hashmap", entry="hashentry", key="hashkey")
       public Map<String, Foo> get()
       {
          ...

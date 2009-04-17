@@ -13,6 +13,12 @@
             <listitem>
                @Wrapped is now on by default for lists and arrays and sets of JAXB objects.  You can also change the namepace and element names using this annotation.
             </listitem>.
+            <listitem>
+            @Wrapped no longer is enclosed in a resteasy namespace prefix nor uses the http://jboss.org/resteasy namespace.  Its just the default namespace.
+            </listitem>
+            <listitem>
+            @Wrapped JSON is not enclosed in a simple JSON array
+            </listitem>
          </itemizedlist>
       </para>
    </sect1>
