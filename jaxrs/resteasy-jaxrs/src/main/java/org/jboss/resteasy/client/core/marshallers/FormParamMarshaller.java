@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.core;
+package org.jboss.resteasy.client.core.marshallers;
 
 import org.jboss.resteasy.client.ClientRequest;
 
@@ -8,11 +8,11 @@ import java.util.Collection;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HeaderParamMarshaller implements Marshaller
+public class FormParamMarshaller implements Marshaller
 {
    private String paramName;
 
-   public HeaderParamMarshaller(String paramName)
+   public FormParamMarshaller(String paramName)
    {
       this.paramName = paramName;
    }
@@ -20,11 +20,12 @@ public class HeaderParamMarshaller implements Marshaller
    public void build(ClientRequest request, Object object)
    {
       if (object == null) return;
+
       if (object instanceof Collection)
       {
          for (Object obj : (Collection) object)
          {
-            request.header(paramName, obj);
+            request.formParameter(paramName, obj);
          }
       }
       else if (object.getClass().isArray())
@@ -34,31 +35,31 @@ public class HeaderParamMarshaller implements Marshaller
             Class componentType = object.getClass().getComponentType();
             if (componentType.equals(boolean.class))
             {
-               for (Boolean bool : (boolean[]) object) request.header(paramName, bool.toString());
+               for (Boolean bool : (boolean[]) object) request.formParameter(paramName, bool.toString());
             }
             else if (componentType.equals(byte.class))
             {
-               for (Byte val : (byte[]) object) request.header(paramName, val.toString());
+               for (Byte val : (byte[]) object) request.formParameter(paramName, val.toString());
             }
             else if (componentType.equals(short.class))
             {
-               for (Short val : (short[]) object) request.header(paramName, val.toString());
+               for (Short val : (short[]) object) request.formParameter(paramName, val.toString());
             }
             else if (componentType.equals(int.class))
             {
-               for (Integer val : (int[]) object) request.header(paramName, val.toString());
+               for (Integer val : (int[]) object) request.formParameter(paramName, val.toString());
             }
             else if (componentType.equals(long.class))
             {
-               for (Long val : (long[]) object) request.header(paramName, val.toString());
+               for (Long val : (long[]) object) request.formParameter(paramName, val.toString());
             }
             else if (componentType.equals(float.class))
             {
-               for (Float val : (float[]) object) request.header(paramName, val.toString());
+               for (Float val : (float[]) object) request.formParameter(paramName, val.toString());
             }
             else if (componentType.equals(double.class))
             {
-               for (Double val : (double[]) object) request.header(paramName, val.toString());
+               for (Double val : (double[]) object) request.formParameter(paramName, val.toString());
             }
          }
          else
@@ -66,14 +67,14 @@ public class HeaderParamMarshaller implements Marshaller
             Object[] objs = (Object[]) object;
             for (Object obj : objs)
             {
-               request.header(paramName, obj);
+               request.formParameter(paramName, obj);
 
             }
          }
       }
       else
       {
-         request.header(paramName, object);
+         request.formParameter(paramName, object);
       }
    }
 }

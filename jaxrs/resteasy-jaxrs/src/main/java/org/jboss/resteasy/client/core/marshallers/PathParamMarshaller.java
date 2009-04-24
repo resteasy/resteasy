@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.core;
+package org.jboss.resteasy.client.core.marshallers;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

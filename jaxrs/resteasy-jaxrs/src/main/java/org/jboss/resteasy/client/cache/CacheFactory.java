@@ -3,7 +3,7 @@ package org.jboss.resteasy.client.cache;
 import org.jboss.resteasy.client.core.ClientInterceptorRepository;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerModifier;
-import org.jboss.resteasy.client.core.ResteasyClientProxy;
+import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

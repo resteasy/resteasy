@@ -1,4 +1,11 @@
-package org.jboss.resteasy.client.core;
+package org.jboss.resteasy.client.core.executors;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -11,13 +18,9 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -49,15 +52,25 @@ public class ApacheHttpClientExecutor implements ClientExecutor
    public ClientResponse execute(ClientRequest request) throws Exception
    {
       String uri = request.getUri();
-      HttpMethodBase httpMethod = createHttpMethod(uri, request.getHttpMethod());
+      final HttpMethodBase httpMethod = createHttpMethod(uri, request.getHttpMethod());
       loadHttpMethod(request, httpMethod);
 
       int status = httpClient.executeMethod(httpMethod);
 
+      BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory(){
+         @Override
+         public InputStream getInputStream() throws IOException
+         {
+            return httpMethod.getResponseBodyAsStream();
+         }
 
-      ApacheHttpClientResponse response = new ApacheHttpClientResponse();
+         @Override
+         public void performReleaseConnection()
+         {
+             httpMethod.releaseConnection();
+         }
+      });
       response.setStatus(status);
-      response.setHttpMethod(httpMethod);
       response.setHeaders(extractHeaders(httpMethod));
       response.setProviderFactory(request.getProviderFactory());
       return response;
@@ -132,6 +145,7 @@ public class ApacheHttpClientExecutor implements ClientExecutor
 
       public String getContentType()
       {
+//         System.out.println(String.format("setting ContentType = %s", request.getBodyContentType().toString()));
          return request.getBodyContentType().toString();
       }
    }
@@ -148,6 +162,7 @@ public class ApacheHttpClientExecutor implements ClientExecutor
             List<String> values = header.getValue();
             for (String value : values)
             {
+//               System.out.println(String.format("setting %s = %s", header.getKey(), value));
                httpMethod.addRequestHeader(header.getKey(), value);
             }
          }

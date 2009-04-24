@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.core;
+package org.jboss.resteasy.client.core.marshallers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;

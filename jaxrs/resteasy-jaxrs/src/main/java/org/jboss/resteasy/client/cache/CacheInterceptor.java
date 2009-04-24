@@ -1,26 +1,30 @@
 package org.jboss.resteasy.client.cache;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.core.interception.AcceptedByMethod;
 import org.jboss.resteasy.core.interception.ClientExecutionContext;
 import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.WeightedMediaType;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -31,6 +35,25 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
 {
    protected BrowserCache cache;
 
+   static class CachedStreamFactory implements BaseClientResponseStreamFactory
+   {
+      BrowserCache.Entry entry;
+      public CachedStreamFactory(BrowserCache.Entry entry)
+      {
+         this.entry = entry;
+      }
+
+      public InputStream getInputStream() throws IOException
+      {
+         return new ByteArrayInputStream(entry.getCached());
+      }
+
+      @Override
+      public void performReleaseConnection()
+      {
+      }
+   }
+   
    public CacheInterceptor(BrowserCache cache)
    {
       this.cache = cache;
@@ -67,7 +90,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
          return handleExpired(ctx, request, entry);
       }
       
-      return new CachedClientResponse(entry, request.getProviderFactory());
+      return createClientResponse(request, entry);
    }
 
    protected ClientResponse handleExpired(ClientExecutionContext ctx,
@@ -102,7 +125,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
          CacheControl cacheControl = CacheControl.valueOf(cc);
          if (cacheControl.isNoCache())
          {
-            return new CachedClientResponse(old, request.getProviderFactory());
+            return createClientResponse(request, old);
          }
          expires = cacheControl.getMaxAge();
       }
@@ -134,13 +157,22 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
 
       if (etag == null && lastModified == null && cc == null && exp == null) // don't cache
       {
-         return new CachedClientResponse(old, request.getProviderFactory());
+         return createClientResponse(request, old);
       }
 
 
       BrowserCache.Entry entry = cache.put(request.getUri(), old.getMediaType(), old.getHeaders(), old.getCached(), expires, etag, lastModified);
-      return new CachedClientResponse(entry, request.getProviderFactory());
+      return createClientResponse(request, entry);
 
+   }
+
+   private BaseClientResponse createClientResponse(ClientRequest request, BrowserCache.Entry entry)
+   {
+      BaseClientResponse response = new BaseClientResponse(new CachedStreamFactory(entry));
+      response.setStatus(200);
+      response.setHeaders(entry.getHeaders());
+      response.setProviderFactory(request.getProviderFactory());
+      return response;
    }
 
 
@@ -167,14 +199,17 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
 
       String contentType = (String) response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
 
-      byte[] cached = ReadFromStream.readFromStream(1024, response.getInputStream());
-      response.releaseConnection();
+      byte[] cached = ReadFromStream.readFromStream(1024, response.getStreamFactory().getInputStream());
+      response.getStreamFactory().performReleaseConnection();
 
-      BrowserCache.Entry entry = cache.put(request.getUri(), MediaType.valueOf(contentType), (MultivaluedMap<String, String>) response.getHeaders(), cached, expires, etag, lastModified);
+      MediaType mediaType = MediaType.valueOf(contentType);
+      final BrowserCache.Entry entry = cache.put(request.getUri(), mediaType,
+            response.getHeaders(), cached, expires, etag, lastModified);
 
-      return new CachedClientResponse(entry, request.getProviderFactory());
+      response.setStreamFactory(new CachedStreamFactory(entry));
+      
+      return response;
    }
-
 
    protected BrowserCache.Entry getEntry(ClientRequest request) throws Exception
    {
