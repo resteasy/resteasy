@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 @Provider
 @Produces("text/plain")
 @Consumes("text/plain")
