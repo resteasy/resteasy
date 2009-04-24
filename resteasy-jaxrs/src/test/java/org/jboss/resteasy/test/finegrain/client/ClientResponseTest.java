@@ -9,9 +9,9 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -24,11 +24,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.annotations.ClientResponseType;
+import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.client.core.executors.URLConnectionClientExecutor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.smoke.SimpleResource;
@@ -148,25 +150,35 @@ public class ClientResponseTest
    @Test
    public void testClientResponse() throws Exception
    {
-      Client client = ProxyFactory.create(Client.class, generateBaseUrl());
+      URI base = new URI(generateBaseUrl());
+      testClient(new ClientRequestFactory(base));
 
+      // uncomment this to test urlConnection executor. This has some hiccups
+      // now
+      
+//       testClient(new ClientRequestFactory(new URLConnectionClientExecutor(), base));
+   }
+
+   private void testClient(ClientRequestFactory requestFactory) throws URISyntaxException, Exception
+   {
+
+      Client client = requestFactory.createProxy(Client.class);
       Assert.assertEquals("basic", client.getBasic().getEntity());
       Assert.assertEquals("basic", client.getBasicResponseString().getEntity());
       Assert.assertEquals("basic", client.getBasicResponseStringFactory().getEntity());
       Assert.assertEquals("basic", client.getData("/basic"));
-      client.putBasic("hello world");
       Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
+      client.putBasic("hello world");
 
       client.putData(new URI("/basic"), "hello world2");
       Assert.assertEquals("hello world", client.getQueryParam("hello world").getEntity());
 
-      String queryResult = createClientRequest("/queryParam").queryParameter("param", "hello world").get(String.class)
-              .getEntity();
+      String queryResult = requestFactory.getRelative("/queryParam?param={param}", String.class, "hello world");
       Assert.assertEquals("hello world", queryResult);
 
       Assert.assertEquals(1234, client.getUriParam(1234).getEntity().intValue());
 
-      ClientResponse<Integer> paramPathResult = createClientRequest("/uriParam/{param}").accept("text/plain")
+      ClientResponse<Integer> paramPathResult = requestFactory.createRequest(generateURL("/uriParam/{param}")).accept("text/plain")
               .pathParameter("param", 1234).get(Integer.class);
       Assert.assertEquals(1234, paramPathResult.getEntity().intValue());
 
@@ -176,21 +188,18 @@ public class ClientResponseTest
       Assert.assertEquals(Response.Status.NO_CONTENT, putResponse.getResponseStatus());
 
       Assert.assertEquals("headervalue", ((BaseClientResponse) client.getHeaderClientResponse()).getHeaders().getFirst("header"));
-      Assert.assertEquals("headervalue", createClientRequest("/header").get().getHeaders().getFirst("header"));
+      Assert.assertEquals("headervalue", requestFactory.createRequest(generateURL("/header")).get().getHeaders().getFirst("header"));
       Assert.assertEquals("headervalue", client.getHeaderResponse().getMetadata().getFirst("header"));
 
-      final byte[] entity = client.getBasicBytes().getEntity();
-      Assert.assertTrue(Arrays.equals("basic".getBytes(), entity));
+      Assert.assertTrue(Arrays.equals("basic".getBytes(), client.getBasicBytes().getEntity()));
       Assert.assertTrue(Arrays.equals("basic".getBytes(), (byte[]) client.getBasicResponse().getEntity()));
 
-      ClientResponse<byte[]> getBasicResponse = createClientRequest("/basic").get(byte[].class);
-      Assert.assertTrue(Arrays.equals("basic".getBytes(), getBasicResponse.getEntity()));
-
+      Assert.assertTrue(Arrays.equals("basic".getBytes(), requestFactory.getRelative("/basic", byte[].class)));
 
       Assert.assertEquals("basic", client.getBasic2().getEntity(String.class, null));
 
-      getBasicResponse = createClientRequest("/basic").get(byte[].class);
-      Assert.assertEquals("basic", getBasicResponse.getEntity(String.class, null));
+      ClientResponse<byte[]> basicResponse = requestFactory.createRelativeRequest("/basic").get(byte[].class);
+      Assert.assertEquals("basic", basicResponse.getEntity(String.class, null));
    }
 
    @Test
@@ -251,8 +260,7 @@ public class ClientResponseTest
          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
          conn.setInstanceFollowRedirects(false);
          conn.setRequestMethod("GET");
-         Map headers = conn.getHeaderFields();
-         for (Object name : headers.keySet())
+         for (Object name : conn.getHeaderFields().keySet())
          {
             System.out.println(name);
          }
@@ -263,13 +271,13 @@ public class ClientResponseTest
 
    private void testRedirect(ClientResponse response)
    {
-      System.out.println("size: " + response.getHeaders().size());
-      for (Object name : response.getHeaders().keySet())
+      MultivaluedMap headers = response.getHeaders();
+      System.out.println("size: " + headers.size());
+      for (Object name : headers.keySet())
       {
-         System.out.print(name);
-         System.out.println(":" + response.getHeaders().getFirst(name.toString()));
+         System.out.println(name +":" + headers.getFirst(name.toString()));
       }
-      Assert.assertEquals((String) response.getHeaders().getFirst("location"), generateURL("/redirect/data"));
+      Assert.assertEquals((String) headers.getFirst("location"), generateURL("/redirect/data"));
    }
 
 }
