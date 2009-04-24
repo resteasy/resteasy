@@ -10,6 +10,8 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import Acme.Serve.Serve;
+
 import javax.ws.rs.core.Application;
 
 /**
@@ -94,5 +96,15 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    public void addApplicationConfig(Application config)
    {
       ResteasyBootstrap.processApplication(config, getRegistry(), getFactory());
+   }
+   
+   public String getProperty(String key)
+   {
+      return props.getProperty(key);
+   }
+
+   public String getPort()
+   {
+      return getProperty(Serve.ARG_PORT);
    }
 }
