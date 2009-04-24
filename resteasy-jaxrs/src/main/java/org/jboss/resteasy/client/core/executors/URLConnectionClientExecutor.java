@@ -88,7 +88,6 @@ public class URLConnectionClientExecutor implements ClientExecutor
             return (status < 300) ? connection.getInputStream() : connection.getErrorStream();
          }
 
-         @Override
          public void performReleaseConnection()
          {
             try
