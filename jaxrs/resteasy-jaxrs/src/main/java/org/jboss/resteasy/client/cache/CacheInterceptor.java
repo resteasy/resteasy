@@ -48,7 +48,6 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
          return new ByteArrayInputStream(entry.getCached());
       }
 
-      @Override
       public void performReleaseConnection()
       {
       }

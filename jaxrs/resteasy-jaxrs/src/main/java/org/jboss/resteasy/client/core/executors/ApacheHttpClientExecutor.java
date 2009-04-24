@@ -58,13 +58,11 @@ public class ApacheHttpClientExecutor implements ClientExecutor
       int status = httpClient.executeMethod(httpMethod);
 
       BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory(){
-         @Override
          public InputStream getInputStream() throws IOException
          {
             return httpMethod.getResponseBodyAsStream();
          }
 
-         @Override
          public void performReleaseConnection()
          {
              httpMethod.releaseConnection();
