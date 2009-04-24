@@ -16,6 +16,8 @@ import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.EntityTypeFactory;
+import org.jboss.resteasy.client.core.marshallers.ClientMarshallerFactory;
+import org.jboss.resteasy.client.core.marshallers.Marshaller;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;

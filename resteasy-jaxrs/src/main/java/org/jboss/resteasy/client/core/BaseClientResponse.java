@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.core;
 
+import static java.lang.String.format;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -22,8 +23,15 @@ import org.jboss.resteasy.util.HttpResponseCodes;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public abstract class BaseClientResponse<T> extends ClientResponse<T>
+@SuppressWarnings("unchecked")
+public class BaseClientResponse<T> extends ClientResponse<T>
 {
+   public static interface BaseClientResponseStreamFactory
+   {
+      InputStream getInputStream() throws IOException;
+      void performReleaseConnection();
+   }
+
    protected ResteasyProviderFactory providerFactory;
    protected String attributeExceptionsTo;
    protected MultivaluedMap<String, String> headers;
@@ -34,12 +42,17 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
    protected int status;
    protected boolean wasReleased = false;
    protected boolean streamWasRead = false;
-   protected byte[] rawResults;
    protected Object unmarshaledEntity;
    protected MessageBodyReaderInterceptor[] messageBodyReaderInterceptors;
    protected Exception exception;// These can only be set by an interceptor
    protected boolean cacheInputStream;
+   protected BaseClientResponseStreamFactory streamFactory;
 
+   public BaseClientResponse(BaseClientResponseStreamFactory streamFactory)
+   {
+      this.streamFactory = streamFactory;
+   }
+   
    public void setMessageBodyReaderInterceptors(MessageBodyReaderInterceptor[] messageBodyReaderInterceptors)
    {
       this.messageBodyReaderInterceptors = messageBodyReaderInterceptors;
@@ -116,109 +129,119 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
       this.alternateMediaType = alternateMediaType;
    }
 
-   @SuppressWarnings("unchecked")
+   public BaseClientResponseStreamFactory getStreamFactory()
+   {
+      return streamFactory;
+   }
+
+   public void setStreamFactory(BaseClientResponseStreamFactory streamFactory)
+   {
+      this.streamFactory = streamFactory;
+   }
+
    @Override
    public T getEntity()
+   {
+      if (returnType == null)
+      {
+         throw new RuntimeException(
+                 "No type information to extract entity with, use other getEntity() methods");
+      }
+      return (T) getEntity(returnType, genericReturnType, this.annotations);
+   }
+
+   @Override
+   public <T2> T2 getEntity(Class<T2> type)
+   {
+      return getEntity(type, null);
+   }
+
+   @Override
+   public <T2> T2 getEntity(Class<T2> type, Type genericType)
+   {
+      return getEntity(type, genericType, getAnnotations(type, genericType));
+   }
+
+   private <T2> Annotation[] getAnnotations(Class<T2> type, Type genericType)
+   {
+      return (this.returnType == type && this.genericReturnType == genericType) ? this.annotations
+            : null;
+   }
+
+   @Override
+   public <T2> T2 getEntity(Class<T2> type, Type genericType, Annotation[] anns)
    {
       if (exception != null)
       {
          throw new RuntimeException("Unable to unmarshall response for "
                  + attributeExceptionsTo, exception);
       }
-      if (returnType == null)
-      {
-         throw new RuntimeException(
-                 "No type information to extract entity with, use other getEntity() methods");
-      }
-      if( genericReturnType == null )
-         genericReturnType = returnType;
-      return (T) getEntity(returnType, genericReturnType);
-   }
 
-   @Override
-   public <T2> T2 getEntity(Class<T2> type, Type genericType)
-   {
-      Annotation[] annotations = null;
-      if (this.returnType == type && this.genericReturnType == genericType)
-      {
-         annotations = this.annotations;
-      }
-      return getEntity(type, genericType, annotations);
-   }
+      if (unmarshaledEntity != null && !type.isInstance(this.unmarshaledEntity)) 
+         throw new RuntimeException("The entity was already read, and it was of type "
+                 + unmarshaledEntity.getClass());
 
-   @SuppressWarnings("unchecked")
-   @Override
-   public <T2> T2 getEntity(Class<T2> type, Type genericType, Annotation[] anns)
-   {
-      if (streamWasRead)
+      if (unmarshaledEntity == null)
       {
-         if (unmarshaledEntity != null)
-         {
-            if (type.isInstance(this.unmarshaledEntity))
-            {
-               return (T2) unmarshaledEntity;
-            }
-            else
-            {
-               throw new RuntimeException("The entity was already read, and it was of type "
-                       + unmarshaledEntity.getClass());
-            }
-         }
-         else
-         {
-            throw new RuntimeException("Stream was already read");
-         }
-      }
-      try
-      {
-         if (status == HttpResponseCodes.SC_NO_CONTENT) return null;
-         String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
-         if (mediaType == null)
-         {
-            mediaType = alternateMediaType;
-         }
-         MediaType media = mediaType == null ? MediaType.WILDCARD_TYPE : MediaType.valueOf(mediaType);
-
-         MessageBodyReader<T2> reader = providerFactory.getMessageBodyReader(
-                 type, genericType, anns, media);
-         if (reader == null)
-         {
-            throw createResponseFailure("Unable to find a MessageBodyReader of content-type "
-                    + mediaType + " and type " + type.getName());
-         }
          try
          {
-            streamWasRead = true;
-            unmarshaledEntity = readFrom(type, genericType, media, anns, reader);
-            return (T2) unmarshaledEntity;
+            if (status == HttpResponseCodes.SC_NO_CONTENT) 
+               return null;
+   
+           unmarshaledEntity = readFrom(type, genericType, getMediaType(), anns);
          }
-         catch (Exception e)
+         finally
          {
-            this.exception = e;
-            throw createResponseFailure(
-                    "Failure reading from MessageBodyReader: "
-                            + reader.getClass().getName(), e);
+            releaseConnection();
          }
       }
-      finally
+      return (T2) unmarshaledEntity;
+   }
+
+   protected MediaType getMediaType()
+   {
+      String mediaType = getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
+      if (mediaType == null)
       {
-         releaseConnection();
+         mediaType = alternateMediaType;
+      }
+
+      return mediaType == null ? MediaType.WILDCARD_TYPE : MediaType.valueOf(mediaType);
+   }
+
+   protected <T2> Object readFrom(Class<T2> type, Type genericType,
+         MediaType media, Annotation[] annotations)
+   {
+      Type genType = genericType == null ? type : genericType;
+      MessageBodyReader<T2> reader = getReader(type, annotations, media, media,
+            genType);
+      try
+      {
+         MessageBodyReaderContextImpl ctx = new MessageBodyReaderContextImpl(
+               messageBodyReaderInterceptors, reader, type, genType,
+               annotations, media, getHeaders(), streamFactory.getInputStream());
+         return ctx.proceed();
+      }
+      catch (IOException e)
+      {
+         this.exception = e;
+         String msg = "Failure reading from MessageBodyReader: " + reader.getClass().getName();
+         throw createResponseFailure(msg, e);
       }
    }
 
-   protected <T2> Object readFrom(Class<T2> type, Type genericType, MediaType media, Annotation[] annotations, MessageBodyReader<T2> reader)
-           throws IOException
+   protected <T2> MessageBodyReader<T2> getReader(Class<T2> type,
+         Annotation[] anns, MediaType mediaType, MediaType media, Type genType)
    {
-      if (messageBodyReaderInterceptors != null && messageBodyReaderInterceptors.length > 0)
+      MessageBodyReader<T2> reader = providerFactory.getMessageBodyReader(type, genType, anns, mediaType);
+
+      if (reader == null)
       {
-         MessageBodyReaderContextImpl ctx = new MessageBodyReaderContextImpl(messageBodyReaderInterceptors, reader,
-                 type, genericType, annotations, media, headers, getInputStream());
-         return ctx.proceed();
+         throw createResponseFailure(format(
+               "Unable to find a MessageBodyReader of content-type %s and type %s",
+               mediaType, type.getName()));
       }
-      else
-      {
-         return reader.readFrom(type, genericType, annotations, media, headers, getInputStream());
-      }
+      return reader;
    }
 
    @Override
@@ -238,12 +261,11 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
       return headers;
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public MultivaluedMap<String, Object> getMetadata()
    {
-      MultivaluedMap map = headers;
-      return (MultivaluedMap<String, Object>) map;
+      // hack to cast from <String, String> to <String, Object>
+      return (MultivaluedMap) headers;
    }
 
    @Override
@@ -256,8 +278,7 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (status > 399 && status < 599)
       {
-         throw createResponseFailure("Error status " + status + " "
-                 + Status.fromStatusCode(status) + " returned");
+         throw createResponseFailure(format("Error status %d %s returned", status, getResponseStatus()));
       }
    }
 
@@ -266,15 +287,13 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
       return createResponseFailure(message, null);
    }
 
-   @SuppressWarnings("unchecked")
-   public ClientResponseFailure createResponseFailure(String message,
-                                                      Exception e)
+   public ClientResponseFailure createResponseFailure(String message, Exception e)
    {
       setException(e);
       this.returnType = byte[].class;
       this.genericReturnType = null;
-      return new ClientResponseFailure(message, e,
-              (ClientResponse<byte[]>) this);
+      this.annotations = null;
+      return new ClientResponseFailure(message, e, (ClientResponse<byte[]>) this);
    }
 
    @Override
@@ -288,7 +307,19 @@ public abstract class BaseClientResponse<T> extends ClientResponse<T>
       return wasReleased;
    }
 
-   public abstract InputStream getInputStream() throws IOException;
+   public final void releaseConnection()
+   {
+      if(!wasReleased)
+      {
+         streamFactory.performReleaseConnection();
+         wasReleased = true;
+      }
+   }
+      
+   @Override
+   protected final void finalize() throws Throwable
+   {
+      releaseConnection();
+   }
 
-   public abstract void releaseConnection();
 }

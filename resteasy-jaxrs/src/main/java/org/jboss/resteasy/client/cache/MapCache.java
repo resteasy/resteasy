@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.jboss.resteasy.client.cache.BrowserCache.Entry;
-
 public class MapCache implements BrowserCache
 {
    protected Map<String, Map<String, Entry>> cache = null;

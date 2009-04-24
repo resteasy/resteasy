@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.core;
+package org.jboss.resteasy.client.core.executors;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -16,6 +16,7 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class HttpClientHeaderWrapper implements MultivaluedMap<String, Object>
 {
 
@@ -40,17 +41,7 @@ public class HttpClientHeaderWrapper implements MultivaluedMap<String, Object>
    public void putSingle(String key, Object value)
    {
       cachedHeaders.putSingle(key, value);
-      RuntimeDelegate.HeaderDelegate delegate = factory.createHeaderDelegate(value.getClass());
-      if (delegate != null)
-      {
-         //System.out.println("addResponseHeader: " + key + " " + delegate.toString(value));
-         httpMethod.setRequestHeader(key.toLowerCase(), delegate.toString(value));
-      }
-      else
-      {
-         //System.out.println("addResponseHeader: " + key + " " + value.toString());
-         httpMethod.setRequestHeader(key.toLowerCase(), value.toString());
-      }
+      addResponseHeader(key, value);
    }
 
    public void add(String key, Object value)

@@ -3,12 +3,12 @@ package org.jboss.resteasy.client;
 import java.net.URI;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.client.core.ApacheHttpClientExecutor;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.ClientInvokerModifier;
-import org.jboss.resteasy.client.core.ResteasyClientProxy;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
+import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -24,12 +24,17 @@ public class ClientRequestFactory
 
    public ClientRequestFactory()
    {
-      this(new HttpClient());
+      init(null, null, null);
+   }
+
+   public ClientRequestFactory(URI base)
+   {
+      init(null, null, base);
    }
 
    public ClientRequestFactory(HttpClient httpClient)
    {
-      this(httpClient, ResteasyProviderFactory.getInstance());
+      this(httpClient, null);
    }
 
    public ClientRequestFactory(HttpClient httpClient,
@@ -38,11 +43,35 @@ public class ClientRequestFactory
       this(new ApacheHttpClientExecutor(httpClient), instance);
    }
 
+   public ClientRequestFactory(ClientExecutor executor, URI base)
+   {
+      init(executor, null, base);
+   }
+
    public ClientRequestFactory(ClientExecutor executor,
          ResteasyProviderFactory providerFactory)
    {
-      this.providerFactory = providerFactory;
-      this.executor = executor;
+      init(executor, providerFactory, null);
+   }
+
+   public ClientRequestFactory(ClientExecutor executor,
+         ResteasyProviderFactory providerFactory, URI base)
+   {
+      init(executor, providerFactory, base);
+   }
+
+   private void init(ClientExecutor executor,
+         ResteasyProviderFactory providerFactory, URI base)
+   {
+      if(providerFactory == null)
+         this.providerFactory = ResteasyProviderFactory.getInstance();
+      else
+         this.providerFactory = providerFactory;
+      if( executor == null )
+         this.executor = new ApacheHttpClientExecutor(new HttpClient());
+      else
+         this.executor = executor;
+      this.base = base;
    }
 
    public ClientRequestFactory(ClientRequestFactory other)
@@ -104,6 +133,10 @@ public class ClientRequestFactory
       return new ClientRequestFactory(this);
    }
 
+   public ClientRequest createRelativeRequest(String uriTemplate)
+   {
+      return createRequest(base.toString() + uriTemplate);
+   }
 
    public ClientRequest createRequest(String uriTemplate)
    {
@@ -120,6 +153,12 @@ public class ClientRequestFactory
       }
       applyInterceptors(clientRequest);
       return clientRequest;
+   }
+
+   public <T> T getRelative(String uriTemplate, Class<T> type, Object... params)
+   throws Exception
+   {
+      return get(base.toString() + uriTemplate, type, params);
    }
 
    public <T> T get(String uriTemplate, Class<T> type, Object... params)

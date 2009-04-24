@@ -20,9 +20,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.jboss.resteasy.client.core.ApacheHttpClientExecutor;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -64,19 +64,28 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
 
    public ClientRequest(String uriTemplate)
    {
-      this(uriTemplate, new HttpClient(), ResteasyProviderFactory.getInstance());
+      this(uriTemplate, new ApacheHttpClientExecutor(new HttpClient()));
    }
 
    public ClientRequest(String uriTemplate, HttpClient httpClient)
    {
-      this(uriTemplate, httpClient, ResteasyProviderFactory.getInstance());
+      this(uriTemplate, new ApacheHttpClientExecutor(httpClient));
+   }
+
+   public ClientRequest(String uriTemplate, ClientExecutor executor)
+   {
+      this(getBuilder(uriTemplate), executor);
    }
 
    public ClientRequest(String uriTemplate, HttpClient httpClient,
          ResteasyProviderFactory providerFactory)
    {
-      this(new UriBuilderImpl().uriTemplate(uriTemplate),
-            new ApacheHttpClientExecutor(httpClient), providerFactory);
+      this(getBuilder(uriTemplate), new ApacheHttpClientExecutor(httpClient),
+            providerFactory);
+   }
+
+   public ClientRequest(UriBuilder uri, ClientExecutor executor){
+      this(uri, executor, ResteasyProviderFactory.getInstance());
    }
 
    public ClientRequest(UriBuilder uri, ClientExecutor executor,
@@ -86,10 +95,19 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       this.executor = executor;
       if (providerFactory instanceof ProviderFactoryDelegate)
       {
-         providerFactory = ((ProviderFactoryDelegate) providerFactory)
+         this.providerFactory = ((ProviderFactoryDelegate) providerFactory)
                .getDelegate();
       }
-      this.providerFactory = providerFactory;
+      else
+      {
+         this.providerFactory = providerFactory;
+      }
+   }
+
+
+   private static UriBuilder getBuilder(String uriTemplate)
+   {
+      return new UriBuilderImpl().uriTemplate(uriTemplate);
    }
 
    public boolean followRedirects()
@@ -362,7 +380,6 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
                .getMessageBodyWriter(getBodyType(), getBodyGenericType(),
                      getBodyAnnotations(), getBodyContentType());
       }
-
       if (getWriterInterceptorList().isEmpty())
       {
          MessageBodyWriterContextImpl ctx = new MessageBodyWriterContextImpl(

@@ -48,6 +48,19 @@ public abstract class ClientResponse<T> extends Response
     * @param <T2>
     * @return
     */
+   public abstract <T2> T2 getEntity(Class<T2> type);
+
+   /**
+    * Extract the response body with the provided type information
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
+    * cache the result and return the cached result.
+    *
+    * @param type
+    * @param genericType
+    * @param <T2>
+    * @return
+    */
    public abstract <T2> T2 getEntity(Class<T2> type, Type genericType);
 
    /**
