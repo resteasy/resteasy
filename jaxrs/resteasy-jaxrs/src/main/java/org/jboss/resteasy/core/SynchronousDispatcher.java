@@ -137,7 +137,7 @@ public class SynchronousDispatcher implements Dispatcher
 
       // finally strip out matrix parameters
 
-      StringBuffer preprocessedPath = new StringBuffer();
+      StringBuilder preprocessedPath = new StringBuilder();
       for (PathSegment pathSegment : segments)
       {
          preprocessedPath.append("/").append(pathSegment.getPath());

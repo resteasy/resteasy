@@ -58,12 +58,12 @@ public class PropertyInjectorImpl implements PropertyInjector
            throws Exception
    {
       Class[] parameterTypes = method.getParameterTypes();
-      StringBuffer methodDesc = new StringBuffer(method.getName() + "(");
+      StringBuilder methodDesc = new StringBuilder(method.getName()).append("(");
       for (int j = 0; j < parameterTypes.length; j++)
       {
          methodDesc.append(getTypeString(parameterTypes[j]));
       }
-      methodDesc.append(")" + getTypeString(method.getReturnType()));
+      methodDesc.append(")").append(getTypeString(method.getReturnType()));
       return createHash(methodDesc.toString());
    }
 
