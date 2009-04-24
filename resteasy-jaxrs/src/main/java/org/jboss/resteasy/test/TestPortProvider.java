@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.methods.OptionsMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.client.ProxyFactory;
 
 import java.net.MalformedURLException;
@@ -43,6 +44,10 @@ public class TestPortProvider
       return new ClientRequest(generateURL(path));
    }
 
+   public static ClientRequest createClientRequest(ClientRequestFactory factory, String path)
+   {
+      return factory.createRequest(generateURL(path));
+   }
    /**
     * Create a commons-httpclient DeleteMethod object.
     *
