@@ -13,6 +13,7 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class MessageBodyReaderContextImpl implements MessageBodyReaderContext
 {
    protected MessageBodyReaderInterceptor[] interceptors;
@@ -97,7 +98,7 @@ public class MessageBodyReaderContextImpl implements MessageBodyReaderContext
 
    public Object proceed() throws IOException, WebApplicationException
    {
-      if (index >= interceptors.length)
+      if (interceptors == null || index >= interceptors.length)
          return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
       try
       {
