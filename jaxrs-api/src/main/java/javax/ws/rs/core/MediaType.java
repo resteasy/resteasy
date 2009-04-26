@@ -89,6 +89,15 @@ public class MediaType
    public final static MediaType APPLICATION_XHTML_XML_TYPE = new MediaType("application", "xhtml+xml");
 
    /**
+    * "application/xop+xml"
+    */
+   public final static String APPLICATION_XOP_XML = "application/xop+xml";
+   /**
+    * "application/xop+xml"
+    */
+   public final static MediaType APPLICATION_XOP_XML_TYPE = new MediaType("application", "xop+xml");
+
+   /**
     * "application/svg+xml"
     */
    public final static String APPLICATION_SVG_XML = "application/svg+xml";
@@ -123,6 +132,15 @@ public class MediaType
     * "multipart/form-data"
     */
    public final static MediaType MULTIPART_FORM_DATA_TYPE = new MediaType("multipart", "form-data");
+
+   /**
+    * "multipart/related"
+    */
+   public final static String MULTIPART_RELATED = "multipart/related";
+   /**
+    * "multipart/related"
+    */
+   public final static MediaType MULTIPART_RELATED_TYPE = new MediaType("multipart", "related");
 
    /**
     * "application/octet-stream"
@@ -315,6 +333,8 @@ public class MediaType
    @Override
    public boolean equals(Object obj)
    {
+      if (this == obj)
+         return true;
       if (obj == null)
          return false;
       if (!(obj instanceof MediaType))

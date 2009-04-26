@@ -108,9 +108,11 @@ public class RegisterBuiltin
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartReader", factory);
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader", "org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader", factory);
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader", factory);
+      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedReader", factory);
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader", "org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader", factory);
       optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartWriter", factory);
       optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter", factory);
+      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedWriter", factory);
       optionalWriter("org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter", "org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter", factory);
       optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", "org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", factory);
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", factory);

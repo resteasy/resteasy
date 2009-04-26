@@ -267,7 +267,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
          {
             set.add(new EntryWrapper<V>(entry));
          }
-         return removeAll(set);
+         return entrySet.removeAll(set);
       }
 
       public void clear()

@@ -14,11 +14,11 @@ public class OutputPart
 {
    private MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
    private Object entity;
-   private Class type;
+   private Class<?> type;
    private Type genericType;
    private MediaType mediaType;
 
-   public OutputPart(Object entity, Class type, Type genericType, MediaType mediaType)
+   public OutputPart(Object entity, Class<?> type, Type genericType, MediaType mediaType)
    {
       this.entity = entity;
       this.type = type;
@@ -36,7 +36,7 @@ public class OutputPart
       return entity;
    }
 
-   public Class getType()
+   public Class<?> getType()
    {
       return type;
    }

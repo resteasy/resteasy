@@ -22,14 +22,14 @@ public class MultipartFormDataOutput extends MultipartOutput
       return part;
    }
 
-   public OutputPart addFormData(String key, Object entity, GenericType type, MediaType mediaType)
+   public OutputPart addFormData(String key, Object entity, GenericType<?> type, MediaType mediaType)
    {
       OutputPart part = super.addPart(entity, type, mediaType);
       formData.put(key, part);
       return part;
    }
 
-   public OutputPart addFormData(String key, Object entity, Class type, Type genericType, MediaType mediaType)
+   public OutputPart addFormData(String key, Object entity, Class<?> type, Type genericType, MediaType mediaType)
    {
       OutputPart part = super.addPart(entity, type, genericType, mediaType);
       formData.put(key, part);

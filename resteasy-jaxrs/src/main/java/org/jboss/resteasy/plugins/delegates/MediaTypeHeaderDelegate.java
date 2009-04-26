@@ -53,6 +53,10 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
             int pidx = param.indexOf("=");
             String name = param.substring(0, pidx).trim();
             String val = param.substring(pidx + 1).trim();
+            if (val.startsWith("\""))
+            	val = val.substring(1).trim();
+            if (val.endsWith("\""))
+            	val = val.substring(0, val.length() - 1);
             typeParams.put(name, val);
          }
          return new MediaType(major, subtype, typeParams);
@@ -71,7 +75,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       for (String name : type.getParameters().keySet())
       {
          String val = type.getParameters().get(name);
-         rtn += ";" + name + "=" + val;
+         rtn += ";" + name + "=\"" + val + "\"";
       }
       return rtn;
    }

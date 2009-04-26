@@ -6,6 +6,7 @@ import javax.ws.rs.core.MediaType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -15,7 +16,7 @@ public class MultipartOutput
 {
 
    protected List<OutputPart> parts = new ArrayList<OutputPart>();
-   protected String boundary = "f231sldkxx11";
+   protected String boundary = UUID.randomUUID().toString();
 
    public OutputPart addPart(Object entity, MediaType mediaType)
    {
@@ -24,14 +25,14 @@ public class MultipartOutput
       return outputPart;
    }
 
-   public OutputPart addPart(Object entity, GenericType type, MediaType mediaType)
+   public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType)
    {
       OutputPart outputPart = new OutputPart(entity, type.getType(), type.getGenericType(), mediaType);
       parts.add(outputPart);
       return outputPart;
    }
 
-   public OutputPart addPart(Object entity, Class type, Type genericType, MediaType mediaType)
+   public OutputPart addPart(Object entity, Class<?> type, Type genericType, MediaType mediaType)
    {
       OutputPart outputPart = new OutputPart(entity, type, genericType, mediaType);
       parts.add(outputPart);
