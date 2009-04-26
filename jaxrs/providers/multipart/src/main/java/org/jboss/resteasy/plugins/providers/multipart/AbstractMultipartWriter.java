@@ -26,10 +26,8 @@ public class AbstractMultipartWriter
    {
       String boundary = mediaType.getParameters().get("boundary");
       if (boundary == null)
-      {
          boundary = multipartOutput.getBoundary();
-         httpHeaders.putSingle(HttpHeaderNames.CONTENT_TYPE, mediaType.toString() + "; boundary=" + multipartOutput.getBoundary());
-      }
+      httpHeaders.putSingle(HttpHeaderNames.CONTENT_TYPE, mediaType.toString() + "; boundary=" + multipartOutput.getBoundary());
       byte[] boundaryBytes = ("--" + boundary).getBytes();
 
       writeParts(multipartOutput, entityStream, boundaryBytes);
@@ -56,7 +54,7 @@ public class AbstractMultipartWriter
       headers.putSingle(HttpHeaderNames.CONTENT_TYPE, part.getMediaType());
 
       Object entity = part.getEntity();
-      Class entityType = part.getType();
+      Class<?> entityType = part.getType();
       Type entityGenericType = part.getGenericType();
       MessageBodyWriter writer = workers.getMessageBodyWriter(entityType, entityGenericType, null, part.getMediaType());
       long size = writer.getSize(entity, entityType, entityGenericType, null, part.getMediaType());

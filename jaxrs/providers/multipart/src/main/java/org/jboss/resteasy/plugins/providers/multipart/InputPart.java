@@ -15,7 +15,7 @@ public interface InputPart
 {
    MultivaluedMap<String, String> getHeaders();
 
-   String getBodyAsString();
+   String getBodyAsString() throws IOException;
 
    <T> T getBody(Class<T> type, Type genericType) throws IOException;
 

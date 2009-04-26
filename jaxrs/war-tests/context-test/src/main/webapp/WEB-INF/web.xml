@@ -8,14 +8,14 @@
         <param-value>org.jboss.resteasy.tests.context.ContextService</param-value>
     </context-param>
 
-    <listener>
-        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-    </listener>
-
     <context-param>
         <param-name>resteasy.servlet.mapping.prefix</param-name>
         <param-value>/test</param-value>
     </context-param>
+
+    <listener>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
 
     <servlet>
         <servlet-name>Resteasy</servlet-name>

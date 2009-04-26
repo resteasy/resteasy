@@ -48,7 +48,7 @@ public class MultipartFormDataReader implements MessageBodyReader<MultipartFormD
 
       String boundary = mediaType.getParameters().get("boundary");
       if (boundary == null) throw new IOException("Unable to get boundary for multipart");
-      MultipartFormDataInputImpl input = new MultipartFormDataInputImpl(boundary, workers);
+      MultipartFormDataInputImpl input = new MultipartFormDataInputImpl(mediaType, workers);
       input.parse(entityStream);
       return input;
    }

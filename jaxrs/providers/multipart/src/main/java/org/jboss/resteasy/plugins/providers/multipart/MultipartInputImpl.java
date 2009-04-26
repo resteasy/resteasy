@@ -1,265 +1,204 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.GenericType;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.SequenceInputStream;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.apache.james.mime4j.field.ContentTypeField;
+import org.apache.james.mime4j.message.BinaryBody;
+import org.apache.james.mime4j.message.Body;
+import org.apache.james.mime4j.message.BodyPart;
+import org.apache.james.mime4j.message.Message;
+import org.apache.james.mime4j.message.Multipart;
+import org.apache.james.mime4j.message.TextBody;
+import org.apache.james.mime4j.parser.Field;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.GenericType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MultipartInputImpl implements MultipartInput
-{
-   protected String boundary;
-   protected byte[] boundaryBytes;
-   protected int pointer;
-   protected List<InputPart> parts = new ArrayList<InputPart>();
-   protected PartImpl currPart;
-   protected int preambleEnd;
-   protected Providers workers;
-   protected static final Annotation[] empty = {};
+public class MultipartInputImpl implements MultipartInput {
+	protected MediaType contentType;
+	protected Providers workers;
+	protected Message mimeMessage;
+	protected List<InputPart> parts = new ArrayList<InputPart>();
+	protected static final Annotation[] empty = {};
 
-   protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
-   protected byte[] buffer;
+	public MultipartInputImpl(MediaType contentType, Providers workers) {
+		this.contentType = contentType;
+		this.workers = workers;
+	}
 
-   public MultipartInputImpl(String boundary, Providers workers)
-   {
-      this.boundary = "--" + boundary;
-      boundaryBytes = this.boundary.getBytes();
-      this.workers = workers;
-   }
+	public void parse(InputStream is) throws IOException {
+		mimeMessage = new Message(addHeaderToHeadlessStream(is));
+		extractParts();
+	}
 
-   public List<InputPart> getParts()
-   {
-      return parts;
-   }
+	protected InputStream addHeaderToHeadlessStream(InputStream is)
+			throws UnsupportedEncodingException {
+		return new SequenceInputStream(createHeaderInputStream(), is);
+	}
 
-   public class PartImpl implements InputPart
-   {
-      private int start;
-      private int end;
-      private MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
-      private MediaType mediaType;
+	protected InputStream createHeaderInputStream()
+			throws UnsupportedEncodingException {
+		String header = HttpHeaders.CONTENT_TYPE + ": " + contentType
+				+ "\r\n\r\n";
+		return new ByteArrayInputStream(header.getBytes("utf-8"));
+	}
 
-      public MultivaluedMap<String, String> getHeaders()
-      {
-         return headers;
-      }
+	public String getPreamble() {
+		return ((Multipart) mimeMessage.getBody()).getPreamble();
+	}
 
-      public void startBody(int index)
-      {
-         start = index;
-      }
+	public List<InputPart> getParts() {
+		return parts;
+	}
 
-      public void endBody(int index)
-      {
-         end = index;
-         String mime = headers.getFirst("content-type");
-         if (mime == null) mediaType = MediaType.TEXT_PLAIN_TYPE;
-         else mediaType = MediaType.valueOf(mime);
-      }
+	protected void extractParts() throws IOException {
+		Multipart multipart = (Multipart) mimeMessage.getBody();
+		for (BodyPart bodyPart : multipart.getBodyParts())
+			parts.add(extractPart(bodyPart));
+	}
 
-      public void addHeader(String header)
-      {
-         int colon = header.indexOf(':');
-         String name = header.substring(0, colon);
-         String value = header.substring(colon + 1);
-         if (value.charAt(0) == '"') value = value.substring(1);
-         if (value.endsWith("\"")) value = value.substring(0, value.length() - 1);
-         headers.add(name.trim(), value.trim());
-      }
+	protected InputPart extractPart(BodyPart bodyPart) throws IOException {
+		return new PartImpl(bodyPart);
+	}
 
-      public InputStream getBody()
-      {
-         return new ByteArrayInputStream(buffer, start, end - start);
-      }
+	public class PartImpl implements InputPart {
+		private BodyPart bodyPart;
+		private MediaType contentType;
+		private MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
 
-      public String getBodyAsString()
-      {
-         return new String(buffer, start, end - start);
-      }
+		public PartImpl(BodyPart bodyPart) {
+			this.bodyPart = bodyPart;
+			for (Field field : bodyPart.getHeader()) {
+				headers.add(field.getName(), field.getBody());
+				if (field instanceof ContentTypeField)
+					contentType = MediaType.valueOf(field.getBody());
+			}
+			if (contentType == null)
+				contentType = MediaType.TEXT_PLAIN_TYPE;
+		}
 
-      public <T> T getBody(Class<T> type, Type genericType) throws IOException
-      {
-         MessageBodyReader<T> reader = workers.getMessageBodyReader(type, genericType, empty, mediaType);
-         return reader.readFrom(type, genericType, empty, mediaType, headers, getBody());
-      }
+		public <T> T getBody(Class<T> type, Type genericType)
+				throws IOException {
+			MessageBodyReader<T> reader = workers.getMessageBodyReader(type,
+					genericType, empty, contentType);
+			return reader.readFrom(type, genericType, empty, contentType,
+					headers, getBody());
+		}
 
-      public <T> T getBody(GenericType<T> type) throws IOException
-      {
-         return getBody(type.getType(), type.getGenericType());
-      }
+		public <T> T getBody(GenericType<T> type) throws IOException {
+			return getBody(type.getType(), type.getGenericType());
+		}
 
-      public MediaType getMediaType()
-      {
-         return mediaType;
-      }
-   }
+		public InputStream getBody() throws IOException {
+			Body body = bodyPart.getBody();
+			InputStream result = null;
+			if (body instanceof TextBody) {
+				final Reader reader = ((TextBody) body).getReader();
+				result = new InputStream() {
+					@Override
+					public int read() throws IOException {
+						int c = reader.read();
+						return c;
+					}
+				};
+			} else if (body instanceof BinaryBody)
+				result = ((BinaryBody) body).getInputStream();
+			return result;
+		}
 
-   protected PartImpl createPart()
-   {
-      return new PartImpl();
-   }
+		public String getBodyAsString() throws IOException {
+			Body body = bodyPart.getBody();
+			String result = null;
+			if (body instanceof TextBody) {
+				Reader reader = ((TextBody) body).getReader();
+				StringWriter writer = new StringWriter();
+				char[] buffer = new char[4048];
+				int n = 0;
+				while ((n = reader.read(buffer)) != -1)
+					writer.write(buffer, 0, n);
+				result = writer.toString();
+			} else if (body instanceof BinaryBody) {
+				InputStream inputStream = ((BinaryBody) body).getInputStream();
+				String charset = contentType.getParameters().get("charset");
+				StringWriter writer = new StringWriter();
+				byte[] buffer = new byte[4048];
+				int n = 0;
+				while ((n = inputStream.read(buffer)) != -1)
+					if (charset == null)
+						writer.write(new String(buffer, 0, n));
+					else
+						writer.write(new String(buffer, 0, n, charset));
+				result = writer.toString();
+			}
 
-   public void parse(InputStream is) throws IOException
-   {
-      int index = 0;
-      while (true)
-      {
-         int b = read(is);
-         if (b == boundaryBytes[index])
-         {
-            index++;
-            if (index == boundaryBytes.length)
-            {
-               int b1 = read(is);
-               if (b1 == -1) throw new RuntimeException("Unexpected end of request, read bounder then EOF");
-               int b2 = read(is);
-               if (b2 == -1) throw new RuntimeException("Unexpected end of request, read bounder then EOF");
+			return result;
+		}
 
-               if (b1 == '\r' && b2 == '\n')
-               {
-                  if (currPart != null) currPart.endBody(pointer - 4 - boundaryBytes.length);
-                  else
-                  {
-                     preambleEnd = pointer - 4 - boundaryBytes.length;
-                  }
-                  currPart = createPart();
-                  extractPart(is);
-               }
-               else if (b1 == '-' && b2 == '-')
-               {
-                  if (currPart != null) currPart.endBody(pointer - 4 - boundaryBytes.length);
-                  else
-                  {
-                     preambleEnd = pointer - 4 - boundaryBytes.length;
-                  }
-                  break;
-               }
-               else
-               {
-                  throw new RuntimeException("Found boundary but no trailing \\r\\n or --");
-               }
-               index = 0;
+		public MultivaluedMap<String, String> getHeaders() {
+			return headers;
+		}
 
-            }
-         }
-         else
-         {
-            index = 0;
-         }
-      }
-      buffer = baos.toByteArray();
-   }
+		public MediaType getMediaType() {
+			return contentType;
+		}
+	}
 
-   protected void extractPart(InputStream is)
-           throws IOException
-   {
-      parts.add(currPart);
-      String line = null;
-      do
-      {
-         line = readLine(is);
-         if (!"".equals(line))
-         {
-            currPart.addHeader(line);
-         }
+	public static void main(String[] args) throws Exception {
+		String input = "URLSTR: file:/Users/billburke/jboss/resteasy-jaxrs/resteasy-jaxrs/src/test/test-data/data.txt\r\n"
+				+ "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
+				+ "Content-Disposition: form-data; name=\"part1\"\r\n"
+				+ "Content-Type: text/plain; charset=US-ASCII\r\n"
+				+ "Content-Transfer-Encoding: 8bit\r\n"
+				+ "\r\n"
+				+ "This is Value 1\r\n"
+				+ "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
+				+ "Content-Disposition: form-data; name=\"part2\"\r\n"
+				+ "Content-Type: text/plain; charset=US-ASCII\r\n"
+				+ "Content-Transfer-Encoding: 8bit\r\n"
+				+ "\r\n"
+				+ "This is Value 2\r\n"
+				+ "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
+				+ "Content-Disposition: form-data; name=\"data.txt\"; filename=\"data.txt\"\r\n"
+				+ "Content-Type: application/octet-stream; charset=ISO-8859-1\r\n"
+				+ "Content-Transfer-Encoding: binary\r\n"
+				+ "\r\n"
+				+ "hello world\r\n" + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3--";
+		ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes());
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("boundary", "B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3");
+		MediaType contentType = new MediaType("multipart", "form-data",
+				parameters);
+		MultipartInputImpl multipart = new MultipartInputImpl(contentType, null);
+		multipart.parse(bais);
 
-      } while (line.length() > 0);
-      currPart.startBody(pointer);
-   }
+		System.out.println(multipart.getPreamble());
+		System.out.println("**********");
+		for (InputPart part : multipart.getParts()) {
+			System.out.println("--");
+			System.out.println("\"" + part.getBodyAsString() + "\"");
+		}
+		System.out.println("done");
 
-   public String getPreamble()
-   {
-      if (preambleEnd < 0) return null;
-      return new String(buffer, 0, preambleEnd);
-   }
-
-   public String getBufferAsString()
-   {
-      return new String(buffer);
-   }
-
-   protected String readLine(InputStream is) throws IOException
-   {
-      StringBuffer buf = new StringBuffer();
-      while (true)
-      {
-         int b = read(is);
-         if (b == -1) throw new RuntimeException("Unexpected end of buffer");
-         if (b == '\r')
-         {
-            b = read(is);
-            if (b == '\n') return buf.toString();
-            else
-            {
-               buf.append('\r').append((char) b);
-            }
-         }
-         else
-         {
-            buf.append((char) b);
-         }
-
-      }
-   }
-
-   protected int read(InputStream is)
-           throws IOException
-   {
-      int b = is.read();
-      if (b == -1) return -1;
-      baos.write(b);
-      pointer++;
-      return b;
-   }
-
-   public static void main(String[] args) throws Exception
-   {
-      String input = "URLSTR: file:/Users/billburke/jboss/resteasy-jaxrs/resteasy-jaxrs/src/test/test-data/data.txt\r\n" +
-              "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n" +
-              "Content-Disposition: form-data; name=\"part1\"\r\n" +
-              "Content-Type: text/plain; charset=US-ASCII\r\n" +
-              "Content-Transfer-Encoding: 8bit\r\n" +
-              "\r\n" +
-              "This is Value 1\r\n" +
-              "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n" +
-              "Content-Disposition: form-data; name=\"part2\"\r\n" +
-              "Content-Type: text/plain; charset=US-ASCII\r\n" +
-              "Content-Transfer-Encoding: 8bit\r\n" +
-              "\r\n" +
-              "This is Value 2\r\n" +
-              "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n" +
-              "Content-Disposition: form-data; name=\"data.txt\"; filename=\"data.txt\"\r\n" +
-              "Content-Type: application/octet-stream; charset=ISO-8859-1\r\n" +
-              "Content-Transfer-Encoding: binary\r\n" +
-              "\r\n" +
-              "hello world\r\n" +
-              "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3--";
-      ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes());
-      MultipartInputImpl multipart = new MultipartInputImpl("B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3", null);
-      multipart.parse(bais);
-
-      System.out.println(multipart.getPreamble());
-      System.out.println("**********");
-      for (InputPart part : multipart.getParts())
-      {
-         System.out.println("--");
-         System.out.println("\"" + part.getBodyAsString() + "\"");
-      }
-      System.out.println("done");
-
-   }
+	}
 }

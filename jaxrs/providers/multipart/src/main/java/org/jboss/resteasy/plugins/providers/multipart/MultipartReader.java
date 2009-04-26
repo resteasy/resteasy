@@ -35,7 +35,7 @@ public class MultipartReader implements MessageBodyReader<MultipartInput>
    {
       String boundary = mediaType.getParameters().get("boundary");
       if (boundary == null) throw new IOException("Unable to get boundary for multipart");
-      MultipartInputImpl input = new MultipartInputImpl(boundary, workers);
+      MultipartInputImpl input = new MultipartInputImpl(mediaType, workers);
       /*
       StringWriter writer = new StringWriter();
       int b;
