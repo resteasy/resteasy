@@ -7,6 +7,7 @@ import static org.jboss.resteasy.test.TestPortProvider.createURL;
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,7 +31,6 @@ import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.BaseClientResponse;
-import org.jboss.resteasy.client.core.executors.URLConnectionClientExecutor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.smoke.SimpleResource;
@@ -86,6 +86,11 @@ public class ClientResponseTest
       @Consumes("text/plain")
       void putBasic(String body);
 
+      @PUT
+      @Path("basic")
+      @Consumes("text/plain")
+      void putBasicInputStream(InputStream body);
+      
       @PUT
       @Path("basic")
       @Consumes("text/plain")
