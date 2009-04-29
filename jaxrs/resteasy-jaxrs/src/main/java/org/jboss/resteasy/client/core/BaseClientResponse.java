@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.core;
 
 import static java.lang.String.format;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -8,12 +9,11 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
 
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
 import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.core.messagebody.ReaderUtility;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -192,7 +192,8 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          }
          finally
          {
-            releaseConnection();
+            if(!InputStream.class.isAssignableFrom(type))
+               releaseConnection();
          }
       }
       return (T2) unmarshaledEntity;
@@ -212,36 +213,29 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected <T2> Object readFrom(Class<T2> type, Type genericType,
          MediaType media, Annotation[] annotations)
    {
-      Type genType = genericType == null ? type : genericType;
-      MessageBodyReader<T2> reader = getReader(type, annotations, media, media,
-            genType);
       try
       {
-         MessageBodyReaderContextImpl ctx = new MessageBodyReaderContextImpl(
-               messageBodyReaderInterceptors, reader, type, genType,
-               annotations, media, getHeaders(), streamFactory.getInputStream());
-         return ctx.proceed();
+         ReaderUtility reader = new ReaderUtility(providerFactory,
+               messageBodyReaderInterceptors)
+         {
+            @Override
+            public RuntimeException createReaderNotFound(Type genericType,
+                  MediaType mediaType)
+            {
+               return createResponseFailure(format(
+                     "Unable to find a MessageBodyReader of content-type %s and type %s",
+                     mediaType, genericType));
+            }
+         };
+         return reader.doRead(type, genericType == null ? type : genericType,
+               media, this.annotations, getHeaders(), streamFactory
+                     .getInputStream());
       }
       catch (IOException e)
       {
-         this.exception = e;
-         String msg = "Failure reading from MessageBodyReader: " + reader.getClass().getName();
-         throw createResponseFailure(msg, e);
+         String msg = "Failure reading from MessageBodyReader for conten-type: %s and type %s";
+         throw createResponseFailure(format(msg, media.toString(), type.getName()), e);
       }
-   }
-
-   protected <T2> MessageBodyReader<T2> getReader(Class<T2> type,
-         Annotation[] anns, MediaType mediaType, MediaType media, Type genType)
-   {
-      MessageBodyReader<T2> reader = providerFactory.getMessageBodyReader(type, genType, anns, mediaType);
-
-      if (reader == null)
-      {
-         throw createResponseFailure(format(
-               "Unable to find a MessageBodyReader of content-type %s and type %s",
-               mediaType, type.getName()));
-      }
-      return reader;
    }
 
    @Override

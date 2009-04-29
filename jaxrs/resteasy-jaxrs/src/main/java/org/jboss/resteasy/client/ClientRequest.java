@@ -57,7 +57,6 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    private Annotation[] bodyAnnotations;
    private MediaType bodyContentType;
    private boolean followRedirects;
-   private MessageBodyWriter writer;
    private String httpMethod;
    private String finalUri;
    private List<String> pathParameterList;
@@ -369,31 +368,27 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
          OutputStream outputStream) throws IOException
    {
       if (body == null)
+      {
          return;
+      }
+
       if (getWriterInterceptorList().isEmpty())
+      {
          setWriterInterceptors(providerFactory
                .getClientMessageBodyWriterInterceptorRegistry().bindForList(
                      null, null));
+      }
+      MessageBodyWriter writer = providerFactory
+            .getMessageBodyWriter(bodyType, bodyGenericType,
+                  bodyAnnotations, bodyContentType);
       if (writer == null)
       {
-         writer = providerFactory
-               .getMessageBodyWriter(getBodyType(), getBodyGenericType(),
-                     getBodyAnnotations(), getBodyContentType());
+         throw new RuntimeException("could not find writer for content-type "
+               + bodyContentType + " type: " + bodyType.getName());
       }
-      if (getWriterInterceptorList().isEmpty())
-      {
-         MessageBodyWriterContextImpl ctx = new MessageBodyWriterContextImpl(
-               getWriterInterceptors(), writer, body, bodyType,
-               bodyGenericType, bodyAnnotations, bodyContentType, headers,
-               outputStream);
-         ctx.proceed();
-      }
-      else
-      {
-         writer.writeTo(body, bodyType, bodyGenericType, bodyAnnotations,
-               bodyContentType, headers, outputStream);
-      }
-
+      new MessageBodyWriterContextImpl(getWriterInterceptors(), writer, body,
+            bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
+            headers, outputStream).proceed();
    }
 
    public ClientResponse get() throws Exception
