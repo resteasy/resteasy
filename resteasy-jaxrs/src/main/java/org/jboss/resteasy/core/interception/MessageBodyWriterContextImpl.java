@@ -109,7 +109,7 @@ public class MessageBodyWriterContextImpl implements MessageBodyWriterContext
 
    public void proceed() throws IOException, WebApplicationException
    {
-      if (index >= interceptors.length)
+      if (interceptors == null || index >= interceptors.length)
       {
          writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
       }
