@@ -16,7 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author <a href="mailto:bill@burkecentral.com">BillBurke</a>
  * @version $Revision: 1 $
  */
 @Provider
@@ -36,7 +36,7 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return type.equals(InputStream.class);
+      return InputStream.class.isAssignableFrom(type);
    }
 
    public long getSize(InputStream inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
