@@ -8,6 +8,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -173,14 +174,14 @@ public class Encode
    public static MultivaluedMap<String, String> decode(MultivaluedMap<String, String> map)
    {
       MultivaluedMapImpl<String, String> decoded = new MultivaluedMapImpl<String, String>();
-      for (String key : map.keySet())
+      for (Map.Entry<String, List<String>> entry : map.entrySet())
       {
-         List<String> values = map.get(key);
+         List<String> values = entry.getValue();
          for (String value : values)
          {
             try
             {
-               decoded.add(URLDecoder.decode(key, "UTF-8"), URLDecoder.decode(value, "UTF-8"));
+               decoded.add(URLDecoder.decode(entry.getKey(), "UTF-8"), URLDecoder.decode(value, "UTF-8"));
             }
             catch (UnsupportedEncodingException e)
             {
@@ -194,14 +195,14 @@ public class Encode
    public static MultivaluedMap<String, String> encode(MultivaluedMap<String, String> map)
    {
       MultivaluedMapImpl<String, String> decoded = new MultivaluedMapImpl<String, String>();
-      for (String key : map.keySet())
+      for (Map.Entry<String, List<String>> entry : map.entrySet())
       {
-         List<String> values = map.get(key);
+         List<String> values = entry.getValue();
          for (String value : values)
          {
             try
             {
-               decoded.add(URLEncoder.encode(key, "UTF-8"), URLEncoder.encode(value, "UTF-8"));
+               decoded.add(URLEncoder.encode(entry.getKey(), "UTF-8"), URLEncoder.encode(value, "UTF-8"));
             }
             catch (UnsupportedEncodingException e)
             {

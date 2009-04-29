@@ -56,7 +56,7 @@ public class HttpServletDispatcher extends HttpServlet
       }
       servletMappingPrefix = servletConfig.getServletContext().getInitParameter("resteasy.servlet.mapping.prefix");
       if (servletMappingPrefix == null) servletMappingPrefix = "";
-      servletMappingPrefix.trim();
+      servletMappingPrefix = servletMappingPrefix.trim();
    }
 
    public void setDispatcher(Dispatcher dispatcher)

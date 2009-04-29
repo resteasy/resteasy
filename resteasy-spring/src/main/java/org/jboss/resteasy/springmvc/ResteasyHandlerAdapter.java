@@ -102,7 +102,7 @@ public class ResteasyHandlerAdapter extends
                jaxrsResponse.outputHeaders(response);
                return (ModelAndView) entity;
             }
-            return (jaxrsResponse == null) ? null : createModelAndView(jaxrsResponse);
+            return createModelAndView(jaxrsResponse);
          }
          catch (Exception e)
          {

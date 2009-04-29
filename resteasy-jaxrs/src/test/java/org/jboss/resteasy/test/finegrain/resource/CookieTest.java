@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -648,8 +649,9 @@ public class CookieTest
          sb.append(indent + "Verifying the following keys in Response:" +
                  newline);
          String actual, expected = null;
-         for (String key : expected_map.keySet())
+         for (Map.Entry<String, String> entry : expected_map.entrySet())
          {
+            String key = entry.getKey();
             if (!mvp.containsKey(key))
             {
                pass = false;
@@ -664,7 +666,7 @@ public class CookieTest
             }
             else
             {
-               expected = expected_map.get(key).toLowerCase();
+               expected = entry.getValue().toLowerCase();
                actual = mvp.getFirst(key).toString().toLowerCase();
 
                if (actual.startsWith("\"") && actual.endsWith("\""))
@@ -679,12 +681,12 @@ public class CookieTest
                           " found in Response, but with different value;" +
                           newline);
                   sb.append(indent + indent + "Expecting " +
-                          expected_map.get(key) +
+                          entry.getValue() +
                           "; got " + mvp.getFirst(key) + newline);
                }
                sb.append(indent + indent + "Processed key " + key +
                        " with expected value " +
-                       expected_map.get(key) + newline);
+                       entry.getValue() + newline);
             }
          }
       }
@@ -713,16 +715,17 @@ public class CookieTest
               resp.getMetadata();
 
 
-      for (String key : mvp.keySet())
+      for (Map.Entry<String, List<Object>> entry : mvp.entrySet())
       {
+         String key = entry.getKey();
          sb.append(indent + "Processing Key found in response: " + key + ": " +
-                 mvp.get(key) + "; " + newline);
+                 entry.getValue() + "; " + newline);
 
          if (key.equalsIgnoreCase("Vary"))
          {
             for (String value : var)
             {
-               String actual = mvp.get(key).toString().toLowerCase();
+               String actual = entry.getValue().toString().toLowerCase();
                if (actual.indexOf(value) < 0)
                {
                   pass = false;
@@ -741,7 +744,7 @@ public class CookieTest
          {
             if (key.toString().equalsIgnoreCase("Content-encoding"))
             {
-               for (Object enc : mvp.get(key))
+               for (Object enc : entry.getValue())
                {
                   if (!encoding.contains(enc.toString().toLowerCase()))
                   {
@@ -757,7 +760,7 @@ public class CookieTest
          {
             if (key.toString().equalsIgnoreCase("Content-language"))
             {
-               for (Object lang : mvp.get(key))
+               for (Object lang : entry.getValue())
                {
                   if (!language.contains(lang.toString()))
                   {
@@ -781,7 +784,7 @@ public class CookieTest
          {
             if (key.toString().equalsIgnoreCase("Content-Type"))
             {
-               for (Object lang : mvp.get(key))
+               for (Object lang : entry.getValue())
                {
                   if (!type.contains(lang.toString().toLowerCase()))
                   {
@@ -802,7 +805,7 @@ public class CookieTest
             }
             if (key.toString().equalsIgnoreCase("Cache-Control"))
             {
-               for (Object all_ccl : mvp.get(key))
+               for (Object all_ccl : entry.getValue())
                {
                   for (String cc : ccl)
                   {
@@ -828,7 +831,7 @@ public class CookieTest
             }
             if (key.toString().equalsIgnoreCase("Set-Cookie"))
             {
-               for (Object nck_actual : mvp.get(key))
+               for (Object nck_actual : entry.getValue())
                {
                   sb.append(indent + indent + "Processing " +
                           nck_actual.toString() +

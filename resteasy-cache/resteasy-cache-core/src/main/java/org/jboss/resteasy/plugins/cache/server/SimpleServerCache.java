@@ -66,9 +66,9 @@ public class SimpleServerCache implements ServerCache
    {
       Map<MediaType, CacheEntry> entry = cache.get(uri);
       if (entry == null || entry.isEmpty()) return null;
-      for (MediaType produce : entry.keySet())
+      for (Map.Entry<MediaType, CacheEntry> produce : entry.entrySet())
       {
-         if (accept.isCompatible(produce)) return entry.get(produce);
+         if (accept.isCompatible(produce.getKey())) return produce.getValue();
       }
       return null;
    }

@@ -85,7 +85,13 @@ public final class JAXBCache
    {
       String contextPath = buildContextPath(packageNames);
       logger.debug("Locating JAXBContext for packages: {}", contextPath);
-      return getJAXBContext(contextPath, null);
+      // FIXME This was the original call causing an infinitive recursive loop.
+      // However I don't know how to fix it, but this method is not used currently
+      // so instead of fixing it modified it to return a null and not going into
+      // recursive loop for now.
+
+      // return getJAXBContext(contextPath, null);
+      return null;
    }
 
    /**

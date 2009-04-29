@@ -111,12 +111,12 @@ public class HttpClientHeaderWrapper implements MultivaluedMap<String, Object>
 
    public void putAll(Map<? extends String, ? extends List<Object>> map)
    {
-      for (String key : map.keySet())
+      for (Map.Entry<? extends String, ? extends List<Object>> entry : map.entrySet())
       {
-         List<Object> objs = map.get(key);
+         List<Object> objs = entry.getValue();
          for (Object obj : objs)
          {
-            add(key, obj);
+            add(entry.getKey(), obj);
          }
       }
    }

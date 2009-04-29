@@ -5,6 +5,8 @@ import org.jboss.resteasy.spi.LoggableFailure;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import java.io.Serializable;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,8 +27,8 @@ public class MediaTypeHelper
       if (consume == null)
       {
          consume = (Consumes) declaring.getAnnotation(Consumes.class);
+         if (consume == null) return null;
       }
-      if (consume == null) return null;
       return MediaType.valueOf(consume.value()[0]);
    }
 
@@ -98,8 +100,10 @@ public class MediaTypeHelper
       return (isCompositeWildcardSubtype(subtype) || isWildcardCompositeSubtype(subtype));
    }
 
-   private static class MediaTypeComparator implements Comparator<MediaType>
+   private static class MediaTypeComparator implements Comparator<MediaType>, Serializable
    {
+
+      private static final long serialVersionUID = -5828700121582498092L;
 
       public int compare(MediaType mediaType2, MediaType mediaType)
       {
@@ -228,10 +232,11 @@ public class MediaTypeHelper
       if (numParams1 != numParams2) return false;
       if (numParams1 == 0) return true;
 
-      for (String key : params1.keySet())
+      for (Map.Entry<String, String> entry : params1.entrySet())
       {
+         String key = entry.getKey();
          if (key.equals("q")) continue;
-         String value = params1.get(key);
+         String value = entry.getValue();
          String value2 = params2.get(key);
          if (value == value2) continue; // both null
          if (value == null || value2 == null) return false;

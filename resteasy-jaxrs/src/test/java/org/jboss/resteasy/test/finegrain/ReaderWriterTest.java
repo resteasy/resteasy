@@ -46,7 +46,7 @@ public class ReaderWriterTest
 
       public TestObject(byte[] buff)
       {
-         this.value = new String(value);
+         this.value = new String(buff);
       }
    }
 

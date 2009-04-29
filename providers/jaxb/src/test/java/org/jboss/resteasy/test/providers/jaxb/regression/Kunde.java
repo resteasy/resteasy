@@ -48,7 +48,7 @@ public abstract class Kunde implements java.io.Serializable
 
    // Alternativen: TABLE, SEQUENCE, IDENTITY, AUTO, NONE (=default)
    @XmlAttribute(name = "id", required = true)
-   protected Long id = new Long(-1);
+   protected Long id = -1L;
 
    @XmlTransient
    protected int version = 0;

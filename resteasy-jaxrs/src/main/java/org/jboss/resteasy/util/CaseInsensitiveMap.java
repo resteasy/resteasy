@@ -416,12 +416,12 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
 
    public void putAll(Map<? extends String, ? extends List<V>> map)
    {
-      for (String key : map.keySet())
+      for (Map.Entry<? extends String, ? extends List<V>> entry : map.entrySet())
       {
-         List<V> objs = map.get(key);
+         List<V> objs = entry.getValue();
          for (V obj : objs)
          {
-            add(key, obj);
+            add(entry.getKey(), obj);
          }
       }
    }

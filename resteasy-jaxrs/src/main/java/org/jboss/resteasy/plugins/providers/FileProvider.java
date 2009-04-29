@@ -94,40 +94,23 @@ public class FileProvider implements MessageBodyReader<File>,
 
    public long getSize(File o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      if (o instanceof File)
-      {
-         return ((File) o).length();
-      }
-      else
-      {
-         System.err
-                 .println("FileProvider.getSize - something went wrong, as parameter is not a File!");
-
-         return -1;
-      }
+      return o.length();
    }
 
-   public void writeTo(File o, Class<?> type, Type genericType,
+   public void writeTo(File uploadFile, Class<?> type, Type genericType,
                        Annotation[] annotations, MediaType mediaType,
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException
    {
-      if (o instanceof File)
-      {
-         File uploadFile = (File) o;
-         InputStream inputStream = new BufferedInputStream(new FileInputStream(uploadFile));
+      InputStream inputStream = new BufferedInputStream(new FileInputStream(uploadFile));
 
-         try
-         {
-            ProviderHelper.writeTo(inputStream, entityStream);
-         }
-         finally
-         {
-            inputStream.close();
-         }
+      try
+      {
+         ProviderHelper.writeTo(inputStream, entityStream);
       }
-      else
-         System.err
-                 .println("FileProvider.writeTo - parameter is not a File!");
+      finally
+      {
+         inputStream.close();
+      }
    }
 }

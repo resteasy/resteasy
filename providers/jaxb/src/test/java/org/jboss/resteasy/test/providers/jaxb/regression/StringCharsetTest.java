@@ -50,7 +50,7 @@ public class StringCharsetTest extends BaseResourceTest
       @Produces("text/html;charset=UTF-8")
       public String getTestHTML()
       {
-         return new String("<html><body>Test " + (char) 353 + (char) 273 + (char) 382 + (char) 269 + "</body></html>");
+         return "<html><body>Test " + (char) 353 + (char) 273 + (char) 382 + (char) 269 + "</body></html>";
       }
 
       @GET
