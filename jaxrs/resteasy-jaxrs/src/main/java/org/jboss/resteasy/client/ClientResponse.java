@@ -97,4 +97,6 @@ public abstract class ClientResponse<T> extends Response
     * @return
     */
    public abstract <T2> T2 getEntity(GenericType<T2> type, Annotation[] annotations);
+   
+   public abstract void releaseConnection();
 }
