@@ -21,6 +21,7 @@ package javax.ws.rs.ext;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
@@ -123,7 +124,10 @@ class FactoryFinder
             }
          }
       }
-      catch (Exception ex)
+      catch (IOException ex)
+      {
+      }
+      catch (RuntimeException ex)
       {
       }
 
@@ -137,12 +141,20 @@ class FactoryFinder
          if (f.exists())
          {
             Properties props = new Properties();
-            props.load(new FileInputStream(f));
+            InputStream is = new FileInputStream(f);
+            try {
+                props.load(is);
+            } finally {
+                is.close();
+            }
             String factoryClassName = props.getProperty(factoryId);
             return newInstance(factoryClassName, classLoader);
          }
       }
-      catch (Exception ex)
+      catch (IOException ex)
+      {
+      }
+      catch (RuntimeException ex)
       {
       }
 

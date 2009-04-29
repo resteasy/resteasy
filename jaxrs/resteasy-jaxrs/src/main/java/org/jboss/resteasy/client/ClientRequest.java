@@ -594,15 +594,12 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       UriBuilderImpl builder = (UriBuilderImpl) uri.clone();
       if (matrixParameters != null)
       {
-         if (matrixParameters != null)
+         for (Map.Entry<String, List<String>> entry : matrixParameters
+               .entrySet())
          {
-            for (Map.Entry<String, List<String>> entry : matrixParameters
-                  .entrySet())
-            {
-               List<String> values = entry.getValue();
-               for (String value : values)
-                  builder.matrixParam(entry.getKey(), value);
-            }
+            List<String> values = entry.getValue();
+            for (String value : values)
+               builder.matrixParam(entry.getKey(), value);
          }
       }
       if (queryParameters != null)

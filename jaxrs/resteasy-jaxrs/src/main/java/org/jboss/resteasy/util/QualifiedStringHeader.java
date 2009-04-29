@@ -91,10 +91,11 @@ public class QualifiedStringHeader
       if (numParams1 != numParams2) return false;
       if (numParams1 == 0) return true;
 
-      for (String key : params1.keySet())
+      for (Map.Entry<String, String> entry : params1.entrySet())
       {
+         String key = entry.getKey();
          if (key.equals("q")) continue;
-         String value = params1.get(key);
+         String value = entry.getValue();
          String value2 = params2.get(key);
          if (value == value2) continue; // both null
          if (value == null || value2 == null) return false;

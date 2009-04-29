@@ -204,10 +204,10 @@ public class ResteasyBootstrap implements ServletContextListener
       {
          Map<String, String> map = parseMap(mimeExtentions);
          Map<String, MediaType> extMap = new HashMap<String, MediaType>();
-         for (String ext : map.keySet())
+         for (Map.Entry<String, String> ext : map.entrySet())
          {
-            String value = map.get(ext);
-            extMap.put(ext, MediaType.valueOf(value));
+            String value = ext.getValue();
+            extMap.put(ext.getKey(), MediaType.valueOf(value));
          }
          if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
          else dispatcher.setMediaTypeMappings(extMap);

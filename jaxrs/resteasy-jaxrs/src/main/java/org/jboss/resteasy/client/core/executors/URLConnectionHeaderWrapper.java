@@ -114,11 +114,11 @@ public class URLConnectionHeaderWrapper implements MultivaluedMap<String, String
 
    public void putAll(Map<? extends String, ? extends List<String>> map)
    {
-      for (String key : map.keySet())
+      for (Map.Entry<? extends String, ? extends List<String>> entry : map.entrySet())
       {
-         for (String obj : map.get(key))
+         for (String obj : entry.getValue())
          {
-            add(key, obj);
+            add(entry.getKey(), obj);
          }
       }
    }

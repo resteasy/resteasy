@@ -3,6 +3,8 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.core.MediaType;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,7 +27,7 @@ public class MediaTypeMap<T>
       Class getType();
    }
 
-   private static class TypedEntryComparator implements Comparator<Entry>
+   private static class TypedEntryComparator implements Comparator<Entry>, Serializable
    {
       private Class type;
 

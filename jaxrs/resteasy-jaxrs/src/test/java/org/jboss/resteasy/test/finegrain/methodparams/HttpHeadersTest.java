@@ -17,7 +17,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -144,11 +143,9 @@ public class HttpHeadersTest extends BaseResourceTest
 
                sb.append("MediaType size=" + pmap.size());
 
-               Iterator k = pmap.keySet().iterator();
-               while (k.hasNext())
+               for (Map.Entry<String, String> entry : pmap.entrySet())
                {
-                  String key = (String) k.next();
-                  sb.append("Key " + key + "; Value " + (String) pmap.get(key));
+                  sb.append("Key " + entry.getKey() + "; Value " + entry.getValue());
                }
 
                sb.append(mt.toString());
@@ -180,10 +177,9 @@ public class HttpHeadersTest extends BaseResourceTest
             Map<String, Cookie> cookies = hs.getCookies();
             sb.append("Cookie Size=" + cookies.size());
 
-            Set<String> keys = cookies.keySet();
-            for (String tmp : keys)
+            for (Map.Entry<String, Cookie> tmp : cookies.entrySet())
             {
-               sb.append(tmp + ": " + cookies.get(tmp) + "; ");
+               sb.append(tmp.getKey() + ": " + tmp.getValue() + "; ");
                Cookie c = cookies.get("name1");
                sb.append("Cookie Name=" + c.getName());
                sb.append("Cookie Value=" + c.getValue());

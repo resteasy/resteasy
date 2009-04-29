@@ -17,15 +17,17 @@ public class JsonParsing
       boolean quote = false;
       boolean backslash = false;
 
-      char c = (char) reader.read();
+      int i = reader.read();
+      char c = (char) i;
       StringBuffer buffer = new StringBuffer();
       if (c != '{') throw new JAXBUnmarshalException("Expecting '{' in json map");
 
       buffer.append(c);
       do
       {
-         c = (char) reader.read();
-         if (c == -1) throw new JAXBUnmarshalException("Unexpected end of stream");
+         i = reader.read();
+         if (i == -1) throw new JAXBUnmarshalException("Unexpected end of stream");
+         c = (char) i;
          buffer.append(c);
          if (backslash)
          {
@@ -57,7 +59,7 @@ public class JsonParsing
                }
             }
          }
-      } while (openBrace > 0 && c != -1);
+      } while (openBrace > 0 && i != -1);
       return buffer.toString();
    }
 
@@ -66,14 +68,16 @@ public class JsonParsing
       boolean quote = true;
       boolean backslash = false;
 
-      char c = (char) reader.read();
+      int i = reader.read();
+      char c = (char) i;
       StringBuffer buffer = new StringBuffer();
       if (c != '"') throw new JAXBUnmarshalException("Expecting '\"' in json map key");
 
       do
       {
-         c = (char) reader.read();
-         if (c == -1) throw new JAXBUnmarshalException("Unexpected end of stream");
+         i = reader.read();
+         if (i == -1) throw new JAXBUnmarshalException("Unexpected end of stream");
+         c = (char) i;
          if (backslash)
          {
             buffer.append(c);
@@ -99,19 +103,21 @@ public class JsonParsing
 
             }
          }
-      } while (quote && c != -1);
+      } while (quote && i != -1);
       return buffer.toString();
    }
 
    protected static char eatWhitspace(Reader buffer, boolean reset)
            throws IOException
    {
+      int i;
       char c;
       do
       {
          buffer.mark(2);
-         c = (char) buffer.read();
-         if (c == -1) new JAXBUnmarshalException("Unexpected end of json input");
+         i = buffer.read();
+         if (i == -1) throw new JAXBUnmarshalException("Unexpected end of json input");
+         c = (char) i;
       } while (Character.isWhitespace(c));
       if (reset) buffer.reset();
       return c;

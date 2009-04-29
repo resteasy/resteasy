@@ -149,7 +149,7 @@ public class ServerResponse extends Response
       }
 
       Type generic = genericType;
-      Class type = entity == null ? null : entity.getClass();
+      Class type = entity.getClass();
       Object ent = entity;
       if (entity instanceof GenericEntity)
       {
