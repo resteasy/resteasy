@@ -1,7 +1,5 @@
 package org.jboss.resteasy.examples.springmvc;
 
-import java.io.IOException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,7 +10,6 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.messagebody.WriterUtility;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
@@ -49,9 +46,9 @@ public class ContactsTest
    @BeforeClass
    public static void setup()
    {
-      // server = new
-      // TJWSEmbeddedSpringMVCServer("classpath:springmvc-servlet.xml", 8080);
-      // server.start();
+      server = new TJWSEmbeddedSpringMVCServer(
+            "classpath:springmvc-servlet.xml", 8080);
+      server.start();
 
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       proxy = ProxyFactory.create(ContactProxy.class, host);
@@ -63,9 +60,8 @@ public class ContactsTest
       server.stop();
    }
 
-   @Ignore
    @Test
-   public void performTest()
+   public void testData()
    {
       Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
       String duskisUri = (String) response.getMetadata().getFirst(
@@ -85,13 +81,5 @@ public class ContactsTest
    public void readHTML()
    {
       System.out.println(proxy.getString(ContactsResource.CONTACTS_URL));
-   }
-
-   @Test
-   public void writeJson() throws IOException
-   {
-      Contact contact = new Contact("Solomon", "Duskis");
-      System.out.println(WriterUtility.asString(contact,
-            MediaType.APPLICATION_JSON));
    }
 }
