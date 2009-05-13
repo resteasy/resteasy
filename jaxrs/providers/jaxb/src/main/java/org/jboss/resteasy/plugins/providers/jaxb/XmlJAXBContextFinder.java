@@ -37,7 +37,7 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
       if (jaxb != null)
       {
          cache.putIfAbsent((Class<?>) type, jaxb);
-         result = jaxb;
+         return jaxb;
       }
       jaxb = createContext(parameterAnnotations, type);
       if (jaxb != null) cache.putIfAbsent((Class<?>) type, jaxb);
