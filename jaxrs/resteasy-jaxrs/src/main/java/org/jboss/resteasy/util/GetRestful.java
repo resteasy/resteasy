@@ -19,21 +19,7 @@ public class GetRestful
     */
    public static Class getRootResourceClass(Class clazz)
    {
-      if (clazz.isAnnotationPresent(Path.class))
-      {
-
-         return clazz;
-      }
-      // ok, no @Path or @HttpMethods so look in interfaces.
-      Class[] intfs = clazz.getInterfaces();
-      for (Class intf : intfs)
-      {
-         if (intf.isAnnotationPresent(Path.class))
-         {
-            return intf;
-         }
-      }
-      return null;
+      return AnnotationResolver.getClassWithAnnotation(clazz, Path.class);
    }
 
    /**
