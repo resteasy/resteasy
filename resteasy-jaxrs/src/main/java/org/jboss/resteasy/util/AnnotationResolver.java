@@ -18,7 +18,7 @@ public class AnnotationResolver
          }
       }
       Class superClass = clazz.getSuperclass();
-      if (superClass != Object.class)
+      if (superClass != Object.class && superClass != null)
       {
          return getClassWithAnnotation(superClass, annotation);
       }
