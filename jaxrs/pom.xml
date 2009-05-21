@@ -74,6 +74,7 @@
         <module>resteasy-jaxrs</module>
         <module>providers</module>
         <module>resteasy-jaxrs-war</module>
+        <module>resteasy-maven-import</module>
         <module>resteasy-cache</module>
         <module>async-http-jbossweb</module>
         <module>async-http-tomcat</module>
