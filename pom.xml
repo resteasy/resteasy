@@ -76,6 +76,7 @@
         <module>resteasy-jaxrs-war</module>
         <module>resteasy-maven-import</module>
         <module>resteasy-cache</module>
+        <module>resteasy-guice</module>
         <module>async-http-jbossweb</module>
         <module>async-http-tomcat</module>
         <module>resteasy-spring</module>
