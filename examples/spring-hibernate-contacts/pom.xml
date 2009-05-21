@@ -31,6 +31,17 @@
             <url>http://scannotation.sf.net/maven2</url>
         </repository>
     </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-maven-import</artifactId>
+                <version>1.1.GA</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
@@ -47,7 +58,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.1.GA</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>
@@ -67,7 +77,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-spring</artifactId>
-            <version>1.1.GA</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
