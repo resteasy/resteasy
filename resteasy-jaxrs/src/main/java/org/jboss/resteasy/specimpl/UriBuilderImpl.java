@@ -502,12 +502,12 @@ public class UriBuilderImpl extends UriBuilder
             }
          }
          map.remove(name);
-         for (Map.Entry<String, List<String>> theName : map.entrySet())
+         for (String theName : map.keySet())
          {
-            List<String> vals = theName.getValue();
+            List<String> vals = map.get(theName);
             for (Object val : vals)
             {
-               path += ";" + theName.getKey() + "=" + val.toString();
+               path += ";" + theName + "=" + val.toString();
             }
          }
       }

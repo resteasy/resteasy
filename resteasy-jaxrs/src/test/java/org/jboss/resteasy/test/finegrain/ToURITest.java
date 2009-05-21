@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
 import junit.framework.Assert;
-
 import org.jboss.resteasy.spi.touri.ObjectToURI;
 import org.jboss.resteasy.spi.touri.URIResolver;
 import org.jboss.resteasy.spi.touri.URITemplate;
@@ -35,7 +34,6 @@ public class ToURITest
 
    public class URIableObject implements URIable
    {
-      @Override
       public String toURI()
       {
          return "/my-url";
@@ -51,7 +49,7 @@ public class ToURITest
    {
       ObjectToURI instance = ObjectToURI.getInstance();
       Assert.assertEquals("/foo/123", instance
-            .resolveURI(new URITemplateObject(123)));
+              .resolveURI(new URITemplateObject(123)));
       Assert.assertEquals("/my-url", instance.resolveURI(new URIableObject()));
    }
 
@@ -61,13 +59,11 @@ public class ToURITest
       ObjectToURI instance = ObjectToURI.getInstance();
       instance.registerURIResolver(new URIResolver()
       {
-         @Override
          public boolean handles(Class<?> type)
          {
             return type == CustomURIableObject.class;
          }
 
-         @Override
          public String resolveURI(Object object)
          {
             return "/some-other-uri";
