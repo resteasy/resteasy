@@ -41,7 +41,7 @@ public class ResourceTest
             binder.bind(TestResource.class).to(TestResourceSimple.class);
          }
       };
-      final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry());
+      final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.process(module);
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("name", resource.getName());
@@ -59,7 +59,7 @@ public class ResourceTest
             binder.bind(TestResource.class).to(TestResourceInjected.class);
          }
       };
-      final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry());
+      final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.process(module);
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("injected-name", resource.getName());

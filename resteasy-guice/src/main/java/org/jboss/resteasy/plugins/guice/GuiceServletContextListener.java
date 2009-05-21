@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.guice;
 
 import com.google.inject.Module;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,8 @@ public class GuiceServletContextListener implements ServletContextListener
    {
       final ServletContext context = event.getServletContext();
       final Registry registry = (Registry) context.getAttribute(Registry.class.getName());
-      final ModuleProcessor processor = new ModuleProcessor(registry);
+      final ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) context.getAttribute(ResteasyProviderFactory.class.getName());
+      final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
       final List<Module> modules = getModules(context);
       processor.process(modules);
    }
