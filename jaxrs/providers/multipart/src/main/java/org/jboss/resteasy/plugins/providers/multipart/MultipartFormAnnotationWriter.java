@@ -25,23 +25,23 @@ import java.lang.reflect.Type;
  */
 @Provider
 @Produces("multipart/form-data")
-public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWriter implements MessageBodyWriter
+public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWriter implements MessageBodyWriter<Object>
 {
-   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return FindAnnotation.findAnnotation(annotations, MultipartForm.class) != null || type.isAnnotationPresent(MultipartForm.class);
    }
 
-   public long getSize(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   public void writeTo(Object obj, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+   public void writeTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       MultipartFormDataOutput multipart = new MultipartFormDataOutput();
 
-      Class theType = type;
+      Class<?> theType = type;
       while (theType != null && !theType.equals(Object.class))
       {
          getFields(theType, multipart, obj);
@@ -77,7 +77,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
 
    }
 
-   protected void getFields(Class type, MultipartFormDataOutput output, Object obj)
+   protected void getFields(Class<?> type, MultipartFormDataOutput output, Object obj)
            throws IOException
    {
       for (Field field : type.getDeclaredFields())

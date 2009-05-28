@@ -47,6 +47,11 @@ public class MultipartRelatedOutput extends MultipartOutput {
 	 * @param contentId
 	 *            the Content-ID to be used as identification for the current
 	 *            part, optional, if null one will be generated
+	 * @param contentTransferEncoding
+	 *            The value to be used for the Content-Transfer-Encoding header
+	 *            field of the part. It's optional, if you don't want to set
+	 *            this pass null. Example values are: "7bit",
+	 *            "quoted-printable", "base64", "8bit", "binary"
 	 * @return
 	 */
 	public OutputPart addPart(Object entity, MediaType mediaType,

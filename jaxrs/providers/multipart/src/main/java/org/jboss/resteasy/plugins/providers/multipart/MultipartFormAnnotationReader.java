@@ -32,15 +32,15 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object> 
 	protected @Context
 	Providers workers;
 
-	public boolean isReadable(Class type, Type genericType,
+	public boolean isReadable(Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType) {
 		return FindAnnotation.findAnnotation(annotations, MultipartForm.class) != null
 				|| type.isAnnotationPresent(MultipartForm.class);
 	}
 
-	public Object readFrom(Class type, Type genericType,
+	public Object readFrom(Class<Object> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap httpHeaders, InputStream entityStream)
+			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
 			throws IOException, WebApplicationException {
 		String boundary = mediaType.getParameters().get("boundary");
 		if (boundary == null)

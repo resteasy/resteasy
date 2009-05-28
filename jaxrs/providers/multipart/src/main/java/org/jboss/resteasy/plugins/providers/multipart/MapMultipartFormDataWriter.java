@@ -21,28 +21,27 @@ import java.util.Map;
  */
 @Provider
 @Produces("multipart/form-data")
-public class MapMultipartFormDataWriter extends AbstractMultipartFormDataWriter implements MessageBodyWriter<Map>
+public class MapMultipartFormDataWriter extends AbstractMultipartFormDataWriter implements MessageBodyWriter<Map<String, Object>>
 {
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Map.class.isAssignableFrom(type) && FindAnnotation.findAnnotation(annotations, PartType.class) != null;
    }
 
-   public long getSize(Map map, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(Map<String, Object> map, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   public void writeTo(Map map, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+   public void writeTo(Map<String, Object> map, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       PartType partType = FindAnnotation.findAnnotation(annotations, PartType.class);
       MediaType partMediaType = MediaType.valueOf(partType.value());
 
       MultipartFormDataOutput output = new MultipartFormDataOutput();
-      for (Object key : map.entrySet())
+      for (Map.Entry<String, Object> entry : map.entrySet())
       {
-         Map.Entry entry = (Map.Entry) key;
-         output.addFormData(entry.getKey().toString(), entry.getValue(), partMediaType);
+         output.addFormData(entry.getKey(), entry.getValue(), partMediaType);
       }
       write(output, mediaType, httpHeaders, entityStream);
    }

@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -16,16 +13,16 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * The MessageBodyWriter implementation to serialize MultipartRelatedOutput
- * objects.
+ * The {@link MessageBodyWriter} implementation to serialize
+ * {@link MultipartRelatedOutput} objects.
  * 
  * @author Attila Kiraly
  * @version $Revision: 1 $
  */
 @Provider
 @Produces(MediaType.MULTIPART_RELATED)
-public class MultipartRelatedWriter extends AbstractMultipartWriter implements
-		MessageBodyWriter<MultipartRelatedOutput> {
+public class MultipartRelatedWriter extends AbstractMultipartRelatedWriter
+		implements MessageBodyWriter<MultipartRelatedOutput> {
 
 	public boolean isWriteable(Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType) {
@@ -43,26 +40,7 @@ public class MultipartRelatedWriter extends AbstractMultipartWriter implements
 			MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
 			OutputStream entityStream) throws IOException,
 			WebApplicationException {
-		for (OutputPart outputPart : multipartRelatedOutput.getParts())
-			if (outputPart.getHeaders().get("Content-ID") == null)
-				outputPart.getHeaders().putSingle("Content-ID",
-						"<" + UUID.randomUUID().toString() + ">");
-		OutputPart rootOutputPart = multipartRelatedOutput.getRootPart();
-		Map<String, String> mediaTypeParameters = new LinkedHashMap<String, String>(
-				mediaType.getParameters());
-		if (mediaTypeParameters.containsKey("boundary"))
-			multipartRelatedOutput.setBoundary(mediaTypeParameters
-					.get("boundary"));
-		mediaTypeParameters.put("start", (String) rootOutputPart.getHeaders()
-				.getFirst("Content-ID"));
-		mediaTypeParameters.put("type", rootOutputPart.getMediaType().getType()
-				+ "/" + rootOutputPart.getMediaType().getSubtype());
-		if (multipartRelatedOutput.getStartInfo() != null)
-			mediaTypeParameters.put("start-info", multipartRelatedOutput
-					.getStartInfo());
-		MediaType modifiedMediaType = new MediaType(mediaType.getType(),
-				mediaType.getSubtype(), mediaTypeParameters);
-		write(multipartRelatedOutput, modifiedMediaType, httpHeaders,
+		writeRelated(multipartRelatedOutput, mediaType, httpHeaders,
 				entityStream);
 	}
 

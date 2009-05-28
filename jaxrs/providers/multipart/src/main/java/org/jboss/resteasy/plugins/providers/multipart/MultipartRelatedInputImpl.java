@@ -13,6 +13,9 @@ import org.apache.james.mime4j.field.FieldName;
 import org.apache.james.mime4j.message.BodyPart;
 
 /**
+ * Implements {@link MultipartRelatedInput} by extending
+ * {@link MultipartInputImpl} and adding multipart/related functionality.
+ * 
  * @author Attila Kiraly
  * @version $Revision: 1 $
  */

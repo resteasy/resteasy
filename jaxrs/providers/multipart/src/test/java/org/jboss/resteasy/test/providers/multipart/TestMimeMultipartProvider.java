@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.DataHandler;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +36,7 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -149,11 +151,17 @@ public class TestMimeMultipartProvider extends BaseResourceTest {
 		public void putFormDataMap(
 				@PartType("application/xml") Map<String, Customer> customers);
 
-		@Path("form")
+		@Path("form/class")
 		@PUT
 		@Consumes("multipart/form-data")
 		public void putFormDataMap(
 				@MultipartForm SimpleMimeMultipartResource.Form form);
+
+		@Path("xop")
+		@PUT
+		@Consumes(MediaType.MULTIPART_RELATED)
+		public void putXop(
+				@XopWithMultipartRelated SimpleMimeMultipartResource.Xop bean);
 	}
 
 	@Test
@@ -186,16 +194,22 @@ public class TestMimeMultipartProvider extends BaseResourceTest {
 		output.setStartInfo("text/xml");
 
 		Map<String, String> mediaTypeParameters = new LinkedHashMap<String, String>();
-		mediaTypeParameters.put("boundary", "MIME_boundary");
 		mediaTypeParameters.put("charset", "UTF-8");
 		mediaTypeParameters.put("type", "text/xml");
-		output.addPart(
-			"<m:data xmlns:m='http://example.org/stuff'>" +
-			"<m:photo><xop:Include xmlns:xop='http://www.w3.org/2004/08/xop/include' href='cid:http://example.org/me.png'/></m:photo>" +
-			"<m:sig><xop:Include xmlns:xop='http://www.w3.org/2004/08/xop/include' href='cid:http://example.org/my.hsh'/></m:sig>" +
-			"</m:data>", new MediaType("application", "xop+xml", mediaTypeParameters), "<mymessage.xml@example.org>", "8bit");
-		output.addPart("// binary octets for png", new MediaType("image", "png"), "<http://example.org/me.png>", "binary");
-		output.addPart("// binary octets for signature", new MediaType("application", "pkcs7-signature"), "<http://example.org/me.hsh>", "binary");
+		output
+				.addPart(
+						"<m:data xmlns:m='http://example.org/stuff'>"
+								+ "<m:photo><xop:Include xmlns:xop='http://www.w3.org/2004/08/xop/include' href='cid:http://example.org/me.png'/></m:photo>"
+								+ "<m:sig><xop:Include xmlns:xop='http://www.w3.org/2004/08/xop/include' href='cid:http://example.org/my.hsh'/></m:sig>"
+								+ "</m:data>", new MediaType("application",
+								"xop+xml", mediaTypeParameters),
+						"<mymessage.xml@example.org>", "8bit");
+		output.addPart("// binary octets for png",
+				new MediaType("image", "png"), "<http://example.org/me.png>",
+				"binary");
+		output.addPart("// binary octets for signature", new MediaType(
+				"application", "pkcs7-signature"),
+				"<http://example.org/me.hsh>", "binary");
 		client.putRelated(output);
 	}
 
@@ -226,6 +240,19 @@ public class TestMimeMultipartProvider extends BaseResourceTest {
 		SimpleMimeMultipartResource.Form form = new SimpleMimeMultipartResource.Form(
 				new Customer("bill"), new Customer("monica"));
 		client.putFormDataMap(form);
+	}
+
+	@Test
+	public void testXop() throws Exception {
+		MultipartClient client = ProxyFactory.create(MultipartClient.class,
+				generateBaseUrl());
+		SimpleMimeMultipartResource.Xop xop = new SimpleMimeMultipartResource.Xop(
+				new Customer("bill"), new Customer("monica"),
+				"Hello Xop World!".getBytes("UTF-8"), new DataHandler(
+						new ByteArrayDataSource("Hello Xop World!"
+								.getBytes("UTF-8"),
+								MediaType.APPLICATION_OCTET_STREAM)));
+		client.putXop(xop);
 	}
 
 	private String createCustomerData(String name) throws JAXBException {
