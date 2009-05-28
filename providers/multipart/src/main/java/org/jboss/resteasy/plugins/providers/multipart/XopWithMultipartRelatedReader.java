@@ -14,27 +14,31 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
+import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
+import org.jboss.resteasy.util.FindAnnotation;
+
 /**
- * The {@link MessageBodyReader} implementation to deserialize
- * {@link MultipartRelatedInput} objects.
+ * This provider is for reading xop packages packed as multipart/related. For
+ * more information see {@link XopWithMultipartRelated}.
  * 
  * @author Attila Kiraly
  * @version $Revision: 1 $
  */
 @Provider
 @Consumes(MediaType.MULTIPART_RELATED)
-public class MultipartRelatedReader implements
-		MessageBodyReader<MultipartRelatedInput> {
+public class XopWithMultipartRelatedReader implements MessageBodyReader<Object> {
 	protected @Context
 	Providers workers;
 
 	public boolean isReadable(Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType) {
-		return type.equals(MultipartRelatedInput.class);
+		return FindAnnotation.findAnnotation(annotations,
+				XopWithMultipartRelated.class) != null
+				|| type.isAnnotationPresent(XopWithMultipartRelated.class);
 	}
 
-	public MultipartRelatedInput readFrom(Class<MultipartRelatedInput> type,
-			Type genericType, Annotation[] annotations, MediaType mediaType,
+	public Object readFrom(Class<Object> type, Type genericType,
+			Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
 			throws IOException, WebApplicationException {
 		String boundary = mediaType.getParameters().get("boundary");
@@ -43,6 +47,10 @@ public class MultipartRelatedReader implements
 		MultipartRelatedInputImpl input = new MultipartRelatedInputImpl(
 				mediaType, workers);
 		input.parse(entityStream);
-		return input;
+
+		XopWithMultipartRelatedJAXBProvider xopWithMultipartRelatedJAXBProvider = new XopWithMultipartRelatedJAXBProvider(
+				workers);
+		return xopWithMultipartRelatedJAXBProvider.readFrom(type, genericType,
+				annotations, mediaType, httpHeaders, entityStream, input);
 	}
 }

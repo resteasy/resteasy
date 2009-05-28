@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.DataHandler;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
@@ -19,9 +20,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
@@ -35,6 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path("/mime")
 public class SimpleMimeMultipartResource {
+
 	public static class Form {
 		@FormParam("bill")
 		@PartType("application/xml")
@@ -58,6 +65,47 @@ public class SimpleMimeMultipartResource {
 
 		public Customer getMonica() {
 			return monica;
+		}
+	}
+
+	@XmlRootElement
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static class Xop {
+		private Customer bill;
+
+		private Customer monica;
+
+		@XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+		private byte[] myBinary;
+
+		@XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+		private DataHandler myDataHandler;
+
+		public Xop() {
+		}
+
+		public Xop(Customer bill, Customer monica, byte[] myBinary,
+				DataHandler myDataHandler) {
+			this.bill = bill;
+			this.monica = monica;
+			this.myBinary = myBinary;
+			this.myDataHandler = myDataHandler;
+		}
+
+		public Customer getBill() {
+			return bill;
+		}
+
+		public Customer getMonica() {
+			return monica;
+		}
+
+		public byte[] getMyBinary() {
+			return myBinary;
+		}
+
+		public DataHandler getMyDataHandler() {
+			return myDataHandler;
 		}
 	}
 
@@ -291,6 +339,20 @@ public class SimpleMimeMultipartResource {
 
 		Assert.assertNotNull(form.getMonica());
 		Assert.assertEquals("monica", form.getMonica().getName());
+	}
+
+	@PUT
+	@Path("xop")
+	@Consumes(MediaType.MULTIPART_RELATED)
+	public void putXopWithMultipartRelated(@XopWithMultipartRelated Xop xop)
+			throws IOException {
+		Assert.assertNotNull(xop.getBill());
+		Assert.assertEquals("bill", xop.getBill().getName());
+
+		Assert.assertNotNull(xop.getMonica());
+		Assert.assertEquals("monica", xop.getMonica().getName());
+		Assert.assertNotNull(xop.getMyBinary());
+		Assert.assertNotNull(xop.getMyDataHandler());
 	}
 
 	/**
