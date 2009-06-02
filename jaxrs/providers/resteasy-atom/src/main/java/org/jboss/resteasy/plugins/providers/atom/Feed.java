@@ -83,13 +83,13 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "feed")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Feed extends Source
 {
 
-   @XmlElementRef
    private List<Entry> entries = new ArrayList<Entry>();
 
+   @XmlElementRef
    public List<Entry> getEntries()
    {
       return entries;

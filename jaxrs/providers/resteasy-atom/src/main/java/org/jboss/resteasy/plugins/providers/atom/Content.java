@@ -68,33 +68,24 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "content")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Content extends CommonAttributes
 {
 
-   @XmlAttribute
    private String type;
 
-   @XmlTransient
    private MediaType mediaType;
 
-   @XmlTransient
    private String text;
 
-   @XmlTransient
    private Element element;
 
-   @XmlAttribute
    private URI src;
 
-   @XmlAnyElement
-   @XmlMixed
    private List<Object> value;
 
-   @XmlTransient
    private Object jaxbObject;
 
-   @XmlTransient
    protected JAXBContextFinder finder;
 
    protected void setFinder(JAXBContextFinder finder)
@@ -102,11 +93,35 @@ public class Content extends CommonAttributes
       this.finder = finder;
    }
 
+   @XmlAnyElement
+   @XmlMixed
+   public List<Object> getValue()
+   {
+      return value;
+   }
+
+   public void setValue(List<Object> value)
+   {
+      this.value = value;
+   }
+
+   @XmlAttribute
+   public URI getSrc()
+   {
+      return src;
+   }
+
+   public void setSrc(URI src)
+   {
+      this.src = src;
+   }
+
    /**
     * Mime type of the content
     *
     * @return
     */
+   @XmlTransient
    public MediaType getType()
    {
       if (mediaType == null)
@@ -128,7 +143,14 @@ public class Content extends CommonAttributes
       else this.type = type.toString();
    }
 
-   public void setType(String type)
+   @XmlAttribute(name = "type")
+   public String getRawType()
+   {
+      return type;
+   }
+
+
+   public void setRawType(String type)
    {
       this.type = type;
    }
@@ -139,6 +161,7 @@ public class Content extends CommonAttributes
     *
     * @return
     */
+   @XmlTransient
    public String getText()
    {
       if (value == null) return null;
@@ -171,6 +194,7 @@ public class Content extends CommonAttributes
     *
     * @return
     */
+   @XmlTransient
    public Element getElement()
    {
       if (value == null) return null;
@@ -206,20 +230,28 @@ public class Content extends CommonAttributes
     * or, if those are not existent, it will create a new JAXBContext from scratch
     * using the class.
     *
-    * @param clazz
+    * @param clazz                class type you are expecting
+    * @param otherPossibleClasses Other classe you want to create the JAXBContext with
     * @return null if there is no XML content
     * @throws JAXBException
     */
-   public <T> T getJAXBObject(Class<T> clazz) throws JAXBException
+   public <T> T getJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException
    {
       JAXBContext ctx = null;
+      Class[] classes = {clazz};
+      if (otherPossibleClasses != null && otherPossibleClasses.length > 0)
+      {
+         classes = new Class[1 + otherPossibleClasses.length];
+         classes[0] = clazz;
+         for (int i = 0; i < otherPossibleClasses.length; i++) classes[i + 1] = otherPossibleClasses[i];
+      }
       if (finder != null)
       {
-         ctx = finder.findCachedContext(clazz, MediaType.APPLICATION_XML_TYPE, null);
+         ctx = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, classes);
       }
       else
       {
-         ctx = JAXBContext.newInstance(clazz);
+         ctx = JAXBContext.newInstance(classes);
       }
       if (getElement() == null) return null;
       Object obj = ctx.createUnmarshaller().unmarshal(getElement());
@@ -241,6 +273,7 @@ public class Content extends CommonAttributes
     *
     * @return
     */
+   @XmlTransient
    public Object getJAXBObject()
    {
       return jaxbObject;

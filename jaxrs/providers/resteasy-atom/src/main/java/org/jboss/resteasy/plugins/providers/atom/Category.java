@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
@@ -26,17 +28,16 @@ import java.net.URI;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "category")
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Category extends CommonAttributes
 {
-   @XmlAttribute
    private String term;
 
-   @XmlAttribute
    private URI scheme;
 
-   @XmlAttribute
    private String label;
 
+   @XmlAttribute
    public String getTerm()
    {
       return term;
@@ -47,6 +48,7 @@ public class Category extends CommonAttributes
       this.term = term;
    }
 
+   @XmlAttribute
    public URI getScheme()
    {
       return scheme;
@@ -57,6 +59,7 @@ public class Category extends CommonAttributes
       this.scheme = scheme;
    }
 
+   @XmlAttribute
    public String getLabel()
    {
       return label;

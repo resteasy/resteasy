@@ -87,46 +87,35 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "entry")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder = {"title", "links", "categories", "updated", "id", "published", "authors", "contributors", "source",
         "rights", "content", "summary"})
 public class Entry extends CommonAttributes
 {
-   @XmlElement(name = "author")
    private List<Person> authors = new ArrayList<Person>();
 
-   @XmlElementRef
    private List<Category> categories = new ArrayList<Category>();
 
-   @XmlElementRef
    private Content content;
 
-   @XmlElement(name = "contributor")
    private List<Person> contributors = new ArrayList<Person>();
 
-   @XmlElement
    private URI id;
 
-   @XmlElementRef
    private List<Link> links = new ArrayList<Link>();
 
-   @XmlElement
    private Date published;
 
-   @XmlElement
    private String title;
-   @XmlElement
    private Date updated;
 
-   @XmlElement
    private String rights;
 
-   @XmlElement
    private Source source;
 
-   @XmlElement
    private String summary;
 
+   @XmlElement
    public URI getId()
    {
       return id;
@@ -137,6 +126,7 @@ public class Entry extends CommonAttributes
       this.id = id;
    }
 
+   @XmlElement
    public String getTitle()
    {
       return title;
@@ -147,6 +137,7 @@ public class Entry extends CommonAttributes
       this.title = title;
    }
 
+   @XmlElement
    public Date getUpdated()
    {
       return updated;
@@ -163,11 +154,13 @@ public class Entry extends CommonAttributes
       return null;
    }
 
+   @XmlElementRef
    public List<Link> getLinks()
    {
       return links;
    }
 
+   @XmlElementRef
    public Content getContent()
    {
       return content;
@@ -178,21 +171,25 @@ public class Entry extends CommonAttributes
       this.content = content;
    }
 
+   @XmlElement(name = "author")
    public List<Person> getAuthors()
    {
       return authors;
    }
 
+   @XmlElementRef
    public List<Category> getCategories()
    {
       return categories;
    }
 
+   @XmlElement(name = "contributor")
    public List<Person> getContributors()
    {
       return contributors;
    }
 
+   @XmlElement
    public Date getPublished()
    {
       return published;
@@ -203,6 +200,7 @@ public class Entry extends CommonAttributes
       this.published = published;
    }
 
+   @XmlElement
    public String getRights()
    {
       return rights;
@@ -213,6 +211,7 @@ public class Entry extends CommonAttributes
       this.rights = rights;
    }
 
+   @XmlElement
    public Source getSource()
    {
       return source;
@@ -223,6 +222,7 @@ public class Entry extends CommonAttributes
       this.source = source;
    }
 
+   @XmlElement
    public String getSummary()
    {
       return summary;

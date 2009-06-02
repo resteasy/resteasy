@@ -23,24 +23,20 @@ import java.net.URI;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "generator")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Generator
 {
-   @XmlAttribute
    private URI uri;
 
-   @XmlAttribute
    private String version;
 
-   @XmlValue
    private String text;
 
-   @XmlAttribute(name = "lang")
    private String language;
 
-   @XmlAttribute
    private URI base;
 
+   @XmlAttribute(name = "lang")
    public String getLanguage()
    {
       return language;
@@ -51,6 +47,7 @@ public class Generator
       this.language = language;
    }
 
+   @XmlAttribute
    public URI getBase()
    {
       return base;
@@ -61,6 +58,7 @@ public class Generator
       this.base = base;
    }
 
+   @XmlAttribute
    public URI getUri()
    {
       return uri;
@@ -71,6 +69,7 @@ public class Generator
       this.uri = uri;
    }
 
+   @XmlAttribute
    public String getVersion()
    {
       return version;
@@ -81,6 +80,7 @@ public class Generator
       this.version = version;
    }
 
+   @XmlValue
    public String getText()
    {
       return text;
