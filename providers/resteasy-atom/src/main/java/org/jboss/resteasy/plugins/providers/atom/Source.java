@@ -54,46 +54,37 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder = {"title", "subtitle", "categories", "updated", "id", "links", "authors", "contributors", "rights",
         "icon", "logo", "generator"})
 public class Source extends CommonAttributes
 {
-   @XmlElement(name = "author")
    private List<Person> authors = new ArrayList<Person>();
-   @XmlElementRef
    private List<Category> categories = new ArrayList<Category>();
-   @XmlElement(name = "contributor")
    private List<Person> contributors = new ArrayList<Person>();
-   @XmlElementRef
    private Generator generator;
-   @XmlElement
    private URI id;
-   @XmlElement
    private String title;
-   @XmlElement
    private Date updated;
-   @XmlElementRef
    private List<Link> links = new ArrayList<Link>();
-   @XmlElement
    private URI icon;
-   @XmlElement
    private URI logo;
-   @XmlElement
    private String rights;
-   @XmlElement
    private String subtitle;
 
+   @XmlElement(name = "author")
    public List<Person> getAuthors()
    {
       return authors;
    }
 
+   @XmlElement(name = "contributor")
    public List<Person> getContributors()
    {
       return contributors;
    }
 
+   @XmlElement
    public URI getId()
    {
       return id;
@@ -104,6 +95,7 @@ public class Source extends CommonAttributes
       this.id = id;
    }
 
+   @XmlElement
    public String getTitle()
    {
       return title;
@@ -114,6 +106,7 @@ public class Source extends CommonAttributes
       this.title = title;
    }
 
+   @XmlElement
    public Date getUpdated()
    {
       return updated;
@@ -130,16 +123,19 @@ public class Source extends CommonAttributes
       return null;
    }
 
+   @XmlElementRef
    public List<Link> getLinks()
    {
       return links;
    }
 
+   @XmlElementRef
    public List<Category> getCategories()
    {
       return categories;
    }
 
+   @XmlElementRef
    public Generator getGenerator()
    {
       return generator;
@@ -150,6 +146,7 @@ public class Source extends CommonAttributes
       this.generator = generator;
    }
 
+   @XmlElement
    public URI getIcon()
    {
       return icon;
@@ -160,6 +157,7 @@ public class Source extends CommonAttributes
       this.icon = icon;
    }
 
+   @XmlElement
    public URI getLogo()
    {
       return logo;
@@ -170,6 +168,7 @@ public class Source extends CommonAttributes
       this.logo = logo;
    }
 
+   @XmlElement
    public String getRights()
    {
       return rights;
@@ -180,6 +179,7 @@ public class Source extends CommonAttributes
       this.rights = rights;
    }
 
+   @XmlElement
    public String getSubtitle()
    {
       return subtitle;

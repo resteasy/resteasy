@@ -14,18 +14,16 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class CommonAttributes
 {
-   @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace")
    private String language;
-   @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
    private URI base;
 
 
-   @XmlAnyAttribute
    private Map extensionAttributes = new HashMap();
 
+   @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace")
    public String getLanguage()
    {
       return language;
@@ -36,6 +34,7 @@ public class CommonAttributes
       this.language = language;
    }
 
+   @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
    public URI getBase()
    {
       return base;
@@ -46,6 +45,7 @@ public class CommonAttributes
       this.base = base;
    }
 
+   @XmlAnyAttribute
    public Map getExtensionAttributes()
    {
       return extensionAttributes;

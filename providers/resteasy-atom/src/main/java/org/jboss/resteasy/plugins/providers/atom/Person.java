@@ -24,16 +24,13 @@ import java.net.URI;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Person extends CommonAttributes
 {
-   @XmlElement
    private String name;
 
-   @XmlElement
    private URI uri;
 
-   @XmlElement
    private String email;
 
    public Person()
@@ -45,6 +42,7 @@ public class Person extends CommonAttributes
       this.name = name;
    }
 
+   @XmlElement
    public String getName()
    {
       return name;
@@ -55,6 +53,7 @@ public class Person extends CommonAttributes
       this.name = name;
    }
 
+   @XmlElement
    public URI getUri()
    {
       return uri;
@@ -65,6 +64,7 @@ public class Person extends CommonAttributes
       this.uri = uri;
    }
 
+   @XmlElement
    public String getEmail()
    {
       return email;

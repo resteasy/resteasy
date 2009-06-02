@@ -32,27 +32,22 @@ import java.net.URI;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "link")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Link extends CommonAttributes
 {
-   @XmlAttribute(required = true)
    private URI href;
 
-   @XmlAttribute
    private String rel;
 
-   @XmlAttribute
    private MediaType type;
 
-   @XmlAttribute
    private String hreflang;
 
-   @XmlAttribute
    private String title;
 
-   @XmlAttribute
    private String length;
 
+   @XmlAttribute(required = true)
    public URI getHref()
    {
       return href;
@@ -63,6 +58,7 @@ public class Link extends CommonAttributes
       this.href = href;
    }
 
+   @XmlAttribute
    public String getRel()
    {
       return rel;
@@ -73,6 +69,7 @@ public class Link extends CommonAttributes
       this.rel = rel;
    }
 
+   @XmlAttribute
    public MediaType getType()
    {
       return type;
@@ -83,6 +80,7 @@ public class Link extends CommonAttributes
       this.type = type;
    }
 
+   @XmlAttribute
    public String getHreflang()
    {
       return hreflang;
@@ -93,6 +91,7 @@ public class Link extends CommonAttributes
       this.hreflang = hreflang;
    }
 
+   @XmlAttribute
    public String getTitle()
    {
       return title;
@@ -103,6 +102,7 @@ public class Link extends CommonAttributes
       this.title = title;
    }
 
+   @XmlAttribute
    public String getLength()
    {
       return length;
