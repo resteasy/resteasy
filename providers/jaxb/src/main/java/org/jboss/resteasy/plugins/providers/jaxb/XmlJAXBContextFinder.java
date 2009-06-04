@@ -57,7 +57,7 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
       JAXBContext ctx = collectionCache.get(key);
       if (ctx != null) return ctx;
 
-      ctx = createContextObject(paraAnnotations, classes);
+      ctx = createContext(paraAnnotations, classes);
       collectionCache.put(key, ctx);
 
       return ctx;

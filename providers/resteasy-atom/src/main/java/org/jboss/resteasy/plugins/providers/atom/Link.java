@@ -35,17 +35,54 @@ import java.net.URI;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class Link extends CommonAttributes
 {
-   private URI href;
+   protected URI href;
 
-   private String rel;
+   protected String rel;
 
-   private MediaType type;
+   protected MediaType type;
 
-   private String hreflang;
+   protected String hreflang;
 
-   private String title;
+   protected String title;
 
-   private String length;
+   protected String length;
+
+   public Link()
+   {
+   }
+
+   public Link(String rel, URI href)
+   {
+      this.rel = rel;
+      this.href = href;
+   }
+
+   public Link(String rel, URI href, MediaType type)
+   {
+      this.rel = rel;
+      this.href = href;
+      this.type = type;
+   }
+
+   public Link(String rel, String href)
+   {
+      this.rel = rel;
+      this.href = URI.create(href);
+   }
+
+   public Link(String rel, String href, MediaType type)
+   {
+      this.rel = rel;
+      this.href = URI.create(href);
+      this.type = type;
+   }
+
+   public Link(String rel, String href, String type)
+   {
+      this.rel = rel;
+      this.href = URI.create(href);
+      this.type = MediaType.valueOf(type);
+   }
 
    @XmlAttribute(required = true)
    public URI getHref()
