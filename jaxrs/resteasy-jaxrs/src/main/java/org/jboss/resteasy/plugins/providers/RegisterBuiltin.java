@@ -12,6 +12,12 @@ import org.slf4j.Logger;
 
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -43,10 +49,49 @@ public class RegisterBuiltin
    public static void register(ResteasyProviderFactory factory)
    {
       if (factory.isBuiltinsRegistered()) return;
+      try
+      {
+         registerProviders(factory);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
       registerMessageBodyReadersWriters(factory);
       registerServerInterceptors(factory);
       registerClientInterceptors(factory);
       factory.setBuiltinsRegistered(true);
+   }
+
+   public static void registerProviders(ResteasyProviderFactory factory) throws Exception
+   {
+      Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
+      LinkedHashSet<String> set = new LinkedHashSet<String>();
+      while (en.hasMoreElements())
+      {
+         URL url = en.nextElement();
+         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+         String line;
+         while ((line = reader.readLine()) != null)
+         {
+            line = line.trim();
+            if (line.equals("")) continue;
+            set.add(line);
+         }
+      }
+      for (String line : set)
+      {
+         Class clazz = null;
+         try
+         {
+            clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
+         }
+         catch (ClassNotFoundException e)
+         {
+            logger.warn("ClassNotFoundException: Unable to load builtin provider: " + line);
+         }
+         factory.registerProvider(clazz, true);
+      }
    }
 
    public static void registerMessageBodyReadersWriters(ResteasyProviderFactory factory)
@@ -56,6 +101,7 @@ public class RegisterBuiltin
 
       logger.debug("Registering standard providers");
 
+      /*
       DataSourceProvider dataSourceProvider = new DataSourceProvider();
       factory.addBuiltInMessageBodyReader(dataSourceProvider);
       factory.addBuiltInMessageBodyWriter(dataSourceProvider);
@@ -94,7 +140,9 @@ public class RegisterBuiltin
 
       factory.addBuiltInMessageBodyWriter(new StreamingOutputProvider());
       logger.info("Added built in provider {}", StreamingOutputProvider.class.getName());
+      */
 
+      /*
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", factory);
@@ -104,7 +152,9 @@ public class RegisterBuiltin
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.MapProvider", "org.jboss.resteasy.plugins.providers.jaxb.MapProvider", factory);
       optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider", factory);
       optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder", factory);
+      */
 
+      /*
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartReader", factory);
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader", "org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader", factory);
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader", factory);
@@ -117,16 +167,17 @@ public class RegisterBuiltin
       optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", "org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", factory);
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", factory);
       optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter", factory);
+      */
 
       // optional providers.
-      optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", "org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider", "org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider", factory);
+      //optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", "org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", factory);
+      //optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider", "org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider", factory);
 
-      optionalProvider("org.jboss.resteasy.plugins.providers.IIOImageProvider", "org.jboss.resteasy.plugins.providers.IIOImageProvider", factory);
-      optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder", factory);
-      optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", "org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.YamlProvider", "org.jboss.resteasy.plugins.providers.YamlProvider", factory);
+      //optionalProvider("org.jboss.resteasy.plugins.providers.IIOImageProvider", "org.jboss.resteasy.plugins.providers.IIOImageProvider", factory);
+      //optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder", factory);
+      //optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", factory);
+      //optionalProvider("org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", "org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", factory);
+      //optionalProvider("org.jboss.resteasy.plugins.providers.YamlProvider", "org.jboss.resteasy.plugins.providers.YamlProvider", factory);
    }
 
    private static void optionalProvider(String dependency, String providerClass, ResteasyProviderFactory factory)

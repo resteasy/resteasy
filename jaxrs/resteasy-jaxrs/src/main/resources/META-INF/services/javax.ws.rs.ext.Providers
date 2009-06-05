@@ -1,0 +1,11 @@
+org.jboss.resteasy.plugins.providers.DataSourceProvider
+org.jboss.resteasy.plugins.providers.DefaultTextPlain
+org.jboss.resteasy.plugins.providers.StringTextStar
+org.jboss.resteasy.plugins.providers.InputStreamProvider
+org.jboss.resteasy.plugins.providers.ByteArrayProvider
+org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider
+org.jboss.resteasy.plugins.providers.FileProvider
+org.jboss.resteasy.plugins.providers.StreamingOutputProvider
+org.jboss.resteasy.plugins.providers.IIOImageProvider
+
+
