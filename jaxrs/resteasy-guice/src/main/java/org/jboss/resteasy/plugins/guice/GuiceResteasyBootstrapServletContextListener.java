@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.guice;
 import com.google.inject.Module;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +13,13 @@ import javax.servlet.ServletContextListener;
 import java.util.List;
 import java.util.ArrayList;
 
-public class GuiceServletContextListener implements ServletContextListener
+public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootstrap implements ServletContextListener
 {
-   private final static Logger logger = LoggerFactory.getLogger(GuiceServletContextListener.class);
+   private final static Logger logger = LoggerFactory.getLogger(GuiceResteasyBootstrapServletContextListener.class);
 
    public void contextInitialized(final ServletContextEvent event)
    {
+      super.contextInitialized(event);
       final ServletContext context = event.getServletContext();
       final Registry registry = (Registry) context.getAttribute(Registry.class.getName());
       final ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) context.getAttribute(ResteasyProviderFactory.class.getName());
