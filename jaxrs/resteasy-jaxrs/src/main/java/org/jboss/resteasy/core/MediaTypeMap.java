@@ -3,7 +3,6 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.core.MediaType;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,11 +114,11 @@ public class MediaTypeMap<T>
    private static Pattern COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+(.+)");
 
    // Composite subtypes are of the pattern *+subtype i.e. *+xml, *+json
-   private static Pattern COMPOSITE_SUBTYPE_WILDCARD_PATTERN = Pattern.compile("\\*\\+(.+)");
+   public static Pattern COMPOSITE_SUBTYPE_WILDCARD_PATTERN = Pattern.compile("\\*\\+(.+)");
 
 
    // This composite is subtype+*  i.e. atom+* rss+*
-   private static Pattern WILD_SUBTYPE_COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+\\*");
+   public static Pattern WILD_SUBTYPE_COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+\\*");
 
    private static class SubtypeMap<T>
    {
