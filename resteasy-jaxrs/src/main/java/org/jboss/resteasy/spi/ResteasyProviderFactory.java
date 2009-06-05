@@ -305,6 +305,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyReader(Class<? extends MessageBodyReader> provider)
    {
+      addMessageBodyReader(provider, false);
+   }
+
+   public void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
+   {
       MessageBodyReader reader = null;
       try
       {
@@ -318,7 +323,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          throw new RuntimeException(e);
       }
-      addMessageBodyReader(reader);
+      addMessageBodyReader(reader, isBuiltin);
    }
 
    public void addMessageBodyReader(MessageBodyReader provider)
@@ -354,6 +359,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider)
    {
+      addMessageBodyWriter(provider, false);
+   }
+
+   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
+   {
       MessageBodyWriter writer = null;
       try
       {
@@ -367,7 +377,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          throw new RuntimeException(e);
       }
-      addMessageBodyWriter(writer);
+      addMessageBodyWriter(writer, isBuiltin);
    }
 
    public void addMessageBodyWriter(MessageBodyWriter provider)
@@ -561,18 +571,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
 
+   public void registerProvider(Class provider)
+   {
+      registerProvider(provider, false);
+   }
+
    /**
     * Register a @Provider class.  Can be a MessageBodyReader/Writer or ExceptionMapper.
     *
     * @param provider
     */
-   public void registerProvider(Class provider)
+   public void registerProvider(Class provider, boolean isBuiltin)
    {
       if (MessageBodyReader.class.isAssignableFrom(provider))
       {
          try
          {
-            addMessageBodyReader(provider);
+            addMessageBodyReader(provider, isBuiltin);
          }
          catch (Exception e)
          {
@@ -583,7 +598,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addMessageBodyWriter(provider);
+            addMessageBodyWriter(provider, isBuiltin);
          }
          catch (Exception e)
          {

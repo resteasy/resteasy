@@ -293,4 +293,24 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    {
       return getDelegate().getContextResolver(contextType, mediaType);
    }
+
+   @Override
+   public void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
+   {
+      getDelegate().addMessageBodyReader(provider, isBuiltin);
+   }
+
+   @Override
+   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
+   {
+      getDelegate().addMessageBodyWriter(provider, isBuiltin);
+   }
+
+   @Override
+   public void registerProvider(Class provider, boolean isBuiltin)
+   {
+      getDelegate().registerProvider(provider, isBuiltin);
+   }
+
+
 }
