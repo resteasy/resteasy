@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
@@ -59,16 +60,16 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return isWrapped(type, genericType, annotations);
+      return isWrapped(type, genericType, annotations, mediaType);
    }
 
-   protected boolean isWrapped(Class<?> type, Type genericType, Annotation[] annotations)
+   protected boolean isWrapped(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if ((Collection.class.isAssignableFrom(type) || type.isArray()) && genericType != null)
       {
          Class baseType = Types.getCollectionBaseType(type, genericType);
          if (baseType == null) return false;
-         return baseType.isAnnotationPresent(XmlRootElement.class) || baseType.isAnnotationPresent(XmlType.class) || baseType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(type);
+         return (baseType.isAnnotationPresent(XmlRootElement.class) || baseType.isAnnotationPresent(XmlType.class) || baseType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(baseType)) && (FindAnnotation.findAnnotation(baseType, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(baseType, annotations, mediaType);
       }
       return false;
    }
@@ -165,7 +166,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return isWrapped(type, genericType, annotations);
+      return isWrapped(type, genericType, annotations, mediaType);
    }
 
    public long getSize(Object entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

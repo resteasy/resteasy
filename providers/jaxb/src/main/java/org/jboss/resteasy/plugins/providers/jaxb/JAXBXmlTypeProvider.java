@@ -112,7 +112,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
                                     Annotation[] annotations,
                                     MediaType mediaType)
    {
-      return (!type.isAnnotationPresent(XmlRootElement.class) && type.isAnnotationPresent(XmlType.class)) && FindAnnotation.findAnnotation(type, annotations, DoNotUseJAXBProvider.class) == null;
+      return (!type.isAnnotationPresent(XmlRootElement.class) && type.isAnnotationPresent(XmlType.class)) && (FindAnnotation.findAnnotation(type, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(type, annotations, mediaType);
    }
 
    /**
