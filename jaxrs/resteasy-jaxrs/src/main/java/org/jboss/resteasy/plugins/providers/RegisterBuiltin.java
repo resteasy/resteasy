@@ -167,6 +167,8 @@ public class RegisterBuiltin
       optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", "org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", factory);
       optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", factory);
       optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter", factory);
+      optionalReader("org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedReader", "org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedReader", factory);
+      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedWriter", "org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedWriter", factory);
       */
 
       // optional providers.
