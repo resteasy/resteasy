@@ -99,4 +99,22 @@ JBoss's Maven Repository is at:
 </dependencies>
 ]]>
 </programlisting>
+    <para>
+        There is also a pom that can be imported so the versions of the individual modules do not have to be specified. Note that maven 2.0.9 is required for this.
+    </para>
+    <programlisting>
+<![CDATA[
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-maven-import</artifactId>
+                <version>1.1.GA</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+]]>
+    </programlisting>
 </chapter>
