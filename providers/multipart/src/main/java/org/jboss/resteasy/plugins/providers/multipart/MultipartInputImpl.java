@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.SequenceInputStream;
 import java.io.StringWriter;
@@ -132,24 +133,32 @@ public class MultipartInputImpl implements MultipartInput {
 			String result = null;
 			if (body instanceof TextBody) {
 				Reader reader = ((TextBody) body).getReader();
-				StringWriter writer = new StringWriter();
-				char[] buffer = new char[4048];
-				int n = 0;
-				while ((n = reader.read(buffer)) != -1)
-					writer.write(buffer, 0, n);
-				result = writer.toString();
+				try {
+					StringWriter writer = new StringWriter();
+					char[] buffer = new char[4048];
+					int n = 0;
+					while ((n = reader.read(buffer)) != -1)
+						writer.write(buffer, 0, n);
+					result = writer.toString();
+				} finally {
+					reader.close();
+				}
 			} else if (body instanceof BinaryBody) {
 				InputStream inputStream = ((BinaryBody) body).getInputStream();
-				String charset = contentType.getParameters().get("charset");
-				StringWriter writer = new StringWriter();
-				byte[] buffer = new byte[4048];
-				int n = 0;
-				while ((n = inputStream.read(buffer)) != -1)
-					if (charset == null)
-						writer.write(new String(buffer, 0, n));
-					else
-						writer.write(new String(buffer, 0, n, charset));
-				result = writer.toString();
+				try {
+					String charset = contentType.getParameters().get("charset");
+					InputStreamReader inputStreamReader = charset == null ? new InputStreamReader(
+							inputStream)
+							: new InputStreamReader(inputStream, charset);
+					StringWriter writer = new StringWriter();
+					char[] buffer = new char[4048];
+					int n = 0;
+					while ((n = inputStreamReader.read(buffer)) != -1)
+						writer.write(buffer, 0, n);
+					result = writer.toString();
+				} finally {
+					inputStream.close();
+				}
 			}
 
 			return result;

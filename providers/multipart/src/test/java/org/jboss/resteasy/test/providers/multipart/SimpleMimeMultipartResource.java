@@ -4,6 +4,9 @@
 package org.jboss.resteasy.test.providers.multipart;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -353,6 +356,25 @@ public class SimpleMimeMultipartResource {
 		Assert.assertEquals("monica", xop.getMonica().getName());
 		Assert.assertNotNull(xop.getMyBinary());
 		Assert.assertNotNull(xop.getMyDataHandler());
+		Assert.assertEquals("Hello Xop World!", new String(xop.getMyBinary(),
+				"UTF-8"));
+		// lets do it twice to test that we get different InputStream-s each
+		// time.
+		for (int fi = 0; fi < 2; fi++) {
+			InputStream inputStream = xop.getMyDataHandler().getInputStream();
+			try {
+				InputStreamReader inputStreamReader = new InputStreamReader(
+						inputStream, "UTF-8");
+				StringWriter writer = new StringWriter();
+				char[] buffer = new char[4048];
+				int n = 0;
+				while ((n = inputStreamReader.read(buffer)) != -1)
+					writer.write(buffer, 0, n);
+				Assert.assertEquals("Hello Xop World!", writer.toString());
+			} finally {
+				inputStream.close();
+			}
+		}
 	}
 
 	/**

@@ -82,37 +82,27 @@ public class XopWithMultipartRelatedJAXBProvider extends
 						public DataHandler getAttachmentAsDataHandler(
 								final String cid) {
 							final InputPart inputPart = getInputPart(cid);
-							try {
-								final InputStream is = inputPart.getBody(
-										InputStream.class, null);
-								return new DataHandler(new DataSource() {
-									public String getContentType() {
-										return inputPart.getMediaType()
-												.toString();
-									}
+							return new DataHandler(new DataSource() {
+								public String getContentType() {
+									return inputPart.getMediaType().toString();
+								}
 
-									public String getName() {
-										return cid;
-									}
+								public String getName() {
+									return cid;
+								}
 
-									public InputStream getInputStream()
-											throws IOException {
-										return is;
-									}
+								public InputStream getInputStream()
+										throws IOException {
+									return inputPart.getBody(InputStream.class,
+											null);
+								}
 
-									public OutputStream getOutputStream()
-											throws IOException {
-										throw new IOException(
-												"This DataSource represents an incoming xop message part. Getting an OutputStream on it is not allowed.");
-									}
-								});
-							} catch (IOException e) {
-								throw new IllegalArgumentException(
-										"Exception while extracting attachment with cid = "
-												+ cid
-												+ " from xop message to a DataHandler.",
-										e);
-							}
+								public OutputStream getOutputStream()
+										throws IOException {
+									throw new IOException(
+											"This DataSource represents an incoming xop message part. Getting an OutputStream on it is not allowed.");
+								}
+							});
 						}
 
 						protected InputPart getInputPart(String cid) {
