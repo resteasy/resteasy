@@ -29,6 +29,7 @@ import org.apache.james.mime4j.message.Message;
 import org.apache.james.mime4j.message.Multipart;
 import org.apache.james.mime4j.message.TextBody;
 import org.apache.james.mime4j.parser.Field;
+import org.apache.james.mime4j.util.CharsetUtil;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 
@@ -147,6 +148,8 @@ public class MultipartInputImpl implements MultipartInput {
 				InputStream inputStream = ((BinaryBody) body).getInputStream();
 				try {
 					String charset = contentType.getParameters().get("charset");
+					if (charset != null)
+						charset = CharsetUtil.toJavaCharset(charset);
 					InputStreamReader inputStreamReader = charset == null ? new InputStreamReader(
 							inputStream)
 							: new InputStreamReader(inputStream, charset);
