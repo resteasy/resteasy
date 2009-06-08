@@ -13,7 +13,7 @@ public class Library {
 
    @GET
    @Path("/book/{isbn}")
-   public String getBook(@PathParm("isbn") String id) {
+   public String getBook(@PathParam("isbn") String id) {
       // search my database and get a string representation and return it
    }
 }
@@ -31,7 +31,7 @@ a constructor that takes a String parameter, or a static valueOf method that tak
 
    @GET
    @Path("/book/{isbn}")
-   public String getBook(@PathParm("isbn") ISBN id) {...}
+   public String getBook(@PathParam("isbn") ISBN id) {...}
 
 
    public class ISBN {
@@ -191,7 +191,7 @@ You can have Resteasy inject a PathSegment instead of a value with your @PathPar
 <programlisting>
    @GET
    @Path("/book/{id}")
-   public String getBook(@PathParm("id") PathSegment id) {...}
+   public String getBook(@PathParam("id") PathSegment id) {...}
 
 </programlisting>
 </para>

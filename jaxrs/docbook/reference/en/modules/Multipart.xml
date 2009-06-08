@@ -353,7 +353,7 @@ public class MultipartFormDataOutput extends MultipartOutput
       @Consumes("multipart/form-data")
       @PUT
       public void putIssue(@MultipartForm CustoemrProblemForm,
-                           @PathParm("id") int id) {
+                           @PathParam("id") int id) {
          ... write to database...
       }
    }
