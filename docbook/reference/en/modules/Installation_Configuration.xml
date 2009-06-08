@@ -21,41 +21,43 @@ RESTeasy is implemented as a ServletContextListener and a Servlet and deployed w
 <para>
 
 <programlisting>
-&lt;web-app&gt;
-   &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
-   &lt;context-param&gt;
-      &lt;param-name&gt;resteasy.scan&lt;/param-name&gt;
-      &lt;param-value&gt;true&lt;/param-value&gt;
-   &lt;/context-param&gt;
+    <![CDATA[
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+    <!-- Set this if you want Resteasy to scan for JAX-RS classes
+    <context-param>
+        <param-name>resteasy.scan</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    -->
 
-   &lt;!-- set this if you map the Resteasy servlet to something other than /*
-   &lt;context-param&gt;
-      &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
-      &lt;param-value&gt;/resteasy&lt;/param-value&gt;
-   &lt;/context-param&gt;
-   --&gt;
-   &lt;!-- if you are using Spring, Seam or EJB as your component model, remove the ResourceMethodSecurityInterceptor --&gt;
-   &lt;context-param&gt;
-      &lt;param-name&gt;resteasy.resource.method-interceptors&lt;/param-name&gt;
-      &lt;param-value&gt;
-         org.jboss.resteasy.core.ResourceMethodSecurityInterceptor
-      &lt;/param-value&gt;
-   &lt;/context-param&gt;
+    <!-- set this if you map the Resteasy servlet to something other than /*
+    <context-param>
+       <param-name>resteasy.servlet.mapping.prefix</param-name>
+       <param-value>/resteasy</param-value>
+    </context-param>
+    -->
+    <!-- to turn on security
+    <context-param>
+        <param-name>resteasy.role.based.security</param-name>
+        <param-value>true</param-value>
+    </context-param>
+     -->
 
-   &lt;listener&gt;
-      &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
-   &lt;/listener&gt;
+    <listener>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
 
-   &lt;servlet&gt;
-      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
-   &lt;/servlet&gt;
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
 
-   &lt;servlet-mapping&gt;
-      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-   &lt;/servlet-mapping&gt;
-&lt;/web-app&gt;
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+</web-app>]
 </programlisting>
 </para>
 <para>
