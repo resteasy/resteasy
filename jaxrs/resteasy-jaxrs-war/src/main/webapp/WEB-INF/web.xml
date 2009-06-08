@@ -4,10 +4,12 @@
 
 <web-app>
     <display-name>Archetype Created Web Application</display-name>
+    <!-- Set this if you want Resteasy to scan for JAX-RS classes
     <context-param>
         <param-name>resteasy.scan</param-name>
         <param-value>true</param-value>
     </context-param>
+    -->
 
     <!-- set this if you map the Resteasy servlet to something other than /*
     <context-param>
@@ -15,13 +17,12 @@
        <param-value>/resteasy</param-value>
     </context-param>
     -->
-    <!-- if you are using Spring, Seam or EJB as your component model, remove the ResourceMethodSecurityInterceptor -->
+    <!-- to turn on security
     <context-param>
-        <param-name>resteasy.resource.method-interceptors</param-name>
-        <param-value>
-            org.jboss.resteasy.plugins.interceptors.SecurityInterceptor
-        </param-value>
+        <param-name>resteasy.role.based.security</param-name>
+        <param-value>true</param-value>
     </context-param>
+     -->
 
     <listener>
         <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
