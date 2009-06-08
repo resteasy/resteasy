@@ -9,7 +9,6 @@ import org.xml.sax.ContentHandler;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -31,7 +30,6 @@ import java.util.Map;
  */
 public class JettisonMappedMarshaller extends BaseMarshaller
 {
-   private Marshaller marshaller;
    private MappedNamespaceConvention convention;
 
    public JettisonMappedMarshaller(JAXBContext context, Map<String, String> xmlToJSON, List<String> attributeMapping, List<String> ignoredElements) throws JAXBException
