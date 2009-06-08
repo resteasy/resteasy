@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
@@ -170,7 +171,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder lastModified(Date lastModified)
    {
-      metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, lastModified);
+      metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, DateUtil.formatDate(lastModified));
       return this;
    }
 
