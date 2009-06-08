@@ -217,6 +217,7 @@ public class Content extends CommonAttributes
     */
    public void setElement(Element element)
    {
+      if (value == null) value = new ArrayList();
       if (this.element != null && value != null) value.clear();
       this.element = element;
       value.add(element);
