@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
@@ -36,6 +37,18 @@ public class ModelTest
       System.out.println(content.getText());
       System.out.println(content.getLanguage());
 
+   }
+
+   /**
+    * RESTEASY-242
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testContentSetElement() throws Exception
+   {
+      Content c = new Content();
+      c.setElement(DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument().createElement("Test"));
    }
 
 
