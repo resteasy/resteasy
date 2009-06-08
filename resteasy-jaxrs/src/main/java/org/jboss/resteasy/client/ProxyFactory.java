@@ -31,11 +31,11 @@ public class ProxyFactory
 
    public static <T> T create(Class<T> clazz, String base, HttpClient client)
    {
-   	return create(clazz, createUri(base), client, ResteasyProviderFactory.getInstance());
+      return create(clazz, createUri(base), client, ResteasyProviderFactory.getInstance());
    }
 
-	public static URI createUri(String base)
-	{
+   public static URI createUri(String base)
+   {
       try
       {
          return new URI(base);
@@ -44,13 +44,13 @@ public class ProxyFactory
       {
          throw new RuntimeException(e);
       }
-	}
+   }
 
    public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory)
    {
-   	return create(clazz, baseUri, new ApacheHttpClientExecutor(httpClient), providerFactory);
+      return create(clazz, baseUri, new ApacheHttpClientExecutor(httpClient), providerFactory);
    }
-   
+
    @SuppressWarnings("unchecked")
    public static <T> T create(Class<T> clazz, URI baseUri, ClientExecutor executor, ResteasyProviderFactory providerFactory)
    {
@@ -65,8 +65,10 @@ public class ProxyFactory
       {
          ClientInvoker invoker = null;
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
-         if (httpMethods.size() != 1)
-            throw new RuntimeException("You must use at least one, but no more than one http method annotation");
+         if (httpMethods == null || httpMethods.size() != 1)
+         {
+            throw new RuntimeException("You must use at least one, but no more than one http method annotation on: " + method.toString());
+         }
 
          invoker = new ClientInvoker(baseUri, clazz, method, providerFactory, executor);
          ClientInvokerInterceptorFactory.applyDefaultInterceptors(invoker, providerFactory, clazz, method);
