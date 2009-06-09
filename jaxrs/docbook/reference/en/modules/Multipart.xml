@@ -116,7 +116,10 @@ public interface InputPart
 <programlisting>
 public interface MultipartFormDataInput extends MultipartInput
 {
+   @Deprecated
    Map&lt;String, InputPart&gt; getFormData();
+
+   Map&lt;String, List&lt;InputPart&gt;&gt; getFormDataMap();
 
    &lt;T&gt; T getFormDataPart(String key, Class&lt;T&gt; rawType, Type genericType) throws IOException;
 
@@ -147,6 +150,34 @@ public interface MultipartFormDataInput extends MultipartInput
    }
 
 </programlisting>
+   </sect2>
+   <sect2 id="MultipartRelated">
+      <title>Input with multipart/related</title>
+      <para>When writing a JAX-RS service, RESTEasy provides an interface that allows you to read in
+      multipart/related mime type. A multipart/related is used to indicate that message parts
+      should not be considered individually but rather as parts of an aggregate whole. One example
+      usage for multipart/related is to send a web page complete with images in a single message.
+      Every multipart/related message has a root/start part that references the other parts of the message.
+      The parts are identified by their "Content-ID" headers. multipart/related is defined by RFC 2387.
+      The interface used for related input is org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedInput</para>
+<programlisting>
+public interface MultipartRelatedInput extends MultipartInput
+{
+   String getType();
+
+   String getStart();
+
+   String getStartInfo();
+
+   InputPart getRootPart();
+
+   Map&lt;String, InputPart&gt; getRelatedMap();
+}
+</programlisting>
+      <para>
+         It works in much the same way as MultipartInput described earlier in this chapter.
+      </para>
+
    </sect2>
    <sect2 id="multipart_output">
       <title>Output with multipart</title>
@@ -294,6 +325,67 @@ public class MultipartFormDataOutput extends MultipartOutput
 
 </programlisting>
    </sect2>
+   <sect2 id="multipart_related_output">
+      <title>Output with multipart/related</title>
+      <para>RESTEasy provides a simple API to output multipart/related.</para>
+<programlisting><![CDATA[
+package org.jboss.resteasy.plugins.providers.multipart;
+
+public class MultipartRelatedOutput extends MultipartOutput
+{
+   public OutputPart getRootPart()
+
+   public OutputPart addPart(Object entity, MediaType mediaType,
+      String contentId, String contentTransferEncoding)
+
+   public String getStartInfo()
+
+   public void setStartInfo(String startInfo)
+}
+]]>
+</programlisting>
+      <para>When you want to output multipart/related it is as simple as creating a MultipartRelatedOutput object
+      and calling addPart() methods. The first added part will be used as the root part of the multipart/related
+      message.
+      Resteasy will automatically find a MessageBodyWriter to marshall your entity objects. Like MultipartInput,
+      sometimes you may have marshalling which is sensitive to generic type metadata. In that case, use
+      GenericType.  Most of the time though passing in an Object and its MediaType is enough.  In the example
+      below, we are sending back a "multipart/related" format back to the calling client. We are sending a
+      html with 2 images.</para>
+<programlisting>
+@Path("/related")
+public class MyService
+{
+   @GET
+   @Produces("multipart/related")
+   public MultipartRelatedOutput get()
+   {
+      MultipartRelatedOutput output = new MultipartRelatedOutput();
+      output.setStartInfo("text/html");
+
+      Map&lt;String, String&gt; mediaTypeParameters = new LinkedHashMap&lt;String, String&gt;();
+      mediaTypeParameters.put("charset", "UTF-8");
+      mediaTypeParameters.put("type", "text/html");
+      output
+         .addPart(
+            "&lt;html&gt;&lt;body&gt;\n"
+            + "This is me: &lt;img src='cid:http://example.org/me.png' /&gt;\n"
+            + "&lt;br /&gt;This is you: &lt;img src='cid:http://example.org/you.png' /&gt;\n"
+            + "&lt;/body&gt;&lt;/html&gt;",
+            new MediaType("text", "html", mediaTypeParameters),
+            "&lt;mymessage.xml@example.org&gt;", "8bit");
+      output.addPart("// binary octets for me png",
+            new MediaType("image", "png"), "&lt;http://example.org/me.png&gt;",
+            "binary");
+      output.addPart("// binary octets for you png", new MediaType(
+            "image", "png"),
+            "&lt;http://example.org/you.png&gt;", "binary");
+      client.putRelated(output);
+      return output;
+   }
+}
+</programlisting>
+   </sect2>
    <sect2 id="multipartform_annotation">
       <title>@MultipartForm and POJOs</title>
       <para>If you have a exact knowledge of your multipart/form-data packets, you can map
@@ -358,5 +450,77 @@ public class MultipartFormDataOutput extends MultipartOutput
       }
    }
 </programlisting>
+   </sect2>
+   <sect2 id="xop_with_multipart_related">
+      <title>XML-binary Optimized Packaging (Xop)</title>
+      <para>RESTEasy supports Xop messages packaged as multipart/related. What does this mean? If you have a JAXB
+      annotated POJO that also holds some binary content you may choose to send it in such a way where the binary
+      does not need to be encoded in any way (neither base64 neither hex). This results in faster transport while
+      still using the convenient POJO. More about Xop can be read here:
+      <link linkend="http://www.w3.org/TR/xop10/">http://www.w3.org/TR/xop10/</link>. Now lets see an example:</para>
+      <para>First we have a JAXB annotated POJO to work with. @XmlMimeType tells JAXB the mime type of the binary
+      content (its not required to do XOP packaging but it is recommended to be set if you know the exact type):</para>
+<programlisting>
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public static class Xop {
+  private Customer bill;
+
+  private Customer monica;
+
+  @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+  private byte[] myBinary;
+
+  @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+  private DataHandler myDataHandler;
+
+  // methods, other fields ...
+}
+</programlisting>
+      <para>In the above POJO myBinary and myDataHandler will be processed as binary attachments while the whole Xop
+      object will be sent as xml (in the places of the binaries only their references will be generated).
+      javax.activation.DataHandler is the most general supported type so if you need an java.io.InputStream or a
+      javax.activation.DataSource you need to go with the DataHandler. Some other special types are supported too:
+      java.awt.Image and javax.xml.transform.Source. Let's assume that Customer is also JAXB friendly POJO in the
+      above example (of course it can also have binary parts). Now lets see a an example Java client that sends this:</para>
+<programlisting>
+// our client interface:
+@Path("mime")
+public static interface MultipartClient {
+  @Path("xop")
+  @PUT
+  @Consumes(MediaType.MULTIPART_RELATED)
+  public void putXop(@XopWithMultipartRelated Xop bean);
+}
+
+// Somewhere using it:
+{
+  MultipartClient client = ProxyFactory.create(MultipartClient.class,
+    "http://www.example.org");
+  Xop xop = new Xop(new Customer("bill"), new Customer("monica"),
+    "Hello Xop World!".getBytes("UTF-8"),
+    new DataHandler(new ByteArrayDataSource("Hello Xop World!".getBytes("UTF-8"),
+    MediaType.APPLICATION_OCTET_STREAM)));
+  client.putXop(xop);
+}
+</programlisting>
+	<para>We used @Consumes(MediaType.MULTIPART_RELATED) to tell RESTEasy that we want to send multipart/related
+	packages (thats the container format that will hold our Xop message). We used @XopWithMultipartRelated to tell
+	RESTEasy that we want to make Xop messages. So we have a POJO and a client service that is willing to send it. All
+	we need now a server that can read it:</para>
+<programlisting>
+@Path("/mime")
+public class XopService {
+  @PUT
+  @Path("xop")
+  @Consumes(MediaType.MULTIPART_RELATED)
+  public void putXopWithMultipartRelated(@XopWithMultipartRelated Xop xop) {
+    // do very important things here
+  }
+}
+</programlisting>
+	<para>We used @Consumes(MediaType.MULTIPART_RELATED) to tell RESTEasy that we want to read multipart/related
+	packages. We used @XopWithMultipartRelated to tell RESTEasy that we want to read Xop messages. Of course we could
+	also produce Xop return values but we would than also need to annotate that and use a Produce annotation, too.</para>
    </sect2>
 </sect1>
