@@ -24,7 +24,7 @@ public interface MultipartRelatedInput extends MultipartInput {
 	 * @return the type parameter of the content-type header of the message,
 	 *         null if there was no such parameter
 	 */
-	public String getType();
+	String getType();
 
 	/**
 	 * A start parameter is not mandatory in a message. If it is presented it
@@ -33,7 +33,7 @@ public interface MultipartRelatedInput extends MultipartInput {
 	 * @return the start parameter of the content-type header of the message,
 	 *         null if there was no such parameter
 	 */
-	public String getStart();
+	String getStart();
 
 	/**
 	 * Optional.
@@ -41,18 +41,18 @@ public interface MultipartRelatedInput extends MultipartInput {
 	 * @return the start-info parameter of the content-type header of the
 	 *         message, null if there was no such parameter
 	 */
-	public String getStartInfo();
+	String getStartInfo();
 
 	/**
 	 * @return the root part of the message. If a start parameter was set in the
 	 *         message header the part with that id is returned. If no start
 	 *         parameter was set the first part is returned.
 	 */
-	public InputPart getRootPart();
+	InputPart getRootPart();
 
 	/**
 	 * @return a map holding all parts with their unique id-s as keys. The root
 	 *         part and the related parts too.
 	 */
-	public Map<String, InputPart> getRelatedMap();
+	Map<String, InputPart> getRelatedMap();
 }
