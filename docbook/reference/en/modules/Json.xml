@@ -1,0 +1,81 @@
+<sect1 id="json">
+    <title>JSON Support via Jackson</title>
+    <para>Besides the Jettision JAXB adapter for JSON, Resteasy also support integration with the Jackson project.
+        Many users find the output from Jackson much much nicer than the Badger format or Mapped format provided by Jettison.
+    Jackson lives at http://jackson.codehaus.org.  It allows you to easily marshal Java objects to and from JSON.
+    It has a Java Bean based model as well as JAXB like APIs.  Resteasy integrates with the JavaBean model as described
+    at this url:  http://jackson.codehaus.org/Tutorial.</para>
+    <para>While Jackson does come with its own JAX-RS integration.  Resteasy expanded it a little.  To include
+        it within your project, just add this maven dependency to your build.</para>
+<programlisting><![CDATA[
+    <repository>
+       <id>jboss</id>
+       <url>http://repository.jboss.org/maven2</url>
+    </repository>
+
+       ...
+    <dependency>
+       <groupId>org.jboss.resteasy</groupId>
+       <artifactId>resteasy-jackson-provider</artifactId>
+       <version>1.1.GA</version>
+    </dependency>
+ ]]></programlisting>
+    <para>The first extra piece that Resteasy added to the integration was
+    to support "application/*+json".  Jackson would only accept "application/json" and "text/json" as valid
+        media types.  This allows you to create json-based media types and still
+    let Jackson marshal things for you.  For example:</para>
+<programlisting>
+<![CDATA[
+@Path("/customers")
+public class MyService {
+
+   @GET
+   @Produces("application/vnd.customer+json")
+   public Customer[] getCustomers() {}
+}
+]]>
+</programlisting>
+    <para>Another problem that occurs is when you are using the Resteasy JAXB providers alongside Jackson.
+    You may want to use Jettision and JAXB to output your JSON instead of Jackson.  In this case, you must
+    either not install the Jackson provider, or use the annotation @org.jboss.resteasy.annotations.providers.NoJackson
+    on your JAXB annotated classes.  For example:</para>
+<programlisting>
+    <![CDATA[
+
+    @XmlRootElement
+    @NoJackson
+    public class Customer {...}
+
+    @Path("/customers")
+    public class MyService {
+
+       @GET
+       @Produces("application/vnd.customer+json")
+       public Customer[] getCustomers() {}
+    }
+    ]]>
+</programlisting>
+        <para>
+        If you can't annotate the JAXB class with @NoJackson, then you can
+    use the annotation on a method parameter.  For example:</para>
+    <programlisting>
+        <![CDATA[
+
+        @XmlRootElement
+        public class Customer {...}
+
+        @Path("/customers")
+        public class MyService {
+
+           @GET
+           @Produces("application/vnd.customer+json")
+           @NoJackson
+           public Customer[] getCustomers() {}
+
+           @POST
+           @Consumes("application/vnd.customer+json")
+           public void createCustomer(@NoJackson Customer[] customers) {...}
+        }
+        ]]>
+    </programlisting>
+</sect1>
