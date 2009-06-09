@@ -40,7 +40,7 @@ public class CacheControlInterceptor implements PostProcessInterceptor, Accepted
       }
       else if (cache != null)
       {
-         initCacheControl(methodCached);
+         initCacheControl(cache);
       }
       else if (nocache != null)
       {
