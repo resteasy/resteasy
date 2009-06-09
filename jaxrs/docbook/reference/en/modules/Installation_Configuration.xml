@@ -57,7 +57,8 @@ RESTeasy is implemented as a ServletContextListener and a Servlet and deployed w
         <servlet-name>Resteasy</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-</web-app>]
+</web-app>
+]]>
 </programlisting>
 </para>
 <para>

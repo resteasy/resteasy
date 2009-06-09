@@ -126,75 +126,119 @@
       </para>
    </sect1>
    <sect1 id="MessageBodyWorkers">
-      <title>MessageBodyWorkers</title>
+      <title>Providers Utility Class</title>
 
       <para>
 
-         javax.ws.rs.ext.MessageBodyWorks is a simple injectable interface that allows you to look up MessageBodyReaders
-         and Writers. It is very useful, for instance, for implementing multipart providers. Content types that embed
+         javax.ws.rs.ext.Providers is a simple injectable interface that allows you to look up MessageBodyReaders,
+          Writers, ContextResolvers, and ExceptionMappers. It is very useful, for instance, for implementing
+          multipart providers. Content types that embed
          other random content types.
       </para>
       <para>
 
          <programlisting>
+<![CDATA[
+public interface Providers
+{
 
-            /**
-            * An injectable interface providing lookup of {@link MessageBodyReader} and
-            * {@link MessageBodyWriter} instances.
-            *
-            * @see javax.ws.rs.core.Context
-            * @see MessageBodyReader
-            * @see MessageBodyWriter
-            */
-            public interface MessageBodyWorkers
-            {
+   /**
+    * Get a message body reader that matches a set of criteria. The set of
+    * readers is first filtered by comparing the supplied value of
+    * {@code mediaType} with the value of each reader's
+    * {@link javax.ws.rs.Consumes}, ensuring the supplied value of
+    * {@code type} is assignable to the generic type of the reader, and
+    * eliminating those that do not match.
+    * The list of matching readers is then ordered with those with the best
+    * matching values of {@link javax.ws.rs.Consumes} (x/y > x&#47;* > *&#47;*)
+    * sorted first. Finally, the
+    * {@link MessageBodyReader#isReadable}
+    * method is called on each reader in order using the supplied criteria and
+    * the first reader that returns {@code true} is selected and returned.
+    *
+    * @param type        the class of object that is to be written.
+    * @param mediaType   the media type of the data that will be read.
+    * @param genericType the type of object to be produced. E.g. if the
+    *                    message body is to be converted into a method parameter, this will be
+    *                    the formal type of the method parameter as returned by
+    *                    <code>Class.getGenericParameterTypes</code>.
+    * @param annotations an array of the annotations on the declaration of the
+    *                    artifact that will be initialized with the produced instance. E.g. if the
+    *                    message body is to be converted into a method parameter, this will be
+    *                    the annotations on that parameter returned by
+    *                    <code>Class.getParameterAnnotations</code>.
+    * @return a MessageBodyReader that matches the supplied criteria or null
+    *         if none is found.
+    */
+   <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type,
+                                                 Type genericType, Annotation annotations[], MediaType mediaType);
 
-            /**
-            * Get a message body reader that matches a set of criteria.
-            *
-            * @param mediaType the media type of the data that will be read, this will
-            * be compared to the values of {@link javax.ws.rs.Consumes} for
-            * each candidate reader and only matching readers will be queried.
-            * @param type the class of object to be produced.
-            * @param genericType the type of object to be produced. E.g. if the
-            * message body is to be converted into a method parameter, this will be
-            * the formal type of the method parameter as returned by
-            * &lt;code&gt;Class.getGenericParameterTypes&lt;/code&gt;.
-            * @param annotations an array of the annotations on the declaration of the
-            * artifact that will be initialized with the produced instance. E.g. if the
-            * message body is to be converted into a method parameter, this will be
-            * the annotations on that parameter returned by
-            * &lt;code&gt;Class.getParameterAnnotations&lt;/code&gt;.
-            * @return a MessageBodyReader that matches the supplied criteria or null
-            * if none is found.
-            */
-            public abstract &lt;T&gt; MessageBodyReader&lt;T&gt; getMessageBodyReader(Class&lt;T&gt; type, Type
-            genericType, Annotation annotations[], MediaType mediaType);
+   /**
+    * Get a message body writer that matches a set of criteria. The set of
+    * writers is first filtered by comparing the supplied value of
+    * {@code mediaType} with the value of each writer's
+    * {@link javax.ws.rs.Produces}, ensuring the supplied value of
+    * {@code type} is assignable to the generic type of the reader, and
+    * eliminating those that do not match.
+    * The list of matching writers is then ordered with those with the best
+    * matching values of {@link javax.ws.rs.Produces} (x/y > x&#47;* > *&#47;*)
+    * sorted first. Finally, the
+    * {@link MessageBodyWriter#isWriteable}
+    * method is called on each writer in order using the supplied criteria and
+    * the first writer that returns {@code true} is selected and returned.
+    *
+    * @param mediaType   the media type of the data that will be written.
+    * @param type        the class of object that is to be written.
+    * @param genericType the type of object to be written. E.g. if the
+    *                    message body is to be produced from a field, this will be
+    *                    the declared type of the field as returned by
+    *                    <code>Field.getGenericType</code>.
+    * @param annotations an array of the annotations on the declaration of the
+    *                    artifact that will be written. E.g. if the
+    *                    message body is to be produced from a field, this will be
+    *                    the annotations on that field returned by
+    *                    <code>Field.getDeclaredAnnotations</code>.
+    * @return a MessageBodyReader that matches the supplied criteria or null
+    *         if none is found.
+    */
+   <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type,
+                                                 Type genericType, Annotation annotations[], MediaType mediaType);
 
+   /**
+    * Get an exception mapping provider for a particular class of exception.
+    * Returns the provider whose generic type is the nearest superclass of
+    * {@code type}.
+    *
+    * @param type the class of exception
+    * @return an {@link ExceptionMapper} for the supplied type or null if none
+    *         is found.
+    */
+   <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type);
 
-            /**
-            * Get a message body writer that matches a set of criteria.
-            *
-            * @param mediaType the media type of the data that will be written, this will
-            * be compared to the values of {@link javax.ws.rs.Produces} for
-            * each candidate writer and only matching writers will be queried.
-            * @param type the class of object that is to be written.
-            * @param genericType the type of object to be written. E.g. if the
-            * message body is to be produced from a field, this will be
-            * the declared type of the field as returned by
-            * &lt;code&gt;Field.getGenericType&lt;/code&gt;.
-            * @param annotations an array of the annotations on the declaration of the
-            * artifact that will be written. E.g. if the
-            * message body is to be produced from a field, this will be
-            * the annotations on that field returned by
-            * &lt;code&gt;Field.getDeclaredAnnotations&lt;/code&gt;.
-            * @return a MessageBodyReader that matches the supplied criteria or null
-            * if none is found.
-            */
-            public abstract &lt;T&gt; MessageBodyWriter&lt;T&gt; getMessageBodyWriter(Class&lt;T&gt; type, Type
-            genericType, Annotation annotations[], MediaType mediaType);
-            }
-
+   /**
+    * Get a context resolver for a particular type of context and media type.
+    * The set of resolvers is first filtered by comparing the supplied value of
+    * {@code mediaType} with the value of each resolver's
+    * {@link javax.ws.rs.Produces}, ensuring the generic type of the context
+    * resolver is assignable to the supplied value of {@code contextType}, and
+    * eliminating those that do not match. If only one resolver matches the
+    * criteria then it is returned. If more than one resolver matches then the
+    * list of matching resolvers is ordered with those with the best
+    * matching values of {@link javax.ws.rs.Produces} (x/y > x&#47;* > *&#47;*)
+    * sorted first. A proxy is returned that delegates calls to
+    * {@link ContextResolver#getContext(java.lang.Class)} to each matching context
+    * resolver in order and returns the first non-null value it obtains or null
+    * if all matching context resolvers return null.
+    *
+    * @param contextType the class of context desired
+    * @param mediaType   the media type of data for which a context is required.
+    * @return a matching context resolver instance or null if no matching
+    *         context providers are found.
+    */
+   <T> ContextResolver<T> getContextResolver(Class<T> contextType,
+                                             MediaType mediaType);
+}
+]]>
          </programlisting>
       </para>
       <para>
@@ -203,7 +247,7 @@
       </para>
       <para>
 
-         MessageBodyWorkers are injectable into MessageBodyReader or Writers:
+         A Providers instance is injectable into MessageBodyReader or Writers:
       </para>
       <para>
 
@@ -212,7 +256,7 @@
             @Consumes("multipart/fixed")
             public class MultipartProvider implements MessageBodyReader {
 
-            private @Context MessageBodyWorkers workers;
+            private @Context Providers providers;
 
             ...
 
@@ -1145,4 +1189,5 @@ public class YamlResource
    </sect1>
    &Multipart;
    &Atom;
+   &Json;
 </chapter>
