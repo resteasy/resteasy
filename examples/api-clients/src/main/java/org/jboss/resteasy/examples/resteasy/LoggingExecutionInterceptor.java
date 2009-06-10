@@ -15,41 +15,41 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoggingExecutionInterceptor implements ClientExecutionInterceptor,
-      MessageBodyReaderInterceptor
+        MessageBodyReaderInterceptor
 {
-   private final static Logger logger = LoggerFactory
-         .getLogger(LoggingExecutionInterceptor.class);
+    private final static Logger logger = LoggerFactory
+            .getLogger(LoggingExecutionInterceptor.class);
 
-   @SuppressWarnings("unchecked")
-   public ClientResponse execute(ClientExecutionContext ctx) throws Exception
-   {
-      StopWatch stopWatch = new StopWatch();
-      stopWatch.start();
-      String uri = ctx.getRequest().getUri();
-      ClientResponse response = ctx.proceed();
-      stopWatch.stop();
-      String contentLength = (String) response.getMetadata().getFirst(
-            HttpHeaderNames.CONTENT_LENGTH);
-      logger.info(String.format("Read url %s in %d ms size %s.", uri, stopWatch
-            .getTime(), contentLength));
-      return response;
-   }
+    @SuppressWarnings("unchecked")
+    public ClientResponse execute(ClientExecutionContext ctx) throws Exception
+    {
+        String uri = ctx.getRequest().getUri();
+        logger.info(String.format("Reading url %s", uri));
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        ClientResponse response = ctx.proceed();
+        stopWatch.stop();
+        String contentLength = (String) response.getMetadata().getFirst(
+                HttpHeaderNames.CONTENT_LENGTH);
+        logger.info(String.format("Read url %s in %d ms size %s.", uri,
+                stopWatch.getTime(), contentLength));
+        return response;
+    }
 
-   public Object read(MessageBodyReaderContext ctx) throws IOException,
-         WebApplicationException
-   {
-      StopWatch stopWatch = new StopWatch();
-      stopWatch.start();
-      try
-      {
-         return ctx.proceed();
-      }
-      finally
-      {
-         stopWatch.stop();
-         logger.info(String.format("Read mediaType %s as %s in %d ms.", ctx
-               .getMediaType().toString(), ctx.getType().getName(), stopWatch
-               .getTime()));
-      }
-   }
+    public Object read(MessageBodyReaderContext ctx) throws IOException,
+            WebApplicationException
+    {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        try
+        {
+            return ctx.proceed();
+        } finally
+        {
+            stopWatch.stop();
+            logger.info(String.format("Read mediaType %s as %s in %d ms.", ctx
+                    .getMediaType().toString(), ctx.getType().getName(),
+                    stopWatch.getTime()));
+        }
+    }
 }
