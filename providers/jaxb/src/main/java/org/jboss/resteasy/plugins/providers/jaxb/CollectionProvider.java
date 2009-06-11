@@ -120,6 +120,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          JAXBContext ctx = finder.findCachedContext(baseType, mediaType, null);
          Unmarshaller unmarshaller = ctx.createUnmarshaller();
+         unmarshaller = AbstractJAXBProvider.decorateUnmarshaller(baseType, annotations, mediaType, unmarshaller);
          if (type.isArray())
          {
             Object array = Array.newInstance(baseType, col.getValue().size());
@@ -215,6 +216,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 
          JAXBElement<JaxbCollection> collection = new JAXBElement<JaxbCollection>(new QName(namespaceURI, element, prefix), JaxbCollection.class, col);
          Marshaller marshaller = ctx.createMarshaller();
+         AbstractJAXBProvider.decorateMarshaller(baseType, annotations, mediaType, marshaller);
          marshaller.marshal(collection, entityStream);
       }
       catch (JAXBException e)

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
+import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
@@ -15,6 +16,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -130,6 +132,8 @@ public class JsonCollectionProvider extends CollectionProvider
       try
       {
          JAXBContext ctx = finder.findCachedContext(baseType, mediaType, annotations);
+         Marshaller marshaller = ctx.createMarshaller();
+         marshaller = AbstractJAXBProvider.decorateMarshaller(baseType, annotations, mediaType, marshaller);
          if (type.isArray())
          {
             Object[] array = (Object[]) entry;
@@ -144,7 +148,7 @@ public class JsonCollectionProvider extends CollectionProvider
                {
                   entityStream.write(',');
                }
-               ctx.createMarshaller().marshal(obj, entityStream);
+               marshaller.marshal(obj, entityStream);
             }
          }
          else
@@ -161,7 +165,7 @@ public class JsonCollectionProvider extends CollectionProvider
                {
                   entityStream.write(',');
                }
-               ctx.createMarshaller().marshal(obj, entityStream);
+               marshaller.marshal(obj, entityStream);
             }
          }
          entityStream.write(']');

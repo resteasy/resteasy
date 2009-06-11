@@ -1,24 +1,5 @@
 package org.jboss.resteasy.client;
 
-import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.RuntimeDelegate;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
@@ -31,10 +12,27 @@ import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.util.GenericType;
+import static org.jboss.resteasy.util.HttpHeaderNames.*;
+
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.RuntimeDelegate;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Create a hand coded request to send to the server.
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -77,25 +75,26 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public ClientRequest(String uriTemplate, HttpClient httpClient,
-         ResteasyProviderFactory providerFactory)
+                        ResteasyProviderFactory providerFactory)
    {
       this(getBuilder(uriTemplate), new ApacheHttpClientExecutor(httpClient),
-            providerFactory);
+              providerFactory);
    }
 
-   public ClientRequest(UriBuilder uri, ClientExecutor executor){
+   public ClientRequest(UriBuilder uri, ClientExecutor executor)
+   {
       this(uri, executor, ResteasyProviderFactory.getInstance());
    }
 
    public ClientRequest(UriBuilder uri, ClientExecutor executor,
-         ResteasyProviderFactory providerFactory)
+                        ResteasyProviderFactory providerFactory)
    {
       this.uri = (UriBuilderImpl) uri;
       this.executor = executor;
       if (providerFactory instanceof ProviderFactoryDelegate)
       {
          this.providerFactory = ((ProviderFactoryDelegate) providerFactory)
-               .getDelegate();
+                 .getDelegate();
       }
       else
       {
@@ -141,7 +140,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       if (object instanceof String)
          return (String) object;
       StringConverter converter = providerFactory.getStringConverter(object
-            .getClass());
+              .getClass());
       if (converter != null)
          return converter.toString(object);
       else
@@ -152,12 +151,12 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    protected String toHeaderString(Object object)
    {
       StringConverter converter = providerFactory.getStringConverter(object
-            .getClass());
+              .getClass());
       if (converter != null)
          return converter.toString(object);
 
       RuntimeDelegate.HeaderDelegate delegate = providerFactory
-            .createHeaderDelegate(object.getClass());
+              .createHeaderDelegate(object.getClass());
       if (delegate != null)
          return delegate.toString(object);
       else
@@ -217,7 +216,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    public ClientRequest body(String contentType, Object data)
    {
       return body(MediaType.valueOf(contentType), data, data.getClass(), null,
-            null);
+              null);
    }
 
    public ClientRequest body(MediaType contentType, Object data)
@@ -226,20 +225,20 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public ClientRequest body(MediaType contentType, Object data,
-         GenericType genericType)
+                             GenericType genericType)
    {
       return body(contentType, data, genericType.getType(), genericType
-            .getGenericType(), null);
+              .getGenericType(), null);
    }
 
    public ClientRequest body(MediaType contentType, Object data,
-         Type genericType)
+                             Type genericType)
    {
       return body(contentType, data, data.getClass(), genericType, null);
    }
 
    public ClientRequest body(MediaType contentType, Object data, Class type,
-         Type genericType, Annotation[] annotations)
+                             Type genericType, Annotation[] annotations)
    {
       this.body = data;
       this.bodyContentType = contentType;
@@ -340,13 +339,13 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    {
       if (getReaderInterceptorList().isEmpty())
          setReaderInterceptors(providerFactory
-               .getClientMessageBodyReaderInterceptorRegistry().bindForList(
-                     null, null));
+                 .getClientMessageBodyReaderInterceptorRegistry().bindForList(
+                 null, null));
 
       if (getExecutionInterceptorList().isEmpty())
       {
          setExecutionInterceptors(providerFactory
-               .getClientExecutionInterceptorRegistry().bindForList(null, null));
+                 .getClientExecutionInterceptorRegistry().bindForList(null, null));
       }
 
       BaseClientResponse response = null;
@@ -357,7 +356,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       else
       {
          ClientExecutionContextImpl ctx = new ClientExecutionContextImpl(
-               getExecutionInterceptorList(), executor, this);
+                 getExecutionInterceptorList(), executor, this);
          response = (BaseClientResponse) ctx.proceed();
       }
       response.setMessageBodyReaderInterceptors(getReaderInterceptors());
@@ -365,7 +364,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public void writeRequestBody(MultivaluedMap<String, Object> headers,
-         OutputStream outputStream) throws IOException
+                                OutputStream outputStream) throws IOException
    {
       if (body == null)
       {
@@ -375,25 +374,39 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       if (getWriterInterceptorList().isEmpty())
       {
          setWriterInterceptors(providerFactory
-               .getClientMessageBodyWriterInterceptorRegistry().bindForList(
-                     null, null));
+                 .getClientMessageBodyWriterInterceptorRegistry().bindForList(
+                 null, null));
       }
       MessageBodyWriter writer = providerFactory
-            .getMessageBodyWriter(bodyType, bodyGenericType,
-                  bodyAnnotations, bodyContentType);
+              .getMessageBodyWriter(bodyType, bodyGenericType,
+                      bodyAnnotations, bodyContentType);
       if (writer == null)
       {
          throw new RuntimeException("could not find writer for content-type "
-               + bodyContentType + " type: " + bodyType.getName());
+                 + bodyContentType + " type: " + bodyType.getName());
       }
       new MessageBodyWriterContextImpl(getWriterInterceptors(), writer, body,
-            bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
-            headers, outputStream).proceed();
+              bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
+              headers, outputStream).proceed();
    }
 
    public ClientResponse get() throws Exception
    {
       return httpMethod("GET");
+   }
+
+   /**
+    * Tries to automatically unmarshal to target type.
+    *
+    * @param returnType
+    * @param <T>
+    * @return
+    * @throws Exception
+    */
+   public <T> T getTarget(Class<T> returnType) throws Exception
+   {
+      BaseClientResponse<T> response = (BaseClientResponse<T>) get(returnType);
+      return response.getEntity();
    }
 
    public <T> ClientResponse<T> get(Class<T> returnType) throws Exception
@@ -404,7 +417,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public <T> ClientResponse<T> get(Class<T> returnType, Type genericType)
-         throws Exception
+           throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) get();
       response.setReturnType(returnType);
@@ -438,7 +451,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public <T> ClientResponse<T> put(Class<T> returnType, Type genericType)
-         throws Exception
+           throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) put();
       response.setReturnType(returnType);
@@ -467,7 +480,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public <T> ClientResponse<T> post(Class<T> returnType, Type genericType)
-         throws Exception
+           throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) post();
       response.setReturnType(returnType);
@@ -496,7 +509,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public <T> ClientResponse<T> delete(Class<T> returnType, Type genericType)
-         throws Exception
+           throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) delete();
       response.setReturnType(returnType);
@@ -525,7 +538,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public <T> ClientResponse<T> options(Class<T> returnType, Type genericType)
-         throws Exception
+           throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) options();
       response.setReturnType(returnType);
@@ -548,7 +561,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public <T> ClientResponse<T> httpMethod(String method, Class<T> returnType)
-         throws Exception
+           throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) httpMethod(method);
       response.setReturnType(returnType);
@@ -556,7 +569,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public <T> ClientResponse<T> httpmethod(String method, Class<T> returnType,
-         Type genericType) throws Exception
+                                           Type genericType) throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) httpMethod(method);
       response.setReturnType(returnType);
@@ -565,7 +578,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    }
 
    public <T> ClientResponse<T> httpMethod(String method, GenericType type)
-         throws Exception
+           throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) httpMethod(method);
       response.setReturnType(type.getType());
@@ -581,7 +594,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    /**
     * This method populates all path, matrix, and query parameters and saves it
     * internally. Once its called once it returns the cached value.
-    * 
+    *
     * @return
     * @throws Exception
     */
@@ -595,7 +608,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       if (matrixParameters != null)
       {
          for (Map.Entry<String, List<String>> entry : matrixParameters
-               .entrySet())
+                 .entrySet())
          {
             List<String> values = entry.getValue();
             for (String value : values)
@@ -605,7 +618,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       if (queryParameters != null)
       {
          for (Map.Entry<String, List<String>> entry : queryParameters
-               .entrySet())
+                 .entrySet())
          {
             List<String> values = entry.getValue();
             for (String value : values)

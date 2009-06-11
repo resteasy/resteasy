@@ -1,15 +1,5 @@
 package org.jboss.resteasy.client.core;
 
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
@@ -18,6 +8,14 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.IOException;
+import java.io.InputStream;
+import static java.lang.String.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,6 +27,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    public static interface BaseClientResponseStreamFactory
    {
       InputStream getInputStream() throws IOException;
+
       void performReleaseConnection();
    }
 
@@ -38,7 +37,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected String alternateMediaType;
    protected Class<?> returnType;
    protected Type genericReturnType;
-   protected Annotation[] annotations;
+   protected Annotation[] annotations = {};
    protected int status;
    protected boolean wasReleased = false;
    protected boolean streamWasRead = false;
@@ -52,7 +51,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       this.streamFactory = streamFactory;
    }
-   
+
    public void setMessageBodyReaderInterceptors(MessageBodyReaderInterceptor[] messageBodyReaderInterceptors)
    {
       this.messageBodyReaderInterceptors = messageBodyReaderInterceptors;
@@ -165,7 +164,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    private <T2> Annotation[] getAnnotations(Class<T2> type, Type genericType)
    {
       return (this.returnType == type && this.genericReturnType == genericType) ? this.annotations
-            : null;
+              : null;
    }
 
    @Override
@@ -177,7 +176,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
                  + attributeExceptionsTo, exception);
       }
 
-      if (unmarshaledEntity != null && !type.isInstance(this.unmarshaledEntity)) 
+      if (unmarshaledEntity != null && !type.isInstance(this.unmarshaledEntity))
          throw new RuntimeException("The entity was already read, and it was of type "
                  + unmarshaledEntity.getClass());
 
@@ -185,14 +184,14 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       {
          try
          {
-            if (status == HttpResponseCodes.SC_NO_CONTENT) 
+            if (status == HttpResponseCodes.SC_NO_CONTENT)
                return null;
-   
-           unmarshaledEntity = readFrom(type, genericType, getMediaType(), anns);
+
+            unmarshaledEntity = readFrom(type, genericType, getMediaType(), anns);
          }
          finally
          {
-            if(!InputStream.class.isAssignableFrom(type))
+            if (!InputStream.class.isAssignableFrom(type))
                releaseConnection();
          }
       }
@@ -211,25 +210,25 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    protected <T2> Object readFrom(Class<T2> type, Type genericType,
-         MediaType media, Annotation[] annotations)
+                                  MediaType media, Annotation[] annotations)
    {
       try
       {
          ReaderUtility reader = new ReaderUtility(providerFactory,
-               messageBodyReaderInterceptors)
+                 messageBodyReaderInterceptors)
          {
             @Override
             public RuntimeException createReaderNotFound(Type genericType,
-                  MediaType mediaType)
+                                                         MediaType mediaType)
             {
                return createResponseFailure(format(
-                     "Unable to find a MessageBodyReader of content-type %s and type %s",
-                     mediaType, genericType));
+                       "Unable to find a MessageBodyReader of content-type %s and type %s",
+                       mediaType, genericType));
             }
          };
          return reader.doRead(type, genericType == null ? type : genericType,
-               media, this.annotations, getHeaders(), streamFactory
-                     .getInputStream());
+                 media, this.annotations, getHeaders(), streamFactory
+                         .getInputStream());
       }
       catch (IOException e)
       {
@@ -303,13 +302,13 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
    public final void releaseConnection()
    {
-      if(!wasReleased)
+      if (!wasReleased)
       {
          streamFactory.performReleaseConnection();
          wasReleased = true;
       }
    }
-      
+
    @Override
    protected final void finalize() throws Throwable
    {
