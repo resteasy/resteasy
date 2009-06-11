@@ -1,4 +1,4 @@
-<sect1 id="Atom">
+<chapter id="Atom">
    <title>Resteasy Atom Support</title>
    <para>
       From W3.org (http://tools.ietf.org/html/rfc4287):
@@ -18,7 +18,7 @@
       are starting to use this format as the envelope for Web Services, for example, distributed notifications, job
       queues, or simply a nice format for sending or receiving data in bulk from a service.
    </para>
-   <sect2 id="resteasy_atom">
+   <sect1 id="resteasy_atom">
       <title>Resteasy Atom API and Provider</title>
       <para>RESTEasy has defined a simple object model in Java to represent Atom and uses JAXB to marshal and unmarshal
          it. The
@@ -70,8 +70,8 @@ public class MyAtomService
          All you have to do is have "atom+" in front of the main subtype. i.e. @Produces("application/atom+json") or
          @Consumes("application/atom+fastinfoset")
       </para>
-   </sect2>
-   <sect2 id="jaxb_atom">
+   </sect1>
+   <sect1 id="jaxb_atom">
       <title>Using JAXB with the Atom Provider</title>
       <para>
          The org.jboss.resteasy.plugins.providers.atom.Content class allows you to unmarshal and marshal JAXB
@@ -143,11 +143,11 @@ public static class AtomServer
    }
 }
 ]]></programlisting>
-   </sect2>
+   </sect1>
 
-</sect1>
+</chapter>
 
-<sect1 id="Abdera">
+<chapter id="Abdera">
 <title>Atom support through Apache Abdera</title>
 <para>
    Resteasy provides support for Apache Abdera, an implementation of the Atom protocol and data format.
@@ -157,7 +157,7 @@ public static class AtomServer
    Abdera is a full-fledged Atom server. Resteasy only supports integration with JAX-RS for Atom data format
    marshalling and unmarshalling to and from the Feed and Entry interface types in Abdera. Here's a simple example:
 </para>
-<sect2 id="Abdera and Maven">
+<sect1 id="Abdera and Maven">
    <title>Abdera and Maven</title>
    <para>The Abdera provider is not included with the Resteasy distribution. To include the Abdera provider
       in your WAR poms, include the following. Please change the version to be the version of resteasy you
@@ -177,8 +177,8 @@ public static class AtomServer
       <version>...version...</version>
    </dependency>
 ]]></programlisting>
-</sect2>
-<sect2 id="using_abdera">
+</sect1>
+<sect1 id="using_abdera">
    <title>Using the Abdera Provider</title>
    <programlisting><![CDATA[
 import org.apache.abdera.Abdera;
@@ -342,5 +342,5 @@ public class AbderaTest extends BaseResourceTest
 }
 ]]>
    </programlisting>
-</sect2>
 </sect1>
+</chapter>

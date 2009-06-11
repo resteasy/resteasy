@@ -1,4 +1,4 @@
-<sect1 id="json">
+<chapter id="json">
     <title>JSON Support via Jackson</title>
     <para>Besides the Jettision JAXB adapter for JSON, Resteasy also support integration with the Jackson project.
         Many users find the output from Jackson much much nicer than the Badger format or Mapped format provided by Jettison.
@@ -78,4 +78,4 @@ public class MyService {
         }
         ]]>
     </programlisting>
-</sect1>
+</chapter>
