@@ -31,7 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Create a hand coded request to send to the server.
+ * Create a hand coded request to send to the server.  You call methods like accept(), body(), pathParameter()
+ * etc. to create the state of the request.  Then you call a get(), post(), etc. method to execute the request.
+ * After an execution of a request, the internal state remains the same.  You can invoke the request again.
+ * You can clear the request with the clear() method.
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -100,6 +103,27 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       {
          this.providerFactory = providerFactory;
       }
+   }
+
+   /**
+    * Clear this request's state so that it can be re-used
+    */
+   public void clear()
+   {
+      headers = null;
+      queryParameters = null;
+      formParameters = null;
+      pathParameters = null;
+      matrixParameters = null;
+      body = null;
+      bodyType = null;
+      bodyGenericType = null;
+      bodyAnnotations = null;
+      bodyContentType = null;
+      httpMethod = null;
+      finalUri = null;
+      pathParameterList = null;
+
    }
 
 
@@ -477,6 +501,12 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       BaseClientResponse response = (BaseClientResponse) post();
       response.setReturnType(returnType);
       return response;
+   }
+
+   public <T> T postTarget(Class<T> returnType) throws Exception
+   {
+      BaseClientResponse<T> response = (BaseClientResponse<T>) post(returnType);
+      return response.getEntity();
    }
 
    public <T> ClientResponse<T> post(Class<T> returnType, Type genericType)
