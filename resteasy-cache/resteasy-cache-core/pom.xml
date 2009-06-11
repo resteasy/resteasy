@@ -15,7 +15,6 @@
         <dependency>
             <groupId>org.jboss.cache</groupId>
             <artifactId>jbosscache-core</artifactId>
-            <version>3.0.3.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
