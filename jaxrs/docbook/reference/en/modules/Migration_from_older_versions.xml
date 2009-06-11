@@ -19,6 +19,9 @@
             <listitem>
             @Wrapped JSON is not enclosed in a simple JSON array
             </listitem>
+             <listitem>
+             If using JSON, the Jackson provider may be triggered.  Use the @NoJackson annotation to fix this.
+             </listitem>
          </itemizedlist>
       </para>
    </sect1>

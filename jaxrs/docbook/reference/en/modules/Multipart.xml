@@ -1,4 +1,4 @@
-<sect1 id="Multipart">
+<chapter id="Multipart">
    <title>Multipart Providers</title>
    <para>Resteasy has rich support for the "multipart/*" and "multipart/form-data" mime types.  The multipart mime
       format is used to pass lists of content bodies.  Multiple content bodies are embedded in one message.
@@ -10,7 +10,7 @@
    a custom API for reading and writing multipart types as well as marshalling arbitrary List (for any multipart type)
       and Map (multipart/form-data only)
    objects</para>
-   <sect2 id="MultipartInput">
+   <sect1 id="MultipartInput">
       <title>Input with multipart/mixed</title>
       <para>When writing a JAX-RS service, RESTEasy provides an interface that allows you to read in any
       multipart mime type.  org.jboss.resteasy.plugins.providers.multipart.MultipartInput</para>
@@ -85,8 +85,8 @@ public interface InputPart
       <para>
          Use of GenericType is required because it is really the only way to obtain generic type information at runtime.
       </para>
-   </sect2>
-   <sect2 id="multipart_list">
+   </sect1>
+   <sect1 id="multipart_list">
       <title>java.util.List with multipart data</title>
       <para>If your body parts are uniform, you do not have to manually unmarshall each and every part.
       You can just provide a java.util.List as your input parameter.  It must have the type it is
@@ -105,8 +105,8 @@ public interface InputPart
    }
 
 </programlisting>
-   </sect2>
-   <sect2 id="MultipartFormData">
+   </sect1>
+   <sect1 id="MultipartFormData">
       <title>Input with multipart/form-data</title>
       <para>When writing a JAX-RS service, RESTEasy provides an interface that allows you to read in
       multipart/form-data mime type.  "multipart/form-data" is often found in web application HTML Form documents and is generally used to
@@ -130,8 +130,8 @@ public interface MultipartFormDataInput extends MultipartInput
          It works in much the same way as MultipartInput described earlier in this chapter.
       </para>
 
-   </sect2>
-   <sect2 id="multipart_map">
+   </sect1>
+   <sect1 id="multipart_map">
       <title>java.util.Map with multipart/form-data</title>
       <para>With form-data, if your body parts are uniform, you do not have to manually unmarshall each and every part.
       You can just provide a java.util.Map as your input parameter.  It must have the type it is
@@ -150,8 +150,8 @@ public interface MultipartFormDataInput extends MultipartInput
    }
 
 </programlisting>
-   </sect2>
-   <sect2 id="MultipartRelated">
+   </sect1>
+   <sect1 id="MultipartRelated">
       <title>Input with multipart/related</title>
       <para>When writing a JAX-RS service, RESTEasy provides an interface that allows you to read in
       multipart/related mime type. A multipart/related is used to indicate that message parts
@@ -178,8 +178,8 @@ public interface MultipartRelatedInput extends MultipartInput
          It works in much the same way as MultipartInput described earlier in this chapter.
       </para>
 
-   </sect2>
-   <sect2 id="multipart_output">
+   </sect1>
+   <sect1 id="multipart_output">
       <title>Output with multipart</title>
       <para>RESTEasy provides a simple API to output multipart data.</para>
 <programlisting><![CDATA[
@@ -237,8 +237,8 @@ public class OutputPart
       }
 
 </programlisting>
-   </sect2>
-   <sect2 id="multipart_list_output">
+   </sect1>
+   <sect1 id="multipart_list_output">
       <title>Multipart Output with java.util.List</title>
       <para>If your body parts are uniform, you do not have to manually marshall each and every part or even
          use a MultipartOutput object..
@@ -260,8 +260,8 @@ public class OutputPart
    }
 
 </programlisting>
-   </sect2>
-   <sect2 id="multipart_formdata_output">
+   </sect1>
+   <sect1 id="multipart_formdata_output">
       <title>Output with multipart/form-data</title>
       <para>RESTEasy provides a simple API to output multipart/form-data.</para>
 <programlisting><![CDATA[
@@ -301,8 +301,8 @@ public class MultipartFormDataOutput extends MultipartOutput
       }
 
 </programlisting>
-   </sect2>
-   <sect2 id="multipart_map_output">
+   </sect1>
+   <sect1 id="multipart_map_output">
       <title>Multipart FormData Output with java.util.Map</title>
       <para>If your body parts are uniform, you do not have to manually marshall each and every part or even
          use a MultipartFormDataOutput object..
@@ -324,8 +324,8 @@ public class MultipartFormDataOutput extends MultipartOutput
    }
 
 </programlisting>
-   </sect2>
-   <sect2 id="multipart_related_output">
+   </sect1>
+   <sect1 id="multipart_related_output">
       <title>Output with multipart/related</title>
       <para>RESTEasy provides a simple API to output multipart/related.</para>
 <programlisting><![CDATA[
@@ -385,8 +385,8 @@ public class MyService
    }
 }
 </programlisting>
-   </sect2>
-   <sect2 id="multipartform_annotation">
+   </sect1>
+   <sect1 id="multipartform_annotation">
       <title>@MultipartForm and POJOs</title>
       <para>If you have a exact knowledge of your multipart/form-data packets, you can map
       them to and from a POJO class to and from multipart/form-data using the
@@ -450,8 +450,8 @@ public class MyService
       }
    }
 </programlisting>
-   </sect2>
-   <sect2 id="xop_with_multipart_related">
+   </sect1>
+   <sect1 id="xop_with_multipart_related">
       <title>XML-binary Optimized Packaging (Xop)</title>
       <para>RESTEasy supports Xop messages packaged as multipart/related. What does this mean? If you have a JAXB
       annotated POJO that also holds some binary content you may choose to send it in such a way where the binary
@@ -522,5 +522,5 @@ public class XopService {
 	<para>We used @Consumes(MediaType.MULTIPART_RELATED) to tell RESTEasy that we want to read multipart/related
 	packages. We used @XopWithMultipartRelated to tell RESTEasy that we want to read Xop messages. Of course we could
 	also produce Xop return values but we would than also need to annotate that and use a Produce annotation, too.</para>
-   </sect2>
-</sect1>
+   </sect1>
+</chapter>
