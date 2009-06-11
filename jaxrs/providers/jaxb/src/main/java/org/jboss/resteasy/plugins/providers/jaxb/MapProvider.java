@@ -116,6 +116,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          HashMap map = new HashMap();
 
          Unmarshaller unmarshaller = ctx.createUnmarshaller();
+         unmarshaller = AbstractJAXBProvider.decorateUnmarshaller(valueType, annotations, mediaType, unmarshaller);
 
          for (int i = 0; i < jaxbMap.getValue().size(); i++)
          {
@@ -204,6 +205,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 
          JAXBElement<JaxbMap> jaxbMap = new JAXBElement<JaxbMap>(new QName(namespaceURI, mapName, prefix), JaxbMap.class, map);
          Marshaller marshaller = ctx.createMarshaller();
+         marshaller = AbstractJAXBProvider.decorateMarshaller(valueType, annotations, mediaType, marshaller);
          marshaller.marshal(jaxbMap, entityStream);
       }
       catch (JAXBException e)

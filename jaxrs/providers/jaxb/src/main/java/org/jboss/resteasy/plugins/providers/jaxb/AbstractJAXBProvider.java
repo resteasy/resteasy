@@ -6,6 +6,7 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.resteasy.core.interception.DecoratorMatcher;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 import org.jboss.resteasy.util.TypeConverter;
 
@@ -53,6 +54,18 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       return finder.findCachedContext(type, mediaType, annotations);
    }
 
+   public static Marshaller decorateMarshaller(Class type, Annotation[] annotations, MediaType mediaType, Marshaller marshaller) throws JAXBException
+   {
+      DecoratorMatcher processor = new DecoratorMatcher();
+      return processor.decorate(Marshaller.class, marshaller, type, annotations, mediaType);
+   }
+
+   public static Unmarshaller decorateUnmarshaller(Class type, Annotation[] annotations, MediaType mediaType, Unmarshaller marshaller) throws JAXBException
+   {
+      DecoratorMatcher processor = new DecoratorMatcher();
+      return processor.decorate(Unmarshaller.class, marshaller, type, annotations, mediaType);
+   }
+
    /**
     *
     */
@@ -67,6 +80,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       {
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+         unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
          return (T) unmarshaller.unmarshal(new StreamSource(entityStream));
       }
       catch (JAXBException e)
@@ -90,6 +104,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       try
       {
          Marshaller marshaller = getMarshaller(type, annotations, mediaType);
+         marshaller = decorateMarshaller(type, annotations, mediaType, marshaller);
          marshaller.marshal(t, outputStream);
       }
       catch (JAXBException e)
