@@ -1,12 +1,5 @@
 package org.jboss.resteasy.client.core.executors;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -21,6 +14,13 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -57,7 +57,8 @@ public class ApacheHttpClientExecutor implements ClientExecutor
 
       int status = httpClient.executeMethod(httpMethod);
 
-      BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory(){
+      BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory()
+      {
          public InputStream getInputStream() throws IOException
          {
             return httpMethod.getResponseBodyAsStream();
@@ -65,7 +66,7 @@ public class ApacheHttpClientExecutor implements ClientExecutor
 
          public void performReleaseConnection()
          {
-             httpMethod.releaseConnection();
+            httpMethod.releaseConnection();
          }
       });
       response.setStatus(status);
@@ -183,6 +184,7 @@ public class ApacheHttpClientExecutor implements ClientExecutor
       }
       if (request.getBody() != null)
       {
+         if (httpMethod instanceof GetMethod) throw new RuntimeException("A GET request cannot have a body.");
          ClientRequestEntity requestEntity = new ClientRequestEntity(new HttpClientHeaderWrapper(httpMethod, request.getProviderFactory()), request);
          EntityEnclosingMethod post = (EntityEnclosingMethod) httpMethod;
          post.setRequestEntity(requestEntity);
