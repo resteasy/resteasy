@@ -17,35 +17,34 @@
     </para>
     <para>
 
-        <programlisting>
-            public interface SimpleClient
-            {
-            @GET
-            @Path("basic")
-            @Produces("text/plain")
-            String getBasic();
+<programlisting>
+public interface SimpleClient
+{
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   String getBasic();
 
-            @PUT
-            @Path("basic")
-            @Consumes("text/plain")
-            void putBasic(String body);
+   @PUT
+   @Path("basic")
+   @Consumes("text/plain")
+   void putBasic(String body);
 
-            @GET
-            @Path("queryParam")
-            @Produces("text/plain")
-            String getQueryParam(@QueryParam("param")String param);
+   @GET
+   @Path("queryParam")
+   @Produces("text/plain")
+   String getQueryParam(@QueryParam("param")String param);
 
-            @GET
-            @Path("matrixParam")
-            @Produces("text/plain")
-            String getMatrixParam(@MatrixParam("param")String param);
+   @GET
+   @Path("matrixParam")
+   @Produces("text/plain")
+   String getMatrixParam(@MatrixParam("param")String param);
 
-            @GET
-            @Path("uriParam/{param}")
-            @Produces("text/plain")
-            int getUriParam(@PathParam("param")int param);
-            }
-        </programlisting>
+   @GET
+   @Path("uriParam/{param}")
+   @Produces("text/plain")
+   int getUriParam(@PathParam("param")int param);
+}</programlisting>
     </para>
     <para>
 
@@ -119,11 +118,11 @@
         <para>
 
             <programlisting>
-                @Path("/")
-                public interface MyProxy {
-                @POST
-                Response.Status updateSite(MyPojo pojo);
-                }
+@Path("/")
+public interface MyProxy {
+   @POST
+   Response.Status updateSite(MyPojo pojo);
+}
             </programlisting>
         </para>
         <para>
@@ -217,14 +216,13 @@ public abstract class ClientResponse<T> extends Response
         <para>
 
             <programlisting>
-                @Path("/")
-                public interface LibraryService {
+@Path("/")
+public interface LibraryService {
 
-                @GET
-                @Produces("application/xml")
-                ClientResponse&lt;LibraryPojo&gt; getAllBooks();
-                }
-            </programlisting>
+   @GET
+   @Produces("application/xml")
+   ClientResponse&lt;LibraryPojo&gt; getAllBooks();
+}</programlisting>
         </para>
         <para>
 
@@ -249,32 +247,29 @@ public abstract class ClientResponse<T> extends Response
             this. The first is to use the @ClientResponseType annotation.
         </para>
         <programlisting>
-            import org.jboss.resteasy.annotations.ClientResponseType;
-            import javax.ws.rs.core.Response;
+import org.jboss.resteasy.annotations.ClientResponseType;
+import javax.ws.rs.core.Response;
 
-            @Path("/")
-            public interface MyInterface {
+@Path("/")
+public interface MyInterface {
 
-            @GET
-            @ClientResponseType(String.class)
-            @Produces("text/plain")
-            public Response get();
-            }
-        </programlisting>
+   @GET
+   @ClientResponseType(String.class)
+   @Produces("text/plain")
+   public Response get();
+}</programlisting>
         <para>
             This approach isn't always good enough. The problem is that some MessageBodyReaders and Writers need generic
             type information in order to match and service a request.
         </para>
-        <programlisting>
-            @Path("/")
-            public interface MyInterface {
+<programlisting>
+@Path("/")
+public interface MyInterface {
 
-            @GET
-            @Produces("application/xml")
-            public Response getMyListOfJAXBObjects();
-            }
-
-        </programlisting>
+   @GET
+   @Produces("application/xml")
+   public Response getMyListOfJAXBObjects();
+}</programlisting>
         <para>
             In this case, your client code can cast the returned Response object to a ClientResponse and use one of the
             typed getEntity() methods.
@@ -283,8 +278,7 @@ public abstract class ClientResponse<T> extends Response
 MyInterface proxy = ProxyFactory.create(MyInterface.class, "http://localhost:8081");
 ClientResponse response = (ClientResponse)proxy.getMyListOfJAXBObjects();
 List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>());
-]]>
-        </programlisting>
+]]></programlisting>
 
     </sect1>
     <sect1 id="Client_error_handling">
@@ -299,13 +293,13 @@ List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>()
         </para>
         <para>
 
-            <programlisting>
-                @GET
-                ClientResponse&lt;String&gt; get() // will throw an exception if you call getEntity()
+<programlisting>
+   @GET
+   ClientResponse&lt;String&gt; get() // will throw an exception if you call getEntity()
 
-                @GET
-                MyObject get(); // will throw a ClientResponseFailure on response code &gt; 399
-            </programlisting>
+   @GET
+   MyObject get(); // will throw a ClientResponseFailure on response code &gt; 399
+</programlisting>
         </para>
         <para>
 
