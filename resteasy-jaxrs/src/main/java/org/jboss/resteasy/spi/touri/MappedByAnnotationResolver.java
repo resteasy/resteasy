@@ -4,20 +4,25 @@ import java.lang.annotation.Annotation;
 
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 
-public class URITemplateAnnotationResolver extends
+public class MappedByAnnotationResolver extends
       AbstractURITemplateAnnotationResolver
 {
-
    protected Class<? extends Annotation> getAnnotationType()
    {
-      return URITemplate.class;
+      return MappedBy.class;
    }
 
    protected UriBuilderImpl getUriBuilder(Class<? extends Object> clazz)
    {
-      String uriTemplate = clazz.getAnnotation(URITemplate.class).value();
+      MappedBy mappedBy = clazz.getAnnotation(MappedBy.class);
       UriBuilderImpl uriBuilderImpl = new UriBuilderImpl();
-      uriBuilderImpl.replacePath(uriTemplate);
+      Class<?> resourceType = mappedBy.resource();
+      uriBuilderImpl.path(resourceType);
+      String method = mappedBy.method();
+      if (method != null && method.length() > 0)
+      {
+         uriBuilderImpl.path(resourceType, method);
+      }
       return uriBuilderImpl;
    }
 }

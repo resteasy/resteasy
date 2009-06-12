@@ -1,6 +1,12 @@
 package org.jboss.resteasy.test.finegrain;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
 import junit.framework.Assert;
+
+import org.jboss.resteasy.spi.touri.MappedBy;
 import org.jboss.resteasy.spi.touri.ObjectToURI;
 import org.jboss.resteasy.spi.touri.URIResolver;
 import org.jboss.resteasy.spi.touri.URITemplate;
@@ -10,14 +16,12 @@ import org.junit.Test;
 public class ToURITest
 {
 
-   @URITemplate("/foo/{id}")
-   public static class URITemplateObject
+   public abstract static class AbstractURITemplateObject
    {
       private int id;
 
-      public URITemplateObject(int id)
+      public AbstractURITemplateObject(int id)
       {
-         super();
          this.id = id;
       }
 
@@ -32,7 +36,25 @@ public class ToURITest
       }
    }
 
-   public class URIableObject implements URIable
+   @URITemplate("/foo/{id}")
+   public static class URITemplateObject extends AbstractURITemplateObject
+   {
+      public URITemplateObject(int id)
+      {
+         super(id);
+      }
+   }
+
+   @MappedBy(resource = FooResouce.class, method = "getFoo")
+   public static class MappedByObject extends AbstractURITemplateObject
+   {
+      public MappedByObject(int id)
+      {
+         super(id);
+      }
+   }
+
+   public static class URIableObject implements URIable
    {
       public String toURI()
       {
@@ -40,8 +62,16 @@ public class ToURITest
       }
    }
 
-   public class CustomURIableObject extends URIableObject
+   public static class CustomURIableObject extends URIableObject
    {
+   }
+
+   @Path("/foo/")
+   public static interface FooResouce
+   {
+      @Path("{id}")
+      @GET
+      AbstractURITemplateObject getFoo(@PathParam("id") Integer id);
    }
 
    @Test
@@ -49,14 +79,19 @@ public class ToURITest
    {
       ObjectToURI instance = ObjectToURI.getInstance();
       Assert.assertEquals("/foo/123", instance
-              .resolveURI(new URITemplateObject(123)));
+            .resolveURI(new URITemplateObject(123)));
       Assert.assertEquals("/my-url", instance.resolveURI(new URIableObject()));
+      Assert.assertEquals("/foo/123", instance.resolveURI(new MappedByObject(
+            123)));
    }
 
    @Test
    public void testCustomResolver()
    {
       ObjectToURI instance = ObjectToURI.getInstance();
+      CustomURIableObject custom = new CustomURIableObject();
+      Assert.assertEquals("/my-url", instance.resolveURI(custom));
+      
       instance.registerURIResolver(new URIResolver()
       {
          public boolean handles(Class<?> type)
@@ -70,6 +105,6 @@ public class ToURITest
          }
       });
 
-      Assert.assertEquals("/some-other-uri", instance.resolveURI(new CustomURIableObject()));
+      Assert.assertEquals("/some-other-uri", instance.resolveURI(custom));
    }
 }

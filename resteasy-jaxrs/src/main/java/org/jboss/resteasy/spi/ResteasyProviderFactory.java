@@ -20,6 +20,7 @@ import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
+import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Consumes;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -155,7 +157,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
-   protected static ThreadLocal<Map<Class<?>, Object>> contextualData = new ThreadLocal<Map<Class<?>, Object>>();
+   protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
+   protected static int maxForwards = 20;
 
    protected InterceptorRegistry<MessageBodyReaderInterceptor> serverMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
    protected InterceptorRegistry<MessageBodyWriterInterceptor> serverMessageBodyWriterInterceptorRegistry = new InterceptorRegistry<MessageBodyWriterInterceptor>(MessageBodyWriterInterceptor.class, this);
@@ -167,27 +170,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
 
    protected boolean builtinsRegistered = false;
+   
 
    public static <T> void pushContext(Class<T> type, T data)
    {
-      Map<Class<?>, Object> map = getContextDataMap();
-      map.put(type, data);
+      getContextDataMap().put(type, data);
    }
 
    public static void pushContextDataMap(Map<Class<?>, Object> map)
    {
-      contextualData.set(map);
+      contextualData.setLast(map);
    }
 
    public static Map<Class<?>, Object> getContextDataMap()
    {
-      Map<Class<?>, Object> map = contextualData.get();
-      if (map == null)
-      {
-         map = new HashMap<Class<?>, Object>();
-         contextualData.set(map);
-      }
-      return map;
+      return getContextDataMap(true);
    }
 
    public static <T> T getContextData(Class<T> type)
@@ -197,14 +194,47 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public static <T> T popContextData(Class<T> type)
    {
-      return (T) contextualData.get().remove(type);
+      return (T) getContextDataMap().remove(type);
    }
 
    public static void clearContextData()
    {
-      contextualData.set(null);
+      contextualData.clear();
    }
 
+   private static Map<Class<?>, Object> getContextDataMap(boolean create)
+   {
+      Map<Class<?>, Object> map = contextualData.get();
+      if( map == null )
+      {
+         contextualData.setLast(map = new HashMap<Class<?>, Object>());
+      }   
+      return map;
+   }
+
+   public static Map<Class<?>, Object> addContextDataLevel()
+   {
+      if( getContextDataLevelCount() == maxForwards )
+      {
+         throw new BadRequestException(
+               "You have exceeded your maximum forwards ResteasyProviderFactory allows.  Last good uri: "
+                     + getContextData(UriInfo.class).getPath());
+      }
+      Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
+      contextualData.push(map);
+      return map;
+   }
+
+   public static int getContextDataLevelCount()
+   {
+      return contextualData.size();
+   }
+
+   public static void removeContextDataLevel()
+   {
+      contextualData.pop();
+   }
+   
    public static void setInstance(ResteasyProviderFactory factory)
    {
       RuntimeDelegate.setInstance(factory);
