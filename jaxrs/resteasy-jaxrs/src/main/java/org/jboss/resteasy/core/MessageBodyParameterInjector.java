@@ -1,42 +1,80 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
-import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.spi.BadRequestException;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
-
-import javax.ws.rs.Encoded;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Encoded;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.core.messagebody.ReaderUtility;
+import org.jboss.resteasy.spi.BadRequestException;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.ThreadLocalStack;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class MessageBodyParameterInjector implements ValueInjector
 {
+   private static ThreadLocalStack<Object> bodyStack = new ThreadLocalStack<Object>();
+
+   public static void pushBody(Object o)
+   {
+      bodyStack.push(o);
+   }
+
+   public static Object getBody()
+   {
+      return bodyStack.get();
+   }
+
+   public static Object popBody()
+   {
+      return bodyStack.pop();
+   }
+
+   public static int bodyCount()
+   {
+      return bodyStack.size();
+   }
+
+   public static void clearBodies()
+   {
+      bodyStack.clear();
+   }
+   
    private Class type;
    private Type genericType;
    private Annotation[] annotations;
-   private ResteasyProviderFactory factory;
-   private MessageBodyReaderInterceptor[] interceptors;
+   private ReaderUtility readerUtility;
 
    public MessageBodyParameterInjector(Class declaringClass, AccessibleObject target, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       this.type = type;
-      this.factory = factory;
       this.genericType = genericType;
       this.annotations = annotations;
-      interceptors = factory.getServerMessageBodyReaderInterceptorRegistry().bind(declaringClass, target);
+      MessageBodyReaderInterceptor[] interceptors = factory
+            .getServerMessageBodyReaderInterceptorRegistry().bind(
+                  declaringClass, target);
+      this.readerUtility = new ReaderUtility(factory, interceptors)
+      {
+         public RuntimeException createReaderNotFound(Type genericType, MediaType mediaType)
+         {
+            return new BadRequestException(
+                  "Could not find message body reader for type: "
+                        + genericType + " of content type: " + mediaType);
+         }
+      };
    }
 
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -56,7 +94,12 @@ public class MessageBodyParameterInjector implements ValueInjector
    {
       try
       {
-         MediaType mediaType = request.getHttpHeaders().getMediaType();
+         Object o = getBody();
+         if( o != null )
+         {
+            return o;
+         }
+         final MediaType mediaType = request.getHttpHeaders().getMediaType();
          if (mediaType == null)
          {
             throw new BadRequestException("content-type was null and expecting to extract a body");
@@ -74,14 +117,7 @@ public class MessageBodyParameterInjector implements ValueInjector
          }
          else
          {
-            MessageBodyReader reader = factory.getMessageBodyReader(type, genericType, annotations, mediaType);
-            if (reader == null)
-               throw new BadRequestException("Could not find message body reader for type: " + genericType + " of content type: " + mediaType);
-            if (interceptors == null || interceptors.length == 0)
-               return reader.readFrom(type, genericType, annotations, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
-            MessageBodyReaderContextImpl ctx = new MessageBodyReaderContextImpl(interceptors, reader, type, genericType,
-                    annotations, mediaType, request.getHttpHeaders().getRequestHeaders(), request.getInputStream());
-            return ctx.proceed();
+            return readerUtility.doRead(request, type, genericType, annotations, mediaType);
          }
       }
       catch (IOException e)

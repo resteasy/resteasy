@@ -1,33 +1,35 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.specimpl.PathSegmentImpl;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Providers;
+
 import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.util.LocaleHelper;
+import org.jboss.resteasy.spi.preprocessor.ExtensionHttpPreprocessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Providers;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -38,8 +40,8 @@ public class SynchronousDispatcher implements Dispatcher
 {
    protected ResteasyProviderFactory providerFactory;
    protected Registry registry;
-   protected Map<String, MediaType> mediaTypeMappings;
-   protected Map<String, String> languageMappings;
+   protected List<HttpRequestPreprocessor> requestPreprocessors = new ArrayList<HttpRequestPreprocessor>();
+   protected ExtensionHttpPreprocessor extentionHttpPreprocessor;
 
    private final static Logger logger = LoggerFactory.getLogger(SynchronousDispatcher.class);
 
@@ -47,6 +49,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
+      requestPreprocessors.add(extentionHttpPreprocessor = new ExtensionHttpPreprocessor());
    }
 
    public ResteasyProviderFactory getProviderFactory()
@@ -61,22 +64,22 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings)
    {
-      this.mediaTypeMappings = mediaTypeMappings;
+      extentionHttpPreprocessor.mediaTypeMappings = mediaTypeMappings;
    }
 
    public void setLanguageMappings(Map<String, String> languageMappings)
    {
-      this.languageMappings = languageMappings;
+      extentionHttpPreprocessor.languageMappings = languageMappings;
    }
 
    public Map<String, MediaType> getMediaTypeMappings()
    {
-      return mediaTypeMappings;
+      return extentionHttpPreprocessor.mediaTypeMappings;
    }
 
    public Map<String, String> getLanguageMappings()
    {
-      return languageMappings;
+      return extentionHttpPreprocessor.languageMappings;
    }
 
    protected void preprocess(HttpRequest in)
@@ -86,78 +89,24 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void preprocessExtensions(HttpRequest in)
    {
-
-      List<PathSegment> segments = null;
-      if (mediaTypeMappings != null || languageMappings != null)
+      for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors)
       {
-
-         String path = in.getUri().getPath(false);
-         int lastSegment = path.lastIndexOf('/');
-         if (lastSegment < 0) lastSegment = 0;
-         int index = path.indexOf('.', lastSegment);
-         if (index < 0) return;
-
-         boolean preprocessed = false;
-
-         String extension = path.substring(index + 1);
-         String[] extensions = extension.split("\\.");
-
-         String rebuilt = path.substring(0, index);
-         for (String ext : extensions)
-         {
-            if (mediaTypeMappings != null)
-            {
-               MediaType match = mediaTypeMappings.get(ext);
-               if (match != null)
-               {
-                  in.getHttpHeaders().getAcceptableMediaTypes().add(0, match);
-                  preprocessed = true;
-                  continue;
-               }
-            }
-            if (languageMappings != null)
-            {
-               String match = languageMappings.get(ext);
-               if (match != null)
-               {
-                  in.getHttpHeaders().getAcceptableLanguages().add(LocaleHelper.extractLocale(match));
-                  preprocessed = true;
-                  continue;
-               }
-            }
-            rebuilt += "." + ext;
-         }
-         if (preprocessed) segments = PathSegmentImpl.parseSegments(rebuilt);
-         else segments = in.getUri().getPathSegments(false);
+         preprocessor.preProcess(in);
       }
-      else
-      {
-         segments = in.getUri().getPathSegments(false);
-      }
-
-      // finally strip out matrix parameters
-
-      StringBuilder preprocessedPath = new StringBuilder();
-      for (PathSegment pathSegment : segments)
-      {
-         preprocessedPath.append("/").append(pathSegment.getPath());
-      }
-      in.setPreprocessedPath(preprocessedPath.toString());
    }
 
    public void invoke(HttpRequest request, HttpResponse response)
    {
-      ResourceInvoker invoker = null;
       try
       {
-         invoker = getInvoker(request, response);
+         ResourceInvoker invoker = getInvoker(request, response);
+         invoke(request, response, invoker);
       }
       catch (Failure e)
       {
          handleException(request, response, e);
          return;
       }
-      invoke(request, response, invoker);
    }
 
    public ResourceInvoker getInvoker(HttpRequest request, HttpResponse response)
@@ -171,7 +120,9 @@ public class SynchronousDispatcher implements Dispatcher
       preprocess(request);
       ResourceInvoker invoker = registry.getResourceInvoker(request, response);
       if (invoker == null)
+      {
          throw new NotFoundException("Unable to find JAX-RS resource associated with path: " + request.getUri().getPath());
+      }
       return invoker;
    }
 
@@ -336,40 +287,53 @@ public class SynchronousDispatcher implements Dispatcher
       ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
       ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
       ResteasyProviderFactory.pushContext(Registry.class, registry);
+      ResteasyProviderFactory.pushContext(Dispatcher.class, this);
+      ResteasyProviderFactory.pushContext(InternalDispatcher.class, InternalDispatcher.getInstance());
    }
 
+   public Response internalInvocation(HttpRequest request, HttpResponse response, Object entity)
+   {
+      // be extra careful in the clean up process. Only pop if there was an
+      // equivalent push.
+      ResteasyProviderFactory.addContextDataLevel();
+      boolean pushedBody = false;
+      try
+      {
+         MessageBodyParameterInjector.pushBody(entity);
+         pushedBody = true;
+         ResourceInvoker invoker = getInvoker(request, response);
+         if( invoker != null )
+         {
+            pushContextObjects(request, response);
+            return getResponse(request, response, invoker);
+         }  
+         
+         // this should never happen, since getInvoker should throw an exception
+         // if invoker is null
+         return null;
+      }
+      finally
+      {
+         ResteasyProviderFactory.removeContextDataLevel();
+         if(pushedBody)
+         {
+            MessageBodyParameterInjector.popBody();
+         }
+      }
+   }
    public void clearContextData()
    {
       ResteasyProviderFactory.clearContextData();
+      // just in case there were internalDispatches that need to be cleaned up
+      MessageBodyParameterInjector.clearBodies();
    }
-
 
    public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
       try
       {
          pushContextObjects(request, response);
-
-         Response jaxrsResponse = null;
-         try
-         {
-            jaxrsResponse = invoker.invoke(request, response);
-            if (request.isSuspended())
-            {
-               /**
-                * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
-                * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
-                * asychronous HTTP.
-                *
-                */
-               request.initialRequestThreadFinished();
-               jaxrsResponse = null; // we're handing response asynchronously
-            }
-         }
-         catch (Exception e)
-         {
-            handleInvokerException(request, response, e);
-         }
+         Response jaxrsResponse = getResponse(request, response, invoker);
 
          try
          {
@@ -384,6 +348,32 @@ public class SynchronousDispatcher implements Dispatcher
       {
          clearContextData();
       }
+   }
+
+   protected Response getResponse(HttpRequest request, HttpResponse response,
+         ResourceInvoker invoker)
+   {
+      Response jaxrsResponse = null;
+      try
+      {
+         jaxrsResponse = invoker.invoke(request, response);
+         if (request.isSuspended())
+         {
+            /**
+             * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
+             * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
+             * asychronous HTTP.
+             *
+             */
+            request.initialRequestThreadFinished();
+            jaxrsResponse = null; // we're handing response asynchronously
+         }
+      }
+      catch (Exception e)
+      {
+         handleInvokerException(request, response, e);
+      }
+      return jaxrsResponse;
    }
 
    public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse)

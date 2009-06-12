@@ -28,6 +28,7 @@ public class ObjectToURI
       instance = new ObjectToURI();
       instance.defaultResolvers.add(new URIableURIResolver());
       instance.defaultResolvers.add(new URITemplateAnnotationResolver());
+      instance.defaultResolvers.add(new MappedByAnnotationResolver());
    }
 
    public static ObjectToURI getInstance()
@@ -46,7 +47,11 @@ public class ObjectToURI
    public String resolveURI(Object object)
    {
       String result = getResolver(object, resolvers);
-      return result == null ? getResolver(object, defaultResolvers) : result;
+      if (result == null)
+      {
+         result = getResolver(object, defaultResolvers);
+      }
+      return result;
    }
 
    private String getResolver(Object object, List<URIResolver> resolvers)
