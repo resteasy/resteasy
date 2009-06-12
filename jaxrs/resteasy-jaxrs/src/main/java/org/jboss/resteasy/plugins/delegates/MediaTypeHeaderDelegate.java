@@ -16,13 +16,90 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       return parse(type);
    }
 
+   private static int getEndName(String params, int start)
+   {
+      int equals = params.indexOf('=', start);
+      int semicolon = params.indexOf(';', start);
+      if (equals == -1 && semicolon == -1) return params.length();
+      if (equals == -1) return semicolon;
+      if (semicolon == -1) return equals;
+      int end = (equals < semicolon) ? equals : semicolon;
+      return end;
+   }
+
+   public static int setParam(HashMap<String, String> typeParams, String params, int start)
+   {
+      boolean quote = false;
+      boolean backslash = false;
+
+      int end = getEndName(params, start);
+      String name = params.substring(start, end).trim();
+      if (end < params.length() && params.charAt(end) == '=') end++;
+
+      StringBuffer buffer = new StringBuffer();
+      int i = end;
+      for (; i < params.length(); i++)
+      {
+         char c = params.charAt(i);
+
+         switch (c)
+         {
+            case '"':
+            {
+               if (backslash)
+               {
+                  backslash = false;
+                  buffer.append(c);
+               }
+               else
+               {
+                  quote = !quote;
+               }
+               break;
+            }
+            case '\\':
+            {
+               if (backslash)
+               {
+                  backslash = false;
+                  buffer.append(c);
+               }
+               break;
+            }
+            case ';':
+            {
+               if (!quote)
+               {
+                  String value = buffer.toString().trim();
+                  typeParams.put(name, value);
+                  return i + 1;
+               }
+               else
+               {
+                  buffer.append(c);
+               }
+               break;
+            }
+            default:
+            {
+               buffer.append(c);
+               break;
+            }
+         }
+      }
+      String value = buffer.toString().trim();
+      typeParams.put(name, value);
+      return i;
+   }
+
+
    public static MediaType parse(String type)
    {
       String params = null;
       int idx = type.indexOf(";");
       if (idx > -1)
       {
-         params = type.substring(idx + 1);
+         params = type.substring(idx + 1).trim();
          type = type.substring(0, idx);
       }
       String major = null;
@@ -43,21 +120,15 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          major = paths[0];
          subtype = paths[1];
       }
-      if (params != null)
+      if (params != null && !params.equals(""))
       {
          HashMap<String, String> typeParams = new HashMap<String, String>();
-         if (params.startsWith(";")) params = params.substring(1);
-         String[] array = params.split(";");
-         for (String param : array)
+
+         int start = 0;
+
+         while (start < params.length())
          {
-            int pidx = param.indexOf("=");
-            String name = param.substring(0, pidx).trim();
-            String val = param.substring(pidx + 1).trim();
-            if (val.startsWith("\""))
-            	val = val.substring(1).trim();
-            if (val.endsWith("\""))
-            	val = val.substring(0, val.length() - 1);
-            typeParams.put(name, val);
+            start = setParam(typeParams, params, start);
          }
          return new MediaType(major, subtype, typeParams);
       }

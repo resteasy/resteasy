@@ -55,6 +55,28 @@ public class MediaTypeTest
       Assert.assertEquals(2, mediaType.getParameters().size());
       Assert.assertEquals("0.4", mediaType.getParameters().get("q"));
       Assert.assertEquals("2", mediaType.getParameters().get("level"));
+
+      mediaType = MediaType.valueOf("text/html;level=  \"2\";q=0.4");
+      Assert.assertEquals("text", mediaType.getType());
+      Assert.assertEquals("html", mediaType.getSubtype());
+      Assert.assertEquals(2, mediaType.getParameters().size());
+      Assert.assertEquals("0.4", mediaType.getParameters().get("q"));
+      Assert.assertEquals("2", mediaType.getParameters().get("level"));
+
+      mediaType = MediaType.valueOf("text/html;level=  \"2\";q=  \"0.4\"   ");
+      Assert.assertEquals("text", mediaType.getType());
+      Assert.assertEquals("html", mediaType.getSubtype());
+      Assert.assertEquals(2, mediaType.getParameters().size());
+      Assert.assertEquals("0.4", mediaType.getParameters().get("q"));
+      Assert.assertEquals("2", mediaType.getParameters().get("level"));
+
+      mediaType = MediaType.valueOf("text/html;level=  \"2\";q=  \"0.4;\"   ");
+      Assert.assertEquals("text", mediaType.getType());
+      Assert.assertEquals("html", mediaType.getSubtype());
+      Assert.assertEquals(2, mediaType.getParameters().size());
+      Assert.assertEquals("0.4;", mediaType.getParameters().get("q"));
+      Assert.assertEquals("2", mediaType.getParameters().get("level"));
+
    }
 
    @Test
