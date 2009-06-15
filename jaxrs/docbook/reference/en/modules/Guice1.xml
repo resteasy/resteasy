@@ -1,8 +1,8 @@
 <chapter id="Guice1">
     <title>Guice 1.0 Integration</title>
     <para>RESTEasy has some simple integration with Guice 1.0.  RESTEasy will scan the binding types for a Guice Module
-        for @Path and @Provider annotations.  It will register these bindings with Resteasy.  The guice-hello
-    project that comes in the Resteasy examples/ directory gives a nice example of this.</para>
+        for @Path and @Provider annotations.  It will register these bindings with RESTEasy.  The guice-hello
+    project that comes in the RESTEasy examples/ directory gives a nice example of this.</para>
 <programlisting>
 @Path("hello")
 public class HelloResource
@@ -63,7 +63,7 @@ public class HelloModule implements Module
 ]]>
 </programlisting>
     <para>GuiceResteasyBootstrapServletContextListener is a subclass of ResteasyBootstrap, so you can use
-    any other Resteasy configuration option within your web.xml file.  Also notice that there is a
+    any other RESTEasy configuration option within your web.xml file.  Also notice that there is a
     resteasy.guice.modules context-param.  This can take a comma delimited list of class names that
     are Guice Modules.</para>
 </chapter>
