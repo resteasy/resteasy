@@ -74,6 +74,12 @@ JBoss's Maven Repository is at:
       <artifactId>resteasy-spring</artifactId>
       <version>1.1.GA</version>
    </dependency>
+   <!-- Guice integration -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-guice</artifactId>
+      <version>1.1.GA</version>
+   </dependency>
 
    <!-- Asynchronous HTTP support with JBossWeb -->
    <dependency>
