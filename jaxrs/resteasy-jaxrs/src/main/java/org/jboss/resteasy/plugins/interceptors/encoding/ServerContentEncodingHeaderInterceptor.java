@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.core.interception.AcceptedByMethod;
+import org.jboss.resteasy.core.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.core.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 @ServerInterceptor
 @Provider
+@HeaderDecoratorPrecedence
 public class ServerContentEncodingHeaderInterceptor extends ContentEncodingHeaderInterceptor implements AcceptedByMethod
 {
    protected

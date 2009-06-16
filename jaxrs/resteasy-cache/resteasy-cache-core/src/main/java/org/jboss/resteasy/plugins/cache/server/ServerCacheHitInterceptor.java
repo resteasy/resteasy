@@ -3,6 +3,8 @@ package org.jboss.resteasy.plugins.cache.server;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.PreProcessInterceptor;
+import org.jboss.resteasy.core.interception.RedirectPrecedence;
+import org.jboss.resteasy.core.interception.ServerInterceptor;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -20,6 +22,8 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@ServerInterceptor
+@RedirectPrecedence
 public class ServerCacheHitInterceptor implements PreProcessInterceptor
 {
    protected ServerCache cache;

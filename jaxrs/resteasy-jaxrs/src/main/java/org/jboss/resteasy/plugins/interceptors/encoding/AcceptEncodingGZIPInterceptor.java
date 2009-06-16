@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.interception.ClientExecutionContext;
 import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.core.interception.ClientInterceptor;
+import org.jboss.resteasy.core.interception.HeaderDecoratorPrecedence;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
@@ -18,6 +19,7 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 @ClientInterceptor
+@HeaderDecoratorPrecedence
 public class AcceptEncodingGZIPInterceptor implements ClientExecutionInterceptor
 {
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception

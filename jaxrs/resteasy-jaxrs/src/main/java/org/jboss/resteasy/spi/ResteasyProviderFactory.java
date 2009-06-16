@@ -4,11 +4,16 @@ import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
 import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.core.interception.ClientInterceptor;
+import org.jboss.resteasy.core.interception.DecoderPrecedence;
+import org.jboss.resteasy.core.interception.EncoderPrecedence;
+import org.jboss.resteasy.core.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.core.interception.PostProcessInterceptor;
 import org.jboss.resteasy.core.interception.PreProcessInterceptor;
+import org.jboss.resteasy.core.interception.RedirectPrecedence;
+import org.jboss.resteasy.core.interception.SecurityPrecedence;
 import org.jboss.resteasy.core.interception.ServerInterceptor;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
@@ -170,7 +175,66 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
 
    protected boolean builtinsRegistered = false;
-   
+
+
+   protected void registerDefaultInterceptorPrecedences(InterceptorRegistry registry)
+   {
+      registry.appendPrecedence(SecurityPrecedence.PRECEDENCE_STRING);
+      registry.appendPrecedence(HeaderDecoratorPrecedence.PRECEDENCE_STRING);
+      registry.appendPrecedence(RedirectPrecedence.PRECEDENCE_STRING);
+      registry.appendPrecedence(EncoderPrecedence.PRECEDENCE_STRING);
+      registry.appendPrecedence(DecoderPrecedence.PRECEDENCE_STRING);
+
+   }
+
+   protected void registerDefaultInterceptorPrecedences()
+   {
+      registerDefaultInterceptorPrecedences(getServerPreProcessInterceptorRegistry());
+      registerDefaultInterceptorPrecedences(getServerMessageBodyReaderInterceptorRegistry());
+      registerDefaultInterceptorPrecedences(getServerMessageBodyWriterInterceptorRegistry());
+      registerDefaultInterceptorPrecedences(getServerPostProcessInterceptorRegistry());
+
+      registerDefaultInterceptorPrecedences(getClientMessageBodyReaderInterceptorRegistry());
+      registerDefaultInterceptorPrecedences(getClientMessageBodyWriterInterceptorRegistry());
+      registerDefaultInterceptorPrecedences(getClientExecutionInterceptorRegistry());
+   }
+
+   public void appendInterceptorPrecedence(String precedence)
+   {
+      getServerPreProcessInterceptorRegistry().appendPrecedence(precedence);
+      getServerMessageBodyReaderInterceptorRegistry().appendPrecedence(precedence);
+      getServerMessageBodyWriterInterceptorRegistry().appendPrecedence(precedence);
+      getServerPostProcessInterceptorRegistry().appendPrecedence(precedence);
+
+      getClientMessageBodyReaderInterceptorRegistry().appendPrecedence(precedence);
+      getClientMessageBodyWriterInterceptorRegistry().appendPrecedence(precedence);
+      getClientExecutionInterceptorRegistry().appendPrecedence(precedence);
+   }
+
+   public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
+   {
+      getServerPreProcessInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+      getServerMessageBodyReaderInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+      getServerMessageBodyWriterInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+      getServerPostProcessInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+
+      getClientMessageBodyReaderInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+      getClientMessageBodyWriterInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+      getClientExecutionInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+   }
+
+   public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
+   {
+      getServerPreProcessInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+      getServerMessageBodyReaderInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+      getServerMessageBodyWriterInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+      getServerPostProcessInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+
+      getClientMessageBodyReaderInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+      getClientMessageBodyWriterInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+      getClientExecutionInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+   }
+
 
    public static <T> void pushContext(Class<T> type, T data)
    {
@@ -205,20 +269,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    private static Map<Class<?>, Object> getContextDataMap(boolean create)
    {
       Map<Class<?>, Object> map = contextualData.get();
-      if( map == null )
+      if (map == null)
       {
          contextualData.setLast(map = new HashMap<Class<?>, Object>());
-      }   
+      }
       return map;
    }
 
    public static Map<Class<?>, Object> addContextDataLevel()
    {
-      if( getContextDataLevelCount() == maxForwards )
+      if (getContextDataLevelCount() == maxForwards)
       {
          throw new BadRequestException(
-               "You have exceeded your maximum forwards ResteasyProviderFactory allows.  Last good uri: "
-                     + getContextData(UriInfo.class).getPath());
+                 "You have exceeded your maximum forwards ResteasyProviderFactory allows.  Last good uri: "
+                         + getContextData(UriInfo.class).getPath());
       }
       Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
       contextualData.push(map);
@@ -234,7 +298,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       contextualData.pop();
    }
-   
+
    public static void setInstance(ResteasyProviderFactory factory)
    {
       RuntimeDelegate.setInstance(factory);
@@ -254,6 +318,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void initialize()
    {
+      registerDefaultInterceptorPrecedences();
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
       addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
       addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
@@ -646,6 +711,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
          }
       }
+      if (ClientExecutionInterceptor.class.isAssignableFrom(provider))
+      {
+         clientExecutionInterceptorRegistry.register(provider);
+      }
       if (PreProcessInterceptor.class.isAssignableFrom(provider))
       {
          serverPreProcessInterceptorRegistry.register(provider);
@@ -753,6 +822,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             throw new RuntimeException("Unable to instantiate ContextResolver", e);
          }
+      }
+      if (provider instanceof ClientExecutionInterceptor)
+      {
+         clientExecutionInterceptorRegistry.register((ClientExecutionInterceptor) provider);
       }
       if (provider instanceof PreProcessInterceptor)
       {

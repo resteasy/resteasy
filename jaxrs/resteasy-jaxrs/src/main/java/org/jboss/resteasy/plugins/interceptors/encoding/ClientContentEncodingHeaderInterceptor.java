@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.core.interception.AcceptedByMethod;
 import org.jboss.resteasy.core.interception.ClientInterceptor;
+import org.jboss.resteasy.core.interception.HeaderDecoratorPrecedence;
 
 import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
@@ -13,6 +14,7 @@ import java.lang.reflect.Method;
  */
 @ClientInterceptor
 @Provider
+@HeaderDecoratorPrecedence
 public class ClientContentEncodingHeaderInterceptor extends ContentEncodingHeaderInterceptor implements AcceptedByMethod
 {
    public boolean accept(Class declaring, Method method)

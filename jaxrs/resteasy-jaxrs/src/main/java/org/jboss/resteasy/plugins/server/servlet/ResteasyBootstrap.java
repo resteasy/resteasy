@@ -125,7 +125,7 @@ public class ResteasyBootstrap implements ServletContextListener
       // MUST COME BEFORE REGISTER BUILTINS!!!!!
       if (resteasySecurity != null && Boolean.valueOf(resteasySecurity.trim()))
       {
-         factory.getServerPreProcessInterceptorRegistry().registerFirst(SecurityInterceptor.class);
+         factory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
       }
 
       String builtin = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
