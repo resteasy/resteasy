@@ -78,4 +78,13 @@ public class MyService {
         }
         ]]>
     </programlisting>
+    <sect1 id="Possible_Jackson_Problems">
+        <title>Possible Conflict With JAXB Provider</title>
+        <para>
+            If your Jackson classes are annotated with JAXB annotations and you  have the resteasy-jaxb-provider in your
+            classpath, you may trigger the Jettision JAXB marshalling code.  To turn off the JAXB json marshaller
+            use the @org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes("application/*+json") on your
+            classes.
+        </para>
+    </sect1>
 </chapter>

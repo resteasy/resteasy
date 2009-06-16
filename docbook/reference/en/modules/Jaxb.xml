@@ -921,6 +921,15 @@ public static class Foo
  </programlisting>
  <para>It also expects this format for input</para>
   </sect2>
+  <sect2 id="JAXB_JSON_problems">
+      <title>Possible Problems with Jettison Provider</title>
+      <para>
+          If you have the resteasy-jackson-provider-xxx.jar in your classpath, the Jackson JSON provider
+              will be triggered.  This will screw up code that is dependent on the Jettison JAXB/JSon provider.
+              If you had been using the Jettison JAXB/Json providers, you must either remove
+              Jackson from your WEB-INF/lib or classpath, or use the @NoJackson annotation on your JAXB classes.
+      </para>
+  </sect2>
 </sect1>
 <sect1 id="JAXB_INTERFACES">
    <title>Interfaces, Abstract Classes, and JAXB</title>
