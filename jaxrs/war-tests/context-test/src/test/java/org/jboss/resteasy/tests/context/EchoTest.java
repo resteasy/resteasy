@@ -29,5 +29,25 @@ public class EchoTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals("http://localhost:9095/test/", response.getEntity());
    }
+
+   @Test
+   public void testServletContext() throws Exception
+   {
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      ClientRequest request = new ClientRequest("http://localhost:9095/test/test/servletcontext");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("ok", response.getEntity());
+   }
+
+   @Test
+   public void testServletConfig() throws Exception
+   {
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      ClientRequest request = new ClientRequest("http://localhost:9095/test/test/servletconfig");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("ok", response.getEntity());
+   }
 }
 

@@ -40,6 +40,7 @@ public class HttpServletDispatcher extends HttpServlet
 
    public void init(ServletConfig servletConfig) throws ServletException
    {
+      super.init(servletConfig);
       providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
       if (providerFactory == null)
       {
