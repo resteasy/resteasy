@@ -1,10 +1,16 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.EntityTypeFactory;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.jboss.resteasy.util.ReadFromStream;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -13,21 +19,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.EntityTypeFactory;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.util.ReadFromStream;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Simple smoke test
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -35,7 +33,7 @@ import org.junit.Test;
 public class InputStreamResourceTest
 {
 
-   private static Dispatcher dispatcher;
+   private static ResteasyDeployment deployment;
 
    @Path("/inputStream")
    @Produces("text/plain")
@@ -80,7 +78,7 @@ public class InputStreamResourceTest
    {
 
       public Class getEntityType(int status,
-            MultivaluedMap<String, Object> metadata)
+                                 MultivaluedMap<String, Object> metadata)
       {
          return String.class;
       }
@@ -90,8 +88,8 @@ public class InputStreamResourceTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addSingletonResource(new Service());
+      deployment = EmbeddedContainer.start();
+      deployment.getRegistry().addSingletonResource(new Service());
    }
 
    @AfterClass
@@ -108,12 +106,12 @@ public class InputStreamResourceTest
       Assert.assertEquals("hello", client.getAsString());
       ClientResponse<InputStream> is = client.getAsInputStream();
       Assert.assertEquals("hello", new String(ReadFromStream.readFromStream(
-            1024, is.getEntity())));
+              1024, is.getEntity())));
       is.releaseConnection();
       client.postString("new value");
       Assert.assertEquals("new value", client.getAsString());
       client.postInputStream(new ByteArrayInputStream("new value 2".getBytes()));
       Assert.assertEquals("new value 2", client.getAsString());
-      
+
    }
 }

@@ -13,7 +13,6 @@ public class EmbeddedContainerBean implements InitializingBean, DisposableBean
    private String rootPath = "/";
    private int port = TestPortProvider.getPort();
    private SecurityDomain securityDoamin = null;
-   private Dispatcher dispatcher = null;
 
    public String getRootPath()
    {
@@ -52,12 +51,7 @@ public class EmbeddedContainerBean implements InitializingBean, DisposableBean
 
    public Dispatcher getDispatcher()
    {
-      return dispatcher;
-   }
-
-   public void setDispatcher(Dispatcher dispatcher)
-   {
-      this.dispatcher = dispatcher;
+      return embeddedServer.getDeployment().getDispatcher();
    }
 
    public void afterPropertiesSet() throws Exception
@@ -65,12 +59,7 @@ public class EmbeddedContainerBean implements InitializingBean, DisposableBean
       embeddedServer.setPort(getPort());
       embeddedServer.setRootResourcePath(getRootPath());
       embeddedServer.setSecurityDomain(getSecurityDoamin());
-      if (dispatcher != null)
-      {
-         embeddedServer.setDispatcher(dispatcher);
-      }
       embeddedServer.start();
-      this.dispatcher = embeddedServer.getDispatcher();
    }
 
    public void destroy() throws Exception

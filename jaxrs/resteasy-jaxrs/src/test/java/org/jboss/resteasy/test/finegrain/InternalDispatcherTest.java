@@ -1,6 +1,18 @@
 package org.jboss.resteasy.test.finegrain;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import junit.framework.Assert;
+import org.jboss.resteasy.annotations.ClientResponseType;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.MessageBodyParameterInjector;
+import org.jboss.resteasy.spi.BadRequestException;
+import org.jboss.resteasy.spi.InternalDispatcher;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,23 +27,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import junit.framework.Assert;
-
-import org.jboss.resteasy.annotations.ClientResponseType;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.MessageBodyParameterInjector;
-import org.jboss.resteasy.spi.BadRequestException;
-import org.jboss.resteasy.spi.InternalDispatcher;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 /**
  * Test for InternalDispatcher
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
@@ -133,7 +131,7 @@ public class InternalDispatcherTest
       @Consumes("text/plain")
       @Path("/forward/basic")
       public void putForwardBasic(String basic,
-            @Context InternalDispatcher dispatcher)
+                                  @Context InternalDispatcher dispatcher)
       {
          dispatcher.putEntity("/basic", basic);
       }
@@ -142,7 +140,7 @@ public class InternalDispatcherTest
       @Consumes("text/plain")
       @Path("/forward/basic")
       public void postForwardBasic(String basic,
-            @Context InternalDispatcher dispatcher)
+                                   @Context InternalDispatcher dispatcher)
       {
          dispatcher.postEntity("/basic", basic);
       }
@@ -169,7 +167,7 @@ public class InternalDispatcherTest
       @GET
       @Path("/forward/object/{id}")
       public Response forwardObject(@PathParam("id") Integer id,
-            @Context InternalDispatcher dispatcher)
+                                    @Context InternalDispatcher dispatcher)
       {
          return dispatcher.getResponse("/object/" + id);
       }
@@ -177,7 +175,7 @@ public class InternalDispatcherTest
       @GET
       @Path("/infinite-forward")
       public int infinitFoward(@Context InternalDispatcher dispatcher,
-            @QueryParam("count") @DefaultValue("0") int count)
+                               @QueryParam("count") @DefaultValue("0") int count)
       {
          try
          {
@@ -193,9 +191,9 @@ public class InternalDispatcherTest
          finally
          {
             Assert
-                  .assertEquals(count, MessageBodyParameterInjector.bodyCount());
+                    .assertEquals(count, MessageBodyParameterInjector.bodyCount());
             Assert.assertEquals(count + 1, ResteasyProviderFactory
-                  .getContextDataLevelCount());
+                    .getContextDataLevelCount());
          }
          return ResteasyProviderFactory.getContextDataLevelCount();
       }
@@ -204,7 +202,7 @@ public class InternalDispatcherTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addSingletonResource(new ForwardingResource());
    }
 
@@ -224,9 +222,9 @@ public class InternalDispatcherTest
       Assert.assertEquals("object1", client.getObject(1).getEntity());
       Assert.assertEquals("object1", client.getForwardedObject(1).getEntity());
       Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), client
-            .getObject(0).getStatus());
+              .getObject(0).getStatus());
       Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), client
-            .getForwardedObject(0).getStatus());
+              .getForwardedObject(0).getStatus());
       client.putForwardBasic("testBasic");
       Assert.assertEquals("testBasic", client.getBasic());
       client.postForwardBasic("testBasic1");

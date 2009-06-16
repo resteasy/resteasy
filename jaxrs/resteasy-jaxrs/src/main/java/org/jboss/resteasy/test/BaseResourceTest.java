@@ -5,6 +5,7 @@ package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,12 +22,14 @@ import java.io.InputStreamReader;
 public abstract class BaseResourceTest
 {
 
+   protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
 
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      deployment = EmbeddedContainer.start();
+      dispatcher = deployment.getDispatcher();
    }
 
    @AfterClass
@@ -37,12 +40,12 @@ public abstract class BaseResourceTest
 
    public Registry getRegistry()
    {
-      return dispatcher.getRegistry();
+      return deployment.getRegistry();
    }
 
    public ResteasyProviderFactory getProviderFactory()
    {
-      return dispatcher.getProviderFactory();
+      return deployment.getProviderFactory();
    }
 
    /**
@@ -50,7 +53,7 @@ public abstract class BaseResourceTest
     */
    public void addPerRequestResource(Class<?> resource)
    {
-      dispatcher.getRegistry().addPerRequestResource(resource);
+      deployment.getRegistry().addPerRequestResource(resource);
    }
 
    public String readString(InputStream in) throws IOException

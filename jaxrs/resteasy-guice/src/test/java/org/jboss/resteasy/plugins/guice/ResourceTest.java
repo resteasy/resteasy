@@ -1,12 +1,12 @@
 package org.jboss.resteasy.plugins.guice;
 
 import com.google.inject.Binder;
-import com.google.inject.Module;
 import com.google.inject.Inject;
+import com.google.inject.Module;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -22,7 +22,7 @@ public class ResourceTest
    @BeforeClass
    public static void beforeClass() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
    }
 
    @AfterClass

@@ -211,7 +211,7 @@ public class HttpHeadersTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      dispatcher.getRegistry().addPerRequestResource(Resource.class);
+      deployment.getRegistry().addPerRequestResource(Resource.class);
    }
 
    /*

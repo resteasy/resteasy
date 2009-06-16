@@ -1,18 +1,17 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.ext.Provider;
-
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.spi.StringConverter;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class SuperStringConverterTest extends BaseResourceTest
 {
@@ -109,9 +108,9 @@ public class SuperStringConverterTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      dispatcher.getProviderFactory().addStringConverter(PersonConverter.class);
-      dispatcher.getProviderFactory().addStringConverter(CompanyConverter.class);
-      dispatcher.getRegistry().addPerRequestResource(MyResource.class);
+      deployment.getProviderFactory().addStringConverter(PersonConverter.class);
+      deployment.getProviderFactory().addStringConverter(CompanyConverter.class);
+      deployment.getRegistry().addPerRequestResource(MyResource.class);
    }
 
    @Path("/")

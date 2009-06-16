@@ -1,28 +1,26 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,7 +44,7 @@ public class QueryParamAsPrimitiveTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitives.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitivesDefault.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitivesDefaultOverride.class);
@@ -65,7 +63,7 @@ public class QueryParamAsPrimitiveTest
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefaultOverride.class);
       resourceQueryPrimitives = ProxyFactory.create(IResourceQueryPrimitives.class, generateBaseUrl());
       resourceQueryPrimitiveWrappers = ProxyFactory.create(IResourceQueryPrimitiveWrappers.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceQueryPrimitiveList = ProxyFactory.create(IResourceQueryPrimitiveList.class, generateBaseUrl());
       resourceQueryPrimitiveArray = ProxyFactory.create(IResourceQueryPrimitiveArray.class, generateBaseUrl());
    }
@@ -1220,7 +1218,7 @@ public class QueryParamAsPrimitiveTest
       list.add(Boolean.TRUE);
       resourceQueryPrimitiveList.doGetBoolean(list);
       boolean[] array =
-      {true, true, true};
+              {true, true, true};
       resourceQueryPrimitiveArray.doGetBoolean(array);
    }
 
@@ -1260,7 +1258,7 @@ public class QueryParamAsPrimitiveTest
       list.add(new Byte((byte) 127));
       resourceQueryPrimitiveList.doGetByte(list);
       byte[] array =
-      {(byte) 127, (byte) 127, (byte) 127};
+              {(byte) 127, (byte) 127, (byte) 127};
       resourceQueryPrimitiveArray.doGetByte(array);
    }
 

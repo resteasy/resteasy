@@ -1,10 +1,16 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,17 +19,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -36,7 +34,7 @@ public class VariantsTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(LanguageVariantResource.class);
       dispatcher.getRegistry().addPerRequestResource(ComplexVariantResource.class);
       dispatcher.getRegistry().addPerRequestResource(EncodingVariantResource.class);
@@ -55,7 +53,7 @@ public class VariantsTest
       public Response doGet(@Context Request r)
       {
          List<Variant> vs = Variant.VariantListBuilder.newInstance().languages(new Locale("zh")).languages(
-               new Locale("fr")).languages(new Locale("en")).add().build();
+                 new Locale("fr")).languages(new Locale("en")).add().build();
 
          Variant v = r.selectVariant(vs);
          if (v == null)
@@ -132,9 +130,9 @@ public class VariantsTest
       public Response doGet(@Context Request r)
       {
          List<Variant> vs = Variant.VariantListBuilder.newInstance().mediaTypes(MediaType.valueOf("image/jpeg")).add()
-               .mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().mediaTypes(
-                     MediaType.valueOf("text/xml")).languages(new Locale("en")).add().mediaTypes(
-                     MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().build();
+                 .mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().mediaTypes(
+                         MediaType.valueOf("text/xml")).languages(new Locale("en")).add().mediaTypes(
+                         MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().build();
 
          Variant v = r.selectVariant(vs);
          if (v == null)

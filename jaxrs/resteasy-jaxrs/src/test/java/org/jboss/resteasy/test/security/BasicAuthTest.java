@@ -1,6 +1,18 @@
 package org.jboss.resteasy.test.security;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
@@ -9,19 +21,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
-import org.jboss.resteasy.test.TJWSServletContainer;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -68,19 +67,19 @@ public class BasicAuthTest
    {
       SimpleSecurityDomain domain = new SimpleSecurityDomain();
       String[] roles =
-      {"admin"};
+              {"admin"};
       String[] basic =
-      {"user"};
+              {"user"};
       domain.addUser("bill", "password", roles);
       domain.addUser("mo", "password", basic);
-      dispatcher = TJWSServletContainer.start("", domain);
+      dispatcher = EmbeddedContainer.start("", domain).getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(BaseResource.class);
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      TJWSServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
    @Test
@@ -90,8 +89,8 @@ public class BasicAuthTest
       client.getParams().setAuthenticationPreemptive(true);
 
       client.getState().setCredentials(
-      //new AuthScope(null, 8080, "Test"),
-            new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
+              //new AuthScope(null, 8080, "Test"),
+              new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
       {
          GetMethod method = createGetMethod("/secured");
          method.setDoAuthentication(true);
@@ -132,8 +131,8 @@ public class BasicAuthTest
       client.getParams().setAuthenticationPreemptive(true);
 
       client.getState().setCredentials(
-      //new AuthScope(null, 8080, "Test"),
-            new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("mo", "password"));
+              //new AuthScope(null, 8080, "Test"),
+              new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("mo", "password"));
       {
          GetMethod method = createGetMethod("/secured/authorized");
          method.setDoAuthentication(true);

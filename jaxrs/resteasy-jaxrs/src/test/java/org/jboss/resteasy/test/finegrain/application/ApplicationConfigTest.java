@@ -1,13 +1,15 @@
 package org.jboss.resteasy.test.finegrain.application;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,15 +20,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.test.TJWSServletContainer;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -60,8 +59,8 @@ public class ApplicationConfigTest
       }
 
       public void writeTo(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-            WebApplicationException
+                          MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
+              WebApplicationException
       {
          s = "\"" + s + "\"";
          entityStream.write(s.getBytes());
@@ -89,14 +88,15 @@ public class ApplicationConfigTest
    @BeforeClass
    public static void before() throws Exception
    {
-      TJWSServletContainer.start();
-      TJWSServletContainer.tjws.addApplicationConfig(new MyApplicationConfig());
+      ResteasyDeployment deployment = new ResteasyDeployment();
+      deployment.setApplication(new MyApplicationConfig());
+      EmbeddedContainer.start(deployment);
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      TJWSServletContainer.stop();
+      EmbeddedContainer.stop();
    }
 
    private void _test(HttpClient client, String uri, String body)

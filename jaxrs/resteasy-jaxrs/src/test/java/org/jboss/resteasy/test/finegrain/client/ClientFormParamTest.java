@@ -1,17 +1,15 @@
 package org.jboss.resteasy.test.finegrain.client;
 
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class ClientFormParamTest
 {
@@ -34,7 +32,7 @@ public class ClientFormParamTest
    @Test
    public void test() throws Exception
    {
-      final Dispatcher dispatcher = EmbeddedContainer.start();
+      final Dispatcher dispatcher = EmbeddedContainer.start().getDispatcher();
       try
       {
          dispatcher.getRegistry().addPerRequestResource(FormResourceImpl.class);
@@ -42,7 +40,7 @@ public class ClientFormParamTest
          final String result = client.put("value");
          Assert.assertEquals(result, "value");
          final String result1 = createClientRequest("/form").formParameter("value", "value").post(
-               String.class).getEntity();
+                 String.class).getEntity();
          Assert.assertEquals(result1, "value");
       }
       finally

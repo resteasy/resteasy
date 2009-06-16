@@ -89,7 +89,7 @@ public class ExceptionMapperTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(Throwme.class);
       ResteasyProviderFactory.getInstance().addExceptionMapper(MyExceptionMapper.class);
       ResteasyProviderFactory.getInstance().addExceptionMapper(NotFoundMapper.class);

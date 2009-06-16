@@ -1,17 +1,5 @@
 package org.jboss.resteasy.test.asynch;
 
-import static org.jboss.resteasy.test.TestPortProvider.createPostMethod;
-import static org.jboss.resteasy.test.TestPortProvider.createPutMethod;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -19,14 +7,21 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
-import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.TJWSServletContainer;
-import org.jboss.resteasy.test.TestPortProvider;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -65,14 +60,11 @@ public class AsynchTest
    @BeforeClass
    public static void before() throws Exception
    {
-      TJWSServletContainer.tjws = new TJWSEmbeddedJaxrsServer();
-      dispatcher = new AsynchronousDispatcher(TJWSServletContainer.tjws.getFactory());
-      TJWSServletContainer.tjws.setDispatcher(dispatcher);
-      TJWSServletContainer.tjws.setPort(TestPortProvider.getPort());
-      TJWSServletContainer.tjws.setRootResourcePath("");
-      TJWSServletContainer.tjws.setSecurityDomain(null);
-      TJWSServletContainer.tjws.start();
-      dispatcher.start();
+      ResteasyDeployment deployment = new ResteasyDeployment();
+      deployment.setAsyncJobServiceEnabled(true);
+      EmbeddedContainer.start(deployment);
+
+      dispatcher = (AsynchronousDispatcher) deployment.getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(MyResource.class);
    }
 

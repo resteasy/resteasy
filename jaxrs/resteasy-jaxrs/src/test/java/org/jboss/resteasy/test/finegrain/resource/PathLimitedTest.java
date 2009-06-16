@@ -1,24 +1,22 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -104,7 +102,7 @@ public class PathLimitedTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(UnlimitedOnPathResource.class);
       dispatcher.getRegistry().addPerRequestResource(UnlimitedResource.class);
       dispatcher.getRegistry().addPerRequestResource(LocatorResource.class);

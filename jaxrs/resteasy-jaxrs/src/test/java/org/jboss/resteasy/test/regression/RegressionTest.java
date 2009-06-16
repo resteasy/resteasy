@@ -158,7 +158,7 @@ public class RegressionTest
    @Test
    public void test144() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getProviderFactory().addMessageBodyWriter(CustomerWriter.class);
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
@@ -193,7 +193,7 @@ public class RegressionTest
    @Test
    public void test1and2() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
          HttpClient client = new HttpClient();
@@ -217,7 +217,7 @@ public class RegressionTest
    @Test
    public void testJdkURLConnection() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
          URL url = createURL("/simple");
@@ -234,7 +234,7 @@ public class RegressionTest
    @Test
    public void test24() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       {
          HttpClient client = new HttpClient();
@@ -265,7 +265,7 @@ public class RegressionTest
    @Test
    public void testIt() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       try
       {
          NowhereClient client = ProxyFactory.create(NowhereClient.class, generateBaseUrl());
@@ -306,7 +306,7 @@ public class RegressionTest
    @Test
    public void test212() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(Spaces.class);
       {
          HttpClient client = new HttpClient();
@@ -337,7 +337,7 @@ public class RegressionTest
    @Test
    public void test227() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(CurlyBraces.class);
       {
          HttpClient client = new HttpClient();
