@@ -17,10 +17,13 @@
             @Wrapped no longer is enclosed in a resteasy namespace prefix nor uses the http://jboss.org/resteasy namespace.  Its just the default namespace.
             </listitem>
             <listitem>
-            @Wrapped JSON is not enclosed in a simple JSON array
+            @Wrapped JSON is now enclosed in a simple JSON array
             </listitem>
              <listitem>
-             If using JSON, the Jackson provider may be triggered.  Use the @NoJackson annotation to fix this.
+             If you have the resteasy-jackson-provider-xxx.jar in your classpath, the Jackson JSON provider
+                 will be triggered.  This will screw up code that is dependent on the Jettison JAXB/JSon provider.
+                 If you had been using the Jettison JAXB/Json providers, you must either remove
+                 Jackson from your WEB-INF/lib or classpath, or use the @NoJackson annotation on your JAXB classes.
              </listitem>
          </itemizedlist>
       </para>
