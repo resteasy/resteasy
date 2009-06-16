@@ -1,24 +1,22 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -43,7 +41,7 @@ public class EncodedParamsTest
    {
       @GET
       public String get(@QueryParam("hello world") int num, @QueryParam("stuff") @Encoded String stuff,
-            @QueryParam("stuff") String unStuff)
+                        @QueryParam("stuff") String unStuff)
       {
          Assert.assertEquals(5, num);
          System.out.println("Hello " + num + " times");
@@ -105,7 +103,7 @@ public class EncodedParamsTest
    @Test
    public void testEncoded() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       try
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);

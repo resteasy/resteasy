@@ -151,7 +151,7 @@ public class ComplexPathParamTest
    @Test
    public void testIt() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       try
       {
          dispatcher.getRegistry().addPerRequestResource(ExtensionResource.class);

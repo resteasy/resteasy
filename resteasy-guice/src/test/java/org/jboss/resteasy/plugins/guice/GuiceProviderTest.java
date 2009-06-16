@@ -1,22 +1,21 @@
 package org.jboss.resteasy.plugins.guice;
 
+import com.google.inject.Binder;
+import com.google.inject.Module;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.junit.BeforeClass;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
-import com.google.inject.Module;
-import com.google.inject.Binder;
 
 public class GuiceProviderTest
 {
@@ -25,7 +24,7 @@ public class GuiceProviderTest
    @BeforeClass
    public static void beforeClass() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
    }
 
    @AfterClass
@@ -35,7 +34,8 @@ public class GuiceProviderTest
    }
 
    @Test
-   public void testProvider() {
+   public void testProvider()
+   {
       final Module module = new Module()
       {
          public void configure(final Binder binder)
@@ -66,7 +66,8 @@ public class GuiceProviderTest
       }
    }
 
-   public static class TestException extends RuntimeException {
+   public static class TestException extends RuntimeException
+   {
    }
 
    @Provider

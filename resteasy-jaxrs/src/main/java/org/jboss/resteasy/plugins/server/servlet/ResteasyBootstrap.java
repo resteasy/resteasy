@@ -1,14 +1,9 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.GetRestful;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 import org.slf4j.Logger;
@@ -18,7 +13,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.net.URL;
@@ -35,69 +29,47 @@ import java.util.Set;
  */
 public class ResteasyBootstrap implements ServletContextListener
 {
-   private ResteasyProviderFactory factory = new ResteasyProviderFactory();
-   private Registry registry;
-   private Dispatcher dispatcher;
    private final static Logger logger = LoggerFactory.getLogger(ResteasyBootstrap.class);
+   protected ResteasyDeployment deployment = new ResteasyDeployment();
 
 
    public void contextInitialized(ServletContextEvent event)
    {
 
       String deploymentSensitive = event.getServletContext().getInitParameter("resteasy.use.deployment.sensitive.factory");
-      if (deploymentSensitive == null || Boolean.valueOf(deploymentSensitive.trim()))
-      {
-         ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
-         if (!(defaultInstance instanceof ThreadLocalResteasyProviderFactory))
-         {
-            ResteasyProviderFactory.setInstance(new ThreadLocalResteasyProviderFactory(defaultInstance));
-         }
-      }
-      else
-      {
-         ResteasyProviderFactory.setInstance(factory);
-      }
+      if (deploymentSensitive != null)
+         deployment.setDeploymentSensitiveFactoryEnabled(Boolean.valueOf(deploymentSensitive.trim()));
+      else deployment.setDeploymentSensitiveFactoryEnabled(true);
 
-      event.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), factory);
 
       String async = event.getServletContext().getInitParameter("resteasy.async.job.service.enabled");
-
-      if (async != null && Boolean.valueOf(async.trim()))
+      if (async != null) deployment.setAsyncJobServiceEnabled(Boolean.valueOf(async.trim()));
+      if (deployment.isAsyncJobServiceEnabled())
       {
-         AsynchronousDispatcher asyncDispatcher = new AsynchronousDispatcher(factory);
          String maxJobResults = event.getServletContext().getInitParameter("resteasy.async.job.service.max.job.results");
          if (maxJobResults != null)
          {
             int maxJobs = Integer.valueOf(maxJobResults);
-            asyncDispatcher.setMaxCacheSize(maxJobs);
+            deployment.setAsyncJobServiceMaxJobResults(maxJobs);
          }
          String maxWaitStr = event.getServletContext().getInitParameter("resteasy.async.job.service.max.wait");
          if (maxWaitStr != null)
          {
             long maxWait = Long.valueOf(maxWaitStr);
-            asyncDispatcher.setMaxWaitMilliSeconds(maxWait);
+            deployment.setAsyncJobServiceMaxWait(maxWait);
          }
          String threadPool = event.getServletContext().getInitParameter("resteasy.async.job.service.thread.pool.size");
          if (threadPool != null)
          {
             int threadPoolSize = Integer.valueOf(threadPool);
-            asyncDispatcher.setThreadPoolSize(threadPoolSize);
+            deployment.setAsyncJobServiceThreadPoolSize(threadPoolSize);
          }
          String basePath = event.getServletContext().getInitParameter("resteasy.async.job.service.base.path");
          if (basePath != null)
          {
-            asyncDispatcher.setBasePath(basePath);
+            deployment.setAsyncJobServiceBasePath(basePath);
          }
-         dispatcher = asyncDispatcher;
-         asyncDispatcher.start();
       }
-      else
-      {
-         dispatcher = new SynchronousDispatcher(factory);
-      }
-      registry = dispatcher.getRegistry();
-      event.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
-      event.getServletContext().setAttribute(Registry.class.getName(), registry);
       String applicationConfig = event.getServletContext().getInitParameter(Application.class.getName());
       if (applicationConfig == null)
       {
@@ -111,7 +83,11 @@ public class ResteasyBootstrap implements ServletContextListener
 
       String providers = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_PROVIDERS);
 
-      if (providers != null) setProviders(providers);
+      if (providers != null)
+      {
+         String[] p = providers.split(",");
+         for (String pr : p) deployment.getProviderClasses().add(pr);
+      }
 
       String resourceMethodInterceptors = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS);
 
@@ -121,15 +97,10 @@ public class ResteasyBootstrap implements ServletContextListener
       }
 
       String resteasySecurity = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
-
-      // MUST COME BEFORE REGISTER BUILTINS!!!!!
-      if (resteasySecurity != null && Boolean.valueOf(resteasySecurity.trim()))
-      {
-         factory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
-      }
+      if (resteasySecurity != null) deployment.setSecurityEnabled(Boolean.valueOf(resteasySecurity.trim()));
 
       String builtin = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
-      if (builtin == null || Boolean.valueOf(builtin.trim())) RegisterBuiltin.register(factory);
+      if (builtin != null) deployment.setRegisterBuiltin(Boolean.valueOf(builtin.trim()));
 
       boolean scanProviders = false;
       boolean scanResources = false;
@@ -203,14 +174,7 @@ public class ResteasyBootstrap implements ServletContextListener
       if (mimeExtentions != null)
       {
          Map<String, String> map = parseMap(mimeExtentions);
-         Map<String, MediaType> extMap = new HashMap<String, MediaType>();
-         for (Map.Entry<String, String> ext : map.entrySet())
-         {
-            String value = ext.getValue();
-            extMap.put(ext.getKey(), MediaType.valueOf(value));
-         }
-         if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
-         else dispatcher.setMediaTypeMappings(extMap);
+         deployment.setMediaTypeMappings(map);
       }
 
       // Mappings don't work anymore, but leaving the code in just in case users demand to put it back in
@@ -218,32 +182,16 @@ public class ResteasyBootstrap implements ServletContextListener
       if (languageExtensions != null)
       {
          Map<String, String> map = parseMap(languageExtensions);
-         if (dispatcher.getLanguageMappings() != null) dispatcher.getLanguageMappings().putAll(map);
-         else dispatcher.setLanguageMappings(map);
+         deployment.setLanguageExtensions(map);
       }
 
-      if (applicationConfig != null)
-      {
-         try
-         {
-            //System.out.println("application config: " + applicationConfig.trim());
-            Class configClass = Thread.currentThread().getContextClassLoader().loadClass(applicationConfig.trim());
-            Application config = (Application) configClass.newInstance();
-            processApplication(config, registry, factory);
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (InstantiationException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
+      if (applicationConfig != null) deployment.setApplicationClass(applicationConfig);
+
+      deployment.start();
+
+      event.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), deployment.getProviderFactory());
+      event.getServletContext().setAttribute(Dispatcher.class.getName(), deployment.getDispatcher());
+      event.getServletContext().setAttribute(Registry.class.getName(), deployment.getRegistry());
 
    }
 
@@ -302,8 +250,7 @@ public class ResteasyBootstrap implements ServletContextListener
       String[] resources = jndiResources.trim().split(",");
       for (String resource : resources)
       {
-         logger.info("Adding jndi resource " + resource);
-         registry.addJndiResource(resource.trim());
+         deployment.getJndiResources().add(resource);
       }
    }
 
@@ -312,16 +259,7 @@ public class ResteasyBootstrap implements ServletContextListener
       String[] resources = list.trim().split(",");
       for (String resource : resources)
       {
-         try
-         {
-            Class clazz = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
-            logger.info("Adding listed resource class: " + resource);
-            registry.addPerRequestResource(clazz);
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
-         }
+         deployment.getResourceClasses().add(resource);
       }
    }
 
@@ -332,22 +270,8 @@ public class ResteasyBootstrap implements ServletContextListener
       for (String clazz : classes)
       {
          logger.info("Adding scanned @Provider: " + clazz);
-         registerProvider(clazz);
+         deployment.getProviderClasses().add(clazz);
       }
-   }
-
-   private void registerProvider(String clazz)
-   {
-      Class provider = null;
-      try
-      {
-         provider = Thread.currentThread().getContextClassLoader().loadClass(clazz);
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw new RuntimeException(e);
-      }
-      factory.registerProvider(provider);
    }
 
    protected void processResources(AnnotationDB db)
@@ -358,40 +282,12 @@ public class ResteasyBootstrap implements ServletContextListener
       for (String clazz : classes)
       {
          logger.info("Adding scanned resource: " + clazz);
-         processResource(clazz);
-      }
-   }
-
-   protected void processResource(String clazz)
-   {
-      Class resource = null;
-      try
-      {
-         resource = Thread.currentThread().getContextClassLoader().loadClass(clazz);
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw new RuntimeException(e);
-      }
-      if (resource.isInterface()) return;
-      if (GetRestful.isRootResource(resource) == false) return;
-
-      System.out.println("FOUND JAX-RS resource: " + clazz);
-      registry.addPerRequestResource(resource);
-   }
-
-   protected void setProviders(String providers)
-   {
-      String[] p = providers.split(",");
-      for (String provider : p)
-      {
-         logger.info("Adding listed @Provider class " + provider);
-         provider = provider.trim();
-         registerProvider(provider);
+         deployment.getResourceClasses().add(clazz);
       }
    }
 
    public void contextDestroyed(ServletContextEvent event)
    {
+      deployment.stop();
    }
 }

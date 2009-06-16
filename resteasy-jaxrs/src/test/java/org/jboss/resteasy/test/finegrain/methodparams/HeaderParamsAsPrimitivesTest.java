@@ -1,14 +1,17 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
@@ -16,18 +19,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -74,7 +72,7 @@ public class HeaderParamsAsPrimitivesTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitives.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitivesDefault.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitivesDefaultOverride.class);
@@ -95,33 +93,33 @@ public class HeaderParamsAsPrimitivesTest
       dispatcher.getRegistry().addPerRequestResource(ResourceHeaderPrimitiveArrayDefaultOverride.class);
       resourceHeaderPrimitives = ProxyFactory.create(IResourceHeaderPrimitives.class, generateBaseUrl());
       resourceHeaderPrimitivesDefault = ProxyFactory.create(IResourceHeaderPrimitivesDefault.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceHeaderPrimitivesDefaultOverride = ProxyFactory.create(IResourceHeaderPrimitivesDefaultOverride.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceHeaderPrimitivesDefaultNull = ProxyFactory.create(IResourceHeaderPrimitivesDefaultNull.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceHeaderPrimitiveWrappers = ProxyFactory.create(IResourceHeaderPrimitiveWrappers.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceHeaderPrimitiveWrappersDefault = ProxyFactory.create(IResourceHeaderPrimitiveWrappersDefault.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceHeaderPrimitiveWrappersDefaultOverride = ProxyFactory.create(
-            IResourceHeaderPrimitiveWrappersDefaultOverride.class, generateBaseUrl());
+              IResourceHeaderPrimitiveWrappersDefaultOverride.class, generateBaseUrl());
       resourceHeaderPrimitiveWrappersDefaultNull = ProxyFactory.create(
-            IResourceHeaderPrimitiveWrappersDefaultNull.class, generateBaseUrl());
+              IResourceHeaderPrimitiveWrappersDefaultNull.class, generateBaseUrl());
       resourceHeaderPrimitiveList = ProxyFactory.create(IResourceHeaderPrimitiveList.class, generateBaseUrl());
       resourceHeaderPrimitiveListDefault = ProxyFactory.create(IResourceHeaderPrimitiveListDefault.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceHeaderPrimitiveListDefaultOverride = ProxyFactory.create(
-            IResourceHeaderPrimitiveListDefaultOverride.class, generateBaseUrl());
+              IResourceHeaderPrimitiveListDefaultOverride.class, generateBaseUrl());
       resourceHeaderPrimitiveListDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveListDefaultNull.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceHeaderPrimitiveArray = ProxyFactory.create(IResourceHeaderPrimitiveArray.class, generateBaseUrl());
       resourceHeaderPrimitiveArrayDefault = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefault.class,
-            generateBaseUrl());
+              generateBaseUrl());
       resourceHeaderPrimitiveArrayDefaultOverride = ProxyFactory.create(
-            IResourceHeaderPrimitiveArrayDefaultOverride.class, generateBaseUrl());
+              IResourceHeaderPrimitiveArrayDefaultOverride.class, generateBaseUrl());
       resourceHeaderPrimitiveArrayDefaultNull = ProxyFactory.create(IResourceHeaderPrimitiveArrayDefaultNull.class,
-            generateBaseUrl());
+              generateBaseUrl());
 
    }
 
@@ -573,8 +571,8 @@ public class HeaderParamsAsPrimitivesTest
 
    @Path("/wrappers/default/override")
    public static class ResourceHeaderPrimitiveWrappersDefaultOverride
-         implements
-            IResourceHeaderPrimitiveWrappersDefaultOverride
+           implements
+           IResourceHeaderPrimitiveWrappersDefaultOverride
    {
       @GET
       @Produces("application/boolean")
@@ -829,8 +827,8 @@ public class HeaderParamsAsPrimitivesTest
 
    @Path("/list/default/override")
    public static class ResourceHeaderPrimitiveListDefaultOverride
-         implements
-            IResourceHeaderPrimitiveListDefaultOverride
+           implements
+           IResourceHeaderPrimitiveListDefaultOverride
    {
       @GET
       @Produces("application/boolean")
@@ -983,8 +981,8 @@ public class HeaderParamsAsPrimitivesTest
 
    @Path("/array/default/override")
    public static class ResourceHeaderPrimitiveArrayDefaultOverride
-         implements
-            IResourceHeaderPrimitiveArrayDefaultOverride
+           implements
+           IResourceHeaderPrimitiveArrayDefaultOverride
    {
       @GET
       @Produces("application/boolean")
@@ -1132,7 +1130,7 @@ public class HeaderParamsAsPrimitivesTest
             throw new RuntimeException(e);
          }
          IResourceHeaderPrimitiveSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSet.class,
-               generateBaseUrl());
+                 generateBaseUrl());
          HashSet<String> set = new HashSet<String>();
          set.add("one");
          set.add("two");
@@ -1155,7 +1153,7 @@ public class HeaderParamsAsPrimitivesTest
             throw new RuntimeException(e);
          }
          IResourceHeaderPrimitiveSortedSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSortedSet.class,
-               generateBaseUrl());
+                 generateBaseUrl());
          TreeSet<String> set = new TreeSet<String>();
          set.add("one");
          set.add("two");
@@ -1175,7 +1173,7 @@ public class HeaderParamsAsPrimitivesTest
       list.add(Boolean.TRUE);
       resourceHeaderPrimitiveList.doGetBoolean(list);
       boolean[] array =
-      {true, true, true};
+              {true, true, true};
       resourceHeaderPrimitiveArray.doGetBoolean(array);
    }
 
@@ -1209,7 +1207,7 @@ public class HeaderParamsAsPrimitivesTest
       resourceHeaderPrimitiveArrayDefault.doGetBoolean();
       resourceHeaderPrimitiveArrayDefaultNull.doGetBoolean();
       boolean[] array =
-      {true};
+              {true};
       resourceHeaderPrimitiveArrayDefaultOverride.doGetBoolean(array);
    }
 

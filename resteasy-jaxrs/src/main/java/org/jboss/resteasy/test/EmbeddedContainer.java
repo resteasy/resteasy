@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import java.lang.reflect.Method;
 
@@ -48,23 +49,31 @@ public class EmbeddedContainer
       EmbeddedContainer.bootstrap = bootstrap;
    }
 
-   public static Dispatcher start() throws Exception
+   public static ResteasyDeployment start() throws Exception
    {
       return start("/");
    }
 
-   public static void start(Dispatcher dispatcher) throws Exception
+   public static void start(ResteasyDeployment deployment) throws Exception
    {
-      Method start = bootstrap.getMethod("start", Dispatcher.class);
-      start.invoke(null, dispatcher);
+      Method start = bootstrap.getMethod("start", ResteasyDeployment.class);
+      start.invoke(null, deployment);
 
    }
 
-   public static Dispatcher start(String bindPath) throws Exception
+   public static ResteasyDeployment start(String bindPath) throws Exception
    {
       Method start = bootstrap.getMethod("start", String.class);
-      return (Dispatcher) start.invoke(null, bindPath);
+      return (ResteasyDeployment) start.invoke(null, bindPath);
    }
+
+   public static ResteasyDeployment start(String bindPath, SecurityDomain domain) throws Exception
+   {
+      Method start = bootstrap.getMethod("start", String.class, SecurityDomain.class);
+      return (ResteasyDeployment) start.invoke(null, bindPath, domain);
+
+   }
+
 
    public static void stop() throws Exception
    {

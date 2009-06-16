@@ -31,7 +31,7 @@ public class ResourceLocatorTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(BaseResource.class);
    }
 
@@ -46,7 +46,7 @@ public class ResourceLocatorTest
    {
       @GET
       @Path("stuff/{param}/bar")
-      public String doGet(@PathParam("param")String param, @Context UriInfo uri)
+      public String doGet(@PathParam("param") String param, @Context UriInfo uri)
       {
          System.out.println("Uri Ancesstors for Subresource2.doGet():");
          Assert.assertEquals(3, uri.getMatchedURIs().size());
@@ -110,7 +110,7 @@ public class ResourceLocatorTest
    public static class BaseResource
    {
       @Path("base/{param}/resources")
-      public Object getSubresource(@PathParam("param")String param)
+      public Object getSubresource(@PathParam("param") String param)
       {
          System.out.println("Here in BaseResource");
          Assert.assertEquals("1", param);
@@ -184,14 +184,14 @@ public class ResourceLocatorTest
    public static class Directory
    {
       @Path("/receivers/{id}")
-      public QueueReceiver getReceiver(@PathParam("id")String id)
+      public QueueReceiver getReceiver(@PathParam("id") String id)
       {
          return new QueueReceiver();
       }
 
       @DELETE
       @Path("/receivers/{id}")
-      public String closeReceiver(@PathParam("id")String id) throws Exception
+      public String closeReceiver(@PathParam("id") String id) throws Exception
       {
          return Directory.class.getName();
       }

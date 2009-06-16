@@ -1,9 +1,6 @@
 package org.jboss.resteasy.plugins.server.embedded;
 
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.ws.rs.core.Application;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -17,12 +14,9 @@ public interface EmbeddedJaxrsServer
 
    void stop();
 
-   ResteasyProviderFactory getFactory();
+   ResteasyDeployment getDeployment();
 
-   Registry getRegistry();
+   void setDeployment(ResteasyDeployment deployment);
 
    void setSecurityDomain(SecurityDomain sc);
-
-   void addApplicationConfig(Application config);
-
 }

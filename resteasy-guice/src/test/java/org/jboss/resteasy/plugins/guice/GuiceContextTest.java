@@ -5,7 +5,7 @@ import com.google.inject.Module;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -23,7 +23,7 @@ public class GuiceContextTest
    @BeforeClass
    public static void beforeClass() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
    }
 
    @AfterClass
@@ -33,7 +33,8 @@ public class GuiceContextTest
    }
 
    @Test
-   public void testMethodInjection() {
+   public void testMethodInjection()
+   {
       final Module module = new Module()
       {
          public void configure(final Binder binder)
@@ -49,7 +50,8 @@ public class GuiceContextTest
    }
 
    //@Test // not (yet) supprted
-   public void testFieldInjection() {
+   public void testFieldInjection()
+   {
       final Module module = new Module()
       {
          public void configure(final Binder binder)
@@ -65,7 +67,8 @@ public class GuiceContextTest
    }
 
    //@Test // not (yet) supprted
-   public void testConstructorInjection() {
+   public void testConstructorInjection()
+   {
       final Module module = new Module()
       {
          public void configure(final Binder binder)
@@ -101,7 +104,9 @@ public class GuiceContextTest
    @Path("test")
    public static class FieldTestResource
    {
-      private @Context UriInfo uriInfo;
+      private
+      @Context
+      UriInfo uriInfo;
 
       @GET
       public String getName()

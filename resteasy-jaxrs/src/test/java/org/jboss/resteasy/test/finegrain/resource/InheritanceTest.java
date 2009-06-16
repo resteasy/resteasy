@@ -69,8 +69,8 @@ public class InheritanceTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      dispatcher.getRegistry().addPerRequestResource(ChildResource.class);
-      dispatcher.getRegistry().addPerRequestResource(ChildResource1.class);
+      deployment.getRegistry().addPerRequestResource(ChildResource.class);
+      deployment.getRegistry().addPerRequestResource(ChildResource1.class);
    }
 
    /*

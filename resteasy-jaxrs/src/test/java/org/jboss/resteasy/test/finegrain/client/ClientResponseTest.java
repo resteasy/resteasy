@@ -1,18 +1,21 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
-import static org.jboss.resteasy.test.TestPortProvider.createProxy;
-import static org.jboss.resteasy.test.TestPortProvider.createURI;
-import static org.jboss.resteasy.test.TestPortProvider.createURL;
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Arrays;
+import org.jboss.resteasy.annotations.ClientResponseType;
+import org.jboss.resteasy.client.ClientRequestFactory;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientURI;
+import org.jboss.resteasy.client.EntityTypeFactory;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.jboss.resteasy.test.smoke.SimpleResource;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,22 +26,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
-import org.jboss.resteasy.annotations.ClientResponseType;
-import org.jboss.resteasy.client.ClientRequestFactory;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ClientURI;
-import org.jboss.resteasy.client.EntityTypeFactory;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.BaseClientResponse;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.smoke.SimpleResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Simple smoke test
@@ -72,7 +65,7 @@ public class ClientResponseTest
 
       @GET
       String getData(@ClientURI String uri);
-      
+
       @PUT
       @Consumes("text/plain")
       Response.Status putData(@ClientURI URI uri, String data);
@@ -90,7 +83,7 @@ public class ClientResponseTest
       @Path("basic")
       @Consumes("text/plain")
       void putBasicInputStream(InputStream body);
-      
+
       @PUT
       @Path("basic")
       @Consumes("text/plain")
@@ -142,7 +135,7 @@ public class ClientResponseTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
    }
 
@@ -160,7 +153,7 @@ public class ClientResponseTest
 
       // uncomment this to test urlConnection executor. This has some hiccups
       // now
-      
+
 //       testClient(new ClientRequestFactory(new URLConnectionClientExecutor(), base));
    }
 
@@ -280,7 +273,7 @@ public class ClientResponseTest
       System.out.println("size: " + headers.size());
       for (Object name : headers.keySet())
       {
-         System.out.println(name +":" + headers.getFirst(name.toString()));
+         System.out.println(name + ":" + headers.getFirst(name.toString()));
       }
       Assert.assertEquals((String) headers.getFirst("location"), generateURL("/redirect/data"));
    }

@@ -23,7 +23,7 @@ public class TestClient
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
+      dispatcher = EmbeddedContainer.start().getDispatcher();
    }
 
    @AfterClass

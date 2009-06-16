@@ -1,23 +1,21 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.IOException;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,7 +25,7 @@ public class UriParamAsPrimitiveTest
 {
    private static HttpClient client = new HttpClient();
 
-   private static Dispatcher dispatcher;
+   private static ResteasyDeployment deployment;
 
    private static IResourceUriBoolean resourceUriBoolean;
 
@@ -36,21 +34,21 @@ public class UriParamAsPrimitiveTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start();
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriBoolean.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriByte.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriShort.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriInt.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriLong.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriFloat.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriDouble.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriBooleanWrapper.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriByteWrapper.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriShortWrapper.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriIntWrapper.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriLongWrapper.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriFloatWrapper.class);
-      dispatcher.getRegistry().addPerRequestResource(ResourceUriDoubleWrapper.class);
+      deployment = EmbeddedContainer.start();
+      deployment.getRegistry().addPerRequestResource(ResourceUriBoolean.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriByte.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriShort.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriInt.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriLong.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriFloat.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriDouble.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriBooleanWrapper.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriByteWrapper.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriShortWrapper.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriIntWrapper.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriLongWrapper.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriFloatWrapper.class);
+      deployment.getRegistry().addPerRequestResource(ResourceUriDoubleWrapper.class);
       resourceUriBoolean = ProxyFactory.create(IResourceUriBoolean.class, generateBaseUrl());
       resourceUriByte = ProxyFactory.create(IResourceUriByte.class, generateBaseUrl());
    }

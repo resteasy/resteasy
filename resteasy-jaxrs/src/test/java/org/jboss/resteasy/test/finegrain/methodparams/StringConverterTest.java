@@ -1,6 +1,12 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
@@ -10,13 +16,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.ext.Provider;
-
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.spi.StringConverter;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -62,7 +61,7 @@ public class StringConverterTest extends BaseResourceTest
       @Path("{pojo}")
       @PUT
       public void put(@QueryParam("pojo") POJO q, @PathParam("pojo") POJO pp, @MatrixParam("pojo") POJO mp,
-            @HeaderParam("pojo") POJO hp)
+                      @HeaderParam("pojo") POJO hp)
       {
          Assert.assertEquals(q.getName(), "pojo");
          Assert.assertEquals(pp.getName(), "pojo");
@@ -76,7 +75,7 @@ public class StringConverterTest extends BaseResourceTest
    {
       @PUT
       public void putDefault(@QueryParam("pojo") @DefaultValue("default") POJO q,
-            @MatrixParam("pojo") @DefaultValue("default") POJO mp, @DefaultValue("default") @HeaderParam("pojo") POJO hp)
+                             @MatrixParam("pojo") @DefaultValue("default") POJO mp, @DefaultValue("default") @HeaderParam("pojo") POJO hp)
       {
          Assert.assertEquals(q.getName(), "default");
          Assert.assertEquals(mp.getName(), "default");
@@ -87,9 +86,9 @@ public class StringConverterTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      dispatcher.getProviderFactory().addStringConverter(POJOConverter.class);
-      dispatcher.getRegistry().addPerRequestResource(MyResource.class);
-      dispatcher.getRegistry().addPerRequestResource(MyDefaultResource.class);
+      deployment.getProviderFactory().addStringConverter(POJOConverter.class);
+      deployment.getRegistry().addPerRequestResource(MyResource.class);
+      deployment.getRegistry().addPerRequestResource(MyDefaultResource.class);
    }
 
    /**
@@ -102,7 +101,7 @@ public class StringConverterTest extends BaseResourceTest
       @Path("{pojo}")
       @PUT
       void put(@QueryParam("pojo") POJO q, @PathParam("pojo") POJO pp, @MatrixParam("pojo") POJO mp,
-            @HeaderParam("pojo") POJO hp);
+               @HeaderParam("pojo") POJO hp);
    }
 
    @Test

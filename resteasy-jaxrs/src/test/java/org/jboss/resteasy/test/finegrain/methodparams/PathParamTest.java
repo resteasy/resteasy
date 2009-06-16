@@ -126,8 +126,8 @@ public class PathParamTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      dispatcher.getRegistry().addPerRequestResource(Digits.class);
-      dispatcher.getRegistry().addPerRequestResource(Resource.class);
+      deployment.getRegistry().addPerRequestResource(Digits.class);
+      deployment.getRegistry().addPerRequestResource(Resource.class);
    }
 
    /*
