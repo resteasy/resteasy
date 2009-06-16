@@ -312,5 +312,21 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       getDelegate().registerProvider(provider, isBuiltin);
    }
 
+   @Override
+   public void appendInterceptorPrecedence(String precedence)
+   {
+      getDelegate().appendInterceptorPrecedence(precedence);
+   }
 
+   @Override
+   public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
+   {
+      getDelegate().insertInterceptorPrecedenceAfter(after, newPrecedence);
+   }
+
+   @Override
+   public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
+   {
+      getDelegate().insertInterceptorPrecedenceBefore(before, newPrecedence);
+   }
 }

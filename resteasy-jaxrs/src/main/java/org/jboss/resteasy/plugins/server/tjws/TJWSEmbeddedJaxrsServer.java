@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
+import Acme.Serve.Serve;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
@@ -9,8 +10,6 @@ import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import Acme.Serve.Serve;
 
 import javax.ws.rs.core.Application;
 
@@ -66,9 +65,9 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
          factory = new ResteasyProviderFactory();
          ResteasyProviderFactory.setInstance(factory);
 
+         RegisterBuiltin.register(factory);
          // enable security
          factory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
-         RegisterBuiltin.register(factory);
       }
       return factory;
    }
@@ -97,7 +96,7 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    {
       ResteasyBootstrap.processApplication(config, getRegistry(), getFactory());
    }
-   
+
    public String getProperty(String key)
    {
       return props.getProperty(key);

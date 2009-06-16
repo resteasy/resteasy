@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.core.interception.ClientInterceptor;
+import org.jboss.resteasy.core.interception.EncoderPrecedence;
 import org.jboss.resteasy.core.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.core.interception.ServerInterceptor;
@@ -19,6 +20,7 @@ import java.util.zip.GZIPOutputStream;
 @Provider
 @ServerInterceptor
 @ClientInterceptor
+@EncoderPrecedence
 public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
 {
    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException

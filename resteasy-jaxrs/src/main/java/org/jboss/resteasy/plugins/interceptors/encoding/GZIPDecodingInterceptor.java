@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.core.interception.ClientInterceptor;
+import org.jboss.resteasy.core.interception.DecoderPrecedence;
 import org.jboss.resteasy.core.interception.MessageBodyReaderContext;
 import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.core.interception.ServerInterceptor;
@@ -19,6 +20,7 @@ import java.util.zip.GZIPInputStream;
 @Provider
 @ServerInterceptor
 @ClientInterceptor
+@DecoderPrecedence
 public class GZIPDecodingInterceptor implements MessageBodyReaderInterceptor
 {
    public Object read(MessageBodyReaderContext context) throws IOException, WebApplicationException

@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.cache.server;
 
 import org.jboss.resteasy.core.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.core.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 
@@ -22,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@ServerInterceptor
 public class ServerCacheInterceptor implements MessageBodyWriterInterceptor
 {
    protected ServerCache cache;

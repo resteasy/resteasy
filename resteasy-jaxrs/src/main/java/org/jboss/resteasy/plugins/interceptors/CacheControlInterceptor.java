@@ -4,6 +4,7 @@ import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.AcceptedByMethod;
+import org.jboss.resteasy.core.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.core.interception.PostProcessInterceptor;
 
 import javax.ws.rs.GET;
@@ -15,6 +16,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@HeaderDecoratorPrecedence
 public class CacheControlInterceptor implements PostProcessInterceptor, AcceptedByMethod
 {
    protected CacheControl cacheControl;

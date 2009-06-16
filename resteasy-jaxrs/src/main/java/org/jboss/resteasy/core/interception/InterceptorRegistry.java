@@ -1,13 +1,18 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-
-import org.jboss.resteasy.core.PropertyInjectorImpl;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -19,30 +24,83 @@ public class InterceptorRegistry<T>
    protected static interface InterceptorFactory
    {
       Object createInterceptor();
+
+      String getPrecedence();
+
+      int getOrder();
    }
 
-   protected static class SingletonInterceptorFactory implements InterceptorFactory
+   protected abstract class AbstractInterceptorFactory implements InterceptorFactory
+   {
+
+      protected String precedence = "DEFAULT";
+      protected int order = 100000;
+
+      protected void setPrecedence(Class<?> clazz)
+      {
+         Precedence precedence = clazz.getAnnotation(Precedence.class);
+         if (precedence != null)
+         {
+            this.precedence = precedence.value();
+            Integer o = precedenceOrder.get(this.precedence);
+            if (o == null) throw new RuntimeException("Unknown interceptor precedence: " + this.precedence);
+            this.order = o;
+         }
+         else
+         {
+            for (Annotation annotation : clazz.getAnnotations())
+            {
+               precedence = annotation.annotationType().getAnnotation(Precedence.class);
+               if (precedence != null)
+               {
+                  this.precedence = precedence.value();
+                  Integer o = precedenceOrder.get(this.precedence);
+                  if (o == null) throw new RuntimeException("Unknown interceptor precedence: " + this.precedence);
+                  this.order = o;
+                  break;
+               }
+            }
+         }
+      }
+
+      public String getPrecedence()
+      {
+         return precedence;
+      }
+
+      public int getOrder()
+      {
+         return order;
+      }
+
+   }
+
+
+   protected class SingletonInterceptorFactory extends AbstractInterceptorFactory
    {
       private Object target;
 
       public SingletonInterceptorFactory(Object target)
       {
          this.target = target;
+         setPrecedence(target.getClass());
       }
 
       public Object createInterceptor()
       {
          return target;
       }
+
    }
 
-   protected static class PerMethodInterceptorFactory implements InterceptorFactory
+   protected class PerMethodInterceptorFactory extends AbstractInterceptorFactory
    {
       private Class clazz;
 
       public PerMethodInterceptorFactory(Class clazz)
       {
          this.clazz = clazz;
+         setPrecedence(clazz);
       }
 
       public Object createInterceptor()
@@ -65,21 +123,76 @@ public class InterceptorRegistry<T>
    protected ResteasyProviderFactory providerFactory;
    protected Class<T> intf;
    protected List<InterceptorFactory> interceptors = new ArrayList<InterceptorFactory>();
+   protected Map<String, Integer> precedenceOrder = new HashMap<String, Integer>();
+   protected List<String> precedenceList = new ArrayList<String>();
+
+   public class PrecedenceComparator implements Comparator<InterceptorFactory>
+   {
+      public int compare(InterceptorFactory factory, InterceptorFactory factory2)
+      {
+         return factory.getOrder() - factory2.getOrder();
+      }
+   }
+
 
    public InterceptorRegistry(Class<T> intf, ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.intf = intf;
+      precedenceOrder.put("DEFAULT", 100000);
+   }
+
+   protected void recalculateOrder()
+   {
+      precedenceOrder.clear();
+      for (int i = 0; i < precedenceList.size(); i++)
+      {
+         precedenceOrder.put(precedenceList.get(i), i);
+      }
+      precedenceOrder.put("DEFAULT", 100000);
+   }
+
+   public void appendPrecedence(String precedence)
+   {
+      precedenceList.add(precedence);
+      recalculateOrder();
+   }
+
+   public void insertPrecedenceAfter(String after, String newPrecedence)
+   {
+      for (int i = 0; i < precedenceList.size(); i++)
+      {
+         if (precedenceList.get(i).equals(after))
+         {
+            precedenceList.add(i + 1, newPrecedence);
+            break;
+         }
+      }
+      recalculateOrder();
+   }
+
+   public void insertPrecedenceBefore(String after, String newPrecedence)
+   {
+      for (int i = 0; i < precedenceList.size(); i++)
+      {
+         if (precedenceList.get(i).equals(after))
+         {
+            precedenceList.add(i, newPrecedence);
+            break;
+         }
+      }
+      recalculateOrder();
    }
 
    public T[] bind(Class declaring, AccessibleObject target)
    {
-	  List<T> list = bindForList(declaring, target);
-	  return list.toArray((T[]) Array.newInstance(intf, list.size()));
+      List<T> list = bindForList(declaring, target);
+      return list.toArray((T[]) Array.newInstance(intf, list.size()));
    }
 
-   public List<T> bindForList(Class declaring, AccessibleObject target) {
-	  List<T> list = new ArrayList<T>();
+   public List<T> bindForList(Class declaring, AccessibleObject target)
+   {
+      List<T> list = new ArrayList<T>();
       for (InterceptorFactory factory : interceptors)
       {
          Object interceptor = factory.createInterceptor();
@@ -100,7 +213,7 @@ public class InterceptorRegistry<T>
          }
       }
       return list;
-}
+   }
 
    protected void addNewInterceptor(List<T> list, Object interceptor)
    {
@@ -109,24 +222,16 @@ public class InterceptorRegistry<T>
       list.add((T) interceptor);
    }
 
-   public void register(Class clazz)
+   public void register(Class<? extends T> clazz)
    {
       interceptors.add(new PerMethodInterceptorFactory(clazz));
+      Collections.sort(interceptors, new PrecedenceComparator());
    }
 
    public void register(T interceptor)
    {
       interceptors.add(new SingletonInterceptorFactory(interceptor));
+      Collections.sort(interceptors, new PrecedenceComparator());
    }
 
-
-   public void registerFirst(Class clazz)
-   {
-      interceptors.add(0, new PerMethodInterceptorFactory(clazz));
-   }
-
-   public void registerFirst(T interceptor)
-   {
-      interceptors.add(0, new SingletonInterceptorFactory(interceptor));
-   }
 }

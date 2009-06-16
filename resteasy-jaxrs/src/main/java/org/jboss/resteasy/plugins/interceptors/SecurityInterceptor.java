@@ -4,6 +4,8 @@ import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.AcceptedByMethod;
 import org.jboss.resteasy.core.interception.PreProcessInterceptor;
+import org.jboss.resteasy.core.interception.SecurityPrecedence;
+import org.jboss.resteasy.core.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -20,6 +22,8 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SecurityPrecedence
+@ServerInterceptor
 public class SecurityInterceptor implements PreProcessInterceptor, AcceptedByMethod
 {
    protected String[] rolesAllowed;

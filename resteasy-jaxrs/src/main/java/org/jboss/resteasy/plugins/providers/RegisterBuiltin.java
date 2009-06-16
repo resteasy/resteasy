@@ -1,17 +1,9 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.core.LoggerCategories;
-import org.jboss.resteasy.plugins.interceptors.CacheControlInterceptor;
-import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPInterceptor;
-import org.jboss.resteasy.plugins.interceptors.encoding.ClientContentEncodingHeaderInterceptor;
-import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
-import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
-import org.jboss.resteasy.plugins.interceptors.encoding.ServerContentEncodingHeaderInterceptor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -28,23 +20,6 @@ public class RegisterBuiltin
 
    private final static Logger logger = LoggerCategories.getProviderLogger();
 
-   public static void registerServerInterceptors(ResteasyProviderFactory factory)
-   {
-      factory.getServerPostProcessInterceptorRegistry().register(CacheControlInterceptor.class);
-      factory.getServerMessageBodyReaderInterceptorRegistry().register(new GZIPDecodingInterceptor());
-      factory.getServerMessageBodyWriterInterceptorRegistry().register(ServerContentEncodingHeaderInterceptor.class);
-      factory.getServerMessageBodyWriterInterceptorRegistry().register(new GZIPEncodingInterceptor());
-
-   }
-
-   public static void registerClientInterceptors(ResteasyProviderFactory factory)
-   {
-      factory.getClientMessageBodyReaderInterceptorRegistry().register(new GZIPDecodingInterceptor());
-      factory.getClientMessageBodyWriterInterceptorRegistry().register(ClientContentEncodingHeaderInterceptor.class);
-      factory.getClientMessageBodyWriterInterceptorRegistry().register(new GZIPEncodingInterceptor());
-      factory.getClientExecutionInterceptorRegistry().register(new AcceptEncodingGZIPInterceptor());
-
-   }
 
    public static void register(ResteasyProviderFactory factory)
    {
@@ -57,9 +32,6 @@ public class RegisterBuiltin
       {
          throw new RuntimeException(e);
       }
-      registerMessageBodyReadersWriters(factory);
-      registerServerInterceptors(factory);
-      registerClientInterceptors(factory);
       factory.setBuiltinsRegistered(true);
    }
 
@@ -91,167 +63,6 @@ public class RegisterBuiltin
             logger.warn("ClassNotFoundException: Unable to load builtin provider: " + line);
          }
          factory.registerProvider(clazz, true);
-      }
-   }
-
-   public static void registerMessageBodyReadersWriters(ResteasyProviderFactory factory)
-   {
-
-      // Spec required providers.
-
-      logger.debug("Registering standard providers");
-
-      /*
-      DataSourceProvider dataSourceProvider = new DataSourceProvider();
-      factory.addBuiltInMessageBodyReader(dataSourceProvider);
-      factory.addBuiltInMessageBodyWriter(dataSourceProvider);
-      logger.info("Added built in provider {}", dataSourceProvider.getClass().getSimpleName());
-
-      DefaultTextPlain plainText = new DefaultTextPlain();
-      factory.addBuiltInMessageBodyReader(plainText);
-      factory.addBuiltInMessageBodyWriter(plainText);
-      logger.info("Added built in provider {}", plainText.getClass().getSimpleName());
-
-      StringTextStar stringTextStar = new StringTextStar();
-      factory.addBuiltInMessageBodyReader(stringTextStar);
-      factory.addBuiltInMessageBodyWriter(stringTextStar);
-      logger.info("Added built in provider {}", StringTextStar.class.getName());
-
-
-      InputStreamProvider inputStreamProvider = new InputStreamProvider();
-      factory.addBuiltInMessageBodyReader(inputStreamProvider);
-      factory.addBuiltInMessageBodyWriter(inputStreamProvider);
-      logger.info("Added built in provider {}", InputStreamProvider.class.getName());
-
-      ByteArrayProvider byteArrayProvider = new ByteArrayProvider();
-      factory.addBuiltInMessageBodyReader(byteArrayProvider);
-      factory.addBuiltInMessageBodyWriter(byteArrayProvider);
-      logger.info("Added built in provider {}", ByteArrayProvider.class.getName());
-
-      FormUrlEncodedProvider formProvider = new FormUrlEncodedProvider();
-      factory.addBuiltInMessageBodyReader(formProvider);
-      factory.addBuiltInMessageBodyWriter(formProvider);
-      logger.info("Added built in provider {}", FormUrlEncodedProvider.class.getName());
-
-      FileProvider fileProvider = new FileProvider();
-      factory.addBuiltInMessageBodyReader(fileProvider);
-      factory.addBuiltInMessageBodyWriter(fileProvider);
-      logger.info("Added built in provider {}", FormUrlEncodedProvider.class.getName());
-
-      factory.addBuiltInMessageBodyWriter(new StreamingOutputProvider());
-      logger.info("Added built in provider {}", StreamingOutputProvider.class.getName());
-      */
-
-      /*
-      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider", "org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider", "org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.MapProvider", "org.jboss.resteasy.plugins.providers.jaxb.MapProvider", factory);
-      optionalProvider("org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider", factory);
-      optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder", factory);
-      */
-
-      /*
-      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartReader", factory);
-      optionalReader("org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader", "org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader", factory);
-      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader", factory);
-      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedReader", factory);
-      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader", "org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataReader", factory);
-      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartWriter", factory);
-      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter", factory);
-      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedWriter", factory);
-      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter", "org.jboss.resteasy.plugins.providers.multipart.ListMultipartWriter", factory);
-      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", "org.jboss.resteasy.plugins.providers.multipart.MapMultipartFormDataWriter", factory);
-      optionalReader("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationReader", factory);
-      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter", "org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter", factory);
-      optionalReader("org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedReader", "org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedReader", factory);
-      optionalWriter("org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedWriter", "org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedWriter", factory);
-      */
-
-      // optional providers.
-      //optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", "org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider", factory);
-      //optionalProvider("org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider", "org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider", factory);
-
-      //optionalProvider("org.jboss.resteasy.plugins.providers.IIOImageProvider", "org.jboss.resteasy.plugins.providers.IIOImageProvider", factory);
-      //optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder", factory);
-      //optionalContextResolver("org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", "org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder", factory);
-      //optionalProvider("org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", "org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider", factory);
-      //optionalProvider("org.jboss.resteasy.plugins.providers.YamlProvider", "org.jboss.resteasy.plugins.providers.YamlProvider", factory);
-   }
-
-   private static void optionalProvider(String dependency, String providerClass, ResteasyProviderFactory factory)
-   {
-      if (isAvailable(dependency))
-      {
-         logger.info("Adding built in provider " + providerClass);
-         Object provider = instantiate(providerClass);
-         factory.addBuiltInMessageBodyReader((MessageBodyReader<?>) provider);
-         factory.addBuiltInMessageBodyWriter((MessageBodyWriter<?>) provider);
-      }
-
-   }
-
-   private static void optionalReader(String dependency, String providerClass, ResteasyProviderFactory factory)
-   {
-      if (isAvailable(dependency))
-      {
-         logger.info("Adding built in provider " + providerClass);
-         Object provider = instantiate(providerClass);
-         factory.addBuiltInMessageBodyReader((MessageBodyReader<?>) provider);
-      }
-
-   }
-
-   private static void optionalWriter(String dependency, String providerClass, ResteasyProviderFactory factory)
-   {
-      if (isAvailable(dependency))
-      {
-         logger.info("Adding built in provider" + providerClass);
-         Object provider = instantiate(providerClass);
-         factory.addBuiltInMessageBodyWriter((MessageBodyWriter<?>) provider);
-      }
-
-   }
-
-   private static void optionalContextResolver(String dependency, String providerClass, ResteasyProviderFactory factory)
-   {
-      if (isAvailable(dependency))
-      {
-         logger.info("Adding built in provider " + providerClass);
-         factory.registerProviderInstance(instantiate(providerClass));
-      }
-
-   }
-
-   private static boolean isAvailable(String className)
-   {
-
-      try
-      {
-         Thread.currentThread().getContextClassLoader().loadClass(className);
-         return true;
-      }
-      catch (ClassNotFoundException cnfe)
-      {
-         return false;
-      }
-
-   }
-
-   private static Object instantiate(String className)
-   {
-      try
-      {
-         Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(className);
-         return cl.newInstance();
-      }
-      catch (Exception e)
-      {
-         logger.error("Failed to load: " + className, e);
-         return null;
       }
    }
 
