@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.annotations.DecorateTypes;
 import org.jboss.resteasy.annotations.Decorator;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.spi.interception.DecoratorProcessor;
 
 import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
@@ -14,7 +15,7 @@ import java.util.List;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @see org.jboss.resteasy.core.interception.DecoratorProcessor
+ * @see org.jboss.resteasy.spi.interception.DecoratorProcessor
  * @see org.jboss.resteasy.annotations.DecorateTypes
  * @see org.jboss.resteasy.annotations.Decorator
  */

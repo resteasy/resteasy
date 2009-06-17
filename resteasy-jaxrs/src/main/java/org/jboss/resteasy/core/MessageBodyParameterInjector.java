@@ -10,7 +10,7 @@ import javax.ws.rs.Encoded;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.core.messagebody.ReaderUtility;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;

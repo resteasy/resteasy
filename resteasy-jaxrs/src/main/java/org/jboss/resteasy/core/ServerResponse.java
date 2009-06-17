@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
-import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.core.interception.PostProcessInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;

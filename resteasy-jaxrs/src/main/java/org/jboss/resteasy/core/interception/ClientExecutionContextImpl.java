@@ -5,6 +5,8 @@ import java.util.List;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.interception.ClientExecutionContext;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

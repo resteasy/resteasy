@@ -5,7 +5,7 @@ import org.jboss.resteasy.annotations.Decorator;
 import org.jboss.resteasy.annotations.providers.jaxb.Stylesheet;
 import org.jboss.resteasy.annotations.providers.jaxb.XmlHeader;
 import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.core.interception.DecoratorProcessor;
+import org.jboss.resteasy.spi.interception.DecoratorProcessor;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;

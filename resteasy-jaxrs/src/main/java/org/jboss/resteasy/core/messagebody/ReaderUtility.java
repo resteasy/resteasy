@@ -11,7 +11,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 
 import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
-import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 

@@ -1,10 +1,10 @@
-package org.jboss.resteasy.core.interception;
+package org.jboss.resteasy.spi.interception;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -12,8 +12,12 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface MessageBodyReaderContext
+public interface MessageBodyWriterContext
 {
+   Object getEntity();
+
+   void setEntity(Object entity);
+
    Class getType();
 
    void setType(Class type);
@@ -30,11 +34,11 @@ public interface MessageBodyReaderContext
 
    void setMediaType(MediaType mediaType);
 
-   MultivaluedMap<String, String> getHeaders();
+   MultivaluedMap<String, Object> getHeaders();
 
-   InputStream getInputStream();
+   OutputStream getOutputStream();
 
-   void setInputStream(InputStream is);
+   public void setOutputStream(OutputStream os);
 
-   Object proceed() throws IOException, WebApplicationException;
+   void proceed() throws IOException, WebApplicationException;
 }

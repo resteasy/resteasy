@@ -1,9 +1,9 @@
 package org.jboss.resteasy.tests.context;
 
-import org.jboss.resteasy.core.interception.MessageBodyWriterContext;
-import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.core.interception.Precedence;
-import org.jboss.resteasy.core.interception.ServerInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.annotations.interception.Precedence;
+import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.junit.Assert;
 
 import javax.ws.rs.WebApplicationException;

@@ -1,10 +1,10 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
-import org.jboss.resteasy.core.interception.ClientInterceptor;
-import org.jboss.resteasy.core.interception.DecoderPrecedence;
-import org.jboss.resteasy.core.interception.MessageBodyReaderContext;
-import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.core.interception.ServerInterceptor;
+import org.jboss.resteasy.annotations.interception.ClientInterceptor;
+import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderContext;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;

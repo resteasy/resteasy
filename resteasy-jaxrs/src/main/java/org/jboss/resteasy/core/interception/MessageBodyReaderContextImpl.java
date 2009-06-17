@@ -1,5 +1,8 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.spi.interception.MessageBodyReaderContext;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;

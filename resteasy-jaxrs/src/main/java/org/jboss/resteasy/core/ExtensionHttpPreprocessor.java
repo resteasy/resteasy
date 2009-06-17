@@ -1,4 +1,4 @@
-package org.jboss.resteasy.spi.preprocessor;
+package org.jboss.resteasy.core;
 
 import java.util.List;
 import java.util.Map;
