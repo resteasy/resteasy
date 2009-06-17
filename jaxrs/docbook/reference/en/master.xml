@@ -41,6 +41,7 @@
                 <!ENTITY Seam SYSTEM "modules/Seam.xml">
                 <!ENTITY Guice1 SYSTEM "modules/Guice1.xml">
                 <!ENTITY JBoss SYSTEM "modules/JBoss.xml">
+                <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 ]>
 
 <book>
@@ -108,6 +109,7 @@
    &Configuring_Individual_JAX-RS_Resource_Beans;
    &GZIP;
    &Cache_NoCache_CacheControl;
+   &Interceptors;
    &Asynchronous_HTTP;
    &Asynchronous_Job;
    &RESTEasy_Embedded_Container;
