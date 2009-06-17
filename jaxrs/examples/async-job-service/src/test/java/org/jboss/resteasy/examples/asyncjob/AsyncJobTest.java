@@ -8,7 +8,6 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
@@ -26,7 +25,7 @@ public class AsyncJobTest
          PutMethod method = new PutMethod("http://localhost:9095/resource?oneway=true");
          method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
          int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
+         Assert.assertEquals(202, status);
          Thread.sleep(1500);
          GetMethod get = new GetMethod("http://localhost:9095/resource");
          status = client.executeMethod(get);

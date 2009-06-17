@@ -3,9 +3,41 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
     <display-name>Archetype RestEasy Web Application</display-name>
+
+    <!-- testing configuration -->
+    <context-param>
+        <param-name>resteasy.append.interceptor.precedence</param-name>
+        <param-value>END</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.interceptor.before.precedence</param-name>
+        <param-value>ENCODER : BEFORE_ENCODER</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.interceptor.after.precedence</param-name>
+        <param-value>ENCODER : AFTER_ENCODER</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.media.type.mappings</param-name>
+        <param-value>xml : application/xml,
+            json : application/json
+        </param-value>
+    </context-param>
+
     <context-param>
         <param-name>resteasy.resources</param-name>
         <param-value>org.jboss.resteasy.tests.context.ContextService</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>org.jboss.resteasy.tests.context.AfterEncoderInterceptor,
+            org.jboss.resteasy.tests.context.EncoderInterceptor,
+            org.jboss.resteasy.tests.context.EndInterceptor,
+            org.jboss.resteasy.tests.context.BeforeEncoderInterceptor
+        </param-value>
     </context-param>
 
     <context-param>

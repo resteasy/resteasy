@@ -199,6 +199,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       registerDefaultInterceptorPrecedences(getClientExecutionInterceptorRegistry());
    }
 
+   /**
+    * Append interceptor predence
+    *
+    * @param precedence
+    */
    public void appendInterceptorPrecedence(String precedence)
    {
       getServerPreProcessInterceptorRegistry().appendPrecedence(precedence);
@@ -211,6 +216,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       getClientExecutionInterceptorRegistry().appendPrecedence(precedence);
    }
 
+   /**
+    * @param after         put newPrecedence after this
+    * @param newPrecedence
+    */
    public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
    {
       getServerPreProcessInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
@@ -223,6 +232,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       getClientExecutionInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
    }
 
+   /**
+    * @param before        put newPrecedence before this
+    * @param newPrecedence
+    */
    public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
    {
       getServerPreProcessInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);

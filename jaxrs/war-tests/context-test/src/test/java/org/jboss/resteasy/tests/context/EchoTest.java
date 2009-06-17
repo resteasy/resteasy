@@ -38,6 +38,10 @@ public class EchoTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ok", response.getEntity());
+      Assert.assertTrue(response.getHeaders().containsKey("before-encoder"));
+      Assert.assertTrue(response.getHeaders().containsKey("after-encoder"));
+      Assert.assertTrue(response.getHeaders().containsKey("end"));
+      Assert.assertTrue(response.getHeaders().containsKey("encoder"));
    }
 
    @Test
@@ -48,6 +52,28 @@ public class EchoTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ok", response.getEntity());
+   }
+
+   @Test
+   public void testXmlMappings() throws Exception
+   {
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      ClientRequest request = new ClientRequest("http://localhost:9095/test/stuff.xml");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("xml", response.getEntity());
+
+   }
+
+   @Test
+   public void testJsonMappings() throws Exception
+   {
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      ClientRequest request = new ClientRequest("http://localhost:9095/test/stuff.json");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("json", response.getEntity());
+
    }
 }
 
