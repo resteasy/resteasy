@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.cache.server;
 
-import org.jboss.resteasy.core.interception.MessageBodyWriterContext;
-import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.core.interception.ServerInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 

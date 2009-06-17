@@ -2,9 +2,9 @@ package org.jboss.resteasy.plugins.cache.server;
 
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.core.interception.PreProcessInterceptor;
-import org.jboss.resteasy.core.interception.RedirectPrecedence;
-import org.jboss.resteasy.core.interception.ServerInterceptor;
+import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
+import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;

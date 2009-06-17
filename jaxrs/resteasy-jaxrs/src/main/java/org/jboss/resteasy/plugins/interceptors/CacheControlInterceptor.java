@@ -3,9 +3,9 @@ package org.jboss.resteasy.plugins.interceptors;
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.core.interception.AcceptedByMethod;
-import org.jboss.resteasy.core.interception.HeaderDecoratorPrecedence;
-import org.jboss.resteasy.core.interception.PostProcessInterceptor;
+import org.jboss.resteasy.spi.interception.AcceptedByMethod;
+import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.core.CacheControl;

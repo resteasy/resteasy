@@ -2,19 +2,19 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
-import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
-import org.jboss.resteasy.core.interception.ClientInterceptor;
-import org.jboss.resteasy.core.interception.DecoderPrecedence;
-import org.jboss.resteasy.core.interception.EncoderPrecedence;
-import org.jboss.resteasy.core.interception.HeaderDecoratorPrecedence;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.annotations.interception.ClientInterceptor;
+import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
+import org.jboss.resteasy.annotations.interception.EncoderPrecedence;
+import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
-import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.core.interception.PostProcessInterceptor;
-import org.jboss.resteasy.core.interception.PreProcessInterceptor;
-import org.jboss.resteasy.core.interception.RedirectPrecedence;
-import org.jboss.resteasy.core.interception.SecurityPrecedence;
-import org.jboss.resteasy.core.interception.ServerInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
+import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
+import org.jboss.resteasy.annotations.interception.SecurityPrecedence;
+import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
@@ -181,8 +181,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       registry.appendPrecedence(SecurityPrecedence.PRECEDENCE_STRING);
       registry.appendPrecedence(HeaderDecoratorPrecedence.PRECEDENCE_STRING);
-      registry.appendPrecedence(RedirectPrecedence.PRECEDENCE_STRING);
       registry.appendPrecedence(EncoderPrecedence.PRECEDENCE_STRING);
+      registry.appendPrecedence(RedirectPrecedence.PRECEDENCE_STRING);
       registry.appendPrecedence(DecoderPrecedence.PRECEDENCE_STRING);
 
    }

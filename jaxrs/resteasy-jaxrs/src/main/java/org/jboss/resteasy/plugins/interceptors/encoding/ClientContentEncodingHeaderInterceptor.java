@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
-import org.jboss.resteasy.core.interception.AcceptedByMethod;
-import org.jboss.resteasy.core.interception.ClientInterceptor;
-import org.jboss.resteasy.core.interception.HeaderDecoratorPrecedence;
+import org.jboss.resteasy.spi.interception.AcceptedByMethod;
+import org.jboss.resteasy.annotations.interception.ClientInterceptor;
+import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 
 import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;

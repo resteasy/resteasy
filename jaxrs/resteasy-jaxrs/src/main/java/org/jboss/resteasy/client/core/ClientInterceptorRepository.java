@@ -2,9 +2,9 @@ package org.jboss.resteasy.client.core;
 
 import java.util.LinkedList;
 
-import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
-import org.jboss.resteasy.core.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
 /**
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>

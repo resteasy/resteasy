@@ -1,6 +1,6 @@
 package org.jboss.resteasy.annotations;
 
-import org.jboss.resteasy.core.interception.DecoratorProcessor;
+import org.jboss.resteasy.spi.interception.DecoratorProcessor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @see org.jboss.resteasy.core.interception.DecoratorProcessor
+ * @see org.jboss.resteasy.spi.interception.DecoratorProcessor
  * @see org.jboss.resteasy.annotations.DecorateTypes
  */
 @Target({ElementType.ANNOTATION_TYPE})

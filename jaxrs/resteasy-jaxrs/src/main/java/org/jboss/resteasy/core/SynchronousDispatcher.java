@@ -27,7 +27,7 @@ import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.spi.preprocessor.ExtensionHttpPreprocessor;
+import org.jboss.resteasy.core.ExtensionHttpPreprocessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

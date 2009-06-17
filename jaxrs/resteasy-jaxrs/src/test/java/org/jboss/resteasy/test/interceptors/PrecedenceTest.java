@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.interceptors;
 
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
-import org.jboss.resteasy.core.interception.Precedence;
+import org.jboss.resteasy.annotations.interception.Precedence;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.annotations.ContentEncoding;
-import org.jboss.resteasy.core.interception.MessageBodyWriterContext;
-import org.jboss.resteasy.core.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
