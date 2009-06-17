@@ -34,6 +34,16 @@
             <groupId>org.apache.james</groupId>
             <artifactId>apache-mime4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>tjws</groupId>
+            <artifactId>webserver</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 

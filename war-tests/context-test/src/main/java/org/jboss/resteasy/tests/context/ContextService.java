@@ -51,4 +51,20 @@ public class ContextService
       Assert.assertNotNull(config);
       return "ok";
    }
+
+   @GET
+   @Produces("application/json")
+   @Path("stuff")
+   public String getJson()
+   {
+      return "json";
+   }
+
+   @GET
+   @Produces("application/xml")
+   @Path("stuff")
+   public String getXml()
+   {
+      return "xml";
+   }
 }

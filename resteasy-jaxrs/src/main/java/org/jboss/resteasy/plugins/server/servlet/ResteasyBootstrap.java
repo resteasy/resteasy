@@ -35,7 +35,6 @@ public class ResteasyBootstrap implements ServletContextListener
 
    public void contextInitialized(ServletContextEvent event)
    {
-
       String deploymentSensitive = event.getServletContext().getInitParameter("resteasy.use.deployment.sensitive.factory");
       if (deploymentSensitive != null)
          deployment.setDeploymentSensitiveFactoryEnabled(Boolean.valueOf(deploymentSensitive.trim()));
@@ -86,7 +85,7 @@ public class ResteasyBootstrap implements ServletContextListener
       if (providers != null)
       {
          String[] p = providers.split(",");
-         for (String pr : p) deployment.getProviderClasses().add(pr);
+         for (String pr : p) deployment.getProviderClasses().add(pr.trim());
       }
 
       String resourceMethodInterceptors = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS);
@@ -169,7 +168,6 @@ public class ResteasyBootstrap implements ServletContextListener
          processResources(resources);
       }
 
-      // Mappings don't work anymore, but leaving the code in just in case users demand to put it back in
       String mimeExtentions = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_MEDIA_TYPE_MAPPINGS);
       if (mimeExtentions != null)
       {
@@ -177,12 +175,32 @@ public class ResteasyBootstrap implements ServletContextListener
          deployment.setMediaTypeMappings(map);
       }
 
-      // Mappings don't work anymore, but leaving the code in just in case users demand to put it back in
       String languageExtensions = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_LANGUAGE_MAPPINGS);
       if (languageExtensions != null)
       {
          Map<String, String> map = parseMap(languageExtensions);
          deployment.setLanguageExtensions(map);
+      }
+      String before = event.getServletContext().getInitParameter("resteasy.interceptor.before.precedence");
+      if (before != null)
+      {
+         Map<String, String> map = parseMap(before);
+         deployment.setInterceptorBeforePrecedences(map);
+      }
+      String after = event.getServletContext().getInitParameter("resteasy.interceptor.after.precedence");
+      if (after != null)
+      {
+         Map<String, String> map = parseMap(after);
+         deployment.setInterceptorAfterPrecedences(map);
+      }
+      String append = event.getServletContext().getInitParameter("resteasy.append.interceptor.precedence");
+      if (append != null)
+      {
+         String[] precedences = append.split(",");
+         for (String precedence : precedences)
+         {
+            deployment.getInterceptorPrecedences().add(precedence.trim());
+         }
       }
 
       if (applicationConfig != null) deployment.setApplicationClass(applicationConfig);

@@ -79,6 +79,33 @@ public class ResteasyDeployment
          dispatcher = new SynchronousDispatcher(providerFactory);
       }
       registry = dispatcher.getRegistry();
+
+      // Interceptor preferences should come before provider registration or builtin.
+
+      if (interceptorPrecedences != null)
+      {
+         for (String precedence : interceptorPrecedences)
+         {
+            providerFactory.appendInterceptorPrecedence(precedence.trim());
+         }
+      }
+
+      if (interceptorBeforePrecedences != null)
+      {
+         for (Map.Entry<String, String> ext : interceptorBeforePrecedences.entrySet())
+         {
+            providerFactory.insertInterceptorPrecedenceBefore(ext.getKey().trim(), ext.getValue().trim());
+         }
+      }
+      if (interceptorAfterPrecedences != null)
+      {
+         for (Map.Entry<String, String> ext : interceptorAfterPrecedences.entrySet())
+         {
+            providerFactory.insertInterceptorPrecedenceAfter(ext.getKey().trim(), ext.getValue().trim());
+         }
+      }
+
+
       if (providerClasses != null)
       {
          for (String provider : providerClasses)
@@ -142,7 +169,7 @@ public class ResteasyDeployment
          for (Map.Entry<String, String> ext : mediaTypeMappings.entrySet())
          {
             String value = ext.getValue();
-            extMap.put(ext.getKey(), MediaType.valueOf(value));
+            extMap.put(ext.getKey().trim(), MediaType.valueOf(value.trim()));
          }
          if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
          else dispatcher.setMediaTypeMappings(extMap);
@@ -223,7 +250,7 @@ public class ResteasyDeployment
       Class provider = null;
       try
       {
-         provider = Thread.currentThread().getContextClassLoader().loadClass(clazz);
+         provider = Thread.currentThread().getContextClassLoader().loadClass(clazz.trim());
       }
       catch (ClassNotFoundException e)
       {
@@ -237,7 +264,7 @@ public class ResteasyDeployment
       Class resource = null;
       try
       {
-         resource = Thread.currentThread().getContextClassLoader().loadClass(clazz);
+         resource = Thread.currentThread().getContextClassLoader().loadClass(clazz.trim());
       }
       catch (ClassNotFoundException e)
       {
