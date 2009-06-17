@@ -25,6 +25,24 @@
                  If you had been using the Jettison JAXB/Json providers, you must either remove
                  Jackson from your WEB-INF/lib or classpath, or use the @NoJackson annotation on your JAXB classes.
              </listitem>
+             <listitem>
+                 The tjws and servlet-api artifacts are now scoped "provided" in the resteasy-jar dependencies.  You may
+                 have to include and scope them as "provided" or "test" within your poms if you are getting class not found errors.
+<programlisting>
+<![CDATA[
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>tjws</groupId>
+            <artifactId>webserver</artifactId>
+            <scope>provided</scope>
+        </dependency>
+]]>
+</programlisting>
+             </listitem>
          </itemizedlist>
       </para>
    </sect1>

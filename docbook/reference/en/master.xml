@@ -40,6 +40,7 @@
                 <!ENTITY Yaml SYSTEM "modules/Yaml.xml">
                 <!ENTITY Seam SYSTEM "modules/Seam.xml">
                 <!ENTITY Guice1 SYSTEM "modules/Guice1.xml">
+                <!ENTITY JBoss SYSTEM "modules/JBoss.xml">
                 ]>
 
 <book>
@@ -118,6 +119,7 @@
     &Guice1;
    &RESTEasy_Client_Framework;
    &Maven_and_RESTEasy;
+   &JBoss;
    &Migration_from_older_versions;
 
 </book>
