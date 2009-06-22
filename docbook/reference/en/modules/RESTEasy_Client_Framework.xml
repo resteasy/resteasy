@@ -327,4 +327,15 @@ List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>()
    }]]>
 </programlisting>
    </sect1>
+   <sect1 id="spring_client_proxy">
+        <title>Spring integration on client side</title>
+        <para>
+            When using spring you can generate a REST client proxy from an interface
+            with the help of org.jboss.resteasy.client.spring.RestClientProxyFactoryBean.
+        </para>
+        <programlisting><![CDATA[
+<bean id="echoClient" class="org.jboss.resteasy.client.spring.RestClientProxyFactoryBean"
+    p:serviceInterface="a.b.c.Echo" p:baseUri="http://server.far.far.away:8080/echo" />
+]]></programlisting>
+   </sect1>
 </chapter>
