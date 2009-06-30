@@ -1,14 +1,15 @@
 package org.jboss.resteasy.examples.resteasy;
 
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.interception.ClientExecutionContext;
-import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
-import org.jboss.resteasy.util.DateUtil;
-import org.jboss.resteasy.util.HttpHeaderNames;
-
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.core.interception.ClientExecutionContext;
+import org.jboss.resteasy.core.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.HttpHeaderNames;
 
 public class ForceCachingExecutionInterceptor implements
         ClientExecutionInterceptor
