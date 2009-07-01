@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy.examples</groupId>
 	<artifactId>api-clients</artifactId>
-	<version>1.1.GA</version>
+	<version>1.2.RC1</version>
 
 	<repositories>
 		<repository>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
-			<version>1.1.GA</version>
+			<version>1.2.RC1</version>
 			<!-- filter out unwanted jars -->
 			<exclusions>
 				<exclusion>
@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxb-provider</artifactId>
-			<version>1.1.GA</version>
+			<version>1.2.RC1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>

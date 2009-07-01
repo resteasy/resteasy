@@ -1,6 +1,6 @@
 <chapter id="JBoss5">
     <title>JBoss 5.x Integration</title>
-    <para>Resteasy 1.1.GA has no special integration with JBoss Application Server so it must be configured and installed
+    <para>Resteasy 1.2.RC1 has no special integration with JBoss Application Server so it must be configured and installed
     like any other container.  There are some issues though.  You must make sure that there is not a copy
     of servlet-api-xxx.jar in your WEB-INF/lib directory as this may cause problems.  Also, if you are running
     with JDK 6, make sure to filter out the JAXB jars as they come with JDK 6.</para>
