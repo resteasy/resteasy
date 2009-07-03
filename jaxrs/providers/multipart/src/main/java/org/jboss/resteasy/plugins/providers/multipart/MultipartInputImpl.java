@@ -146,11 +146,12 @@ public class MultipartInputImpl implements MultipartInput {
 				}
 			} else if (body instanceof BinaryBody) {
 				InputStream inputStream = ((BinaryBody) body).getInputStream();
+				InputStreamReader inputStreamReader = null;
 				try {
 					String charset = contentType.getParameters().get("charset");
 					if (charset != null)
 						charset = CharsetUtil.toJavaCharset(charset);
-					InputStreamReader inputStreamReader = charset == null ? new InputStreamReader(
+					inputStreamReader = charset == null ? new InputStreamReader(
 							inputStream)
 							: new InputStreamReader(inputStream, charset);
 					StringWriter writer = new StringWriter();
@@ -160,6 +161,8 @@ public class MultipartInputImpl implements MultipartInput {
 						writer.write(buffer, 0, n);
 					result = writer.toString();
 				} finally {
+					if (inputStreamReader != null)
+						inputStreamReader.close();
 					inputStream.close();
 				}
 			}

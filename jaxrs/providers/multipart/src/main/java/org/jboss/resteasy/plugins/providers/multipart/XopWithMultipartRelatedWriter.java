@@ -28,8 +28,6 @@ import org.jboss.resteasy.util.FindAnnotation;
 @Produces(MediaType.MULTIPART_RELATED)
 public class XopWithMultipartRelatedWriter extends
 		AbstractMultipartRelatedWriter implements MessageBodyWriter<Object> {
-	protected @Context
-	Providers workers;
 
 	public long getSize(Object t, Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType) {

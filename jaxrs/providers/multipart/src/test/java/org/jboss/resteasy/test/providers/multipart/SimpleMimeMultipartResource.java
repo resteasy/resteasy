@@ -362,8 +362,9 @@ public class SimpleMimeMultipartResource {
 		// time.
 		for (int fi = 0; fi < 2; fi++) {
 			InputStream inputStream = xop.getMyDataHandler().getInputStream();
+			InputStreamReader inputStreamReader = null;
 			try {
-				InputStreamReader inputStreamReader = new InputStreamReader(
+				inputStreamReader = new InputStreamReader(
 						inputStream, "UTF-8");
 				StringWriter writer = new StringWriter();
 				char[] buffer = new char[4048];
@@ -372,6 +373,8 @@ public class SimpleMimeMultipartResource {
 					writer.write(buffer, 0, n);
 				Assert.assertEquals("Hello Xop World!", writer.toString());
 			} finally {
+				if (inputStreamReader != null)
+					inputStreamReader.close();
 				inputStream.close();
 			}
 		}
