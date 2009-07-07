@@ -29,7 +29,13 @@ public class ProxyFactory
       return create(clazz, base, new HttpClient());
    }
 
+   @Deprecated
    public static <T> T create(Class<T> clazz, String base, HttpClient client)
+   {
+      return create(clazz, createUri(base), client, ResteasyProviderFactory.getInstance());
+   }
+
+   public static <T> T create(Class<T> clazz, String base, ClientExecutor client)
    {
       return create(clazz, createUri(base), client, ResteasyProviderFactory.getInstance());
    }
@@ -46,6 +52,7 @@ public class ProxyFactory
       }
    }
 
+   @Deprecated
    public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory)
    {
       return create(clazz, baseUri, new ApacheHttpClientExecutor(httpClient), providerFactory);

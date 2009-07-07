@@ -67,6 +67,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       this(uriTemplate, new ApacheHttpClientExecutor(new HttpClient()));
    }
 
+   @Deprecated
    public ClientRequest(String uriTemplate, HttpClient httpClient)
    {
       this(uriTemplate, new ApacheHttpClientExecutor(httpClient));
@@ -77,6 +78,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       this(getBuilder(uriTemplate), executor);
    }
 
+   @Deprecated
    public ClientRequest(String uriTemplate, HttpClient httpClient,
                         ResteasyProviderFactory providerFactory)
    {
