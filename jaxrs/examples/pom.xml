@@ -16,7 +16,6 @@
         <module>jaxb-json</module>
         <module>guice-hello</module>
         <module>spring-hibernate-contacts</module>
-        <module>simple</module>
         <module>async-job-service</module>
         <module>api-clients</module>
         <module>resteasy-springMVC</module>
