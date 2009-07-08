@@ -19,5 +19,6 @@
         <module>async-job-service</module>
         <module>api-clients</module>
         <module>resteasy-springMVC</module>
+        <module>oreilly-workbook</module>
     </modules>
 </project>
