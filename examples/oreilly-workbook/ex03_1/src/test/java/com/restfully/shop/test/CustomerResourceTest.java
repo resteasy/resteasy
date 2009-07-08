@@ -31,7 +31,7 @@ public class CustomerResourceTest
               + "<country>USA</country>"
               + "</customer>";
 
-      URL postUrl = new URL("http://localhost:9095/rest-services/customers");
+      URL postUrl = new URL("http://localhost:9095/customers");
       HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
       connection.setDoOutput(true);
       connection.setInstanceFollowRedirects(false);
@@ -47,7 +47,7 @@ public class CustomerResourceTest
 
       // Get the new customer
       System.out.println("*** GET Created Customer **");
-      URL getUrl = new URL("http://localhost:9095/rest-services/customers/1");
+      URL getUrl = new URL("http://localhost:9095/customers/1");
       connection = (HttpURLConnection) getUrl.openConnection();
       connection.setRequestMethod("GET");
       System.out.println("Content-Type: " + connection.getContentType());
