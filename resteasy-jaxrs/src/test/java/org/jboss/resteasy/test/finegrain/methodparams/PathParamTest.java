@@ -2,6 +2,8 @@ package org.jboss.resteasy.test.finegrain.methodparams;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
@@ -9,12 +11,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.Set;
 
@@ -128,6 +133,7 @@ public class PathParamTest extends BaseResourceTest
    {
       deployment.getRegistry().addPerRequestResource(Digits.class);
       deployment.getRegistry().addPerRequestResource(Resource.class);
+      deployment.getRegistry().addPerRequestResource(CarResource.class);
    }
 
    /*
@@ -169,6 +175,98 @@ public class PathParamTest extends BaseResourceTest
          Assert.assertEquals(404, status);
       }
 
+   }
+
+   @Path("/cars/{make}")
+   public static class CarResource
+   {
+      public static enum Color
+      {
+         red,
+         white,
+         blue,
+         black
+      }
+
+      @GET
+      @Path("/matrixparam/{model}/{year}")
+      @Produces("text/plain")
+      public String getFromMatrixParam(@PathParam("make") String make,
+                                       @PathParam("model") PathSegment car,
+                                       @MatrixParam("color") Color color,
+                                       @PathParam("year") String year)
+      {
+         return "A " + color + " " + year + " " + make + " " + car.getPath();
+      }
+
+
+      @GET
+      @Path("/pathsegment/{model}/{year}")
+      @Produces("text/plain")
+      public String getFromPathSegment(@PathParam("make") String make,
+                                       @PathParam("model") PathSegment car,
+                                       @PathParam("year") String year)
+      {
+         String carColor = car.getMatrixParameters().getFirst("color");
+         return "A " + carColor + " " + year + " " + make + " " + car.getPath();
+      }
+
+      @GET
+      @Path("/pathsegments/{model : .+}/year/{year}")
+      @Produces("text/plain")
+      public String getFromMultipleSegments(@PathParam("make") String make,
+                                            @PathParam("model") List<PathSegment> car,
+                                            @PathParam("year") String year)
+      {
+         String output = "A " + year + " " + make;
+         for (PathSegment segment : car)
+         {
+            output += " " + segment.getPath();
+         }
+         return output;
+      }
+
+      @GET
+      @Path("/uriinfo/{model}/{year}")
+      @Produces("text/plain")
+      public String getFromUriInfo(@Context UriInfo info)
+      {
+         String make = info.getPathParameters().getFirst("make");
+         String year = info.getPathParameters().getFirst("year");
+         PathSegment model = info.getPathSegments().get(3);
+         String color = model.getMatrixParameters().getFirst("color");
+
+         return "A " + color + " " + year + " " + make + " " + model.getPath();
+      }
+   }
+
+   @Test
+   public void testCarResource() throws Exception
+   {
+
+      System.out.println("**** Via @MatrixParam ***");
+      ClientRequest get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/matrixparam/e55;color=black/2006"));
+      ClientResponse<String> response = get.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
+
+      System.out.println("**** Via PathSegment ***");
+      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/pathsegment/e55;color=black/2006"));
+      response = get.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
+
+      System.out.println("**** Via PathSegments ***");
+      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/pathsegments/e55/amg/year/2006"));
+      response = get.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("A 2006 mercedes e55 amg", response.getEntity());
+
+      System.out.println("**** Via PathSegment ***");
+      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/uriinfo/e55;color=black/2006"));
+      response = get.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
    }
 
 
