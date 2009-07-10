@@ -4,11 +4,13 @@ import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,11 +23,26 @@ public class PathParamInjector implements ValueInjector
    private String paramName;
    private boolean encode;
    private Class type;
+   private boolean pathSegment = false;
+   private boolean pathSegmentArray = false;
+   private boolean pathSegmentList = false;
 
    public PathParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, ResteasyProviderFactory factory)
    {
       this.type = type;
-      if (type.equals(PathSegment.class) == false && !(isPathSegmentArray(type)))
+      if (isPathSegmentArray(type))
+      {
+         pathSegmentArray = true;
+      }
+      else if (isPathSegmentList(type, genericType))
+      {
+         pathSegmentList = true;
+      }
+      else if (type.equals(PathSegment.class))
+      {
+         pathSegment = true;
+      }
+      else
       {
          extractor = new StringParameterInjector(type, genericType, paramName, PathParam.class, defaultValue, target, factory);
       }
@@ -36,6 +53,12 @@ public class PathParamInjector implements ValueInjector
    private boolean isPathSegmentArray(Class type)
    {
       return type.isArray() && type.getComponentType().equals(PathSegment.class);
+   }
+
+   private boolean isPathSegmentList(Class type, Type genericType)
+   {
+      Class collectionBaseType = Types.getCollectionBaseType(type, genericType);
+      return List.class.equals(type) && collectionBaseType != null && collectionBaseType.equals(PathSegment.class);
    }
 
    public Object inject(HttpRequest request, HttpResponse response)
@@ -53,9 +76,18 @@ public class PathParamInjector implements ValueInjector
             list = uriInfo.getPathParameterPathSegments().get(paramName);
          }
          PathSegment[] segments = list.get(list.size() - 1);
-         if (isPathSegmentArray(type))
+         if (pathSegmentArray)
          {
             return segments;
+         }
+         else if (pathSegmentList)
+         {
+            ArrayList<PathSegment> pathlist = new ArrayList<PathSegment>();
+            for (PathSegment seg : segments)
+            {
+               pathlist.add(seg);
+            }
+            return pathlist;
          }
          else
          {

@@ -25,7 +25,7 @@ Running the project and manually testing it:
 ===========================================
 
 cd services
-mvn jetty6:run-exploded
+mvn jetty:run
 
 Open a browser at the following URL:
 
