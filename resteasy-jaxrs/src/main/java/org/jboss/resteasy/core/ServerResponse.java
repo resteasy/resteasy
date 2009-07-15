@@ -1,10 +1,10 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
@@ -206,12 +206,8 @@ public class ServerResponse extends Response
 
    public void outputHeaders(HttpResponse response)
    {
+      // Let servlet container set cookies
       response.setStatus(getStatus());
-      if (getMetadata() != null
-              && getMetadata().size() > 0)
-      {
-         response.getOutputHeaders().putAll(getMetadata());
-      }
       if (getMetadata() != null)
       {
          List<Object> cookies = getMetadata().get(
@@ -232,6 +228,11 @@ public class ServerResponse extends Response
             if (cookies.size() < 1)
                getMetadata().remove(HttpHeaderNames.SET_COOKIE);
          }
+      }
+      if (getMetadata() != null
+              && getMetadata().size() > 0)
+      {
+         response.getOutputHeaders().putAll(getMetadata());
       }
    }
 

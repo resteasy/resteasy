@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -113,6 +114,10 @@ public class CookieTest
          {
             int status = client.executeMethod(method);
             Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+            for (Header header : method.getResponseHeaders())
+            {
+               System.out.println(header.getName() + ": " + header.getValue());
+            }
          }
          catch (IOException e)
          {
