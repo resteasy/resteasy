@@ -26,7 +26,7 @@ public class CarResource
    }
 
    @GET
-   @Path("/matrixparam/{make}/{model}/{year}")
+   @Path("/matrix/{make}/{model}/{year}")
    @Produces("text/plain")
    public String getFromMatrixParam(@PathParam("make") String make,
                                     @PathParam("model") PathSegment car,
@@ -38,7 +38,7 @@ public class CarResource
 
 
    @GET
-   @Path("/pathsegment/{make}/{model}/{year}")
+   @Path("/segment/{make}/{model}/{year}")
    @Produces("text/plain")
    public String getFromPathSegment(@PathParam("make") String make,
                                     @PathParam("model") PathSegment car,
@@ -49,7 +49,7 @@ public class CarResource
    }
 
    @GET
-   @Path("/pathsegments/{make}/{model : .+}/year/{year}")
+   @Path("/segments/{make}/{model : .+}/year/{year}")
    @Produces("text/plain")
    public String getFromMultipleSegments(@PathParam("make") String make,
                                          @PathParam("model") List<PathSegment> car,

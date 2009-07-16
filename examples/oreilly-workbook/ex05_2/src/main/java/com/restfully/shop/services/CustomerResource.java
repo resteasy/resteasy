@@ -43,7 +43,8 @@ public class CustomerResource
       System.out.println("Created customer " + customer.getId());
       String output = "Created customer <a href=\"customers/" + customer.getId() + "\">" + customer.getId() + "</a>";
       String lastVisit = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG).format(new Date());
-      return Response.created(URI.create("/customers/" + customer.getId()))
+      URI location = URI.create("/customers/" + customer.getId());
+      return Response.created(location)
               .entity(output)
               .cookie(new NewCookie("last-visit", lastVisit))
               .build();
