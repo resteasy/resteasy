@@ -23,16 +23,19 @@ public class RegisterBuiltin
 
    public static void register(ResteasyProviderFactory factory)
    {
-      if (factory.isBuiltinsRegistered()) return;
-      try
+      synchronized (factory)
       {
-         registerProviders(factory);
+         if (factory.isBuiltinsRegistered()) return;
+         try
+         {
+            registerProviders(factory);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+         factory.setBuiltinsRegistered(true);
       }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
-      }
-      factory.setBuiltinsRegistered(true);
    }
 
    public static void registerProviders(ResteasyProviderFactory factory) throws Exception
