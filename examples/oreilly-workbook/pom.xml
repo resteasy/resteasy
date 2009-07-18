@@ -1,0 +1,21 @@
+<!-- This file is used to build and run all the examples -->
+<project>
+    <name>OReilly Workbook Examples</name>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.oreilly.rest.workbook</groupId>
+    <artifactId>workbook-pom</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>ex03_1</module>
+        <module>ex04_1</module>
+        <module>ex04_2</module>
+        <module>ex04_3</module>
+        <module>ex05_1</module>
+        <module>ex05_2</module>
+        <module>ex06_1</module>
+        <module>ex06_2</module>
+    </modules>
+</project>
