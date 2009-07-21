@@ -4,7 +4,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -33,6 +33,23 @@ import java.util.Set;
  */
 public class ApplicationConfigTest
 {
+   @Path("/myinterface")
+   public static interface MyInterface
+   {
+      @GET
+      @Produces("text/plain")
+      public String hello();
+
+   }
+
+   public static class MyService implements MyInterface
+   {
+      public String hello()
+      {
+         return "hello";
+      }
+   }
+
    @Path("/my")
    public static class MyResource
    {
@@ -74,6 +91,7 @@ public class ApplicationConfigTest
       public MyApplicationConfig()
       {
          classes.add(MyResource.class);
+         classes.add(MyService.class);
          classes.add(QuotedTextWriter.class);
       }
 
@@ -122,5 +140,6 @@ public class ApplicationConfigTest
    {
       HttpClient client = new HttpClient();
       _test(client, generateURL("/my"), "\"hello\"");
+      _test(client, generateURL("/myinterface"), "hello");
    }
 }
