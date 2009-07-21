@@ -83,8 +83,21 @@ public class Encode
    {
       try
       {
+         StringBuffer buf = new StringBuffer();
+         List<String> params = new ArrayList<String>();
+         boolean foundParam = false;
+         if (savePathParams(string, buf, params))
+         {
+            foundParam = true;
+            string = buf.toString();
+         }
+
          string = URLEncoder.encode(string, "UTF-8").replace("+", "%20").replace("%25", "%");
          string = encodeNonCodes(string);
+         if (foundParam)
+         {
+            return pathParamReplacement(string, params);
+         }
       }
       catch (UnsupportedEncodingException e)
       {
@@ -148,7 +161,7 @@ public class Encode
       return segment;
    }
 
-   private static String pathParamReplacement(String segment, ArrayList<String> params)
+   private static String pathParamReplacement(String segment, List<String> params)
    {
       StringBuffer newSegment = new StringBuffer();
       Matcher matcher = PARAM_REPLACEMENT.matcher(segment);

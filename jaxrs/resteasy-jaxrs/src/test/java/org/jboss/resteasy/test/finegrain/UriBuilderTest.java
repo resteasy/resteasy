@@ -104,24 +104,6 @@ public class UriBuilderTest
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c?a=x&b=y#ment"), bu);
    }
 
-   /*
-   @Test
-   public void testExtension()
-   {
-      URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c").
-              extension("html").build();
-      Assert.assertEquals(URI.create("http://localhost:8080/a/b/c.html"), bu);
-      bu = UriBuilder.fromUri("http://localhost:8080/a/b/c.xml").
-              extension(null).build();
-      Assert.assertEquals(URI.create("http://localhost:8080/a/b/c"), bu);
-      bu = UriBuilder.fromUri("http://localhost:8080/a/b.html/c.xml").
-              extension(null).build();
-      Assert.assertEquals(URI.create("http://localhost:8080/a/b.html/c"), bu);
-      bu = UriBuilder.fromUri("http://localhost:8080/a/b.html/c.xml").
-              extension(".html").build();
-      Assert.assertEquals(URI.create("http://localhost:8080/a/b.html/c.html"), bu);
-   }
-   */
 
    @Test
    public void testReplaceUri()
@@ -390,5 +372,12 @@ public class UriBuilderTest
          Assert.assertEquals("/foo/something%20something", uri.toString());
       }
    }
+
+   @Test
+   public void testQueryParamSubstitution() throws Exception
+   {
+      UriBuilder.fromUri("http://localhost/test").queryParam("a", "{b}").build("c");
+   }
+
 
 }
