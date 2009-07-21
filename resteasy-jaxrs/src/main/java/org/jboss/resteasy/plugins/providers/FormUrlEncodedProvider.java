@@ -13,13 +13,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -116,13 +110,13 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
       boolean first = true;
       for (Map.Entry<String, List<String>> entry : formData.entrySet())
       {
-         if (first) first = false;
-         else writer.write("&");
          String encodedName = entry.getKey();
          if (!encoded) encodedName = URLEncoder.encode(entry.getKey(), "UTF-8");
 
          for (String value : entry.getValue())
          {
+            if (first) first = false;
+            else writer.write("&");
             if (!encoded)
             {
                value = URLEncoder.encode(value, "UTF-8");
