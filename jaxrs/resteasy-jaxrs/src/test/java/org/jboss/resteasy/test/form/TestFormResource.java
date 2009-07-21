@@ -6,31 +6,35 @@
  */
 package org.jboss.resteasy.test.form;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.test.BaseResourceTest;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import org.jboss.resteasy.util.GenericType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A TestFormResource.
@@ -62,6 +66,28 @@ public class TestFormResource extends BaseResourceTest
       @Produces(MediaType.APPLICATION_FORM_URLENCODED)
       @POST
       MultivaluedMap<String, String> post(@Form ClientForm form);
+
+      @Produces(MediaType.APPLICATION_FORM_URLENCODED)
+      @POST
+      String postString(@Form ClientForm form);
+
+   }
+
+   @Path("/myform")
+   public static class MyFormResource
+   {
+      @GET
+      @Path("/server")
+      @Produces("application/x-www-form-urlencoded")
+      public MultivaluedMap<String, String> retrieveServername()
+      {
+
+         MultivaluedMap<String, String> serverMap = new MultivaluedMapImpl<String, String>();
+         serverMap.add("servername", "srv1");
+         serverMap.add("servername", "srv2");
+
+         return serverMap;
+      }
    }
 
    /**
@@ -73,6 +99,34 @@ public class TestFormResource extends BaseResourceTest
    public void setUp() throws Exception
    {
       addPerRequestResource(FormResource.class);
+      addPerRequestResource(MyFormResource.class);
+   }
+
+   /**
+    * RESTEASY-261
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testMultiValueParam() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/myform/server"));
+      ClientResponse<MultivaluedMap<String, String>> response = request.get(new GenericType<MultivaluedMap<String, String>>()
+      {
+      });
+      int status = response.getStatus();
+      Assert.assertEquals(200, status);
+      boolean sv1 = false;
+      boolean sv2 = false;
+      MultivaluedMap<String, String> form = response.getEntity();
+      Assert.assertEquals(2, form.get("servername").size());
+      for (String str : form.get("servername"))
+      {
+         if (str.equals("srv1")) sv1 = true;
+         else if (str.equals("srv2")) sv2 = true;
+      }
+      Assert.assertTrue(sv1);
+      Assert.assertTrue(sv2);
    }
 
    @Test
@@ -95,6 +149,7 @@ public class TestFormResource extends BaseResourceTest
       Assert.assertEquals(rtn.getFirst(DOUBLE_VALUE_FIELD), "123.45");
       Assert.assertEquals(rtn.getFirst(LONG_VALUE_FIELD), "566780");
       Assert.assertEquals(rtn.getFirst(INTEGER_VALUE_FIELD), "3");
+      String str = proxy.postString(form);
    }
 
    @Test
@@ -128,7 +183,7 @@ public class TestFormResource extends BaseResourceTest
          else if (index > 0)
          {
             values.put(URLDecoder.decode(pair.substring(0, index), "UTF-8"), URLDecoder.decode(pair
-                  .substring(index + 1), "UTF-8"));
+                    .substring(index + 1), "UTF-8"));
          }
       }
       Assert.assertEquals(values.get(BOOLEAN_VALUE_FIELD), "true");
