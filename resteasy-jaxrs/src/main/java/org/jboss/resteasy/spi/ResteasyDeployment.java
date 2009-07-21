@@ -10,9 +10,9 @@ import org.jboss.resteasy.util.GetRestful;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -215,15 +215,19 @@ public class ResteasyDeployment
       {
          for (Class clazz : config.getClasses())
          {
-            if (clazz.isAnnotationPresent(Path.class))
+            if (GetRestful.isRootResource(clazz))
             {
                logger.info("Adding class resource " + clazz.getName() + " from Application " + Application.class.getName());
                registry.addPerRequestResource(clazz);
             }
-            else
+            else if (clazz.isAnnotationPresent(Provider.class))
             {
                logger.info("Adding class @Provider " + clazz.getName() + " from Application " + Application.class.getName());
                factory.registerProvider(clazz);
+            }
+            else
+            {
+               throw new RuntimeException("Application.getClasses() returned unknown class type: " + clazz.getName());
             }
          }
       }
@@ -231,15 +235,19 @@ public class ResteasyDeployment
       {
          for (Object obj : config.getSingletons())
          {
-            if (obj.getClass().isAnnotationPresent(Path.class))
+            if (GetRestful.isRootResource(obj.getClass()))
             {
                logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + Application.class.getName());
                registry.addSingletonResource(obj);
             }
-            else
+            else if (obj.getClass().isAnnotationPresent(Provider.class))
             {
                logger.info("Adding singleton @Provider " + obj.getClass().getName() + " from Application " + Application.class.getName());
                factory.registerProviderInstance(obj);
+            }
+            else
+            {
+               throw new RuntimeException("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
             }
          }
       }
