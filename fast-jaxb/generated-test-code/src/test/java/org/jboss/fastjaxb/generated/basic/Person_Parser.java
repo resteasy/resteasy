@@ -1,24 +1,24 @@
 package org.jboss.fastjaxb.generated.basic;
 
 
-import org.jboss.fastjaxb.template.Sax;
-import java.util.List;
-import org.jboss.fastjaxb.test.basic.Person;
-import java.lang.String;
-import org.xml.sax.Attributes;
-import org.jboss.fastjaxb.template.ParentCallback;
 import org.jboss.fastjaxb.template.Handler;
-import org.xml.sax.helpers.DefaultHandler;
+import org.jboss.fastjaxb.template.ParentCallback;
+import org.jboss.fastjaxb.template.Sax;
+import org.jboss.fastjaxb.test.basic.Person;
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class Person_Parser extends DefaultHandler implements ParentCallback, Handler
 {
 
    private static enum State
    {
-       NAME,
-       BUSINESSADDRESSES,
-       ADDRESSES
+      NAME,
+      BUSINESSADDRESSES,
+      ADDRESSES,
+      PHONE,
+      MOBILE
    }
 
    protected Sax top;
@@ -62,18 +62,27 @@ public class Person_Parser extends DefaultHandler implements ParentCallback, Han
    {
       if (state == State.BUSINESSADDRESSES)
       {
-         this.target.getBusinessAddresses().add((org.jboss.fastjaxb.test.basic.Address)obj);
+         this.target.getBusinessAddresses().add((org.jboss.fastjaxb.test.basic.Address) obj);
       }
       else if (state == State.ADDRESSES)
       {
-         this.target.getAddresses().add((org.jboss.fastjaxb.test.basic.Address)obj);
+         this.target.getAddresses().add((org.jboss.fastjaxb.test.basic.Address) obj);
+      }
+      else if (state == State.PHONE)
+      {
+         this.target.setPhone((org.jboss.fastjaxb.test.basic.PhoneNumber) obj);
+      }
+      else if (state == State.MOBILE)
+      {
+         this.target.setMobile((org.jboss.fastjaxb.test.basic.PhoneNumber) obj);
       }
       else throw new SAXException("Unknown state for adding a child");
    }
 
    @Override
-   public void characters(char[] ch, int start, int length) throws SAXException {
-      tempVal = new String(ch,start,length);
+   public void characters(char[] ch, int start, int length) throws SAXException
+   {
+      tempVal = new String(ch, start, length);
    }
 
    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
@@ -98,6 +107,22 @@ public class Person_Parser extends DefaultHandler implements ParentCallback, Han
          parser.setParentCallback(this);
          parser.start(attributes, qName);
       }
+      else if (qName.equalsIgnoreCase("home-phone"))
+      {
+         this.state = State.PHONE;
+         PhoneNumber_Parser parser = new PhoneNumber_Parser();
+         parser.setTop(top);
+         parser.setParentCallback(this);
+         parser.start(attributes, qName);
+      }
+      else if (qName.equalsIgnoreCase("mobile-phone"))
+      {
+         this.state = State.MOBILE;
+         PhoneNumber_Parser parser = new PhoneNumber_Parser();
+         parser.setTop(top);
+         parser.setParentCallback(this);
+         parser.start(attributes, qName);
+      }
       else
       {
          throw new SAXException("Unknown elemement: " + qName);
@@ -118,7 +143,7 @@ public class Person_Parser extends DefaultHandler implements ParentCallback, Han
       }
       if (state == State.NAME)
       {
-               this.target.setName(tempVal);
+         this.target.setName(tempVal);
       }
       else
       {

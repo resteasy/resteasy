@@ -2,9 +2,9 @@ package org.jboss.fastjaxb;
 
 import org.jboss.fastjaxb.util.Types;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.lang.annotation.Annotation;
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,7 +77,7 @@ public class Property
       {
          throw new RuntimeException("Failed to get base type for property: " + name);
       }
-      baseType = ct;
+      if (baseType == null) baseType = ct;
       return baseType;
    }
 

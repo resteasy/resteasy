@@ -1,12 +1,16 @@
 package org.jboss.fastjaxb;
 
-import javax.xml.bind.annotation.*;
-import java.io.PrintWriter;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -87,20 +91,17 @@ public class Introspector
             {
                qName = property.getName();
             }
-            if (attr.type() != null)
+            if (attr.type() != null && !attr.type().equals(XmlElement.DEFAULT.class))
             {
                property.setBaseType(attr.type());
             }
             rootElement.getElements().put(qName, property);
-            if (isValueType(property.getBaseType()) == false)
-            {
-               createMap(property.getBaseType());
-            }
+            processRootElement(property);
          }
          else if (property.isAnnotationPresent(XmlElementRef.class))
          {
             XmlElementRef attr = property.getAnnotation(XmlElementRef.class);
-            if (attr.type() != null)
+            if (attr.type() != null && !attr.type().equals(XmlElementRef.DEFAULT.class))
             {
                property.setBaseType(attr.type());
             }
@@ -121,25 +122,23 @@ public class Introspector
                qName = baseType.getSimpleName().toLowerCase();
             }
             rootElement.getElements().put(qName, property);
-            if (isValueType(property.getBaseType()) == false)
-            {
-               createMap(property.getBaseType());
-            }
+            processRootElement(property);
          }
          else
          {
             // assume it is an element
             rootElement.getElements().put(property.getName(), property);
-            boolean b = isValueType(property.getBaseType());
-            if (b)
-            {
-            }
-            else
-            {
-               createMap(property.getBaseType());
-            }
+            processRootElement(property);
          }
 
+      }
+   }
+
+   private void processRootElement(Property property)
+   {
+      if (isJaxbElement(property.getBaseType()))
+      {
+         createMap(property.getBaseType());
       }
    }
 
@@ -157,7 +156,7 @@ public class Introspector
       {
          if (method.isAnnotationPresent(XmlTransient.class)) continue;
          if (ignoredMethods.contains(method.getName())) continue;
-         
+
          if (method.getName().startsWith("get") && method.getName().length() > 3 && method.getParameterTypes().length == 0)
          {
             String propertyName = extractPropertyName(method);
