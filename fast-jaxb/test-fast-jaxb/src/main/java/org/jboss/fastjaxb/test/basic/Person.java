@@ -21,6 +21,8 @@ public class Person
    private String name;
    private List<Address> addresses;
    private List<Address> businessAddresses;
+   private PhoneNumber phone;
+   private Phone mobile;
 
 
    public String getName()
@@ -66,6 +68,28 @@ public class Person
       this.id = id;
    }
 
+   @XmlElement(name="home-phone")
+   public PhoneNumber getPhone()
+   {
+      return phone;
+   }
+
+   public void setPhone(PhoneNumber phone)
+   {
+      this.phone = phone;
+   }
+
+   @XmlElement(name="mobile-phone", type=PhoneNumber.class)
+   public Phone getMobile()
+   {
+      return mobile;
+   }
+
+   public void setMobile(Phone mobile)
+   {
+      this.mobile = mobile;
+   }
+
    @Override
    public String toString()
    {
@@ -74,6 +98,8 @@ public class Person
               ", name='" + name + '\'' +
               ", addresses=" + addresses +
               ", businessAddresses=" + businessAddresses +
+              ", phone=" + phone +
+              ", mobile=" + mobile +
               '}';
    }
 }

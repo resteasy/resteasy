@@ -276,18 +276,24 @@ public class ClassCodeGenerator
       boolean first = true;
       for (Property property : rootElement.getElements().values())
       {
-         if (!Collection.class.isAssignableFrom(property.getType()))
-         {
-            continue;
-         }
          if (!isRootElement(property.getBaseType())) continue;
          writer.print("      ");
          if (first) first = false;
          else writer.print("else ");
          writer.println("if (state == State." + property.getName().toUpperCase() + ")");
          writer.println("      {");
-         writer.println("         this.target." + property.getGetter().getName() +
-                 "().add((" + property.getBaseType().getName() + ")obj);");
+         if (Collection.class.isAssignableFrom(property.getType()))
+         {
+            writer.println("         this.target." + property.getGetter().getName() +
+                    "().add((" + property.getBaseType().getName() + ")obj);");
+         }
+         else
+         {
+            writer.println("         this.target." + property.getSetter().getName() +
+                    "((" + property.getBaseType().getName() + ")obj);");
+
+         }
+
          writer.println("      }");
 
       }

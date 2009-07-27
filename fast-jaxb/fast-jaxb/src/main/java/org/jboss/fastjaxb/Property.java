@@ -18,6 +18,7 @@ public class Property
    protected Method setter;
    protected Method getter;
    protected String name;
+   protected Class baseType;
 
    public Property(String name)
    {
@@ -65,9 +66,9 @@ public class Property
 
    public Class<?> getBaseType()
    {
+      if (baseType != null) return baseType;
       Class ct = getType();
       Type gt = getGenericType();
-      Class baseType = null;
       try
       {
          baseType = Types.getCollectionBaseType(ct, gt);
@@ -76,8 +77,13 @@ public class Property
       {
          throw new RuntimeException("Failed to get base type for property: " + name);
       }
-      if (baseType == null) return ct;
+      baseType = ct;
       return baseType;
+   }
+
+   public void setBaseType(Class baseType)
+   {
+      this.baseType = baseType;
    }
 
    public <T extends Annotation> T getAnnotation(Class<T> annotation)

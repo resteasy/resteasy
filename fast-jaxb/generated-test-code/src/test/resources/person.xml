@@ -16,4 +16,10 @@
         <street>11229 Backstreet Road</street>
         <city>Cambridge</city>
     </business-address>
+    <home-phone>
+        <number>555-555-5555</number>
+    </home-phone>
+    <mobile-phone>
+        <number>666-666-6666</number>
+    </mobile-phone>
 </person>

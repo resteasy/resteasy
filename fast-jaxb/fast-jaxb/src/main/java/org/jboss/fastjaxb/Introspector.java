@@ -42,10 +42,20 @@ public class Introspector
       return rootElements;
    }
 
+
    public boolean isValueType(Class clazz)
    {
-      return clazz.isPrimitive() || valueTypes.contains(clazz);
+      if (clazz.isPrimitive()) return true;
+      if (isJaxbElement(clazz)) return false;
+      return true;
 
+   }
+
+   private boolean isJaxbElement(Class clazz)
+   {
+      if (clazz.isAnnotationPresent(XmlRootElement.class)) return true;
+      if (clazz.isAnnotationPresent(XmlType.class)) return true;
+      return false;
    }
 
    public void createMap(Class rootClass)
@@ -59,10 +69,6 @@ public class Introspector
       rootElements.put(rootClass, rootElement);
       for (Property property : rootElement.getProperties().values())
       {
-         if (isValueType(property.getBaseType()) == false)
-         {
-            createMap(property.getBaseType());
-         }
          if (property.isAnnotationPresent(XmlAttribute.class))
          {
             XmlAttribute attr = property.getAnnotation(XmlAttribute.class);
@@ -81,10 +87,23 @@ public class Introspector
             {
                qName = property.getName();
             }
+            if (attr.type() != null)
+            {
+               property.setBaseType(attr.type());
+            }
             rootElement.getElements().put(qName, property);
+            if (isValueType(property.getBaseType()) == false)
+            {
+               createMap(property.getBaseType());
+            }
          }
          else if (property.isAnnotationPresent(XmlElementRef.class))
          {
+            XmlElementRef attr = property.getAnnotation(XmlElementRef.class);
+            if (attr.type() != null)
+            {
+               property.setBaseType(attr.type());
+            }
             Class<?> baseType = property.getBaseType();
             String qName = null;
             if (baseType.isAnnotationPresent(XmlRootElement.class))
@@ -97,26 +116,28 @@ public class Introspector
                }
 
             }
-            else if (baseType.isAnnotationPresent(XmlType.class))
-            {
-               XmlType re = baseType.getAnnotation(XmlType.class);
-               qName = re.name();
-               if (qName == null || qName.equals("") || qName.equals("##default"))
-               {
-                  qName = null;
-               }
-
-            }
             if (qName == null)
             {
                qName = baseType.getSimpleName().toLowerCase();
             }
             rootElement.getElements().put(qName, property);
+            if (isValueType(property.getBaseType()) == false)
+            {
+               createMap(property.getBaseType());
+            }
          }
          else
          {
             // assume it is an element
             rootElement.getElements().put(property.getName(), property);
+            boolean b = isValueType(property.getBaseType());
+            if (b)
+            {
+            }
+            else
+            {
+               createMap(property.getBaseType());
+            }
          }
 
       }
@@ -130,15 +151,6 @@ public class Introspector
       {
          root.setElementName(re.name());
          root.setNamespace(re.namespace());
-      }
-      else
-      {
-         XmlType xt = rootClass.getAnnotation(XmlType.class);
-         if (xt != null)
-         {
-            root.setElementName(re.name());
-            root.setNamespace(re.namespace());
-         }
       }
 
       for (Method method : rootClass.getMethods())
