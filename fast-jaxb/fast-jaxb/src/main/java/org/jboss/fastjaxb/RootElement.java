@@ -1,6 +1,7 @@
 package org.jboss.fastjaxb;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +18,28 @@ public class RootElement
    protected Map<String, Property> elements = new LinkedHashMap<String, Property>();
    protected String elementName;
    protected String namespace;
+   protected Property anyProperty;
+   protected Property valueProperty;
+
+   public Property getValueProperty()
+   {
+      return valueProperty;
+   }
+
+   public void setValueProperty(Property valueProperty)
+   {
+      this.valueProperty = valueProperty;
+   }
+
+   public Property getAnyProperty()
+   {
+      return anyProperty;
+   }
+
+   public void setAnyProperty(Property anyProperty)
+   {
+      this.anyProperty = anyProperty;
+   }
 
    public Class getRootClass()
    {

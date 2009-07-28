@@ -20,9 +20,24 @@ public class Property
    protected String name;
    protected Class baseType;
 
+
+   public Property()
+   {
+   }
+
    public Property(String name)
    {
       this.name = name;
+   }
+
+   public Property clone()
+   {
+      Property p = new Property();
+      p.setter = this.setter;
+      p.getter = this.getter;
+      p.name = this.name;
+      p.baseType = this.baseType;
+      return p;
    }
 
    public Method getGetter()

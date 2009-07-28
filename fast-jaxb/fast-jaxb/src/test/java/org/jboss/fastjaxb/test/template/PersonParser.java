@@ -1,11 +1,11 @@
 package org.jboss.fastjaxb.test.template;
 
-import org.xml.sax.helpers.DefaultHandler;
+import org.jboss.fastjaxb.spi.Handler;
+import org.jboss.fastjaxb.spi.ParentCallback;
+import org.jboss.fastjaxb.spi.Sax;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.jboss.fastjaxb.template.ParentCallback;
-import org.jboss.fastjaxb.template.Handler;
-import org.jboss.fastjaxb.template.Sax;
+import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 
@@ -66,7 +66,7 @@ public class PersonParser extends DefaultHandler implements ParentCallback, Hand
    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
    {
       if (qName.equalsIgnoreCase("name")) state = State.NAME;
-      else if(qName.equalsIgnoreCase("address"))
+      else if (qName.equalsIgnoreCase("address"))
       {
          state = State.ADDRESSES;
          AddressParser addressParser = new AddressParser();
@@ -74,7 +74,7 @@ public class PersonParser extends DefaultHandler implements ParentCallback, Hand
          addressParser.setParentCallback(this);
          addressParser.start(attributes, qName);
       }
-      else if(qName.equalsIgnoreCase("business-address"))
+      else if (qName.equalsIgnoreCase("business-address"))
       {
          state = State.BUSINESSADDRESSES;
          AddressParser addressParser = new AddressParser();
@@ -93,19 +93,20 @@ public class PersonParser extends DefaultHandler implements ParentCallback, Hand
    {
       if (state == State.ADDRESSES)
       {
-         person.getAddresses().add((Address)obj);
+         person.getAddresses().add((Address) obj);
       }
       else if (state == State.BUSINESSADDRESSES)
       {
-         person.getBusinessAddresses().add((Address)obj);
+         person.getBusinessAddresses().add((Address) obj);
       }
       else throw new SAXException("Unknown state");
    }
 
    @Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
-		tempVal = new String(ch,start,length);
-	}
+   public void characters(char[] ch, int start, int length) throws SAXException
+   {
+      tempVal = new String(ch, start, length);
+   }
 
    @Override
    public void endElement(String uri, String localName, String qName) throws SAXException

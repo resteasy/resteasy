@@ -1,11 +1,11 @@
 package org.jboss.fastjaxb.test.template;
 
-import org.xml.sax.helpers.DefaultHandler;
+import org.jboss.fastjaxb.spi.Handler;
+import org.jboss.fastjaxb.spi.ParentCallback;
+import org.jboss.fastjaxb.spi.Sax;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.jboss.fastjaxb.template.Handler;
-import org.jboss.fastjaxb.template.Sax;
-import org.jboss.fastjaxb.template.ParentCallback;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,13 +56,14 @@ public class AddressParser extends DefaultHandler implements Handler
    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
    {
       if (qName.equalsIgnoreCase("street")) state = State.STREET;
-      else if(qName.equalsIgnoreCase("city")) state = State.CITY;
+      else if (qName.equalsIgnoreCase("city")) state = State.CITY;
    }
 
    @Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
-		tempVal = new String(ch,start,length);
-	}
+   public void characters(char[] ch, int start, int length) throws SAXException
+   {
+      tempVal = new String(ch, start, length);
+   }
 
    @Override
    public void endElement(String uri, String localName, String qName) throws SAXException
@@ -78,7 +79,8 @@ public class AddressParser extends DefaultHandler implements Handler
       {
          address.setStreet(tempVal);
       }
-      else if (state == State.CITY) {
+      else if (state == State.CITY)
+      {
          address.setCity(tempVal);
       }
       else

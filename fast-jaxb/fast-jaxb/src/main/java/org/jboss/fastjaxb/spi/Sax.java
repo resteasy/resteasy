@@ -1,15 +1,12 @@
-package org.jboss.fastjaxb.template;
+package org.jboss.fastjaxb.spi;
 
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.InputSource;
+import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.Stack;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-import java.io.IOException;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,7 +21,9 @@ public class Sax extends DefaultHandler implements ParentCallback
    protected Map<String, Handler> handlers = new HashMap<String, Handler>();
    protected Object root;
 
-   public Sax() {}
+   public Sax()
+   {
+   }
 
    public Sax(Map<String, Handler> handlers)
    {
@@ -43,7 +42,7 @@ public class Sax extends DefaultHandler implements ParentCallback
 
    public void endChild()
    {
-      
+
    }
 
    public Map<String, Handler> getHandlers()
@@ -68,7 +67,8 @@ public class Sax extends DefaultHandler implements ParentCallback
       }
       if (uri == null) uri = "";
       handler = handlers.get(uri);
-      if (handler == null) throw new SAXException("Unable to find handler for namespace uri:" + uri + " l:" + localName + " q:" + qName);
+      if (handler == null)
+         throw new SAXException("Unable to find handler for namespace uri:" + uri + " l:" + localName + " q:" + qName);
       handler = handler.newInstance();
       handler.setTop(this);
       handler.setParentCallback(this);

@@ -1,4 +1,4 @@
-package org.jboss.fastjaxb.template;
+package org.jboss.fastjaxb.spi;
 
 import org.xml.sax.Attributes;
 

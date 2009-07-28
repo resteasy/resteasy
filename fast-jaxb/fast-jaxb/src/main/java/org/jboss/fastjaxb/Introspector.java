@@ -1,11 +1,15 @@
 package org.jboss.fastjaxb;
 
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,7 +77,15 @@ public class Introspector
       rootElements.put(rootClass, rootElement);
       for (Property property : rootElement.getProperties().values())
       {
-         if (property.isAnnotationPresent(XmlAttribute.class))
+         if (property.isAnnotationPresent(XmlAnyElement.class))
+         {
+            rootElement.setAnyProperty(property);
+         }
+         if (property.isAnnotationPresent(XmlValue.class))
+         {
+            rootElement.setValueProperty(property);
+         }
+         else if (property.isAnnotationPresent(XmlAttribute.class))
          {
             XmlAttribute attr = property.getAnnotation(XmlAttribute.class);
             String qName = attr.name();
@@ -86,43 +98,30 @@ public class Introspector
          else if (property.isAnnotationPresent(XmlElement.class))
          {
             XmlElement attr = property.getAnnotation(XmlElement.class);
-            String qName = attr.name();
-            if (qName == null || qName.equals("") || qName.equals("##default"))
-            {
-               qName = property.getName();
-            }
-            if (attr.type() != null && !attr.type().equals(XmlElement.DEFAULT.class))
-            {
-               property.setBaseType(attr.type());
-            }
-            rootElement.getElements().put(qName, property);
-            processRootElement(property);
+            processXmlElement(rootElement, property, attr);
          }
          else if (property.isAnnotationPresent(XmlElementRef.class))
          {
             XmlElementRef attr = property.getAnnotation(XmlElementRef.class);
-            if (attr.type() != null && !attr.type().equals(XmlElementRef.DEFAULT.class))
+            processXmlElementRef(rootElement, property, attr);
+         }
+         else if (property.isAnnotationPresent(XmlElements.class))
+         {
+            XmlElements refs = property.getAnnotation(XmlElements.class);
+            for (XmlElement ref : refs.value())
             {
-               property.setBaseType(attr.type());
+               Property cloned = property.clone();
+               processXmlElement(rootElement, cloned, ref);
             }
-            Class<?> baseType = property.getBaseType();
-            String qName = null;
-            if (baseType.isAnnotationPresent(XmlRootElement.class))
+         }
+         else if (property.isAnnotationPresent(XmlElementRefs.class))
+         {
+            XmlElementRefs refs = property.getAnnotation(XmlElementRefs.class);
+            for (XmlElementRef ref : refs.value())
             {
-               XmlRootElement re = baseType.getAnnotation(XmlRootElement.class);
-               qName = re.name();
-               if (qName == null || qName.equals("") || qName.equals("##default"))
-               {
-                  qName = null;
-               }
-
+               Property cloned = property.clone();
+               processXmlElementRef(rootElement, cloned, ref);
             }
-            if (qName == null)
-            {
-               qName = baseType.getSimpleName().toLowerCase();
-            }
-            rootElement.getElements().put(qName, property);
-            processRootElement(property);
          }
          else
          {
@@ -132,6 +131,62 @@ public class Introspector
          }
 
       }
+   }
+
+   private void processXmlElementRef(RootElement rootElement, Property property, XmlElementRef attr)
+   {
+      if (attr.type() != null && !attr.type().equals(XmlElementRef.DEFAULT.class))
+      {
+         property.setBaseType(attr.type());
+      }
+      String qName = extractQName(property, attr);
+      rootElement.getElements().put(qName, property);
+      processRootElement(property);
+   }
+
+   private void processXmlElement(RootElement rootElement, Property property, XmlElement attr)
+   {
+      String qName = extractQName(property, attr);
+      if (attr.type() != null && !attr.type().equals(XmlElement.DEFAULT.class))
+      {
+         property.setBaseType(attr.type());
+      }
+      rootElement.getElements().put(qName, property);
+      processRootElement(property);
+   }
+
+   private String extractQName(Property property, XmlElementRef attr)
+   {
+      String qName = attr.name();
+      if (qName == null || qName.equals("") || qName.equals("##default"))
+      {
+         Class<?> baseType = property.getBaseType();
+         if (baseType.isAnnotationPresent(XmlRootElement.class))
+         {
+            XmlRootElement re = baseType.getAnnotation(XmlRootElement.class);
+            qName = re.name();
+            if (qName == null || qName.equals("") || qName.equals("##default"))
+            {
+               qName = null;
+            }
+
+         }
+         if (qName == null)
+         {
+            qName = baseType.getSimpleName().toLowerCase();
+         }
+      }
+      return qName;
+   }
+
+   private String extractQName(Property property, XmlElement attr)
+   {
+      String qName = attr.name();
+      if (qName == null || qName.equals("") || qName.equals("##default"))
+      {
+         qName = property.getName();
+      }
+      return qName;
    }
 
    private void processRootElement(Property property)

@@ -1,14 +1,19 @@
 package org.jboss.fastjaxb;
 
-import org.jboss.fastjaxb.template.Handler;
-import org.jboss.fastjaxb.template.ParentCallback;
-import org.jboss.fastjaxb.template.Sax;
-import org.xml.sax.helpers.DefaultHandler;
+import org.jboss.fastjaxb.spi.Handler;
+import org.jboss.fastjaxb.spi.ParentCallback;
+import org.jboss.fastjaxb.spi.Sax;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.*;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -108,10 +113,16 @@ public class ClassCodeGenerator
    {
       if (rootElement.getElements().size() == 0) return;
 
+      HashSet<String> states = new HashSet<String>();
+      for (Property property : rootElement.getElements().values())
+      {
+         states.add(property.getName().toUpperCase());
+      }
+
       writer.println("   private static enum State");
       writer.println("   {");
       boolean first = true;
-      for (Property property : rootElement.getElements().values())
+      for (String state : states)
       {
          if (first)
          {
@@ -121,7 +132,7 @@ public class ClassCodeGenerator
          {
             writer.println(",");
          }
-         writer.print("       " + property.getName().toUpperCase());
+         writer.print("       " + state);
       }
       writer.println();
       writer.println("   }");
@@ -133,7 +144,7 @@ public class ClassCodeGenerator
       writer.println("   protected Sax top;");
       writer.println("   protected ParentCallback handler;");
       writer.println("   protected String tempVal;");
-      writer.println("   protected State state;");
+      if (rootElement.getElements().size() > 0) writer.println("   protected State state;");
       writer.println("   protected String qName;");
       writer.println("   protected " + clazz.getSimpleName() + " target;");
    }
@@ -191,36 +202,38 @@ public class ClassCodeGenerator
       writer.println("");
       writer.println("   public void endChild()");
       writer.println("   {");
-      writer.println("      state = null;");
+      if (rootElement.getElements().size() > 0) writer.println("      state = null;");
       writer.println("   }");
    }
 
    public void outputPropertySet(String variable, Property property)
    {
+      writer.println("      if (" + variable + " != null)");
+      writer.println("      {");
       if (property.getType().equals(String.class))
       {
          writer.println("      this.target." + property.getSetter().getName() + "(" + variable + ");");
-         return;
-      }
-      writer.println("      {");
-      writer.println("         String   tmp = " + variable + ";");
-      if (property.getType().isPrimitive())
-      {
-         Class primitiveType = property.getType();
-         if (primitiveType.equals(boolean.class)) writer.println("         boolean tmp2 = Boolean.valueOf(tmp);");
-         if (primitiveType.equals(int.class)) writer.println("         int tmp2 = Integer.valueOf(tmp);");
-         if (primitiveType.equals(long.class)) writer.println("         long tmp2 = Long.valueOf(tmp);");
-         if (primitiveType.equals(double.class)) writer.println("         double tmp2 = Double.valueOf(tmp);");
-         if (primitiveType.equals(float.class)) writer.println("         float tmp2 = Float.valueOf(tmp);");
-         if (primitiveType.equals(byte.class)) writer.println("         byte tmp2 = Byte.valueOf(tmp);");
-         if (primitiveType.equals(short.class)) writer.println("         short tmp2 = Short.valueOf(tmp);");
       }
       else
       {
-         throw new RuntimeException("Type not supported" + property.getType().getName());
+         writer.println("         String   tmp = " + variable + ";");
+         if (property.getType().isPrimitive())
+         {
+            Class primitiveType = property.getType();
+            if (primitiveType.equals(boolean.class)) writer.println("         boolean tmp2 = Boolean.valueOf(tmp);");
+            if (primitiveType.equals(int.class)) writer.println("         int tmp2 = Integer.valueOf(tmp);");
+            if (primitiveType.equals(long.class)) writer.println("         long tmp2 = Long.valueOf(tmp);");
+            if (primitiveType.equals(double.class)) writer.println("         double tmp2 = Double.valueOf(tmp);");
+            if (primitiveType.equals(float.class)) writer.println("         float tmp2 = Float.valueOf(tmp);");
+            if (primitiveType.equals(byte.class)) writer.println("         byte tmp2 = Byte.valueOf(tmp);");
+            if (primitiveType.equals(short.class)) writer.println("         short tmp2 = Short.valueOf(tmp);");
+         }
+         else
+         {
+            throw new RuntimeException("Type not supported" + property.getType().getName());
+         }
+         writer.println("      this.target." + property.getSetter().getName() + "(tmp2);");
       }
-      writer.println("      this.target." + property.getSetter().getName() + "(tmp2);");
-
 
       writer.println("      }");
 
@@ -329,7 +342,23 @@ public class ClassCodeGenerator
       {
          writer.println("      else");
          writer.println("      {");
-         writer.println("         throw new SAXException(\"Unknown elemement: \" + qName);");
+         if (rootElement.getAnyProperty() == null)
+         {
+            writer.println("         throw new SAXException(\"Unknown elemement: \" + qName);");
+         }
+         else
+         {
+            writer.println("         Handler any = top.getHandlers().get(uri);");
+            writer.println("         if (any == null) throw new SAXException(\"Unknown elemement: \" + qName);");
+            writer.println("         else");
+            writer.println("         {");
+            writer.println("            this.state = State." + rootElement.getAnyProperty().getName().toUpperCase() + ";");
+            writer.println("            any.newInstance();");
+            writer.println("            any.setTop(top);");
+            writer.println("            any.setParentCallback(this);");
+            writer.println("            any.start(attributes, qName);");
+            writer.println("         }");
+         }
          writer.println("      }");
       }
       writer.println("   }");
@@ -339,12 +368,20 @@ public class ClassCodeGenerator
    {
       writer.println("   public void endElement(String uri, String localName, String qName) throws SAXException");
       writer.println("   {");
-      writer.println("      if (state == null && qName.equalsIgnoreCase(this.qName))");
+      boolean state = rootElement.getElements().size() > 0;
+
+      writer.print("      if (");
+      if (state) writer.print("state == null && ");
+      writer.println("qName.equalsIgnoreCase(this.qName))");
       writer.println("      {");
       writer.println("         handler.add(this.target);");
       writer.println("         handler.endChild();");
+      if (rootElement.getValueProperty() != null)
+      {
+         outputPropertySet("tempVal", rootElement.getValueProperty());
+      }
       writer.println("         this.target = null;");
-      writer.println("         this.state = null;");
+      if (state) writer.println("         this.state = null;");
       writer.println("         this.tempVal = null;");
       writer.println("         top.getCurrent().pop();");
       writer.println("         return;");
@@ -358,7 +395,7 @@ public class ClassCodeGenerator
          else writer.print("else ");
          writer.println("if (state == State." + property.getName().toUpperCase() + ")");
          writer.println("      {");
-         writer.  print("         ");
+         writer.print("         ");
          outputPropertySet("tempVal", property);
          writer.println("      }");
       }
@@ -369,7 +406,8 @@ public class ClassCodeGenerator
          writer.println("         throw new SAXException(\"Unknown end elemement: \" + qName);");
          writer.println("      }");
       }
-      writer.println("      state = null;");
+      if (state) writer.println("      state = null;");
+      writer.println("      tempVal = null;");
       writer.println("   }");
    }
 }

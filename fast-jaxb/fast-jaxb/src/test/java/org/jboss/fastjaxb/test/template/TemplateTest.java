@@ -1,13 +1,13 @@
 package org.jboss.fastjaxb.test.template;
 
+import org.jboss.fastjaxb.spi.Handler;
+import org.jboss.fastjaxb.spi.Sax;
 import org.junit.Test;
-import org.jboss.fastjaxb.template.Handler;
-import org.jboss.fastjaxb.template.Sax;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.HashMap;
 import java.io.InputStream;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,9 +31,8 @@ public class TemplateTest
       InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("person.xml");
       parser.parse(is, sax);
 
-      Person person = (Person)sax.getRoot();
+      Person person = (Person) sax.getRoot();
       System.out.println(person);
-
 
 
    }

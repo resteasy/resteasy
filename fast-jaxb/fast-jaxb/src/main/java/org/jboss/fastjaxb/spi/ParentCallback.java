@@ -1,4 +1,4 @@
-package org.jboss.fastjaxb.template;
+package org.jboss.fastjaxb.spi;
 
 import org.xml.sax.SAXException;
 
@@ -12,5 +12,6 @@ import org.xml.sax.SAXException;
 public interface ParentCallback
 {
    void add(Object obj) throws SAXException;
+
    void endChild();
 }
