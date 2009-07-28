@@ -1,9 +1,9 @@
 package org.jboss.fastjaxb.generated.basic;
 
 
-import org.jboss.fastjaxb.template.Handler;
-import org.jboss.fastjaxb.template.ParentCallback;
-import org.jboss.fastjaxb.template.Sax;
+import org.jboss.fastjaxb.spi.Handler;
+import org.jboss.fastjaxb.spi.ParentCallback;
+import org.jboss.fastjaxb.spi.Sax;
 import org.jboss.fastjaxb.test.basic.Person;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -14,11 +14,11 @@ public class Person_Parser extends DefaultHandler implements ParentCallback, Han
 
    private static enum State
    {
-      NAME,
-      BUSINESSADDRESSES,
-      ADDRESSES,
       PHONE,
-      MOBILE
+      NAME,
+      MOBILE,
+      ADDRESSES,
+      BUSINESSADDRESSES
    }
 
    protected Sax top;
@@ -52,7 +52,10 @@ public class Person_Parser extends DefaultHandler implements ParentCallback, Han
    {
       this.qName = qName;
       this.target = new Person();
-      this.target.setId(attributes.getValue("id"));
+      if (attributes.getValue("id") != null)
+      {
+         this.target.setId(attributes.getValue("id"));
+      }
       this.target.setBusinessAddresses(new java.util.ArrayList());
       this.target.setAddresses(new java.util.ArrayList());
       top.getCurrent().push(this);
@@ -143,12 +146,16 @@ public class Person_Parser extends DefaultHandler implements ParentCallback, Han
       }
       if (state == State.NAME)
       {
-         this.target.setName(tempVal);
+         if (tempVal != null)
+         {
+            this.target.setName(tempVal);
+         }
       }
       else
       {
          throw new SAXException("Unknown end elemement: " + qName);
       }
       state = null;
+      tempVal = null;
    }
 }

@@ -1,22 +1,21 @@
 package org.jboss.fastjaxb.generated.basic;
 
 
-import org.jboss.fastjaxb.template.Sax;
-import java.lang.String;
+import org.jboss.fastjaxb.spi.Handler;
+import org.jboss.fastjaxb.spi.ParentCallback;
+import org.jboss.fastjaxb.spi.Sax;
 import org.jboss.fastjaxb.test.basic.Address;
 import org.xml.sax.Attributes;
-import org.jboss.fastjaxb.template.ParentCallback;
-import org.jboss.fastjaxb.template.Handler;
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class Address_Parser extends DefaultHandler implements ParentCallback, Handler
 {
 
    private static enum State
    {
-       STREET,
-       CITY
+      CITY,
+      STREET
    }
 
    protected Sax top;
@@ -58,8 +57,9 @@ public class Address_Parser extends DefaultHandler implements ParentCallback, Ha
    }
 
    @Override
-   public void characters(char[] ch, int start, int length) throws SAXException {
-      tempVal = new String(ch,start,length);
+   public void characters(char[] ch, int start, int length) throws SAXException
+   {
+      tempVal = new String(ch, start, length);
    }
 
    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
@@ -92,16 +92,23 @@ public class Address_Parser extends DefaultHandler implements ParentCallback, Ha
       }
       if (state == State.STREET)
       {
-               this.target.setStreet(tempVal);
+         if (tempVal != null)
+         {
+            this.target.setStreet(tempVal);
+         }
       }
       else if (state == State.CITY)
       {
-               this.target.setCity(tempVal);
+         if (tempVal != null)
+         {
+            this.target.setCity(tempVal);
+         }
       }
       else
       {
          throw new SAXException("Unknown end elemement: " + qName);
       }
       state = null;
+      tempVal = null;
    }
 }

@@ -1,10 +1,10 @@
 package org.jboss.fastjaxb.tests.basic;
 
-import org.junit.Test;
-import org.jboss.fastjaxb.test.basic.Person;
-import org.jboss.fastjaxb.template.Sax;
-import org.jboss.fastjaxb.template.Handler;
 import org.jboss.fastjaxb.generated.basic.Person_Parser;
+import org.jboss.fastjaxb.spi.Handler;
+import org.jboss.fastjaxb.spi.Sax;
+import org.jboss.fastjaxb.test.basic.Person;
+import org.junit.Test;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -34,7 +34,7 @@ public class TestBasic
       InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("person.xml");
       parser.parse(is, sax);
 
-      Person person = (Person)sax.getRoot();
+      Person person = (Person) sax.getRoot();
       long end = System.currentTimeMillis() - start;
       System.out.println("Time took: " + end);
       System.out.println(person);

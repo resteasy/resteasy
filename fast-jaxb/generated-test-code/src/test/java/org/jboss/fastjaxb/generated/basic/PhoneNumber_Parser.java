@@ -1,9 +1,9 @@
 package org.jboss.fastjaxb.generated.basic;
 
 
-import org.jboss.fastjaxb.template.Handler;
-import org.jboss.fastjaxb.template.ParentCallback;
-import org.jboss.fastjaxb.template.Sax;
+import org.jboss.fastjaxb.spi.Handler;
+import org.jboss.fastjaxb.spi.ParentCallback;
+import org.jboss.fastjaxb.spi.Sax;
 import org.jboss.fastjaxb.test.basic.PhoneNumber;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -87,12 +87,16 @@ public class PhoneNumber_Parser extends DefaultHandler implements ParentCallback
       }
       if (state == State.NUMBER)
       {
-         this.target.setNumber(tempVal);
+         if (tempVal != null)
+         {
+            this.target.setNumber(tempVal);
+         }
       }
       else
       {
          throw new SAXException("Unknown end elemement: " + qName);
       }
       state = null;
+      tempVal = null;
    }
 }
