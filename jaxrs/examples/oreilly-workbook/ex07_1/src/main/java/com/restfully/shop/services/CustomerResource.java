@@ -9,7 +9,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Map;
@@ -23,7 +22,7 @@ public class CustomerResource
    private AtomicInteger idCounter = new AtomicInteger();
 
    @POST
-   @Consumes("application/x-java-serialized-object")
+   @Consumes("application/xml")
    public Response createCustomer(Customer customer)
    {
       customer.setId(idCounter.incrementAndGet());
@@ -35,24 +34,24 @@ public class CustomerResource
 
    @GET
    @Path("{id}")
-   @Produces("application/x-java-serialized-object")
+   @Produces("application/xml")
    public Customer getCustomer(@PathParam("id") int id)
    {
       Customer customer = customerDB.get(id);
       if (customer == null)
       {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+         throw new NotFoundException("Could not find customer " + id);
       }
       return customer;
    }
 
    @PUT
    @Path("{id}")
-   @Consumes("application/x-java-serialized-object")
+   @Consumes("application/xml")
    public void updateCustomer(@PathParam("id") int id, Customer update)
    {
       Customer current = customerDB.get(id);
-      if (current == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+      if (current == null) throw new NotFoundException("Could not find customer " + id);
 
       current.setFirstName(update.getFirstName());
       current.setLastName(update.getLastName());
