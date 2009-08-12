@@ -61,6 +61,23 @@ public class UriBuilderImpl extends UriBuilder
     * @param uriTemplate
     * @return
     */
+   public static UriBuilder fromTemplate(String uriTemplate)
+   {
+      UriBuilderImpl impl = new UriBuilderImpl();
+      impl.uriTemplate(uriTemplate);
+      return impl;
+   }
+
+   /**
+    * Must follow the patter scheme://host:port/path?query#fragment
+    * <p/>
+    * port, path, query and fragment are optional. Scheme and host must be specified.
+    * <p/>
+    * You may put path parameters anywhere within the uriTemplate except port
+    *
+    * @param uriTemplate
+    * @return
+    */
    public UriBuilder uriTemplate(String uriTemplate)
    {
       Matcher match = uriPattern.matcher(uriTemplate);
