@@ -185,7 +185,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder header(String name, Object value)
    {
-      metadata.putSingle(name, value);
+      metadata.add(name, value);
       return this;
    }
 

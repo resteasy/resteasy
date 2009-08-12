@@ -20,5 +20,7 @@
         <module>ex07_1</module>
         <module>ex08_1</module>
         <module>ex08_2</module>
+        <module>ex09_1</module>
+        <module>ex09_2</module>
     </modules>
 </project>
