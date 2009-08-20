@@ -5,7 +5,7 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>context-test</artifactId>
     <packaging>war</packaging>
-    <version>1.1.GA_CP-SNAPSHOT</version>
+    <version>1.1.GA_CP01</version>
     <name>context-test</name>
     <url>http://maven.apache.org</url>
     <repositories>

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>async-job-service</artifactId>
-    <version>1.1.GA_CP-SNAPSHOT</version>
+    <version>1.1.GA_CP01</version>
     <packaging>war</packaging>
     <name/>
     <description/>

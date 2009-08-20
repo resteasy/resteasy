@@ -6,7 +6,7 @@
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>resteasy-springMVC</artifactId>
     <packaging>war</packaging>
-    <version>1.1.GA_CP-SNAPSHOT</version>
+    <version>1.1.GA_CP01</version>
     <name>Spring MVC RestContact Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <dependencies>
