@@ -1,5 +1,6 @@
 
-This project is an example of using JAX-RS, EJB, and JPA all together in one application
+This project is an example of using JAX-RS, EJB, and JPA all together in one application through a JAX-RS
+portable way.
 
 System Requirements:
 ====================
@@ -7,8 +8,9 @@ System Requirements:
 
 Building the project:
 ====================
-1. In root directoy
+1. Start a JBoss 5.1.0.GA instance in the background
+2. In root directoy
 
 mvn clean install
 
-This will build a WAR and run it with embedded Jetty
+This will build an EAR and run the testsuite within ear/src/test/...
