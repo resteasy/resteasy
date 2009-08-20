@@ -36,6 +36,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jboss-maven-plugin</artifactId>
+                <version>1.3.1</version> 
                 <configuration>
                     <jbossHome>/Users/billburke/jboss/jboss-5.0.0.CR2</jbossHome>
                 </configuration>
