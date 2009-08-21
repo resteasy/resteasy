@@ -45,40 +45,54 @@ public class OrderResource
 
    }
 
-   protected void addPurgeLinkHeader(UriInfo uriInfo, Response.ResponseBuilder builder)
+   @GET
+   @Path("{id}")
+   @Produces("application/xml")
+   public Response getOrder(@PathParam("id") int id, @Context UriInfo uriInfo)
+   {
+      Order order = orderDB.get(id);
+      if (order == null)
+      {
+         throw new WebApplicationException(Response.Status.NOT_FOUND);
+      }
+      Response.ResponseBuilder builder = Response.ok(order);
+      if (!order.isCancelled()) addCancelHeader(uriInfo, builder);
+      return builder.build();
+   }
+
+   protected void addCancelHeader(UriInfo uriInfo, Response.ResponseBuilder builder)
    {
       UriBuilder absolute = uriInfo.getAbsolutePathBuilder();
-      String purgeUrl = absolute.clone().path("purge").build().toString();
-      builder.header("Link", new Link("purge", purgeUrl, null));
+      String cancelUrl = absolute.clone().path("cancel").build().toString();
+      builder.header("Link", new Link("cancel", cancelUrl, null));
    }
 
    @POST
-   @Path("purge")
-   public void purgeOrders()
+   @Path("{id}/cancel")
+   public void cancelOrder(@PathParam("id") int id)
    {
-      synchronized (orderDB)
+      Order order = orderDB.get(id);
+      if (order == null)
       {
-         List<Order> orders = new ArrayList<Order>();
-         orders.addAll(orderDB.values());
-         for (Order order : orders)
-         {
-            if (order.isCancelled())
-            {
-               orderDB.remove(order.getId());
-            }
-         }
+         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
+      order.setCancelled(true);
    }
 
+
    @HEAD
+   @Path("{id}")
    @Produces("application/xml")
-   public Response getOrdersHeaders(@QueryParam("start") int start,
-                                    @QueryParam("size") @DefaultValue("2") int size,
-                                    @Context UriInfo uriInfo)
+   public Response getOrderHeaders(@PathParam("id") int id, @Context UriInfo uriInfo)
    {
+      Order order = orderDB.get(id);
+      if (order == null)
+      {
+         throw new WebApplicationException(Response.Status.NOT_FOUND);
+      }
       Response.ResponseBuilder builder = Response.ok();
       builder.type("application/xml");
-      addPurgeLinkHeader(uriInfo, builder);
+      if (!order.isCancelled()) addCancelHeader(uriInfo, builder);
       return builder.build();
    }
 
@@ -129,54 +143,41 @@ public class OrderResource
       return responseBuilder.build();
    }
 
-   protected void addCancelHeader(UriInfo uriInfo, Response.ResponseBuilder builder)
+   protected void addPurgeLinkHeader(UriInfo uriInfo, Response.ResponseBuilder builder)
    {
       UriBuilder absolute = uriInfo.getAbsolutePathBuilder();
-      String cancelUrl = absolute.clone().path("cancel").build().toString();
-      builder.header("Link", new Link("cancel", cancelUrl, null));
+      String purgeUrl = absolute.clone().path("purge").build().toString();
+      builder.header("Link", new Link("purge", purgeUrl, null));
    }
 
    @POST
-   @Path("{id}/cancel")
-   public void cancelOrder(@PathParam("id") int id)
+   @Path("purge")
+   public void purgeOrders()
    {
-      Order order = orderDB.get(id);
-      if (order == null)
+      synchronized (orderDB)
       {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+         List<Order> orders = new ArrayList<Order>();
+         orders.addAll(orderDB.values());
+         for (Order order : orders)
+         {
+            if (order.isCancelled())
+            {
+               orderDB.remove(order.getId());
+            }
+         }
       }
-      order.setCancelled(true);
-   }
-
-
-   @GET
-   @Path("{id}")
-   @Produces("application/xml")
-   public Response getOrder(@PathParam("id") int id, @Context UriInfo uriInfo)
-   {
-      Order order = orderDB.get(id);
-      if (order == null)
-      {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
-      }
-      Response.ResponseBuilder builder = Response.ok(order);
-      if (!order.isCancelled()) addCancelHeader(uriInfo, builder);
-      return builder.build();
    }
 
    @HEAD
-   @Path("{id}")
    @Produces("application/xml")
-   public Response getOrderHeaders(@PathParam("id") int id, @Context UriInfo uriInfo)
+   public Response getOrdersHeaders(@QueryParam("start") int start,
+                                    @QueryParam("size") @DefaultValue("2") int size,
+                                    @Context UriInfo uriInfo)
    {
-      Order order = orderDB.get(id);
-      if (order == null)
-      {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
-      }
       Response.ResponseBuilder builder = Response.ok();
       builder.type("application/xml");
-      if (!order.isCancelled()) addCancelHeader(uriInfo, builder);
+      addPurgeLinkHeader(uriInfo, builder);
       return builder.build();
    }
+
 }
