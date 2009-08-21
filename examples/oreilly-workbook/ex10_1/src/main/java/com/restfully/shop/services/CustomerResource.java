@@ -4,21 +4,21 @@ import com.restfully.shop.domain.Customer;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Request;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import java.net.URI;
-import java.util.Map;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,15 +60,16 @@ public class CustomerResource
    @Path("{id}")
    @Produces("application/xml")
    public Response getCustomer(@PathParam("id") int id,
-                                @HeaderParam("ETag") String sent,
-                                @Context Request request) {
+                               @HeaderParam("If-None-Match") String sent,
+                               @Context Request request)
+   {
       Customer cust = customerDB.get(id);
       if (cust == null)
       {
          throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
 
-      if (sent == null) System.out.println("No ETag sent by client");
+      if (sent == null) System.out.println("No If-None-Match sent by client");
 
       EntityTag tag = new EntityTag(Integer.toString(cust.hashCode()));
 
@@ -77,7 +78,8 @@ public class CustomerResource
 
 
       Response.ResponseBuilder builder = request.evaluatePreconditions(tag);
-      if (builder != null) {
+      if (builder != null)
+      {
          System.out.println("** revalidation on the server was successful");
          builder.cacheControl(cc);
          return builder.build();
@@ -98,16 +100,18 @@ public class CustomerResource
    @PUT
    @Consumes("application/xml")
    public Response updateCustomer(@PathParam("id") int id,
-                                   @Context Request request,
-                                    Customer update ) {
+                                  @Context Request request,
+                                  Customer update)
+   {
       Customer cust = customerDB.get(id);
       if (cust == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
       EntityTag tag = new EntityTag(Integer.toString(cust.hashCode()));
 
       Response.ResponseBuilder builder =
-                        request.evaluatePreconditions(tag);
+              request.evaluatePreconditions(tag);
 
-      if (builder != null) {
+      if (builder != null)
+      {
          // Preconditions not met!
          return builder.build();
       }
