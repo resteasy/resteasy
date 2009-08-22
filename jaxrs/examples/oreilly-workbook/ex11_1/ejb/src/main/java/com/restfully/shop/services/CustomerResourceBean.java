@@ -36,6 +36,12 @@ public class CustomerResourceBean implements CustomerResource
 
    }
 
+   public Customer getCustomer(int id)
+   {
+      CustomerEntity customer = em.getReference(CustomerEntity.class, id);
+      return entity2domain(customer);
+   }
+
    public static void domain2entity(CustomerEntity entity, Customer customer)
    {
       entity.setId(customer.getId());
@@ -124,12 +130,6 @@ public class CustomerResourceBean implements CustomerResource
       customers.setCustomers(list);
       customers.setLinks(links);
       return customers;
-   }
-
-   public Customer getCustomer(int id)
-   {
-      CustomerEntity customer = em.getReference(CustomerEntity.class, id);
-      return entity2domain(customer);
    }
 
 }

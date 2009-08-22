@@ -8,16 +8,12 @@ import java.util.Set;
 
 public class ShoppingApplication extends Application
 {
-   private Set<Class<?>> classes = new HashSet<Class<?>>();
-
-   public ShoppingApplication()
-   {
-      classes.add(EntityNotFoundExceptionMapper.class);
-      classes.add(EJBExceptionMapper.class);
-   }
 
    public Set<Class<?>> getClasses()
    {
+      Set<Class<?>> classes = new HashSet<Class<?>>();
+      classes.add(EntityNotFoundExceptionMapper.class);
+      classes.add(EJBExceptionMapper.class);
       return classes;
    }
 
