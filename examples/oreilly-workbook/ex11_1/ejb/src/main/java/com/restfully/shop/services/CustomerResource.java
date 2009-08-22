@@ -38,6 +38,6 @@ public interface CustomerResource
 
    @GET
    @Path("{id}")
-   @Produces({"application/xml", "application/json"})
+   @Produces("application/xml")
    Customer getCustomer(@PathParam("id") int id);
 }
