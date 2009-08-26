@@ -23,5 +23,6 @@ public interface ResteasyContextParameters
    String RESTEASY_RESOURCES = "resteasy.resources";
    String RESTEASY_MEDIA_TYPE_MAPPINGS = "resteasy.media.type.mappings";
    String RESTEASY_LANGUAGE_MAPPINGS = "resteasy.language.mappings";
+   String RESTEASY_MEDIA_TYPE_PARAM_MAPPING = "resteasy.media.type.param.mapping";
    String RESTEASY_ROLE_BASED_SECURITY = "resteasy.role.based.security";
 }

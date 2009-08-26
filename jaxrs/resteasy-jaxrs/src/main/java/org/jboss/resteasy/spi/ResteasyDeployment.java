@@ -1,5 +1,6 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -47,6 +48,7 @@ public class ResteasyDeployment
    protected Registry registry;
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
+   protected String paramMapping;
    private final static Logger logger = LoggerFactory.getLogger(ResteasyDeployment.class);
 
    public void start()
@@ -163,6 +165,10 @@ public class ResteasyDeployment
          }
       }
 
+      if( paramMapping != null ) {
+         dispatcher.addHttpPreprocessor( new AcceptParameterHttpPreprocessor( paramMapping ) );
+      }
+      
       if (mediaTypeMappings != null)
       {
          Map<String, MediaType> extMap = new HashMap<String, MediaType>();
@@ -513,5 +519,10 @@ public class ResteasyDeployment
    public void setProviderFactory(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
+   }
+
+   public void setMediaTypeParamMapping(String paramMapping)
+   {
+      this.paramMapping = paramMapping;
    }
 }

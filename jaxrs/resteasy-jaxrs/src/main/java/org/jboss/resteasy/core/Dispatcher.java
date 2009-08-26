@@ -6,6 +6,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -31,4 +32,6 @@ public interface Dispatcher
    void invoke(HttpRequest in, HttpResponse response);
    
    Response internalInvocation(HttpRequest request, HttpResponse response, Object entity);
+
+   void addHttpPreprocessor(HttpRequestPreprocessor httpPreprocessor);
 }

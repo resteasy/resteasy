@@ -403,4 +403,9 @@ public class SynchronousDispatcher implements Dispatcher
       serverResponse.writeTo(response, providerFactory);
    }
 
+   public void addHttpPreprocessor(HttpRequestPreprocessor httpPreprocessor)
+   {
+      requestPreprocessors.add(httpPreprocessor);
+   }
+
 }

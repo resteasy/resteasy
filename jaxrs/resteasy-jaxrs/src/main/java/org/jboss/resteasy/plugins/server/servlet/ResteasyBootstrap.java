@@ -1,25 +1,27 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.scannotation.AnnotationDB;
-import org.scannotation.WarUrlFinder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.scannotation.AnnotationDB;
+import org.scannotation.WarUrlFinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a ServletContextListener that creates the registry for resteasy and stuffs it as a servlet context attribute
@@ -168,6 +170,19 @@ public class ResteasyBootstrap implements ServletContextListener
          processResources(resources);
       }
 
+      String paramMapping = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_MEDIA_TYPE_PARAM_MAPPING);
+      if (paramMapping != null)
+      {
+         paramMapping = paramMapping.trim();
+         
+         if( paramMapping.length() > 0 ) {
+            deployment.setMediaTypeParamMapping(paramMapping);
+         }
+         else {
+            deployment.setMediaTypeParamMapping(HttpHeaderNames.ACCEPT.toLowerCase());
+         }
+      }
+      
       String mimeExtentions = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_MEDIA_TYPE_MAPPINGS);
       if (mimeExtentions != null)
       {
@@ -203,6 +218,8 @@ public class ResteasyBootstrap implements ServletContextListener
          }
       }
 
+      
+      
       if (applicationConfig != null) deployment.setApplicationClass(applicationConfig);
 
       deployment.start();
