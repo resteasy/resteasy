@@ -250,7 +250,7 @@
             <dependency>
                 <groupId>org.jboss.cache</groupId>
                 <artifactId>jbosscache-core</artifactId>
-                <version>3.0.3.GA</version>
+                <version>3.2.0.GA</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
