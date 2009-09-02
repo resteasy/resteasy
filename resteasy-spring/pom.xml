@@ -38,14 +38,14 @@
         </dependency>
         <dependency>
             <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>2.1_3</version>
+            <artifactId>cglib</artifactId>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
-            <version>3.0</version>
+            <version>3.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

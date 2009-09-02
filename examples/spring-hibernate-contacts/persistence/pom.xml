@@ -37,24 +37,24 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate</artifactId>
-            <version>3.2.6.ga</version>
+            <artifactId>hibernate-core</artifactId>
+            <version>3.3.2.GA</version>
         </dependency>
         <!-- In memory database. To replace MySQL for test -->
         <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>1.8.0.7</version>
+            <version>1.8.0.8</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-annotations</artifactId>
-            <version>3.3.1.GA</version>
+            <version>3.4.0.GA</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>ejb3-persistence</artifactId>
-            <version>3.3.2.Beta1</version>
+            <version>1.0.2.GA</version>
         </dependency>
     </dependencies>
 
