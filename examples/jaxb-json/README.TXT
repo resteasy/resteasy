@@ -17,7 +17,7 @@ mvn clean install
 Running the project and manually testing it:
 ===========================================
 
-mvn jetty6:run-exploded
+mvn jetty:run-exploded
 
 Open a browser at the following URL:
 
