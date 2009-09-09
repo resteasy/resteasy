@@ -165,10 +165,11 @@ public class ResteasyDeployment
          }
       }
 
-      if( paramMapping != null ) {
-         dispatcher.addHttpPreprocessor( new AcceptParameterHttpPreprocessor( paramMapping ) );
+      if (paramMapping != null)
+      {
+         dispatcher.addHttpPreprocessor(new AcceptParameterHttpPreprocessor(paramMapping));
       }
-      
+
       if (mediaTypeMappings != null)
       {
          Map<String, MediaType> extMap = new HashMap<String, MediaType>();
@@ -271,24 +272,6 @@ public class ResteasyDeployment
          throw new RuntimeException(e);
       }
       providerFactory.registerProvider(provider);
-   }
-
-   protected void processResource(String clazz)
-   {
-      Class resource = null;
-      try
-      {
-         resource = Thread.currentThread().getContextClassLoader().loadClass(clazz.trim());
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw new RuntimeException(e);
-      }
-      if (resource.isInterface()) return;
-      if (GetRestful.isRootResource(resource) == false) return;
-
-      System.out.println("FOUND JAX-RS resource: " + clazz);
-      registry.addPerRequestResource(resource);
    }
 
    public String getApplicationClass()

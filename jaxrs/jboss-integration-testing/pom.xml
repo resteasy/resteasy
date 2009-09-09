@@ -17,5 +17,6 @@
         <module>servlet-mapping-test</module>
         <module>spring-integration-test</module>
         <module>ejb-test</module>
+        <module>scanning-test</module>
     </modules>
 </project>
