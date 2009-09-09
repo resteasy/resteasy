@@ -1,18 +1,5 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
-
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -22,6 +9,18 @@ import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This is a ServletContextListener that creates the registry for resteasy and stuffs it as a servlet context attribute
@@ -33,7 +32,6 @@ public class ResteasyBootstrap implements ServletContextListener
 {
    private final static Logger logger = LoggerFactory.getLogger(ResteasyBootstrap.class);
    protected ResteasyDeployment deployment = new ResteasyDeployment();
-
 
    public void contextInitialized(ServletContextEvent event)
    {
@@ -126,17 +124,32 @@ public class ResteasyBootstrap implements ServletContextListener
 
       if (scanProviders || scanResources)
       {
+         logger.debug("Scanning...");
          if (applicationConfig != null)
             throw new RuntimeException("You cannot deploy a javax.ws.rs.core.Application and have scanning on as this may create errors");
 
          URL[] urls = WarUrlFinder.findWebInfLibClasspaths(event);
+         for (URL u : urls)
+         {
+            logger.debug("Scanning WEB-INF/lib/: " + u);
+         }
          URL url = WarUrlFinder.findWebInfClassesPath(event);
+         if (url != null) logger.debug("Scanning WEB-INF/classes at: " + url);
          AnnotationDB db = new AnnotationDB();
          String[] ignoredPackages = {"org.jboss.resteasy.plugins", "org.jboss.resteasy.annotations", "org.jboss.resteasy.client", "org.jboss.resteasy.specimpl", "org.jboss.resteasy.core", "org.jboss.resteasy.spi", "org.jboss.resteasy.util", "org.jboss.resteasy.mock", "javax.ws.rs"};
          db.setIgnoredPackages(ignoredPackages);
+
+         // only index class annotations as we don't want sub-resources being picked up in the scan
+         db.setScanClassAnnotations(true);
+         db.setScanFieldAnnotations(false);
+         db.setScanMethodAnnotations(false);
+         db.setScanParameterAnnotations(false);
          try
          {
-            if (url != null) db.scanArchives(url);
+            if (url != null)
+            {
+               db.scanArchives(url);
+            }
             db.scanArchives(urls);
             try
             {
@@ -174,15 +187,17 @@ public class ResteasyBootstrap implements ServletContextListener
       if (paramMapping != null)
       {
          paramMapping = paramMapping.trim();
-         
-         if( paramMapping.length() > 0 ) {
+
+         if (paramMapping.length() > 0)
+         {
             deployment.setMediaTypeParamMapping(paramMapping);
          }
-         else {
+         else
+         {
             deployment.setMediaTypeParamMapping(HttpHeaderNames.ACCEPT.toLowerCase());
          }
       }
-      
+
       String mimeExtentions = event.getServletContext().getInitParameter(ResteasyContextParameters.RESTEASY_MEDIA_TYPE_MAPPINGS);
       if (mimeExtentions != null)
       {
@@ -218,8 +233,7 @@ public class ResteasyBootstrap implements ServletContextListener
          }
       }
 
-      
-      
+
       if (applicationConfig != null) deployment.setApplicationClass(applicationConfig);
 
       deployment.start();
@@ -316,6 +330,21 @@ public class ResteasyBootstrap implements ServletContextListener
       if (paths != null) classes.addAll(paths);
       for (String clazz : classes)
       {
+         Class cls = null;
+         try
+         {
+            // Ignore interfaces and subresource classes
+            // Scanning is different than other deployment methods
+            // in other deployment methods we don't want to ignore interfaces and subresources as they are
+            // application errors
+            cls = Thread.currentThread().getContextClassLoader().loadClass(clazz.trim());
+            if (cls.isInterface()) continue;
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+
          logger.info("Adding scanned resource: " + clazz);
          deployment.getResourceClasses().add(clazz);
       }

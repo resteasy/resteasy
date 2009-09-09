@@ -1,59 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>1.2.RC1</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>spring-integration-test</artifactId>
+    <groupId>org.jboss.resteasy.test</groupId>
+    <artifactId>scanning-test-war</artifactId>
     <packaging>war</packaging>
-    <name>Spring Integration Test</name>
+    <version>1.2.RC1</version>
+    <name>encoding-test</name>
     <url>http://maven.apache.org</url>
-    <repositories>
-        <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.org/maven2</url>
-        </repository>
-        <repository>
-            <id>maven</id>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>
-        <repository>
-            <id>ibiblio mirror</id>
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-        </repository>
-    </repositories>
+
     <dependencies>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-spring</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.1</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <scope>test</scope>
+            <groupId>org.jboss.resteasy.test</groupId>
+            <artifactId>scanning-test-jar</artifactId>
+            <version>1.2.RC1</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring</artifactId>
-            <version>2.5.6</version>
-        </dependency>
+
     </dependencies>
+
     <build>
-        <finalName>spring-integration-test</finalName>
+        <finalName>scanning-test</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -70,7 +41,7 @@
                             <goal>deploy</goal>
                         </goals>
                         <configuration>
-                            <fileName>${basedir}/target/spring-integration-test.war</fileName>
+                            <fileName>${basedir}/target/scanning-test.war</fileName>
                         </configuration>
                     </execution>
                     <execution>
@@ -80,7 +51,7 @@
                             <goal>undeploy</goal>
                         </goals>
                         <configuration>
-                            <fileName>${basedir}/target/spring-integration-test.war</fileName>
+                            <fileName>${basedir}/target/scanning-test.war</fileName>
                         </configuration>
                     </execution>
                 </executions>
