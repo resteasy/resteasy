@@ -212,6 +212,10 @@ public class UriBuilderImpl extends UriBuilder
          String[] segments = new String[]{ann.value()};
          path = paths(true, path, segments);
       }
+      else
+      {
+         throw new IllegalArgumentException("Class must be annotated with @Path to invoke path(Class)");
+      }
       return this;
    }
 
