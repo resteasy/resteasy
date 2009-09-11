@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.delegates;
 
+import org.jboss.resteasy.util.HeaderParameterParser;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.HashMap;
@@ -14,82 +16,6 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
    {
       if (type == null) throw new IllegalArgumentException("MediaType value is null");
       return parse(type);
-   }
-
-   private static int getEndName(String params, int start)
-   {
-      int equals = params.indexOf('=', start);
-      int semicolon = params.indexOf(';', start);
-      if (equals == -1 && semicolon == -1) return params.length();
-      if (equals == -1) return semicolon;
-      if (semicolon == -1) return equals;
-      int end = (equals < semicolon) ? equals : semicolon;
-      return end;
-   }
-
-   public static int setParam(HashMap<String, String> typeParams, String params, int start)
-   {
-      boolean quote = false;
-      boolean backslash = false;
-
-      int end = getEndName(params, start);
-      String name = params.substring(start, end).trim();
-      if (end < params.length() && params.charAt(end) == '=') end++;
-
-      StringBuffer buffer = new StringBuffer();
-      int i = end;
-      for (; i < params.length(); i++)
-      {
-         char c = params.charAt(i);
-
-         switch (c)
-         {
-            case '"':
-            {
-               if (backslash)
-               {
-                  backslash = false;
-                  buffer.append(c);
-               }
-               else
-               {
-                  quote = !quote;
-               }
-               break;
-            }
-            case '\\':
-            {
-               if (backslash)
-               {
-                  backslash = false;
-                  buffer.append(c);
-               }
-               break;
-            }
-            case ';':
-            {
-               if (!quote)
-               {
-                  String value = buffer.toString().trim();
-                  typeParams.put(name, value);
-                  return i + 1;
-               }
-               else
-               {
-                  buffer.append(c);
-               }
-               break;
-            }
-            default:
-            {
-               buffer.append(c);
-               break;
-            }
-         }
-      }
-      String value = buffer.toString().trim();
-      typeParams.put(name, value);
-      return i;
    }
 
 
@@ -128,7 +54,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
          while (start < params.length())
          {
-            start = setParam(typeParams, params, start);
+            start = HeaderParameterParser.setParam(typeParams, params, start);
          }
          return new MediaType(major, subtype, typeParams);
       }
