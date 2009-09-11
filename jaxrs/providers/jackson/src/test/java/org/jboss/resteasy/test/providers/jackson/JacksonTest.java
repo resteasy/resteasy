@@ -4,6 +4,7 @@ import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -14,6 +15,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -104,6 +106,26 @@ public class JacksonTest extends BaseResourceTest
          this.id = id;
       }
    }
+
+   @Path("/products")
+   public interface JacksonProxy
+   {
+      @GET
+      @Produces("application/json")
+      @Path("{id}")
+      Product getProduct();
+
+      @GET
+      @Produces("application/json")
+      JacksonTest.Product[] getProducts();
+
+      @POST
+      @Produces("application/foo+json")
+      @Consumes("application/foo+json")
+      @Path("{id}")
+      Product post(@PathParam("id") int id, Product p);
+   }
+
 
    @Path("/products")
    public static class JacksonService
@@ -227,4 +249,13 @@ public class JacksonTest extends BaseResourceTest
 
    }
 
+   @Test
+   public void testJacksonProxy() throws Exception
+   {
+      JacksonProxy proxy = ProxyFactory.create(JacksonProxy.class, generateBaseUrl());
+      Product p = new Product(1, "Stuff");
+      p = proxy.post(1, p);
+      Assert.assertEquals(1, p.getId());
+      Assert.assertEquals("Stuff", p.getName());
+   }
 }
