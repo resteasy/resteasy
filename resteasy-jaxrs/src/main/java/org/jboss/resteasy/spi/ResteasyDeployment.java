@@ -139,6 +139,37 @@ public class ResteasyDeployment
             throw new RuntimeException(e);
          }
       }
+
+      // register all providers
+      registration();
+
+      if (paramMapping != null)
+      {
+         dispatcher.addHttpPreprocessor(new AcceptParameterHttpPreprocessor(paramMapping));
+      }
+
+      if (mediaTypeMappings != null)
+      {
+         Map<String, MediaType> extMap = new HashMap<String, MediaType>();
+         for (Map.Entry<String, String> ext : mediaTypeMappings.entrySet())
+         {
+            String value = ext.getValue();
+            extMap.put(ext.getKey().trim(), MediaType.valueOf(value.trim()));
+         }
+         if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
+         else dispatcher.setMediaTypeMappings(extMap);
+      }
+
+
+      if (languageExtensions != null)
+      {
+         if (dispatcher.getLanguageMappings() != null) dispatcher.getLanguageMappings().putAll(languageExtensions);
+         else dispatcher.setLanguageMappings(languageExtensions);
+      }
+   }
+
+   public void registration()
+   {
       if (application != null) processApplication(application);
 
       if (providerClasses != null)
@@ -199,30 +230,6 @@ public class ResteasyDeployment
       for (Class actualResourceClass : actualResourceClasses)
       {
          registry.addPerRequestResource(actualResourceClass);
-      }
-
-      if (paramMapping != null)
-      {
-         dispatcher.addHttpPreprocessor(new AcceptParameterHttpPreprocessor(paramMapping));
-      }
-
-      if (mediaTypeMappings != null)
-      {
-         Map<String, MediaType> extMap = new HashMap<String, MediaType>();
-         for (Map.Entry<String, String> ext : mediaTypeMappings.entrySet())
-         {
-            String value = ext.getValue();
-            extMap.put(ext.getKey().trim(), MediaType.valueOf(value.trim()));
-         }
-         if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
-         else dispatcher.setMediaTypeMappings(extMap);
-      }
-
-
-      if (languageExtensions != null)
-      {
-         if (dispatcher.getLanguageMappings() != null) dispatcher.getLanguageMappings().putAll(languageExtensions);
-         else dispatcher.setLanguageMappings(languageExtensions);
       }
    }
 
