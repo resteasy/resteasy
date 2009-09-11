@@ -35,10 +35,12 @@ public class ResteasyDeployment
    protected Application application;
    protected boolean registerBuiltin = true;
    protected List<String> providerClasses = new ArrayList<String>();
+   protected List<Class> actualProviderClasses = new ArrayList<Class>();
    protected List<Object> providers = new ArrayList<Object>();
    protected boolean securityEnabled = false;
    protected List<String> jndiResources = new ArrayList<String>();
    protected List<String> resourceClasses = new ArrayList<String>();
+   protected List<Class> actualResourceClasses = new ArrayList<Class>();
    protected List<Object> resources = new ArrayList<Object>();
    protected Map<String, String> mediaTypeMappings = new HashMap<String, String>();
    protected Map<String, String> languageExtensions = new HashMap<String, String>();
@@ -108,6 +110,37 @@ public class ResteasyDeployment
       }
 
 
+      if (securityEnabled)
+      {
+         providerFactory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
+      }
+
+      if (registerBuiltin)
+      {
+         RegisterBuiltin.register(providerFactory);
+      }
+
+      if (applicationClass != null)
+      {
+         try
+         {
+            application = (Application) Thread.currentThread().getContextClassLoader().loadClass(applicationClass).newInstance();
+         }
+         catch (InstantiationException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (IllegalAccessException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      if (application != null) processApplication(application);
+
       if (providerClasses != null)
       {
          for (String provider : providerClasses)
@@ -123,15 +156,13 @@ public class ResteasyDeployment
          }
       }
 
-      if (securityEnabled)
+      for (Class actualProviderClass : actualProviderClasses)
       {
-         providerFactory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
+         providerFactory.registerProvider(actualProviderClass);
       }
 
-      if (registerBuiltin)
-      {
-         RegisterBuiltin.register(providerFactory);
-      }
+      // All providers should be registered before resources because of interceptors.
+      // interceptors must exist as they are applied only once when the resource is registered.
 
       if (jndiResources != null)
       {
@@ -165,6 +196,11 @@ public class ResteasyDeployment
          }
       }
 
+      for (Class actualResourceClass : actualResourceClasses)
+      {
+         registry.addPerRequestResource(actualResourceClass);
+      }
+
       if (paramMapping != null)
       {
          dispatcher.addHttpPreprocessor(new AcceptParameterHttpPreprocessor(paramMapping));
@@ -188,26 +224,6 @@ public class ResteasyDeployment
          if (dispatcher.getLanguageMappings() != null) dispatcher.getLanguageMappings().putAll(languageExtensions);
          else dispatcher.setLanguageMappings(languageExtensions);
       }
-      if (applicationClass != null)
-      {
-         try
-         {
-            application = (Application) Thread.currentThread().getContextClassLoader().loadClass(applicationClass).newInstance();
-         }
-         catch (InstantiationException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      if (application != null) processApplication(application, registry, providerFactory);
    }
 
    public void stop()
@@ -215,7 +231,7 @@ public class ResteasyDeployment
 
    }
 
-   public static void processApplication(Application config, Registry registry, ResteasyProviderFactory factory)
+   protected void processApplication(Application config)
    {
       logger.info("Deploying " + Application.class.getName() + ": " + config.getClass());
       if (config.getClasses() != null)
@@ -224,13 +240,11 @@ public class ResteasyDeployment
          {
             if (GetRestful.isRootResource(clazz))
             {
-               logger.info("Adding class resource " + clazz.getName() + " from Application " + Application.class.getName());
-               registry.addPerRequestResource(clazz);
+               actualResourceClasses.add(clazz);
             }
             else if (clazz.isAnnotationPresent(Provider.class))
             {
-               logger.info("Adding class @Provider " + clazz.getName() + " from Application " + Application.class.getName());
-               factory.registerProvider(clazz);
+               actualProviderClasses.add(clazz);
             }
             else
             {
@@ -245,12 +259,11 @@ public class ResteasyDeployment
             if (GetRestful.isRootResource(obj.getClass()))
             {
                logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + Application.class.getName());
-               registry.addSingletonResource(obj);
+               resources.add(obj);
             }
             else if (obj.getClass().isAnnotationPresent(Provider.class))
             {
-               logger.info("Adding singleton @Provider " + obj.getClass().getName() + " from Application " + Application.class.getName());
-               factory.registerProviderInstance(obj);
+               providers.add(obj);
             }
             else
             {
@@ -382,6 +395,26 @@ public class ResteasyDeployment
    public void setProviders(List<Object> providers)
    {
       this.providers = providers;
+   }
+
+   public List<Class> getActualProviderClasses()
+   {
+      return actualProviderClasses;
+   }
+
+   public void setActualProviderClasses(List<Class> actualProviderClasses)
+   {
+      this.actualProviderClasses = actualProviderClasses;
+   }
+
+   public List<Class> getActualResourceClasses()
+   {
+      return actualResourceClasses;
+   }
+
+   public void setActualResourceClasses(List<Class> actualResourceClasses)
+   {
+      this.actualResourceClasses = actualResourceClasses;
    }
 
    public boolean isSecurityEnabled()
