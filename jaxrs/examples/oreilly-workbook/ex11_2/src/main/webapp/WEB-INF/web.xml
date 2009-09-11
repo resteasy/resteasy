@@ -1,18 +1,11 @@
 <web-app>
-    <display-name>Archetype Created Web Application</display-name>
-
-    <context-param>
-        <param-name>javax.ws.rs.Application</param-name>
-        <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
-    </context-param>
-
-    <listener>
-        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-    </listener>
-
     <servlet>
         <servlet-name>Resteasy</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
+        </init-param>
     </servlet>
 
     <servlet-mapping>
