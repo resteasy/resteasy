@@ -2,21 +2,16 @@
 <title>Installation/Configuration</title>
 
 <para>
-
-
+RESTeasy is deployed as a WAR archive and thus depends on a Servlet container.  We strongly suggest that you use Maven to build your WAR files as RESTEasy is split into
+a bunch of different modules.  You can see an example Maven project in one of the examples in the examples/ directory
 </para>
 <para>
-
-RESTeasy is deployed as a WAR archive and thus depends on a Servlet container.  
-When you download RESTeasy and unzip it you will see that it contains an exploded WAR.
+Also, when you download RESTeasy and unzip it you will see that it contains an exploded WAR.
 Make a deep copy of the WAR archive for your particular application.  Place your JAX-RS annotated class resources and providers within
-one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.  RESTeasy is configured by default
-to scan jars and classes within these directories for JAX-RS annotated classes and deploy and register them within the system.
+one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.  
 </para>
 <para>
-
-
-RESTeasy is implemented as a ServletContextListener and a Servlet and deployed within a WAR file. If you open up the WEB-INF/web.xml in your RESTeasy download you will see this:
+RESTeasy is implemented as a Servlet and deployed within a WAR file. If you open up the WEB-INF/web.xml in your RESTeasy download you will see this:
 </para>
 <para>
 
@@ -44,10 +39,6 @@ RESTeasy is implemented as a ServletContextListener and a Servlet and deployed w
     </context-param>
      -->
 
-    <listener>
-        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-    </listener>
-
     <servlet>
         <servlet-name>Resteasy</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
@@ -62,40 +53,7 @@ RESTeasy is implemented as a ServletContextListener and a Servlet and deployed w
 </programlisting>
 </para>
 <para>
-
-The ResteasyBootstrap listener is responsible for initializing some basic components of RESTeasy as well as scanning for annotation classes you have in your WAR file.  It receives configuration options from &lt;context-param&gt; elements.  Here's a list of what options are available
-</para>
-<para>
-
-
-</para>
-<para>
-
-This config variable must be set if your servlet-mapping for the Resteasy servlet has a url-pattern other than /*.  For example, if the url-pattern is 
-</para>
-<para>
-
-<programlisting>
-
-   &lt;servlet-mapping&gt;
-      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;url-pattern&gt;/restful-services/*&lt;/url-pattern&gt;
-   &lt;/servlet-mapping&gt;
-</programlisting>
-</para>
-<para>
-
-Then the value of resteasy-servlet.mapping.prefix must be:
-</para>
-<para>
-
-<programlisting>
-
-   &lt;context-param&gt;
-      &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
-      &lt;param-value&gt;/restful-services&lt;/param-value&gt;
-   &lt;/context-param&gt;
-</programlisting>
+The Resteasy servlet is responsible for initializing some basic components of RESTeasy.  It receives configuration options from &lt;context-param&gt; elements.  Here's a list of what options are available
 </para>
 <para>
 
@@ -122,6 +80,14 @@ If the url-pattern for the Resteasy servlet-mapping is not /*</entry>
 </row>
 <row>
 <entry>
+resteasy.scan</entry>
+<entry>
+false</entry>
+<entry>
+Automatically scan WEB-INF/lib jars and WEB-INF/classes directory for both @Provider and JAX-RS resource classes (@Path, @GET, @POST etc..) and register them</entry>
+</row>
+<row>
+<entry>
 resteasy.scan.providers</entry>
 <entry>
 false</entry>
@@ -135,14 +101,6 @@ resteasy.scan.resources</entry>
 false</entry>
 <entry>
 Scan for JAX-RS resource classes</entry>
-</row>
-<row>
-<entry>
-resteasy.scan</entry>
-<entry>
-false</entry>
-<entry>
-Scan for both @Provider and JAX-RS resource classes (@Path, @GET, @POST etc..) and register them</entry>
 </row>
 <row>
 <entry>
@@ -178,11 +136,35 @@ A comma delimited list of JNDI names which reference objects you want to registe
 </row>
 <row>
 <entry>
-javax.ws.rs.core.Application</entry>
+javax.ws.rs.Application</entry>
 <entry>
 no default</entry>
 <entry>
 Fully qualified name of Application class to bootstrap in a spec portable way</entry>
+</row>
+<row>
+<entry>
+resteasy.media.type.mappings
+</entry>
+<entry>
+no default
+</entry>
+<entry>
+Replaces the need for an Accept header by mapping file name extensions (like .xml or .txt) to a media type.  Used when the client
+is unable to use a Accept header to choose a representation (i.e. a browser).  See JAX-RS Content Negotiation chapter for more details.
+</entry>
+</row>
+<row>
+<entry>
+resteasy.language.mappings
+</entry>
+<entry>
+no default
+</entry>
+<entry>
+Replaces the need for an Accept-Language header by mapping file name extensions (like .en or .fr) to a language.  Used when the client
+is unable to use a Accept-Language header to choose a language (i.e. a browser).  See JAX-RS Content Negotiation chapter for more details
+</entry>
 </row>
 </tbody>
 </tgroup>
@@ -191,22 +173,38 @@ Fully qualified name of Application class to bootstrap in a spec portable way</e
 </para>
 <para>
 
-
-The ResteasyBootstrap listener configures an instance of an ResteasyProviderFactory and Registry.  You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes org.jboss.resteasy.spi.ResteasyProviderFactory and org.jboss.resteasy.spi.Registry.
+The resteasy.servlet.mapping.prefix &lt;context param&gt; variable must be set if your servlet-mapping for the Resteasy servlet has a url-pattern other than /*.  For example, if the url-pattern is 
 </para>
 <para>
 
+<programlisting>
+
+   &lt;servlet-mapping&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;url-pattern&gt;/restful-services/*&lt;/url-pattern&gt;
+   &lt;/servlet-mapping&gt;
+</programlisting>
 </para>
 <para>
 
+Then the value of resteasy-servlet.mapping.prefix must be:
+</para>
+<para>
 
+<programlisting>
+
+   &lt;context-param&gt;
+      &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+      &lt;param-value&gt;/restful-services&lt;/param-value&gt;
+   &lt;/context-param&gt;
+</programlisting>
 </para>
 <sect1 id="javax.ws.rs.core.Application">
 <title>javax.ws.rs.core.Application</title>
 
 <para>
 
-javax.ws.rs.core.Application is a standard JAX-RS class that you may implement to provide information on your deployment.  It is simply a class the lists all JAX-RS root resources and providers.
+The javax.ws.rs.core.Application class is a standard JAX-RS class that you may implement to provide information on your deployment.  It is simply a class the lists all JAX-RS root resources and providers.
 </para>
 <para>
 
@@ -266,20 +264,20 @@ public abstract class Application
 </para>
 <para>
 
-To use Application you must set a servlet context-param, javax.ws.rs.core.Application with a fully qualified class that implements Application.  For example:
+To use Application you must set a servlet init-param, javax.ws.rs.Application with a fully qualified class that implements Application.  For example:
 </para>
 <para>
 
-<programlisting>
-
-   &lt;context-param&gt;
-      &lt;param-name&gt;javax.ws.rs.core.Application&lt;/param-name&gt;
-      &lt;param-value&gt;com.mycom.MyApplicationConfig&lt;/param-value&gt;
-   &lt;/context-param&gt;
-
-
-
-</programlisting>
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>
+            org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+        </servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
+        </init-param>
+    </servlet>
 </para>
 <para>
 
@@ -289,6 +287,42 @@ If you have this set, you should probably turn off automatic scanning as this wi
 
 </para>
 </sect1>
+
+<sect1 id="listener">
+<title>RESTEasy as a ServletContextListener</title>
+
+<para>
+The initialization of RESTEasy can be performed within a ServletContextListener instead of within the Servlet.  You may need this if you are writing custom Listeners that need to interact with RESTEasy at boot time.  An example of this is the RESTEasy Spring integration that requires a Spring ServletContextListener.  The org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap class is a ServletContextListener that configures an instance of an ResteasyProviderFactory and Registry.  You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes org.jboss.resteasy.spi.ResteasyProviderFactory and org.jboss.resteasy.spi.Registry.  From these instances you can programmatically interact with RESTEasy registration interfaces.
+</para>
+
+<programlisting>
+    <![CDATA[
+<web-app>
+   <listener>
+      <listener-class>
+         org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
+      </listener-class>
+   </listener>
+
+  <!-- ** INSERT YOUR LISTENERS HERE!!!! -->
+
+   <servlet>
+      <servlet-name>Resteasy</servlet-name>
+      <servlet-class>
+         org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+      </servlet-class>
+   </servlet>
+
+   <servlet-mapping>
+      <servlet-name>Resteasy</servlet-name>
+      <url-pattern>/resteasy/*</url-pattern>
+   </servlet-mapping>
+
+</web-app>
+]]>
+</programlisting>
+</sect1>
+
 <sect1 id="RESTEasyLogging">
 <title>RESTEasyLogging</title>
 

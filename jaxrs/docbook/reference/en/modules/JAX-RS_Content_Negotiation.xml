@@ -119,11 +119,50 @@
       programmatically by the application developer using the javax.ws.rs.Variant, VarianListBuilder, and Request
       objects. Request is injected via @Context. Read the javadoc for more info on these.
    </para>
-   <para>
+<sect1 id="media_mappings">
+<title>URL-based negotiation</title>
+<para>
+Some clients, like browsers, cannot use the Accept and Accept-Language headers to negotiation the representation's media type
+or language.  RESTEasy allows you to map file name suffixes like (.xml, .txt, .en, .fr) to media types and languages.  These file name suffixes
+take the place and override any Accept header sent by the client.  You configure this using the resteasy.media.type.mappings and resteasy.language.mappings
+context-param variables within your web.xml
+</para>
+<programlisting>
+<![CDATA[
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+    <context-param>
+        <param-name>resteasy.media.type.mappings</param-name>
+        <param-value>html : text/html, json : application/json, xml : application/xml</param-value>
+    </context-param>
 
-   </para>
-   <para>
+   <context-param>
+        <param-name>resteasy.language.mappings</param-name>
+        <param-value> en : en-US, es : es, fr : fr</param-name>
+   </context-param>
 
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
 
-   </para>
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+</web-app>
+]]>
+</programlisting>
+<para>
+Mappings are a comma delimited list of suffix/mediatype or suffix/language mappings.  Each mapping is delimited by a ':'.  So, if you invoked GET /foo/bar.xml.en, this would be equivalent to invoking the following request:
+</para>
+<programlisting>
+GET /foo/bar
+Accept: application/xml
+Accept-Language: en-US
+</programlisting>
+<para>
+The mapped file suffixes are stripped from the target URL path before the request is dispatched to a corresponding JAX-RS resource.
+</para>
+</sect1>
 </chapter>

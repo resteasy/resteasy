@@ -2,6 +2,7 @@
                          "http://www.docbook.org/xml/4.4/docbookx.dtd"
         [
                 <!ENTITY Overview SYSTEM "modules/Overview.xml">
+                <!ENTITY License SYSTEM "modules/License.xml">
                 <!ENTITY Installation_Configuration SYSTEM "modules/Installation_Configuration.xml">
                 <!ENTITY Using_Path SYSTEM "modules/Using_Path.xml">
                 <!ENTITY _PathParam SYSTEM "modules/_PathParam.xml">
@@ -83,6 +84,7 @@
 
 
    &Overview;
+   &License;
    &Installation_Configuration;
    &Using_Path;
    &_PathParam;
