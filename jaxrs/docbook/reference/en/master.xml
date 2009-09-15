@@ -43,6 +43,7 @@
                 <!ENTITY Guice1 SYSTEM "modules/Guice1.xml">
                 <!ENTITY JBoss SYSTEM "modules/JBoss.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
+                <!ENTITY Books SYSTEM "modules/Books.xml">
                 ]>
 
 <book>
@@ -125,6 +126,7 @@
    &Maven_and_RESTEasy;
    &JBoss;
    &Migration_from_older_versions;
+   &Books;
 
 </book>
 
