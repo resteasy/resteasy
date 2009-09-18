@@ -1,5 +1,7 @@
 package org.jboss.resteasy.client.core;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -150,22 +152,55 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
          }
          return clientResponse;
       }
+   // We are not a ClientResposne type so we need to unmarshall and narrow it
+		// to right type. If we are unable to unmarshall, or encounter any kind of
+		// Exception, give the ClientErrorHandlers a chance to handle the
+		// ClientResponse manually.
 
-      // We are not a ClientResposne type so we need to unmarshall and narrow it to right type
+		try
+		{
+			clientResponse.checkFailureStatus();
 
-      clientResponse.checkFailureStatus();
+			if (returnType == null || isVoidReturnType(returnType))
+			{
+				clientResponse.releaseConnection();
+				return null;
+			}
 
-      if (returnType == null || isVoidReturnType(returnType))
-      {
-         clientResponse.releaseConnection();
-         return null;
-      }
+			clientResponse.setReturnType(returnType);
+			clientResponse.setGenericReturnType(method.getGenericReturnType());
 
-      clientResponse.setReturnType(returnType);
-      clientResponse.setGenericReturnType(method.getGenericReturnType());
-
-      return clientResponse.getEntity();
-   }
+			return clientResponse.getEntity();
+		}
+		catch (RuntimeException e)
+		{
+			for (ClientErrorInterceptor handler : providerFactory.getClientErrorInterceptors())
+			{
+				try
+				{
+					// attempt to reset the stream in order to provide a fresh stream
+					// to each ClientErrorInterceptor -- failing to reset the stream
+					// could mean that an unusable stream will be passed to the
+					// interceptor
+					InputStream stream = clientResponse.getStreamFactory().getInputStream();
+					if(stream != null)
+					{
+						stream.reset();
+					}
+				}
+				catch (IOException e1)
+				{
+					// eat this exception since it's not really relevant for the client response
+				}
+				handler.handle(clientResponse);
+			}
+			throw e;
+		}
+		finally
+		{
+			clientResponse.releaseConnection();
+		}
+	}
 
    private boolean isVoidReturnType(final Class<?> returnType)
    {
