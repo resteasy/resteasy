@@ -182,18 +182,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
       if (unmarshaledEntity == null)
       {
-         try
-         {
             if (status == HttpResponseCodes.SC_NO_CONTENT)
                return null;
 
             unmarshaledEntity = readFrom(type, genericType, getMediaType(), anns);
-         }
-         finally
-         {
-            if (!InputStream.class.isAssignableFrom(type))
-               releaseConnection();
-         }
       }
       return (T2) unmarshaledEntity;
    }

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
@@ -50,6 +51,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -173,6 +175,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected InterceptorRegistry<MessageBodyReaderInterceptor> clientMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
    protected InterceptorRegistry<MessageBodyWriterInterceptor> clientMessageBodyWriterInterceptorRegistry = new InterceptorRegistry<MessageBodyWriterInterceptor>(MessageBodyWriterInterceptor.class, this);
    protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
+
+   protected List<ClientErrorInterceptor> clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
 
    protected boolean builtinsRegistered = false;
 
@@ -570,6 +574,27 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
 
    }
+
+	/**
+	 * Add a {@link ClientErrorInterceptor} to this provider factory instance.
+	 * Duplicate handlers are ignored. (For Client Proxy API only)
+	 */
+	public void addClientErrorInterceptor(ClientErrorInterceptor handler)
+	{
+		if (!clientErrorInterceptors.contains(handler))
+		{
+			clientErrorInterceptors.add(handler);
+		}
+	}
+
+	
+	/**
+	 * Return the list of currently registered {@link ClientErrorInterceptor} instances.
+	 */
+    public List<ClientErrorInterceptor> getClientErrorInterceptors()
+    {
+   	 return clientErrorInterceptors;
+    }
 
    public void addContextResolver(Class<? extends ContextResolver> resolver)
    {

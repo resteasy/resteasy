@@ -12,6 +12,7 @@ import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
@@ -59,10 +60,16 @@ public class ApacheHttpClientExecutor implements ClientExecutor
 
       BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory()
       {
-         public InputStream getInputStream() throws IOException
-         {
-            return httpMethod.getResponseBodyAsStream();
-         }
+         InputStream stream;
+
+			public InputStream getInputStream() throws IOException
+			{
+				if (stream == null)
+				{
+					stream = new SelfExpandingBufferredInputStream(httpMethod.getResponseBodyAsStream());
+				}
+				return stream;
+			}
 
          public void performReleaseConnection()
          {
