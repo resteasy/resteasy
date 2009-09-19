@@ -1,18 +1,5 @@
 package org.jboss.resteasy.client.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.URI;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Providers;
-
 import org.jboss.resteasy.annotations.ClientResponseType;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
@@ -24,6 +11,18 @@ import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.Types;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Providers;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -43,7 +42,8 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
    protected boolean followRedirects;
 
 
-   public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor){
+   public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor)
+   {
       this.declaring = declaring;
       this.method = method;
       this.marshallers = ClientMarshallerFactory.createMarshallers(declaring, method,
@@ -61,6 +61,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
    {
       return accepts;
    }
+
    public Method getMethod()
    {
       return method;
@@ -85,7 +86,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       {
          if (uri == null) throw new RuntimeException("You have not set a base URI for the client proxy");
 
-			ClientRequest request = new ClientRequest(uri, executor, providerFactory);
+         ClientRequest request = new ClientRequest(uri, executor, providerFactory);
          if (accepts != null) request.header(HttpHeaders.ACCEPT, accepts.toString());
          this.copyClientInterceptorsTo(request);
 
@@ -146,61 +147,57 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
          {
             handleResponseHint(clientResponse, responseHint);
          }
-         else
-         {
-            clientResponse.releaseConnection();
-         }
          return clientResponse;
       }
-   // We are not a ClientResposne type so we need to unmarshall and narrow it
-		// to right type. If we are unable to unmarshall, or encounter any kind of
-		// Exception, give the ClientErrorHandlers a chance to handle the
-		// ClientResponse manually.
+      // We are not a ClientResposne type so we need to unmarshall and narrow it
+      // to right type. If we are unable to unmarshall, or encounter any kind of
+      // Exception, give the ClientErrorHandlers a chance to handle the
+      // ClientResponse manually.
 
-		try
-		{
-			clientResponse.checkFailureStatus();
+      try
+      {
+         clientResponse.checkFailureStatus();
 
-			if (returnType == null || isVoidReturnType(returnType))
-			{
-				clientResponse.releaseConnection();
-				return null;
-			}
+         if (returnType == null || isVoidReturnType(returnType))
+         {
+            clientResponse.releaseConnection();
+            return null;
+         }
 
-			clientResponse.setReturnType(returnType);
-			clientResponse.setGenericReturnType(method.getGenericReturnType());
+         clientResponse.setReturnType(returnType);
+         clientResponse.setGenericReturnType(method.getGenericReturnType());
 
-			return clientResponse.getEntity();
-		}
-		catch (RuntimeException e)
-		{
-			for (ClientErrorInterceptor handler : providerFactory.getClientErrorInterceptors())
-			{
-				try
-				{
-					// attempt to reset the stream in order to provide a fresh stream
-					// to each ClientErrorInterceptor -- failing to reset the stream
-					// could mean that an unusable stream will be passed to the
-					// interceptor
-					InputStream stream = clientResponse.getStreamFactory().getInputStream();
-					if(stream != null)
-					{
-						stream.reset();
-					}
-				}
-				catch (IOException e1)
-				{
-					// eat this exception since it's not really relevant for the client response
-				}
-				handler.handle(clientResponse);
-			}
-			throw e;
-		}
-		finally
-		{
-			clientResponse.releaseConnection();
-		}
-	}
+         return clientResponse.getEntity();
+      }
+      catch (RuntimeException e)
+      {
+         for (ClientErrorInterceptor handler : providerFactory.getClientErrorInterceptors())
+         {
+            try
+            {
+               // attempt to reset the stream in order to provide a fresh stream
+               // to each ClientErrorInterceptor -- failing to reset the stream
+               // could mean that an unusable stream will be passed to the
+               // interceptor
+               InputStream stream = clientResponse.getStreamFactory().getInputStream();
+               if (stream != null)
+               {
+                  stream.reset();
+               }
+            }
+            catch (IOException e1)
+            {
+               // eat this exception since it's not really relevant for the client response
+            }
+            handler.handle(clientResponse);
+         }
+         throw e;
+      }
+      finally
+      {
+         clientResponse.releaseConnection();
+      }
+   }
 
    private boolean isVoidReturnType(final Class<?> returnType)
    {
@@ -265,5 +262,5 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
    {
       setFollowRedirects(true);
    }
-   
+
 }
