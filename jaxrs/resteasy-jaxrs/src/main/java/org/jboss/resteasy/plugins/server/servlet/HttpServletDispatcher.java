@@ -92,6 +92,10 @@ public class HttpServletDispatcher extends HttpServlet
       servletMappingPrefix = bootstrap.getParameter("resteasy.servlet.mapping.prefix");
       if (servletMappingPrefix == null) servletMappingPrefix = "";
       servletMappingPrefix = servletMappingPrefix.trim();
+
+      dispatcher.getDefaultContextObjects().put(ServletConfig.class, servletConfig);
+      dispatcher.getDefaultContextObjects().put(ServletContext.class, servletConfig.getServletContext());
+
    }
 
    protected void processApplication(Application config)
@@ -176,6 +180,7 @@ public class HttpServletDispatcher extends HttpServlet
          {
             ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
             ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+/*
             try
             {
                // embedded TJWS and Jetty might not have these things initialized
@@ -195,6 +200,7 @@ public class HttpServletDispatcher extends HttpServlet
             {
 
             }
+            */
             ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
             dispatcher.invoke(in, theResponse);
          }

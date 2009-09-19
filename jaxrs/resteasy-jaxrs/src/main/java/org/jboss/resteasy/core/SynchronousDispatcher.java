@@ -1,19 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Providers;
-
 import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -27,9 +13,22 @@ import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.core.ExtensionHttpPreprocessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Providers;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -42,6 +41,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected Registry registry;
    protected List<HttpRequestPreprocessor> requestPreprocessors = new ArrayList<HttpRequestPreprocessor>();
    protected ExtensionHttpPreprocessor extentionHttpPreprocessor;
+   protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
 
    private final static Logger logger = LoggerFactory.getLogger(SynchronousDispatcher.class);
 
@@ -75,6 +75,11 @@ public class SynchronousDispatcher implements Dispatcher
    public Map<String, MediaType> getMediaTypeMappings()
    {
       return extentionHttpPreprocessor.mediaTypeMappings;
+   }
+
+   public Map<Class, Object> getDefaultContextObjects()
+   {
+      return defaultContextObjects;
    }
 
    public Map<String, String> getLanguageMappings()
@@ -289,6 +294,11 @@ public class SynchronousDispatcher implements Dispatcher
       ResteasyProviderFactory.pushContext(Registry.class, registry);
       ResteasyProviderFactory.pushContext(Dispatcher.class, this);
       ResteasyProviderFactory.pushContext(InternalDispatcher.class, InternalDispatcher.getInstance());
+
+      for (Map.Entry<Class, Object> entry : defaultContextObjects.entrySet())
+      {
+         ResteasyProviderFactory.pushContext(entry.getKey(), entry.getValue());
+      }
    }
 
    public Response internalInvocation(HttpRequest request, HttpResponse response, Object entity)
@@ -302,12 +312,12 @@ public class SynchronousDispatcher implements Dispatcher
          MessageBodyParameterInjector.pushBody(entity);
          pushedBody = true;
          ResourceInvoker invoker = getInvoker(request, response);
-         if( invoker != null )
+         if (invoker != null)
          {
             pushContextObjects(request, response);
             return getResponse(request, response, invoker);
-         }  
-         
+         }
+
          // this should never happen, since getInvoker should throw an exception
          // if invoker is null
          return null;
@@ -315,12 +325,13 @@ public class SynchronousDispatcher implements Dispatcher
       finally
       {
          ResteasyProviderFactory.removeContextDataLevel();
-         if(pushedBody)
+         if (pushedBody)
          {
             MessageBodyParameterInjector.popBody();
          }
       }
    }
+
    public void clearContextData()
    {
       ResteasyProviderFactory.clearContextData();
@@ -351,7 +362,7 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    protected Response getResponse(HttpRequest request, HttpResponse response,
-         ResourceInvoker invoker)
+                                  ResourceInvoker invoker)
    {
       Response jaxrsResponse = null;
       try

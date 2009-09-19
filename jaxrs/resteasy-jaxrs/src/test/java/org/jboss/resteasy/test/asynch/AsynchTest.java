@@ -15,10 +15,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -36,9 +39,24 @@ public class AsynchTest
    @Path("/")
    public static class MyResource
    {
+      @Context
+      private ServletConfig config;
+
+      @Context
+      private ServletContext context;
+
+
       @POST
       public String post(String content) throws Exception
       {
+         System.out.println("in post");
+         Assert.assertNotNull(config);
+         Assert.assertNotNull(context);
+         System.out.println("Asserts passed");
+         config.getServletContext();
+         context.getMajorVersion();
+         System.out.println("Called injected passed");
+
          Thread.sleep(1500);
          latch.countDown();
 
@@ -49,6 +67,12 @@ public class AsynchTest
       public void put(String content) throws Exception
       {
          System.out.println("IN PUT!!!!");
+         Assert.assertNotNull(config);
+         Assert.assertNotNull(context);
+         System.out.println("Asserts passed");
+         config.getServletContext();
+         context.getMajorVersion();
+         System.out.println("Called injected passed");
          Assert.assertEquals("content", content);
          Thread.sleep(500);
          System.out.println("******* countdown ****");
