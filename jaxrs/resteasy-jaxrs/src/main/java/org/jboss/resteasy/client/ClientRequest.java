@@ -62,9 +62,65 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    private String finalUri;
    private List<String> pathParameterList;
 
+   //private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor";
+   private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor";
+
+   /**
+    * Set the default executor class name.
+    *
+    * @param classname
+    * @param createPerRequestInstance whether the instance can be used by every request
+    */
+   public static void setDefaultExecutorClass(String classname, boolean createPerRequestInstance)
+   {
+      synchronized (lock)
+      {
+         defaultExecutorClasss = classname;
+         defaultExecutor = null;
+         createPerInstance = createPerRequestInstance;
+      }
+   }
+
+   private static volatile boolean createPerInstance = true;
+
+   private static volatile ClientExecutor defaultExecutor = null;
+
+   private static final Object lock = new Object();
+
+   private static ClientExecutor getDefaultExecutor()
+   {
+      if (createPerInstance) return createDefaultExecutorInstance();
+      ClientExecutor result = defaultExecutor;
+      if (result == null)
+      {
+         synchronized (lock)
+         {
+            result = defaultExecutor;
+            if (result == null)
+            {
+               defaultExecutor = result = createDefaultExecutorInstance();
+            }
+         }
+      }
+      return result;
+   }
+
+   private static ClientExecutor createDefaultExecutorInstance()
+   {
+      try
+      {
+         Class clazz = Thread.currentThread().getContextClassLoader().loadClass(defaultExecutorClasss);
+         return (ClientExecutor) clazz.newInstance();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
    public ClientRequest(String uriTemplate)
    {
-      this(uriTemplate, new ApacheHttpClientExecutor(new HttpClient()));
+      this(uriTemplate, getDefaultExecutor());
    }
 
    @Deprecated

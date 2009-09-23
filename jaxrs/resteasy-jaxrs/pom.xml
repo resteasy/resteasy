@@ -71,6 +71,18 @@
             <artifactId>commons-httpclient</artifactId>
         </dependency>
 
+
+        <!-- 4.0 refactor of apache httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+        </dependency>
+
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
         <dependency>
             <groupId>tjws</groupId>
