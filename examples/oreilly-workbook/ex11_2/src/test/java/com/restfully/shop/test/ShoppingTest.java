@@ -61,6 +61,7 @@ public class ShoppingTest
       product.setCost(199.99);
       request.body("application/xml", product);
       response = request.post();
+      response.releaseConnection();
       Assert.assertEquals(201, response.getStatus());
 
       product = new Product();
@@ -68,6 +69,7 @@ public class ShoppingTest
       product.setCost(3299.99);
       request.body("application/xml", product);
       response = request.post();
+      response.releaseConnection();
       Assert.assertEquals(201, response.getStatus());
 
       product = new Product();
@@ -75,6 +77,7 @@ public class ShoppingTest
       product.setCost(49.99);
       request.body("application/xml", product);
       response = request.post();
+      response.releaseConnection();
       Assert.assertEquals(201, response.getStatus());
 
    }
