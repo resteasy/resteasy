@@ -86,6 +86,11 @@
         <repository>
             <id>jboss</id>
             <name>jboss repo</name>
+            <url>http://repository.jboss.org/maven2-brew</url>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <name>jboss repo</name>
             <url>http://repository.jboss.org/maven2</url>
         </repository>
         <repository>
