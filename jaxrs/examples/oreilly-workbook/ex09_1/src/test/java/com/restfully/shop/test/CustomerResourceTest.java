@@ -2,8 +2,6 @@ package com.restfully.shop.test;
 
 import com.restfully.shop.domain.Customers;
 import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Test;
 
 
@@ -16,7 +14,6 @@ public class CustomerResourceTest
    @Test
    public void testQueryCustomers() throws Exception
    {
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       String url = "http://localhost:9095/customers";
       while (url != null)
       {

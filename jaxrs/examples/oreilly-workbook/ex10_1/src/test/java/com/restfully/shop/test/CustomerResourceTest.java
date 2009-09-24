@@ -1,20 +1,10 @@
 package com.restfully.shop.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import com.restfully.shop.domain.Customer;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.ws.rs.core.Response;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import com.restfully.shop.domain.Customer;
+import org.junit.Assert;
+import org.junit.Test;
 
 
 /**
@@ -26,7 +16,7 @@ public class CustomerResourceTest
    @Test
    public void testCustomerResource() throws Exception
    {
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      //RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       ClientRequest request = new ClientRequest("http://localhost:9095/customers/1");
       ClientResponse<Customer> response = request.get(Customer.class);
       Assert.assertEquals(200, response.getStatus());

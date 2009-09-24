@@ -9,10 +9,7 @@ import com.restfully.shop.domain.Product;
 import com.restfully.shop.domain.Products;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Date;
@@ -26,12 +23,6 @@ import java.util.Map;
  */
 public class ShoppingTest
 {
-   @BeforeClass
-   public static void init()
-   {
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-   }
-
    protected Map<String, Link> processLinkHeaders(ClientResponse response)
    {
       List<String> linkHeaders = (List<String>) response.getHeaders().get("Link");

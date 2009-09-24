@@ -1,21 +1,16 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.client.core.ClientErrorInterceptor;
-import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.core.PropertyInjectorImpl;
-import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.annotations.interception.EncoderPrecedence;
 import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
-import org.jboss.resteasy.core.interception.InterceptorRegistry;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
 import org.jboss.resteasy.annotations.interception.SecurityPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
+import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
@@ -23,9 +18,15 @@ import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
+import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
@@ -166,6 +167,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
    protected static int maxForwards = 20;
+   public static boolean registerBuiltinByDefault = true;
 
    protected InterceptorRegistry<MessageBodyReaderInterceptor> serverMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
    protected InterceptorRegistry<MessageBodyWriterInterceptor> serverMessageBodyWriterInterceptorRegistry = new InterceptorRegistry<MessageBodyWriterInterceptor>(MessageBodyWriterInterceptor.class, this);
@@ -323,7 +325,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public static ResteasyProviderFactory getInstance()
    {
-      return (ResteasyProviderFactory) RuntimeDelegate.getInstance();
+      ResteasyProviderFactory factory = (ResteasyProviderFactory) RuntimeDelegate.getInstance();
+      if (registerBuiltinByDefault) RegisterBuiltin.register(factory);
+      return factory;
+   }
+
+   public static void setRegisterBuiltinByDefault(boolean registerBuiltinByDefault)
+   {
+      ResteasyProviderFactory.registerBuiltinByDefault = registerBuiltinByDefault;
    }
 
    public ResteasyProviderFactory()
@@ -575,26 +584,26 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    }
 
-	/**
-	 * Add a {@link ClientErrorInterceptor} to this provider factory instance.
-	 * Duplicate handlers are ignored. (For Client Proxy API only)
-	 */
-	public void addClientErrorInterceptor(ClientErrorInterceptor handler)
-	{
-		if (!clientErrorInterceptors.contains(handler))
-		{
-			clientErrorInterceptors.add(handler);
-		}
-	}
+   /**
+    * Add a {@link ClientErrorInterceptor} to this provider factory instance.
+    * Duplicate handlers are ignored. (For Client Proxy API only)
+    */
+   public void addClientErrorInterceptor(ClientErrorInterceptor handler)
+   {
+      if (!clientErrorInterceptors.contains(handler))
+      {
+         clientErrorInterceptors.add(handler);
+      }
+   }
 
-	
-	/**
-	 * Return the list of currently registered {@link ClientErrorInterceptor} instances.
-	 */
-    public List<ClientErrorInterceptor> getClientErrorInterceptors()
-    {
-   	 return clientErrorInterceptors;
-    }
+
+   /**
+    * Return the list of currently registered {@link ClientErrorInterceptor} instances.
+    */
+   public List<ClientErrorInterceptor> getClientErrorInterceptors()
+   {
+      return clientErrorInterceptors;
+   }
 
    public void addContextResolver(Class<? extends ContextResolver> resolver)
    {
