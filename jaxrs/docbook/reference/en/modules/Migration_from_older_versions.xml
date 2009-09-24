@@ -1,47 +1,20 @@
 <chapter id="Migration_from_older_versions">
    <title>Migration from older versions</title>
    <sect1 id="Migrating_to_Resteasy_Beta_6">
-      <title>Migrating from 1.0.x and 1.1-RC1</title>
+      <title>Migrating from 1.1 to 1.2</title>
 
       <para>
 
          <itemizedlist>
 
             <listitem>
-                You now turn on Resteasy role-based security i.e. @RolesAllowed, by using the new resteasy.role.based.security context-param.
+                The constructors for ClientRequest that have a HttpClient parameter (Apache Http Client 3.1 API)  are now deprecated.  They will be removed in the final release of 1.2.  You must create a Apache hTTP Client Executor and pass it in as a parameter if you want to re-use existing Apache HttpClient sessions or do any special configuration.  The same is true for the ProxyFactoyr methods.
             </listitem>
             <listitem>
-               @Wrapped is now on by default for lists and arrays and sets of JAXB objects.  You can also change the namepace and element names using this annotation.
-            </listitem>.
-            <listitem>
-            @Wrapped no longer is enclosed in a resteasy namespace prefix nor uses the http://jboss.org/resteasy namespace.  Its just the default namespace.
-            </listitem>
-            <listitem>
-            @Wrapped JSON is now enclosed in a simple JSON array
+                Apache HttpClient 4.0 is now the default client used for our ClientRequest and ProxyFactory APIs.  Version 3.1 of this library is still support.  Just allocate an executor for that instead.  Or you can set the default one used by modifying the static field ClientRequest.defaultExecutorClass.
             </listitem>
              <listitem>
-             If you have the resteasy-jackson-provider-xxx.jar in your classpath, the Jackson JSON provider
-                 will be triggered.  This will screw up code that is dependent on the Jettison JAXB/JSon provider.
-                 If you had been using the Jettison JAXB/Json providers, you must either remove
-                 Jackson from your WEB-INF/lib or classpath, or use the @NoJackson annotation on your JAXB classes.
-             </listitem>
-             <listitem>
-                 The tjws and servlet-api artifacts are now scoped "provided" in the resteasy-jar dependencies.  You may
-                 have to include and scope them as "provided" or "test" within your poms if you are getting class not found errors.
-<programlisting>
-<![CDATA[
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>tjws</groupId>
-            <artifactId>webserver</artifactId>
-            <scope>provided</scope>
-        </dependency>
-]]>
-</programlisting>
+             It is no longer required to call RegisterBuiltin.register() to initialize the set of providers.  Too many users forgot to do this (include myself!).  You can turn this off by calling the static method ResteasyProviderFactory.setRegisterBuiltinByDefault(false)
              </listitem>
          </itemizedlist>
       </para>
