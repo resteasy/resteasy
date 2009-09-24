@@ -6,8 +6,6 @@ import com.restfully.shop.domain.Link;
 import com.restfully.shop.domain.Order;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,7 +37,7 @@ public class OrderResourceTest
    @Test
    public void testCreateCancelPurge() throws Exception
    {
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      //RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       String url = "http://localhost:9095/shop";
       ClientRequest request = new ClientRequest(url);
       ClientResponse response = request.head();

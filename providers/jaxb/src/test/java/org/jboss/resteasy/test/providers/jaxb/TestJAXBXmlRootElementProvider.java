@@ -4,8 +4,6 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -50,7 +48,7 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
    public void setUp() throws Exception
    {
       addPerRequestResource(JAXBXmlRootElementResource.class);
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      //RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
       client = ProxyFactory.create(JAXBXmlRootElementClient.class, JAXB_URL);
       elementClient = ProxyFactory.create(JAXBElementClient.class, JAXB_URL);
       jsonClient = ProxyFactory.create(JsonJAXBXmlRootElementClient.class, JAXB_URL);
