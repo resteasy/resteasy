@@ -7,12 +7,21 @@
 
          <itemizedlist>
 
+             <listitem>
+                 Jettison and Fastinfoset have been broken out of the resteasy-jaxb-provider maven module.  You will now need to include resteasy-jettison-provider or resteasy-fastinfoset-provider if you use either
+                 of these libraries.
+             </listitem>
             <listitem>
                 The constructors for ClientRequest that have a HttpClient parameter (Apache Http Client 3.1 API)  are now deprecated.  They will be removed in the final release of 1.2.  You must create a Apache hTTP Client Executor and pass it in as a parameter if you want to re-use existing Apache HttpClient sessions or do any special configuration.  The same is true for the ProxyFactoyr methods.
             </listitem>
+             <!--
             <listitem>
                 Apache HttpClient 4.0 is now the default client used for our ClientRequest and ProxyFactory APIs.  Version 3.1 of this library is still support.  Just allocate an executor for that instead.  Or you can set the default one used by modifying the static field ClientRequest.defaultExecutorClass.
             </listitem>
+            -->
+             <listitem>
+                 Apache HttpClient 4.0 support is available if you want to use it.  I've had some trouble with it so it is not the default implementation yet for the client framework.
+             </listitem>
              <listitem>
              It is no longer required to call RegisterBuiltin.register() to initialize the set of providers.  Too many users forgot to do this (include myself!).  You can turn this off by calling the static method ResteasyProviderFactory.setRegisterBuiltinByDefault(false)
              </listitem>

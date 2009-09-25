@@ -329,6 +329,10 @@ public static class TestService
   <para>
      http://jettison.codehaus.org/
   </para>
+       <para>
+           To use this integration with Jettision you need to import the resteasy-jettison-provider Maven module.  Older versions
+           of RESTEasy used to include this within the resteasy-jaxb-provider but we decided to modularize it more.
+       </para>
       <para>
     Jettison has two mapping formats. One is BadgerFish the other is a Jettison
         Mapped Convention format.  The Mapped Convention is the default mapping.
@@ -611,6 +615,10 @@ public Book get() {...}
          documents may be used whenever the size and processing time of XML documents is an issue. It is configured
          the same way the XML JAXB provider is so really no other documentation is needed here.
       </para>
+       <para>
+           To use this integration with Fastinfoset you need to import the resteasy-fastinfoset-provider Maven module.  Older versions
+           of RESTEasy used to include this within the resteasy-jaxb-provider but we decided to modularize it more.
+       </para>
       <para>
 
 
