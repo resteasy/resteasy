@@ -6,9 +6,9 @@
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>1.2.RC1</version>
     </parent>
-    <artifactId>resteasy-jackson-provider</artifactId>
+    <artifactId>resteasy-jettison-provider</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy Jackson Provider</name>
+    <name>Resteasy Jettison Provider</name>
 
     <dependencies>
         <dependency>
@@ -20,25 +20,16 @@
         <!-- keep jaxb provider in test scope as I'm making sure Jackson providers take precedence -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jettison-provider</artifactId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <!--
            Used for optional JSON provider. Provider is activated by adding this
            jar to classpath
         -->
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

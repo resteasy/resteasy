@@ -62,8 +62,8 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    private String finalUri;
    private List<String> pathParameterList;
 
-   //private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor";
-   private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor";
+   private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor";
+   //private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor";
 
    /**
     * Set the default executor class name.

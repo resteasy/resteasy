@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxb-provider</artifactId>
+            <artifactId>resteasy-jettison-provider</artifactId>
             <version>1.2.RC1</version>
         </dependency>
     </dependencies>

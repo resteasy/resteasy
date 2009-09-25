@@ -5,7 +5,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
@@ -82,8 +82,8 @@ public class JsonMapTest extends BaseResourceTest
       }
    }
 
-   @Before
-   public void setup()
+   @BeforeClass
+   public static void setup()
    {
       addPerRequestResource(MyResource.class);
 
