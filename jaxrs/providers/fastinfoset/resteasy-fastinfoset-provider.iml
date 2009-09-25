@@ -5,6 +5,7 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
@@ -18,26 +19,21 @@
     <orderEntry type="library" name="Maven: org.scannotation:scannotation:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: javassist:javassist:3.6.0.GA" level="project" />
     <orderEntry type="library" name="Maven: javax.annotation:jsr250-api:1.0" level="project" />
-    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: javax.activation:activation:1.1" level="project" />
     <orderEntry type="library" name="Maven: commons-httpclient:commons-httpclient:3.1" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
-    <orderEntry type="module" module-name="resteasy-jettison-provider" />
-    <orderEntry type="module" module-name="resteasy-jaxb-provider" />
-    <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-impl:2.1.10" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml.stream:stax-api:1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.xml.stream:sjsxp:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.jettison:jettison:1.1" level="project" />
-    <orderEntry type="module" module-name="resteasy-jackson-provider" />
-    <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-core-asl:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-jaxrs:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: junit:junit:4.1" level="project" />
+    <orderEntry type="module" module-name="resteasy-jaxb-provider" exported="" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.xml.bind:jaxb-impl:2.1.10" level="project" />
+    <orderEntry type="library" exported="" name="Maven: javax.xml.bind:jaxb-api:2.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: javax.xml.stream:stax-api:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.xml.stream:sjsxp:1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.xml.fastinfoset:FastInfoset:1.2.7" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="library" name="Maven: tjws:webserver:1.3.3" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:4.1" level="project" />
   </component>
 </module>
 

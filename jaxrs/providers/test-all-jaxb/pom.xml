@@ -6,39 +6,48 @@
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>1.2.RC1</version>
     </parent>
-    <artifactId>resteasy-jackson-provider</artifactId>
+    <artifactId>test-all-jaxb</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy Jackson Provider</name>
+    <name>Test All JAXB providers</name>
 
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
-        <!-- keep jaxb provider in test scope as I'm making sure Jackson providers take precedence -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jettison-provider</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-fastinfoset-provider</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!--
-           Used for optional JSON provider. Provider is activated by adding this
-           jar to classpath
-        -->
+            Contains Generated Classes and other test data required for testing.
+         -->
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-test-data</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -48,11 +57,6 @@
         <dependency>
             <groupId>tjws</groupId>
             <artifactId>webserver</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

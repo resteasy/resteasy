@@ -3,9 +3,5 @@ org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider
 org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider
 org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider
 org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider
-org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider
 org.jboss.resteasy.plugins.providers.jaxb.MapProvider
-org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider
 org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder
-org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder
-org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder

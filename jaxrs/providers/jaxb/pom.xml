@@ -17,23 +17,10 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--
-            Contains Generated Classes and other test data required for testing.
-         -->
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-test-data</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         <!-- javax.xml.bind.JAXBElement provider is required by spec -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.fastinfoset</groupId>
-            <artifactId>FastInfoset</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.stream</groupId>
@@ -49,14 +36,6 @@
             <groupId>tjws</groupId>
             <artifactId>webserver</artifactId>
             <scope>test</scope>
-        </dependency>
-        <!--
-           Used for optional JSON provider. Provider is activated by adding this
-           jar to classpath
-        -->
-        <dependency>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
