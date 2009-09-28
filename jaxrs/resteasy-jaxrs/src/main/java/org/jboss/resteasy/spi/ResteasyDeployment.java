@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * This class is used to configure and initialize the core components of RESTEasy.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

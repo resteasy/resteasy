@@ -7,11 +7,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.junit.Assert;
-import org.junit.Test;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -98,7 +98,7 @@ public class TopicTest
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
       server.setPort(8081);
       server.start();
-      Dispatcher dispatcher = server.getDispatcher();
+      Dispatcher dispatcher = server.getDeployment().getDispatcher();
       HttpClient client = new HttpClient();
       try
       {
@@ -133,7 +133,7 @@ public class TopicTest
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
       server.setPort(8081);
       server.start();
-      Dispatcher dispatcher = server.getDispatcher();
+      Dispatcher dispatcher = server.getDeployment().getDispatcher();
       HttpClient client = new HttpClient();
       try
       {
@@ -184,7 +184,7 @@ public class TopicTest
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
       server.setPort(8081);
       server.start();
-      Dispatcher dispatcher = server.getDispatcher();
+      Dispatcher dispatcher = server.getDeployment().getDispatcher();
       HttpClient client = new HttpClient();
       try
       {
