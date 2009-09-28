@@ -25,6 +25,9 @@
              <listitem>
              It is no longer required to call RegisterBuiltin.register() to initialize the set of providers.  Too many users forgot to do this (include myself!).  You can turn this off by calling the static method ResteasyProviderFactory.setRegisterBuiltinByDefault(false)
              </listitem>
+             <listitem>
+                 The Embedded Container's API has changed to use org.jboss.resteasy.spi.ResteasyDeployment.  Please see embedded documentation for more details.
+             </listitem>
          </itemizedlist>
       </para>
    </sect1>
