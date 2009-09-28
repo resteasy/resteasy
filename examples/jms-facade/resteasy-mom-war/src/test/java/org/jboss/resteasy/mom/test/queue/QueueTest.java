@@ -7,12 +7,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.junit.Assert;
-import org.junit.Test;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.Assert;
+import org.junit.Test;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -94,6 +95,7 @@ public class QueueTest
    {
       @Path("/listener")
       @POST
+      @Consumes("text/plain")
       public Response post(String msg)
       {
          lastMessage = msg;
@@ -108,7 +110,7 @@ public class QueueTest
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
       server.setPort(8081);
       server.start();
-      Dispatcher dispatcher = server.getDispatcher();
+      Dispatcher dispatcher = server.getDeployment().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(Listener.class);
       HttpClient client = new HttpClient();
       try
@@ -143,7 +145,7 @@ public class QueueTest
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
       server.setPort(8081);
       server.start();
-      Dispatcher dispatcher = server.getDispatcher();
+      Dispatcher dispatcher = server.getDeployment().getDispatcher();
       HttpClient client = new HttpClient();
       try
       {
@@ -194,7 +196,7 @@ public class QueueTest
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
       server.setPort(8081);
       server.start();
-      Dispatcher dispatcher = server.getDispatcher();
+      Dispatcher dispatcher = server.getDeployment().getDispatcher();
       HttpClient client = new HttpClient();
       try
       {

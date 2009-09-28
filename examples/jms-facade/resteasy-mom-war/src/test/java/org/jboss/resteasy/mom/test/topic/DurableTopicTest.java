@@ -7,11 +7,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.junit.Assert;
-import org.junit.Test;
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -92,8 +91,7 @@ public class DurableTopicTest
    public void testDurableTopicListener() throws Exception
    {
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
-      Dispatcher dispatcher = server.getDispatcher();
-      dispatcher.getRegistry().addPerRequestResource(Listener.class);
+      server.getDeployment().getActualResourceClasses().add(Listener.class);
       server.setPort(8081);
       server.setRootResourcePath("");
       server.start();
@@ -128,8 +126,7 @@ public class DurableTopicTest
    public void testDurableTopicListenerFailure() throws Exception
    {
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
-      Dispatcher dispatcher = server.getDispatcher();
-      dispatcher.getRegistry().addPerRequestResource(Listener.class);
+      server.getDeployment().getActualResourceClasses().add(Listener.class);
       server.setPort(8081);
       server.start();
       HttpClient client = new HttpClient();
@@ -183,8 +180,7 @@ public class DurableTopicTest
    public void testDurableTopicListenerBigMessage() throws Exception
    {
       TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
-      Dispatcher dispatcher = server.getDispatcher();
-      dispatcher.getRegistry().addPerRequestResource(BigMessageListener.class);
+      server.getDeployment().getActualResourceClasses().add(BigMessageListener.class);
       server.setPort(8081);
       server.start();
       HttpClient client = new HttpClient();
