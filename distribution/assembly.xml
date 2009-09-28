@@ -31,6 +31,10 @@
             <outputDirectory>examples/jaxb-json</outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>../examples/guice-hello</directory>
+            <outputDirectory>examples/guice-hello</outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>../examples/jms-facade</directory>
             <outputDirectory>examples/jms-facade</outputDirectory>
         </fileSet>
@@ -73,6 +77,8 @@
             <includes>
                 <include>org.jboss.resteasy:resteasy-jaxrs</include>
                 <include>org.jboss.resteasy:resteasy-jaxb-provider</include>
+                <include>org.jboss.resteasy:resteasy-jettison-provider</include>
+                <include>org.jboss.resteasy:resteasy-fastinfoset-provider</include>
                 <include>org.jboss.resteasy:resteasy-atom-provider</include>
                 <include>org.jboss.resteasy:resteasy-multipart-provider</include>
                 <include>org.jboss.resteasy:resteasy-jackson-provider</include>
