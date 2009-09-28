@@ -24,7 +24,7 @@ public class MyResource {
    {
       TJWSEmbeddedJaxrsServer tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setPort(8081);
-      tjws.getRegistry().addPerRequestResource(MyResource.class);
+      tjws.getDeployment().getActualResourceClasses().add(MyResource.class);
       tjws.start();
    }
 }
@@ -52,13 +52,11 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
       final TJWSEmbeddedJaxrsServer tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setPort(8081);
 
-      org.resteasy.plugins.server.servlet.SpringBeanProcessor processor = new SpringBeanProcessor(tjws.getRegistry(), tjws.getFactory();
+      tjws.start();
+      org.resteasy.plugins.server.servlet.SpringBeanProcessor processor = new SpringBeanProcessor(tjws.getDeployment().getRegistry(), tjws.getDeployment().getFactory();
       ConfigurableBeanFactory factory = new XmlBeanFactory(...);
       factory.addBeanPostProcessor(processor);
-
-      tjws.start();
    }
-
 </programlisting>
       </para>
 <para>
