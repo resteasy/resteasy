@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -24,7 +23,7 @@ public class AbstractMultipartRelatedWriter extends AbstractMultipartWriter {
 		for (OutputPart outputPart : multipartRelatedOutput.getParts())
 			if (outputPart.getHeaders().get("Content-ID") == null)
 				outputPart.getHeaders().putSingle("Content-ID",
-						"<" + UUID.randomUUID().toString() + ">");
+						ContentIDUtils.generateContentID());
 		OutputPart rootOutputPart = multipartRelatedOutput.getRootPart();
 		Map<String, String> mediaTypeParameters = new LinkedHashMap<String, String>(
 				mediaType.getParameters());

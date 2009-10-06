@@ -10,7 +10,6 @@ import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -106,16 +105,15 @@ public class XopWithMultipartRelatedJAXBProvider extends
 						}
 
 						protected InputPart getInputPart(String cid) {
-							cid = cid.trim();
-							int cidIndex = cid.indexOf("cid:");
-							if (cidIndex == 0)
-								cid = cid.substring(4).trim();
+							String contentID = ContentIDUtils
+									.convertCidToContentID(cid);
 							InputPart inputPart = xopPackage.getRelatedMap()
-									.get(cid);
+									.get(contentID);
 							if (inputPart == null)
 								throw new IllegalArgumentException(
 										"No attachment with cid = " + cid
-												+ " found in xop message.");
+												+ " (Content-ID = " + contentID
+												+ ") found in xop message.");
 							return inputPart;
 						}
 
@@ -151,26 +149,31 @@ public class XopWithMultipartRelatedJAXBProvider extends
 				@Override
 				public String addMtomAttachment(DataHandler data,
 						String elementNamespace, String elementLocalName) {
-					String cid = generateContentId();
+					String addrSpec = ContentIDUtils.generateRFC822AddrSpec();
+					String contentID = ContentIDUtils
+							.generateContentIDFromAddrSpec(addrSpec);
 					xopPackage.addPart(data.getDataSource(), MediaType
-							.valueOf(data.getContentType()), cid, "binary");
-					return "cid:" + cid;
+							.valueOf(data.getContentType()), contentID,
+							"binary");
+					String cid = ContentIDUtils
+							.generateCidFromAddrSpec(addrSpec);
+					return cid;
 				}
 
 				@Override
 				public String addMtomAttachment(byte[] data, int offset,
 						int length, String mimeType, String elementNamespace,
 						String elementLocalName) {
-					String cid = generateContentId();
+					String addrSpec = ContentIDUtils.generateRFC822AddrSpec();
+					String contentID = ContentIDUtils
+							.generateContentIDFromAddrSpec(addrSpec);
 					ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
 							data, offset, length);
 					xopPackage.addPart(byteArrayInputStream, MediaType
-							.valueOf(mimeType), cid, "binary");
-					return "cid:" + cid;
-				}
-
-				protected String generateContentId() {
-					return UUID.randomUUID().toString();
+							.valueOf(mimeType), contentID, "binary");
+					String cid = ContentIDUtils
+							.generateCidFromAddrSpec(addrSpec);
+					return cid;
 				}
 
 				@Override
@@ -190,7 +193,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 
 			OutputPart outputPart = xopPackage.addPart(xml
 					.toString(getCharset(xopRootMediaType)), xopRootMediaType,
-					UUID.randomUUID().toString(), null);
+					ContentIDUtils.generateContentID(), null);
 			List<OutputPart> outputParts = xopPackage.getParts();
 			outputParts.remove(outputPart);
 			outputParts.add(0, outputPart);
