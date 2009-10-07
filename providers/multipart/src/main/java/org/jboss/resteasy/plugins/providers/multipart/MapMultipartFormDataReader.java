@@ -44,6 +44,11 @@ public class MapMultipartFormDataReader implements MessageBodyReader<Map<?, ?>> 
 		if (boundary == null)
 			throw new IOException("Unable to get boundary for multipart");
 
+		if (!(genericType instanceof ParameterizedType))
+			throw new IllegalArgumentException("Reader = " + this
+					+ " recived genericType = " + genericType
+					+ ", but it is not instance of " + ParameterizedType.class);
+
 		ParameterizedType param = (ParameterizedType) genericType;
 		Type baseType = param.getActualTypeArguments()[1];
 		Class<?> rawType = Types.getRawType(baseType);

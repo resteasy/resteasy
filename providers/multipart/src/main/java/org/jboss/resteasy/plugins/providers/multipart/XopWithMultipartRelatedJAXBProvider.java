@@ -39,6 +39,120 @@ import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
 public class XopWithMultipartRelatedJAXBProvider extends
 		AbstractJAXBProvider<Object> {
 
+	private static class XopAttachmentMarshaller extends AttachmentMarshaller {
+		private final MultipartRelatedOutput xopPackage;
+
+		private XopAttachmentMarshaller(MultipartRelatedOutput xopPackage) {
+			this.xopPackage = xopPackage;
+		}
+
+		@Override
+		public String addMtomAttachment(DataHandler data,
+				String elementNamespace, String elementLocalName) {
+			return addBinary(data.getDataSource(), data.getContentType());
+		}
+
+		@Override
+		public String addMtomAttachment(byte[] data, int offset, int length,
+				String mimeType, String elementNamespace,
+				String elementLocalName) {
+			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+					data, offset, length);
+			return addBinary(byteArrayInputStream, mimeType);
+		}
+
+		protected String addBinary(Object object, String mimeType) {
+			String addrSpec = ContentIDUtils.generateRFC822AddrSpec();
+			String contentID = ContentIDUtils
+					.generateContentIDFromAddrSpec(addrSpec);
+			xopPackage.addPart(object, MediaType.valueOf(mimeType), contentID,
+					"binary");
+			return ContentIDUtils.generateCidFromAddrSpec(addrSpec);
+		}
+
+		@Override
+		public String addSwaRefAttachment(DataHandler data) {
+			throw new UnsupportedOperationException(
+					"SwaRefs are not supported in xop creation.");
+		}
+
+		@Override
+		public boolean isXOPPackage() {
+			return true;
+		}
+	}
+
+	private static class InputPartBackedDataSource implements DataSource {
+		private final String cid;
+		private final InputPart inputPart;
+
+		private InputPartBackedDataSource(String cid, InputPart inputPart) {
+			this.cid = cid;
+			this.inputPart = inputPart;
+		}
+
+		public String getContentType() {
+			return inputPart.getMediaType().toString();
+		}
+
+		public String getName() {
+			return cid;
+		}
+
+		public InputStream getInputStream() throws IOException {
+			return inputPart.getBody(InputStream.class, null);
+		}
+
+		public OutputStream getOutputStream() throws IOException {
+			throw new IOException(
+					"This DataSource represents an incoming xop message part. Getting an OutputStream on it is not allowed.");
+		}
+	}
+
+	private static class XopAttachmentUnmarshaller extends
+			AttachmentUnmarshaller {
+
+		private final MultipartRelatedInput xopPackage;
+
+		private XopAttachmentUnmarshaller(MultipartRelatedInput xopPackage) {
+			this.xopPackage = xopPackage;
+		}
+
+		@Override
+		public byte[] getAttachmentAsByteArray(String cid) {
+			InputPart inputPart = getInputPart(cid);
+			try {
+				return inputPart.getBody(byte[].class, null);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(
+						"Exception while extracting attachment with cid = "
+								+ cid + " from xop message to a byte[].", e);
+			}
+		}
+
+		@Override
+		public DataHandler getAttachmentAsDataHandler(final String cid) {
+			final InputPart inputPart = getInputPart(cid);
+			return new DataHandler(
+					new InputPartBackedDataSource(cid, inputPart));
+		}
+
+		protected InputPart getInputPart(String cid) {
+			String contentID = ContentIDUtils.convertCidToContentID(cid);
+			InputPart inputPart = xopPackage.getRelatedMap().get(contentID);
+			if (inputPart == null)
+				throw new IllegalArgumentException("No attachment with cid = "
+						+ cid + " (Content-ID = " + contentID
+						+ ") found in xop message.");
+			return inputPart;
+		}
+
+		@Override
+		public boolean isXOPPackage() {
+			return true;
+		}
+	}
+
 	public XopWithMultipartRelatedJAXBProvider(Providers providers) {
 		super();
 		this.providers = providers;
@@ -62,66 +176,8 @@ public class XopWithMultipartRelatedJAXBProvider extends
 					.getMediaType(), true);
 			Unmarshaller unmarshaller = jaxb.createUnmarshaller();
 			unmarshaller
-					.setAttachmentUnmarshaller(new AttachmentUnmarshaller() {
-						@Override
-						public byte[] getAttachmentAsByteArray(String cid) {
-							InputPart inputPart = getInputPart(cid);
-							try {
-								return inputPart.getBody(byte[].class, null);
-							} catch (IOException e) {
-								throw new IllegalArgumentException(
-										"Exception while extracting attachment with cid = "
-												+ cid
-												+ " from xop message to a byte[].",
-										e);
-							}
-						}
-
-						@Override
-						public DataHandler getAttachmentAsDataHandler(
-								final String cid) {
-							final InputPart inputPart = getInputPart(cid);
-							return new DataHandler(new DataSource() {
-								public String getContentType() {
-									return inputPart.getMediaType().toString();
-								}
-
-								public String getName() {
-									return cid;
-								}
-
-								public InputStream getInputStream()
-										throws IOException {
-									return inputPart.getBody(InputStream.class,
-											null);
-								}
-
-								public OutputStream getOutputStream()
-										throws IOException {
-									throw new IOException(
-											"This DataSource represents an incoming xop message part. Getting an OutputStream on it is not allowed.");
-								}
-							});
-						}
-
-						protected InputPart getInputPart(String cid) {
-							String contentID = ContentIDUtils
-									.convertCidToContentID(cid);
-							InputPart inputPart = xopPackage.getRelatedMap()
-									.get(contentID);
-							if (inputPart == null)
-								throw new IllegalArgumentException(
-										"No attachment with cid = " + cid
-												+ " (Content-ID = " + contentID
-												+ ") found in xop message.");
-							return inputPart;
-						}
-
-						@Override
-						public boolean isXOPPackage() {
-							return true;
-						}
-					});
+					.setAttachmentUnmarshaller(new XopAttachmentUnmarshaller(
+							xopPackage));
 			return unmarshaller.unmarshal(new StreamSource(rootPart.getBody(
 					InputStream.class, null)));
 		} catch (JAXBException e) {
@@ -144,50 +200,8 @@ public class XopWithMultipartRelatedJAXBProvider extends
 
 			Marshaller marshaller = getMarshaller(type, annotations,
 					xopRootMediaType);
-			marshaller.setAttachmentMarshaller(new AttachmentMarshaller() {
-
-				@Override
-				public String addMtomAttachment(DataHandler data,
-						String elementNamespace, String elementLocalName) {
-					String addrSpec = ContentIDUtils.generateRFC822AddrSpec();
-					String contentID = ContentIDUtils
-							.generateContentIDFromAddrSpec(addrSpec);
-					xopPackage.addPart(data.getDataSource(), MediaType
-							.valueOf(data.getContentType()), contentID,
-							"binary");
-					String cid = ContentIDUtils
-							.generateCidFromAddrSpec(addrSpec);
-					return cid;
-				}
-
-				@Override
-				public String addMtomAttachment(byte[] data, int offset,
-						int length, String mimeType, String elementNamespace,
-						String elementLocalName) {
-					String addrSpec = ContentIDUtils.generateRFC822AddrSpec();
-					String contentID = ContentIDUtils
-							.generateContentIDFromAddrSpec(addrSpec);
-					ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-							data, offset, length);
-					xopPackage.addPart(byteArrayInputStream, MediaType
-							.valueOf(mimeType), contentID, "binary");
-					String cid = ContentIDUtils
-							.generateCidFromAddrSpec(addrSpec);
-					return cid;
-				}
-
-				@Override
-				public String addSwaRefAttachment(DataHandler data) {
-					throw new UnsupportedOperationException(
-							"SwaRefs are not supported in xop creation.");
-				}
-
-				@Override
-				public boolean isXOPPackage() {
-					return true;
-				}
-
-			});
+			marshaller.setAttachmentMarshaller(new XopAttachmentMarshaller(
+					xopPackage));
 			ByteArrayOutputStream xml = new ByteArrayOutputStream();
 			marshaller.marshal(t, xml);
 

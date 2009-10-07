@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.security.AccessController;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -84,7 +85,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
       {
          if (field.isAnnotationPresent(FormParam.class) && field.isAnnotationPresent(PartType.class))
          {
-            field.setAccessible(true);
+			AccessController.doPrivileged(new FieldEnablerPrivilegedAction(field));
             FormParam param = field.getAnnotation(FormParam.class);
             Object value = null;
             try
