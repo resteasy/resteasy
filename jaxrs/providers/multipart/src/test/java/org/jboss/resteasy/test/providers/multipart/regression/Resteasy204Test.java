@@ -57,7 +57,7 @@ public class Resteasy204Test extends BaseResourceTest
    }
 
    @Before
-   public void setup() throws Exception
+   public void setUp() throws Exception
    {
       addPerRequestResource(Service.class);
    }

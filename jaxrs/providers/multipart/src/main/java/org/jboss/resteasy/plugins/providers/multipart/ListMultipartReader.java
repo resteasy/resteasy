@@ -43,6 +43,11 @@ public class ListMultipartReader implements MessageBodyReader<List<?>> {
 		if (boundary == null)
 			throw new IOException("Unable to get boundary for multipart");
 
+		if (!(genericType instanceof ParameterizedType))
+			throw new IllegalArgumentException("Reader = " + this
+					+ " recived genericType = " + genericType
+					+ ", but it is not instance of " + ParameterizedType.class);
+
 		ParameterizedType param = (ParameterizedType) genericType;
 		Type baseType = param.getActualTypeArguments()[0];
 		Class<?> rawType = Types.getRawType(baseType);
