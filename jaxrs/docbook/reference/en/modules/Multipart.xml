@@ -398,11 +398,11 @@ public class MyService
       are doing output.  For example:</para>
 <programlisting>
    public class CustomerProblemForm {
-      @FormData("customer")
+      @FormParam("customer")
       @PartType("application/xml")
       private Customer customer;
 
-      @FormData("problem")
+      @FormParam("problem")
       @PartType("text/plain")
       private String problem;
 
@@ -522,5 +522,12 @@ public class XopService {
 	<para>We used @Consumes(MediaType.MULTIPART_RELATED) to tell RESTEasy that we want to read multipart/related
 	packages. We used @XopWithMultipartRelated to tell RESTEasy that we want to read Xop messages. Of course we could
 	also produce Xop return values but we would than also need to annotate that and use a Produce annotation, too.</para>
+   </sect1>
+   <sect1 id="multipart_parsing_note">
+      <title>Note about multipart parsing and working with other frameworks</title>
+      <para>There are a lot of frameworks doing multipart parsing automatically with the help of filters and interceptors.
+      Like org.jboss.seam.web.MultipartFilter in Seam or org.springframework.web.multipart.MultipartResolver in Spring.
+      However the incoming multipart request stream can be parsed only once. Resteasy users working with multipart should
+      make sure that nothing parses the stream before Resteasy gets it.</para>
    </sect1>
 </chapter>
