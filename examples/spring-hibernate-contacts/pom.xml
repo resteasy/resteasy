@@ -6,7 +6,7 @@
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>spring-hibernate-contacts</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.RC1</version>
+    <version>1.2.GA</version>
     <name>RestContact Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <repositories>
@@ -36,7 +36,7 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-maven-import</artifactId>
-                <version>1.2.RC1</version>
+                <version>1.2.GA</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
