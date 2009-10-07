@@ -5,7 +5,7 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>scanning-test-war</artifactId>
     <packaging>war</packaging>
-    <version>1.2.RC1</version>
+    <version>1.2.GA</version>
     <name>encoding-test</name>
     <url>http://maven.apache.org</url>
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.jboss.resteasy.test</groupId>
             <artifactId>scanning-test-jar</artifactId>
-            <version>1.2.RC1</version>
+            <version>1.2.GA</version>
         </dependency>
 
     </dependencies>

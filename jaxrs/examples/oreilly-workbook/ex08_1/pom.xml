@@ -33,12 +33,12 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.2.RC1</version>
+            <version>1.2.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jettison-provider</artifactId>
-            <version>1.2.RC1</version>
+            <version>1.2.GA</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
