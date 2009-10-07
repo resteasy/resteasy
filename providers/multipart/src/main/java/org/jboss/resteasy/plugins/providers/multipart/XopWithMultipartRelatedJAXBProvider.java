@@ -191,9 +191,8 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			ByteArrayOutputStream xml = new ByteArrayOutputStream();
 			marshaller.marshal(t, xml);
 
-			OutputPart outputPart = xopPackage.addPart(xml
-					.toString(getCharset(xopRootMediaType)), xopRootMediaType,
-					ContentIDUtils.generateContentID(), null);
+			OutputPart outputPart = xopPackage.addPart(xml.toString(),
+					xopRootMediaType, ContentIDUtils.generateContentID(), null);
 			List<OutputPart> outputParts = xopPackage.getParts();
 			outputParts.remove(outputPart);
 			outputParts.add(0, outputPart);

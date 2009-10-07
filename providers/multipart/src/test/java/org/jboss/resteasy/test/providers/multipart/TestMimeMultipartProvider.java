@@ -241,10 +241,11 @@ public class TestMimeMultipartProvider extends BaseResourceTest {
 
 	@Test
 	public void testXop() throws Exception {
+		logger.info("System encoding: " + System.getProperty("file.encoding"));
 		MultipartClient client = ProxyFactory.create(MultipartClient.class,
 				generateBaseUrl());
 		SimpleMimeMultipartResource.Xop xop = new SimpleMimeMultipartResource.Xop(
-				new Customer("bill"), new Customer("monica"),
+				new Customer("bill\u00E9"), new Customer("monica"),
 				"Hello Xop World!".getBytes("UTF-8"), new DataHandler(
 						new ByteArrayDataSource("Hello Xop World!"
 								.getBytes("UTF-8"),

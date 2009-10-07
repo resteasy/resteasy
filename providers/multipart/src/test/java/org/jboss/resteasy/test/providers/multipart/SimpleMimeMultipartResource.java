@@ -350,7 +350,7 @@ public class SimpleMimeMultipartResource {
 	public void putXopWithMultipartRelated(@XopWithMultipartRelated Xop xop)
 			throws IOException {
 		Assert.assertNotNull(xop.getBill());
-		Assert.assertEquals("bill", xop.getBill().getName());
+		Assert.assertEquals("bill\u00E9", xop.getBill().getName());
 
 		Assert.assertNotNull(xop.getMonica());
 		Assert.assertEquals("monica", xop.getMonica().getName());
@@ -364,8 +364,7 @@ public class SimpleMimeMultipartResource {
 			InputStream inputStream = xop.getMyDataHandler().getInputStream();
 			InputStreamReader inputStreamReader = null;
 			try {
-				inputStreamReader = new InputStreamReader(
-						inputStream, "UTF-8");
+				inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
 				StringWriter writer = new StringWriter();
 				char[] buffer = new char[4048];
 				int n = 0;
