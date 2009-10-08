@@ -162,6 +162,11 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
 
    public LinkHeader fromString(String value) throws IllegalArgumentException
    {
+      return from(value);
+   }
+
+   public static LinkHeader from(String value) throws IllegalArgumentException
+   {
       Parser parser = new Parser(value);
       parser.parse();
       return parser.getHeader();
@@ -169,6 +174,11 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
    }
 
    public String toString(LinkHeader value)
+   {
+      return getString(value);
+   }
+
+   public static String getString(LinkHeader value)
    {
       StringBuffer buf = new StringBuffer();
       for (Link link : value.getLinks())

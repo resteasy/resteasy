@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,5 +56,15 @@ public class LinkHeader
    public List<Link> getLinks()
    {
       return links;
+   }
+
+   public static LinkHeader valueOf(String val)
+   {
+      return LinkHeaderDelegate.from(val);
+   }
+
+   public String toString()
+   {
+      return LinkHeaderDelegate.getString(this);
    }
 }
