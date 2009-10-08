@@ -1,19 +1,24 @@
 package org.jboss.resteasy.test.client;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
-import org.jboss.resteasy.spi.LinkHeader;
-import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
+import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.test.BaseResourceTest;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.POST;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -30,6 +35,7 @@ public class LinkHeaderTest extends BaseResourceTest
          System.out.println("SERVER LinkHeader: " + new LinkHeaderDelegate().toString(linkHeader));
          return Response.noContent().header("Link", linkHeader).build();
       }
+
       @POST
       @Path("/str")
       public Response postStr(@HeaderParam("Link") String linkHeader)
@@ -37,12 +43,59 @@ public class LinkHeaderTest extends BaseResourceTest
          System.out.println("SERVER LINK: " + linkHeader);
          return Response.noContent().header("Link", linkHeader).build();
       }
+
+      @HEAD
+      @Path("/topic")
+      public Response head(@Context UriInfo uriInfo)
+      {
+         return Response.ok()
+                 .header("Link", getSenderLink(uriInfo))
+                 .header("Link", getTopLink(uriInfo)).build();
+      }
+
+      protected String getSenderLink(UriInfo info)
+      {
+         String basePath = info.getMatchedURIs().get(0);
+         UriBuilder builder = info.getBaseUriBuilder();
+         builder.path(basePath);
+         builder.path("sender");
+         String link = "<" + builder.build().toString() + ">; rel=\"sender\"; title=\"sender\"";
+         return link;
+      }
+
+      protected String getTopLink(UriInfo info)
+      {
+         String basePath = info.getMatchedURIs().get(0);
+         UriBuilder builder = info.getBaseUriBuilder();
+         builder.path(basePath);
+         builder.path("poller");
+         String link = "<" + builder.build().toString() + ">; rel=\"top-message\"; title=\"top-message\"";
+         return link;
+      }
+
    }
 
    @BeforeClass
    public static void init() throws Exception
    {
       addPerRequestResource(LinkHeaderService.class);
+   }
+
+   @Test
+   public void testTopic() throws Exception
+   {
+      LinkHeaderDelegate delegate = new LinkHeaderDelegate();
+      LinkHeader header = delegate.fromString("<http://localhost:8081/linkheader/topic/sender>; rel=\"sender\"; title=\"sender\", <http://localhost:8081/linkheader/topic/poller>; rel=\"top-message\"; title=\"top-message\"");
+      Link sender = header.getLinkByTitle("sender");
+      Assert.assertNotNull(sender);
+      Assert.assertEquals("http://localhost:8081/linkheader/topic/sender", sender.getHref());
+      Assert.assertEquals("sender", sender.getRelationship());
+      Link top = header.getLinkByTitle("top-message");
+      Assert.assertNotNull(top);
+      Assert.assertEquals("http://localhost:8081/linkheader/topic/poller", top.getHref());
+      Assert.assertEquals("top-message", top.getRelationship());
+
+
    }
 
    @Test
