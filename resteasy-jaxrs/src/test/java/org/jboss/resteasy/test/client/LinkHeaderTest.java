@@ -95,6 +95,22 @@ public class LinkHeaderTest extends BaseResourceTest
       Assert.assertEquals("http://localhost:8081/linkheader/topic/poller", top.getHref());
       Assert.assertEquals("top-message", top.getRelationship());
 
+   }
+
+   @Test
+   public void testTopic2() throws Exception
+   {
+      LinkHeaderDelegate delegate = new LinkHeaderDelegate();
+      LinkHeader header = delegate.fromString("<http://localhost:8081/topics/test/poller/next?index=0>; rel=\"next-message\"; title=\"next-message\",<http://localhost:8081/topics/test/poller>; rel=\"generator\"; title=\"generator\"");
+      Link next = header.getLinkByTitle("next-message");
+      Assert.assertNotNull(next);
+      Assert.assertEquals("http://localhost:8081/topics/test/poller/next?index=0", next.getHref());
+      Assert.assertEquals("next-message", next.getRelationship());
+      Link generator = header.getLinkByTitle("generator");
+      Assert.assertNotNull(generator);
+      Assert.assertEquals("http://localhost:8081/topics/test/poller", generator.getHref());
+      Assert.assertEquals("generator", generator.getRelationship());
+
 
    }
 
