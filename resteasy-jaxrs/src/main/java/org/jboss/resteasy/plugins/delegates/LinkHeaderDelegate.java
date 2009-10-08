@@ -1,16 +1,13 @@
 package org.jboss.resteasy.plugins.delegates;
 
-import org.jboss.resteasy.spi.LinkHeader;
-import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.spi.LinkHeader;
 
-import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -46,7 +43,8 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
             char c = value.charAt(curr);
             if (c == '<')
             {
-               if (href != null) throw new IllegalArgumentException("Uanble to parse Link header.  Too many links in declaration: " + value);
+               if (href != null)
+                  throw new IllegalArgumentException("Uanble to parse Link header.  Too many links in declaration: " + value);
                href = parseLink();
             }
             else if (c == ';' || c == ' ')
@@ -59,6 +57,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
                populateLink(href, attributes);
                href = null;
                attributes = new MultivaluedMapImpl<String, String>();
+               curr++;
             }
             else
             {
@@ -66,8 +65,6 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
             }
          }
          populateLink(href, attributes);
-
-
 
 
       }
@@ -120,34 +117,49 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
       public void parseAttribute(MultivaluedMap<String, String> attributes)
       {
          int end = value.indexOf('=', curr);
-         if (end == -1 || end + 1 >= value.length()) throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+         if (end == -1 || end + 1 >= value.length())
+            throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
          String name = value.substring(curr, end);
          name = name.trim();
          curr = end + 1;
          String val = null;
-         end = value.indexOf(';', curr);
-         if (end == -1)
+         if (curr >= value.length())
          {
-            val = value.substring(curr);
-            curr = value.length();
+            val = "";
          }
          else
          {
-            val = value.substring(curr, end);
-            curr = end;
-         }
-         val = val.trim();
-         if (val.length() > 0 && val.charAt(0) == '"')
-         {
-            end = val.indexOf('"', 1);
-            if (end == -1) throw new IllegalArgumentException("Unable to parse Link header.  No end to quote: " + value);
-            val = val.substring(1, end);
+
+            if (value.charAt(curr) == '"')
+            {
+               if (curr + 1 >= value.length())
+                  throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+               curr++;
+               end = value.indexOf('"', curr);
+               if (end == -1)
+                  throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+               val = value.substring(curr, end);
+               curr = end + 1;
+            }
+            else
+            {
+               StringBuffer buf = new StringBuffer();
+               while (curr < value.length())
+               {
+                  char c = value.charAt(curr);
+                  if (c == ',' || c == ';') break;
+                  buf.append(value.charAt(curr));
+                  curr++;
+               }
+               val = buf.toString();
+            }
          }
          attributes.add(name, val);
 
       }
 
    }
+
    public LinkHeader fromString(String value) throws IllegalArgumentException
    {
       Parser parser = new Parser(value);

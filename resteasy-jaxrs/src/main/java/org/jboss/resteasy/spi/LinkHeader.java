@@ -1,9 +1,9 @@
 package org.jboss.resteasy.spi;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,6 +14,17 @@ public class LinkHeader
    private Map<String, Link> linksByRelationship = new HashMap<String, Link>();
    private Map<String, Link> linksByTitle = new HashMap<String, Link>();
    private List<Link> links = new ArrayList<Link>();
+
+
+   public Link getLinkByTitle(String title)
+   {
+      return linksByTitle.get(title);
+   }
+
+   public Link getLinkByRelationship(String rel)
+   {
+      return linksByRelationship.get(rel);
+   }
 
    /**
     * Index of links by relationship "rel" or "rev"
