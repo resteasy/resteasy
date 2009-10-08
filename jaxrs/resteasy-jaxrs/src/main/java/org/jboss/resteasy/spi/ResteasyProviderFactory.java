@@ -18,6 +18,7 @@ import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
@@ -352,6 +353,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
       addHeaderDelegate(Locale.class, new LocaleDelegate());
+      addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
    }
 
    public InterceptorRegistry<MessageBodyReaderInterceptor> getServerMessageBodyReaderInterceptorRegistry()

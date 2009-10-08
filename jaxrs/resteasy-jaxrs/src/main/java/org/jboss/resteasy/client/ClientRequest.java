@@ -11,6 +11,8 @@ import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.util.GenericType;
 import static org.jboss.resteasy.util.HttpHeaderNames.*;
 
@@ -61,6 +63,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    private String httpMethod;
    private String finalUri;
    private List<String> pathParameterList;
+   private LinkHeader linkHeader;
 
    private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor";
    //private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor";
@@ -181,6 +184,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       httpMethod = null;
       finalUri = null;
       pathParameterList = null;
+      linkHeader = null;
 
    }
 
@@ -244,6 +248,22 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       else
          return object.toString();
 
+   }
+
+   public ClientRequest addLink(Link link)
+   {
+      if (linkHeader == null)
+      {
+         linkHeader = new LinkHeader();
+      }
+      linkHeader.getLinks().add(link);
+      return this;
+   }
+
+   public ClientRequest addLink(String title, String rel, String href, String type)
+   {
+      Link link = new Link(title, rel, href, type, null);
+      return addLink(link);
    }
 
    public ClientRequest formParameter(String parameterName, Object value)
@@ -419,6 +439,8 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
 
    public ClientResponse execute() throws Exception
    {
+      if (linkHeader != null) header("Link", linkHeader);
+      
       if (getReaderInterceptorList().isEmpty())
          setReaderInterceptors(providerFactory
                  .getClientMessageBodyReaderInterceptorRegistry().bindForList(
