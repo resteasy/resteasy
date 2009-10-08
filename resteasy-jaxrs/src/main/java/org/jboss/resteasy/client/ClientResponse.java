@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client;
 
 import org.jboss.resteasy.util.GenericType;
+import org.jboss.resteasy.spi.LinkHeader;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -97,6 +98,13 @@ public abstract class ClientResponse<T> extends Response
     * @return
     */
    public abstract <T2> T2 getEntity(GenericType<T2> type, Annotation[] annotations);
+
+   /**
+    * Get the link headers of the response.
+    *
+    * @return
+    */
+   public abstract LinkHeader getLinkHeader();
    
    public abstract void releaseConnection();
 }

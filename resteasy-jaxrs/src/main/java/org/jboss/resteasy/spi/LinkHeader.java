@@ -1,0 +1,47 @@
+package org.jboss.resteasy.spi;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+
+/**
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @version $Revision: 1 $
+ */
+public class LinkHeader
+{
+   private Map<String, Link> linksByRelationship = new HashMap<String, Link>();
+   private Map<String, Link> linksByTitle = new HashMap<String, Link>();
+   private List<Link> links = new ArrayList<Link>();
+
+   /**
+    * Index of links by relationship "rel" or "rev"
+    *
+    * @return
+    */
+   public Map<String, Link> getLinksByRelationship()
+   {
+      return linksByRelationship;
+   }
+
+   /**
+    * Index of links by title
+    *
+    * @return
+    */
+   public Map<String, Link> getLinksByTitle()
+   {
+      return linksByTitle;
+   }
+
+   /**
+    * All the links defined
+    *
+    * @return
+    */
+   public List<Link> getLinks()
+   {
+      return links;
+   }
+}

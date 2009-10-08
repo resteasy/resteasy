@@ -5,9 +5,11 @@ import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.core.messagebody.ReaderUtility;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -16,6 +18,7 @@ import java.io.InputStream;
 import static java.lang.String.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,6 +49,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected Exception exception;// These can only be set by an interceptor
    protected boolean cacheInputStream;
    protected BaseClientResponseStreamFactory streamFactory;
+   protected LinkHeader linkHeader;
 
    public BaseClientResponse(BaseClientResponseStreamFactory streamFactory)
    {
@@ -121,6 +125,24 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (headers == null) return null;
       return headers.getFirst(headerKey);
+   }
+
+   public LinkHeader getLinkHeader()
+   {
+      if (linkHeader != null) return linkHeader;
+      if (!headers.containsKey("Link")) return null;
+      List<String> links = headers.get("Link");
+      linkHeader = new LinkHeader();
+      LinkHeaderDelegate delegate = new LinkHeaderDelegate();
+      for (String link : links)
+      {
+         LinkHeader tmp = delegate.fromString(link);
+         linkHeader.getLinks().addAll(tmp.getLinks());
+         linkHeader.getLinksByRelationship().putAll(tmp.getLinksByRelationship());
+         linkHeader.getLinksByTitle().putAll(tmp.getLinksByTitle());
+
+      }
+      return linkHeader;
    }
 
    public void setAlternateMediaType(String alternateMediaType)
