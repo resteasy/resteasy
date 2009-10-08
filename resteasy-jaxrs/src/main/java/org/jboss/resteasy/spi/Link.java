@@ -1,10 +1,10 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.client.ClientExecutor;
+import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Implementation of <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-06">Link Headers v6</a>
@@ -76,5 +76,15 @@ public class Link
    public MultivaluedMap<String, String> getExtensions()
    {
       return extensions;
+   }
+
+   public ClientRequest request()
+   {
+      return new ClientRequest(href);
+   }
+
+   public ClientRequest request(ClientExecutor executor)
+   {
+      return new ClientRequest(href, executor);
    }
 }
