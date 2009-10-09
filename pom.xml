@@ -12,7 +12,7 @@
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
     </properties>
 
-    <url>http://wiki.jboss.org/wiki/Wiki.jsp?page=RESTeasyJAXRS</url>
+    <url>http://rest-easy.org</url>
 
     <licenses>
         <license>
