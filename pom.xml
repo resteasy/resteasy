@@ -1,0 +1,18 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>RESTEasy</name>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-pom</artifactId>
+    <version>1.2.GA</version>
+    <packaging>pom</packaging>
+
+    <url>http://rest-easy.org</url>
+
+    <modules>
+        <module>jaxrs</module>
+        <module>rest-star</module>
+    </modules>
+
+</project>
