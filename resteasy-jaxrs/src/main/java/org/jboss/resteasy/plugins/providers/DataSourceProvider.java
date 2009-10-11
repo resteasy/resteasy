@@ -11,10 +11,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.SequenceInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -28,6 +31,45 @@ import java.lang.reflect.Type;
 public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 {
 
+	protected static class SequencedDataSource implements DataSource {
+		private byte[] byteBuffer;
+		private int byteBufferOffset;
+		private int byteBufferLength;
+		private File tempFile;
+		private String type;
+
+		public SequencedDataSource(byte[] byteBuffer, int byteBufferOffset,
+				int byteBufferLength, File tempFile, String type) {
+			super();
+			this.byteBuffer = byteBuffer;
+			this.byteBufferOffset = byteBufferOffset;
+			this.byteBufferLength = byteBufferLength;
+			this.tempFile = tempFile;
+			this.type = type;
+		}
+
+		public String getContentType() {
+			return type;
+		}
+
+		public InputStream getInputStream() throws IOException {
+			InputStream bis = new ByteArrayInputStream(byteBuffer, byteBufferOffset, byteBufferLength);
+			if (tempFile == null)
+				return bis;
+			InputStream fis = new FileInputStream(tempFile);
+			return new SequenceInputStream(bis, fis);
+		}
+
+		public String getName() {
+			return "";
+		}
+
+		public OutputStream getOutputStream() throws IOException {
+			throw new IOException("No output stream allowed");
+		}
+		
+	}
+
 
    /**
     * @param in
@@ -37,33 +79,24 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     */
    public static DataSource readDataSource(final InputStream in, final MediaType mediaType) throws IOException
    {
-      final String type = mediaType.toString();
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ProviderHelper.writeTo(in, baos);
-      final byte[] bytes = baos.toByteArray();
+      byte[] memoryBuffer = new byte[4096];
+      int readCount = in.read(memoryBuffer, 0, memoryBuffer.length);
 
-      return new DataSource()
-      {
-         public InputStream getInputStream() throws IOException
-         {
-            return new ByteArrayInputStream(bytes);
-         }
+      File tempFile = null;
+      if (in.available() > 0) {
+    	  tempFile = File.createTempFile("resteasy-provider-datasource", null);
+    	  FileOutputStream fos = new FileOutputStream(tempFile);
+    	  try {
+    		  ProviderHelper.writeTo(in, fos);
+    	  } finally {
+    		  fos.close();
+    	  }
+      }
 
-         public OutputStream getOutputStream() throws IOException
-         {
-            throw new IOException("No output stream allowed");
-         }
+      if (readCount == -1)
+    	  readCount = 0;
 
-         public String getContentType()
-         {
-            return type;
-         }
-
-         public String getName()
-         {
-            return "";
-         }
-      };
+      return new SequencedDataSource(memoryBuffer, 0, readCount, tempFile, mediaType.toString());
    }
 
    /**
