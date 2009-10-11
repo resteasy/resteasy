@@ -32,6 +32,12 @@ public class DataSourceResource
       return datasource.getContentType();
    }
 
+   @POST
+   @Path("/echo")
+   public DataSource echo(DataSource datasource) {
+	   return datasource;
+   }
+
    @GET
    @Path("/{value}")
    public DataSource getDataSource(@PathParam("value") String value) throws IOException

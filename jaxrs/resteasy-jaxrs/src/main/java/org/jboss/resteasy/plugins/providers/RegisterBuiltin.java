@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 
 import javax.ws.rs.ext.Providers;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Enumeration;
@@ -45,13 +46,18 @@ public class RegisterBuiltin
       while (en.hasMoreElements())
       {
          URL url = en.nextElement();
-         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-         String line;
-         while ((line = reader.readLine()) != null)
-         {
-            line = line.trim();
-            if (line.equals("")) continue;
-            set.add(line);
+         InputStream is = url.openStream();
+         try {
+	         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+	         String line;
+	         while ((line = reader.readLine()) != null)
+	         {
+	            line = line.trim();
+	            if (line.equals("")) continue;
+	            set.add(line);
+	         }
+         } finally {
+        	 is.close();
          }
       }
       for (String line : set)
