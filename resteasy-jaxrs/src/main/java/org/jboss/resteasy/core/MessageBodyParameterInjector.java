@@ -1,30 +1,31 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
+import org.jboss.resteasy.core.messagebody.ReaderUtility;
+import org.jboss.resteasy.spi.BadRequestException;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.ThreadLocalStack;
+
+import javax.ws.rs.Encoded;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Encoded;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.core.messagebody.ReaderUtility;
-import org.jboss.resteasy.spi.BadRequestException;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.ThreadLocalStack;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class MessageBodyParameterInjector implements ValueInjector
+public class MessageBodyParameterInjector implements ValueInjector, InterceptorRegistryListener
 {
    private static ThreadLocalStack<Object> bodyStack = new ThreadLocalStack<Object>();
 
@@ -52,29 +53,52 @@ public class MessageBodyParameterInjector implements ValueInjector
    {
       bodyStack.clear();
    }
-   
+
    private Class type;
    private Type genericType;
    private Annotation[] annotations;
    private ReaderUtility readerUtility;
+   private ResteasyProviderFactory factory;
+   private Class declaringClass;
+   private AccessibleObject target;
+
+   private class ReaderUtilityImpl extends ReaderUtility
+   {
+      private ReaderUtilityImpl(ResteasyProviderFactory factory, MessageBodyReaderInterceptor[] interceptors)
+      {
+         super(factory, interceptors);
+      }
+
+
+      public RuntimeException createReaderNotFound(Type genericType, MediaType mediaType)
+      {
+         return new BadRequestException(
+                 "Could not find message body reader for type: "
+                         + genericType + " of content type: " + mediaType);
+      }
+   }
 
    public MessageBodyParameterInjector(Class declaringClass, AccessibleObject target, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
+      this.factory = factory;
+      this.declaringClass = declaringClass;
+      this.target = target;
       this.type = type;
       this.genericType = genericType;
       this.annotations = annotations;
       MessageBodyReaderInterceptor[] interceptors = factory
-            .getServerMessageBodyReaderInterceptorRegistry().bind(
-                  declaringClass, target);
-      this.readerUtility = new ReaderUtility(factory, interceptors)
-      {
-         public RuntimeException createReaderNotFound(Type genericType, MediaType mediaType)
-         {
-            return new BadRequestException(
-                  "Could not find message body reader for type: "
-                        + genericType + " of content type: " + mediaType);
-         }
-      };
+              .getServerMessageBodyReaderInterceptorRegistry().bind(
+                      declaringClass, target);
+      this.readerUtility = new ReaderUtilityImpl(factory, interceptors);
+      factory.getServerMessageBodyReaderInterceptorRegistry().getListeners().add(this);
+   }
+
+   public void registryUpdated(InterceptorRegistry registry)
+   {
+      MessageBodyReaderInterceptor[] interceptors = factory
+              .getServerMessageBodyReaderInterceptorRegistry().bind(
+                      declaringClass, target);
+      this.readerUtility = new ReaderUtilityImpl(factory, interceptors);
    }
 
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -95,7 +119,7 @@ public class MessageBodyParameterInjector implements ValueInjector
       try
       {
          Object o = getBody();
-         if( o != null )
+         if (o != null)
          {
             return o;
          }

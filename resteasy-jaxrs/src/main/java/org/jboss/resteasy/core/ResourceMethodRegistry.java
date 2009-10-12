@@ -213,7 +213,15 @@ public class ResourceMethodRegistry implements Registry
          String pathExpression = builder.getPath();
          if (pathExpression == null) pathExpression = "";
 
-         if (rootSegment.removePath(pathExpression, method) != null) size--;
+         ResourceInvoker invoker = rootSegment.removePath(pathExpression, method);
+         if (invoker != null)
+         {
+            size--;
+            if (invoker instanceof ResourceMethod)
+            {
+               ((ResourceMethod) invoker).cleanup();
+            }
+         }
       }
    }
 
