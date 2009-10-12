@@ -206,6 +206,11 @@ public class MockHttpRequest implements HttpRequest
       return inputStream;
    }
 
+   public void setInputStream(InputStream stream)
+   {
+      this.inputStream = stream;
+   }
+
    public UriInfo getUri()
    {
       return uri;

@@ -46,6 +46,7 @@ public class HttpServletInputMessage implements HttpRequest
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
    protected AbstractAsynchronousResponse asynchronousResponse;
+   protected InputStream overridenStream;
 
 
    public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
@@ -160,6 +161,7 @@ public class HttpServletInputMessage implements HttpRequest
 
    public InputStream getInputStream()
    {
+      if (overridenStream != null) return overridenStream;
       try
       {
          return request.getInputStream();
@@ -168,6 +170,11 @@ public class HttpServletInputMessage implements HttpRequest
       {
          throw new RuntimeException(e);
       }
+   }
+
+   public void setInputStream(InputStream stream)
+   {
+      this.overridenStream = stream;
    }
 
    public UriInfo getUri()

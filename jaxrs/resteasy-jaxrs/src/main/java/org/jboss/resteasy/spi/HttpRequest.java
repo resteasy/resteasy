@@ -17,6 +17,14 @@ public interface HttpRequest
 
    InputStream getInputStream();
 
+   /**
+    * If you are using a servlet container, this will *NOT* override the HttpServletRequest.getInputStream().
+    * It will only override it for the resteasy HttpRequest
+    *
+    * @param stream
+    */
+   void setInputStream(InputStream stream);
+
    UriInfo getUri();
 
    String getHttpMethod();
