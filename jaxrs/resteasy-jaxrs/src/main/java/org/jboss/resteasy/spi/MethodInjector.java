@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.core.ValueInjector;
+
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -30,4 +32,6 @@ public interface MethodInjector
     * @throws Failure
     */
    Object[] injectArguments(HttpRequest request, HttpResponse response) throws Failure;
+
+   ValueInjector[] getParams();
 }

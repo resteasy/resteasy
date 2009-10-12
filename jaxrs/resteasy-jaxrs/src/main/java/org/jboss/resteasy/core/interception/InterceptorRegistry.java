@@ -1,9 +1,9 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.annotations.interception.Precedence;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
-import org.jboss.resteasy.annotations.interception.Precedence;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -127,6 +127,7 @@ public class InterceptorRegistry<T>
    protected List<InterceptorFactory> interceptors = new ArrayList<InterceptorFactory>();
    protected Map<String, Integer> precedenceOrder = new HashMap<String, Integer>();
    protected List<String> precedenceList = new ArrayList<String>();
+   protected List<InterceptorRegistryListener> listeners = new ArrayList<InterceptorRegistryListener>();
 
    public class PrecedenceComparator implements Comparator<InterceptorFactory>
    {
@@ -136,6 +137,15 @@ public class InterceptorRegistry<T>
       }
    }
 
+   public List<InterceptorRegistryListener> getListeners()
+   {
+      return listeners;
+   }
+
+   public Class<T> getIntf()
+   {
+      return intf;
+   }
 
    public InterceptorRegistry(Class<T> intf, ResteasyProviderFactory providerFactory)
    {
@@ -228,12 +238,20 @@ public class InterceptorRegistry<T>
    {
       interceptors.add(new PerMethodInterceptorFactory(clazz));
       Collections.sort(interceptors, new PrecedenceComparator());
+      for (InterceptorRegistryListener listener : listeners)
+      {
+         listener.registryUpdated(this);
+      }
    }
 
    public void register(T interceptor)
    {
       interceptors.add(new SingletonInterceptorFactory(interceptor));
       Collections.sort(interceptors, new PrecedenceComparator());
+      for (InterceptorRegistryListener listener : listeners)
+      {
+         listener.registryUpdated(this);
+      }
    }
 
 }

@@ -79,6 +79,11 @@ public class MethodInjectorImpl implements MethodInjector
 
    }
 
+   public ValueInjector[] getParams()
+   {
+      return params;
+   }
+
    public Object[] injectArguments(HttpRequest input, HttpResponse response)
    {
       try

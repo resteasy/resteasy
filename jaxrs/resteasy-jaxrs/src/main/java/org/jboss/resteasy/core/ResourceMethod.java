@@ -1,8 +1,7 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -10,6 +9,9 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
+import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.Types;
 import org.jboss.resteasy.util.WeightedMediaType;
@@ -32,7 +34,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceMethod implements ResourceInvoker
+public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListener
 {
 
    protected MediaType[] produces;
@@ -93,6 +95,9 @@ public class ResourceMethod implements ResourceInvoker
       preProcessInterceptors = providerFactory.getServerPreProcessInterceptorRegistry().bind(resourceClass, method);
       postProcessInterceptors = providerFactory.getServerPostProcessInterceptorRegistry().bind(resourceClass, method);
       writerInterceptors = providerFactory.getServerMessageBodyWriterInterceptorRegistry().bind(resourceClass, method);
+      providerFactory.getServerPreProcessInterceptorRegistry().getListeners().add(this);
+      providerFactory.getServerPostProcessInterceptorRegistry().getListeners().add(this);
+      providerFactory.getServerMessageBodyWriterInterceptorRegistry().getListeners().add(this);
       /*
           We get the genericReturnType for the case of:
           
@@ -107,6 +112,37 @@ public class ResourceMethod implements ResourceInvoker
        */
       genericReturnType = Types.getGenericReturnTypeOfGenericInterfaceMethod(clazz, method);
    }
+
+   public void cleanup()
+   {
+      providerFactory.getServerPreProcessInterceptorRegistry().getListeners().remove(this);
+      providerFactory.getServerPostProcessInterceptorRegistry().getListeners().remove(this);
+      providerFactory.getServerMessageBodyWriterInterceptorRegistry().getListeners().remove(this);
+      for (ValueInjector param : methodInjector.getParams())
+      {
+         if (param instanceof MessageBodyParameterInjector)
+         {
+            providerFactory.getServerMessageBodyReaderInterceptorRegistry().getListeners().remove(param);
+         }
+      }
+   }
+
+   public void registryUpdated(InterceptorRegistry registry)
+   {
+      if (registry.getIntf().equals(MessageBodyWriterInterceptor.class))
+      {
+         writerInterceptors = providerFactory.getServerMessageBodyWriterInterceptorRegistry().bind(resourceClass, method);
+      }
+      else if (registry.getIntf().equals(PreProcessInterceptor.class))
+      {
+         preProcessInterceptors = providerFactory.getServerPreProcessInterceptorRegistry().bind(resourceClass, method);
+      }
+      else if (registry.getIntf().equals(PostProcessInterceptor.class))
+      {
+         postProcessInterceptors = providerFactory.getServerPostProcessInterceptorRegistry().bind(resourceClass, method);
+      }
+   }
+
 
    protected void incrementMethodCount(String httpMethod)
    {
