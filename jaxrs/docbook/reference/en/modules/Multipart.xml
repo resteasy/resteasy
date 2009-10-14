@@ -35,6 +35,8 @@ public interface InputPart
    &lt;T&gt; T getBody(org.jboss.resteasy.util.GenericType&lt;T&gt; type) throws IOException;
 
    MediaType getMediaType();
+
+   boolean isContentTypeFromMessage();
 }
       </programlisting>
       <para>MultipartInput is a simple interface that allows you to get access to each part of the multipart message.
@@ -529,5 +531,32 @@ public class XopService {
       Like org.jboss.seam.web.MultipartFilter in Seam or org.springframework.web.multipart.MultipartResolver in Spring.
       However the incoming multipart request stream can be parsed only once. Resteasy users working with multipart should
       make sure that nothing parses the stream before Resteasy gets it.</para>
+   </sect1>
+   <sect1 id="multipart_overwrite_default_content_type">
+      <title>Overwriting the default fallback content type for multipart messages</title>
+      <para>By default if no Content-Type header is present in a part, "text/plain; charset=us-ascii" is used as fallback.
+      This is the value defined by the MIME RFC. However for example some web clients (like most, if not all, web browsers)
+      do not send Content-Type headers for all fields in a multipart/form-data request (only for the file parts). This can
+      cause character encoding and unmarshalling errors on the server side. To correct this there is an option to define an
+      other, non-rfc compliant fallback value. This can be done dynamicly per request with the PreProcessInterceptor
+      infrastructure of RESTEasy. In the following example we will set "*/*; charset=UTF-8" as the new default fallback:
+<programlisting>
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+
+@Provider
+@ServerInterceptor
+public class ContentTypeSetterPreProcessorInterceptor implements
+		PreProcessInterceptor {
+
+	public ServerResponse preProcess(HttpRequest request,
+			ResourceMethod method) throws Failure, WebApplicationException {
+		request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
+				"*/*; charset=UTF-8");
+		return null;
+	}
+
+}
+</programlisting>
+      </para>
    </sect1>
 </chapter>

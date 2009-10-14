@@ -134,6 +134,15 @@ public class MediaType
    public final static MediaType MULTIPART_FORM_DATA_TYPE = new MediaType("multipart", "form-data");
 
    /**
+    * "multipart/mixed"
+    */
+   public final static String MULTIPART_MIXED = "multipart/mixed";
+   /**
+    * "multipart/mixed"
+    */
+   public final static MediaType MULTIPART_MIXED_TYPE = new MediaType("multipart", "mixed");
+
+   /**
     * "multipart/related"
     */
    public final static String MULTIPART_RELATED = "multipart/related";
@@ -159,6 +168,32 @@ public class MediaType
     * "text/plain"
     */
    public final static MediaType TEXT_PLAIN_TYPE = new MediaType("text", "plain");
+
+   /**
+    * Default fallback of the HTTP 1.1 protocol.
+    * 
+    * "text/plain; charset=ISO-8859-1"
+    */
+   public final static String TEXT_PLAIN_WITH_CHARSET_ISO_8859_1 = "text/plain; charset=ISO-8859-1";
+   /**
+    * Default fallback of the HTTP 1.1 protocol.
+    * 
+    * "text/plain; charset=ISO-8859-1"
+    */
+   public final static MediaType TEXT_PLAIN_WITH_CHARSET_ISO_8859_1_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_CHARSET_ISO_8859_1);
+
+   /**
+    * Default fallback of MIME messages
+    * 
+    * "text/plain; charset=us-ascii"
+    */
+   public final static String TEXT_PLAIN_WITH_CHARSET_US_ASCII = "text/plain; charset=us-ascii";
+   /**
+    * Default fallback of MIME messages
+    * 
+    * "text/plain; charset=us-ascii"
+    */
+   public final static MediaType TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_CHARSET_US_ASCII);
 
    /**
     * "text/xml"
