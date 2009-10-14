@@ -30,6 +30,8 @@ import org.apache.james.mime4j.message.Multipart;
 import org.apache.james.mime4j.message.TextBody;
 import org.apache.james.mime4j.parser.Field;
 import org.apache.james.mime4j.util.CharsetUtil;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 
@@ -43,10 +45,27 @@ public class MultipartInputImpl implements MultipartInput {
 	protected Message mimeMessage;
 	protected List<InputPart> parts = new ArrayList<InputPart>();
 	protected static final Annotation[] empty = {};
+	protected MediaType defaultPartContentType = MediaType.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
 
 	public MultipartInputImpl(MediaType contentType, Providers workers) {
 		this.contentType = contentType;
 		this.workers = workers;
+		HttpRequest httpRequest = ResteasyProviderFactory
+				.getContextData(HttpRequest.class);
+		if (httpRequest != null) {
+			String defaultContentType = (String) httpRequest
+					.getAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY);
+			if (defaultContentType != null)
+				this.defaultPartContentType = MediaType
+						.valueOf(defaultContentType);
+		}
+	}
+
+	public MultipartInputImpl(MediaType contentType, Providers workers,
+			MediaType defaultPartContentType) {
+		this.contentType = contentType;
+		this.workers = workers;
+		this.defaultPartContentType = defaultPartContentType;
 	}
 
 	public void parse(InputStream is) throws IOException {
@@ -85,19 +104,23 @@ public class MultipartInputImpl implements MultipartInput {
 	}
 
 	public class PartImpl implements InputPart {
+
 		private BodyPart bodyPart;
 		private MediaType contentType;
 		private MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
+		private boolean contentTypeFromMessage;
 
 		public PartImpl(BodyPart bodyPart) {
 			this.bodyPart = bodyPart;
 			for (Field field : bodyPart.getHeader()) {
 				headers.add(field.getName(), field.getBody());
-				if (field instanceof ContentTypeField)
+				if (field instanceof ContentTypeField) {
 					contentType = MediaType.valueOf(field.getBody());
+					contentTypeFromMessage = true;
+				}
 			}
 			if (contentType == null)
-				contentType = MediaType.TEXT_PLAIN_TYPE;
+				contentType = defaultPartContentType;
 		}
 
 		public <T> T getBody(Class<T> type, Type genericType)
@@ -116,14 +139,8 @@ public class MultipartInputImpl implements MultipartInput {
 			Body body = bodyPart.getBody();
 			InputStream result = null;
 			if (body instanceof TextBody) {
-				final Reader reader = ((TextBody) body).getReader();
-				result = new InputStream() {
-					@Override
-					public int read() throws IOException {
-						int c = reader.read();
-						return c;
-					}
-				};
+				Reader reader = ((TextBody) body).getReader();
+				result = new ReaderBackedInputStream(reader);
 			} else if (body instanceof BinaryBody)
 				result = ((BinaryBody) body).getInputStream();
 			return result;
@@ -176,6 +193,30 @@ public class MultipartInputImpl implements MultipartInput {
 
 		public MediaType getMediaType() {
 			return contentType;
+		}
+
+		public boolean isContentTypeFromMessage() {
+			return contentTypeFromMessage;
+		}
+	}
+
+	private static class ReaderBackedInputStream extends InputStream {
+		private final Reader reader;
+
+		private ReaderBackedInputStream(Reader reader) {
+			this.reader = reader;
+		}
+
+		@Override
+		public int read() throws IOException {
+			int c = reader.read();
+			return c;
+		}
+
+		@Override
+		public void close() throws IOException {
+			reader.close();
+			super.close();
 		}
 	}
 
