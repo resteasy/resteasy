@@ -1,17 +1,17 @@
 package org.jboss.resteasy.star.messaging;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.GET;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import java.util.concurrent.TimeUnit;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -47,7 +47,7 @@ public class PollerResource
    @Path("/top")
    @HEAD
    public Response headTop(@QueryParam("wait") @DefaultValue("0") long wait,
-                       @Context UriInfo info) throws Exception
+                           @Context UriInfo info) throws Exception
    {
       MessageIndex top = current.getCurrent();
       if (top.getId() == -1)
@@ -63,14 +63,13 @@ public class PollerResource
    @GET
    public Response next(@QueryParam("wait") @DefaultValue("0") long wait,
                         @QueryParam("index") long index,
-                       @Context UriInfo info) throws Exception
+                        @Context UriInfo info) throws Exception
    {
       MessageIndex top = repository.getMessageIndex(index);
       if (top == null)
       {
          Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE);
-         String link = getTopLink(info);
-         responseBuilder.header("Link", link);
+         setTopLink(responseBuilder, info);
          return responseBuilder.build();
       }
 
@@ -80,15 +79,14 @@ public class PollerResource
    @Path("/next")
    @HEAD
    public Response headNext(@QueryParam("wait") @DefaultValue("0") long wait,
-                        @QueryParam("index") long index,
-                       @Context UriInfo info) throws Exception
+                            @QueryParam("index") long index,
+                            @Context UriInfo info) throws Exception
    {
       MessageIndex top = repository.getMessageIndex(index);
       if (top == null)
       {
          Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE);
-         String link = getTopLink(info);
-         responseBuilder.header("Link", link);
+         setTopLink(responseBuilder, info);
          return responseBuilder.build();
       }
 
@@ -134,10 +132,9 @@ public class PollerResource
 
    protected Response.ResponseBuilder getMessageResponse(UriInfo info, Message msg)
    {
-      String link = getNextLink(info, msg);
       Response.ResponseBuilder responseBuilder = Response.ok();
-      responseBuilder.header("Link", link);
-      responseBuilder.header("Link", getDestinationLink(info));
+      setNextLink(responseBuilder, info, msg);
+      setDestinationLink(responseBuilder, info);
       for (String header : msg.getHeaders().keySet())
       {
          List values = msg.getHeaders().get(header);
@@ -155,16 +152,15 @@ public class PollerResource
       return builder.build().toString();
    }
 
-   protected String getNextLink(UriInfo info, Message msg)
+   protected void setNextLink(Response.ResponseBuilder response, UriInfo info, Message msg)
    {
       String basePath = info.getMatchedURIs().get(1);
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
       builder.path("next");
       builder.queryParam("index", msg.getId());
-
-      String link = "<" + builder.build().toString() + ">; rel=\"next-message\"; title=\"next-message\"";
-      return link;
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "next-message", "next-message", uri, null);
    }
 
    protected Response getNext(long wait, UriInfo info, MessageIndex top)
@@ -195,22 +191,22 @@ public class PollerResource
       return builder.build();
    }
 
-   protected String getTopLink(UriInfo info)
+   protected void setTopLink(Response.ResponseBuilder response, UriInfo info)
    {
       String basePath = info.getMatchedURIs().get(1);
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
       builder.path("poller");
-      String link = "<" + builder.build().toString() + ">; rel=\"top-message\"; title=\"top-message\"";
-      return link;
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "top-message", "top-message", uri, null);
    }
 
-   protected String getDestinationLink(UriInfo info)
+   protected void setDestinationLink(Response.ResponseBuilder response, UriInfo info)
    {
       String basePath = info.getMatchedURIs().get(1);
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
-      String link = "<" + builder.build().toString() + ">; rel=\"generator\"; title=\"generator\"";
-      return link;
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "generator", "generator", uri, null);
    }
 }
