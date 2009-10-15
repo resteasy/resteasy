@@ -184,18 +184,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
       for (Link link : value.getLinks())
       {
          if (buf.length() > 0) buf.append(", ");
-         buf.append("<").append(link.getHref()).append(">");
-         buf.append("; rel=\"").append(link.getRelationship()).append("\"");
-         if (link.getType() != null) buf.append("; type=").append(link.getType());
-         if (link.getTitle() != null) buf.append("; title=\"").append(link.getTitle()).append("\"");
-         for (String key : link.getExtensions().keySet())
-         {
-            List<String> values = link.getExtensions().get(key);
-            for (String val : values)
-            {
-               buf.append("; ").append(key).append("=\"").append(val).append("\"");
-            }
-         }
+         buf.append(link.toString());
       }
       return buf.toString();
    }

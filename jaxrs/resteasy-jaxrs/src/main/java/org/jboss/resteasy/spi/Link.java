@@ -5,6 +5,7 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.List;
 
 /**
  * Implementation of <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-06">Link Headers v6</a>
@@ -87,4 +88,32 @@ public class Link
    {
       return new ClientRequest(href, executor);
    }
+
+   public String toString()
+   {
+      StringBuffer buf = new StringBuffer("<");
+      buf.append(href).append(">");
+      if (relationship != null)
+      {
+         buf.append("; rel=\"").append(relationship).append("\"");
+      }
+      if (type != null)
+      {
+         buf.append("; type=\"").append(type).append("\"");
+      }
+      if (title != null)
+      {
+         buf.append("; title=\"").append(title).append("\"");
+      }
+      for (String key : getExtensions().keySet())
+      {
+         List<String> values = getExtensions().get(key);
+         for (String val : values)
+         {
+            buf.append("; ").append(key).append("=\"").append(val).append("\"");
+         }
+      }
+      return buf.toString();
+   }
+
 }
