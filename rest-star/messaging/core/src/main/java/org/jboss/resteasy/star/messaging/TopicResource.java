@@ -2,15 +2,14 @@ package org.jboss.resteasy.star.messaging;
 
 import org.hornetq.core.client.ClientSessionFactory;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.HEAD;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Context;
-import java.util.Map;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -56,43 +55,42 @@ public class TopicResource
       String msg = "<topic>"
               + "<name>" + topicName + "</name>"
               + "</topic/>";
-      return Response.ok(msg)
-                     .header("Link", getSenderLink(uriInfo))
-                     .header("Link", getTopLink(uriInfo)).build();
-
+      Response.ResponseBuilder builder = Response.ok(msg);
+      setSenderLink(builder, uriInfo);
+      setTopLink(builder, uriInfo);
+      return builder.build();
    }
 
    @HEAD
    @Produces("application/xml")
    public Response head(@Context UriInfo uriInfo)
    {
-      return Response.ok()
-                     .header("Link", getSenderLink(uriInfo))
-                     .header("Link", getTopLink(uriInfo)).build();
-
+      Response.ResponseBuilder builder = Response.ok();
+      setSenderLink(builder, uriInfo);
+      setTopLink(builder, uriInfo);
+      return builder.build();
    }
 
-   protected String getSenderLink(UriInfo info)
+   protected void setSenderLink(Response.ResponseBuilder response, UriInfo info)
    {
       String basePath = info.getMatchedURIs().get(1);
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
       builder.path("sender");
-      String link = "<" + builder.build().toString() + ">; rel=\"sender\"; title=\"sender\"";
-      return link;
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "sender", "sender", uri, null);
    }
 
-   protected String getTopLink(UriInfo info)
+   protected void setTopLink(Response.ResponseBuilder response, UriInfo info)
    {
       String basePath = info.getMatchedURIs().get(1);
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
       builder.path("poller");
       builder.path("top");
-      String link = "<" + builder.build().toString() + ">; rel=\"top-message\"; title=\"top-message\"";
-      return link;
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "top-message", "top-message", uri, null);
    }
-
 
 
 }
