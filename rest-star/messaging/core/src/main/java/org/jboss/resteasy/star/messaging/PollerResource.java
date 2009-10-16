@@ -3,6 +3,7 @@ package org.jboss.resteasy.star.messaging;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -22,6 +23,8 @@ public class PollerResource
    protected CurrentMessageIndex current;
    protected MessageRepository repository;
 
+   public static final String WAIT_HEADER = "X-RS-Wait";
+
    public PollerResource(MessageRepository repository, CurrentMessageIndex current)
    {
       this.repository = repository;
@@ -30,11 +33,10 @@ public class PollerResource
 
    @Path("/top")
    @GET
-   public Response top(@QueryParam("wait") @DefaultValue("0") long wait,
+   public Response top(@HeaderParam(WAIT_HEADER) @DefaultValue("0") long wait,
                        @Context UriInfo info) throws Exception
    {
       MessageIndex top = current.getCurrent();
-      System.out.println("TOP id = " + top.getId());
       if (top.getId() == -1)
       {
          return getNext(wait, info, top);
@@ -46,7 +48,7 @@ public class PollerResource
 
    @Path("/top")
    @HEAD
-   public Response headTop(@QueryParam("wait") @DefaultValue("0") long wait,
+   public Response headTop(@HeaderParam(WAIT_HEADER) @DefaultValue("0") long wait,
                            @Context UriInfo info) throws Exception
    {
       MessageIndex top = current.getCurrent();
@@ -61,7 +63,7 @@ public class PollerResource
 
    @Path("/next")
    @GET
-   public Response next(@QueryParam("wait") @DefaultValue("0") long wait,
+   public Response next(@HeaderParam(WAIT_HEADER) @DefaultValue("0") long wait,
                         @QueryParam("index") long index,
                         @Context UriInfo info) throws Exception
    {
@@ -78,7 +80,7 @@ public class PollerResource
 
    @Path("/next")
    @HEAD
-   public Response headNext(@QueryParam("wait") @DefaultValue("0") long wait,
+   public Response headNext(@HeaderParam(WAIT_HEADER) @DefaultValue("0") long wait,
                             @QueryParam("index") long index,
                             @Context UriInfo info) throws Exception
    {
@@ -160,7 +162,7 @@ public class PollerResource
       builder.path("next");
       builder.queryParam("index", msg.getId());
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "next-message", "next-message", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "next", "next", uri, null);
    }
 
    protected Response getNext(long wait, UriInfo info, MessageIndex top)
@@ -198,7 +200,7 @@ public class PollerResource
       builder.path(basePath);
       builder.path("poller");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "top-message", "top-message", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "top", "top", uri, null);
    }
 
    protected void setDestinationLink(Response.ResponseBuilder response, UriInfo info)

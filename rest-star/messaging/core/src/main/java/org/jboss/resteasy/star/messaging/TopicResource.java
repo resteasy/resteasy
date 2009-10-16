@@ -52,6 +52,7 @@ public class TopicResource
    public Response get(@Context UriInfo uriInfo)
    {
 
+
       String msg = "<topic>"
               + "<name>" + topicName + "</name>"
               + "</topic/>";
@@ -89,7 +90,7 @@ public class TopicResource
       builder.path("poller");
       builder.path("top");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "top-message", "top-message", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "top", "top", uri, null);
    }
 
 
