@@ -1,8 +1,8 @@
 package org.jboss.resteasy.star.messaging;
 
+import org.jboss.resteasy.util.CaseInsensitiveMap;
+
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -11,8 +11,7 @@ import java.util.concurrent.CountDownLatch;
 public class Message
 {
    private long id = -1;
-   private long nextMessage;
-   private MultivaluedMap<String, String> headers;
+   private CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
    private byte[] body;
 
    public long getId()
@@ -25,16 +24,6 @@ public class Message
       this.id = id;
    }
 
-   public long getNextMessage()
-   {
-      return nextMessage;
-   }
-
-   public void setNextMessage(long nextMessage)
-   {
-      this.nextMessage = nextMessage;
-   }
-
    public MultivaluedMap<String, String> getHeaders()
    {
       return headers;
@@ -42,7 +31,7 @@ public class Message
 
    public void setHeaders(MultivaluedMap<String, String> headers)
    {
-      this.headers = headers;
+      this.headers.putAll(headers);
    }
 
    public byte[] getBody()

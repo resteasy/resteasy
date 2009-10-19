@@ -23,6 +23,7 @@ public class TopicResource
    private String topicName;
    private SenderResource sender;
    private PollerResource poller;
+   private TopicSubscriberResource subscribers;
 
    public TopicResource(MessageRepository repository, CurrentMessageIndex current, ClientSessionFactory factory, String topicName)
    {
@@ -33,6 +34,7 @@ public class TopicResource
 
       sender = new SenderResource(repository, factory, topicName);
       poller = new PollerResource(repository, current);
+      subscribers = new TopicSubscriberResource(topicName, repository, factory);
    }
 
    @Path("poller")
@@ -47,6 +49,12 @@ public class TopicResource
       return sender;
    }
 
+   @Path("subscribers")
+   public TopicSubscriberResource subscribers()
+   {
+      return subscribers;
+   }
+
    @GET
    @Produces("application/xml")
    public Response get(@Context UriInfo uriInfo)
@@ -59,6 +67,7 @@ public class TopicResource
       Response.ResponseBuilder builder = Response.ok(msg);
       setSenderLink(builder, uriInfo);
       setTopLink(builder, uriInfo);
+      setSubscribersLink(builder, uriInfo);
       return builder.build();
    }
 
@@ -69,6 +78,7 @@ public class TopicResource
       Response.ResponseBuilder builder = Response.ok();
       setSenderLink(builder, uriInfo);
       setTopLink(builder, uriInfo);
+      setSubscribersLink(builder, uriInfo);
       return builder.build();
    }
 
@@ -80,6 +90,16 @@ public class TopicResource
       builder.path("sender");
       String uri = builder.build().toString();
       LinkHeaderSupport.setLinkHeader(response, "sender", "sender", uri, null);
+   }
+
+   protected void setSubscribersLink(Response.ResponseBuilder response, UriInfo info)
+   {
+      String basePath = info.getMatchedURIs().get(1);
+      UriBuilder builder = info.getBaseUriBuilder();
+      builder.path(basePath);
+      builder.path("subscribers");
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "subscribers", "subscribers", uri, null);
    }
 
    protected void setTopLink(Response.ResponseBuilder response, UriInfo info)
