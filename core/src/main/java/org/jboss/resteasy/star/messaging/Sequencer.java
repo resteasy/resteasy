@@ -2,7 +2,6 @@ package org.jboss.resteasy.star.messaging;
 
 import org.hornetq.core.client.ClientConsumer;
 import org.hornetq.core.client.ClientMessage;
-import org.hornetq.core.client.ClientProducer;
 import org.hornetq.core.client.ClientSession;
 import org.hornetq.core.client.ClientSessionFactory;
 import org.hornetq.core.exception.HornetQException;
@@ -16,7 +15,6 @@ import java.util.concurrent.CountDownLatch;
 public class Sequencer implements Runnable
 {
    private String incoming;
-   private String outgoing;
    private CurrentMessageIndex current;
    private MessageRepository repository;
    private volatile boolean shutdown;
@@ -30,16 +28,6 @@ public class Sequencer implements Runnable
    public void setIncoming(String incoming)
    {
       this.incoming = incoming;
-   }
-
-   public String getOutgoing()
-   {
-      return outgoing;
-   }
-
-   public void setOutgoing(String outgoing)
-   {
-      this.outgoing = outgoing;
    }
 
    public CurrentMessageIndex getCurrent()
@@ -75,14 +63,11 @@ public class Sequencer implements Runnable
    public void run()
    {
       ClientConsumer consumer = null;
-      ClientProducer producer = null;
       ClientSession session = null;
       try
       {
          session = factory.createSession();
          consumer = session.createConsumer(incoming);
-         producer = null;
-         if (outgoing != null) producer = session.createProducer(outgoing);
          session.start();
          System.out.println("initialized and started consumer for " + incoming);
       }
@@ -103,7 +88,6 @@ public class Sequencer implements Runnable
             newIndex.setLatch(new CountDownLatch(1));
             top.setNext(id);
             current.setCurrent(newIndex);
-            if (producer != null) producer.send(notification);
             top.getLatch().countDown();
             notification.acknowledge();
          }
