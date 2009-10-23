@@ -1,15 +1,13 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.util.AcceptableVariant;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -50,69 +48,15 @@ public class RequestImpl implements Request
    {
       if (variants == null || variants.size() == 0) throw new IllegalArgumentException("Variant list must not be zero");
 
-      List<MediaType> accepts = headers.getAcceptableMediaTypes();
-      List<String> languages = ServletUtil.extractLanguages(headers.getRequestHeaders());
-      List<String> encodings = convertString(headers.getRequestHeaders().get(HttpHeaderNames.ACCEPT_ENCODING));
-
+      ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
+      MultivaluedMap<String,String> requestHeaders = headers.getRequestHeaders();
+      negotiation.setAcceptHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT));
+      negotiation.setAcceptCharsetHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_CHARSET));
+      negotiation.setAcceptEncodingHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_ENCODING));
+      negotiation.setAcceptLanguageHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_LANGUAGE));
 
       varyHeader = ResponseBuilderImpl.createVaryHeader(variants);
-      return pickVariant(variants, accepts, languages, encodings);
-   }
-
-   public static Variant pickVariant(List<Variant> has, List<MediaType> accepts, List<String> languages, List<String> encodings)
-   {
-      List<AcceptableVariant> wants = new ArrayList<AcceptableVariant>();
-
-      int langSize = languages.size();
-      int encodingSize = encodings.size();
-      int typeSize = accepts.size();
-
-      int i = 0;
-
-      if (langSize > 0 || encodingSize > 0 || typeSize > 0)
-      {
-         do
-         {
-            MediaType type = null;
-            if (i < typeSize) type = accepts.get(i);
-            int j = 0;
-            do
-            {
-               String encoding = null;
-               if (j < encodingSize) encoding = encodings.get(j);
-               int k = 0;
-               do
-               {
-                  String language = null;
-                  if (k < langSize) language = languages.get(k);
-                  wants.add(new AcceptableVariant(type, language, encoding));
-                  k++;
-               } while (k < langSize);
-               j++;
-            } while (j < encodingSize);
-            i++;
-         } while (i < typeSize);
-      }
-
-
-      return AcceptableVariant.pick(has, wants);
-
-   }
-
-
-   public List<String> convertString(List<String> tags)
-   {
-      ArrayList<String> result = new ArrayList<String>();
-      if (tags == null) return result;
-      for (String tag : tags)
-      {
-         String[] split = tag.split(",");
-         for (String etag : split)
-         {
-            result.add(etag.trim());
-         }
-      }
-      return result;
+      return negotiation.getBestMatch(variants);
    }
 
    public List<EntityTag> convertEtag(List<String> tags)
