@@ -40,7 +40,7 @@
                 <!ENTITY Jaxb SYSTEM "modules/Jaxb.xml">
                 <!ENTITY Yaml SYSTEM "modules/Yaml.xml">
                 <!ENTITY Seam SYSTEM "modules/Seam.xml">
-                <!ENTITY Guice1 SYSTEM "modules/Guice1.xml">
+                <!ENTITY Guice SYSTEM "modules/Guice.xml">
                 <!ENTITY JBoss SYSTEM "modules/JBoss.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
@@ -121,7 +121,7 @@
    &RESTEasy_EJB_Integration;
    &RESTEasy_Spring_Integration;
     &Seam;
-    &Guice1;
+    &Guice;
    &RESTEasy_Client_Framework;
    &Maven_and_RESTEasy;
    &JBoss;
