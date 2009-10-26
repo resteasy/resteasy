@@ -6,7 +6,7 @@ import java.util.concurrent.CountDownLatch;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MessageIndex
+public class TopicMessageIndex
 {
    private long id = -1;
    private long next;

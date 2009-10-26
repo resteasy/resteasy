@@ -2,17 +2,15 @@ package org.jboss.resteasy.star.messaging;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MessageRepository
+public class TopicMessageRepository
 {
-   private ConcurrentHashMap<Long, MessageIndex> messageIndex = new ConcurrentHashMap<Long, MessageIndex>();
+   private ConcurrentHashMap<Long, TopicMessageIndex> messageIndex = new ConcurrentHashMap<Long, TopicMessageIndex>();
    private ConcurrentHashMap<Long, Message> repository = new ConcurrentHashMap<Long, Message>();
    private AtomicLong counter = new AtomicLong(0);
 
@@ -21,7 +19,7 @@ public class MessageRepository
       return repository.get(id);
    }
 
-   public MessageIndex getMessageIndex(long id)
+   public TopicMessageIndex getMessageIndex(long id)
    {
       return messageIndex.get(id);
    }
@@ -36,9 +34,9 @@ public class MessageRepository
       return msg;
    }
 
-   public MessageIndex addIndex(long id)
+   public TopicMessageIndex addIndex(long id)
    {
-      MessageIndex index = new MessageIndex();
+      TopicMessageIndex index = new TopicMessageIndex();
       index.setId(id);
       messageIndex.put(id, index);
       return index;

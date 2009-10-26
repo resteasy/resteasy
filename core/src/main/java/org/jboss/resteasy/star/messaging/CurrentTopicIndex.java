@@ -6,24 +6,24 @@ import java.util.concurrent.CountDownLatch;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CurrentMessageIndex
+public class CurrentTopicIndex
 {
-   private MessageIndex current;
+   private TopicMessageIndex current;
 
-   public CurrentMessageIndex()
+   public CurrentTopicIndex()
    {
-      current = new MessageIndex();
+      current = new TopicMessageIndex();
       current.setId(-1);
       current.setNext(-1);
       current.setLatch(new CountDownLatch(1));
    }
 
-   public synchronized MessageIndex getCurrent()
+   public synchronized TopicMessageIndex getCurrent()
    {
       return current;
    }
 
-   public synchronized void setCurrent(MessageIndex current)
+   public synchronized void setCurrent(TopicMessageIndex current)
    {
       this.current = current;
    }

@@ -20,12 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TopicSubscriberResource
 {
-   private MessageRepository repository;
+   private TopicMessageRepository repository;
    private Map<String, ConsumerForwarding> subscriptions = new ConcurrentHashMap<String, ConsumerForwarding>();
    private ClientSessionFactory factory;
    private String topicName;
 
-   public TopicSubscriberResource(String topicName, MessageRepository repository, ClientSessionFactory factory)
+   public TopicSubscriberResource(String topicName, TopicMessageRepository repository, ClientSessionFactory factory)
    {
       this.repository = repository;
       this.factory = factory;
