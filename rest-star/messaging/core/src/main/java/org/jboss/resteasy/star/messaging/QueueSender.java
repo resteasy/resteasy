@@ -11,9 +11,9 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class Sender
+public class QueueSender
 {
-   private MessageRepository repository;
+   private QueueMessageRepository repository;
    private ClientSessionFactory sessionFactory;
    private String destination;
 
@@ -26,7 +26,7 @@ public class Sender
          ClientProducer producer = session.createProducer(destination);
          ClientMessage message = session.createClientMessage(false);
          message.putLongProperty("m-id", msg.getId());
-         System.out.println("sending message: " + msg.getId());
+         System.out.println("sending to message queue: " + msg.getId());
          producer.send(message);
          session.start();
          return msg;
@@ -38,12 +38,12 @@ public class Sender
 
    }
 
-   public MessageRepository getRepository()
+   public QueueMessageRepository getRepository()
    {
       return repository;
    }
 
-   public void setRepository(MessageRepository repository)
+   public void setRepository(QueueMessageRepository repository)
    {
       this.repository = repository;
    }

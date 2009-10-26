@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DestinationResource
 {
    private Map<String, TopicResource> topics = new ConcurrentHashMap<String, TopicResource>();
+   private Map<String, QueueResource> queues = new ConcurrentHashMap<String, QueueResource>();
 
    @Path("/topics/{name}")
    public TopicResource findTopic(@PathParam("name") String name)
@@ -26,5 +27,18 @@ public class DestinationResource
    public Map<String, TopicResource> getTopics()
    {
       return topics;
+   }
+
+   @Path("/queues/{name}")
+   public QueueResource findQueue(@PathParam("name") String name)
+   {
+      QueueResource queue = queues.get(name);
+      if (queue == null) throw new WebApplicationException(404);
+      return queue;
+   }
+
+   public Map<String, QueueResource> getQueues()
+   {
+      return queues;
    }
 }

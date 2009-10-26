@@ -22,12 +22,12 @@ public class ConsumerForwarding implements MessageHandler
 {
    private String uri;
    private String topicName;
-   private MessageRepository repository;
+   private TopicMessageRepository repository;
    private ClientExecutor executor = new ApacheHttpClientExecutor();
    private ClientSession session;
    private String uuid;
 
-   public ConsumerForwarding(String uri, String topicName, ClientSessionFactory factory, MessageRepository repository, boolean durable)
+   public ConsumerForwarding(String uri, String topicName, ClientSessionFactory factory, TopicMessageRepository repository, boolean durable)
    {
       this.uri = uri;
       this.topicName = topicName;

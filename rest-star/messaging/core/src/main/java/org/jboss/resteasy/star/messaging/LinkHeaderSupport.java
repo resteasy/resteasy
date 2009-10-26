@@ -20,6 +20,11 @@ public class LinkHeaderSupport
    public static void setLinkHeader(Response.ResponseBuilder builder, String title, String rel, String href, String type)
    {
       Link link = new Link(title, rel, href, type, null);
+      setLinkHeader(builder, link);
+   }
+
+   public static void setLinkHeader(Response.ResponseBuilder builder, Link link)
+   {
       builder.header("Link", link);
    }
 

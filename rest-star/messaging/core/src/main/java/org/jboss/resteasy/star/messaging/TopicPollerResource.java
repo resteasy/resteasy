@@ -18,14 +18,12 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class PollerResource
+public class TopicPollerResource
 {
-   protected CurrentMessageIndex current;
-   protected MessageRepository repository;
+   protected CurrentTopicIndex current;
+   protected TopicMessageRepository repository;
 
-   public static final String WAIT_HEADER = "X-RS-Wait";
-
-   public PollerResource(MessageRepository repository, CurrentMessageIndex current)
+   public TopicPollerResource(TopicMessageRepository repository, CurrentTopicIndex current)
    {
       this.repository = repository;
       this.current = current;
@@ -33,10 +31,10 @@ public class PollerResource
 
    @Path("/top")
    @GET
-   public Response top(@HeaderParam(WAIT_HEADER) @DefaultValue("0") long wait,
+   public Response top(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                        @Context UriInfo info) throws Exception
    {
-      MessageIndex top = current.getCurrent();
+      TopicMessageIndex top = current.getCurrent();
       if (top.getId() == -1)
       {
          return getNext(wait, info, top);
@@ -48,10 +46,10 @@ public class PollerResource
 
    @Path("/top")
    @HEAD
-   public Response headTop(@HeaderParam(WAIT_HEADER) @DefaultValue("0") long wait,
+   public Response headTop(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                            @Context UriInfo info) throws Exception
    {
-      MessageIndex top = current.getCurrent();
+      TopicMessageIndex top = current.getCurrent();
       if (top.getId() == -1)
       {
          return getHeadNext(wait, info, top);
@@ -63,11 +61,11 @@ public class PollerResource
 
    @Path("/next")
    @GET
-   public Response next(@HeaderParam(WAIT_HEADER) @DefaultValue("0") long wait,
+   public Response next(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                         @QueryParam("index") long index,
                         @Context UriInfo info) throws Exception
    {
-      MessageIndex top = repository.getMessageIndex(index);
+      TopicMessageIndex top = repository.getMessageIndex(index);
       if (top == null)
       {
          Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE);
@@ -80,11 +78,11 @@ public class PollerResource
 
    @Path("/next")
    @HEAD
-   public Response headNext(@HeaderParam(WAIT_HEADER) @DefaultValue("0") long wait,
+   public Response headNext(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                             @QueryParam("index") long index,
                             @Context UriInfo info) throws Exception
    {
-      MessageIndex top = repository.getMessageIndex(index);
+      TopicMessageIndex top = repository.getMessageIndex(index);
       if (top == null)
       {
          Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE);
@@ -165,7 +163,7 @@ public class PollerResource
       LinkHeaderSupport.setLinkHeader(response, "next", "next", uri, null);
    }
 
-   protected Response getNext(long wait, UriInfo info, MessageIndex top)
+   protected Response getNext(long wait, UriInfo info, TopicMessageIndex top)
            throws InterruptedException
    {
       boolean ready = top.getLatch().await(wait, TimeUnit.SECONDS);
@@ -179,7 +177,7 @@ public class PollerResource
       return builder.build();
    }
 
-   protected Response getHeadNext(long wait, UriInfo info, MessageIndex top)
+   protected Response getHeadNext(long wait, UriInfo info, TopicMessageIndex top)
            throws InterruptedException
    {
       boolean ready = top.getLatch().await(wait, TimeUnit.SECONDS);

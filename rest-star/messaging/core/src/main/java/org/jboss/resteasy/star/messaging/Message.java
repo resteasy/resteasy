@@ -3,12 +3,13 @@ package org.jboss.resteasy.star.messaging;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.Serializable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class Message
+public class Message implements Serializable
 {
    private long id = -1;
    private CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();

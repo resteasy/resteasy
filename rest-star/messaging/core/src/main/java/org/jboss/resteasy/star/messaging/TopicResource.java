@@ -17,34 +17,34 @@ import javax.ws.rs.core.UriInfo;
  */
 public class TopicResource
 {
-   private MessageRepository repository;
-   private CurrentMessageIndex current;
+   private TopicMessageRepository repository;
+   private CurrentTopicIndex current;
    private ClientSessionFactory factory;
    private String topicName;
-   private SenderResource sender;
-   private PollerResource poller;
+   private TopicSenderResource sender;
+   private TopicPollerResource poller;
    private TopicSubscriberResource subscribers;
 
-   public TopicResource(MessageRepository repository, CurrentMessageIndex current, ClientSessionFactory factory, String topicName)
+   public TopicResource(TopicMessageRepository repository, CurrentTopicIndex current, ClientSessionFactory factory, String topicName)
    {
       this.repository = repository;
       this.current = current;
       this.factory = factory;
       this.topicName = topicName;
 
-      sender = new SenderResource(repository, factory, topicName);
-      poller = new PollerResource(repository, current);
+      sender = new TopicSenderResource(repository, factory, topicName);
+      poller = new TopicPollerResource(repository, current);
       subscribers = new TopicSubscriberResource(topicName, repository, factory);
    }
 
    @Path("poller")
-   public PollerResource poller()
+   public TopicPollerResource poller()
    {
       return poller;
    }
 
    @Path("sender")
-   public SenderResource sender()
+   public TopicSenderResource sender()
    {
       return sender;
    }

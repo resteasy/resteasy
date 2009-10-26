@@ -1,19 +1,19 @@
 package org.jboss.resteasy.star.messaging.test;
 
-import org.junit.Test;
+import org.hornetq.core.client.ClientConsumer;
+import org.hornetq.core.client.ClientMessage;
+import org.hornetq.core.client.ClientProducer;
+import org.hornetq.core.client.ClientSession;
+import org.hornetq.core.client.ClientSessionFactory;
+import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.config.Configuration;
 import org.hornetq.core.config.TransportConfiguration;
 import org.hornetq.core.config.impl.ConfigurationImpl;
 import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
-import org.hornetq.core.server.HornetQServer;
 import org.hornetq.core.server.HornetQ;
-import org.hornetq.core.client.ClientSessionFactory;
-import org.hornetq.core.client.ClientSession;
-import org.hornetq.core.client.ClientProducer;
-import org.hornetq.core.client.ClientMessage;
-import org.hornetq.core.client.ClientConsumer;
-import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
+import org.hornetq.core.server.HornetQServer;
+import org.junit.Test;
 
 import java.util.Date;
 
@@ -103,4 +103,6 @@ public class HornetTest
       }
 
    }
+
+
 }
