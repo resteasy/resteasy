@@ -8,11 +8,11 @@ import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
-import org.jboss.resteasy.spi.LinkHeader;
-import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.util.GenericType;
 import static org.jboss.resteasy.util.HttpHeaderNames.*;
 
@@ -440,7 +440,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    public ClientResponse execute() throws Exception
    {
       if (linkHeader != null) header("Link", linkHeader);
-      
+
       if (getReaderInterceptorList().isEmpty())
          setReaderInterceptors(providerFactory
                  .getClientMessageBodyReaderInterceptorRegistry().bindForList(
@@ -510,6 +510,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
    public <T> T getTarget(Class<T> returnType) throws Exception
    {
       BaseClientResponse<T> response = (BaseClientResponse<T>) get(returnType);
+      if (response.getStatus() != 200) throw new ClientResponseFailure(response);
       return response.getEntity();
    }
 

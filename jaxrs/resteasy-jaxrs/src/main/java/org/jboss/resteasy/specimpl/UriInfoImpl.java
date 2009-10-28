@@ -38,6 +38,13 @@ public class UriInfoImpl implements UriInfo
 
    public UriInfoImpl(URI absolutePath, URI baseUri, String encodedPath, String queryString, List<PathSegment> encodedPathSegments)
    {
+      /*
+      logger.info("**** URIINFO encodedPath: " + encodedPath);
+      for (PathSegment segment : encodedPathSegments)
+      {
+         logger.info("   Segment: " + segment.getPath());
+      }
+      */
       this.encodedPath = encodedPath;
       try
       {

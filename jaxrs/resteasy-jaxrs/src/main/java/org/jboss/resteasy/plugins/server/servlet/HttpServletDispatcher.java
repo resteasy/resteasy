@@ -163,6 +163,7 @@ public class HttpServletDispatcher extends HttpServlet
    {
       try
       {
+         //logger.info("***PATH: " + request.getRequestURL());
          // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
          // ResteasyProviderFactory.getInstance()
          ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();

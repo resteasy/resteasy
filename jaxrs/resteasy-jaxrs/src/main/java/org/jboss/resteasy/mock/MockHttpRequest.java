@@ -59,7 +59,7 @@ public class MockHttpRequest implements HttpRequest
       request.httpHeaders.setCookies(new HashMap<String, Cookie>());
       request.httpHeaders.setRequestHeaders(new Headers<String>());
       //request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
-      request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getRawQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
+      request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getRawPath(), absoluteUri.getRawQuery(), PathSegmentImpl.parseSegments(absoluteUri.getRawPath()));
       request.preprocessedPath = request.uri.getPath(false);
       return request;
 

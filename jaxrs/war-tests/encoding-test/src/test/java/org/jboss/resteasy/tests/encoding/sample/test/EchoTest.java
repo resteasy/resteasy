@@ -1,5 +1,7 @@
 package org.jboss.resteasy.tests.encoding.sample.test;
 
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -24,6 +26,15 @@ public class EchoTest
       Assert.assertEquals(SPACES_REQUEST, client.sayHi(SPACES_REQUEST));
 
       Assert.assertEquals(QUERY, client.compile(QUERY));
+   }
+
+   @Test
+   public void testIt() throws Exception
+   {
+      ClientRequest request = new ClientRequest("http://localhost:9095/sayhello/widget/08%2F26%2F2009");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+
    }
 }
 
