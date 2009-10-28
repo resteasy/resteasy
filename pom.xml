@@ -77,6 +77,7 @@
         <module>resteasy-maven-import</module>
         <module>resteasy-cache</module>
         <module>resteasy-guice</module>
+        <module>resteasy-oauth</module>
         <module>async-http-jbossweb</module>
         <module>async-http-tomcat</module>
         <module>resteasy-spring</module>
@@ -267,6 +268,11 @@
                 <groupId>org.jboss.cache</groupId>
                 <artifactId>jbosscache-core</artifactId>
                 <version>3.0.3.GA</version>
+            </dependency>
+            <dependency>
+            	<groupId>net.oauth.core</groupId>
+            	<artifactId>oauth</artifactId>
+            	<version>20090825</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
