@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
@@ -75,6 +76,10 @@ public class PathParamInjector implements ValueInjector
          {
             list = uriInfo.getPathParameterPathSegments().get(paramName);
          }
+         if (list == null)
+         {
+            throw new InternalServerErrorException("Unknown @PathParam: " + paramName + " for path: " + uriInfo.getPath());
+         }
          PathSegment[] segments = list.get(list.size() - 1);
          if (pathSegmentArray)
          {
@@ -97,6 +102,10 @@ public class PathParamInjector implements ValueInjector
       else
       {
          List<String> list = request.getUri().getPathParameters(!encode).get(paramName);
+         if (list == null)
+         {
+            throw new InternalServerErrorException("Unknown @PathParam: " + paramName + " for path: " + request.getUri().getPath());
+         }
          if (extractor.isCollectionOrArray())
          {
             return extractor.extractValues(list);
