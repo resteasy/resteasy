@@ -44,6 +44,7 @@
                 <!ENTITY JBoss SYSTEM "modules/JBoss.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
+                <!ENTITY Authentication SYSTEM "modules/Authentication.xml">
                 ]>
 
 <book>
@@ -118,6 +119,7 @@
    &RESTEasy_Embedded_Container;
    &RESTEasy_Server-side_Mock_Framework;
    &Securing_JAX-RS_and_RESTeasy;
+   &Authentication;
    &RESTEasy_EJB_Integration;
    &RESTEasy_Spring_Integration;
     &Seam;

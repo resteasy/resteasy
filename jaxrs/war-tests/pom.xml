@@ -14,5 +14,6 @@
     <modules>
         <module>encoding-test</module>
         <module>context-test</module>
+        <module>oauth-servlet-test</module>
     </modules>
 </project>
