@@ -52,5 +52,13 @@ public class Hello
       return queryText;
    }
 
+   @Path("/widget/{date}")
+   @GET
+   @Produces("text/plain")
+   public String get(@PathParam("date") String date)
+   {
+      return date;
+   }
+
 
 }

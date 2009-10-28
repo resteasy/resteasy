@@ -6,32 +6,32 @@ package org.jboss.resteasy.client;
  */
 public class ClientResponseFailure extends RuntimeException
 {
-   private ClientResponse<byte[]> response;
+   private ClientResponse response;
 
-   public ClientResponseFailure(ClientResponse<byte[]> response)
+   public ClientResponseFailure(ClientResponse response)
    {
       this.response = response;
    }
 
-   public ClientResponseFailure(String s, ClientResponse<byte[]> response)
+   public ClientResponseFailure(String s, ClientResponse response)
    {
       super(s);
       this.response = response;
    }
 
-   public ClientResponseFailure(String s, Throwable throwable, ClientResponse<byte[]> response)
+   public ClientResponseFailure(String s, Throwable throwable, ClientResponse response)
    {
       super(s, throwable);
       this.response = response;
    }
 
-   public ClientResponseFailure(Throwable throwable, ClientResponse<byte[]> response)
+   public ClientResponseFailure(Throwable throwable, ClientResponse response)
    {
       super(throwable);
       this.response = response;
    }
 
-   public ClientResponse<byte[]> getResponse()
+   public ClientResponse getResponse()
    {
       return response;
    }
