@@ -92,7 +92,7 @@ public class Encode
             string = buf.toString();
          }
 
-         string = URLEncoder.encode(string, "UTF-8").replace("+", "%20").replace("%25", "%");
+         string = URLEncoder.encode(string, "UTF-8").replace("%25", "%");
          string = encodeNonCodes(string);
          if (foundParam)
          {

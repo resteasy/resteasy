@@ -27,6 +27,14 @@ public class UriBuilderTest
    }
 
    @Test
+   public void testQuery()
+   {
+      UriBuilder builder = UriBuilder.fromPath("/foo");
+      builder.queryParam("mama", "   ");
+      Assert.assertEquals(builder.build().toString(), "/foo?mama=+++");
+   }
+
+   @Test
    public void testReplaceScheme()
    {
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c").
