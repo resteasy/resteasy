@@ -1,12 +1,15 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.util.StringToPrimitive;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.ext.RuntimeDelegate;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -39,6 +42,7 @@ public class StringParameterInjector
    protected Class<? extends Collection> collectionType;
    protected AccessibleObject target;
    protected StringConverter converter;
+   protected StringParameterUnmarshaller unmarshaller;
    protected RuntimeDelegate.HeaderDelegate delegate;
 
    public StringParameterInjector()
@@ -46,9 +50,9 @@ public class StringParameterInjector
 
    }
 
-   public StringParameterInjector(Class type, Type genericType, String paramName, Class paramType, String defaultValue, AccessibleObject target, ResteasyProviderFactory factory)
+   public StringParameterInjector(Class type, Type genericType, String paramName, Class paramType, String defaultValue, AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory)
    {
-      initialize(type, genericType, paramName, paramType, defaultValue, target, factory);
+      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory);
    }
 
    public boolean isCollectionOrArray()
@@ -56,7 +60,7 @@ public class StringParameterInjector
       return isCollection || type.isArray();
    }
 
-   protected void initialize(Class type, Type genericType, String paramName, Class paramType, String defaultValue, AccessibleObject target, ResteasyProviderFactory factory)
+   protected void initialize(Class type, Type genericType, String paramName, Class paramType, String defaultValue, AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       this.type = type;
       this.paramName = paramName;
@@ -95,6 +99,35 @@ public class StringParameterInjector
       }
       if (!baseType.isPrimitive())
       {
+         unmarshaller = factory.createStringParameterUnmarshaller(baseType);
+         if (unmarshaller != null)
+         {
+            unmarshaller.setAnnotations(annotations);
+            return;
+         }
+
+         for (Annotation annotation : annotations)
+         {
+            StringParameterUnmarshallerBinder binder = annotation.annotationType().getAnnotation(StringParameterUnmarshallerBinder.class);
+            if (binder != null)
+            {
+               try
+               {
+                  unmarshaller = binder.value().newInstance();
+               }
+               catch (InstantiationException e)
+               {
+                  throw new RuntimeException(e.getCause());
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new RuntimeException(e);
+               }
+               unmarshaller.setAnnotations(annotations);
+               return;
+            }
+         }
+
          converter = factory.getStringConverter(baseType);
          if (converter != null) return;
 
@@ -193,6 +226,10 @@ public class StringParameterInjector
       if (converter != null)
       {
          return converter.fromString(strVal);
+      }
+      else if (unmarshaller != null)
+      {
+         return unmarshaller.fromString(strVal);
       }
       else if (delegate != null)
       {

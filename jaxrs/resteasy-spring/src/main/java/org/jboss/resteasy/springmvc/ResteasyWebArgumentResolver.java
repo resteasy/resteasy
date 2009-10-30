@@ -87,7 +87,7 @@ public class ResteasyWebArgumentResolver implements WebArgumentResolver
                defaultVal = defaultValue.value();
 
             return new CookieParamInjector(type, genericType, method,
-                    cookieParam.value(), defaultVal, factory).inject(request,
+                    cookieParam.value(), defaultVal, annotations, factory).inject(request,
                     null);
          }
       }

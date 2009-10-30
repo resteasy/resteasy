@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.FormParam;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -16,9 +17,9 @@ import java.util.List;
 public class FormParamInjector extends StringParameterInjector implements ValueInjector
 {
 
-   public FormParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue, ResteasyProviderFactory factory)
+   public FormParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue, Annotation[] annotations, ResteasyProviderFactory factory)
    {
-      super(type, genericType, header, FormParam.class, defaultValue, target, factory);
+      super(type, genericType, header, FormParam.class, defaultValue, target, annotations, factory);
    }
 
    public Object inject(HttpRequest request, HttpResponse response)

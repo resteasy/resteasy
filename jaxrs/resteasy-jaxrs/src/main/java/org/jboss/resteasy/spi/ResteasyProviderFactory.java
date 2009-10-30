@@ -14,11 +14,11 @@ import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
+import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
-import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
@@ -162,6 +162,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
    protected Map<Class<?>, MediaTypeMap<ContextResolver>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<ContextResolver>>();
    protected Map<Class<?>, StringConverter> stringConverters = new HashMap<Class<?>, StringConverter>();
+   protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
    protected Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
@@ -701,6 +702,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
+   public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> provider)
+   {
+      Type[] intfs = provider.getClass().getGenericInterfaces();
+      for (Type type : intfs)
+      {
+         if (type instanceof ParameterizedType)
+         {
+            ParameterizedType pt = (ParameterizedType) type;
+            if (pt.getRawType().equals(StringParameterUnmarshaller.class))
+            {
+               Class<?> aClass = Types.getRawType(pt.getActualTypeArguments()[0]);
+               stringParameterUnmarshallers.put(aClass, provider);
+            }
+         }
+      }
+   }
+
    public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
    {
       MediaTypeMap<ContextResolver> resolvers = contextResolvers.get(clazz);
@@ -714,6 +732,28 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return stringConverters.get(clazz);
    }
 
+   public <T> StringParameterUnmarshaller<T> createStringParameterUnmarshaller(Class<T> clazz)
+   {
+      if (stringParameterUnmarshallers.size() == 0) return null;
+      Class<? extends StringParameterUnmarshaller> un = stringParameterUnmarshallers.get(clazz);
+      StringParameterUnmarshaller<T> provider = null;
+      try
+      {
+         provider = un.newInstance();
+      }
+      catch (InstantiationException e)
+      {
+         throw new RuntimeException(e.getCause());
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new RuntimeException(e);
+      }
+      PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
+      injector.inject(provider);
+      return provider;
+
+   }
 
    public void registerProvider(Class provider)
    {
@@ -818,6 +858,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (StringConverter.class.isAssignableFrom(provider))
       {
          addStringConverter(provider);
+      }
+      if (StringParameterUnmarshaller.class.isAssignableFrom(provider))
+      {
+         addStringParameterUnmarshaller(provider);
       }
    }
 
