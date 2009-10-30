@@ -32,6 +32,14 @@
                   </row>
                   <row>
                      <entry>
+                        application/*+xml, text/*+xml
+                     </entry>
+                     <entry>
+                        org.w3c.dom.Document
+                     </entry>
+                  </row>
+                  <row>
+                     <entry>
                         */*
                      </entry>
                      <entry>

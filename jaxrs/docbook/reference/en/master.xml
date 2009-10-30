@@ -8,6 +8,7 @@
                 <!ENTITY _PathParam SYSTEM "modules/_PathParam.xml">
                 <!ENTITY _QueryParam SYSTEM "modules/_QueryParam.xml">
                 <!ENTITY _HeaderParam SYSTEM "modules/_HeaderParam.xml">
+                <!ENTITY LinkHeader SYSTEM "modules/LinkHeader.xml">
                 <!ENTITY GZIP SYSTEM "modules/gzip.xml">
                 <!ENTITY _MatrixParam SYSTEM "modules/_MatrixParam.xml">
                 <!ENTITY _CookieParam SYSTEM "modules/_CookieParam.xml">
@@ -92,6 +93,7 @@
    &_PathParam;
    &_QueryParam;
    &_HeaderParam;
+   &LinkHeader;
    &_MatrixParam;
    &_CookieParam;
    &_FormParam;
