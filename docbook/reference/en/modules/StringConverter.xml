@@ -4,16 +4,22 @@
       HTTP request. The specification says that these types of injected parameters can be converted to objects
       if these objects have a valueOf(String) static method or a constructor that takes one String parameter.
       What if you have a class where valueOf() or this string constructor doesn't exist or is inappropriate for
-      an HTTP request? Resteasy has a proprietary @Provider interface that you can plug in:
+      an HTTP request? Resteasy has 2 proprietary @Provider interfaces that you can plug in:
    </para>
+    <sect1 id="StringConverterInterface">
+        <title>StringConverter</title>
    <programlisting>
+<![CDATA[
 package org.jboss.resteasy.spi;
 
-public interface StringConverter&lt;T&gt;
+public interface StringConverter<T>
 {
    T fromString(String str);
    String toString(T value);
 }
+
+
+]]>
    </programlisting>
    <para>You implement this interface to provide your own custom string marshalling. It is registered
       within your web.xml under the resteasy.providers context-param (See Installation and Configuration chapter).
@@ -112,4 +118,97 @@ public interface StringConverter&lt;T&gt;
    }
 ]]>
    </programlisting>
+    </sect1>
+    <sect1 id="StringParamUnmarshaller">
+        <title>StringParamUnmarshaller</title>
+        <para>org.jboss.resteasy.spi.StringParameterUnmarshaller is sensative to the annotations placed
+        on the parameter or field you are injecting into.  It is created per injector.  The setAnnotations()
+        method is called by resteasy to initialize the unmarshaller.</para>
+<programlisting><![CDATA[
+package org.jboss.resteasy.spi;
+
+public interface StringParameterUnmarshaller<T>
+{
+   void setAnnotations(Annotation[] annotations);
+   T fromString(String str);
+}
+
+]]>
+</programlisting>
+        <para>You can add this by creating and registering a provider that implements this interface.  You can
+        also bind them using a meta-annotation called org.jboss.resteasy.annotationsStringParameterUnmarshallerBinder.
+        Here's an example of formatting a java.util.Date based @PathParam</para>
+<programlisting><![CDATA[
+public class StringParamUnmarshallerTest extends BaseResourceTest
+{
+   @Retention(RetentionPolicy.RUNTIME)
+   @StringParameterUnmarshallerBinder(DateFormatter.class)
+   public @interface DateFormat
+   {
+      String value();
+   }
+
+   public static class DateFormatter implements StringParameterUnmarshaller<Date>
+   {
+      private SimpleDateFormat formatter;
+
+      public void setAnnotations(Annotation[] annotations)
+      {
+         DateFormat format = FindAnnotation.findAnnotation(annotations, DateFormat.class);
+         formatter = new SimpleDateFormat(format.value());
+      }
+
+      public Date fromString(String str)
+      {
+         try
+         {
+            return formatter.parse(str);
+         }
+         catch (ParseException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+   }
+
+   @Path("/datetest")
+   public static class Service
+   {
+      @GET
+      @Produces("text/plain")
+      @Path("/{date}")
+      public String get(@PathParam("date") @DateFormat("MM-dd-yyyy") Date date)
+      {
+         System.out.println(date);
+         Calendar c = Calendar.getInstance();
+         c.setTime(date);
+         Assert.assertEquals(3, c.get(Calendar.MONTH));
+         Assert.assertEquals(23, c.get(Calendar.DAY_OF_MONTH));
+         Assert.assertEquals(1977, c.get(Calendar.YEAR));
+         return date.toString();
+      }
+   }
+
+   @BeforeClass
+   public static void setup() throws Exception
+   {
+      addPerRequestResource(Service.class);
+   }
+
+   @Test
+   public void testMe() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/datetest/04-23-1977"));
+      System.out.println(request.getTarget(String.class));
+   }
+}
+]]>
+</programlisting>
+        <para>In the example a new annotation is defined called @DateFormat.  This annotation class is
+        annotated with the meta-annotation StringParameterUnmarshallerBinder with a reference to the DateFormmater classes.</para>
+        <para>The Service.get() method has a @PathParam parameter that is also annotated with @DateFormat.  The application
+        of @DateFormat triggers the binding of the DateFormatter.  The DateFormatter will now be run to unmarshal the
+        path parameter into the date paramter of the get() method.</para>
+
+    </sect1>
 </chapter>
