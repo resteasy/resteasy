@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <project>
-   <modelVersion>4.0.0</modelVersion>
-   <parent>
-      <artifactId>resteasy-jaxrs-all</artifactId>
-      <groupId>org.jboss.resteasy</groupId>
-      <version>1.2.RC1</version>
-   </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <groupId>org.jboss.resteasy</groupId>
+        <version>1.2.GA</version>
+    </parent>
 
-   <artifactId>resteasy-oauth</artifactId>
-   <name>RESTEasy JAX-RS OAuth</name>
+    <artifactId>resteasy-oauth</artifactId>
+    <name>RESTEasy JAX-RS OAuth</name>
 
-   <dependencies>
+    <dependencies>
         <dependency>
-        	<groupId>net.oauth.core</groupId>
-        	<artifactId>oauth</artifactId>
+            <groupId>net.oauth.core</groupId>
+            <artifactId>oauth</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -24,6 +24,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-   </dependencies>
+    </dependencies>
 
 </project>

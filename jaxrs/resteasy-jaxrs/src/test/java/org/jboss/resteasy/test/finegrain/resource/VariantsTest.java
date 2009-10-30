@@ -160,7 +160,7 @@ public class VariantsTest
          int status = client.executeMethod(method);
          Assert.assertEquals(status, HttpResponseCodes.SC_OK);
          Assert.assertEquals("GET", method.getResponseBodyAsString());
-         Assert.assertEquals("text/xml", method.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue());
+         Assert.assertEquals("application/xml", method.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue());
          Assert.assertEquals("en-us", method.getResponseHeader(HttpHeaderNames.CONTENT_LANGUAGE).getValue());
       }
       catch (IOException e)
@@ -188,8 +188,8 @@ public class VariantsTest
          int status = client.executeMethod(method);
          Assert.assertEquals(status, HttpResponseCodes.SC_OK);
          Assert.assertEquals("GET", method.getResponseBodyAsString());
-         Assert.assertEquals("text/xml", method.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue());
-         Assert.assertEquals("en", method.getResponseHeader(HttpHeaderNames.CONTENT_LANGUAGE).getValue());
+         Assert.assertEquals("application/xml", method.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue());
+         Assert.assertEquals("en-us", method.getResponseHeader(HttpHeaderNames.CONTENT_LANGUAGE).getValue());
       }
       catch (IOException e)
       {
@@ -223,6 +223,34 @@ public class VariantsTest
          throw new RuntimeException(e);
       }
    }
+
+   @Test
+   public void testGetComplex4() throws IOException
+   {
+      HttpClient client = new HttpClient();
+      GetMethod method = createGetMethod("/complex");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xml");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/xml");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "image/png");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT_LANGUAGE, "en, en-us;q=0.5");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+         Assert.assertEquals("GET", method.getResponseBodyAsString());
+         Assert.assertEquals("text/xml", method.getResponseHeader(HttpHeaderNames.CONTENT_TYPE).getValue());
+         Assert.assertEquals("en", method.getResponseHeader(HttpHeaderNames.CONTENT_LANGUAGE).getValue());
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
 
    @Test
    public void testGetComplexNotAcceptable() throws IOException
