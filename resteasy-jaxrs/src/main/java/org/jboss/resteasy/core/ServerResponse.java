@@ -3,19 +3,18 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
@@ -133,7 +132,7 @@ public class ServerResponse extends Response
       this.genericType = genericType;
    }
 
-   public void writeTo(HttpResponse response, ResteasyProviderFactory providerFactory) throws WebApplicationException, IOException
+   public void writeTo(HttpResponse response, ResteasyProviderFactory providerFactory) throws WriterException
    {
       if (postProcessInterceptors != null)
       {
@@ -167,21 +166,36 @@ public class ServerResponse extends Response
          throw new NoMessageBodyWriterFoundFailure(type, contentType);
       }
 
-      outputHeaders(response);
-      long size = writer.getSize(ent, type, generic, annotations, contentType);
-      if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
+      try
+      {
+         outputHeaders(response);
+         long size = writer.getSize(ent, type, generic, annotations, contentType);
+         if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
 
-      if (messageBodyWriterInterceptors == null || messageBodyWriterInterceptors.length == 0)
-      {
-         writer.writeTo(ent, type, generic, annotations,
-                 contentType, response.getOutputHeaders(), response
-                         .getOutputStream());
+
+         if (messageBodyWriterInterceptors == null || messageBodyWriterInterceptors.length == 0)
+         {
+            writer.writeTo(ent, type, generic, annotations,
+                    contentType, response.getOutputHeaders(), response
+                            .getOutputStream());
+         }
+         else
+         {
+            MessageBodyWriterContextImpl ctx = new MessageBodyWriterContextImpl(messageBodyWriterInterceptors, writer, ent, type, generic,
+                    annotations, contentType, response.getOutputHeaders(), response.getOutputStream());
+            ctx.proceed();
+         }
       }
-      else
+      catch (Exception ex)
       {
-         MessageBodyWriterContextImpl ctx = new MessageBodyWriterContextImpl(messageBodyWriterInterceptors, writer, ent, type, generic,
-                 annotations, contentType, response.getOutputHeaders(), response.getOutputStream());
-         ctx.proceed();
+         if (ex instanceof WriterException)
+         {
+            throw (WriterException) ex;
+         }
+         else
+         {
+            throw new WriterException(ex);
+         }
       }
    }
 

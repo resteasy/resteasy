@@ -8,10 +8,8 @@ import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -98,8 +96,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       }
       catch (JAXBException e)
       {
-         Response response = Response.serverError().build();
-         throw new WebApplicationException(e, response);
+         throw new JAXBMarshalException(e);
       }
    }
 

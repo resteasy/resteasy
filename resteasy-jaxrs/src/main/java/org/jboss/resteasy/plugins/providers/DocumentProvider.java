@@ -1,10 +1,8 @@
 package org.jboss.resteasy.plugins.providers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.WriterException;
+import org.w3c.dom.Document;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -17,18 +15,21 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * Provider that reads and writes org.w3c.dom.Document
- * 
+ *
  * @author <a href="sduskis@gmail.com>Solomon Duskis</a>
  * @version $Revision: $
  */
 @Provider
-@Produces({ "text/*+xml", "application/*+xml" })
-@Consumes({ "text/*+xml", "application/*+xml" })
+@Produces({"text/*+xml", "application/*+xml"})
+@Consumes({"text/*+xml", "application/*+xml"})
 public class DocumentProvider extends AbstractEntityProvider<Document>
 {
    private final TransformerFactory transformerFactory;
@@ -41,15 +42,15 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
    }
 
    public boolean isReadable(Class<?> clazz, Type type,
-         Annotation[] annotation, MediaType mediaType)
+                             Annotation[] annotation, MediaType mediaType)
    {
       return Document.class.isAssignableFrom(clazz);
    }
 
    public Document readFrom(Class<Document> clazz, Type type,
-         Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, String> headers, InputStream input)
-         throws IOException, WebApplicationException
+                            Annotation[] annotations, MediaType mediaType,
+                            MultivaluedMap<String, String> headers, InputStream input)
+           throws IOException, WebApplicationException
    {
       try
       {
@@ -57,30 +58,30 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       }
       catch (Exception e)
       {
-         throw new WebApplicationException(e);
+         throw new ReaderException(e);
       }
    }
 
    public boolean isWriteable(Class<?> clazz, Type type,
-         Annotation[] annotation, MediaType mediaType)
+                              Annotation[] annotation, MediaType mediaType)
    {
       return Document.class.isAssignableFrom(clazz);
    }
 
    public void writeTo(Document document, Class<?> clazz, Type type,
-         Annotation[] annotation, MediaType mediaType,
-         MultivaluedMap<String, Object> headers, OutputStream output)
-         throws IOException, WebApplicationException
+                       Annotation[] annotation, MediaType mediaType,
+                       MultivaluedMap<String, Object> headers, OutputStream output)
+           throws IOException, WebApplicationException
    {
       try
       {
          DOMSource source = new DOMSource(document);
          StreamResult result = new StreamResult(output);
-         transformerFactory.newTransformer().transform(source,result);
+         transformerFactory.newTransformer().transform(source, result);
       }
       catch (TransformerException te)
       {
-         throw new WebApplicationException(te);
+         throw new WriterException(te);
       }
    }
 }

@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.WriterException;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
@@ -107,7 +109,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
       }
       catch (MessagingException e)
       {
-         throw new WebApplicationException(e);
+         throw new ReaderException(e);
       }
    }
 
@@ -141,7 +143,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
       }
       catch (MessagingException e)
       {
-         throw new WebApplicationException(e);
+         throw new WriterException(e);
       }
 
    }

@@ -80,6 +80,7 @@ public class TestBadContentType
       int status = hc.executeMethod(gm);
       assertEquals(500, status);
       String response = gm.getResponseBodyAsString();
+      System.out.println("response: " + response);
       assertTrue(response
               .contains("media type: text/html"));
    }

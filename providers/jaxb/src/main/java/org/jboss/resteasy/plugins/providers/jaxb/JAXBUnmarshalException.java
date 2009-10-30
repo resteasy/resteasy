@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.spi.BadRequestException;
+import org.jboss.resteasy.spi.ReaderException;
 
 import javax.ws.rs.core.Response;
 
@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JAXBUnmarshalException extends BadRequestException
+public class JAXBUnmarshalException extends ReaderException
 {
    public JAXBUnmarshalException(String s)
    {
