@@ -1,14 +1,16 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.spi.ProviderFactoryDelegate;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
-import org.jboss.resteasy.spi.ProviderFactoryDelegate;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
 import javax.ws.rs.core.Application;
@@ -46,6 +48,30 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       ResteasyProviderFactory factory = delegate.get();
       if (factory == null) return defaultFactory;
       return factory;
+   }
+
+   @Override
+   public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> resolver)
+   {
+      getDelegate().addStringParameterUnmarshaller(resolver);
+   }
+
+   @Override
+   public void addClientErrorInterceptor(ClientErrorInterceptor handler)
+   {
+      getDelegate().addClientErrorInterceptor(handler);
+   }
+
+   @Override
+   public List<ClientErrorInterceptor> getClientErrorInterceptors()
+   {
+      return getDelegate().getClientErrorInterceptors();
+   }
+
+   @Override
+   public <T> StringParameterUnmarshaller<T> createStringParameterUnmarshaller(Class<T> clazz)
+   {
+      return super.createStringParameterUnmarshaller(clazz);
    }
 
    @Override

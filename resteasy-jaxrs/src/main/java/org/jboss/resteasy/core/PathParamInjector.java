@@ -9,6 +9,7 @@ import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class PathParamInjector implements ValueInjector
    private boolean pathSegmentArray = false;
    private boolean pathSegmentList = false;
 
-   public PathParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, ResteasyProviderFactory factory)
+   public PathParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       this.type = type;
       if (isPathSegmentArray(type))
@@ -45,7 +46,7 @@ public class PathParamInjector implements ValueInjector
       }
       else
       {
-         extractor = new StringParameterInjector(type, genericType, paramName, PathParam.class, defaultValue, target, factory);
+         extractor = new StringParameterInjector(type, genericType, paramName, PathParam.class, defaultValue, target, annotations, factory);
       }
       this.paramName = paramName;
       this.encode = encode;

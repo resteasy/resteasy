@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.core.PathSegment;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -17,9 +18,9 @@ import java.util.List;
  */
 public class MatrixParamInjector extends StringParameterInjector implements ValueInjector
 {
-   public MatrixParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, ResteasyProviderFactory factory)
+   public MatrixParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, Annotation[] annotations, ResteasyProviderFactory factory)
    {
-      super(type, genericType, paramName, MatrixParam.class, defaultValue, target, factory);
+      super(type, genericType, paramName, MatrixParam.class, defaultValue, target, annotations, factory);
    }
 
    public Object inject(HttpRequest request, HttpResponse response)
