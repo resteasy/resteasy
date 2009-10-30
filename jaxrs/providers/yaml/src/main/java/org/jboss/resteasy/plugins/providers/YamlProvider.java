@@ -2,7 +2,8 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.ho.yaml.Yaml;
 import org.ho.yaml.exception.YamlException;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.WriterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +62,12 @@ public class YamlProvider extends AbstractEntityProvider<Object>
       catch (YamlException ye)
       {
          logger.debug("Failed to decode Yaml: {}", ye.getMessage());
-         throw new WebApplicationException(ye, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new ReaderException("Failed to decode Yaml", ye);
       }
       catch (Exception e)
       {
          logger.debug("Failed to decode Yaml: {}", e.getMessage());
-         throw new WebApplicationException(e, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new ReaderException("Failed to decode Yaml", e);
       }
 
 
@@ -113,7 +114,7 @@ public class YamlProvider extends AbstractEntityProvider<Object>
       {
 
          logger.debug("Failed to encode yaml for object: {}", t.toString());
-         throw new WebApplicationException(e, HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+         throw new WriterException(e);
 
       }
 

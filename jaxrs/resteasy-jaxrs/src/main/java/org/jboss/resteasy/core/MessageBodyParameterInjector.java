@@ -90,6 +90,8 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
               .getServerMessageBodyReaderInterceptorRegistry().bind(
                       declaringClass, target);
       this.readerUtility = new ReaderUtilityImpl(factory, interceptors);
+
+      // this is for when an interceptor is added after the creation of the injector
       factory.getServerMessageBodyReaderInterceptorRegistry().getListeners().add(this);
    }
 

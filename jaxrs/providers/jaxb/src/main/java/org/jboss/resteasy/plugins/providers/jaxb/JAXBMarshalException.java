@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.spi.InternalServerErrorException;
+import org.jboss.resteasy.spi.WriterException;
 
 import javax.ws.rs.core.Response;
 
@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JAXBMarshalException extends InternalServerErrorException
+public class JAXBMarshalException extends WriterException
 {
    public JAXBMarshalException(String s)
    {

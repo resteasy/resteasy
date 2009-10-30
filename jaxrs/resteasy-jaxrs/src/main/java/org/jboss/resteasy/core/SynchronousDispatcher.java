@@ -10,9 +10,12 @@ import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.NotFoundException;
+import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
+import org.jboss.resteasy.spi.WriterException;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,22 +161,28 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void handleException(HttpRequest request, HttpResponse response, Exception e)
    {
+      if (executeExceptionMapper(response, e)) return;
+
       // ApplicationException needs to come first as it does its own executeExceptionMapper() call
       if (e instanceof ApplicationException)
       {
          handleApplicationException(response, (ApplicationException) e);
-         return;
       }
-
-      if (executeExceptionMapper(response, e)) return;
-
-      if (e instanceof WebApplicationException)
+      else if (e instanceof WriterException)
+      {
+         handleWriterException(request, response, (WriterException) e);
+      }
+      else if (e instanceof ReaderException)
+      {
+         handleReaderException(request, response, (ReaderException) e);
+      }
+      else if (e instanceof WebApplicationException)
       {
          handleWebApplicationException(response, (WebApplicationException) e);
       }
       else if (e instanceof Failure)
       {
-         handleFailure(request, response, e);
+         handleFailure(request, response, (Failure) e);
       }
       else
       {
@@ -182,13 +191,12 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected void handleFailure(HttpRequest request, HttpResponse response, Exception e)
+   protected void handleFailure(HttpRequest request, HttpResponse response, Failure failure)
    {
-      if (((Failure) e).isLoggable())
-         logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
-      else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+      if (failure.isLoggable())
+         logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
+      else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
 
-      Failure failure = (Failure) e;
       if (failure.getResponse() != null)
       {
          writeFailure(response, failure.getResponse());
@@ -241,16 +249,79 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void handleApplicationException(HttpResponse response, ApplicationException e)
    {
+      if (executeExceptionMapper(response, e.getCause()))
+      {
+         return;
+      }
       if (e.getCause() instanceof WebApplicationException)
       {
          handleWebApplicationException(response, (WebApplicationException) e.getCause());
          return;
       }
-
-      if (!executeExceptionMapper(response, e.getCause()))
+      else
       {
          throw new UnhandledException(e.getCause());
       }
+   }
+
+   protected void handleWriterException(HttpRequest request, HttpResponse response, WriterException e)
+   {
+      if (e.getResponse() != null || e.getErrorCode() > -1)
+      {
+         handleFailure(request, response, e);
+         return;
+      }
+      else if (e.getCause() != null)
+      {
+         if (executeExceptionMapper(response, e.getCause()))
+         {
+            return;
+         }
+         if (e.getCause() instanceof WebApplicationException)
+         {
+            handleWebApplicationException(response, (WebApplicationException) e.getCause());
+            return;
+         }
+         if (e.getCause() instanceof Failure)
+         {
+            handleFailure(request, response, (Failure) e.getCause());
+            return;
+         }
+         else
+         {
+         }
+      }
+      e.setErrorCode(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+      handleFailure(request, response, e);
+   }
+
+   protected void handleReaderException(HttpRequest request, HttpResponse response, ReaderException e)
+   {
+      // If a response or error code set, use that, otherwise look at cause.
+      if (e.getResponse() != null || e.getErrorCode() > -1)
+      {
+         handleFailure(request, response, e);
+         return;
+      }
+      else if (e.getCause() != null)
+      {
+         if (executeExceptionMapper(response, e.getCause()))
+         {
+            return;
+         }
+         if (e.getCause() instanceof WebApplicationException)
+         {
+            handleWebApplicationException(response, (WebApplicationException) e.getCause());
+            return;
+         }
+         if (e.getCause() instanceof Failure)
+         {
+            handleFailure(request, response, (Failure) e.getCause());
+            return;
+         }
+      }
+      e.setErrorCode(HttpResponseCodes.SC_BAD_REQUEST);
+      handleFailure(request, response, e);
    }
 
    protected void writeFailure(HttpResponse response, Response jaxrsResponse)
@@ -408,7 +479,7 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    protected void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
-           throws IOException, WebApplicationException
+           throws WriterException
    {
       ServerResponse serverResponse = (ServerResponse) jaxrsResponse;
       serverResponse.writeTo(response, providerFactory);

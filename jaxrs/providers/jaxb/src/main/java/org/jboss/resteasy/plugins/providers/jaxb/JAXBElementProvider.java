@@ -3,7 +3,6 @@
  */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.core.ExceptionAdapter;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Consumes;
@@ -72,7 +71,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       }
       catch (JAXBException e)
       {
-         throw new RuntimeException(e);
+         throw new JAXBUnmarshalException(e);
       }
       JAXBElement<?> result;
       try
@@ -83,7 +82,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       }
       catch (JAXBException e)
       {
-         throw new ExceptionAdapter(e);
+         throw new JAXBUnmarshalException(e);
       }
       JAXBElement<?> element = result;
       return element;

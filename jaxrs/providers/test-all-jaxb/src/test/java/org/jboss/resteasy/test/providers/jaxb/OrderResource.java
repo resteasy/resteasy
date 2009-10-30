@@ -3,7 +3,6 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBHelper;
 import org.jboss.resteasy.test.providers.jaxb.data.Item;
 import org.jboss.resteasy.test.providers.jaxb.data.Order;
 

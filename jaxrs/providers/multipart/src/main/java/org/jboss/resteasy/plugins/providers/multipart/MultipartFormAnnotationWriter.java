@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.FormParam;
@@ -62,11 +63,11 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
             }
             catch (IllegalAccessException e)
             {
-               throw new RuntimeException(e);
+               throw new WriterException(e);
             }
             catch (InvocationTargetException e)
             {
-               throw new RuntimeException(e);
+               throw new WriterException(e.getCause());
             }
             PartType partType = method.getAnnotation(PartType.class);
 
@@ -85,7 +86,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
       {
          if (field.isAnnotationPresent(FormParam.class) && field.isAnnotationPresent(PartType.class))
          {
-			AccessController.doPrivileged(new FieldEnablerPrivilegedAction(field));
+            AccessController.doPrivileged(new FieldEnablerPrivilegedAction(field));
             FormParam param = field.getAnnotation(FormParam.class);
             Object value = null;
             try
@@ -94,7 +95,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
             }
             catch (IllegalAccessException e)
             {
-               throw new RuntimeException(e);
+               throw new WriterException(e);
             }
             PartType partType = field.getAnnotation(PartType.class);
 

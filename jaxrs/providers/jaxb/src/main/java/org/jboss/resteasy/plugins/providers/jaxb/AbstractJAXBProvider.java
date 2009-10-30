@@ -10,11 +10,9 @@ import org.jboss.resteasy.core.interception.DecoratorMatcher;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 import org.jboss.resteasy.util.TypeConverter;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
@@ -85,8 +83,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       catch (JAXBException e)
       {
-         Response response = Response.serverError().build();
-         throw new WebApplicationException(e, response);
+         throw new JAXBUnmarshalException(e);
       }
    }
 
@@ -109,8 +106,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       catch (JAXBException e)
       {
-         Response response = Response.serverError().build();
-         throw new WebApplicationException(e, response);
+         throw new JAXBMarshalException(e);
       }
    }
 
