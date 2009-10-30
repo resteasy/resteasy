@@ -9,7 +9,7 @@
     </parent>
 
     <name>RESTEasy Maven Import</name>
-    <artifactId>resteasy-maven-import</artifactId>
+    <artifactId>resteasy-bom</artifactId>
     <packaging>pom</packaging>
 
     <dependencyManagement>

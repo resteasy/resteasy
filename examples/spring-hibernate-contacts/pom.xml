@@ -35,7 +35,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-maven-import</artifactId>
+                <artifactId>resteasy-bom</artifactId>
                 <version>1.2.GA</version>
                 <type>pom</type>
                 <scope>import</scope>
