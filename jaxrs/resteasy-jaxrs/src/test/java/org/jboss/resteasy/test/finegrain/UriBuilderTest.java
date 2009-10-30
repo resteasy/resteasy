@@ -35,6 +35,15 @@ public class UriBuilderTest
    }
 
    @Test
+   public void testQuery2()
+   {
+      UriBuilder builder = UriBuilder.fromUri("http://localhost/test");
+      builder.replaceQuery("a={b}");
+      URI uri = builder.build("=");
+      Assert.assertEquals(uri.toString(), "http://localhost/test?a=%3D");
+   }
+
+   @Test
    public void testReplaceScheme()
    {
       URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c").

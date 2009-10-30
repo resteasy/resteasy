@@ -333,7 +333,7 @@ public class UriBuilderImpl extends UriBuilder
       if (query != null)
       {
          buffer.append("?");
-         replaceParameter(paramMap, isEncoded, query, buffer);
+         replaceQueryStringParameter(paramMap, isEncoded, query, buffer);
       }
       if (fragment != null)
       {
@@ -365,7 +365,7 @@ public class UriBuilderImpl extends UriBuilder
          }
          matcher.appendReplacement(buffer, value);
       }
-      matcher.appendTail(buffer);
+      matcher.appendTail(buffer); 
       return buffer;
    }
 
@@ -400,6 +400,29 @@ public class UriBuilderImpl extends UriBuilder
       return buffer;
    }
 
+   protected StringBuffer replaceQueryStringParameter(Map<String, ? extends Object> paramMap, boolean isEncoded, String string, StringBuffer buffer)
+   {
+      Matcher matcher = createUriParamMatcher(string);
+      while (matcher.find())
+      {
+         String param = matcher.group(1);
+         String value = paramMap.get(param).toString();
+         if (value != null)
+         {
+            if (!isEncoded)
+            {
+               value = Encode.encodeQueryString(value);
+            }
+            matcher.appendReplacement(buffer, value);
+         }
+         else
+         {
+            throw new IllegalArgumentException("path param " + param + " has not been provided by the parameter map");
+         }
+      }
+      matcher.appendTail(buffer);
+      return buffer;
+   }
 
    /**
     * Return a unique order list of path params
