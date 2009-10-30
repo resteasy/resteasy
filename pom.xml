@@ -270,9 +270,9 @@
                 <version>3.0.3.GA</version>
             </dependency>
             <dependency>
-            	<groupId>net.oauth.core</groupId>
-            	<artifactId>oauth</artifactId>
-            	<version>20090825</version>
+                <groupId>net.oauth.core</groupId>
+                <artifactId>oauth</artifactId>
+                <version>20090825</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -296,6 +296,10 @@
         <repository>
             <id>codehaus</id>
             <url>http://repository.codehaus.org</url>
+        </repository>
+        <repository>
+            <id>oauth</id>
+            <url>http://oauth.googlecode.com/svn/code/maven</url>
         </repository>
         <repository>
             <id>maven2-repository.dev.java.net</id>
