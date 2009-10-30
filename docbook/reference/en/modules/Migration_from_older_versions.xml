@@ -6,7 +6,9 @@
       <para>
 
          <itemizedlist>
-
+             <listitem>
+                The resteasy-maven-import artifact has been renamed to resteasy-bom
+             </listitem>
              <listitem>
                  Jettison and Fastinfoset have been broken out of the resteasy-jaxb-provider maven module.  You will now need to include resteasy-jettison-provider or resteasy-fastinfoset-provider if you use either
                  of these libraries.

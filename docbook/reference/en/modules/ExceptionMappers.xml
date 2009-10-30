@@ -114,6 +114,34 @@
 <entry>Not Found.  There is no JAX-RS method that serves the request path/resource.</entry>
 </row>
 <row>
+<entry>ReaderException</entry>
+<entry>400</entry>
+<entry>All exceptions thrown from MessageBodyReaders are wrapped within this exception.  If there is no ExceptionMapper for the
+wrapped exception or if the excepiton isn't a WebApplicationException, then resteasy will return a 400 code by default.</entry>
+</row>
+<row>
+<entry>WriterException</entry>
+<entry>500</entry>
+<entry>All exceptions thrown from MessageBodyWriters are wrapped within this exception.  If there is no ExceptionMapper for the
+wrapped exception or if the exception isn't a WebApplicationException, then resteasy will return a 400 code by default.</entry>
+</row>
+<row>
+<entry>o.j.r.plugins.providers.jaxb.JAXBUnmarshalException</entry>
+<entry>400</entry>
+<entry>The JAXB providers (XML and Jettison) throw this exception on reads.  They may be wrapping JAXBExceptions.  This class extends ReaderException</entry>
+</row>
+<row>
+<entry>o.j.r.plugins.providers.jaxb.JAXBMarshalException</entry>
+<entry>500</entry>
+<entry>The JAXB providers (XML and Jettison) throw this exception on writes.  They may be wrapping JAXBExceptions.  This class extends WriterException</entry>
+</row>
+<row>
+<entry>ApplicationException</entry>
+<entry>N/A</entry>
+<entry>This exception wraps all exceptions thrown from application code.  It functions much in the same way as InvocationTargetException.
+If there is an ExceptionMapper for wrapped exception, then that is used to handle the request.</entry>
+</row>
+<row>
 <entry>Failure</entry>
 <entry>N/A</entry>
 <entry>Internal Resteasy.  Not logged</entry>
