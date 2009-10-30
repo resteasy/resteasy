@@ -1,0 +1,7 @@
+<chapter id="LinkHeader">
+   <title>Link Headers</title>
+  <para>
+     RESTEasy has both client and server side support for the <ulink url="http://tools.ietf.org/html/draft-nottingham-http-link-header-06">Link header specification</ulink>.
+     See the javadocs for org.jboss.resteasy.spi.LinkHeader, org.jboss.resteasy.spi.Link, and org.jboss.resteasy.client.ClientResponse.
+  </para>
+</chapter>
