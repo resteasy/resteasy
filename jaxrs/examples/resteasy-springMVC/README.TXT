@@ -22,4 +22,4 @@ mvn jetty:run
 Open a browser at the following URL:
 
 List all available contacts:
-http://localhost:9095/contacts
+http://localhost:8080/contacts
