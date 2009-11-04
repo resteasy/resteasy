@@ -17,4 +17,4 @@ Flickr Client:
 2. mvn exec:java -Dexec.mainClass="org.jboss.resteasy.examples.flickr.FlickrClient" -Dexec.args="<apiKey>"
 
 Twitter Client
-mvn exec:java -Dexec.mainClass="org.jboss.resteasy.examples.twitter.Twitter" -Dexec.args="<userId> <password>"
+mvn exec:java -Dexec.mainClass="org.jboss.resteasy.examples.twitter.TwitterClient" -Dexec.args="<userId> <password>"
