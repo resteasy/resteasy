@@ -3,11 +3,11 @@
                          "http://www.docbook.org/xml/4.4/docbookx.dtd">-->
 <chapter id="Authentication">
     <title>Authentication</title>
-    <para>RESTEasy 1.2.RC1 has preliminary support for OAuth.</para>
+    <para>RESTEasy has preliminary support for OAuth.</para>
     <section>
     	<title>OAuth core 1.0a</title>
     	<para>
-    		RESTEasy 1.2.RC1 has preliminary support for <ulink url="http://oauth.net/core/1.0a">OAuth core 1.0a</ulink>.
+    		RESTEasy has preliminary support for <ulink url="http://oauth.net/core/1.0a">OAuth core 1.0a</ulink>.
     		This includes support for authenticating with OAuth (as described by the <ulink url="http://oauth.net/core/1.0a#rfc.section.6">spec section 6</ulink>)
     		and OAuth authentication for protected resources (as described by the <ulink url="http://oauth.net/core/1.0a#rfc.section.7">spec section 7</ulink>).
     	</para>
@@ -141,7 +141,7 @@
 			</table>
 			<para>
 				Once authenticated, the OAuth Servlet Filter will set your request's Principal and Roles, which can then be
-				accessed using the JAX-RS SecurityContext. You can also protect your resources using Roles as described in <xref linkend="Securing_JAX-RS_and_RESTEasy"/>
+				accessed using the JAX-RS SecurityContext. You can also protect your resources using Roles as described in the section "Securing JAX-RS and RESTeasy".
 			</para>
 		</section>
 		<section>
