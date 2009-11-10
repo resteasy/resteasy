@@ -8,11 +8,15 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.client.ClientExecutor;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+
 public class JaxrsModule implements Module
 {
 
    public void configure(final Binder binder)
    {
+      binder.bind(ClientExecutor.class).to(ApacheHttpClient4Executor.class);
       binder.bind(RuntimeDelegate.class).toInstance(RuntimeDelegate.getInstance());
       binder.bind(Response.ResponseBuilder.class).toProvider(ResponseBuilderProvider.class);
       binder.bind(UriBuilder.class).toProvider(UriBuilderProvider.class);
