@@ -17,6 +17,17 @@ public class LinkHeader
    private Map<String, Link> linksByTitle = new HashMap<String, Link>();
    private List<Link> links = new ArrayList<Link>();
 
+   public LinkHeader addLink(final Link link)
+   {
+      links.add(link);
+      return this;
+   }
+
+   public LinkHeader addLink(final String title, final String rel, final String href, final String type)
+   {
+      final Link link = new Link(title, rel, href, type, null);
+      return addLink(link);
+   }
 
    public Link getLinkByTitle(String title)
    {
