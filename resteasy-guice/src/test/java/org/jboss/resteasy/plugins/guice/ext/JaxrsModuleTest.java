@@ -4,6 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.guice.ModuleProcessor;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -62,14 +63,16 @@ public class JaxrsModuleTest
 
    public static class JaxrsTestResource implements TestResource
    {
+      private final ClientExecutor clientExecutor;
       private final RuntimeDelegate runtimeDelegate;
       private final Response.ResponseBuilder responseBuilder;
       private final UriBuilder uriBuilder;
       private final Variant.VariantListBuilder variantListBuilder;
 
       @Inject
-      public JaxrsTestResource(final RuntimeDelegate runtimeDelegate, final Response.ResponseBuilder responseBuilder, final UriBuilder uriBuilder, final Variant.VariantListBuilder variantListBuilder)
+      public JaxrsTestResource(final ClientExecutor clientExecutor, final RuntimeDelegate runtimeDelegate, final Response.ResponseBuilder responseBuilder, final UriBuilder uriBuilder, final Variant.VariantListBuilder variantListBuilder)
       {
+         this.clientExecutor = clientExecutor;
          this.runtimeDelegate = runtimeDelegate;
          this.responseBuilder = responseBuilder;
          this.uriBuilder = uriBuilder;
@@ -78,6 +81,7 @@ public class JaxrsModuleTest
 
       public String getName()
       {
+         Assert.assertNotNull(clientExecutor);
          Assert.assertNotNull(runtimeDelegate);
          Assert.assertNotNull(responseBuilder);
          Assert.assertNotNull(uriBuilder);
