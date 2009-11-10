@@ -49,7 +49,7 @@ public class GuiceContextTest
       dispatcher.getRegistry().removeRegistrations(MethodTestResource.class);
    }
 
-   //@Test // not (yet) supprted
+   @Test
    public void testFieldInjection()
    {
       final Module module = new Module()
