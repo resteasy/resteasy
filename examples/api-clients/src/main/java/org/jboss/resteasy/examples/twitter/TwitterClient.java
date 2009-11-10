@@ -16,6 +16,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.ClientExecutor;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -26,8 +28,9 @@ public class TwitterClient
    public static void main(String[] args) throws Exception
    {
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      final ClientExecutor clientExecutor = new ApacheHttpClientExecutor(createClient(args[0], args[1]));
       TwitterResource twitter = ProxyFactory.create(TwitterResource.class,
-            "http://twitter.com", createClient(args[0], args[1]));
+            "http://twitter.com", clientExecutor);
       System.out.println("===> first run");
       printStatuses(twitter.getFriendsTimelines());
       
