@@ -1,9 +1,7 @@
 package org.jboss.resteasy.client;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -90,7 +88,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
 
    private static final Object lock = new Object();
 
-   private static ClientExecutor getDefaultExecutor()
+   public static ClientExecutor getDefaultExecutor()
    {
       if (createPerInstance) return createDefaultExecutorInstance();
       ClientExecutor result = defaultExecutor;
@@ -126,23 +124,9 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       this(uriTemplate, getDefaultExecutor());
    }
 
-   @Deprecated
-   public ClientRequest(String uriTemplate, HttpClient httpClient)
-   {
-      this(uriTemplate, new ApacheHttpClientExecutor(httpClient));
-   }
-
    public ClientRequest(String uriTemplate, ClientExecutor executor)
    {
       this(getBuilder(uriTemplate), executor);
-   }
-
-   @Deprecated
-   public ClientRequest(String uriTemplate, HttpClient httpClient,
-                        ResteasyProviderFactory providerFactory)
-   {
-      this(getBuilder(uriTemplate), new ApacheHttpClientExecutor(httpClient),
-              providerFactory);
    }
 
    public ClientRequest(UriBuilder uri, ClientExecutor executor)

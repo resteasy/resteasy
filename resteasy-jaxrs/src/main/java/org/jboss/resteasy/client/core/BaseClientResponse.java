@@ -2,14 +2,14 @@ package org.jboss.resteasy.client.core;
 
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.core.messagebody.ReaderUtility;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -204,10 +204,13 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
       if (unmarshaledEntity == null)
       {
-            if (status == HttpResponseCodes.SC_NO_CONTENT)
-               return null;
+         if (status == HttpResponseCodes.SC_NO_CONTENT)
+            return null;
 
-            unmarshaledEntity = readFrom(type, genericType, getMediaType(), anns);
+         unmarshaledEntity = readFrom(type, genericType, getMediaType(), anns);
+         // only release connection if we actually unmarshalled something and if the object is *NOT* an InputStream
+         // If it is an input stream, the user may be doing their own stream processing.
+         if (unmarshaledEntity != null && !InputStream.class.isInstance(unmarshaledEntity)) releaseConnection();
       }
       return (T2) unmarshaledEntity;
    }

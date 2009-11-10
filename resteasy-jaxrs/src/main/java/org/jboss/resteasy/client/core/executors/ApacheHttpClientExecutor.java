@@ -78,7 +78,16 @@ public class ApacheHttpClientExecutor implements ClientExecutor
 
          public void performReleaseConnection()
          {
-            httpMethod.releaseConnection();
+            try
+            {
+               httpMethod.releaseConnection();
+            }
+            catch (Exception ignored) {}
+            try
+            {
+               stream.close();
+            }
+            catch (Exception ignored) {}
          }
       });
       response.setStatus(status);
