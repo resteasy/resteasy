@@ -1,10 +1,8 @@
 package org.jboss.resteasy.client;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.ClientProxy;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -26,13 +24,7 @@ public class ProxyFactory
 
    public static <T> T create(Class<T> clazz, String base)
    {
-      return create(clazz, base, new HttpClient());
-   }
-
-   @Deprecated
-   public static <T> T create(Class<T> clazz, String base, HttpClient client)
-   {
-      return create(clazz, createUri(base), client, ResteasyProviderFactory.getInstance());
+      return create(clazz, base, ClientRequest.getDefaultExecutor());
    }
 
    public static <T> T create(Class<T> clazz, String base, ClientExecutor client)
@@ -50,12 +42,6 @@ public class ProxyFactory
       {
          throw new RuntimeException(e);
       }
-   }
-
-   @Deprecated
-   public static <T> T create(Class<T> clazz, URI baseUri, HttpClient httpClient, ResteasyProviderFactory providerFactory)
-   {
-      return create(clazz, baseUri, new ApacheHttpClientExecutor(httpClient), providerFactory);
    }
 
    @SuppressWarnings("unchecked")

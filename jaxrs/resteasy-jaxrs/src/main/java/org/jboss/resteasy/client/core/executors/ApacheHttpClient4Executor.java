@@ -86,7 +86,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
          {
             try
             {
-               if (res.getEntity() != null) res.getEntity().getContent().close();
+               if (stream != null) stream.close();
             }
             catch (Exception ignore)
             {

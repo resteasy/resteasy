@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.xml;
 import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.providers.jaxb.json.BadgerContext;
 import org.jboss.resteasy.plugins.providers.jaxb.json.JettisonMappedContext;
@@ -52,8 +53,9 @@ public class TestJAXB
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
       HttpClient httpClient = new HttpClient();
+      ApacheHttpClientExecutor executor = new ApacheHttpClientExecutor(httpClient);
       BookStoreClient client = ProxyFactory.create(BookStoreClient.class, generateBaseUrl(),
-              httpClient);
+              executor);
 
       Book book = client.getBookByISBN("596529260");
       Assert.assertNotNull(book);
