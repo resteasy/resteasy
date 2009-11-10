@@ -166,4 +166,14 @@ public class LinkHeaderTest extends BaseResourceTest
       Assert.assertTrue(header.getLinksByRelationship().containsKey("start"));
       Assert.assertTrue(header.getLinksByRelationship().containsKey("http://example.net/relation/other"));
    }
+
+   @Test
+   public void testAdd() {
+      final LinkHeader linkHeader = new LinkHeader();
+      Assert.assertEquals(linkHeader.getLinks().size(), 0);
+      linkHeader.addLink(new Link("one", "resl-1", "href-1", null, null));
+      Assert.assertEquals(linkHeader.getLinks().size(), 1);
+      linkHeader.addLink(new Link("two", "resl-2", "href-2", null, null));
+      Assert.assertEquals(linkHeader.getLinks().size(), 2);
+   }
 }
