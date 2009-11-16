@@ -27,7 +27,7 @@
     <orderEntry type="library" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
     <orderEntry type="module" module-name="resteasy-jettison-provider" />
     <orderEntry type="module" module-name="resteasy-jaxb-provider" />
-    <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-impl:2.1.10" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-impl:2.1.12" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.1" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.stream:stax-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.sun.xml.stream:sjsxp:1.0.1" level="project" />
