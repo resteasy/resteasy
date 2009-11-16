@@ -6,19 +6,19 @@
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>resteasy-springMVC</artifactId>
     <packaging>war</packaging>
-    <version>1.2.GA</version>
+    <version>1.2.1.GA</version>
     <name>Spring MVC RestContact Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-spring</artifactId>
-            <version>1.2.GA</version>
+            <version>1.2.1.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>1.2.GA</version>
+            <version>1.2.1.GA</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
