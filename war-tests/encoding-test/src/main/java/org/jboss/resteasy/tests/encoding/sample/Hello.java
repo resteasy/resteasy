@@ -60,5 +60,15 @@ public class Hello
       return date;
    }
 
+   @Path("/plus/{plus}")
+   @GET
+   @Produces("text/plain")
+   public String getPlus(@PathParam("plus") String p)
+   {
+      System.out.println("GET PLUS: " + p);
+      Assert.assertEquals("foo+bar", p);
+      return p;
+   }
+
 
 }
