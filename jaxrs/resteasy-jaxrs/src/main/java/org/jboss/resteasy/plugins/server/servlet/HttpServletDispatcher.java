@@ -171,8 +171,19 @@ public class HttpServletDispatcher extends HttpServlet
          {
             ThreadLocalResteasyProviderFactory.push(providerFactory);
          }
-         HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-         UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
+         HttpHeaders headers = null;
+         UriInfoImpl uriInfo = null;
+         try
+         {
+            headers = ServletUtil.extractHttpHeaders(request);
+            uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
+         }
+         catch (Exception e)
+         {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            // made it warn so that people can filter this.
+            logger.warn("Failed to parse request.", e);
+         }
 
          HttpResponse theResponse = createServletResponse(response);
          HttpRequest in = createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);
