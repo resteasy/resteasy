@@ -1,10 +1,9 @@
 package org.jboss.resteasy.client.cache;
 
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * In-memory BrowserCache. Uses an underlying cache, with ConcurrentMapCache as
@@ -15,7 +14,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * <p/>
  * With high concurrent access, because this is not a sophisticated cache,
  * sometimes a cache entry may be lost. It is consistent though.
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -30,10 +29,10 @@ public class LightweightBrowserCache implements BrowserCache
    {
       this(new MapCache());
    }
-   
+
    public LightweightBrowserCache(BrowserCache cache)
    {
-      this.internalCache=cache;
+      this.internalCache = cache;
    }
 
    public BrowserCache getInternalCache()
@@ -79,21 +78,21 @@ public class LightweightBrowserCache implements BrowserCache
    }
 
    public Entry put(String key, MediaType mediaType,
-         MultivaluedMap<String, String> headers, byte[] cached, int expires,
-         String etag, String lastModified)
+                    MultivaluedMap<String, String> headers, byte[] cached, int expires,
+                    String etag, String lastModified)
    {
       Entry previousValue = internalCache.get(key, mediaType);
 
       int sizeDiff = -1;
-      if(previousValue == null)
+      if (previousValue == null)
          sizeDiff = cached.length;
-      else 
+      else
          sizeDiff = cached.length - previousValue.getCached().length;
-      
+
       if (bytes.addAndGet(sizeDiff) > maxBytes)
       {
          bytes.set(0);
-         internalCache.clear(); 
+         internalCache.clear();
          bytes.addAndGet(sizeDiff);
       }
       return internalCache.put(key, mediaType, headers, cached, expires, etag, lastModified);
@@ -102,5 +101,6 @@ public class LightweightBrowserCache implements BrowserCache
    public void clear()
    {
       internalCache.clear();
+      bytes.set(0);
    }
 }
