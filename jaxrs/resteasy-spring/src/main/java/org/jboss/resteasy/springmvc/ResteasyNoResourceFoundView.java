@@ -42,7 +42,7 @@ public class ResteasyNoResourceFoundView implements View
             return null;
          }
 
-      };
+      }.handle(new ResteasyRequestWrapper(request), response);
    }
 
    @SuppressWarnings("unchecked")
