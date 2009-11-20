@@ -205,7 +205,8 @@ public class ApacheHttpClientExecutor implements ClientExecutor
       }
       if (request.getBody() != null)
       {
-         if (httpMethod instanceof GetMethod) throw new RuntimeException("A GET request cannot have a body.");
+         if (!(httpMethod instanceof EntityEnclosingMethod))
+            throw new RuntimeException("A GET request cannot have a body.");
          ClientRequestEntity requestEntity = new ClientRequestEntity(new HttpClientHeaderWrapper(httpMethod, request.getProviderFactory()), request);
          EntityEnclosingMethod post = (EntityEnclosingMethod) httpMethod;
          post.setRequestEntity(requestEntity);
