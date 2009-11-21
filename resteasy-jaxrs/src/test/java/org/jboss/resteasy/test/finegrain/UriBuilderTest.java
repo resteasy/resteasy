@@ -33,7 +33,7 @@ public class UriBuilderTest
       builder.queryParam("msg", "emoji stuff %EE%81%96%EE%90%8F");
       URI uri = builder.build();
       System.out.println(uri);
-      Assert.assertEquals("/my/url?msg=emoji%20stuff%20%EE%81%96%EE%90%8F", uri.toString());
+      Assert.assertEquals("/my/url?msg=emoji+stuff+%EE%81%96%EE%90%8F", uri.toString());
 
    }
 

@@ -89,10 +89,14 @@ public class Encode
          foundParam = true;
          string = buf.toString();
       }
-      /*
-      string = URLEncoder.encode(string, "UTF-8").replace("%25", "%");
-      */
-      string = URLUtils.encodeQueryNameOrValue(string).replace("%25", "%");
+      try
+      {
+         string = URLEncoder.encode(string, "UTF-8").replace("%25", "%");
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         throw new RuntimeException(e);
+      }
       string = encodeNonCodes(string);
       if (foundParam)
       {
