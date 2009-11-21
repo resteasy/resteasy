@@ -56,12 +56,6 @@ JBoss's Maven Repository is at:
       <artifactId>resteasy-atom-provider</artifactId>
       <version>1.2.1.GA</version>
    </dependency>
-   <!-- JAXB + Atom support -->
-   <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-atom-provider</artifactId>
-      <version>1.2.1.GA</version>
-   </dependency>
    <!-- Apache Abdera Integration -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
