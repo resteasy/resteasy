@@ -27,6 +27,17 @@ public class UriBuilderTest
    }
 
    @Test
+   public void testEmoji()
+   {
+      UriBuilder builder = UriBuilder.fromPath("/my/url");
+      builder.queryParam("msg", "emoji stuff %EE%81%96%EE%90%8F");
+      URI uri = builder.build();
+      System.out.println(uri);
+      Assert.assertEquals("/my/url?msg=emoji%20stuff%20%EE%81%96%EE%90%8F", uri.toString());
+
+   }
+
+   @Test
    public void testQuery()
    {
       UriBuilder builder = UriBuilder.fromPath("/foo");

@@ -65,7 +65,7 @@ public class Encode
       return result;
    }
 
-   private static final Pattern nonCodes = Pattern.compile("%([^a-fA-F0-7]|$)");
+   private static final Pattern nonCodes = Pattern.compile("%([^a-fA-F0-9]|$)");
 
    public static String encodeNonCodes(String string)
    {
@@ -79,29 +79,24 @@ public class Encode
       return buf.toString();
    }
 
-   public static String encodeQueryString(String string)
+   public static String encodeQueryStringNameOrValue(String string)
    {
-      try
+      StringBuffer buf = new StringBuffer();
+      List<String> params = new ArrayList<String>();
+      boolean foundParam = false;
+      if (savePathParams(string, buf, params))
       {
-         StringBuffer buf = new StringBuffer();
-         List<String> params = new ArrayList<String>();
-         boolean foundParam = false;
-         if (savePathParams(string, buf, params))
-         {
-            foundParam = true;
-            string = buf.toString();
-         }
-
-         string = URLEncoder.encode(string, "UTF-8").replace("%25", "%");
-         string = encodeNonCodes(string);
-         if (foundParam)
-         {
-            return pathParamReplacement(string, params);
-         }
+         foundParam = true;
+         string = buf.toString();
       }
-      catch (UnsupportedEncodingException e)
+      /*
+      string = URLEncoder.encode(string, "UTF-8").replace("%25", "%");
+      */
+      string = URLUtils.encodeQueryNameOrValue(string).replace("%25", "%");
+      string = encodeNonCodes(string);
+      if (foundParam)
       {
-         throw new RuntimeException(e);
+         return pathParamReplacement(string, params);
       }
       return string;
    }

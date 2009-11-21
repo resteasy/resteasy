@@ -365,7 +365,7 @@ public class UriBuilderImpl extends UriBuilder
          }
          matcher.appendReplacement(buffer, value);
       }
-      matcher.appendTail(buffer); 
+      matcher.appendTail(buffer);
       return buffer;
    }
 
@@ -411,7 +411,7 @@ public class UriBuilderImpl extends UriBuilder
          {
             if (!isEncoded)
             {
-               value = Encode.encodeQueryString(value);
+               value = Encode.encodeQueryStringNameOrValue(value);
             }
             matcher.appendReplacement(buffer, value);
          }
@@ -580,7 +580,7 @@ public class UriBuilderImpl extends UriBuilder
       {
          if (query == null) query = "";
          else query += "&";
-         query += Encode.encodeQueryString(name) + "=" + Encode.encodeQueryString(value.toString());
+         query += Encode.encodeQueryStringNameOrValue(name) + "=" + Encode.encodeQueryStringNameOrValue(value.toString());
       }
       return this;
    }
