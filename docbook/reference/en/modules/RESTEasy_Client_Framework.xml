@@ -281,8 +281,11 @@ List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>()
 ]]></programlisting>
 
     </sect1>
+    
+    
+    
     <sect1 id="Client_error_handling">
-        <title>Client error handling</title>
+        <title>Client Error Handling</title>
 
         <para>
 
@@ -301,11 +304,77 @@ List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>()
    MyObject get(); // will throw a ClientResponseFailure on response code &gt; 399
 </programlisting>
         </para>
-        <para>
 
 
+	<para>
+		In cases where Client Proxy methods do not return Response or
+		ClientResponse, it may be not be desireable for the Client Proxy
+		Framework to throw generic ClientResponseFailure exceptions. In these
+		scenarios, where more fine-grained control of thrown Exceptions is
+		required, the ClientErrorInterceptor API may be used.
+		</para>
+<programlisting>
+public static T getClientService(final Class clazz, final String serverUri)
+{
+	ResteasyProviderFactory pf = ResteasyProviderFactory.getInstance();
+	pf.addClientErrorInterceptor(new DataExceptionInterceptor());
+
+	System.out.println("Generating REST service for: " + clazz.getName());
+	return ProxyFactory.create(clazz, serverUri);
+}
+</programlisting>
+
+<para>
+	ClientErrorInterceptor provides a hook into the proxy ClientResponse request lifecycle. If a
+	Client Proxy method is called, resulting in a client exception, and the
+	proxy return type is not Response or ClientResponse, registered
+	interceptors will be given a chance to process the response manually,
+	or throw a new exception. If all interceptors successfully return,
+	RestEasy will re-throw the original encountered exception. Note,
+	however, that the response input stream may need to be reset before
+	additional reads will succeed.
+</para>
+
+<programlisting>
+public class ExampleInterceptor implements ClientErrorInterceptor
+{
+	public void handle(ClientResponse response) throws RuntimeException
+	{
+		try
+		{
+			BaseClientResponse r = (BaseClientResponse) response;
+			InputStream stream = r.getStreamFactory().getInputStream();
+			stream.reset();
+			
+			String data = response.getEntity(String.class);
+		
+		
+			if(FORBIDDEN.equals(response.getResponseStatus()))
+			{
+				throw new MyCustomException("This exception will be thrown "
+					+ "instead of the ClientResponseFailure");
+			}
+		
+		}
+		catch (IOException e)
+		{
+			//...
+		}
+		// If we got here, and this method returns successfully, 
+		// RESTEasy will throw the original ClientResponseFailure
+	}
+}
+</programlisting>
+
+		<para>
+		
+		
         </para>
     </sect1>
+    
+    
+    
+    
    <sect1 id="ClientRequest">
    <title>Manual ClientRequest API</title>
    <para>Resteasy has a manual API for invoking requests:  org.jboss.resteasy.client.ClientRequest  See the Javadoc for the full capabilities
@@ -339,3 +408,4 @@ List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>()
 ]]></programlisting>
    </sect1>
 </chapter>
+
