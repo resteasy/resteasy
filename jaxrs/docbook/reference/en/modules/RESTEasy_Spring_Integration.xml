@@ -27,16 +27,16 @@ RESTeasy comes with its own Spring ContextLoaderListener that registers a RESTea
    &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
 
    &lt;listener&gt;
-      &lt;listener-class&gt;org.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+      &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
    &lt;/listener&gt;
 
    &lt;listener&gt;
-      &lt;listener-class&gt;org.resteasy.plugins.spring.SpringContextLoaderListener&lt;/listener-class&gt;
+      &lt;listener-class&gt;org.jboss.resteasy.plugins.spring.SpringContextLoaderListener&lt;/listener-class&gt;
    &lt;/listener&gt;
 
    &lt;servlet&gt;
       &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;servlet-class&gt;org.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
+      &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
    &lt;/servlet&gt;
 
    &lt;servlet-mapping&gt;
@@ -53,7 +53,7 @@ The SpringContextLoaderListener must be declared after ResteasyBootstrap as it u
 </para>
 <para>
 
-If you do not use a Spring ContextLoaderListener to create your bean factories, then you can manually register the RESTeasy BeanFactoryPostProcessor by allocating an instance of org.jboss.resteasy.plugins.spring.SpringBeanProcessor.  You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes org.resteasy.spi.ResteasyProviderFactory and org.resteasy.spi.Registry.  (Really the string FQN of these classes).  There is also a org.jboss.resteasy.plugins.spring.SpringBeanProcessorServletAware, that will automatically inject references to the Registry and ResteasyProviderFactory from the Servlet Context.  (that is, if you have used RestasyBootstrap to bootstrap Resteasy).
+If you do not use a Spring ContextLoaderListener to create your bean factories, then you can manually register the RESTeasy BeanFactoryPostProcessor by allocating an instance of org.jboss.resteasy.plugins.spring.SpringBeanProcessor.  You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes org.jboss.resteasy.spi.ResteasyProviderFactory and org.jboss.resteasy.spi.Registry.  (Really the string FQN of these classes).  There is also a org.jboss.resteasy.plugins.spring.SpringBeanProcessorServletAware, that will automatically inject references to the Registry and ResteasyProviderFactory from the Servlet Context.  (that is, if you have used RestasyBootstrap to bootstrap Resteasy).
 </para>
 <para>
    Our Spring integration supports both singletons and the "prototype" scope.  RESTEasy handles injecting @Context references.  Constructor injection is not supported though.  Also, with the "prototype" scope, RESTEasy will inject any @*Param annotated fields or setters before the request is dispatched.

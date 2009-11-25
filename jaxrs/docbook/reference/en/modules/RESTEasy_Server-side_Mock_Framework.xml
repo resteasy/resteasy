@@ -8,7 +8,7 @@ Although RESTEasy has an Embeddable Container, you may not be comfortable with t
 <para>
 
 <programlisting>
-import org.resteasy.mock.*;
+import org.jboss.resteasy.mock.*;
 ...
 
       Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();

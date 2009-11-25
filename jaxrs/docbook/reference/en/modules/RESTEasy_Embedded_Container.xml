@@ -53,7 +53,7 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
       tjws.setPort(8081);
 
       tjws.start();
-      org.resteasy.plugins.server.servlet.SpringBeanProcessor processor = new SpringBeanProcessor(tjws.getDeployment().getRegistry(), tjws.getDeployment().getFactory();
+      org.jboss.resteasy.plugins.server.servlet.SpringBeanProcessor processor = new SpringBeanProcessor(tjws.getDeployment().getRegistry(), tjws.getDeployment().getFactory();
       ConfigurableBeanFactory factory = new XmlBeanFactory(...);
       factory.addBeanPostProcessor(processor);
    }
