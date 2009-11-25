@@ -55,7 +55,7 @@ public interface SimpleClient
     <para>
 
         <programlisting>
-            import org.resteasy.plugins.client.httpclient.ProxyFactory;
+            import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
             ...
             // this initialization only needs to be done once per VM
             RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
@@ -137,7 +137,7 @@ public interface MyProxy {
         </para>
         <para>
 
-            If you are interested in everything, you can get it with the org.resteasy.spi.ClientResponse interface:
+            If you are interested in everything, you can get it with the org.jboss.resteasy.spi.ClientResponse interface:
         </para>
         <programlisting><![CDATA[
 /**

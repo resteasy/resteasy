@@ -6,7 +6,7 @@
         <version>1.2.1.GA</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.resteasy</groupId>
+    <groupId>org.jboss.resteasy</groupId>
     <artifactId>application-config-test</artifactId>
     <packaging>war</packaging>
     <name>Basic Integration Test</name>

@@ -69,12 +69,12 @@ So, here's an example of a modified RESTEasy WAR file.  You'll notice that every
    &lt;/context-param&gt;
 
    &lt;listener&gt;
-      &lt;listener-class&gt;org.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+      &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
    &lt;/listener&gt;
 
    &lt;servlet&gt;
       &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;servlet-class&gt;org.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
+      &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
    &lt;/servlet&gt;
 
    &lt;servlet-mapping&gt;
