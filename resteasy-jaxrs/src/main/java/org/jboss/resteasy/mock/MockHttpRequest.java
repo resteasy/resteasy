@@ -52,6 +52,12 @@ public class MockHttpRequest implements HttpRequest
    protected static MockHttpRequest initWithUri(String uri) throws URISyntaxException
    {
       URI absoluteUri = new URI(uri);
+      URI baseUri = absoluteUri;
+      return initWithUri(absoluteUri, baseUri);
+   }
+
+   private static MockHttpRequest initWithUri(URI absoluteUri, URI baseUri)
+   {
       MockHttpRequest request = new MockHttpRequest();
       request.httpHeaders = new HttpHeadersImpl();
       request.httpHeaders.setAcceptableLanguages(new ArrayList<String>());
@@ -59,15 +65,21 @@ public class MockHttpRequest implements HttpRequest
       request.httpHeaders.setCookies(new HashMap<String, Cookie>());
       request.httpHeaders.setRequestHeaders(new Headers<String>());
       //request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
-      request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getRawPath(), absoluteUri.getRawQuery(), PathSegmentImpl.parseSegments(absoluteUri.getRawPath()));
+      request.uri = new UriInfoImpl(absoluteUri, baseUri, absoluteUri.getRawPath(), absoluteUri.getRawQuery(), PathSegmentImpl.parseSegments(absoluteUri.getRawPath()));
       request.preprocessedPath = request.uri.getPath(false);
       return request;
-
    }
 
    public static MockHttpRequest create(String httpMethod, String uri) throws URISyntaxException
    {
       MockHttpRequest request = initWithUri(uri);
+      request.httpMethod = httpMethod;
+      return request;
+   }
+
+   public static MockHttpRequest create(String httpMethod, URI uriObj, URI baseUri)
+   {
+      MockHttpRequest request = initWithUri(uriObj, baseUri);
       request.httpMethod = httpMethod;
       return request;
    }
@@ -323,4 +335,5 @@ public class MockHttpRequest implements HttpRequest
    {
       attributes.remove(name);
    }
+
 }
