@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>async-job-service</artifactId>
-    <version>1.2.2.GA-SNAPSHOT</version>
+    <version>1.3.RC1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name/>
     <description/>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.2.2.GA-SNAPSHOT</version>
+            <version>1.3.RC1-SNAPSHOT</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>

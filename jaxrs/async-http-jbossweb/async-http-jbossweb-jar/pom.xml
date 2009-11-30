@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>1.2.2.GA-SNAPSHOT</version>
+        <version>1.3.RC1-SNAPSHOT</version>
     </parent>
     <artifactId>async-http-jbossweb</artifactId>
     <packaging>jar</packaging>
