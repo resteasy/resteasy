@@ -41,8 +41,8 @@ functionality instead of Resteasy.
 <web-app>
 ...
    <context-param>
-      <context-name>resteasy.role.based.security</context-name>
-      <context-value>true</context-value>
+      <param-name>resteasy.role.based.security</context-name>
+      <param-value>true</context-value>
    </context-param>
 </web-app>]]>
 </programlisting>
@@ -64,8 +64,8 @@ So, here's an example of a modified RESTEasy WAR file.  You'll notice that every
 &lt;web-app&gt;
 
    &lt;context-param&gt;
-      &lt;context-name>resteasy.role.based.security&lt;/context-name&gt;
-      &lt;context-value>true&lt;/context-value&gt;
+      &lt;param-name>resteasy.role.based.security&lt;/context-name&gt;
+      &lt;param-value>true&lt;/context-value&gt;
    &lt;/context-param&gt;
 
    &lt;listener&gt;
