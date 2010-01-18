@@ -83,6 +83,11 @@ public class MediaTypeCaseSensitivityTest extends BaseResourceTest
    @Test
    public void testIt() throws Exception
    {
+      MessageBodyReader<Stuff> messageBodyReader = getProviderFactory().getMessageBodyReader(Stuff.class, Stuff.class,
+            null, new MediaType("ApplIcAtion", "STufF"));
+      Assert.assertNotNull(messageBodyReader);
+      Assert.assertNotNull(messageBodyReader.getClass());
+      Assert.assertEquals(StuffProvider.class, messageBodyReader.getClass());
       HttpClient client = new HttpClient();
       PostMethod post = new PostMethod(generateURL("/stuff"));
       post.setRequestEntity(new StringRequestEntity("bill", "Application/Stuff", null));
