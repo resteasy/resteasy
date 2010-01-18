@@ -1,14 +1,17 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
-import Acme.Serve.SSLAcceptor;
-import Acme.Serve.Serve;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServlet;
+import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Properties;
+
+import javax.servlet.http.HttpServlet;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import Acme.Serve.SSLAcceptor;
+import Acme.Serve.Serve;
 
 /**
  * This cannot be restarted once stopped.
@@ -23,9 +26,32 @@ import java.util.Properties;
  */
 public class TJWSServletServer
 {
-   protected Serve server = new Serve();
-   protected Properties props = new Properties();
    private final static Logger logger = LoggerFactory.getLogger(TJWSServletServer.class);
+   
+   public static class FileMappingServe extends Serve{
+      private static final long serialVersionUID = -5031104686755790970L;
+      private PathTreeDictionary mappingTable = null;
+
+      public void initFileMappings()
+      {
+         addDefaultServlets(null); // optional file servlet
+         if(mappingTable != null)
+            super.setMappingTable(mappingTable);
+      };
+
+      public void addFileMapping(String context, File directory)
+      {
+         if(mappingTable == null)
+         {
+            mappingTable = new PathTreeDictionary();
+         }
+         mappingTable.put(context, directory);
+      }
+}
+   
+   protected FileMappingServe server = new FileMappingServe();
+
+   protected Properties props = new Properties();
 
    public void addServlet(String bindPath, HttpServlet servlet)
    {
@@ -108,6 +134,11 @@ public class TJWSServletServer
       props.put(SSLAcceptor.ARG_PORT, Integer.toString(port));
    }
 
+   public void addFileMapping(String context, File directory)
+   {
+      server.addFileMapping(context, directory);
+   }
+   
    public void start()
    {
       if (this.props == null) this.props = new Properties();
@@ -118,7 +149,7 @@ public class TJWSServletServer
       if (props.containsKey(SSLAcceptor.ARG_PORT)) props.put(Serve.ARG_ACCEPTOR_CLASS, SSLAcceptor.class.getName());
       props.setProperty(Serve.ARG_NOHUP, "nohup");
       server.arguments = props;
-      server.addDefaultServlets(null); // optional file servlet
+      server.initFileMappings();
       new Thread()
       {
          public void run()
