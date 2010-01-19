@@ -28,7 +28,7 @@ public class HeaderParameterParser
       String name = params.substring(start, end).trim();
       if (end < params.length() && params.charAt(end) == '=') end++;
 
-      StringBuffer buffer = new StringBuffer();
+      StringBuilder buffer = new StringBuilder(params.length() - end);
       int i = end;
       for (; i < params.length(); i++)
       {
