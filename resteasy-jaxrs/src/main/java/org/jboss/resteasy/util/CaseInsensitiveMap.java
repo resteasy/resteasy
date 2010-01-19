@@ -1,9 +1,5 @@
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,11 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Serializable
+@SuppressWarnings("unchecked")
+public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
 {
 
    private static class KeySetWrapper implements Set<String>
@@ -169,11 +170,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
       public boolean contains(Object o)
       {
          if (!(o instanceof Entry)) return false;
-         final Entry<String, V> entry = (Entry<String, V>) o;
-
-         Entry<CaseInsensitiveKey, V> wrapped = new EntryWrapper<V>(entry);
-
-         return entrySet.contains(wrapped);
+         return entrySet.contains(new EntryWrapper<V>((Entry<String, V>) o));
       }
 
       public Iterator<Entry<String, V>> iterator()
@@ -313,17 +310,17 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
             this.entry = entry;
          }
 
-         public String getKey()
+         public final String getKey()
          {
             return entry.getKey().key;
          }
 
-         public T getValue()
+         public final T getValue()
          {
             return entry.getValue();
          }
 
-         public T setValue(T v)
+         public final T setValue(T v)
          {
             return entry.setValue(v);
          }
@@ -332,31 +329,34 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
 
    private static class CaseInsensitiveKey implements Serializable
    {
+      private static final long serialVersionUID = 6249456709345532524L;
       private String key;
+      private String tlc;
+      private int hashCode = -1;
 
       private CaseInsensitiveKey(String key)
       {
          this.key = key;
+         tlc = key.toLowerCase();
       }
 
-      public boolean equals(Object o)
+      public final boolean equals(Object o)
       {
          if (this == o) return true;
          if (o == null || getClass() != o.getClass()) return false;
 
          CaseInsensitiveKey that = (CaseInsensitiveKey) o;
-
-         if (!key.equalsIgnoreCase(that.key)) return false;
-
-         return true;
+         return tlc.equals(that.tlc);
       }
 
-      public int hashCode()
+      public final int hashCode()
       {
-         return key.toLowerCase().hashCode();
+         if (hashCode == -1)
+            hashCode = tlc.hashCode();
+         return hashCode;
       }
 
-      public String toString()
+      public final String toString()
       {
          return key;
       }
@@ -374,12 +374,17 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
       map.add(new CaseInsensitiveKey(key), value);
    }
 
+   public void addMultiple(String key, Collection<V> value)
+   {
+      map.addMultiple(new CaseInsensitiveKey(key), value);
+   }
+
    public V getFirst(String key)
    {
       return map.getFirst(new CaseInsensitiveKey(key));
    }
 
-   public int size()
+   public final int size()
    {
       return map.size();
    }
@@ -414,14 +419,19 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
       return map.remove(new CaseInsensitiveKey(o.toString()));
    }
 
-   public void putAll(Map<? extends String, ? extends List<V>> map)
+   public final void putAll(Map otherMap)
    {
-      for (Map.Entry<? extends String, ? extends List<V>> entry : map.entrySet())
-      {
-         List<V> objs = entry.getValue();
-         for (V obj : objs)
+      if(otherMap instanceof CaseInsensitiveMap){
+         CaseInsensitiveMap otherCaseInsensitiveMap = ((CaseInsensitiveMap)otherMap);
+         Set<Map.Entry<CaseInsensitiveKey, List<V>>> es = otherCaseInsensitiveMap.map.entrySet();
+         for (Entry<CaseInsensitiveKey, List<V>> entry : es)
          {
-            add(entry.getKey(), obj);
+            map.addMultiple(entry.getKey(), entry.getValue());
+         }
+      } else {
+         for (Map.Entry<String, List<V>> entry : (Set<Entry<String, List<V>>>) otherMap.entrySet())
+         {
+            this.map.addMultiple(new CaseInsensitiveKey(entry.getKey()), entry.getValue());
          }
       }
    }
