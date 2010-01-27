@@ -6,7 +6,6 @@ import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
@@ -244,13 +243,9 @@ public class ResourceMethodRegistry implements Registry
    /**
     * Find a resource to invoke on
     *
-    * @param httpMethod  GET, POST, PUT, OPTIONS, TRACE, etc...
-    * @param path        uri path
-    * @param contentType produced type
-    * @param accepts     accept header
     * @return
     */
-   public ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response)
+   public ResourceInvoker getResourceInvoker(HttpRequest request)
    {
       List<String> matchedUris = request.getUri().getMatchedURIs(false);
       if (matchedUris == null || matchedUris.size() == 0) return rootSegment.matchRoot(request);

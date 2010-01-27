@@ -134,7 +134,7 @@ public class ResourceLocator implements ResourceInvoker
          registry.addResourceFactory(null, null, subResourceClass);
          cachedSubresources.putIfAbsent(target.getClass(), registry);
       }
-      ResourceInvoker invoker = registry.getResourceInvoker(request, response);
+      ResourceInvoker invoker = registry.getResourceInvoker(request);
       if (invoker == null)
       {
          NotFoundException notFound = new NotFoundException("No path match in subresource for: " + request.getUri().getAbsolutePath());

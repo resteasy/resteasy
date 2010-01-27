@@ -107,7 +107,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
-         ResourceInvoker invoker = getInvoker(request, response);
+         ResourceInvoker invoker = getInvoker(request);
          invoke(request, response, invoker);
       }
       catch (Failure e)
@@ -117,7 +117,27 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   public ResourceInvoker getInvoker(HttpRequest request, HttpResponse response)
+   /**
+    * Propagate NotFoundException.  This is used for Filters
+    *
+    * @param request
+    * @param response
+    */
+   public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException
+   {
+      ResourceInvoker invoker = getInvoker(request);
+      try
+      {
+         invoke(request, response, invoker);
+      }
+      catch (Failure e)
+      {
+         handleException(request, response, e);
+         return;
+      }
+   }
+
+   public ResourceInvoker getInvoker(HttpRequest request)
            throws Failure
    {
       logger.debug("PathInfo: " + request.getUri().getPath());
@@ -126,7 +146,7 @@ public class SynchronousDispatcher implements Dispatcher
          throw new InternalServerErrorException(request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
       }
       preprocess(request);
-      ResourceInvoker invoker = registry.getResourceInvoker(request, response);
+      ResourceInvoker invoker = registry.getResourceInvoker(request);
       if (invoker == null)
       {
          throw new NotFoundException("Unable to find JAX-RS resource associated with path: " + request.getUri().getPath());
@@ -382,7 +402,7 @@ public class SynchronousDispatcher implements Dispatcher
       {
          MessageBodyParameterInjector.pushBody(entity);
          pushedBody = true;
-         ResourceInvoker invoker = getInvoker(request, response);
+         ResourceInvoker invoker = getInvoker(request);
          if (invoker != null)
          {
             pushContextObjects(request, response);

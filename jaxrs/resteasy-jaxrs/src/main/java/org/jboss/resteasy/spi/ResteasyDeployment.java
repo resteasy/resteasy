@@ -43,6 +43,7 @@ public class ResteasyDeployment
    protected List<String> jndiResources = new ArrayList<String>();
    protected List<String> resourceClasses = new ArrayList<String>();
    protected List<Class> actualResourceClasses = new ArrayList<Class>();
+   protected List<ResourceFactory> resourceFactories = new ArrayList<ResourceFactory>();
    protected List<Object> resources = new ArrayList<Object>();
    protected Map<String, String> mediaTypeMappings = new HashMap<String, String>();
    protected Map<String, String> languageExtensions = new HashMap<String, String>();
@@ -232,6 +233,11 @@ public class ResteasyDeployment
       for (Class actualResourceClass : actualResourceClasses)
       {
          registry.addPerRequestResource(actualResourceClass);
+      }
+
+      for (ResourceFactory factory : resourceFactories)
+      {
+         registry.addResourceFactory(factory);
       }
    }
 
@@ -549,5 +555,15 @@ public class ResteasyDeployment
    public void setMediaTypeParamMapping(String paramMapping)
    {
       this.paramMapping = paramMapping;
+   }
+
+   public List<ResourceFactory> getResourceFactories()
+   {
+      return resourceFactories;
+   }
+
+   public void setResourceFactories(List<ResourceFactory> resourceFactories)
+   {
+      this.resourceFactories = resourceFactories;
    }
 }

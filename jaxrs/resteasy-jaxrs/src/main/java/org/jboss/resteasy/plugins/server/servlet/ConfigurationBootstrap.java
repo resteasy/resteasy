@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.scannotation.AnnotationDB;
@@ -121,6 +122,18 @@ abstract public class ConfigurationBootstrap
          scanResources = Boolean.valueOf(sResources.trim());
       }
 
+      // Check to see if scanning is being done by deployer (i.e. JBoss App Server)
+      String sScannedByDeployer = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_BY_DEPLOYER);
+      if (sScannedByDeployer != null)
+      {
+         boolean tmp = Boolean.valueOf(sResources.trim());
+         if (tmp)
+         {
+            scanProviders = false;
+            scanResources = false;
+         }
+      }
+
       if (scanProviders || scanResources)
       {
          logger.debug("Scanning...");
@@ -170,6 +183,12 @@ abstract public class ConfigurationBootstrap
          processJndiResources(jndiResources);
       }
 
+      String jndiComponentResources = getParameter(ResteasyContextParameters.RESTEASY_JNDI_COMPONENT_RESOURCES);
+      if (jndiComponentResources != null)
+      {
+         processJndiComponentResources(jndiComponentResources);
+      }
+
       String resources = getParameter(ResteasyContextParameters.RESTEASY_RESOURCES);
       if (resources != null)
       {
@@ -204,19 +223,19 @@ abstract public class ConfigurationBootstrap
          Map<String, String> map = parseMap(languageExtensions);
          deployment.setLanguageExtensions(map);
       }
-      String before = getParameter("resteasy.interceptor.before.precedence");
+      String before = getParameter(ResteasyContextParameters.RESTEASY_INTERCEPTOR_BEFORE_PRECEDENCE);
       if (before != null)
       {
          Map<String, String> map = parseMap(before);
          deployment.setInterceptorBeforePrecedences(map);
       }
-      String after = getParameter("resteasy.interceptor.after.precedence");
+      String after = getParameter(ResteasyContextParameters.RESTEASY_INTERCEPTOR_AFTER_PRECEDENCE);
       if (after != null)
       {
          Map<String, String> map = parseMap(after);
          deployment.setInterceptorAfterPrecedences(map);
       }
-      String append = getParameter("resteasy.append.interceptor.precedence");
+      String append = getParameter(ResteasyContextParameters.RESTEASY_APPEND_INTERCEPTOR_PRECEDENCE);
       if (append != null)
       {
          String[] precedences = append.split(",");
@@ -250,6 +269,32 @@ abstract public class ConfigurationBootstrap
       for (String resource : resources)
       {
          deployment.getJndiResources().add(resource);
+      }
+   }
+
+   protected void processJndiComponentResources(String jndiResources)
+   {
+      String[] resources = jndiResources.trim().split(",");
+      for (String resource : resources)
+      {
+         String[] config = resource.trim().split(";");
+         if (config.length < 3)
+         {
+            throw new RuntimeException(ResteasyContextParameters.RESTEASY_JNDI_COMPONENT_RESOURCES + " variable is not set correctly: jndi;class;true|false comma delimited");
+         }
+         String jndiName = config[0];
+         Class clazz = null;
+         try
+         {
+            clazz = Thread.currentThread().getContextClassLoader().loadClass(config[1]);
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException("Could not find class provided to " + ResteasyContextParameters.RESTEASY_JNDI_COMPONENT_RESOURCES, e);
+         }
+         boolean cacheRefrence = Boolean.valueOf(config[2].trim());
+         JndiComponentResourceFactory factory = new JndiComponentResourceFactory(jndiName, clazz, cacheRefrence);
+         deployment.getResourceFactories().add(factory);
       }
    }
 
