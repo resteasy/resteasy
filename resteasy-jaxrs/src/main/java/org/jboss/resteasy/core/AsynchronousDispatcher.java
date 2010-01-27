@@ -217,35 +217,35 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       return builder.build();
    }
 
-   public void invokeSuper(HttpRequest request, HttpResponse response)
-   {
-      super.invoke(request, response);
-   }
-
    public boolean isAsynchrnousRequest(HttpRequest in)
    {
       MultivaluedMap<String, String> queryParameters = in.getUri().getQueryParameters();
       return queryParameters.get("asynch") != null || queryParameters.get("oneway") != null;
    }
 
-   public void invoke(HttpRequest in, HttpResponse response)
+   public void invokeSuper(HttpRequest in, HttpResponse response, ResourceInvoker invoker)
+   {
+      super.invoke(in, response, invoker);
+   }
+
+   public void invoke(HttpRequest in, HttpResponse response, ResourceInvoker invoker)
    {
       MultivaluedMap<String, String> queryParameters = in.getUri().getQueryParameters();
       if (queryParameters.get("asynch") != null)
       {
-         postJob(in, response);
+         postJob(in, response, invoker);
       }
       else if (queryParameters.get("oneway") != null)
       {
-         oneway(in, response);
+         oneway(in, response, invoker);
       }
       else
       {
-         super.invoke(in, response);
+         super.invoke(in, response, invoker);
       }
    }
 
-   public void postJob(HttpRequest request, HttpResponse response)
+   public void postJob(HttpRequest request, HttpResponse response, final ResourceInvoker invoker)
    {
       final MockHttpRequest in;
       try
@@ -265,7 +265,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
             try
             {
-               invokeSuper(in, theResponse);
+               invokeSuper(in, theResponse, invoker);
             }
             finally
             {
@@ -283,7 +283,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       response.getOutputHeaders().add(HttpHeaderNames.LOCATION, uri);
    }
 
-   public void oneway(HttpRequest request, HttpResponse response)
+   public void oneway(HttpRequest request, HttpResponse response, final ResourceInvoker invoker)
    {
       logger.debug("IN ONE WAY!!!!!");
       final MockHttpRequest in;
@@ -306,7 +306,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
             try
             {
-               invokeSuper(in, theResponse);
+               invokeSuper(in, theResponse, invoker);
             }
             catch (Exception ignored)
             {

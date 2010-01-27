@@ -54,6 +54,6 @@ public class JBossWebDispatcherServlet extends HttpServletDispatcher implements 
    @Override
    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest httpServletRequest, HttpHeaders httpHeaders, UriInfoImpl uriInfo, HttpResponse httpResponse)
    {
-      return new JBossWebAsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, uriInfo, httpMethod, (SynchronousDispatcher) dispatcher, cometEvent.get());
+      return new JBossWebAsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, uriInfo, httpMethod, (SynchronousDispatcher) getDispatcher(), cometEvent.get());
    }
 }

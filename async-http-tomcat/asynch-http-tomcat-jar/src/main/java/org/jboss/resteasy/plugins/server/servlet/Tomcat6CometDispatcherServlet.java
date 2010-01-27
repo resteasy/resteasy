@@ -51,6 +51,6 @@ public class Tomcat6CometDispatcherServlet extends HttpServletDispatcher impleme
    @Override
    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest httpServletRequest, HttpHeaders httpHeaders, UriInfoImpl uriInfo, HttpResponse httpResponse)
    {
-      return new Tomcat6AsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, uriInfo, httpMethod, (SynchronousDispatcher) dispatcher, cometEvent.get());
+      return new Tomcat6AsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, uriInfo, httpMethod, (SynchronousDispatcher) getDispatcher(), cometEvent.get());
    }
 }

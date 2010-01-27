@@ -86,5 +86,5 @@ public interface Registry
 
    int getSize();
 
-   ResourceInvoker getResourceInvoker(HttpRequest request, HttpResponse response);
+   ResourceInvoker getResourceInvoker(HttpRequest request);
 }

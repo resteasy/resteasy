@@ -97,7 +97,7 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
    private ResourceInvoker getInvoker(HttpRequest httpRequest)
    {
       if (dispatcher != null)
-         return dispatcher.getInvoker(httpRequest, null);
+         return dispatcher.getInvoker(httpRequest);
       return null;
    }
 

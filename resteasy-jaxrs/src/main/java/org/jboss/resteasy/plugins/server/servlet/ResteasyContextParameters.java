@@ -25,4 +25,9 @@ public interface ResteasyContextParameters
    String RESTEASY_LANGUAGE_MAPPINGS = "resteasy.language.mappings";
    String RESTEASY_MEDIA_TYPE_PARAM_MAPPING = "resteasy.media.type.param.mapping";
    String RESTEASY_ROLE_BASED_SECURITY = "resteasy.role.based.security";
+   String RESTEASY_INTERCEPTOR_BEFORE_PRECEDENCE = "resteasy.interceptor.before.precedence";
+   String RESTEASY_INTERCEPTOR_AFTER_PRECEDENCE = "resteasy.interceptor.after.precedence";
+   String RESTEASY_APPEND_INTERCEPTOR_PRECEDENCE = "resteasy.append.interceptor.precedence";
+   String RESTEASY_SCANNED_BY_DEPLOYER = "resteasy.scanned.by.deployer";
+   String RESTEASY_JNDI_COMPONENT_RESOURCES = "resteasy.jndi.component.resources";
 }

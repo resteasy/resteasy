@@ -17,6 +17,6 @@ public class HttpServlet30Dispatcher extends HttpServletDispatcher
    @Override
    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest httpServletRequest, HttpHeaders httpHeaders, UriInfoImpl uriInfo, HttpResponse httpResponse)
    {
-      return new Servlet3AsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, uriInfo, httpMethod, (SynchronousDispatcher) dispatcher);
+      return new Servlet3AsyncHttpRequest(httpServletRequest, httpResponse, httpHeaders, uriInfo, httpMethod, (SynchronousDispatcher) getDispatcher());
    }
 }
