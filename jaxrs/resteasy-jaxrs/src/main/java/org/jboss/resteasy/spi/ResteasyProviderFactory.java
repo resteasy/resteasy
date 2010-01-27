@@ -8,6 +8,7 @@ import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
 import org.jboss.resteasy.annotations.interception.SecurityPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
@@ -50,6 +51,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -85,7 +87,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public boolean isBuiltin = false;
 
       public Class template = null;
-
+      
+      
+      
 
       private MessageBodyKey(Class intf, T reader, boolean isBuiltin)
       {
@@ -434,19 +438,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
    {
-      MessageBodyReader reader = null;
-      try
-      {
-         reader = provider.newInstance();
-      }
-      catch (InstantiationException e)
-      {
-         throw new RuntimeException(e);
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new RuntimeException(e);
-      }
+      MessageBodyReader reader = getProviderInstance(provider);
       addMessageBodyReader(reader, isBuiltin);
    }
 
@@ -488,19 +480,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
    {
-      MessageBodyWriter writer = null;
-      try
-      {
-         writer = provider.newInstance();
-      }
-      catch (InstantiationException e)
-      {
-         throw new RuntimeException(e);
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new RuntimeException(e);
-      }
+      MessageBodyWriter writer = getProviderInstance(provider);
       addMessageBodyWriter(writer, isBuiltin);
    }
 
@@ -551,19 +531,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addExceptionMapper(Class<? extends ExceptionMapper> provider)
    {
-      ExceptionMapper writer = null;
-      try
-      {
-         writer = provider.newInstance();
-      }
-      catch (InstantiationException e)
-      {
-         throw new RuntimeException(e);
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new RuntimeException(e);
-      }
+      ExceptionMapper writer = getProviderInstance(provider);
       addExceptionMapper(writer);
    }
 
@@ -610,19 +578,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addContextResolver(Class<? extends ContextResolver> resolver)
    {
-      ContextResolver writer = null;
-      try
-      {
-         writer = resolver.newInstance();
-      }
-      catch (InstantiationException e)
-      {
-         throw new RuntimeException(e);
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new RuntimeException(e);
-      }
+      ContextResolver writer = getProviderInstance(resolver);
       addContextResolver(writer);
    }
 
@@ -666,19 +622,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addStringConverter(Class<? extends StringConverter> resolver)
    {
-      StringConverter writer = null;
-      try
-      {
-         writer = resolver.newInstance();
-      }
-      catch (InstantiationException e)
-      {
-         throw new RuntimeException(e);
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new RuntimeException(e);
-      }
+      StringConverter writer = getProviderInstance(resolver);
       addStringConverter(writer);
    }
 
@@ -736,19 +680,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (stringParameterUnmarshallers.size() == 0) return null;
       Class<? extends StringParameterUnmarshaller> un = stringParameterUnmarshallers.get(clazz);
-      StringParameterUnmarshaller<T> provider = null;
-      try
-      {
-         provider = un.newInstance();
-      }
-      catch (InstantiationException e)
-      {
-         throw new RuntimeException(e.getCause());
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new RuntimeException(e);
-      }
+      StringParameterUnmarshaller<T> provider = getProviderInstance(un);
       PropertyInjectorImpl injector = new PropertyInjectorImpl(provider.getClass(), this);
       injector.inject(provider);
       return provider;
@@ -1026,5 +958,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             return null;
          }
       };
+   }
+   
+   protected <T> T getProviderInstance(Class<? extends T> clazz)
+   {
+      InjectorFactory factory = new InjectorFactoryImpl(this);
+      Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+      ConstructorInjector constructorInjector = factory.createConstructor(constructor);
+
+      T provider = (T) constructorInjector.construct();
+      return provider;
    }
 }
