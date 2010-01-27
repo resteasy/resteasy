@@ -10,7 +10,12 @@ public interface ResteasyBootstrapClasses
 {
    public static String[] BOOTSTRAP_CLASSES = {
            HttpServletDispatcher.class.getName(),
-           ResteasyBootstrap.class.getName()
+           ResteasyBootstrap.class.getName(),
+           "org.springframework.web.servlet.DispatcherServlet",
+           FilterDispatcher.class.getName(),
+           "org.jboss.resteasy.plugins.server.servlet.JBossWebDispatcherServlet",
+           "org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher",
+           "org.jboss.resteasy.plugins.server.servlet.Tomcat6CometDispatcherServlet"
    };
 
 }
