@@ -1,7 +1,6 @@
 package org.jboss.resteasy.jsapi;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -9,7 +8,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +32,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.auth.oauth.OAuthServlet;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
@@ -51,7 +48,9 @@ import org.slf4j.LoggerFactory;
  */
 public class JSAPIServlet extends HttpServlet {
 
-	private final static Logger logger = LoggerFactory.getLogger(OAuthServlet.class);
+	private static final long serialVersionUID = -1985015444704126795L;
+
+	private final static Logger logger = LoggerFactory.getLogger(JSAPIServlet.class);
 	private ResourceMethodRegistry registry;
 	private String restPath;
 
