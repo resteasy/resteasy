@@ -33,6 +33,7 @@
                 <!ENTITY RESTEasy_EJB_Integration SYSTEM "modules/RESTEasy_EJB_Integration.xml">
                 <!ENTITY RESTEasy_Spring_Integration SYSTEM "modules/RESTEasy_Spring_Integration.xml">
                 <!ENTITY RESTEasy_Client_Framework SYSTEM "modules/RESTEasy_Client_Framework.xml">
+                <!ENTITY AJAX_Client SYSTEM "modules/AJAX_Client.xml">
                 <!ENTITY Maven_and_RESTEasy SYSTEM "modules/Maven_and_RESTEasy.xml">
                 <!ENTITY Migration_from_older_versions SYSTEM "modules/Migration_from_older_versions.xml">
                 <!ENTITY Multipart SYSTEM "modules/Multipart.xml">
@@ -127,6 +128,7 @@
     &Seam;
     &Guice;
    &RESTEasy_Client_Framework;
+   &AJAX_Client;
    &Maven_and_RESTEasy;
    &JBoss;
    &Migration_from_older_versions;
