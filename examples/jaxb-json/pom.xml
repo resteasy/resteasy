@@ -41,10 +41,6 @@
                     <artifactId>commons-httpclient</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>tjws</groupId>
-                    <artifactId>webserver</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>javax.servlet</groupId>
                     <artifactId>servlet-api</artifactId>
                 </exclusion>

@@ -17,6 +17,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>tjws</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
@@ -84,11 +91,13 @@
         </dependency>
 
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
+        <!--
         <dependency>
             <groupId>tjws</groupId>
             <artifactId>webserver</artifactId>
             <scope>provided</scope>
         </dependency>
+        -->
 
     </dependencies>
 </project>

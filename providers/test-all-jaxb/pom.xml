@@ -55,10 +55,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>tjws</groupId>
-            <artifactId>webserver</artifactId>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>tjws</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <!--
+        <dependency>
+           <groupId>tjws</groupId>
+           <artifactId>webserver</artifactId>
+           <scope>test</scope>
+        </dependency>
+        -->
     </dependencies>
 
 

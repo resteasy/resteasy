@@ -42,6 +42,7 @@ public class ResteasyDeployment
    protected boolean securityEnabled = false;
    protected List<String> jndiResources = new ArrayList<String>();
    protected List<String> resourceClasses = new ArrayList<String>();
+   protected List<String> unwrappedExceptions = new ArrayList<String>();
    protected List<Class> actualResourceClasses = new ArrayList<Class>();
    protected List<ResourceFactory> resourceFactories = new ArrayList<ResourceFactory>();
    protected List<Object> resources = new ArrayList<Object>();
@@ -78,12 +79,15 @@ public class ResteasyDeployment
          asyncDispatcher.setMaxWaitMilliSeconds(asyncJobServiceMaxWait);
          asyncDispatcher.setThreadPoolSize(asyncJobServiceThreadPoolSize);
          asyncDispatcher.setBasePath(asyncJobServiceBasePath);
+         asyncDispatcher.getUnwrappedExceptions().addAll(unwrappedExceptions);
          dispatcher = asyncDispatcher;
          asyncDispatcher.start();
       }
       else
       {
-         dispatcher = new SynchronousDispatcher(providerFactory);
+         SynchronousDispatcher dis = new SynchronousDispatcher(providerFactory);
+         dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
+         dispatcher = dis;
       }
       registry = dispatcher.getRegistry();
 
@@ -565,5 +569,15 @@ public class ResteasyDeployment
    public void setResourceFactories(List<ResourceFactory> resourceFactories)
    {
       this.resourceFactories = resourceFactories;
+   }
+
+   public List<String> getUnwrappedExceptions()
+   {
+      return unwrappedExceptions;
+   }
+
+   public void setUnwrappedExceptions(List<String> unwrappedExceptions)
+   {
+      this.unwrappedExceptions = unwrappedExceptions;
    }
 }

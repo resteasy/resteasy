@@ -30,8 +30,10 @@ import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,6 +47,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected List<HttpRequestPreprocessor> requestPreprocessors = new ArrayList<HttpRequestPreprocessor>();
    protected ExtensionHttpPreprocessor extentionHttpPreprocessor;
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
+   protected Set<String> unwrappedExceptions = new HashSet<String>();
 
    private final static Logger logger = LoggerFactory.getLogger(SynchronousDispatcher.class);
 
@@ -88,6 +91,11 @@ public class SynchronousDispatcher implements Dispatcher
    public Map<String, String> getLanguageMappings()
    {
       return extentionHttpPreprocessor.languageMappings;
+   }
+
+   public Set<String> getUnwrappedExceptions()
+   {
+      return unwrappedExceptions;
    }
 
    protected void preprocess(HttpRequest in)
@@ -280,9 +288,34 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else
       {
+         if (unwrappedExceptions.contains(e.getCause().getClass().getName()))
+         {
+            unwrapException(response, e.getCause());
+         }
+         else
+         {
+            throw new UnhandledException(e.getCause());
+         }
+      }
+   }
+
+   protected void unwrapException(HttpResponse response, Throwable e)
+   {
+      if (executeExceptionMapper(response, e.getCause()))
+      {
+         return;
+      }
+      if (e.getCause() instanceof WebApplicationException)
+      {
+         handleWebApplicationException(response, (WebApplicationException) e.getCause());
+         return;
+      }
+      else
+      {
          throw new UnhandledException(e.getCause());
       }
    }
+
 
    protected void handleWriterException(HttpRequest request, HttpResponse response, WriterException e)
    {

@@ -115,6 +115,7 @@ public class AsynchTest
 
          method.releaseConnection();
       }
+      client.getHttpConnectionManager().closeIdleConnections(0);
    }
 
    @Test
@@ -222,6 +223,7 @@ public class AsynchTest
 
          method.releaseConnection();
       }
+      client.getHttpConnectionManager().closeIdleConnections(0);
    }
 
 }

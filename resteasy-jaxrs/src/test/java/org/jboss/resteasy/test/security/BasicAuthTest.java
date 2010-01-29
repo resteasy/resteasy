@@ -114,6 +114,8 @@ public class BasicAuthTest
          Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, status);
          method.releaseConnection();
       }
+      client.getHttpConnectionManager().closeIdleConnections(0);
+
    }
 
    @Test
@@ -140,5 +142,6 @@ public class BasicAuthTest
          Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, status);
          method.releaseConnection();
       }
+      client.getHttpConnectionManager().closeIdleConnections(0);
    }
 }

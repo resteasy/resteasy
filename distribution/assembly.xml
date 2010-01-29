@@ -93,7 +93,8 @@
             </includes>
             <excludes>
                 <exclude>org.jboss.resteasy:resteasy-jaxrs-war</exclude>
-                <exclude>tjws:webserver</exclude>
+                <exclude>org.jboss.resteasy:tjws</exclude>
+                <!-- <include>tjws:webserver</include> -->
                 <exclude>javax.servlet:servlet-api</exclude>
             </excludes>
             <outputDirectory>lib</outputDirectory>
@@ -102,7 +103,9 @@
             <unpack>false</unpack>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
-                <include>tjws:webserver</include>
+                <include>org.jboss.resteasy:tjws</include>
+                <
+                <!-- include>tjws:webserver</include>  -->
                 <include>javax.servlet:servlet-api</include>
             </includes>
             <outputDirectory>embedded-lib</outputDirectory>

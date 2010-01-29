@@ -37,10 +37,18 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>tjws</groupId>
-            <artifactId>webserver</artifactId>
-            <scope>provided</scope>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>tjws</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
+        <!--
+        <dependency>
+           <groupId>tjws</groupId>
+           <artifactId>webserver</artifactId>
+           <scope>test</scope>
+        </dependency>
+        -->
     </dependencies>
 
     <build>
