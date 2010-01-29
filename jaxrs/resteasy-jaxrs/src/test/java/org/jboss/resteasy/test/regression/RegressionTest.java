@@ -181,6 +181,7 @@ public class RegressionTest
          Assert.assertEquals(204, proxy.deleteComplex().getStatus());
 
          method.releaseConnection();
+         client.getHttpConnectionManager().closeIdleConnections(0);
       }
       EmbeddedContainer.stop();
    }
@@ -205,6 +206,7 @@ public class RegressionTest
          String response = new String(responseBody, "US-ASCII");
          Assert.assertEquals("hello world", response);
          method.releaseConnection();
+         client.getHttpConnectionManager().closeIdleConnections(0);
       }
       EmbeddedContainer.stop();
    }
@@ -246,6 +248,7 @@ public class RegressionTest
          String response = new String(responseBody, "US-ASCII");
          Assert.assertEquals("hello world", response);
          method.releaseConnection();
+         client.getHttpConnectionManager().closeIdleConnections(0);
       }
       EmbeddedContainer.stop();
 
@@ -314,6 +317,7 @@ public class RegressionTest
          int status = client.executeMethod(method);
          Assert.assertEquals(200, status);
          method.releaseConnection();
+         client.getHttpConnectionManager().closeIdleConnections(0);
       }
       EmbeddedContainer.stop();
 
@@ -345,6 +349,7 @@ public class RegressionTest
          int status = client.executeMethod(method);
          Assert.assertEquals(200, status);
          method.releaseConnection();
+         client.getHttpConnectionManager().closeIdleConnections(0);
       }
       EmbeddedContainer.stop();
 

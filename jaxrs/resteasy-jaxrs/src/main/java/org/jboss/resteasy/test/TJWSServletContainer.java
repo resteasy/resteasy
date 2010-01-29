@@ -24,6 +24,7 @@ public class TJWSServletContainer
 
    public static void start(ResteasyDeployment deployment) throws Exception
    {
+      System.out.println("[Embedded Container Start]");
       tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setDeployment(deployment);
       tjws.setPort(TestPortProvider.getPort());
@@ -52,8 +53,18 @@ public class TJWSServletContainer
 
    public static void stop() throws Exception
    {
+      System.out.println("[Embedded Container Stop]");
       if (tjws != null)
-         tjws.stop();
+      {
+         try
+         {
+            tjws.stop();
+         }
+         catch (Exception e)
+         {
+
+         }
+      }
       tjws = null;
    }
 

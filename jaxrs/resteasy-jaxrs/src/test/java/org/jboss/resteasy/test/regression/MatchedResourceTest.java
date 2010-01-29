@@ -84,6 +84,7 @@ public class MatchedResourceTest
          {
             throw new RuntimeException(e);
          }
+         client.getHttpConnectionManager().closeIdleConnections(0);
       }
    }
 

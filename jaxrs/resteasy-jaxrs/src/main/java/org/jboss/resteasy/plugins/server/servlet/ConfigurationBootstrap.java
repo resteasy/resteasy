@@ -195,6 +195,12 @@ abstract public class ConfigurationBootstrap
          processResources(resources);
       }
 
+      String unwrapped = getParameter(ResteasyContextParameters.RESTEASY_UNWRAPPED_EXCEPTIONS);
+      if (unwrapped != null)
+      {
+         processUnwrapped(unwrapped);
+      }
+
       String paramMapping = getParameter(ResteasyContextParameters.RESTEASY_MEDIA_TYPE_PARAM_MAPPING);
       if (paramMapping != null)
       {
@@ -304,6 +310,15 @@ abstract public class ConfigurationBootstrap
       for (String resource : resources)
       {
          deployment.getResourceClasses().add(resource);
+      }
+   }
+
+   protected void processUnwrapped(String list)
+   {
+      String[] resources = list.trim().split(",");
+      for (String resource : resources)
+      {
+         deployment.getUnwrappedExceptions().add(resource);
       }
    }
 

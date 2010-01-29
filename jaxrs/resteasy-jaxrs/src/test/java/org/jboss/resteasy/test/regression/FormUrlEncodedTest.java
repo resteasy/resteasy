@@ -87,6 +87,7 @@ public class FormUrlEncodedTest
             throw new RuntimeException(e);
          }
       }
+      client.getHttpConnectionManager().closeIdleConnections(0);
 
    }
 

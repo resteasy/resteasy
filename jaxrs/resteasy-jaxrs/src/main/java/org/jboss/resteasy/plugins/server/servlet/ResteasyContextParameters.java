@@ -30,4 +30,5 @@ public interface ResteasyContextParameters
    String RESTEASY_APPEND_INTERCEPTOR_PRECEDENCE = "resteasy.append.interceptor.precedence";
    String RESTEASY_SCANNED_BY_DEPLOYER = "resteasy.scanned.by.deployer";
    String RESTEASY_JNDI_COMPONENT_RESOURCES = "resteasy.jndi.component.resources";
+   String RESTEASY_UNWRAPPED_EXCEPTIONS = "resteasy.unwrapped.exceptions";
 }

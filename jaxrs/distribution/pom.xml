@@ -104,9 +104,16 @@
             <artifactId>servlet-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>tjws</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--
+        <dependency>
             <groupId>tjws</groupId>
             <artifactId>webserver</artifactId>
         </dependency>
+        -->
 
     </dependencies>
 

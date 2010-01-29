@@ -78,6 +78,7 @@ public class TestWireSmoke
          Assert.assertEquals("1234", method.getResponseBodyAsString());
          method.releaseConnection();
       }
+      client.getHttpConnectionManager().closeIdleConnections(0);
       dispatcher.getRegistry().removeRegistrations(SimpleResource.class);
       Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }
@@ -122,6 +123,7 @@ public class TestWireSmoke
          Assert.assertEquals("1234", method.getResponseBodyAsString());
          method.releaseConnection();
       }
+      client.getHttpConnectionManager().closeIdleConnections(0);
       dispatcher.getRegistry().removeRegistrations(LocatingResource.class);
       Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }

@@ -69,6 +69,7 @@
     <modules>
 
         <!-- Should probably be removed and be treated as external dependency -->
+        <module>tjws</module>
         <module>jaxrs-api</module>
         <module>resteasy-test-data</module>
         <module>resteasy-jaxrs</module>
@@ -212,11 +213,15 @@
                 <version>1.4</version>
             </dependency>
 
-            <dependency>
-                <groupId>tjws</groupId>
-                <artifactId>webserver</artifactId>
-                <version>1.3.3</version>
-            </dependency>
+            <!--
+            We forked it for now because of startup/shutdown race conditions
+
+                        <dependency>
+                            <groupId>tjws</groupId>
+                            <artifactId>webserver</artifactId>
+                            <version>1.7.0</version>
+                        </dependency>
+            -->
 
             <dependency>
                 <groupId>org.jyaml</groupId>
@@ -311,8 +316,8 @@
             <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
         </repository>
         <repository>
-        	<id>jetty</id>
-        	<url>http://oss.sonatype.org/content/groups/jetty/</url>
+            <id>jetty</id>
+            <url>http://oss.sonatype.org/content/groups/jetty/</url>
         </repository>
     </repositories>
     <pluginRepositories>
@@ -358,9 +363,9 @@
                     <version>2.0-beta-5</version>
                 </plugin>
                 <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>6.1.15</version>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>maven-jetty-plugin</artifactId>
+                    <version>6.1.15</version>
                 </plugin>
                 <plugin>
                     <inherited>true</inherited>
