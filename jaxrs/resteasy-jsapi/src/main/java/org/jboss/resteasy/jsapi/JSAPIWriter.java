@@ -33,7 +33,8 @@ public class JSAPIWriter
    public void writeJavaScript(String uri, PrintWriter writer,
          List<MethodMetaData> methodMetaDataList) throws IOException
    {
-      uri = restPath + uri;
+	   if(restPath != null)
+		   uri = uri + restPath;
       logger.info("rest path: " + uri);
 
       writer.println("// start RESTEasy client API");
@@ -141,7 +142,7 @@ public class JSAPIWriter
    {
       switch(metaData.getParamType()){
       case QUERY_PARAMETER:
-         print(metaData, writer, "QueryPrameter");
+         print(metaData, writer, "QueryParameter");
          break;
       case HEADER_PARAMETER:
          print(metaData, writer, "Header");
@@ -152,7 +153,7 @@ public class JSAPIWriter
          print(metaData, writer, "Cookie");
          break;
       case MATRIX_PARAMETER:
-         print(metaData, writer, "Mtrix");
+         print(metaData, writer, "MatrixParameter");
          break;
       case FORM_PARAMETER:
          // FIXME: handle this;
