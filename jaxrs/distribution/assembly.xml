@@ -104,7 +104,6 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
                 <include>org.jboss.resteasy:tjws</include>
-                <
                 <!-- include>tjws:webserver</include>  -->
                 <include>javax.servlet:servlet-api</include>
             </includes>
