@@ -32,7 +32,7 @@
     <orderEntry type="library" exported="" name="Maven: com.sun.xml.stream:sjsxp:1.0.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.codehaus.jettison:jettison:1.1" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
-    <orderEntry type="library" name="Maven: tjws:webserver:1.7.0" level="project" />
+    <orderEntry type="module" module-name="tjws" />
     <orderEntry type="library" name="Maven: junit:junit:4.1" level="project" />
   </component>
 </module>
