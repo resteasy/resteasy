@@ -10,12 +10,12 @@
     <name>RestContact Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <repositories>
-		<!-- liweinan: put jboss repo at first or it will download spring deps from http://repo1.maven.org/maven2 -->
-	    <repository>
+        <!-- liweinan: put jboss repo at first or it will download spring deps from http://repo1.maven.org/maven2 -->
+        <repository>
             <id>jboss</id>
             <name>jboss repo</name>
             <url>http://repository.jboss.org/maven2-brew</url>
-        </repository>    
+        </repository>
         <repository>
             <id>java.net</id>
             <url>http://download.java.net/maven/1</url>
@@ -49,14 +49,12 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-		<!-- FIXME: liweinan: the following dependency is indirectly need by several other modules, but it costs too long time to fix them. So I have to add them explicitly -->
-		<dependency>
+        <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>maven-jetty-plugin</artifactId>
             <version>6.1.15</version>
             <scope>test</scope>
         </dependency>
-		<!-- liweinan: end of the above section -->
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>maven-jetty-plugin</artifactId>
@@ -124,27 +122,26 @@
             <artifactId>spring-webmvc</artifactId>
             <version>2.5.6.SEC01</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <version>2.5.6.SEC01</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>2.5.6.SEC01</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>2.5.6.SEC01</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>2.5.6.SEC01</version>
         </dependency>
-
         <!-- Test classes that integrates Junit 3.8 and 4 to Spring based applications -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -156,11 +153,36 @@
             <artifactId>spring-beans</artifactId>
             <version>2.5.6.SEC01</version>
         </dependency>
-        <dependency>
+         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
             <version>1.0.2</version>
         </dependency>
+        <!-- FIXME: liweinan: the following dependency is indirectly need by several other modules, but it costs too long time to fix them. So I have to add them explicitly -->
+        <!-- dom4j and commons annotation is indirectly needed by hibernate-->
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <!-- cglib  is indirectly needed by spring-->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <!-- antlr is needed during test running-->
+        <dependency>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>2.7.6</version>
+        </dependency>
+        <!-- liweinan: end of the above section -->
     </dependencies>
     <build>
         <finalName>RestContact</finalName>

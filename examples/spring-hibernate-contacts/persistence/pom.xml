@@ -20,11 +20,11 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-      		<dependency>
-	            <groupId>org.jboss.javaee</groupId>
-	            <artifactId>jboss-transaction-api</artifactId>
-	            <version>1.0.1.GA</version>
-	        </dependency>
+        <dependency>
+            <groupId>org.jboss.javaee</groupId>
+            <artifactId>jboss-transaction-api</artifactId>
+            <version>1.0.1.GA</version>
+        </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
@@ -41,15 +41,15 @@
             <version>3.3.2.GA</version>
         </dependency>
         <!-- In memory database. To replace MySQL for test -->
-  		  <dependency>
-	            <groupId>hsqldb</groupId>
-	            <artifactId>hsqldb</artifactId>
-	            <version>1.8.0.8patch02-brew</version>
-	        </dependency>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.8patch02-brew</version>
+        </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-annotations</artifactId>
-            <version>3.4.0.GA</version>
+            <version>3.4.0.GA_CP01</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
