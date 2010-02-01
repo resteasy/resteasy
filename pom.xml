@@ -86,6 +86,7 @@
         <module>war-tests</module>
         <module>examples</module>
         <module>async-http-servlet-3.0</module>
+        <module>profiling-tests</module>
     </modules>
 
     <dependencyManagement>

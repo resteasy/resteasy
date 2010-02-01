@@ -4,12 +4,14 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.core.MediaType;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -206,9 +208,55 @@ public class MediaTypeMap<T>
    private List<Entry<T>> wildcards = new ArrayList<Entry<T>>();
    private List<Entry<T>> all = new ArrayList<Entry<T>>();
    private List<T> everything = new ArrayList<T>();
+   private Map<CachedMediaTypeAndClass, List<T>> classCache = new ConcurrentHashMap<CachedMediaTypeAndClass, List<T>>();
+
+   private static class CachedMediaTypeAndClass
+   {
+      // we need a weak reference because of possible hot deployment
+      // Although, these reference should get cleared up with any add() invocation
+      private WeakReference<Class> clazz;
+      private MediaType mediaType;
+
+      private CachedMediaTypeAndClass(Class clazz, MediaType mediaType)
+      {
+         this.clazz = new WeakReference(clazz);
+         this.mediaType = mediaType;
+      }
+
+      private Class getClazz()
+      {
+         return clazz.get();
+      }
+
+      @Override
+      public boolean equals(Object o)
+      {
+         if (this == o) return true;
+         if (o == null || getClass() != o.getClass()) return false;
+
+         CachedMediaTypeAndClass that = (CachedMediaTypeAndClass) o;
+
+         // WeakReference may have GC'd
+         if (getClazz() == null || that.getClazz() == null) return false;
+
+         if (!getClazz().equals(that.getClazz())) return false;
+         if (!mediaType.equals(that.mediaType)) return false;
+
+         return true;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         int result = getClazz().hashCode();
+         result = 31 * result + mediaType.hashCode();
+         return result;
+      }
+   }
 
    public void add(MediaType type, T obj)
    {
+      classCache.clear();
       type = new MediaType(type.getType().toLowerCase(), type.getSubtype().toLowerCase(), type.getParameters());
       Entry<T> entry = new Entry<T>(type, obj);
       all.add(entry);
@@ -270,8 +318,18 @@ public class MediaTypeMap<T>
       return convert(matches);
    }
 
+   private static final boolean useCache = true;
+
    public List<T> getPossible(MediaType accept, Class type)
    {
+      List<T> cached = null;
+      CachedMediaTypeAndClass cacheEntry = new CachedMediaTypeAndClass(type, accept);
+      if (useCache)
+      {
+         cached = classCache.get(cacheEntry);
+         if (cached != null) return cached;
+      }
+
       accept = new MediaType(accept.getType().toLowerCase(), accept.getSubtype().toLowerCase(), accept.getParameters());
       List<Entry<T>> matches = new ArrayList<Entry<T>>();
       if (accept.isWildcardType())
@@ -288,7 +346,9 @@ public class MediaTypeMap<T>
          }
       }
       Collections.sort(matches, new TypedEntryComparator(type));
-      return convert(matches);
+      cached = convert(matches);
+      if (useCache) classCache.put(cacheEntry, cached);
+      return cached;
 
    }
 
