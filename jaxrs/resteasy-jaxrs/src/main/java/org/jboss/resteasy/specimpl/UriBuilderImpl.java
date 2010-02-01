@@ -50,6 +50,7 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    private static final Pattern uriPattern = Pattern.compile("([^:]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
+   private static final Pattern pathPattern = Pattern.compile("(/[^?]*)(\\?([^#]+))?(#(.*))?");
 
    /**
     * Must follow the patter scheme://host:port/path?query#fragment
@@ -69,7 +70,7 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    /**
-    * Must follow the patter scheme://host:port/path?query#fragment
+    * Must follow the pattern scheme://host:port/path?query#fragment or /path?query#fragment
     * <p/>
     * port, path, query and fragment are optional. Scheme and host must be specified.
     * <p/>
@@ -81,13 +82,23 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder uriTemplate(String uriTemplate)
    {
       Matcher match = uriPattern.matcher(uriTemplate);
-      if (!match.matches()) throw new RuntimeException("Illegal uri template: " + uriTemplate);
-      scheme(match.group(1));
-      host(match.group(2));
-      if (match.group(4) != null) port(Integer.valueOf(match.group(4)));
-      if (match.group(5) != null) path(match.group(5));
-      if (match.group(7) != null) replaceQuery(match.group(7));
-      if (match.group(9) != null) fragment(match.group(8));
+      if (!match.matches())
+      {
+         match = pathPattern.matcher(uriTemplate);
+         if (!match.matches()) throw new RuntimeException("Illegal uri template: " + uriTemplate);
+         if (match.group(1) != null) path(match.group(1));
+         if (match.group(3) != null) replaceQuery(match.group(7));
+         if (match.group(5) != null) fragment(match.group(8));
+      }
+      else
+      {
+         scheme(match.group(1));
+         host(match.group(2));
+         if (match.group(4) != null) port(Integer.valueOf(match.group(4)));
+         if (match.group(5) != null) path(match.group(5));
+         if (match.group(7) != null) replaceQuery(match.group(7));
+         if (match.group(9) != null) fragment(match.group(8));
+      }
 
       return this;
 
