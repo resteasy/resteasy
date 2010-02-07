@@ -72,16 +72,16 @@ public class AcceptTest
       try
       {
          request = MockHttpRequest.create(httpMethod, path).contentType(contentType);
+         request.accept(accepts);
       }
       catch (URISyntaxException e)
       {
          throw new RuntimeException(e);
       }
-      request.accept(accepts);
 
       // finally strip out matrix parameters
 
-      StringBuffer preprocessedPath = new StringBuffer();
+      StringBuilder preprocessedPath = new StringBuilder();
       for (PathSegment pathSegment : request.getUri().getPathSegments())
       {
          preprocessedPath.append("/").append(pathSegment.getPath());
@@ -417,12 +417,11 @@ public class AcceptTest
       Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(ComplexResource.class);
 
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
-      MediaType contentType = new MediaType("text", "xml");
+      MediaType contentType = MediaType.TEXT_XML_TYPE;
 
       ArrayList<MediaType> accepts = new ArrayList<MediaType>();
-      accepts.add(new MediaType("*", "*"));
-      accepts.add(new MediaType("text", "html"));
+      accepts.add(MediaType.WILDCARD_TYPE);
+      accepts.add(MediaType.TEXT_HTML_TYPE);
 
       {
          ResourceMethod method = (ResourceMethod) registry.getResourceInvoker(createRequest("GET", "/", contentType, accepts));
