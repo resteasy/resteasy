@@ -409,20 +409,18 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void pushContextObjects(HttpRequest request, HttpResponse response)
    {
-      ResteasyProviderFactory.pushContext(HttpRequest.class, request);
-      ResteasyProviderFactory.pushContext(HttpResponse.class, response);
-      ResteasyProviderFactory.pushContext(HttpHeaders.class, request.getHttpHeaders());
-      ResteasyProviderFactory.pushContext(UriInfo.class, request.getUri());
-      ResteasyProviderFactory.pushContext(Request.class, new RequestImpl(request));
-      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
-      ResteasyProviderFactory.pushContext(Registry.class, registry);
-      ResteasyProviderFactory.pushContext(Dispatcher.class, this);
-      ResteasyProviderFactory.pushContext(InternalDispatcher.class, InternalDispatcher.getInstance());
+      Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      contextDataMap.put(HttpRequest.class, request);
+      contextDataMap.put(HttpResponse.class, response);
+      contextDataMap.put(HttpHeaders.class, request.getHttpHeaders());
+      contextDataMap.put(UriInfo.class, request.getUri());
+      contextDataMap.put(Request.class, new RequestImpl(request));
+      contextDataMap.put(Providers.class, providerFactory);
+      contextDataMap.put(Registry.class, registry);
+      contextDataMap.put(Dispatcher.class, this);
+      contextDataMap.put(InternalDispatcher.class, InternalDispatcher.getInstance());
 
-      for (Map.Entry<Class, Object> entry : defaultContextObjects.entrySet())
-      {
-         ResteasyProviderFactory.pushContext(entry.getKey(), entry.getValue());
-      }
+      contextDataMap.putAll(defaultContextObjects);
    }
 
    public Response internalInvocation(HttpRequest request, HttpResponse response, Object entity)
