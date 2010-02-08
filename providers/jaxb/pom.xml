@@ -20,12 +20,12 @@
         <!--
             Contains Generated Classes and other test data required for testing.
          -->
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-test-data</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.jboss.resteasy</groupId>-->
+            <!--<artifactId>resteasy-test-data</artifactId>-->
+            <!--<version>${project.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
         <!-- javax.xml.bind.JAXBElement provider is required by spec -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
