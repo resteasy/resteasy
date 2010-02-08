@@ -10,31 +10,10 @@
     <name>RestContact Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <repositories>
-        <!-- liweinan: put jboss repo at first or it will download spring deps from http://repo1.maven.org/maven2 -->
         <repository>
             <id>jboss</id>
             <name>jboss repo</name>
             <url>http://repository.jboss.org/maven2-brew</url>
-        </repository>
-        <repository>
-            <id>java.net</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </repository>
-        <repository>
-            <id>maven repo</id>
-            <name>maven repo</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        <!-- For resteasy -->
-        <repository>
-            <id>jboss</id>
-            <name>jboss repo</name>
-            <url>http://repository.jboss.org/maven2</url>
-        </repository>
-        <repository>
-            <id>scannotation</id>
-            <url>http://scannotation.sf.net/maven2</url>
         </repository>
     </repositories>
     <dependencyManagement>
@@ -153,36 +132,11 @@
             <artifactId>spring-beans</artifactId>
             <version>2.5.6.SEC01</version>
         </dependency>
-         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <!-- FIXME: liweinan: the following dependency is indirectly need by several other modules, but it costs too long time to fix them. So I have to add them explicitly -->
-        <!-- dom4j and commons annotation is indirectly needed by hibernate-->
         <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2</version>
-        </dependency>
-        <!-- cglib  is indirectly needed by spring-->
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>2.2</version>
-        </dependency>
-        <!-- antlr is needed during test running-->
-        <dependency>
-            <groupId>antlr</groupId>
-            <artifactId>antlr</artifactId>
-            <version>2.7.6</version>
-        </dependency>
-        <!-- liweinan: end of the above section -->
+            <groupId>org.hibernate</groupId>
+            <artifactId>ejb3-persistence</artifactId>
+            <version>3.4.0.GA</version>
+        </dependency>   
     </dependencies>
     <build>
         <finalName>RestContact</finalName>
