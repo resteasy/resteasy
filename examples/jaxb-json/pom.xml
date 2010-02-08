@@ -12,6 +12,17 @@
 
     <repositories>
         <repository>
+            <id>jboss</id>
+            <name>jboss repo</name>
+            <url>http://repository.jboss.org/maven2-brew</url>
+        </repository>
+        <!-- For resteasy -->
+        <repository>
+            <id>jboss</id>
+            <name>jboss repo</name>
+            <url>http://repository.jboss.org/maven2</url>
+        </repository>
+        <repository>
             <id>java.net</id>
             <url>http://download.java.net/maven/1</url>
             <layout>legacy</layout>
@@ -21,17 +32,7 @@
             <name>maven repo</name>
             <url>http://repo1.maven.org/maven2/</url>
         </repository>
-        <!-- For resteasy -->
-        <repository>
-            <id>jboss</id>
-            <name>jboss repo</name>
-            <url>http://repository.jboss.org/maven2-brew</url>
-        </repository>
-        <repository>
-            <id>jboss</id>
-            <name>jboss repo</name>
-            <url>http://repository.jboss.org/maven2</url>
-        </repository>
+
     </repositories>
 
     <dependencies>
