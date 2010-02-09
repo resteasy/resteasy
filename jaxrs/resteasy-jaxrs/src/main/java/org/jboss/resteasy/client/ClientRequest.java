@@ -12,7 +12,6 @@ import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.util.GenericType;
-import static org.jboss.resteasy.util.HttpHeaderNames.*;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
@@ -29,6 +28,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.jboss.resteasy.util.HttpHeaderNames.*;
 
 /**
  * Create a hand coded request to send to the server.  You call methods like accept(), body(), pathParameter()
@@ -498,6 +499,14 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       return response.getEntity();
    }
 
+   /**
+    * Templates the returned ClientResponse for easy access to returned entity
+    *
+    * @param returnType
+    * @param <T>
+    * @return
+    * @throws Exception
+    */
    public <T> ClientResponse<T> get(Class<T> returnType) throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) get();
@@ -590,6 +599,21 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       response.setGenericReturnType(type.getGenericType());
       return response;
    }
+
+   /**
+    * Automatically does POST/Create pattern.  Will throw a ClientResponseFailure
+    * if status is something other than 201
+    *
+    * @return Link to created resource
+    * @throws Exception, ClientResponseFailure
+    */
+   public Link create() throws Exception, ClientResponseFailure
+   {
+      BaseClientResponse response = (BaseClientResponse) post();
+      if (response.getStatus() != 201) throw new ClientResponseFailure(response);
+      return response.getLocation();
+   }
+
 
    public ClientResponse delete() throws Exception
    {

@@ -1,9 +1,11 @@
 package org.jboss.resteasy.client.core;
 
+import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.core.messagebody.ReaderUtility;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
+import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
@@ -15,10 +17,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.InputStream;
-import static java.lang.String.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+
+import static java.lang.String.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -50,6 +53,14 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected boolean cacheInputStream;
    protected BaseClientResponseStreamFactory streamFactory;
    protected LinkHeader linkHeader;
+   protected Link location;
+   protected ClientExecutor executor;
+
+   public BaseClientResponse(BaseClientResponseStreamFactory streamFactory, ClientExecutor executor)
+   {
+      this.streamFactory = streamFactory;
+      this.executor = executor;
+   }
 
    public BaseClientResponse(BaseClientResponseStreamFactory streamFactory)
    {
@@ -142,7 +153,24 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          linkHeader.getLinksByTitle().putAll(tmp.getLinksByTitle());
 
       }
+      for (Link link : linkHeader.getLinks())
+      {
+         link.setExecutor(executor);
+      }
       return linkHeader;
+   }
+
+   @Override
+   public Link getLocation()
+   {
+      if (location != null) return location;
+      if (!headers.containsKey("Location")) return null;
+      String header = headers.getFirst("Location");
+
+      location = new Link();
+      location.setHref(header);
+
+      return location;
    }
 
    public void setAlternateMediaType(String alternateMediaType)
