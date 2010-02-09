@@ -20,6 +20,7 @@ public class Link
    protected String href;
    protected String type;
    protected MultivaluedMap<String, String> extensions = new MultivaluedMapImpl<String, String>();
+   protected ClientExecutor executor;
 
    public Link()
    {
@@ -79,9 +80,26 @@ public class Link
       return extensions;
    }
 
+   public ClientExecutor getExecutor()
+   {
+      return executor;
+   }
+
+   public void setExecutor(ClientExecutor executor)
+   {
+      this.executor = executor;
+   }
+
    public ClientRequest request()
    {
-      return new ClientRequest(href);
+      if (executor != null)
+      {
+         return new ClientRequest(href, executor);
+      }
+      else
+      {
+         return new ClientRequest(href);
+      }
    }
 
    public ClientRequest request(ClientExecutor executor)

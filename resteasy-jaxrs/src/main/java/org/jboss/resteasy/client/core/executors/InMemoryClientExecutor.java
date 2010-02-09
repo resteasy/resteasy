@@ -1,19 +1,5 @@
 package org.jboss.resteasy.client.core.executors;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -26,6 +12,20 @@ import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -57,10 +57,21 @@ public class InMemoryClientExecutor implements ClientExecutor
       this.baseUri = baseUri;
    }
 
+   public ClientRequest createRequest(String uriTemplate)
+   {
+      return new ClientRequest(uriTemplate, this);
+   }
+
+   public ClientRequest createRequest(UriBuilder uriBuilder)
+   {
+      return new ClientRequest(uriBuilder, this);
+   }
+
+
    public ClientResponse execute(ClientRequest request) throws Exception
    {
       MockHttpRequest mockHttpRequest = MockHttpRequest.create(request.getHttpMethod(), new URI(request.getUri()),
-            baseUri);
+              baseUri);
       loadHttpMethod(request, mockHttpRequest);
       setBody(request, mockHttpRequest);
 
@@ -69,17 +80,17 @@ public class InMemoryClientExecutor implements ClientExecutor
       return createResponse(request, mockResponse);
    }
 
-   public static BaseClientResponse createResponse(ClientRequest request, final MockHttpResponse mockResponse)
+   protected BaseClientResponse createResponse(ClientRequest request, final MockHttpResponse mockResponse)
    {
       BaseClientResponseStreamFactory streamFactory = createStreamFactory(mockResponse);
-      BaseClientResponse response = new BaseClientResponse(streamFactory);
+      BaseClientResponse response = new BaseClientResponse(streamFactory, this);
       response.setStatus(mockResponse.getStatus());
       setHeaders(mockResponse, response);
       response.setProviderFactory(request.getProviderFactory());
       return response;
    }
 
-   public static void setHeaders(final MockHttpResponse mockResponse, BaseClientResponse response)
+   protected void setHeaders(final MockHttpResponse mockResponse, BaseClientResponse response)
    {
       MultivaluedMapImpl<String, String> responseHeaders = new MultivaluedMapImpl<String, String>();
       for (Entry<String, List<Object>> entry : mockResponse.getOutputHeaders().entrySet())

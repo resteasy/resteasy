@@ -16,6 +16,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStrea
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +52,16 @@ public class ApacheHttpClientExecutor implements ClientExecutor
          headers.add(header.getName(), header.getValue());
       }
       return headers;
+   }
+
+   public ClientRequest createRequest(String uriTemplate)
+   {
+      return new ClientRequest(uriTemplate, this);
+   }
+
+   public ClientRequest createRequest(UriBuilder uriBuilder)
+   {
+      return new ClientRequest(uriBuilder, this);
    }
 
 
@@ -89,7 +100,7 @@ public class ApacheHttpClientExecutor implements ClientExecutor
             }
             catch (Exception ignored) {}
          }
-      });
+      }, this);
       response.setStatus(status);
       response.setHeaders(extractHeaders(httpMethod));
       response.setProviderFactory(request.getProviderFactory());

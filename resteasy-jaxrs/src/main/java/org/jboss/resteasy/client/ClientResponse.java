@@ -1,7 +1,8 @@
 package org.jboss.resteasy.client;
 
-import org.jboss.resteasy.util.GenericType;
+import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.util.GenericType;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -105,6 +106,13 @@ public abstract class ClientResponse<T> extends Response
     * @return
     */
    public abstract LinkHeader getLinkHeader();
-   
+
+   /**
+    * Get the Location header as a Link so you can easily execute on it.
+    *
+    * @return
+    */
+   public abstract Link getLocation();
+
    public abstract void releaseConnection();
 }
