@@ -5,12 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>async-job-service</artifactId>
-    <version>1.1.GA_CP02</version>
+    <version>1.1.GA_CP-SNAPSHOT</version>
     <packaging>war</packaging>
     <name/>
     <description/>
 
     <repositories>
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/1</url>
+            <layout>legacy</layout>
+        </repository>
+        <repository>
+            <id>maven repo</id>
+            <name>maven repo</name>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
         <!-- For resteasy -->
         <repository>
             <id>jboss</id>
@@ -18,8 +28,8 @@
             <url>http://repository.jboss.org/maven2-brew</url>
         </repository>
         <repository>
-            <id>jboss2</id>
-            <name>jboss repo2</name>
+            <id>jboss</id>
+            <name>jboss repo</name>
             <url>http://repository.jboss.org/maven2</url>
         </repository>
     </repositories>

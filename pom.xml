@@ -5,7 +5,7 @@
     <name>RESTEasy JAX-RS</name>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>1.1.GA_CP02</version>
+    <version>1.1.GA_CP-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -70,7 +70,7 @@
 
         <!-- Should probably be removed and be treated as external dependency -->
         <module>jaxrs-api</module>
-        <!--<module>resteasy-test-data</module>-->
+        <module>resteasy-test-data</module>
         <module>resteasy-jaxrs</module>
         <module>providers</module>
         <module>resteasy-jaxrs-war</module>

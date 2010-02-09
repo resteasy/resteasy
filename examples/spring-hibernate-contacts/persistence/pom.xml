@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jboss.resteasy.examples</groupId>
         <artifactId>spring-hibernate-contacts</artifactId>
-        <version>1.1.GA_CP02</version>
+        <version>1.1.GA_CP-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>3.3.2.GA_CP01</version>
+            <version>3.3.2.GA</version>
         </dependency>
         <!-- In memory database. To replace MySQL for test -->
         <dependency>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>ejb3-persistence</artifactId>
-            <version>3.4.0.GA_CP01</version>
+            <version>1.0.2.GA</version>
         </dependency>
     </dependencies>
 
