@@ -1,10 +1,5 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.annotations.interception.Precedence;
-import org.jboss.resteasy.core.PropertyInjectorImpl;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.AcceptedByMethod;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -15,6 +10,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jboss.resteasy.annotations.interception.Precedence;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -229,8 +228,7 @@ public class InterceptorRegistry<T>
 
    protected void addNewInterceptor(List<T> list, Object interceptor)
    {
-      PropertyInjectorImpl injector = new PropertyInjectorImpl(interceptor.getClass(), providerFactory);
-      injector.inject(interceptor);
+      providerFactory.injectProperties(interceptor);
       list.add((T) interceptor);
    }
 

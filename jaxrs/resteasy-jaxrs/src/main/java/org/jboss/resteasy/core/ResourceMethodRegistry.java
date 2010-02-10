@@ -117,7 +117,7 @@ public class ResourceMethodRegistry implements Registry
     */
    public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
    {
-      if (ref != null) ref.registered(new InjectorFactoryImpl(providerFactory));
+      if (ref != null) ref.registered(providerFactory.getInjectorFactory());
       for (Method method : clazz.getMethods())
       {
          processMethod(ref, base, clazz, method);
@@ -167,7 +167,7 @@ public class ResourceMethodRegistry implements Registry
       String pathExpression = builder.getPath();
       if (pathExpression == null) pathExpression = "";
 
-      InjectorFactory injectorFactory = new InjectorFactoryImpl(providerFactory);
+      InjectorFactory injectorFactory = providerFactory.getInjectorFactory();
       if (httpMethods == null)
       {
          ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, clazz, method);

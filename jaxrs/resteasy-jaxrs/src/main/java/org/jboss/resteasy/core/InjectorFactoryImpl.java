@@ -28,34 +28,34 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("unchecked")
 public class InjectorFactoryImpl implements InjectorFactory
 {
-   private ResteasyProviderFactory factory;
+   private ResteasyProviderFactory providerFactory;
 
 
    public InjectorFactoryImpl(ResteasyProviderFactory factory)
    {
-      this.factory = factory;
+      this.providerFactory = factory;
    }
 
    public ConstructorInjector createConstructor(Constructor constructor)
    {
-      return new ConstructorInjectorImpl(constructor, factory);
+      return new ConstructorInjectorImpl(constructor, providerFactory);
    }
 
    public PropertyInjector createPropertyInjector(Class resourceClass)
    {
-      return new PropertyInjectorImpl(resourceClass, factory);
+      return new PropertyInjectorImpl(resourceClass, providerFactory);
    }
 
    public MethodInjector createMethodInjector(Class root, Method method)
    {
-      return new MethodInjectorImpl(root, method, factory);
+      return new MethodInjectorImpl(root, method, providerFactory);
    }
 
-   public static ValueInjector getParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
    {
-
       DefaultValue defaultValue = FindAnnotation.findAnnotation(annotations, DefaultValue.class);
       boolean encode = FindAnnotation.findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
       String defaultVal = null;
@@ -67,7 +67,6 @@ public class InjectorFactoryImpl implements InjectorFactory
       PathParam uriParam;
       CookieParam cookie;
       FormParam formParam;
-      Form form;
       Suspend suspend;
 
 
@@ -91,7 +90,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new PathParamInjector(type, genericType, injectTarget, uriParam.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
+      else if (FindAnnotation.findAnnotation(annotations, Form.class) != null)
       {
          return new FormInjector(type, providerFactory);
       }
@@ -111,6 +110,10 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new MessageBodyParameterInjector(injectTargetClass, injectTarget, type, genericType, annotations, providerFactory);
       }
+   }
 
+   public static ValueInjector getParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
+   {
+      return providerFactory.getInjectorFactory().createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
    }
 }
