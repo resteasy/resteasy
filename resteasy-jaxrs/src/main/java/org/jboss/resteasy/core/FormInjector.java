@@ -18,7 +18,7 @@ public class FormInjector implements ValueInjector
    public FormInjector(Class type, ResteasyProviderFactory factory)
    {
       this.type = type;
-      injector = new PropertyInjectorImpl(type, factory);
+      injector = factory.getInjectorFactory().createPropertyInjector(type);
 
    }
 
