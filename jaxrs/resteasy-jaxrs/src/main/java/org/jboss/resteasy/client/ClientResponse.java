@@ -103,7 +103,7 @@ public abstract class ClientResponse<T> extends Response
    /**
     * Get the link headers of the response.
     *
-    * @return
+    * @return non-null
     */
    public abstract LinkHeader getLinkHeader();
 

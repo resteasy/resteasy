@@ -141,9 +141,12 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    public LinkHeader getLinkHeader()
    {
       if (linkHeader != null) return linkHeader;
-      if (!headers.containsKey("Link")) return null;
-      List<String> links = headers.get("Link");
       linkHeader = new LinkHeader();
+      if (!headers.containsKey("Link"))
+      {
+         return linkHeader;
+      }
+      List<String> links = headers.get("Link");
       LinkHeaderDelegate delegate = new LinkHeaderDelegate();
       for (String link : links)
       {
