@@ -1,8 +1,10 @@
 package org.jboss.resteasy.plugins.spring;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.ext.Provider;
@@ -164,6 +166,8 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
       }
       beanFactory.addBeanPostProcessor(new ResteasyBeanPostProcessor());
       Collection<String> ignoreList = createIgnoreList(beanFactory);
+
+      List<SpringResourceFactory> springResourceFactories = new ArrayList<SpringResourceFactory>();
       for (String name : beanFactory.getBeanDefinitionNames())
       {
          if (ignoreList.contains(name)) continue;
@@ -171,6 +175,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
          BeanDefinition beanDef = beanFactory.getBeanDefinition(name);
          if (beanDef.getBeanClassName() == null) continue;
          if (beanDef.isAbstract()) continue;
+
          Class<?> beanClass = null;
          try
          {
@@ -180,16 +185,20 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
          {
             throw new RuntimeException(e);
          }
-         if (GetRestful.isRootResource(beanClass))
-         {
-            SpringResourceFactory resourceFactory = new SpringResourceFactory(name, beanFactory, beanClass);
-            resourceFactories.put(name, resourceFactory);
-            getRegistry().addResourceFactory(resourceFactory);
-         }
-         else if (beanClass.isAnnotationPresent(Provider.class))
+         if (beanClass.isAnnotationPresent(Provider.class))
          {
             getProviderFactory().registerProviderInstance(beanFactory.getBean(name));
          }
+         if (GetRestful.isRootResource(beanClass))
+         {
+            springResourceFactories.add(new SpringResourceFactory(name, beanFactory, beanClass));
+         }
+      }
+
+      for (SpringResourceFactory resourceFactory : springResourceFactories)
+      {
+         resourceFactories.put(resourceFactory.beanName, resourceFactory);
+         getRegistry().addResourceFactory(resourceFactory);
       }
    }
 }
