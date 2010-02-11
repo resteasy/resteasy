@@ -32,7 +32,7 @@
             <artifactId>jaxb-impl</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.fastinfoset</groupId>
+            <groupId>sun-fi</groupId>
             <artifactId>FastInfoset</artifactId>
         </dependency>
         <dependency>

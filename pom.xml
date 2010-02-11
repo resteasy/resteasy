@@ -151,7 +151,7 @@
             </dependency>
 
             <dependency>
-                <groupId>com.sun.xml.fastinfoset</groupId>
+                <groupId>sun-fi</groupId>
                 <artifactId>FastInfoset</artifactId>
                 <version>1.2.7</version>
             </dependency>
