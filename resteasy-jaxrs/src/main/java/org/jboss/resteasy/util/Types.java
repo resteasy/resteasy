@@ -264,4 +264,42 @@ public class Types
       }
       return null;
    }
+   
+   /**
+    * Finds an actual value of a type variable. The method looks in a class hierarchy for a class defining the variable 
+    * and returns the value if present.
+    * @param clazz
+    * @param typeVariable
+    * @return actual type of the type variable
+    */
+   public static Type getActualValueOfTypeVariable(Class<?> clazz, TypeVariable<?> typeVariable)
+   {
+      if (typeVariable.getGenericDeclaration() instanceof Class<?>)
+      {
+         Class<?> classDeclaringTypeVariable = (Class<?>) typeVariable.getGenericDeclaration();
+         
+         // find the generic version of classDeclaringTypeVariable
+         while (clazz.getSuperclass() != null)
+         {
+            if (clazz.getSuperclass().equals(classDeclaringTypeVariable))
+            {
+               // found it
+               ParameterizedType parameterizedSuperclass = (ParameterizedType) clazz.getGenericSuperclass();
+               
+               for (int i = 0; i < classDeclaringTypeVariable.getTypeParameters().length; i++)
+               {
+                  TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
+                  if (tv.equals(typeVariable))
+                  {
+                     return parameterizedSuperclass.getActualTypeArguments()[i];
+                  }
+               }
+            }
+
+            clazz = clazz.getSuperclass();
+         }
+      }
+      
+      throw new RuntimeException("Unable to determine value of type parameter " + typeVariable);
+   }
 }
