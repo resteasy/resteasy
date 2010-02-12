@@ -92,9 +92,11 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
+
       preProcessInterceptors = providerFactory.getServerPreProcessInterceptorRegistry().bind(resourceClass, method);
       postProcessInterceptors = providerFactory.getServerPostProcessInterceptorRegistry().bind(resourceClass, method);
       writerInterceptors = providerFactory.getServerMessageBodyWriterInterceptorRegistry().bind(resourceClass, method);
+
       providerFactory.getServerPreProcessInterceptorRegistry().getListeners().add(this);
       providerFactory.getServerPostProcessInterceptorRegistry().getListeners().add(this);
       providerFactory.getServerMessageBodyWriterInterceptorRegistry().getListeners().add(this);
@@ -237,10 +239,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
          ServerResponse serverResponse = preInterceptor.preProcess(request, this);
          if (serverResponse != null)
          {
-            serverResponse.setAnnotations(method.getAnnotations());
-            serverResponse.setMessageBodyWriterInterceptors(writerInterceptors);
-            serverResponse.setPostProcessInterceptors(postProcessInterceptors);
-            return serverResponse;
+            return prepareResponse(serverResponse);
          }
       }
 
@@ -260,21 +259,22 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
-         ServerResponse serverResponse = ServerResponse.copyIfNotServerResponse((Response) rtn);
-         serverResponse.setAnnotations(method.getAnnotations());
-         serverResponse.setMessageBodyWriterInterceptors(writerInterceptors);
-         serverResponse.setPostProcessInterceptors(postProcessInterceptors);
-         return serverResponse;
+         return prepareResponse(ServerResponse.copyIfNotServerResponse((Response) rtn));
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);
       builder.type(resolveContentType(request));
       ServerResponse jaxrsResponse = (ServerResponse) builder.build();
       jaxrsResponse.setGenericType(genericReturnType);
-      jaxrsResponse.setAnnotations(method.getAnnotations());
-      jaxrsResponse.setMessageBodyWriterInterceptors(writerInterceptors);
-      jaxrsResponse.setPostProcessInterceptors(postProcessInterceptors);
-      return jaxrsResponse;
+      return prepareResponse(jaxrsResponse);
+   }
+
+   protected ServerResponse prepareResponse(ServerResponse serverResponse)
+   {
+      serverResponse.setAnnotations(method.getAnnotations());
+      serverResponse.setMessageBodyWriterInterceptors(writerInterceptors);
+      serverResponse.setPostProcessInterceptors(postProcessInterceptors);
+      return serverResponse;
    }
 
    public boolean doesProduce(List<? extends MediaType> accepts)
