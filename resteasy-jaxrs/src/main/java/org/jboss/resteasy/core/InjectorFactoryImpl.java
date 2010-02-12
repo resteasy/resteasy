@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.spi.ConstructorInjector;
@@ -7,7 +8,6 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -56,8 +56,8 @@ public class InjectorFactoryImpl implements InjectorFactory
 
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
    {
-      DefaultValue defaultValue = FindAnnotation.findAnnotation(annotations, DefaultValue.class);
-      boolean encode = FindAnnotation.findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
+      DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
+      boolean encode = findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
       String defaultVal = null;
       if (defaultValue != null) defaultVal = defaultValue.value();
 
@@ -70,39 +70,39 @@ public class InjectorFactoryImpl implements InjectorFactory
       Suspend suspend;
 
 
-      if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
+      if ((query = findAnnotation(annotations, QueryParam.class)) != null)
       {
          return new QueryParamInjector(type, genericType, injectTarget, query.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if ((header = FindAnnotation.findAnnotation(annotations, HeaderParam.class)) != null)
+      else if ((header = findAnnotation(annotations, HeaderParam.class)) != null)
       {
          return new HeaderParamInjector(type, genericType, injectTarget, header.value(), defaultVal, annotations, providerFactory);
       }
-      else if ((formParam = FindAnnotation.findAnnotation(annotations, FormParam.class)) != null)
+      else if ((formParam = findAnnotation(annotations, FormParam.class)) != null)
       {
          return new FormParamInjector(type, genericType, injectTarget, formParam.value(), defaultVal, annotations, providerFactory);
       }
-      else if ((cookie = FindAnnotation.findAnnotation(annotations, CookieParam.class)) != null)
+      else if ((cookie = findAnnotation(annotations, CookieParam.class)) != null)
       {
          return new CookieParamInjector(type, genericType, injectTarget, cookie.value(), defaultVal, annotations, providerFactory);
       }
-      else if ((uriParam = FindAnnotation.findAnnotation(annotations, PathParam.class)) != null)
+      else if ((uriParam = findAnnotation(annotations, PathParam.class)) != null)
       {
          return new PathParamInjector(type, genericType, injectTarget, uriParam.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if (FindAnnotation.findAnnotation(annotations, Form.class) != null)
+      else if (findAnnotation(annotations, Form.class) != null)
       {
          return new FormInjector(type, providerFactory);
       }
-      else if ((matrix = FindAnnotation.findAnnotation(annotations, MatrixParam.class)) != null)
+      else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null)
       {
          return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, annotations, providerFactory);
       }
-      else if ((suspend = FindAnnotation.findAnnotation(annotations, Suspend.class)) != null)
+      else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
       {
          return new SuspendInjector(suspend, type);
       }
-      else if (FindAnnotation.findAnnotation(annotations, Context.class) != null)
+      else if (findAnnotation(annotations, Context.class) != null)
       {
          return new ContextParameterInjector(type, providerFactory);
       }
@@ -112,6 +112,10 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
    }
 
+   /**
+    * This method should not be called.  Call providerFactory.getInjectorFactory().createParameterExtractor() instead 
+    */
+   @Deprecated
    public static ValueInjector getParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
    {
       return providerFactory.getInjectorFactory().createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
