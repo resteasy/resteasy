@@ -1,5 +1,13 @@
 package org.jboss.resteasy.core;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+
+import javax.ws.rs.WebApplicationException;
+
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.Failure;
@@ -9,12 +17,6 @@ import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
-
-import javax.ws.rs.WebApplicationException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -54,8 +56,22 @@ public class MethodInjectorImpl implements MethodInjector
       Type[] genericParameterTypes = Types.getGenericParameterTypesOfGenericInterfaceMethod(root, method);
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
-         Class type = method.getParameterTypes()[i];
-         Type genericType = genericParameterTypes[i];
+         Class<?> type;
+         Type genericType;
+         
+         // the parameter type might be a type variable defined in a superclass
+         if (genericParameterTypes[i] instanceof TypeVariable<?>)
+         {
+            // try to find out the value of the type variable
+            genericType = Types.getActualValueOfTypeVariable(root, (TypeVariable<?>)genericParameterTypes[i]);
+            type = Types.getRawType(genericType);
+         } 
+         else
+         {
+            type = method.getParameterTypes()[i];
+            genericType = genericParameterTypes[i];
+         }
+                  
          Annotation[] annotations = method.getParameterAnnotations()[i];
          params[i] = factory.getInjectorFactory().createParameterExtractor(root, method, type, genericType, annotations);
       }
