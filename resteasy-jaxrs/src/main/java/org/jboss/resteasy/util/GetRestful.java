@@ -26,42 +26,53 @@ public class GetRestful
     * Given a class, search itself and implemented interfaces for jax-rs annotations.
     *
     * @param clazz
-    * @return list of class and intertfaces that have jax-rs annotations
+    * @return list of class and interfaces that have jax-rs annotations
     */
    public static Class getSubResourceClass(Class clazz)
    {
-      if (clazz.isAnnotationPresent(Path.class))
+      // check class & superclasses for JAX-RS annotations
+      for(Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
       {
-         return clazz;
+         if( hasJAXRSAnnotations(actualClass)) 
+            return actualClass;
       }
-      for (Method method : clazz.getMethods())
-      {
-         if (method.isAnnotationPresent(Path.class)) return clazz;
-         for (Annotation ann : method.getAnnotations())
-         {
-            if (ann.annotationType().isAnnotationPresent(HttpMethod.class)) return clazz;
-         }
-      }
+
       // ok, no @Path or @HttpMethods so look in interfaces.
-      Class[] intfs = clazz.getInterfaces();
-      for (Class intf : intfs)
+      for (Class intf : clazz.getInterfaces())
       {
-         if (intf.isAnnotationPresent(Path.class))
-         {
+         if( hasJAXRSAnnotations(intf))
             return intf;
-         }
-         for (Method method : intf.getMethods())
-         {
-            if (method.isAnnotationPresent(Path.class)) return intf;
-            for (Annotation ann : method.getAnnotations())
-            {
-               if (ann.annotationType().isAnnotationPresent(HttpMethod.class)) return intf;
-            }
-         }
       }
       return null;
    }
 
+   private static boolean isTopObject(Class<?> actualClass)
+   {
+      return actualClass != null && actualClass != Object.class;
+   }
+
+   private static boolean hasJAXRSAnnotations(Class<?> c){
+      if (c.isAnnotationPresent(Path.class))
+      {
+         return true;
+      }
+      for (Method method : c.getMethods())
+      {
+         if (method.isAnnotationPresent(Path.class))
+         {
+            return true;
+         }
+         for (Annotation ann : method.getAnnotations())
+         {
+            if (ann.annotationType().isAnnotationPresent(HttpMethod.class)) 
+            {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+   
    public static boolean isRootResource(Class clazz)
    {
       return getRootResourceClass(clazz) != null;
