@@ -805,6 +805,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          addStringParameterUnmarshaller(provider);
       }
+      if(InjectorFactory.class.isAssignableFrom(provider))
+      {
+         try
+         {
+            Constructor constructor = provider.getConstructor(ResteasyProviderFactory.class);
+            this.injectorFactory = (InjectorFactory) constructor.newInstance(this);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
    }
 
    /**
@@ -905,6 +917,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (provider instanceof StringConverter)
       {
          addStringConverter((StringConverter) provider);
+      }
+      if (provider instanceof InjectorFactory)
+      {
+         this.injectorFactory = (InjectorFactory) provider;
       }
    }
 
