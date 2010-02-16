@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.mockejb:mockejb:0.6-beta2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/mockejb/mockejb/0.6-beta2/mockejb-0.6-beta2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/mockejb/mockejb/0.6-beta2/mockejb-0.6-beta2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/mockejb/mockejb/0.6-beta2/mockejb-0.6-beta2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

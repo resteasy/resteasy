@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.jboss.identity.idm:idm-api:1.0.0.Beta1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/identity/idm/idm-api/1.0.0.Beta1/idm-api-1.0.0.Beta1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/identity/idm/idm-api/1.0.0.Beta1/idm-api-1.0.0.Beta1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/identity/idm/idm-api/1.0.0.Beta1/idm-api-1.0.0.Beta1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process name="EventListener" xmlns="http://jbpm.org/4.3/jpdl">
+    <on event="start">
+        <event-listener class="org.jboss.resteasy.star.bpm.test.LogListener">
+            <field name="msg">
+                <string value="start on process definition"/>
+            </field>
+        </event-listener>
+    </on>
+
+    <start>
+        <transition to="wait"/>
+    </start>
+
+    <state name="wait">
+        <on event="start">
+            <event-listener class="org.jboss.resteasy.star.bpm.test.LogListener">
+                <field name="msg">
+                    <string value="start on activity wait"/>
+                </field>
+            </event-listener>
+        </on>
+        <on event="end">
+            <event-listener class="org.jboss.resteasy.star.bpm.test.LogListener">
+                <field name="msg">
+                    <string value="end on activity wait"/>
+                </field>
+            </event-listener>
+        </on>
+        <transition to="park">
+            <event-listener class="org.jboss.resteasy.star.bpm.test.LogListener">
+                <field name="msg">
+                    <string value="take transition"/>
+                </field>
+            </event-listener>
+        </transition>
+    </state>
+
+    <state name="park"/>
+
+</process>

@@ -12,6 +12,7 @@
 
     <modules>
         <module>messaging</module>
+        <module>workflow</module>
     </modules>
 
 </project>

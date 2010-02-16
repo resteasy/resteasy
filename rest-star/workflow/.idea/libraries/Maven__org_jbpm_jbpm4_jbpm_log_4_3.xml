@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.jbpm.jbpm4:jbpm-log:4.3">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm4/jbpm-log/4.3/jbpm-log-4.3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm4/jbpm-log/4.3/jbpm-log-4.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm4/jbpm-log/4.3/jbpm-log-4.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

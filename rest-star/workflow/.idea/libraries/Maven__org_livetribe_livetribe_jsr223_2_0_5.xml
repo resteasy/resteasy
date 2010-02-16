@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.livetribe:livetribe-jsr223:2.0.5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/livetribe/livetribe-jsr223/2.0.5/livetribe-jsr223-2.0.5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/livetribe/livetribe-jsr223/2.0.5/livetribe-jsr223-2.0.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/livetribe/livetribe-jsr223/2.0.5/livetribe-jsr223-2.0.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
