@@ -50,22 +50,20 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Path("/bpm")
 public class ProcessDefinitionResource
 {
    private ProcessEngine engine;
-
-   public ProcessDefinitionResource(ProcessEngine engine)
-   {
-      this.engine = engine;
-   }
-
-   private AtomicLong idGenerator = new AtomicLong(1);
-
-   @Context
    private UriInfo uriInfo;
 
-   @Path("/definitions")
+   private static AtomicLong idGenerator = new AtomicLong(1);
+
+
+   public ProcessDefinitionResource(ProcessEngine engine, UriInfo uriInfo)
+   {
+      this.engine = engine;
+      this.uriInfo = uriInfo;
+   }
+
    @POST
    @Consumes("bpm/*")
    public Response createProcessDefinition(@Context HttpHeaders headers, String jpdl)
@@ -105,7 +103,7 @@ public class ProcessDefinitionResource
       return builder.build();
    }
 
-   @Path("/definitions/{pdid}")
+   @Path("/{pdid}")
    @HEAD
    public Response getDefinitionHead()
    {
@@ -115,7 +113,7 @@ public class ProcessDefinitionResource
       return response.build();
    }
 
-   @Path("/definitions/{pdid}")
+   @Path("/{pdid}")
    @GET
    @Produces({"bpm/jpdl", "bpm/bpmn"})
    public Response getDefinition(@PathParam("pdid") String pdid) throws Exception
@@ -159,7 +157,7 @@ public class ProcessDefinitionResource
       response.header("Link", new Link("instances", "instances", instances.toString(), null, null));
    }
 
-   @Path("/definitions/{pdid}/instances")
+   @Path("/{pdid}/instances")
    public ProcessInstanceResource instances(@PathParam("pdid") String pdid)
    {
       return new ProcessInstanceResource(engine, uriInfo, pdid);

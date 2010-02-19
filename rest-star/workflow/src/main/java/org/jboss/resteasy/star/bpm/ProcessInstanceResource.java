@@ -162,7 +162,7 @@ public class ProcessInstanceResource
    private void addVariablesLink(Response.ResponseBuilder builder, String pid)
    {
       UriBuilder uri = uriInfo.getBaseUriBuilder()
-              .path(ProcessDefinitionResource.class)
+              .path(ProcessEngineResource.class)
               .path("definitions")
               .path(pdid).path("instances")
               .path(pid)
@@ -173,7 +173,7 @@ public class ProcessInstanceResource
    private void addNewVariableLink(Response.ResponseBuilder builder, String pid)
    {
       UriBuilder uri = uriInfo.getBaseUriBuilder()
-              .path(ProcessDefinitionResource.class)
+              .path(ProcessEngineResource.class)
               .path("definitions")
               .path(pdid).path("instances")
               .path(pid)

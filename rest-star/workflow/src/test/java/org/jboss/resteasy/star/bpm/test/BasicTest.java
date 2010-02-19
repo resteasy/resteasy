@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.bpm.ProcessDefinitionResource;
+import org.jboss.resteasy.star.bpm.ProcessEngineResource;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jbpm.api.Configuration;
 import org.jbpm.api.ProcessEngine;
@@ -29,7 +30,7 @@ public class BasicTest extends BaseResourceTest
    public static void init()
    {
       processEngine = Configuration.getProcessEngine();
-      ProcessDefinitionResource pe = new ProcessDefinitionResource(processEngine);
+      ProcessEngineResource pe = new ProcessEngineResource(processEngine);
       dispatcher.getRegistry().addSingletonResource(pe);
 
    }
