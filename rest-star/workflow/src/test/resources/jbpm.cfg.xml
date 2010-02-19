@@ -6,6 +6,7 @@
   <import resource="jbpm.businesscalendar.cfg.xml" />
   <import resource="jbpm.tx.hibernate.cfg.xml" />
   <import resource="jbpm.jpdl.cfg.xml" />
+  <import resource="jbpm.bpmn.cfg.xml" />
   <import resource="jbpm.identity.cfg.xml" />
 
   <!-- Job executor is excluded for running the example test cases. -->

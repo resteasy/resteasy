@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://schema.omg.org/spec/BPMN/2.0 ../../../../../../../../../../bpmn/src/main/resources/BPMN20.xsd"
+        xmlns="http://schema.omg.org/spec/BPMN/2.0"
+        typeLanguage="http://www.w3.org/2001/XMLSchema"
+        expressionLanguage="http://www.w3.org/1999/XPath"
+        targetNamespace="http://jbpm.org/example/bpmn2/terminate_end_event"
+        xmlns:jbpm="http://jbpm.org/bpmn2">
+
+    <process id="EventListener" name="EventListener">
+        <startEvent id="start"/>
+
+        <sequenceFlow id="toWait"
+                      sourceRef="start" targetRef="wait"/>
+
+        <receiveTask id="wait"/>
+
+        <sequenceFlow id="continue" name="foobar" sourceRef="wait" targetRef="park"/>
+
+        <endEvent id="park" name="The End"/>
+
+    </process>
+</definitions>

@@ -6,10 +6,9 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.bpm.ProcessEngineResource;
+import org.jboss.resteasy.star.bpm.ProcessDefinitionResource;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jbpm.api.Configuration;
-import org.jbpm.api.NewDeployment;
 import org.jbpm.api.ProcessEngine;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class BasicTest extends BaseResourceTest
    public static void init()
    {
       processEngine = Configuration.getProcessEngine();
-      ProcessEngineResource pe = new ProcessEngineResource(processEngine);
+      ProcessDefinitionResource pe = new ProcessDefinitionResource(processEngine);
       dispatcher.getRegistry().addSingletonResource(pe);
 
    }
@@ -38,18 +37,34 @@ public class BasicTest extends BaseResourceTest
    @Test
    public void testTransitions() throws Exception
    {
-      InputStream jpdl = Thread.currentThread().getContextClassLoader().getResourceAsStream("jpdl/state.jpdl.xml");
+      String mediaType = "bpm/jpdl";
+      String file = "jpdl/state.jpdl.xml";
+      transitions(mediaType, file);
+   }
+
+   @Test
+   public void testBpmnTransitions() throws Exception
+   {
+      String mediaType = "bpm/bpmn";
+      String file = "bpmn/state.bpmn.xml";
+      transitions(mediaType, file);
+   }
+   private void transitions(String mediaType, String file)
+           throws Exception
+   {
+      InputStream jpdl = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
       Assert.assertNotNull(jpdl);
 
       ApacheHttpClientExecutor executor = new ApacheHttpClientExecutor();
 
       ClientRequest request = executor.createRequest("http://localhost:8081/bpm/definitions");
-      request.body("bpm/jpdl", jpdl);
+      request.body(mediaType, jpdl);
       Link definition = request.create();
       Assert.assertNotNull(definition);
       ClientResponse response = null;
 
-      response = definition.request().head();
+      response = definition.request().get();
+      System.out.println(response.getEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Link instanceFactory = response.getLinkHeader().getLinkByTitle("instances");
       response = instanceFactory.request().post();
@@ -57,27 +72,28 @@ public class BasicTest extends BaseResourceTest
       Link instance = response.getLocation();
       Assert.assertNotNull(instance);
 
+      System.out.println("LinkHeader: " + response.getLinkHeader());
+
       Link next = response.getLinkHeader().getLinkByTitle("continue");
-      while (next != null)
-      {
-         System.out.println("next: " + next.getHref());
-         response = next.request().post();
-         System.out.println("after next");
-         Assert.assertEquals(204, response.getStatus());
-         next = response.getLinkHeader().getLinkByTitle("continue");
-      }
+      Assert.assertNotNull(next);
+      System.out.println("next: " + next.getHref());
+      response = next.request().post();
+      System.out.println("after next");
+      Assert.assertEquals(204, response.getStatus());
    }
 
    @Test
    public void testVariables() throws Exception
    {
-      InputStream jpdl = Thread.currentThread().getContextClassLoader().getResourceAsStream("jpdl/state.jpdl.xml");
+      String mediaType = "bpm/jpdl";
+      String file = "jpdl/state.jpdl.xml";
+      InputStream jpdl = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
       Assert.assertNotNull(jpdl);
 
       ApacheHttpClientExecutor executor = new ApacheHttpClientExecutor();
 
       ClientRequest request = executor.createRequest("http://localhost:8081/bpm/definitions");
-      request.body("bpm/jpdl", jpdl);
+      request.body(mediaType, jpdl);
       Link definition = request.create();
       Assert.assertNotNull(definition);
       ClientResponse response = null;
@@ -95,6 +111,11 @@ public class BasicTest extends BaseResourceTest
       System.out.println(response.getLinkHeader().toString());
       Link instance = response.getLocation();
       Assert.assertNotNull(instance);
+
+      Link next = response.getLinkHeader().getLinkByTitle("continue");
+      Assert.assertNotNull(next);
+
+
       Link variables = response.getLinkHeader().getLinkByTitle("variables");
       Link newVariables = response.getLinkHeader().getLinkByTitle("variable-template");
 
@@ -115,20 +136,11 @@ public class BasicTest extends BaseResourceTest
       Assert.assertEquals(204, response.getStatus());
 
 
-      
-      Link next = response.getLinkHeader().getLinkByTitle("continue");
+      System.out.println("next: " + next.getHref());
+      response = next.request().post();
+      System.out.println("after next");
+      Assert.assertEquals(204, response.getStatus());
 
-
-
-
-      while (next != null)
-      {
-         System.out.println("next: " + next.getHref());
-         response = next.request().post();
-         System.out.println("after next");
-         Assert.assertEquals(204, response.getStatus());
-         next = response.getLinkHeader().getLinkByTitle("continue");
-      }
    }
 
 }
