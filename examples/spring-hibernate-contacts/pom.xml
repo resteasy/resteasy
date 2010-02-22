@@ -10,32 +10,11 @@
     <name>RestContact Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <repositories>
-        <!-- liweinan: put jboss repo at first or it will download spring deps from http://repo1.maven.org/maven2 -->
         <repository>
             <id>jboss</id>
             <name>jboss repo</name>
             <url>http://repository.jboss.org/maven2-brew</url>
-        </repository>
-        <repository>
-            <id>java.net</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </repository>
-        <repository>
-            <id>maven repo</id>
-            <name>maven repo</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        <!-- For resteasy -->
-        <repository>
-            <id>jboss</id>
-            <name>jboss repo</name>
-            <url>http://repository.jboss.org/maven2</url>
-        </repository>
-        <repository>
-            <id>scannotation</id>
-            <url>http://scannotation.sf.net/maven2</url>
-        </repository>
+        </repository>        
     </repositories>
     <dependencyManagement>
         <dependencies>
