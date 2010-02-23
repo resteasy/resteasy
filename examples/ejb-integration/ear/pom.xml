@@ -24,11 +24,10 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>javax.ejb</groupId>
-         <artifactId>ejb-api</artifactId>
-         <version>3.0</version>
-         <scope>provided</scope>
-      </dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>ejb3-persistence</artifactId>
+            <version>3.4.0.GA_CP01</version>
+        </dependency>
       <dependency>
          <groupId>org.jboss.resteasy</groupId>
          <artifactId>ejb-integration</artifactId>
