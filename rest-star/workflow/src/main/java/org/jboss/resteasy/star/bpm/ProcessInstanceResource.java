@@ -10,6 +10,7 @@ import org.jboss.resteasy.spi.LinkHeader;
 import org.jbpm.api.ProcessEngine;
 import org.jbpm.api.ProcessInstance;
 import org.jbpm.pvm.internal.model.Activity;
+import org.jbpm.pvm.internal.model.ExecutionImpl;
 import org.jbpm.pvm.internal.model.ProcessDefinitionImpl;
 import org.jbpm.pvm.internal.model.Transition;
 
@@ -90,7 +91,7 @@ public class ProcessInstanceResource
       MultipartFormDataInput input = null;
       try
       {
-         input = ReaderUtility.read(MultipartFormDataInput.class,request.getHttpHeaders().getMediaType(), request.getInputStream());
+         input = ReaderUtility.read(MultipartFormDataInput.class, request.getHttpHeaders().getMediaType(), request.getInputStream());
       }
       catch (IOException e)
       {
@@ -141,11 +142,15 @@ public class ProcessInstanceResource
 
    private void extractTransitions(ProcessInstance instance, UriBuilder uriBuilder, Response.ResponseBuilder builder)
    {
+      /*
       Set<String> activityNames = instance.findActiveActivityNames();
       if (activityNames == null || activityNames.size() < 1) return;
       String activityName = instance.findActiveActivityNames().iterator().next();
-
-      ProcessDefinitionImpl pd = (ProcessDefinitionImpl) engine.getRepositoryService().createProcessDefinitionQuery().processDefinitionId(instance.getProcessDefinitionId()).uniqueResult();
+      */
+      ExecutionImpl impl = (ExecutionImpl) instance;
+      String activityName = impl.getActivityName();
+      String pdid = instance.getProcessDefinitionId();
+      ProcessDefinitionImpl pd = (ProcessDefinitionImpl) engine.getRepositoryService().createProcessDefinitionQuery().processDefinitionId(pdid).uniqueResult();
       Activity current = pd.findActivity(activityName);
       for (Transition transition : current.getOutgoingTransitions())
       {
@@ -289,7 +294,6 @@ public class ProcessInstanceResource
    @HEAD
    public Response headVariables(@PathParam("pid") String pid)
    {
-      System.out.println("HEAD VARIABLES!!!");
       Set<String> variableNames = engine.getExecutionService().getVariableNames(pid);
       if (variableNames == null)
       {
@@ -297,7 +301,6 @@ public class ProcessInstanceResource
          return Response.ok().build();
       }
 
-      System.out.println("Gathering variables: " + variableNames);
       Map<String, Object> variables = engine.getExecutionService().getVariables(pid, variableNames);
 
       Response.ResponseBuilder builder = Response.ok();

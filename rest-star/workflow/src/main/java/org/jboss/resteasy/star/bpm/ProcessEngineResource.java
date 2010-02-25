@@ -28,4 +28,10 @@ public class ProcessEngineResource
    {
       return new ProcessDefinitionResource(engine, uriInfo);
    }
+
+   @Path("/tasks")
+   public TaskResource tasks()
+   {
+      return new TaskResource(engine, uriInfo);
+   }
 }

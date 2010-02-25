@@ -6,11 +6,13 @@ import org.jboss.resteasy.util.MediaTypeMatcher;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import java.io.ByteArrayInputStream;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +31,8 @@ public class Variable implements Externalizable
    private transient Representation transformableRepresentation;
    private transient Representation initialRepresentation;
    private MultivaluedMap<String, String> entityHeaders = new MultivaluedMapImpl<String, String>();
+   private static final Annotation[] emptyAnnotations = {};
+   private static final MultivaluedMap<String, String> emptyHeaders = new MultivaluedMapImpl<String, String>();
 
    public static Set<String> allowable = new HashSet<String>();
 
@@ -39,6 +43,15 @@ public class Variable implements Externalizable
 
    public Variable()
    {
+   }
+
+   protected ResteasyProviderFactory getNonNullFactory()
+   {
+      if (factory == null)
+      {
+         factory = ResteasyProviderFactory.getInstance();
+      }
+      return factory;
    }
 
    public Variable(MediaType mediaType, MultivaluedMap<String, String> headers, byte[] body)
@@ -71,23 +84,23 @@ public class Variable implements Externalizable
 
    public void readExternal(ObjectInput is) throws IOException, ClassNotFoundException
    {
-      Map<String, Representation> representations = (Map<String, Representation>)is.readObject();
+      Map<String, Representation> representations = (Map<String, Representation>) is.readObject();
       String type = is.readUTF();
-      if (type != null  && !type.equals(""))
+      if (type != null && !type.equals(""))
       {
          transformableRepresentation = representations.get(type);
       }
       String initial = is.readUTF();
       initialRepresentation = representations.get(initial);
 
-      entityHeaders = (MultivaluedMap<String, String>)is.readObject();
+      entityHeaders = (MultivaluedMap<String, String>) is.readObject();
 
       matcher = new MediaTypeMatcher<Representation>();
       matcher.setRepresentations(new ConcurrentHashMap<MediaType, Representation>());
 
       for (Representation rep : representations.values())
       {
-         matcher.getRepresentations().put(rep.getMediaType(), rep);   
+         matcher.getRepresentations().put(rep.getMediaType(), rep);
       }
 
    }
@@ -98,8 +111,6 @@ public class Variable implements Externalizable
    }
 
    /**
-    *
-    *
     * @param accepts this parameter is assumed to be sorted by preference
     * @return
     */
@@ -116,7 +127,7 @@ public class Variable implements Externalizable
          matched = transform(type);
          if (matched != null) return matched;
       }
-      
+
       return null;
    }
 
@@ -172,4 +183,24 @@ public class Variable implements Externalizable
       set.addAll(matcher.getRepresentations().keySet());
       return set;
    }
+
+   public String toString()
+   {
+      MediaType from = initialRepresentation.getMediaType();
+      MessageBodyReader reader = getNonNullFactory().getMessageBodyReader(String.class, null, emptyAnnotations, from);
+      if (reader == null)
+      {
+         throw new RuntimeException("Unable to find reader for: " + initialRepresentation.getMediaType());
+      }
+      ByteArrayInputStream bais = new ByteArrayInputStream(initialRepresentation.getRepresentation());
+      try
+      {
+         return (String) reader.readFrom(String.class, null, emptyAnnotations, from, emptyHeaders, bais);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
 }
