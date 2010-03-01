@@ -154,11 +154,12 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       // Exception, give the ClientErrorHandlers a chance to handle the
       // ClientResponse manually.
 
+      clientResponse.checkFailureStatus();
+
       // only release connection if it is not an instance of an InputStream
       boolean releaseConnectionAfter = true;
       try
       {
-         clientResponse.checkFailureStatus();
 
          if (returnType == null || isVoidReturnType(returnType))
          {

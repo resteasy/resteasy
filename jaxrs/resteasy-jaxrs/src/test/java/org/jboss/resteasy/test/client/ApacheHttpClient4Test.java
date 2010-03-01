@@ -187,6 +187,41 @@ public class ApacheHttpClient4Test extends BaseResourceTest
                for (int j = 0; j < 10; j++)
                {
                   System.out.println("calling proxy");
+                  callProxy(proxy);
+                  System.gc();
+                  System.out.println("returned");
+               }
+            }
+         };
+      }
+
+      for (int i = 0; i < 3; i++) threads[i].start();
+      for (int i = 0; i < 3; i++) threads[i].join();
+
+      Assert.assertEquals(30l, counter.get());
+   }
+
+   @Test
+   public void testConnectionCleanupErrorNoGC() throws Exception
+   {
+      final ApacheHttpClient4Executor executor = createClient();
+      final MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081", executor);
+      counter.set(0);
+
+
+      Thread[] threads = new Thread[3];
+
+
+      for (int i = 0; i < 3; i++)
+      {
+         threads[i] = new Thread()
+         {
+            @Override
+            public void run()
+            {
+               for (int j = 0; j < 10; j++)
+               {
+                  System.out.println("calling proxy");
                   String str = null;
                   try
                   {
@@ -195,8 +230,8 @@ public class ApacheHttpClient4Test extends BaseResourceTest
                   catch (ClientResponseFailure e)
                   {
                      Assert.assertEquals(e.getResponse().getStatus(), 404);
+                     e.getResponse().releaseConnection();
                      counter.incrementAndGet();
-                     System.gc();
                   }
                   System.out.println("returned");
                }
@@ -208,6 +243,20 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       for (int i = 0; i < 3; i++) threads[i].join();
 
       Assert.assertEquals(30l, counter.get());
+   }
+
+   private void callProxy(MyResource proxy)
+   {
+      String str = null;
+      try
+      {
+         str = proxy.error();
+      }
+      catch (ClientResponseFailure e)
+      {
+         Assert.assertEquals(e.getResponse().getStatus(), 404);
+         counter.incrementAndGet();
+      }
    }
 
 
