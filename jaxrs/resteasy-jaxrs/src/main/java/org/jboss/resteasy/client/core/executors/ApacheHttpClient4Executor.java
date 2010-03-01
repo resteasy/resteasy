@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.core.executors;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -87,16 +88,32 @@ public class ApacheHttpClient4Executor implements ClientExecutor
          {
             if (stream == null)
             {
-               stream = new SelfExpandingBufferredInputStream(res.getEntity().getContent());
+               HttpEntity entity = res.getEntity();
+               if (entity == null) return null;
+               stream = new SelfExpandingBufferredInputStream(entity.getContent());
             }
             return stream;
          }
 
          public void performReleaseConnection()
          {
+            // Apache Client 4 is stupid,  You have to get the InputStream and close it if there is an entity
+            // otherwise the connection is never released.  There is, of course, no close() method on response
+            // to make this easier.
             try
             {
-               if (stream != null) stream.close();
+               if (stream != null)
+               {
+                  stream.close();
+               }
+               else
+               {
+                  InputStream is = getInputStream();
+                  if (is != null)
+                  {
+                     is.close();
+                  }
+               }
             }
             catch (Exception ignore)
             {

@@ -352,7 +352,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (!wasReleased)
       {
-         streamFactory.performReleaseConnection();
+         if (streamFactory != null) streamFactory.performReleaseConnection();
          wasReleased = true;
       }
    }
