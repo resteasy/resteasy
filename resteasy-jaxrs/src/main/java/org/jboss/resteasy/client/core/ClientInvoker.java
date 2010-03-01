@@ -154,7 +154,15 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       // Exception, give the ClientErrorHandlers a chance to handle the
       // ClientResponse manually.
 
-      clientResponse.checkFailureStatus();
+
+      try
+      {
+         clientResponse.checkFailureStatus();
+      }
+      catch (RuntimeException e)
+      {
+         clientErrorHandling(clientResponse, e);
+      }
 
       // only release connection if it is not an instance of an InputStream
       boolean releaseConnectionAfter = true;
@@ -176,32 +184,38 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       }
       catch (RuntimeException e)
       {
-         for (ClientErrorInterceptor handler : providerFactory.getClientErrorInterceptors())
-         {
-            try
-            {
-               // attempt to reset the stream in order to provide a fresh stream
-               // to each ClientErrorInterceptor -- failing to reset the stream
-               // could mean that an unusable stream will be passed to the
-               // interceptor
-               InputStream stream = clientResponse.getStreamFactory().getInputStream();
-               if (stream != null)
-               {
-                  stream.reset();
-               }
-            }
-            catch (IOException e1)
-            {
-               // eat this exception since it's not really relevant for the client response
-            }
-            handler.handle(clientResponse);
-         }
-         throw e;
+         clientErrorHandling(clientResponse, e);
       }
       finally
       {
          if (releaseConnectionAfter) clientResponse.releaseConnection();
       }
+      throw new RuntimeException("Should be unreachable");
+   }
+
+   protected void clientErrorHandling(BaseClientResponse clientResponse, RuntimeException e)
+   {
+      for (ClientErrorInterceptor handler : providerFactory.getClientErrorInterceptors())
+      {
+         try
+         {
+            // attempt to reset the stream in order to provide a fresh stream
+            // to each ClientErrorInterceptor -- failing to reset the stream
+            // could mean that an unusable stream will be passed to the
+            // interceptor
+            InputStream stream = clientResponse.getStreamFactory().getInputStream();
+            if (stream != null)
+            {
+               stream.reset();
+            }
+         }
+         catch (IOException e1)
+         {
+            // eat this exception since it's not really relevant for the client response
+         }
+         handler.handle(clientResponse);
+      }
+      throw e;
    }
 
    private boolean isVoidReturnType(final Class<?> returnType)
