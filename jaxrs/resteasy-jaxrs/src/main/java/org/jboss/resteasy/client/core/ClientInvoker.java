@@ -154,6 +154,8 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       // Exception, give the ClientErrorHandlers a chance to handle the
       // ClientResponse manually.
 
+      // only release connection if it is not an instance of an InputStream
+      boolean releaseConnectionAfter = true;
       try
       {
          clientResponse.checkFailureStatus();
@@ -167,7 +169,9 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
          clientResponse.setReturnType(returnType);
          clientResponse.setGenericReturnType(method.getGenericReturnType());
 
-         return clientResponse.getEntity();
+         Object obj = clientResponse.getEntity();
+         if (obj instanceof InputStream) releaseConnectionAfter = false;
+         return obj;
       }
       catch (RuntimeException e)
       {
@@ -195,7 +199,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       }
       finally
       {
-         clientResponse.releaseConnection();
+         if (releaseConnectionAfter) clientResponse.releaseConnection();
       }
    }
 
