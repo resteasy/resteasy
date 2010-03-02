@@ -49,8 +49,7 @@ public interface Providers
     * method is called on each reader in order using the supplied criteria and
     * the first reader that returns {@code true} is selected and returned.
     *
-    * @param type        the class of object that is to be written.
-    * @param mediaType   the media type of the data that will be read.
+    * @param type        the class of object that is to be read.
     * @param genericType the type of object to be produced. E.g. if the
     *                    message body is to be converted into a method parameter, this will be
     *                    the formal type of the method parameter as returned by
@@ -60,6 +59,7 @@ public interface Providers
     *                    message body is to be converted into a method parameter, this will be
     *                    the annotations on that parameter returned by
     *                    <code>Class.getParameterAnnotations</code>.
+    * @param mediaType   the media type of the data that will be read.
     * @return a MessageBodyReader that matches the supplied criteria or null
     *         if none is found.
     */
@@ -80,7 +80,6 @@ public interface Providers
     * method is called on each writer in order using the supplied criteria and
     * the first writer that returns {@code true} is selected and returned.
     *
-    * @param mediaType   the media type of the data that will be written.
     * @param type        the class of object that is to be written.
     * @param genericType the type of object to be written. E.g. if the
     *                    message body is to be produced from a field, this will be
@@ -91,6 +90,7 @@ public interface Providers
     *                    message body is to be produced from a field, this will be
     *                    the annotations on that field returned by
     *                    <code>Field.getDeclaredAnnotations</code>.
+    * @param mediaType   the media type of the data that will be written.
     * @return a MessageBodyReader that matches the supplied criteria or null
     *         if none is found.
     */

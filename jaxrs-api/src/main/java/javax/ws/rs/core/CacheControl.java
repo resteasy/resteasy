@@ -61,7 +61,7 @@ public class CacheControl
     * <li>proxyRevalidate = false</li>
     * <li>An empty list of private fields</li>
     * <li>An empty list of no-cache fields</li>
-    * <li>An empty list of cache extensions</li>
+    * <li>An empty map of cache extensions</li>
     * </ul>
     */
    public CacheControl()

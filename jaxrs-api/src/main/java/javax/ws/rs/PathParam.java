@@ -45,7 +45,8 @@ import java.lang.annotation.Target;
  * path segments.</li>
  * <li>Be a primitive type.</li>
  * <li>Have a constructor that accepts a single String argument.</li>
- * <li>Have a static method named <code>valueOf</code> that accepts a single
+ * <li>Have a static method named <code>valueOf</code> or <code>fromString</code>
+ * that accepts a single
  * String argument (see, for example, {@link Integer#valueOf(String)}).
  * </ul>
  * <p/>

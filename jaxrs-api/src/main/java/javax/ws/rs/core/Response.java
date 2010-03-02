@@ -111,11 +111,23 @@ public abstract class Response
     * @return a new ResponseBuilder
     * @throws IllegalArgumentException if status is null
     */
-   public static ResponseBuilder status(Status status)
+   public static ResponseBuilder status(StatusType status)
    {
       ResponseBuilder b = ResponseBuilder.newInstance();
       b.status(status);
       return b;
+   }
+
+   /**
+    * Create a new ResponseBuilder with the supplied status.
+    *
+    * @param status the response status
+    * @return a new ResponseBuilder
+    * @throws IllegalArgumentException if status is null
+    */
+   public static ResponseBuilder status(Status status)
+   {
+      return status((StatusType) status);
    }
 
    /**
@@ -331,7 +343,7 @@ public abstract class Response
    /**
     * Create a new ResponseBuilder for a not acceptable response.
     *
-    * @param variants list of variants that were available, a null vaue is
+    * @param variants list of variants that were available, a null value is
     *                 equivalent to an empty list.
     * @return a new ResponseBuilder
     */
@@ -416,11 +428,25 @@ public abstract class Response
        * @return the updated ResponseBuilder
        * @throws IllegalArgumentException if status is null
        */
-      public ResponseBuilder status(Status status)
+      public ResponseBuilder status(StatusType status)
       {
          if (status == null)
             throw new IllegalArgumentException();
          return status(status.getStatusCode());
+      }
+
+      ;
+
+      /**
+       * Set the status on the ResponseBuilder.
+       *
+       * @param status the response status
+       * @return the updated ResponseBuilder
+       * @throws IllegalArgumentException if status is null
+       */
+      public ResponseBuilder status(Status status)
+      {
+         return status((StatusType) status);
       }
 
       ;
@@ -588,11 +614,39 @@ public abstract class Response
    }
 
    /**
+    * Base interface for statuses used in responses.
+    */
+   public interface StatusType
+   {
+      /**
+       * Get the associated status code
+       *
+       * @return the status code
+       */
+      public int getStatusCode();
+
+      /**
+       * Get the class of status code
+       *
+       * @return the class of status code
+       */
+      public Status.Family getFamily();
+
+      /**
+       * Get the reason phrase
+       *
+       * @return the reason phrase
+       */
+      public String getReasonPhrase();
+   }
+
+   /**
     * Commonly used status codes defined by HTTP, see
     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10">HTTP/1.1 documentation</a>}
-    * for the complete list.
+    * for the complete list. Additional status codes can be added by applications
+    * by creating an implementation of {@link StatusType}.
     */
-   public enum Status
+   public enum Status implements StatusType
    {
       /**
        * 200 OK, see {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">HTTP/1.1 documentation</a>}.
@@ -611,7 +665,7 @@ public abstract class Response
        */
       NO_CONTENT(204, "No Content"),
       /**
-       * 303 See Other, see {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2">HTTP/1.1 documentation</a>}.
+       * 301 Moved Permanently, see {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2">HTTP/1.1 documentation</a>}.
        */
       MOVED_PERMANENTLY(301, "Moved Permanently"),
       /**
@@ -731,6 +785,16 @@ public abstract class Response
       public int getStatusCode()
       {
          return code;
+      }
+
+      /**
+       * Get the reason phrase
+       *
+       * @return the reason phrase
+       */
+      public String getReasonPhrase()
+      {
+         return toString();
       }
 
       /**

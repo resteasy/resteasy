@@ -25,7 +25,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 import java.lang.reflect.ReflectPermission;
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Implementations of JAX-RS provide a concrete subclass of RuntimeDelegate and
@@ -42,14 +41,13 @@ public abstract class RuntimeDelegate
    private static final String JAXRS_DEFAULT_RUNTIME_DELEGATE
            = "com.sun.ws.rs.ext.RuntimeDelegateImpl";
 
-   private static AtomicReference<RuntimeDelegate> rdr =
-           new AtomicReference<RuntimeDelegate>();
-
    private static ReflectPermission rp = new ReflectPermission("suppressAccessChecks");
 
    protected RuntimeDelegate()
    {
    }
+
+   private static volatile RuntimeDelegate rd;
 
    /**
     * Obtain a RuntimeDelegate instance. If an instance had not already been
@@ -86,42 +84,55 @@ public abstract class RuntimeDelegate
     */
    public static RuntimeDelegate getInstance()
    {
-      RuntimeDelegate rd = rdr.get();
-      if (rd != null)
-         return rd;
-      synchronized (rdr)
-      {
-         rd = rdr.get();
-         if (rd != null)
-            return rd;
-         try
+      // Double-check idiom for lazy initialization of fields.
+      RuntimeDelegate result = rd;
+      if (result == null)
+      { // First check (no locking)
+         synchronized (RuntimeDelegate.class)
          {
-            Object delegate =
-                    FactoryFinder.find(JAXRS_RUNTIME_DELEGATE_PROPERTY,
-                            JAXRS_DEFAULT_RUNTIME_DELEGATE);
-            if (!(delegate instanceof RuntimeDelegate))
-            {
-               Class pClass = RuntimeDelegate.class;
-               String classnameAsResource = pClass.getName().replace('.', '/') + ".class";
-               ClassLoader loader = pClass.getClassLoader();
-               if (loader == null)
-               {
-                  loader = ClassLoader.getSystemClassLoader();
-               }
-               URL targetTypeURL = loader.getResource(classnameAsResource);
-               throw new LinkageError("ClassCastException: attempting to cast" +
-                       delegate.getClass().getClassLoader().getResource(classnameAsResource) +
-                       "to" + targetTypeURL.toString());
+            result = rd;
+            if (result == null)
+            { // Second check (with locking)
+               rd = result = findDelegate();
             }
-            rd = (RuntimeDelegate) delegate;
          }
-         catch (Exception ex)
-         {
-            throw new RuntimeException(ex);
-         }
-         rdr.compareAndSet(null, rd);
       }
-      return rdr.get();
+      return result;
+   }
+
+   /**
+    * Obtain a RuntimeDelegate instance using the method described in
+    * {@link #getInstance}.
+    *
+    * @return an instance of RuntimeDelegate
+    */
+   private static RuntimeDelegate findDelegate()
+   {
+      try
+      {
+         Object delegate =
+                 FactoryFinder.find(JAXRS_RUNTIME_DELEGATE_PROPERTY,
+                         JAXRS_DEFAULT_RUNTIME_DELEGATE);
+         if (!(delegate instanceof RuntimeDelegate))
+         {
+            Class pClass = RuntimeDelegate.class;
+            String classnameAsResource = pClass.getName().replace('.', '/') + ".class";
+            ClassLoader loader = pClass.getClassLoader();
+            if (loader == null)
+            {
+               loader = ClassLoader.getSystemClassLoader();
+            }
+            URL targetTypeURL = loader.getResource(classnameAsResource);
+            throw new LinkageError("ClassCastException: attempting to cast" +
+                    delegate.getClass().getClassLoader().getResource(classnameAsResource) +
+                    "to" + targetTypeURL.toString());
+         }
+         return (RuntimeDelegate) delegate;
+      }
+      catch (Exception ex)
+      {
+         throw new RuntimeException(ex);
+      }
    }
 
    /**
@@ -140,7 +151,10 @@ public abstract class RuntimeDelegate
       {
          security.checkPermission(rp);
       }
-      rdr.set(rd);
+      synchronized (RuntimeDelegate.class)
+      {
+         RuntimeDelegate.rd = rd;
+      }
    }
 
    /**
