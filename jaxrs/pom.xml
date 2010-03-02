@@ -87,6 +87,7 @@
         <module>examples</module>
         <module>async-http-servlet-3.0</module>
         <module>profiling-tests</module>
+	<module>resteasy-cdi</module>
     </modules>
 
     <dependencyManagement>

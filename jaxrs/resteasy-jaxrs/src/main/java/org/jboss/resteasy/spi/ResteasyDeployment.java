@@ -59,13 +59,14 @@ public class ResteasyDeployment
 
    public void start()
    {
+      
+      providerFactory = ResteasyProviderFactory.getInstance();
       if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
       if (deploymentSensitiveFactoryEnabled)
       {
-         ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
-         if (!(defaultInstance instanceof ThreadLocalResteasyProviderFactory))
+         if (!(providerFactory instanceof ThreadLocalResteasyProviderFactory))
          {
-            ResteasyProviderFactory.setInstance(new ThreadLocalResteasyProviderFactory(defaultInstance));
+            ResteasyProviderFactory.setInstance(new ThreadLocalResteasyProviderFactory(providerFactory));
          }
       }
       else
