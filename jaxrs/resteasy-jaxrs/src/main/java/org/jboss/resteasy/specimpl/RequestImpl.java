@@ -49,7 +49,7 @@ public class RequestImpl implements Request
       if (variants == null || variants.size() == 0) throw new IllegalArgumentException("Variant list must not be zero");
 
       ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
-      MultivaluedMap<String,String> requestHeaders = headers.getRequestHeaders();
+      MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
       negotiation.setAcceptHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT));
       negotiation.setAcceptCharsetHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_CHARSET));
       negotiation.setAcceptEncodingHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_ENCODING));
@@ -198,5 +198,16 @@ public class RequestImpl implements Request
       }
       if (rtn != null && varyHeader != null) rtn.header(HttpHeaderNames.VARY, varyHeader);
       return rtn;
+   }
+
+   public Response.ResponseBuilder evaluatePreconditions()
+   {
+      List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
+      if (ifMatch == null || ifMatch.size() == 0)
+      {
+         return null;
+      }
+
+      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED);
    }
 }

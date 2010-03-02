@@ -110,4 +110,29 @@ public interface Request
     *          if called outside the scope of a request
     */
    ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag);
+
+   /**
+    * Evaluate request preconditions for a resource that does not currently
+    * exist. The primary use of this method is to support the {@link <a
+    * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24">
+    * If-Match: *</a>} and {@link <a
+    * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26">
+    * If-None-Match: *</a>} preconditions.
+    * <p/>
+    * <p>Note that both preconditions <code>If-None-Match: *</code> and
+    * <code>If-None-Match: <i>something</i></code> will always be considered to
+    * have been met and it is the applications responsibility
+    * to enforce any additional method-specific semantics. E.g. a
+    * <code>PUT</code> on a resource that does not exist might succeed whereas
+    * a <code>GET</code> on a resource that does not exist would likely result
+    * in a 404 response. It would be the responsibility of the application to
+    * generate the 404 response.</p>
+    *
+    * @return null if the preconditions are met or a ResponseBuilder set with
+    *         the appropriate status if the preconditions are not met.
+    * @throws java.lang.IllegalStateException
+    *          if called outside the scope of
+    *          a request
+    */
+   ResponseBuilder evaluatePreconditions();
 }

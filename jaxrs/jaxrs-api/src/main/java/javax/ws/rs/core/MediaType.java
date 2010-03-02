@@ -3,7 +3,7 @@
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
  * in compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.php
  * See the License for the specific language governing
@@ -89,15 +89,6 @@ public class MediaType
    public final static MediaType APPLICATION_XHTML_XML_TYPE = new MediaType("application", "xhtml+xml");
 
    /**
-    * "application/xop+xml"
-    */
-   public final static String APPLICATION_XOP_XML = "application/xop+xml";
-   /**
-    * "application/xop+xml"
-    */
-   public final static MediaType APPLICATION_XOP_XML_TYPE = new MediaType("application", "xop+xml");
-
-   /**
     * "application/svg+xml"
     */
    public final static String APPLICATION_SVG_XML = "application/svg+xml";
@@ -134,24 +125,6 @@ public class MediaType
    public final static MediaType MULTIPART_FORM_DATA_TYPE = new MediaType("multipart", "form-data");
 
    /**
-    * "multipart/mixed"
-    */
-   public final static String MULTIPART_MIXED = "multipart/mixed";
-   /**
-    * "multipart/mixed"
-    */
-   public final static MediaType MULTIPART_MIXED_TYPE = new MediaType("multipart", "mixed");
-
-   /**
-    * "multipart/related"
-    */
-   public final static String MULTIPART_RELATED = "multipart/related";
-   /**
-    * "multipart/related"
-    */
-   public final static MediaType MULTIPART_RELATED_TYPE = new MediaType("multipart", "related");
-
-   /**
     * "application/octet-stream"
     */
    public final static String APPLICATION_OCTET_STREAM = "application/octet-stream";
@@ -168,32 +141,6 @@ public class MediaType
     * "text/plain"
     */
    public final static MediaType TEXT_PLAIN_TYPE = new MediaType("text", "plain");
-
-   /**
-    * Default fallback of the HTTP 1.1 protocol.
-    * 
-    * "text/plain; charset=ISO-8859-1"
-    */
-   public final static String TEXT_PLAIN_WITH_CHARSET_ISO_8859_1 = "text/plain; charset=ISO-8859-1";
-   /**
-    * Default fallback of the HTTP 1.1 protocol.
-    * 
-    * "text/plain; charset=ISO-8859-1"
-    */
-   public final static MediaType TEXT_PLAIN_WITH_CHARSET_ISO_8859_1_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_CHARSET_ISO_8859_1);
-
-   /**
-    * Default fallback of MIME messages
-    * 
-    * "text/plain; charset=us-ascii"
-    */
-   public final static String TEXT_PLAIN_WITH_CHARSET_US_ASCII = "text/plain; charset=us-ascii";
-   /**
-    * Default fallback of MIME messages
-    * 
-    * "text/plain; charset=us-ascii"
-    */
-   public final static MediaType TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_CHARSET_US_ASCII);
 
    /**
     * "text/xml"
@@ -368,8 +315,6 @@ public class MediaType
    @Override
    public boolean equals(Object obj)
    {
-      if (this == obj)
-         return true;
       if (obj == null)
          return false;
       if (!(obj instanceof MediaType))

@@ -36,7 +36,8 @@ import java.lang.annotation.Target;
  * <li>Be a primitive type</li>
  * <li>Be {@link javax.ws.rs.core.Cookie}</li>
  * <li>Have a constructor that accepts a single String argument</li>
- * <li>Have a static method named <code>valueOf</code> that accepts a single
+ * <li>Have a static method named <code>valueOf</code> or <code>fromString</code>
+ * that accepts a single
  * String argument (see, for example, {@link Integer#valueOf(String)})
  * <li>Be <code>List&lt;T&gt;</code>, <code>Set&lt;T&gt;</code> or
  * <code>SortedSet&lt;T&gt;</code>, where <code>T</code> satisfies 2, 3 or 4 above.

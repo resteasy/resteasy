@@ -11,34 +11,27 @@
  */
 
 /*
- * Context.java
+ * OPTIONS.java
  *
- * Created on November 16, 2006, 3:37 PM
+ * Created on March 10, 2009
  *
  */
 
-package javax.ws.rs.core;
+package javax.ws.rs;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to inject information into a class
- * field, bean property or method parameter.
+ * Indicates that the annotated method responds to HTTP OPTIONS requests
  *
- * @see Application
- * @see UriInfo
- * @see Request
- * @see HttpHeaders
- * @see SecurityContext
- * @see javax.ws.rs.ext.Providers
+ * @see HttpMethod
  */
-@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Context
+@HttpMethod(HttpMethod.OPTIONS)
+public @interface OPTIONS
 {
 }

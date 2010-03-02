@@ -43,7 +43,10 @@ import java.lang.annotation.Target;
 public @interface Consumes
 {
    /**
-    * A list of media types. E.g. {"image/jpeg","image/gif"}
+    * A list of media types. Each entry may specify a single type or consist
+    * of a comma separated list of types. E.g. {"image/jpeg,image/gif",
+    * "image/png"}. Use of the comma-separated form allows definition of a
+    * common string constant for use on multiple targets.
     */
    String[] value() default "*/*";
 }

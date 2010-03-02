@@ -21,13 +21,32 @@ package javax.ws.rs.ext;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Properties;
 
 class FactoryFinder
 {
+
+   static ClassLoader getContextClassLoader()
+   {
+      return AccessController.doPrivileged(
+              new PrivilegedAction<ClassLoader>()
+              {
+                 public ClassLoader run()
+                 {
+                    ClassLoader cl = null;
+                    try
+                    {
+                       cl = Thread.currentThread().getContextClassLoader();
+                    }
+                    catch (SecurityException ex) { }
+                    return cl;
+                 }
+              });
+   }
 
    /**
     * Creates an instance of the specified class using the specified
@@ -48,7 +67,14 @@ class FactoryFinder
          }
          else
          {
-            spiClass = classLoader.loadClass(className);
+            try
+            {
+               spiClass = Class.forName(className, false, classLoader);
+            }
+            catch (ClassNotFoundException ex)
+            {
+               spiClass = Class.forName(className);
+            }
          }
          return spiClass.newInstance();
       }
@@ -85,15 +111,7 @@ class FactoryFinder
     */
    static Object find(String factoryId, String fallbackClassName) throws ClassNotFoundException
    {
-      ClassLoader classLoader;
-      try
-      {
-         classLoader = Thread.currentThread().getContextClassLoader();
-      }
-      catch (Exception x)
-      {
-         throw new ClassNotFoundException(x.toString(), x);
-      }
+      ClassLoader classLoader = getContextClassLoader();
 
       String serviceId = "META-INF/services/" + factoryId;
       // try to find services in CLASSPATH
@@ -124,12 +142,10 @@ class FactoryFinder
             }
          }
       }
-      catch (IOException ex)
+      catch (Exception ex)
       {
       }
-      catch (RuntimeException ex)
-      {
-      }
+
 
       // try to read from $java.home/lib/jaxrs.properties
       try
@@ -141,22 +157,15 @@ class FactoryFinder
          if (f.exists())
          {
             Properties props = new Properties();
-            InputStream is = new FileInputStream(f);
-            try {
-                props.load(is);
-            } finally {
-                is.close();
-            }
+            props.load(new FileInputStream(f));
             String factoryClassName = props.getProperty(factoryId);
             return newInstance(factoryClassName, classLoader);
          }
       }
-      catch (IOException ex)
+      catch (Exception ex)
       {
       }
-      catch (RuntimeException ex)
-      {
-      }
+
 
       // Use the system property
       try
