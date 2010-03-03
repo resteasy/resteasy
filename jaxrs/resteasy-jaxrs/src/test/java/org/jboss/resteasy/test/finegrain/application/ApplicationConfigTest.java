@@ -15,7 +15,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -24,8 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -60,6 +57,34 @@ public class ApplicationConfigTest
          return "hello";
       }
    }
+   
+   @Path("/injection")
+   @Produces("text/plain")
+   public static class InjectionResource
+   {
+      private MyApplicationConfig application = MyApplicationConfig.getInstance();
+      
+      @Path("/field")
+      @GET
+      public boolean fieldInjection()
+      {
+         return application.isFieldInjected(); 
+      }
+      
+      @Path("/setter")
+      @GET
+      public boolean setterInjection()
+      {
+         return application.isSetterInjected(); 
+      }
+      
+      @Path("/constructor")
+      @GET
+      public boolean constructorInjection()
+      {
+         return application.isConstructorInjected(); 
+      }
+   }
 
    @Provider
    @Produces("text/quoted")
@@ -84,30 +109,12 @@ public class ApplicationConfigTest
       }
    }
 
-   public static class MyApplicationConfig extends Application
-   {
-      private Set<Class<?>> classes = new HashSet<Class<?>>();
-
-      public MyApplicationConfig()
-      {
-         classes.add(MyResource.class);
-         classes.add(MyService.class);
-         classes.add(QuotedTextWriter.class);
-      }
-
-      @Override
-      public Set<Class<?>> getClasses()
-      {
-         return classes;
-      }
-
-   }
 
    @BeforeClass
    public static void before() throws Exception
    {
       ResteasyDeployment deployment = new ResteasyDeployment();
-      deployment.setApplication(new MyApplicationConfig());
+      deployment.setApplicationClass("org.jboss.resteasy.test.finegrain.application.MyApplicationConfig");
       EmbeddedContainer.start(deployment);
    }
 
@@ -141,5 +148,26 @@ public class ApplicationConfigTest
       HttpClient client = new HttpClient();
       _test(client, generateURL("/my"), "\"hello\"");
       _test(client, generateURL("/myinterface"), "hello");
+   }
+   
+   @Test
+   public void testFieldInjection()
+   {
+      HttpClient client = new HttpClient();
+      _test(client, generateURL("/injection/field"), "true");
+   }
+   
+   @Test
+   public void testSetterInjection()
+   {
+      HttpClient client = new HttpClient();
+      _test(client, generateURL("/injection/setter"), "true");
+   }
+   
+   @Test
+   public void testConstructorInjection()
+   {
+      HttpClient client = new HttpClient();
+      _test(client, generateURL("/injection/constructor"), "true");
    }
 }
