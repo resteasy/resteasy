@@ -130,22 +130,22 @@ public class ResteasyDeployment
 
       if (applicationClass != null)
       {
+         Class<?> clazz = null;
          try
          {
-            application = (Application) Thread.currentThread().getContextClassLoader().loadClass(applicationClass).newInstance();
-         }
-         catch (InstantiationException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
+            clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass);
          }
          catch (ClassNotFoundException e)
          {
             throw new RuntimeException(e);
          }
+         
+         ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(clazz.getConstructors()[0]);
+         PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz);
+         
+         application = (Application) constructorInjector.construct();
+         propertyInjector.inject(application);
+         
       }
 
       // register all providers
