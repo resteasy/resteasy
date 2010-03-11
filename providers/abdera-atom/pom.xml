@@ -11,10 +11,14 @@
     <name>Abdera Atom Provider</name>
 
     <repositories>
+        <!--<repository>-->
+        <!--<id>apache-snapshots</id>-->
+        <!--<name>Apache Snapshot Repository</name>-->
+        <!--<url>http://people.apache.org/repo/m2-incubating-repository</url>-->
+        <!--</repository>-->
         <repository>
-            <id>apache-snapshots</id>
-            <name>Apache Snapshot Repository</name>
-            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+            <id>jboss-brew</id>
+            <url>http://repository.jboss.org/maven2-brew</url>
         </repository>
     </repositories>
 

@@ -12,7 +12,7 @@
 
     <repositories>
         <repository>
-            <id>jboss</id>
+            <id>jboss-brew</id>
             <name>jboss repo</name>
             <url>http://repository.jboss.org/maven2-brew</url>
         </repository>

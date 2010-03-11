@@ -12,8 +12,8 @@
     <url>http://maven.apache.org</url>
     <repositories>
         <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.org/maven2</url>
+            <id>jboss-brew</id>
+            <url>http://repository.jboss.org/maven2-brew</url>
         </repository>
     </repositories>
     <dependencies>

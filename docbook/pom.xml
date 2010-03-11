@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -11,25 +11,25 @@
     <name>RESTEasy Reference Guide (${translation})</name>
     <repositories>
         <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.org/maven2</url>
+            <id>jboss-brew</id>
+            <url>http://repository.jboss.org/maven2-brew</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>jboss</id>
-            <url>http://repository.jboss.org/maven2</url>
+            <id>jboss-brew</id>
+            <url>http://repository.jboss.org/maven2-brew</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>maven2-repository.dev.java.net</id>
-            <url>http://download.java.net/maven/2</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>maven-repository.dev.java.net</id>
-            <name>Java.net Maven 1 Repository (legacy)</name>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </pluginRepository>
+        <!--<pluginRepository>-->
+            <!--<id>maven2-repository.dev.java.net</id>-->
+            <!--<url>http://download.java.net/maven/2</url>-->
+        <!--</pluginRepository>-->
+        <!--<pluginRepository>-->
+            <!--<id>maven-repository.dev.java.net</id>-->
+            <!--<name>Java.net Maven 1 Repository (legacy)</name>-->
+            <!--<url>http://download.java.net/maven/1</url>-->
+            <!--<layout>legacy</layout>-->
+        <!--</pluginRepository>-->
     </pluginRepositories>
 
     <build>
@@ -60,35 +60,35 @@
                     <imageResource>
                         <directory>reference/en</directory>
                         <includes>
-                          <include>images/*</include>
+                            <include>images/*</include>
                         </includes>
                     </imageResource>
-                   <!-- <cssResource>
-                        <directory>src/main/css</directory>
-                    </cssResource> -->
-<!--put back css -->
+                    <!-- <cssResource>
+                       <directory>src/main/css</directory>
+                   </cssResource> -->
+                    <!--put back css -->
 
                     <formats>
-                       <format>
+                        <format>
                             <formatName>html</formatName>
-			    <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
+                            <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
                             <finalName>index.html</finalName>
                         </format>
-                  	<format>
+                        <format>
                             <formatName>html_single</formatName>
                             <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
-			    <finalName>index.html</finalName>
+                            <finalName>index.html</finalName>
                         </format>
 
-			 <format>
+                        <format>
                             <formatName>pdf</formatName>
-			                 <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-                          <finalName>RESTEasy_Reference_Guide.pdf</finalName>
-			    <profilingTypeName>two_pass</profilingTypeName>
+                            <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
+                            <finalName>RESTEasy_Reference_Guide.pdf</finalName>
+                            <profilingTypeName>two_pass</profilingTypeName>
                         </format>
 
 
-                    <!--<format>
+                        <!--<format>
                             <formatName>eclipse</formatName>
                             <stylesheetResource>classpath:/xslt/main-eclipse.xsl</stylesheetResource>
                             <finalName>index.html</finalName>
@@ -100,19 +100,19 @@
                         <!-- needed for uri-resolvers; can be ommitted if using 'current' uri scheme -->
                         <!--     could also locate the docbook dependency and inspect its version... -->
                         <!--docbookVersion>1.72.0</docbookVersion -->
-			<docbookVersion>1.72.0</docbookVersion>
+                        <docbookVersion>1.72.0</docbookVersion>
                         <transformerParameters>
-                          <property>
-                              <name>javax.xml.parsers.DocumentBuilderFactory</name>
-                              <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
-                          </property>
-                          <property>
-                              <name>javax.xml.parsers.SAXParserFactory</name>
-                              <value>org.apache.xerces.jaxp.SAXParserFactoryImpl</value>
-                          </property>
-                          <!--<javax.xml.parsers.DocumentBuilderFactory>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</javax.xml.parsers.DocumentBuilderFactory>
-                          <javax.xml.parsers.SAXParserFactory>org.apache.xerces.jaxp.SAXParserFactoryImpl</javax.xml.parsers.SAXParserFactory>
-                          <javax.xml.validation.SchemaFactory:http\://www.w3.org/2001/XMLSchema>org.apache.xerces.jaxp.validation.XMLSchemaFactory</javax.xml.validation.SchemaFactory:http\://www.w3.org/2001/XMLSchema>-->
+                            <property>
+                                <name>javax.xml.parsers.DocumentBuilderFactory</name>
+                                <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
+                            </property>
+                            <property>
+                                <name>javax.xml.parsers.SAXParserFactory</name>
+                                <value>org.apache.xerces.jaxp.SAXParserFactoryImpl</value>
+                            </property>
+                            <!--<javax.xml.parsers.DocumentBuilderFactory>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</javax.xml.parsers.DocumentBuilderFactory>
+                            <javax.xml.parsers.SAXParserFactory>org.apache.xerces.jaxp.SAXParserFactoryImpl</javax.xml.parsers.SAXParserFactory>
+                            <javax.xml.validation.SchemaFactory:http\://www.w3.org/2001/XMLSchema>org.apache.xerces.jaxp.validation.XMLSchemaFactory</javax.xml.validation.SchemaFactory:http\://www.w3.org/2001/XMLSchema>-->
                         </transformerParameters>
                     </options>
                 </configuration>
