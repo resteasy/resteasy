@@ -66,6 +66,7 @@ public class Hello
    public String getPlus(@PathParam("plus") String p)
    {
       System.out.println("GET PLUS: " + p);
+      System.out.println("request URL: " + info.getRequestUri());
       Assert.assertEquals("foo+bar", p);
       return p;
    }

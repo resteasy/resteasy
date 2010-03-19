@@ -300,21 +300,11 @@ public class UriBuilderTest
       Assert.assertEquals(URI.create("http://user@localhost:8080/a/b?query#fragment"), full);
    }
 
-   /**
-    * Regression test for RESTEASY-102
-    */
-   @Test
-   public void testResteasy102()
-   {
-      UriBuilder ub = UriBuilder.fromPath("foo+bar");
-      Assert.assertEquals("foo%2Bbar", ub.build().toString());
-
-   }
-
    /*
    * Create an UriBuilder instance using
    *                 uriBuilder.fromUri(String)
    */
+
    @Test
    public void FromUriTest3() throws Exception
    {
@@ -360,7 +350,7 @@ public class UriBuilderTest
          map.put("id", "something %%20something");
 
          URI uri = impl.buildFromMap(map);
-         Assert.assertEquals("/foo/something%20%25%20something", uri.toString());
+         Assert.assertEquals("/foo/something%20%25%2520something", uri.toString());
       }
       {
          UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
@@ -405,6 +395,492 @@ public class UriBuilderTest
    public void testQueryParamSubstitution() throws Exception
    {
       UriBuilder.fromUri("http://localhost/test").queryParam("a", "{b}").build("c");
+   }
+
+   /**
+    * Regression from TCK 1.1
+    */
+   @Test
+   public void testEncodedMap1() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      URI uri;
+
+      Map maps = new HashMap();
+      maps.put("x", "x%20yz");
+      maps.put("y", "/path-absolute/%test1");
+      maps.put("z", "fred@example.com");
+      maps.put("w", "path-rootless/test2");
+
+      String expected_path =
+              "path-rootless/test2/x%20yz//path-absolute/%25test1/fred@example.com/x%20yz";
+
+      uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
+              buildFromEncodedMap(maps);
+      if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0)
+      {
+         pass = false;
+         sb.append("Test failed for expected path: " + expected_path +
+                 " Got " + uri.getRawPath() + " instead\n");
+      }
+      else
+      {
+         sb.append("Got expected path: " + uri.getRawPath() + "\n");
+      }
+
+      if (!pass)
+      {
+         System.out.println(sb.toString());
+      }
+      Assert.assertTrue(pass);
+   }
+
+   /**
+    * from TCK 1.1
+    */
+   @Test
+   public void testEncodedMapTest3() throws Exception
+   {
+      Map maps = new HashMap();
+      maps.put("x", null);
+      maps.put("y", "/path-absolute/test1");
+      maps.put("z", "fred@example.com");
+      maps.put("w", "path-rootless/test2");
+      maps.put("u", "extra");
+
+      String expected_path =
+              "path-rootless/test2/x%yz//path-absolute/test1/fred@example.com/x%yz";
+
+      try
+      {
+         URI uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
+                 buildFromEncodedMap(maps);
+         throw new Exception("Test Failed: expected IllegalArgumentException not thrown");
+      }
+      catch (IllegalArgumentException ex)
+      {
+      }
+   }
+
+   @Test
+   public void testEncodedMapTest4() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      URI uri;
+
+      Map maps = new HashMap();
+      maps.put("x", "x%yz");
+      maps.put("y", "/path-absolute/test1");
+      maps.put("z", "fred@example.com");
+      maps.put("w", "path-rootless/test2");
+      maps.put("u", "extra");
+
+      String expected_path =
+              "path-rootless/test2/x%yz//path-absolute/test1/fred@example.com/x%yz";
+
+      try
+      {
+         uri = UriBuilder.fromPath("").path("{w}/{v}/{x}/{y}/{z}/{x}").
+                 buildFromEncodedMap(maps);
+         throw new Exception("Test Failed: expected IllegalArgumentException not thrown");
+      }
+      catch (IllegalArgumentException ex)
+      {
+      }
+   }
+
+   @Test
+   public void testBuildFromMapTest1() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      URI uri;
+
+      Map maps = new HashMap();
+      maps.put("x", "x%yz");
+      maps.put("y", "/path-absolute/test1");
+      maps.put("z", "fred@example.com");
+      maps.put("w", "path-rootless/test2");
+
+      String expected_path =
+              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+
+      try
+      {
+         uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
+                 buildFromMap(maps);
+         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0)
+         {
+            pass = false;
+            sb.append("Test failed for expected path: " + expected_path +
+                    " Got " + uri.getRawPath() + " instead\n");
+         }
+         else
+         {
+            sb.append("Got expected path: " + uri.getRawPath() + "\n");
+         }
+      }
+      catch (Exception ex)
+      {
+         pass = false;
+         sb.append("Unexpected exception thrown: " + ex.getMessage() +
+                 "\n");
+      }
+
+      if (!pass)
+      {
+         throw new Exception("At least one assertion failed: " + sb.toString());
+      }
+   }
+
+   @Test
+   public void testBuildFromMapTest2() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      URI uri;
+
+      Map maps = new HashMap();
+      maps.put("x", "x%yz");
+      maps.put("y", "/path-absolute/test1");
+      maps.put("z", "fred@example.com");
+      maps.put("w", "path-rootless/test2");
+      maps.put("u", "extra");
+
+      String expected_path =
+              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+
+      try
+      {
+         uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
+                 buildFromMap(maps);
+         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0)
+         {
+            pass = false;
+            sb.append("Test failed for expected path: " + expected_path +
+                    " Got " + uri.getRawPath() + " instead" + "\n");
+         }
+         else
+         {
+            sb.append("Got expected path: " + uri.getRawPath() + "\n");
+         }
+      }
+      catch (Exception ex)
+      {
+         pass = false;
+         sb.append("Unexpected exception thrown: " + ex.getMessage() +
+                 "\n");
+      }
+
+      if (!pass)
+      {
+         throw new Exception("At least one assertion failed: " + sb.toString());
+      }
+   }
+
+   @Test
+   public void testBuildFromMapTest3() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      URI uri;
+
+      Map maps = new HashMap();
+      maps.put("x", null);
+      maps.put("y", "/path-absolute/test1");
+      maps.put("z", "fred@example.com");
+      maps.put("w", "path-rootless/test2");
+      maps.put("u", "extra");
+
+      String expected_path =
+              "path-rootless/test2/x%yz//path-absolute/test1/fred@example.com/x%yz";
+
+      try
+      {
+         uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
+                 buildFromMap(maps);
+         throw new Exception("Test Failed: expected IllegalArgumentException not thrown");
+      }
+      catch (IllegalArgumentException ex)
+      {
+      }
+   }
+
+   @Test
+   public void testBuildFromMapTest4() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      URI uri;
+
+      Map maps = new HashMap();
+      maps.put("x", "x%yz");
+      maps.put("y", "/path-absolute/test1");
+      maps.put("z", "fred@example.com");
+      maps.put("w", "path-rootless/test2");
+      maps.put("u", "extra");
+
+      String expected_path =
+              "path-rootless/test2/x%yz//path-absolute/test1/fred@example.com/x%yz";
+
+      try
+      {
+         uri = UriBuilder.fromPath("").path("{w}/{v}/{x}/{y}/{z}/{x}").
+                 buildFromMap(maps);
+         throw new Exception("Test Failed: expected IllegalArgumentException not thrown");
+      }
+      catch (IllegalArgumentException ex)
+      {
+      }
+   }
+
+   @Test
+   public void testBuildFromMapTest5() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      URI uri;
+      UriBuilder ub;
+
+      Map maps = new HashMap();
+      maps.put("x", "x%yz");
+      maps.put("y", "/path-absolute/test1");
+      maps.put("z", "fred@example.com");
+      maps.put("w", "path-rootless/test2");
+
+      Map maps1 = new HashMap();
+      maps1.put("x", "x%20yz");
+      maps1.put("y", "/path-absolute/test1");
+      maps1.put("z", "fred@example.com");
+      maps1.put("w", "path-rootless/test2");
+
+      Map maps2 = new HashMap();
+      maps2.put("x", "x%yz");
+      maps2.put("y", "/path-absolute/test1");
+      maps2.put("z", "fred@example.com");
+      maps2.put("w", "path-rootless/test2");
+      maps2.put("v", "xyz");
+
+      String expected_path =
+              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+
+      String expected_path_1 =
+              "path-rootless/test2/x%2520yz//path-absolute/test1/fred@example.com/x%2520yz";
+
+      String expected_path_2 =
+              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+
+      try
+      {
+         ub = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}");
+
+         uri = ub.buildFromMap(maps);
+
+         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0)
+         {
+            pass = false;
+            sb.append("Test failed for expected path: " + expected_path +
+                    " Got " + uri.getRawPath() + " instead" + "\n");
+         }
+         else
+         {
+            sb.append("Got expected path: " + uri.getRawPath() + "\n");
+         }
+
+         uri = ub.buildFromMap(maps1);
+
+         if (uri.getRawPath().compareToIgnoreCase(expected_path_1) != 0)
+         {
+            pass = false;
+            sb.append("Test failed for expected path: " + expected_path_1 +
+                    " Got " + uri.getRawPath() + " instead" + "\n");
+         }
+         else
+         {
+            sb.append("Got expected path: " + uri.getRawPath() + "\n");
+         }
+
+         uri = ub.buildFromMap(maps2);
+
+         if (uri.getRawPath().compareToIgnoreCase(expected_path_2) != 0)
+         {
+            pass = false;
+            sb.append("Test failed for expected path: " + expected_path_2 +
+                    " Got " + uri.getRawPath() + " instead" + "\n");
+         }
+         else
+         {
+            sb.append("Got expected path: " + uri.getRawPath() + "\n");
+         }
+      }
+      catch (Exception ex)
+      {
+         pass = false;
+         sb.append("Unexpected exception thrown: " + ex.getMessage() +
+                 "\n");
+      }
+
+      if (!pass)
+      {
+         throw new Exception("At least one assertion failed: " + sb.toString());
+      }
+   }
+
+   @Test
+   public void testFromEncodedTest1() throws Exception
+   {
+      StringBuffer sb = new StringBuffer();
+      boolean pass = true;
+      String expected_value_1 = "http://localhost:8080/a/%25/=/%25G0/%25/=";
+      String expected_value_2 = "http://localhost:8080/xy/%20/%25/xy";
+      URI uri = null;
+
+      uri = UriBuilder.fromPath("http://localhost:8080").path("/{v}/{w}/{x}/{y}/{z}/{x}").
+              buildFromEncoded("a", "%25", "=", "%G0", "%", "23");
+
+      if (uri.toString().compareToIgnoreCase(expected_value_1) != 0)
+      {
+         pass = false;
+         sb.append("Incorrec URI returned: " + uri.toString() +
+                 ", expecting " + expected_value_1 + "\n");
+      }
+      else
+      {
+         sb.append("Got expected return: " + expected_value_1 + "\n");
+      }
+
+      uri = UriBuilder.fromPath("http://localhost:8080").path("/{x}/{y}/{z}/{x}").
+              buildFromEncoded("xy", " ", "%");
+
+      if (uri.toString().compareToIgnoreCase(expected_value_2) != 0)
+      {
+         pass = false;
+         sb.append("Incorrec URI returned: " + uri.toString() +
+                 ", expecting " + expected_value_2 + "\n");
+      }
+      else
+      {
+         sb.append("Got expected return: " + expected_value_2 + "\n");
+      }
+
+
+      if (!pass)
+      {
+         throw new Exception("At least one assertion failed: " + sb.toString());
+      }
+   }
+
+   @Test
+   public void testQueryParamTest1() throws Exception
+   {
+      String name = null;
+
+      try
+      {
+         UriBuilder.fromPath("http://localhost:8080").queryParam(name, "x",
+                 "y");
+         throw new Exception("Expected IllegalArgumentException Not thrown");
+      }
+      catch (IllegalArgumentException ilex)
+      {
+      }
+   }
+
+   @Test
+   public void QueryParamTest5() throws Exception
+   {
+      Boolean pass = true;
+      String name = "name";
+      StringBuffer sb = new StringBuffer();
+      String expected_value =
+              "http://localhost:8080?name=x%3D&name=y?&name=x+y&name=%26";
+      URI uri;
+
+      try
+      {
+         uri = UriBuilder.fromPath("http://localhost:8080").queryParam(name,
+                 "x=", "y?", "x y", "&").build();
+         if (uri.toString().compareToIgnoreCase(expected_value) != 0)
+         {
+            pass = false;
+            sb.append("Incorrec URI returned: " + uri.toString() +
+                    ", expecting " + expected_value + "\n");
+         }
+         else
+         {
+            sb.append("Got expected return: " + expected_value + "\n");
+         }
+      }
+      catch (Exception ex)
+      {
+         pass = false;
+         sb.append("Unexpected Exception thrown" + ex.getMessage());
+      }
+
+      if (!pass)
+      {
+         throw new Exception("At least one assertion failed: " + sb.toString());
+      }
+   }
+
+   @Test
+   public void testReplaceQueryTest3() throws Exception
+   {
+      Boolean pass = true;
+      String name = "name";
+      StringBuffer sb = new StringBuffer();
+      String expected_value =
+              "http://localhost:8080?name1=x&name2=%20&name3=x+y&name4=23&name5=x%20y";
+      URI uri;
+
+      uri = UriBuilder.fromPath("http://localhost:8080").queryParam(name,
+              "x=", "y?", "x y", "&").replaceQuery("name1=x&name2=%20&name3=x+y&name4=23&name5=x y").
+              build();
+      if (uri.toString().compareToIgnoreCase(expected_value) != 0)
+      {
+         pass = false;
+         sb.append("Incorrec URI returned: " + uri.toString() +
+                 ", expecting " + expected_value + "\n");
+      }
+      else
+      {
+         sb.append("Got expected return: " + expected_value + "\n");
+      }
+      if (!pass)
+      {
+         throw new Exception("At least one assertion failed: " + sb.toString());
+      }
+   }
+
+   @Test
+   public void testReplaceQueryParamTest2() throws Exception
+   {
+      Boolean pass = true;
+      String name = "name";
+      StringBuffer sb = new StringBuffer();
+      String expected_value = "http://localhost:8080";
+      URI uri;
+
+      uri =
+              UriBuilder.fromPath("http://localhost:8080").queryParam(name,
+                      "x=", "y?", "x y", "&").replaceQueryParam(name, null).build();
+      if (uri.toString().compareToIgnoreCase(expected_value) != 0)
+      {
+         pass = false;
+         sb.append("Incorrec URI returned: " + uri.toString() +
+                 ", expecting " + expected_value + "\n");
+      }
+      else
+      {
+         sb.append("Got expected return: " + expected_value + "\n");
+      }
+
+      if (!pass)
+      {
+         throw new Exception("At least one assertion failed: " + sb.toString());
+      }
    }
 
 

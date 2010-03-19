@@ -59,11 +59,14 @@ public class ResteasyDeployment
 
    public void start()
    {
-      
-      providerFactory = ResteasyProviderFactory.getInstance();
+      // it is very important that each deployment create their own provider factory
+      // this allows each WAR to have their own set of providers 
       if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
       if (deploymentSensitiveFactoryEnabled)
       {
+         // the ThreadLocalResteasyProviderFactory pushes and pops this deployments providerFactory
+         // on a ThreadLocal stack.  This allows each application/WAR to have their own providerFactory
+         // and still be able to call ResteasyProviderFactory.getInstance()
          if (!(providerFactory instanceof ThreadLocalResteasyProviderFactory))
          {
             ResteasyProviderFactory.setInstance(new ThreadLocalResteasyProviderFactory(providerFactory));
@@ -139,13 +142,13 @@ public class ResteasyDeployment
          {
             throw new RuntimeException(e);
          }
-         
+
          ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(clazz.getConstructors()[0]);
          PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz);
-         
+
          application = (Application) constructorInjector.construct();
          propertyInjector.inject(application);
-         
+
       }
 
       // register all providers
@@ -268,7 +271,7 @@ public class ResteasyDeployment
             }
             else
             {
-               throw new RuntimeException("Application.getClasses() returned unknown class type: " + clazz.getName());
+               logger.warn("Application.getClasses() returned unknown class type: " + clazz.getName());
             }
          }
       }
@@ -287,7 +290,7 @@ public class ResteasyDeployment
             }
             else
             {
-               throw new RuntimeException("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
+               logger.warn("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
             }
          }
       }
