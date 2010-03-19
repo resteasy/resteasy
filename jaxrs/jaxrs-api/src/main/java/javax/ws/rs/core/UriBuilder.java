@@ -122,6 +122,7 @@ public abstract class UriBuilder
     */
    public static UriBuilder fromPath(String path) throws IllegalArgumentException
    {
+      if (path == null) throw new IllegalArgumentException("path parameter is null");
       UriBuilder b = newInstance();
       b.replacePath(path);
       return b;

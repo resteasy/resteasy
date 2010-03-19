@@ -1,5 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
+import org.jboss.resteasy.util.Encode;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
@@ -24,7 +26,7 @@ public class UriInfoImpl implements UriInfo
    private MultivaluedMap<String, String> encodedPathParameters;
    private MultivaluedMap<String, PathSegment[]> pathParameterPathSegments;
    private MultivaluedMap<String, PathSegment[]> encodedPathParameterPathSegments;
-   
+
    private List<PathSegment> pathSegments;
    private List<PathSegment> encodedPathSegments;
    private URI absolutePath;
@@ -45,14 +47,7 @@ public class UriInfoImpl implements UriInfo
       }
       */
       this.encodedPath = encodedPath;
-      try
-      {
-         this.path = URLDecoder.decode(encodedPath, "UTF-8");
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      this.path = Encode.decodePath(encodedPath);
       //System.out.println("path: " + path);
       //System.out.println("encodedPath: " + encodedPath);
 
@@ -64,16 +59,9 @@ public class UriInfoImpl implements UriInfo
       this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
       for (PathSegment segment : encodedPathSegments)
       {
-         try
-         {
-            pathSegments.add(new PathSegmentImpl(URLDecoder.decode(((PathSegmentImpl) segment).getOriginal(), "UTF-8")));
-         }
-         catch (UnsupportedEncodingException e)
-         {
-            throw new RuntimeException(e);
-         }
+         pathSegments.add(new PathSegmentImpl(Encode.decodePath(((PathSegmentImpl) segment).getOriginal())));
       }
-      if (queryString == null) 
+      if (queryString == null)
       {
          this.absolutePathWithQueryString = absolutePath;
       }
@@ -139,7 +127,7 @@ public class UriInfoImpl implements UriInfo
 
    public MultivaluedMap<String, String> getPathParameters()
    {
-      if( pathParameters == null )
+      if (pathParameters == null)
       {
          pathParameters = new MultivaluedMapImpl<String, String>();
       }
@@ -149,15 +137,8 @@ public class UriInfoImpl implements UriInfo
    public void addEncodedPathParameter(String name, String value)
    {
       getEncodedPathParameters().add(name, value);
-      try
-      {
-         String value1 = URLDecoder.decode(value, "UTF-8");
-         getPathParameters().add(name, value1);
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      String value1 = Encode.decodePath(value);
+      getPathParameters().add(name, value1);
    }
 
    private MultivaluedMap<String, String> getEncodedPathParameters()
@@ -171,7 +152,7 @@ public class UriInfoImpl implements UriInfo
 
    public MultivaluedMap<String, PathSegment[]> getEncodedPathParameterPathSegments()
    {
-      if( encodedPathParameterPathSegments == null)
+      if (encodedPathParameterPathSegments == null)
       {
          encodedPathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment[]>();
       }
@@ -180,7 +161,7 @@ public class UriInfoImpl implements UriInfo
 
    public MultivaluedMap<String, PathSegment[]> getPathParameterPathSegments()
    {
-      if( pathParameterPathSegments == null)
+      if (pathParameterPathSegments == null)
       {
          pathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment[]>();
       }
@@ -195,7 +176,7 @@ public class UriInfoImpl implements UriInfo
 
    public MultivaluedMap<String, String> getQueryParameters()
    {
-      if( queryParameters == null)
+      if (queryParameters == null)
       {
          queryParameters = new MultivaluedMapImpl<String, String>();
       }
@@ -204,14 +185,14 @@ public class UriInfoImpl implements UriInfo
 
    protected MultivaluedMap<String, String> getEncodedQueryParameters()
    {
-      if( encodedQueryParameters == null )
+      if (encodedQueryParameters == null)
       {
          this.encodedQueryParameters = new MultivaluedMapImpl<String, String>();
       }
       return encodedQueryParameters;
    }
-   
-   
+
+
    public MultivaluedMap<String, String> getQueryParameters(boolean decode)
    {
       if (decode) return getQueryParameters();
@@ -318,8 +299,4 @@ public class UriInfoImpl implements UriInfo
       }
    }
 
-   public String getConnegExtension()
-   {
-      throw new RuntimeException("NOT IMPLEMENTED YET");
-   }
 }
