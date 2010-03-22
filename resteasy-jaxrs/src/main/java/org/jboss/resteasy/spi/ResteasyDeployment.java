@@ -34,6 +34,7 @@ public class ResteasyDeployment
    protected int asyncJobServiceThreadPoolSize = 100;
    protected String asyncJobServiceBasePath = "/asynch/jobs";
    protected String applicationClass;
+   protected String injectorFactoryClass;
    protected Application application;
    protected boolean registerBuiltin = true;
    protected List<String> providerClasses = new ArrayList<String>();
@@ -129,6 +130,26 @@ public class ResteasyDeployment
       if (registerBuiltin)
       {
          RegisterBuiltin.register(providerFactory);
+      }
+      
+      if (injectorFactoryClass != null)
+      {
+         InjectorFactory injectorFactory;
+         try
+         {
+            Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
+            injectorFactory = (InjectorFactory) clazz.newInstance();
+         }
+         catch (ClassNotFoundException cnfe)
+         {
+            throw new RuntimeException("Unable to find InjectorFactory implementation.", cnfe);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
+         }
+         
+         providerFactory.setInjectorFactory(injectorFactory);
       }
 
       if (applicationClass != null)
@@ -318,6 +339,16 @@ public class ResteasyDeployment
    public void setApplicationClass(String applicationClass)
    {
       this.applicationClass = applicationClass;
+   }
+   
+   public String getInjectorFactoryClass()
+   {
+      return injectorFactoryClass;
+   }
+
+   public void setInjectorFactoryClass(String injectorFactoryClass)
+   {
+      this.injectorFactoryClass = injectorFactoryClass;
    }
 
    public boolean isDeploymentSensitiveFactoryEnabled()
