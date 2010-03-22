@@ -41,7 +41,6 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
    @Override
    public void start()
    {
-      ResteasyProviderFactory.setInstance(new ResteasyProviderFactory());
       deployment.start();
       server.setAttribute(ResteasyProviderFactory.class.getName(), deployment.getProviderFactory());
       server.setAttribute(Dispatcher.class.getName(), deployment.getDispatcher());
