@@ -251,6 +251,11 @@ abstract public class ConfigurationBootstrap
          }
       }
 
+      String injectorFactoryClass = getParameter("resteasy.injector.factory");
+      if (injectorFactoryClass != null)
+      {
+         deployment.setInjectorFactoryClass(injectorFactoryClass);
+      }
 
       if (applicationConfig != null) deployment.setApplicationClass(applicationConfig);
       return deployment;
