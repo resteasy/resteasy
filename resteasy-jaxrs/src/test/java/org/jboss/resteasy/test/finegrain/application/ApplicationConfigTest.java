@@ -15,6 +15,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -63,6 +65,8 @@ public class ApplicationConfigTest
    public static class InjectionResource
    {
       private MyApplicationConfig application = MyApplicationConfig.getInstance();
+      @Context
+      private Application injectedApplication;
       
       @Path("/field")
       @GET
@@ -83,6 +87,13 @@ public class ApplicationConfigTest
       public boolean constructorInjection()
       {
          return application.isConstructorInjected(); 
+      }
+      
+      @Path("/application")
+      @GET
+      public boolean injectionOfApplicationSubclassInstance()
+      {
+         return injectedApplication != null; 
       }
    }
 
@@ -169,5 +180,13 @@ public class ApplicationConfigTest
    {
       HttpClient client = new HttpClient();
       _test(client, generateURL("/injection/constructor"), "true");
+   }
+   
+//   @Test
+//   RESTEASY-370
+   public void testInjectionOfApplicationSubclassInstance()
+   {
+      HttpClient client = new HttpClient();
+      _test(client, generateURL("/injection/application"), "true");
    }
 }
