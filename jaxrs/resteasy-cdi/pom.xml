@@ -42,10 +42,8 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<classifier>jdk15</classifier>
-			<version>5.10</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
