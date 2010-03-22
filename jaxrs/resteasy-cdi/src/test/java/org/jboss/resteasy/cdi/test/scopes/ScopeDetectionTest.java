@@ -1,17 +1,17 @@
 package org.jboss.resteasy.cdi.test.scopes;
 
 import org.jboss.resteasy.cdi.Bootstrap;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
 
 public class ScopeDetectionTest
 {
    private Bootstrap bootstrap;
 
-   @BeforeMethod
+   @Before
    public void prepare()
    {
       bootstrap = new Bootstrap();
@@ -52,5 +52,4 @@ public class ScopeDetectionTest
    {
       assertTrue(bootstrap.hasScopeDefined(Resource6.class));
    }
-
 }
