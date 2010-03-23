@@ -4,17 +4,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -25,17 +26,15 @@ import javax.inject.Scope;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.spi.InjectorFactory;
-import org.jboss.resteasy.spi.PropertyInjector;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This Extension prepares and registers CdiInjectorFactory with RESTEasy. It also handles default
- * scopes for discovered JAX-RS components. Furthermore, this Extension observes ProcessInjectionTarget
- * event and wraps InjectionTargets representing JAX-RS components within JaxrsInjectionTarget. 
+ * This Extension handles default scopes for discovered JAX-RS components. It also observes ProcessInjectionTarget
+ * event and wraps InjectionTargets representing JAX-RS components within JaxrsInjectionTarget. Furthermore, it builds
+ * the sessionBeanInterface map which maps Session Bean classes to a local interface. This map is used in CdiInjectorFactory
+ * during lookup of Sesion Bean JAX-RS components.
  * 
  * @author Jozef Hartinger
  * 
@@ -43,8 +42,6 @@ import org.slf4j.LoggerFactory;
 public class Bootstrap implements Extension
 {
    private final Logger log = LoggerFactory.getLogger(Bootstrap.class);
-   private InjectorFactory injectorFactoryDelegate;
-   private CdiInjectorFactory injectorFactory;
    
    // Scope literals
    public static final Annotation requestScopedLiteral = new AnnotationLiteral<RequestScoped>()
@@ -59,29 +56,6 @@ public class Bootstrap implements Extension
    private Map<Class<?>, Class<?>> sessionBeanInterface = new HashMap<Class<?>, Class<?>>();
 
    /**
-    * This method prepares CdiInjectorFactory instance which is needed during 
-    * ProcessInjectionTarget phase and at runtime. 
-    */
-   public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery event)
-   {
-      log.debug("Creating CdiInjectorFactory.");
-      injectorFactoryDelegate = ResteasyProviderFactory.getInstance().getInjectorFactory();
-      injectorFactory = new CdiInjectorFactory(injectorFactoryDelegate);
-   }
-   
-   /**
-    * Register CdiInjectorFactory with RESTEasy
-    * 
-    */
-   public void observeAfterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager manager)
-   {
-      log.debug("Registering CdiInjectorFactory.");
-      
-      injectorFactory.init(sessionBeanInterface, manager);
-      ResteasyProviderFactory.getInstance().setInjectorFactory(injectorFactory);
-   }
-
-   /**
     * Set a default scope for each CDI bean which is a JAX-RS Resource, 
     * Provider or Application subclass.
     * 
@@ -92,9 +66,13 @@ public class Bootstrap implements Extension
 
       if (!type.getJavaClass().isInterface())
       {
-         Provider providerAnnotation = type.getAnnotation(Provider.class);
-
-         if (providerAnnotation != null)
+         /**
+         if (type.isAnnotationPresent(Stateless.class))
+         {
+            return; // Do not modify the scope of a Stateless Session Bean
+         }
+         **/
+         if (type.isAnnotationPresent(Provider.class))
          {
             log.debug("Discovered CDI bean which is a JAX-RS provider {}.", type.getJavaClass().getCanonicalName());
             event.setAnnotatedType(wrapAnnotatedType(type, applicationScopedLiteral));
@@ -140,8 +118,7 @@ public class Bootstrap implements Extension
    
    protected <T> InjectionTarget<T> wrapInjectionTarget(ProcessInjectionTarget<T> event)
    {
-      PropertyInjector propertyInjector = injectorFactoryDelegate.createPropertyInjector(event.getAnnotatedType().getJavaClass());
-      return new JaxrsInjectionTarget<T>(event.getInjectionTarget(), propertyInjector);
+      return new JaxrsInjectionTarget<T>(event.getInjectionTarget(), event.getAnnotatedType().getJavaClass());
    }
    
    /**
@@ -157,6 +134,12 @@ public class Bootstrap implements Extension
       {
          addSessionBeanInterface(sessionBean);
       }
+   }
+   
+   public void setResteasyCdiConfiguration(@Observes AfterBeanDiscovery event, BeanManager manager)
+   {
+      ResteasyCdiConfiguration configuration = lookupResteasyCdiConfiguration(manager);
+      configuration.setSessionBeanInterfaceMap(sessionBeanInterface);
    }
    
    private void addSessionBeanInterface(Bean<?> bean)
@@ -225,5 +208,16 @@ public class Bootstrap implements Extension
    private boolean isStereotype(Annotation annotation)
    {
       return annotation.annotationType().isAnnotationPresent(Stereotype.class);
+   }
+   
+   /**
+    * Does a lookup for the contextual instance of ResteasyCdiConfiguration
+    */
+   public static ResteasyCdiConfiguration lookupResteasyCdiConfiguration(BeanManager manager)
+   {
+      Set<Bean<?>> beans = manager.getBeans(ResteasyCdiConfiguration.class);
+      Bean<?> bean = manager.resolve(beans);
+      CreationalContext<?> context = manager.createCreationalContext(bean);
+      return (ResteasyCdiConfiguration) manager.getReference(bean, ResteasyCdiConfiguration.class, context);
    }
 }

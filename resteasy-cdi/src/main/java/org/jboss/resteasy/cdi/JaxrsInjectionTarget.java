@@ -6,32 +6,41 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 
+import org.jboss.resteasy.core.PropertyInjectorImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
- * This implementation of InjectionTarget is a wrapper that allows JAX-RS property injection
- * to be performed just after CDI injection.
+ * This implementation of InjectionTarget is a wrapper that allows JAX-RS
+ * property injection to be performed just after CDI injection.
  * 
  * @author Jozef Hartinger
- *
+ * 
  */
 public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
 {
    private InjectionTarget<T> delegate;
+   private Class<T> clazz;
    private PropertyInjector propertyInjector;
-   
-   public JaxrsInjectionTarget(InjectionTarget<T> delegate, PropertyInjector propertyInjector)
+
+   public JaxrsInjectionTarget(InjectionTarget<T> delegate, Class<T> clazz)
    {
       this.delegate = delegate;
-      this.propertyInjector = propertyInjector;
+      this.clazz = clazz;
    }
 
    public void inject(T instance, CreationalContext<T> ctx)
    {
       delegate.inject(instance, ctx);
+
+      // We need to load PropertyInjector lazily since RESTEasy starts
+      // after the CDI lifecycle events are executed
+      if (propertyInjector == null)
+      {
+         propertyInjector = getPropertyInjector();
+      }
 
       HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
       HttpResponse response = ResteasyProviderFactory.getContextData(HttpResponse.class);
@@ -69,5 +78,10 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
    public T produce(CreationalContext<T> ctx)
    {
       return delegate.produce(ctx);
+   }
+
+   private PropertyInjector getPropertyInjector()
+   {
+      return new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance());
    }
 }
