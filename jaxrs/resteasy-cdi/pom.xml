@@ -32,7 +32,7 @@
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
 			<scope>provided</scope>
-			<version>1.0</version>
+			<version>1.0-SP1</version>
 		</dependency>
 
 		<dependency>
