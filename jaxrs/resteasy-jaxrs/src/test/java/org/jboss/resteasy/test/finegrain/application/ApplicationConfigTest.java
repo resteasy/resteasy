@@ -4,7 +4,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -25,6 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -59,41 +60,43 @@ public class ApplicationConfigTest
          return "hello";
       }
    }
-   
+
    @Path("/injection")
    @Produces("text/plain")
    public static class InjectionResource
    {
-      private MyApplicationConfig application = MyApplicationConfig.getInstance();
-      @Context
-      private Application injectedApplication;
-      
+      private MyApplicationConfig application;
+
       @Path("/field")
       @GET
       public boolean fieldInjection()
       {
-         return application.isFieldInjected(); 
+         return getApplication().isFieldInjected();
       }
-      
+
       @Path("/setter")
       @GET
       public boolean setterInjection()
       {
-         return application.isSetterInjected(); 
+         return getApplication().isSetterInjected();
       }
-      
+
       @Path("/constructor")
       @GET
       public boolean constructorInjection()
       {
-         return application.isConstructorInjected(); 
+         return getApplication().isConstructorInjected();
       }
-      
-      @Path("/application")
-      @GET
-      public boolean injectionOfApplicationSubclassInstance()
+
+      private MyApplicationConfig getApplication()
       {
-         return injectedApplication != null; 
+         return application;
+      }
+
+      @Context
+      public void setApplication(Application app)
+      {
+         this.application = (MyApplicationConfig) app;
       }
    }
 
@@ -160,33 +163,25 @@ public class ApplicationConfigTest
       _test(client, generateURL("/my"), "\"hello\"");
       _test(client, generateURL("/myinterface"), "hello");
    }
-   
+
    @Test
    public void testFieldInjection()
    {
       HttpClient client = new HttpClient();
       _test(client, generateURL("/injection/field"), "true");
    }
-   
+
    @Test
    public void testSetterInjection()
    {
       HttpClient client = new HttpClient();
       _test(client, generateURL("/injection/setter"), "true");
    }
-   
+
    @Test
    public void testConstructorInjection()
    {
       HttpClient client = new HttpClient();
       _test(client, generateURL("/injection/constructor"), "true");
-   }
-   
-//   @Test
-//   RESTEASY-370
-   public void testInjectionOfApplicationSubclassInstance()
-   {
-      HttpClient client = new HttpClient();
-      _test(client, generateURL("/injection/application"), "true");
    }
 }

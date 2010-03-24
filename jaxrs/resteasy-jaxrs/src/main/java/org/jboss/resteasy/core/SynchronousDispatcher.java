@@ -6,7 +6,6 @@ import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.NotFoundException;
@@ -26,7 +25,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -415,10 +413,6 @@ public class SynchronousDispatcher implements Dispatcher
       contextDataMap.put(HttpHeaders.class, request.getHttpHeaders());
       contextDataMap.put(UriInfo.class, request.getUri());
       contextDataMap.put(Request.class, new RequestImpl(request));
-      contextDataMap.put(Providers.class, providerFactory);
-      contextDataMap.put(Registry.class, registry);
-      contextDataMap.put(Dispatcher.class, this);
-      contextDataMap.put(InternalDispatcher.class, InternalDispatcher.getInstance());
 
       contextDataMap.putAll(defaultContextObjects);
    }

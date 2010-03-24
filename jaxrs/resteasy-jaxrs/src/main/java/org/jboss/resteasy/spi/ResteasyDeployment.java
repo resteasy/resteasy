@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,7 @@ public class ResteasyDeployment
    protected List<String> interceptorPrecedences = new ArrayList<String>();
    protected Map<String, String> interceptorBeforePrecedences = new HashMap<String, String>();
    protected Map<String, String> interceptorAfterPrecedences = new HashMap<String, String>();
+   protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
    protected Registry registry;
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
@@ -77,6 +79,8 @@ public class ResteasyDeployment
       {
          ResteasyProviderFactory.setInstance(providerFactory);
       }
+
+
       if (asyncJobServiceEnabled)
       {
          AsynchronousDispatcher asyncDispatcher = new AsynchronousDispatcher(providerFactory);
@@ -96,113 +100,140 @@ public class ResteasyDeployment
       }
       registry = dispatcher.getRegistry();
 
-      // Interceptor preferences should come before provider registration or builtin.
+      dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
+      dispatcher.getDefaultContextObjects().put(Providers.class, providerFactory);
+      dispatcher.getDefaultContextObjects().put(Registry.class, registry);
+      dispatcher.getDefaultContextObjects().put(Dispatcher.class, dispatcher);
+      dispatcher.getDefaultContextObjects().put(InternalDispatcher.class, InternalDispatcher.getInstance());
 
-      if (interceptorPrecedences != null)
+      try
       {
-         for (String precedence : interceptorPrecedences)
-         {
-            providerFactory.appendInterceptorPrecedence(precedence.trim());
-         }
-      }
+         // push context data so we can inject it
+         Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+         contextDataMap.putAll(dispatcher.getDefaultContextObjects());
 
-      if (interceptorBeforePrecedences != null)
-      {
-         for (Map.Entry<String, String> ext : interceptorBeforePrecedences.entrySet())
-         {
-            providerFactory.insertInterceptorPrecedenceBefore(ext.getKey().trim(), ext.getValue().trim());
-         }
-      }
-      if (interceptorAfterPrecedences != null)
-      {
-         for (Map.Entry<String, String> ext : interceptorAfterPrecedences.entrySet())
-         {
-            providerFactory.insertInterceptorPrecedenceAfter(ext.getKey().trim(), ext.getValue().trim());
-         }
-      }
+         // Interceptor preferences should come before provider registration or builtin.
 
-
-      if (securityEnabled)
-      {
-         providerFactory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
-      }
-
-      if (registerBuiltin)
-      {
-         RegisterBuiltin.register(providerFactory);
-      }
-      
-      if (injectorFactoryClass != null)
-      {
-         InjectorFactory injectorFactory;
-         try
+         if (interceptorPrecedences != null)
          {
-            Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
-            injectorFactory = (InjectorFactory) clazz.newInstance();
-         }
-         catch (ClassNotFoundException cnfe)
-         {
-            throw new RuntimeException("Unable to find InjectorFactory implementation.", cnfe);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
-         }
-         
-         providerFactory.setInjectorFactory(injectorFactory);
-      }
-
-      if (applicationClass != null)
-      {
-         Class<?> clazz = null;
-         try
-         {
-            clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass);
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
+            for (String precedence : interceptorPrecedences)
+            {
+               providerFactory.appendInterceptorPrecedence(precedence.trim());
+            }
          }
 
-         ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(clazz.getConstructors()[0]);
-         PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz);
-
-         application = (Application) constructorInjector.construct();
-         propertyInjector.inject(application);
-
-      }
-
-      // register all providers
-      registration();
-
-      if (paramMapping != null)
-      {
-         dispatcher.addHttpPreprocessor(new AcceptParameterHttpPreprocessor(paramMapping));
-      }
-
-      if (mediaTypeMappings != null)
-      {
-         Map<String, MediaType> extMap = new HashMap<String, MediaType>();
-         for (Map.Entry<String, String> ext : mediaTypeMappings.entrySet())
+         if (interceptorBeforePrecedences != null)
          {
-            String value = ext.getValue();
-            extMap.put(ext.getKey().trim(), MediaType.valueOf(value.trim()));
+            for (Map.Entry<String, String> ext : interceptorBeforePrecedences.entrySet())
+            {
+               providerFactory.insertInterceptorPrecedenceBefore(ext.getKey().trim(), ext.getValue().trim());
+            }
          }
-         if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
-         else dispatcher.setMediaTypeMappings(extMap);
+         if (interceptorAfterPrecedences != null)
+         {
+            for (Map.Entry<String, String> ext : interceptorAfterPrecedences.entrySet())
+            {
+               providerFactory.insertInterceptorPrecedenceAfter(ext.getKey().trim(), ext.getValue().trim());
+            }
+         }
+
+
+         if (securityEnabled)
+         {
+            providerFactory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
+         }
+
+         if (injectorFactoryClass != null)
+         {
+            InjectorFactory injectorFactory;
+            try
+            {
+               Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
+               injectorFactory = (InjectorFactory) clazz.newInstance();
+            }
+            catch (ClassNotFoundException cnfe)
+            {
+               throw new RuntimeException("Unable to find InjectorFactory implementation.", cnfe);
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
+            }
+
+            providerFactory.setInjectorFactory(injectorFactory);
+         }
+
+         if (registerBuiltin)
+         {
+            RegisterBuiltin.register(providerFactory);
+         }
+
+         if (applicationClass != null)
+         {
+            application = createApplication(applicationClass, providerFactory);
+
+         }
+
+         // register all providers
+         registration();
+
+         if (paramMapping != null)
+         {
+            dispatcher.addHttpPreprocessor(new AcceptParameterHttpPreprocessor(paramMapping));
+         }
+
+         if (mediaTypeMappings != null)
+         {
+            Map<String, MediaType> extMap = new HashMap<String, MediaType>();
+            for (Map.Entry<String, String> ext : mediaTypeMappings.entrySet())
+            {
+               String value = ext.getValue();
+               extMap.put(ext.getKey().trim(), MediaType.valueOf(value.trim()));
+            }
+            if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
+            else dispatcher.setMediaTypeMappings(extMap);
+         }
+
+
+         if (languageExtensions != null)
+         {
+            if (dispatcher.getLanguageMappings() != null) dispatcher.getLanguageMappings().putAll(languageExtensions);
+            else dispatcher.setLanguageMappings(languageExtensions);
+         }
       }
-
-
-      if (languageExtensions != null)
+      finally
       {
-         if (dispatcher.getLanguageMappings() != null) dispatcher.getLanguageMappings().putAll(languageExtensions);
-         else dispatcher.setLanguageMappings(languageExtensions);
+         ResteasyProviderFactory.removeContextDataLevel();
       }
+   }
+
+   public static Application createApplication(String applicationClass, ResteasyProviderFactory providerFactory)
+   {
+      Class<?> clazz = null;
+      try
+      {
+         clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass);
+      }
+      catch (ClassNotFoundException e)
+      {
+         throw new RuntimeException(e);
+      }
+
+      ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(clazz.getConstructors()[0]);
+      PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz);
+
+      Application application = (Application) constructorInjector.construct();
+      propertyInjector.inject(application);
+      return application;
    }
 
    public void registration()
    {
-      if (application != null) processApplication(application);
+      if (application != null)
+      {
+         dispatcher.getDefaultContextObjects().put(Application.class, application);
+         processApplication(application);
+      }
 
       if (providerClasses != null)
       {
@@ -292,6 +323,7 @@ public class ResteasyDeployment
             }
             else
             {
+               // required by spec to warn and not abort
                logger.warn("Application.getClasses() returned unknown class type: " + clazz.getName());
             }
          }
@@ -311,6 +343,7 @@ public class ResteasyDeployment
             }
             else
             {
+               // required by spec to warn and not abort
                logger.warn("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
             }
          }
@@ -340,7 +373,7 @@ public class ResteasyDeployment
    {
       this.applicationClass = applicationClass;
    }
-   
+
    public String getInjectorFactoryClass()
    {
       return injectorFactoryClass;
@@ -614,5 +647,15 @@ public class ResteasyDeployment
    public void setUnwrappedExceptions(List<String> unwrappedExceptions)
    {
       this.unwrappedExceptions = unwrappedExceptions;
+   }
+
+   public Map<Class, Object> getDefaultContextObjects()
+   {
+      return defaultContextObjects;
+   }
+
+   public void setDefaultContextObjects(Map<Class, Object> defaultContextObjects)
+   {
+      this.defaultContextObjects = defaultContextObjects;
    }
 }

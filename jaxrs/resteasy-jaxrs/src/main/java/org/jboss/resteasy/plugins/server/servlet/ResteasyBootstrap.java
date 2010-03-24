@@ -25,7 +25,6 @@ public class ResteasyBootstrap implements ServletContextListener
 
       ListenerBootstrap config = new ListenerBootstrap(event.getServletContext());
       deployment = config.createDeployment();
-
       deployment.start();
 
       servletContext.setAttribute(ResteasyProviderFactory.class.getName(), deployment.getProviderFactory());

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.scannotation.WarUrlFinder;
 
 import javax.servlet.ServletContext;
@@ -16,6 +17,15 @@ public class ListenerBootstrap extends ConfigurationBootstrap
    public ListenerBootstrap(ServletContext servletContext)
    {
       this.servletContext = servletContext;
+   }
+
+   @Override
+   public ResteasyDeployment createDeployment()
+   {
+      ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
+      if (deployment == null) deployment = super.createDeployment();
+      deployment.getDefaultContextObjects().put(ServletContext.class, servletContext);
+      return deployment;
    }
 
    public URL[] getScanningUrls()
