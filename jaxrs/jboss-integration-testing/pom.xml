@@ -18,5 +18,6 @@
         <module>spring-integration-test</module>
         <module>ejb-test</module>
         <module>scanning-test</module>
+	<module>resteasy-cdi-test</module>
     </modules>
 </project>
