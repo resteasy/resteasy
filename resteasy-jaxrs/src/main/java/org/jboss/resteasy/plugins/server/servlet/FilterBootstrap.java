@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.spi.ResteasyDeployment;
+
 import javax.servlet.FilterConfig;
 
 /**
@@ -14,6 +16,14 @@ public class FilterBootstrap extends ListenerBootstrap
    {
       super(config.getServletContext());
       this.config = config;
+   }
+
+   @Override
+   public ResteasyDeployment createDeployment()
+   {
+      ResteasyDeployment deployment = super.createDeployment();
+      deployment.getDefaultContextObjects().put(FilterConfig.class, config);
+      return deployment;
    }
 
    public String getParameter(String name)

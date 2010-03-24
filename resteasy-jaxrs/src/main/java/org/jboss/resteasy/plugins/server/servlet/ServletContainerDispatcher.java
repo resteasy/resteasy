@@ -24,6 +24,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Helper/delegate class to unify Servlet and Filter dispatcher implementations
@@ -60,7 +61,7 @@ public class ServletContainerDispatcher
       }
 
 
-      // We haven't been initialized by a Listener already
+      // We haven't been initialized by an external entity so bootstrap ourselves
       if (providerFactory == null)
       {
          deployment = bootstrap.createDeployment();
@@ -81,12 +82,16 @@ public class ServletContainerDispatcher
          {
             try
             {
-               Application app = (Application) Thread.currentThread().getContextClassLoader().loadClass(application.trim()).newInstance();
+               Application app = ResteasyDeployment.createApplication(application.trim(), providerFactory);
+               dispatcher.getDefaultContextObjects().put(Application.class, app);
+               // push context data so we can inject it
+               Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+               contextDataMap.putAll(dispatcher.getDefaultContextObjects());
                processApplication(app);
             }
-            catch (Exception e)
+            finally
             {
-               throw new RuntimeException(e);
+               ResteasyProviderFactory.removeContextDataLevel();
             }
          }
       }
@@ -94,7 +99,6 @@ public class ServletContainerDispatcher
       if (servletMappingPrefix == null) servletMappingPrefix = "";
       servletMappingPrefix = servletMappingPrefix.trim();
 
-      dispatcher.getDefaultContextObjects().put(ServletContext.class, servletContext);
 
    }
 
