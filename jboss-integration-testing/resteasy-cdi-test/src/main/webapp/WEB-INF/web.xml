@@ -11,11 +11,6 @@
     </context-param>
     
     <context-param>
-    	<param-name>resteasy.injector.factory</param-name>
-    	<param-value>org.jboss.resteasy.cdi.CdiInjectorFactory</param-value>
-    </context-param>
-    
-    <context-param>
     	<param-name>javax.ws.rs.Application</param-name>
     	<param-value>org.jboss.resteasy.cdi.test.MyApplication</param-value>
     </context-param>
