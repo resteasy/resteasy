@@ -110,6 +110,12 @@ public class Bootstrap implements Extension
     */
    public <T> void observeInjectionTarget(@Observes ProcessInjectionTarget<T> event)
    {
+      if (event.getAnnotatedType() == null)
+      {  // check for resin's bug http://bugs.caucho.com/view.php?id=3967
+         log.warn("ProcessInjectionTarget.getAnnotatedType() returned null. As a result, JAX-RS property injection will not work.");
+         return;
+      }
+      
       if (isJaxrsComponent(event.getAnnotatedType().getJavaClass()))
       {
          event.setInjectionTarget(wrapInjectionTarget(event));
