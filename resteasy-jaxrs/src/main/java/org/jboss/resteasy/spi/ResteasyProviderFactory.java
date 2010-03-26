@@ -1,37 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.ext.RuntimeDelegate;
-
 import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.annotations.interception.EncoderPrecedence;
@@ -63,6 +31,37 @@ import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Variant;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.RuntimeDelegate;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -87,9 +86,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public boolean isBuiltin = false;
 
       public Class template = null;
-      
-      
-      
+
 
       private MessageBodyKey(Class intf, T reader, boolean isBuiltin)
       {
@@ -187,6 +184,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected List<ClientErrorInterceptor> clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
 
    protected boolean builtinsRegistered = false;
+   protected boolean registerBuiltins = true;
 
    protected InjectorFactory injectorFactory = new InjectorFactoryImpl(this);
 
@@ -360,6 +358,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
       addHeaderDelegate(Locale.class, new LocaleDelegate());
       addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
+   }
+
+   public boolean isRegisterBuiltins()
+   {
+      return registerBuiltins;
+   }
+
+   public void setRegisterBuiltins(boolean registerBuiltins)
+   {
+      this.registerBuiltins = registerBuiltins;
    }
 
    public InjectorFactory getInjectorFactory()
@@ -805,7 +813,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          addStringParameterUnmarshaller(provider);
       }
-      if(InjectorFactory.class.isAssignableFrom(provider))
+      if (InjectorFactory.class.isAssignableFrom(provider))
       {
          try
          {
@@ -985,7 +993,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
       };
    }
-   
+
    protected <T> T getProviderInstance(Class<? extends T> clazz)
    {
       Constructor<?> constructor = clazz.getDeclaredConstructors()[0];

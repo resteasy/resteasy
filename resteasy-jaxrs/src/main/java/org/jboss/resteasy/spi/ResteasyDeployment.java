@@ -65,6 +65,8 @@ public class ResteasyDeployment
       // it is very important that each deployment create their own provider factory
       // this allows each WAR to have their own set of providers 
       if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
+      providerFactory.setRegisterBuiltins(registerBuiltin);
+
       if (deploymentSensitiveFactoryEnabled)
       {
          // the ThreadLocalResteasyProviderFactory pushes and pops this deployments providerFactory
@@ -165,7 +167,12 @@ public class ResteasyDeployment
 
          if (registerBuiltin)
          {
+            providerFactory.setRegisterBuiltins(true);
             RegisterBuiltin.register(providerFactory);
+         }
+         else
+         {
+            providerFactory.setRegisterBuiltins(false);
          }
 
          if (applicationClass != null)
