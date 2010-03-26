@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
@@ -51,6 +52,36 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public boolean isRegisterBuiltins()
+   {
+      return getDelegate().isRegisterBuiltins();
+   }
+
+   @Override
+   public void setRegisterBuiltins(boolean registerBuiltins)
+   {
+      getDelegate().setRegisterBuiltins(registerBuiltins);
+   }
+
+   @Override
+   public InjectorFactory getInjectorFactory()
+   {
+      return getDelegate().getInjectorFactory();
+   }
+
+   @Override
+   public void setInjectorFactory(InjectorFactory injectorFactory)
+   {
+      getDelegate().setInjectorFactory(injectorFactory);
+   }
+
+   @Override
+   public void injectProperties(Object o)
+   {
+      getDelegate().injectProperties(o);
+   }
+
+   @Override
    public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> resolver)
    {
       getDelegate().addStringParameterUnmarshaller(resolver);
@@ -71,7 +102,7 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    @Override
    public <T> StringParameterUnmarshaller<T> createStringParameterUnmarshaller(Class<T> clazz)
    {
-      return super.createStringParameterUnmarshaller(clazz);
+      return getDelegate().createStringParameterUnmarshaller(clazz);
    }
 
    @Override
