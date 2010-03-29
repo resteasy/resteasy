@@ -424,13 +424,15 @@ public class UriBuilderImpl extends UriBuilder
          {
             value = Encode.encodeNonCodes(value);
          }
+         // if there is a $ then we must backslash it or it will screw up regex group substitution
+         value = value.replace("$", "\\$");
          matcher.appendReplacement(buffer, value);
       }
       matcher.appendTail(buffer);
       return buffer;
    }
 
-   protected Matcher createUriParamMatcher(String string)
+   public static Matcher createUriParamMatcher(String string)
    {
       Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBraces(string));
       return matcher;
