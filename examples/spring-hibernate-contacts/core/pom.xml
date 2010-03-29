@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>spring-hibernate-contacts-core</artifactId>
-    <name/>
+    <name>Example: Spring + Hibernate Contacts - Core</name>
     <version>2.0-beta-2-SNAPSHOT</version>
     <description/>
 </project>
