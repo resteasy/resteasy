@@ -74,7 +74,7 @@ NOTE: You can only use auto-proxied beans with our base Spring integration.   Yo
    &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
 
    &lt;servlet&gt;
-      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;servlet-name&gt;Spring&lt;/servlet-name&gt;
       &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet;&lt;/servlet-class&gt;
    &lt;/servlet&gt;
 
