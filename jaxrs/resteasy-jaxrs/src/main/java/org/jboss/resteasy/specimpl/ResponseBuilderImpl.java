@@ -131,7 +131,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    {
       if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
       {
-         String path = location.getPath();
+         String path = location.toString();
          if (path.startsWith("/")) path = path.substring(1);
          URI baseUri = ResteasyProviderFactory.getContextData(HttpRequest.class).getUri().getBaseUri();
          location = baseUri.resolve(path);
@@ -145,7 +145,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    {
       if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
       {
-         String path = location.getPath();
+         String path = location.toString();
          if (path.startsWith("/")) path = path.substring(1);
          URI baseUri = ResteasyProviderFactory.getContextData(HttpRequest.class).getUri().getBaseUri();
          location = baseUri.resolve(path);
