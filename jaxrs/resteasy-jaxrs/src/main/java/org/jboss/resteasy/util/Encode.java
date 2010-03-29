@@ -192,7 +192,8 @@ public class Encode
       return encodeValue(value, queryNameValueEncoding);
    }
 
-   private static final Pattern nonCodes = Pattern.compile("%([^a-fA-F0-9]|$)");
+   //private static final Pattern nonCodes = Pattern.compile("%([^a-fA-F0-9]|$)");
+   private static final Pattern nonCodes = Pattern.compile("%([^a-fA-F0-9]|[a-fA-F0-9]$|$|[a-fA-F0-9][^a-fA-F0-9])");
    private static final Pattern encodedChars = Pattern.compile("%([a-fA-F0-9][a-fA-F0-9])");
 
    public static String decodePath(String path)
@@ -204,7 +205,20 @@ public class Encode
          String enc = matcher.group(1);
          int c = Integer.parseInt(enc, 16);
          StringBuffer cBuf = new StringBuffer();
-         cBuf.append((char) c);
+         char chr = (char) c;
+         // if we don't do this switch logic then it will screw up regex appendReplacement
+         switch (chr)
+         {
+            case '\\':
+               cBuf.append("\\\\");
+               break;
+            case '$':
+               cBuf.append("\\$");
+               break;
+            default:
+               cBuf.append(chr);
+
+         }
          matcher.appendReplacement(buf, cBuf.toString());
       }
       matcher.appendTail(buf);
