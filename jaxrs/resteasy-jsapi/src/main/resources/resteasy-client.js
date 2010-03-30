@@ -59,24 +59,13 @@ REST.Request.prototype = {
 				contentTypeSet = this.contentTypeHeader;
 				request.setRequestHeader('Content-Type', this.contentTypeHeader);
 			}
+			// we use this flag to work around buggy browsers
+			var gotReadyStateChangeEvent = false;
 			if(callback){
 				request.onreadystatechange = function() {
-					if(this.readyState == 4) {
-						var entity;
-						if(this.status >= 200 && this.status < 300){
-							var contentType = request.getResponseHeader("Content-Type");
-							if(contentType != null){
-								if(REST._isXMLMIME(contentType))
-									entity = this.responseXML;
-								else if(contentType.equals("application/json"))
-									entity = JSON.parse(this.responseText);
-								else
-									entity = this.responseText;
-							}else
-								entity = this.responseText;
-						}
-						callback(this.status, this, entity);
-					}
+					gotReadyStateChangeEvent = true;
+					REST.log("Got readystatechange");
+					REST._complete(this, callback);
 				};
 			}
 			var data = this.entity;
@@ -84,14 +73,23 @@ REST.Request.prototype = {
 				if(this.entity instanceof Element){
 					if(!contentTypeSet || REST._isXMLMIME(contentTypeSet))
 						data = REST.serialiseXML(this.entity);
+				}else if(this.entity instanceof Document){
+					if(!contentTypeSet || REST._isXMLMIME(contentTypeSet))
+						data = this.entity;
 				}else if(this.entity instanceof Object){
-					if(!contentTypeSet || contentTypeSet.equals("application/json"))
+					if(!contentTypeSet || contentTypeSet == "application/json")
 						data = JSON.stringify(this.entity);
 				}
 			}
 			REST.log("Content-Type set to "+contentTypeSet);
 			REST.log("Entity set to "+data);
 			request.send(data);
+			// now if the browser did not follow the specs and did not fire the events while synchronous,
+			// handle it manually
+			if(!this.async && !gotReadyStateChangeEvent && callback){
+				REST.log("Working around browser readystatechange bug");
+				REST._complete(request, callback);
+			}
 		},
 		setAccepts : function(acceptHeader){
 			REST.log("setAccepts("+acceptHeader+")");
@@ -140,9 +138,32 @@ REST.log = function(string){
 		print(string);
 }
 
+REST._complete = function(request, callback){
+	REST.log("Request ready state: "+request.readyState);
+	if(request.readyState == 4) {
+		var entity;
+		REST.log("Request status: "+request.status);
+		REST.log("Request response: "+request.responseText);
+		if(request.status >= 200 && request.status < 300){
+			var contentType = request.getResponseHeader("Content-Type");
+			if(contentType != null){
+				if(REST._isXMLMIME(contentType))
+					entity = request.responseXML;
+				else if(contentType == "application/json")
+					entity = JSON.parse(request.responseText);
+				else
+					entity = request.responseText;
+			}else
+				entity = request.responseText;
+		}
+		REST.log("Calling callback with: "+entity);
+		callback(request.status, request, entity);
+	}
+}
+
 REST._isXMLMIME = function(contentType){
-	return contentType.equals("text/xml")
-			|| contentType.equals("application/xml")
+	return contentType == "text/xml"
+			|| contentType == "application/xml"
 			|| (contentType.indexOf("application/") == 0
 				&& contentType.lastIndexOf("+xml") == (contentType.length - 4));
 }
