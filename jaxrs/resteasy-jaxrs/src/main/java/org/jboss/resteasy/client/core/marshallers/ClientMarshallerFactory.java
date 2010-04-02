@@ -12,6 +12,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 
@@ -90,6 +91,11 @@ public class ClientMarshallerFactory
               Form.class)) != null)
       {
          marshaller = new FormMarshaller(type, providerFactory);
+      }
+      else if ((FindAnnotation.findAnnotation(annotations,
+              Context.class)) != null)
+      {
+         marshaller = new NOOPMarshaller();
       }
       else if (type.equals(Cookie.class))
       {
