@@ -1,6 +1,6 @@
 package org.jboss.resteasy.star.messaging;
 
-import org.hornetq.core.client.ClientSessionFactory;
+import org.hornetq.api.core.client.ClientSessionFactory;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;
