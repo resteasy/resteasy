@@ -1,8 +1,8 @@
 package org.jboss.resteasy.star.messaging;
 
-import org.hornetq.core.client.ClientSession;
-import org.hornetq.core.client.ClientSessionFactory;
-import org.hornetq.core.exception.HornetQException;
+import org.hornetq.api.core.HornetQException;
+import org.hornetq.api.core.client.ClientSession;
+import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
 
 import javax.ws.rs.DefaultValue;
@@ -242,7 +242,7 @@ public class QueueResource
             }
             else
             {
-               return Response.status(Response.Status.PRECONDITION_FAILED).build();
+               return Response.status(Response.Status.PRECONDITION_FAILED.getStatusCode()).build();
             }
          }
          else

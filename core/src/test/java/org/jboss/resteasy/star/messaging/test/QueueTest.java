@@ -5,7 +5,6 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.SimpleDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -15,6 +14,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.concurrent.CountDownLatch;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -79,8 +80,8 @@ public class QueueTest extends BaseResourceTest
       Assert.assertEquals(Integer.toString(3), res.getEntity());
       ack = res.getLinkHeader().getLinkByTitle("acknowledgement");
       System.out.println("ack: " + ack);
-      //ackRes = ack.request().formParameter("acknowledge", "true").post();
-      //Assert.assertEquals(204, ackRes.getStatus());
+      ackRes = ack.request().formParameter("acknowledge", "true").post();
+      Assert.assertEquals(204, ackRes.getStatus());
 
 
       Assert.assertEquals(504, poller.request().post().getStatus());

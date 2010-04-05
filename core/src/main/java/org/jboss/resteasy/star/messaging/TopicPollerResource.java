@@ -68,7 +68,7 @@ public class TopicPollerResource
       TopicMessageIndex top = repository.getMessageIndex(index);
       if (top == null)
       {
-         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE);
+         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE.getStatusCode());
          setTopLink(responseBuilder, info);
          return responseBuilder.build();
       }
@@ -85,7 +85,7 @@ public class TopicPollerResource
       TopicMessageIndex top = repository.getMessageIndex(index);
       if (top == null)
       {
-         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE);
+         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE.getStatusCode());
          setTopLink(responseBuilder, info);
          return responseBuilder.build();
       }

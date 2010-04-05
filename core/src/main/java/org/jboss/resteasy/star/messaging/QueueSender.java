@@ -1,9 +1,9 @@
 package org.jboss.resteasy.star.messaging;
 
-import org.hornetq.core.client.ClientMessage;
-import org.hornetq.core.client.ClientProducer;
-import org.hornetq.core.client.ClientSession;
-import org.hornetq.core.client.ClientSessionFactory;
+import org.hornetq.api.core.client.ClientMessage;
+import org.hornetq.api.core.client.ClientProducer;
+import org.hornetq.api.core.client.ClientSession;
+import org.hornetq.api.core.client.ClientSessionFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -24,7 +24,7 @@ public class QueueSender
       try
       {
          ClientProducer producer = session.createProducer(destination);
-         ClientMessage message = session.createClientMessage(false);
+         ClientMessage message = session.createMessage(false);
          message.putLongProperty("m-id", msg.getId());
          System.out.println("sending to message queue: " + msg.getId());
          producer.send(message);
