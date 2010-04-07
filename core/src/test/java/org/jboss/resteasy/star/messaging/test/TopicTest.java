@@ -33,6 +33,7 @@ public class TopicTest extends BaseResourceTest
    {
       server = new SimpleDeployment();
       server.getTopics().add(new TopicDeployment("test", true));
+      server.getTopics().add(new TopicDeployment("testNoDups", false));
       server.setRegistry(deployment.getRegistry());
       server.start();
    }
@@ -68,6 +69,63 @@ public class TopicTest extends BaseResourceTest
       Assert.assertEquals(503, next.request().get().getStatus());
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(2)).post().getStatus());
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(3)).post().getStatus());
+
+
+      res = next.request().get(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      Assert.assertEquals(Integer.toString(2), res.getEntity());
+
+      System.out.println("***: " + res.getLinkHeader());
+      next = res.getLinkHeader().getLinkByTitle("next");
+      res = next.request().get(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      Assert.assertEquals(Integer.toString(3), res.getEntity());
+
+
+      System.out.println("***: " + res.getLinkHeader());
+      next = res.getLinkHeader().getLinkByTitle("next");
+      Assert.assertEquals(503, next.request().get().getStatus());
+   }
+
+   @Test
+   public void testNoDups() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/topics/testNoDups"));
+
+      ClientResponse response = request.head();
+      Assert.assertEquals(200, response.getStatus());
+      Link sender = response.getLinkHeader().getLinkByTitle("create-next");
+      Link next = response.getLinkHeader().getLinkByTitle("next");
+      Link last = response.getLinkHeader().getLinkByTitle("last");
+
+      Assert.assertEquals(503, next.request().get().getStatus());
+      Assert.assertEquals(503, last.request().get().getStatus());
+      System.out.println("create-next is: " + sender);
+      response = sender.request().body("text/plain", Integer.toString(1)).post();
+      Assert.assertEquals(307, response.getStatus());
+      sender = response.getLocation();
+      response = sender.request().body("text/plain", Integer.toString(1)).post();
+      Assert.assertEquals(201, response.getStatus());
+      sender = response.getLinkHeader().getLinkByTitle("create-next");
+      next = last;
+      ClientResponse<String> res = next.request().get(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      Assert.assertEquals(Integer.toString(1), res.getEntity());
+      System.out.println("***: " + res.getLinkHeader());
+      next = res.getLinkHeader().getLinkByTitle("next");
+      Assert.assertEquals(503, next.request().get().getStatus());
+
+
+      response = sender.request().body("text/plain", Integer.toString(2)).post();
+      Assert.assertEquals(201, response.getStatus());
+      response = sender.request().body("text/plain", Integer.toString(2)).post();
+      Assert.assertEquals(405, response.getStatus());
+      sender = response.getLinkHeader().getLinkByTitle("create-next");
+
+
+      response = sender.request().body("text/plain", Integer.toString(3)).post();
+      Assert.assertEquals(201, response.getStatus());
+      sender = response.getLinkHeader().getLinkByTitle("create-next");
 
 
       res = next.request().get(String.class);

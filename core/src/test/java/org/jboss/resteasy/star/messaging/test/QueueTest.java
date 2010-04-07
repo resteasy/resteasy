@@ -51,10 +51,10 @@ public class QueueTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       Link sender = response.getLinkHeader().getLinkByTitle("create-next");
       System.out.println("create-next: " + sender);
-      Link poller = response.getLinkHeader().getLinkByTitle("poller");
+      Link poller = response.getLinkHeader().getLinkByTitle("consume-next");
       System.out.println("poller: " + poller);
 
-      Assert.assertEquals(504, poller.request().post().getStatus());
+      Assert.assertEquals(503, poller.request().post().getStatus());
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(1)).post().getStatus());
       ClientResponse<String> res = poller.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
@@ -63,7 +63,7 @@ public class QueueTest extends BaseResourceTest
       System.out.println("ack: " + ack);
       ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, ackRes.getStatus());
-      Assert.assertEquals(504, poller.request().post().getStatus());
+      Assert.assertEquals(503, poller.request().post().getStatus());
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(2)).post().getStatus());
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(3)).post().getStatus());
 
@@ -85,7 +85,7 @@ public class QueueTest extends BaseResourceTest
       Assert.assertEquals(204, ackRes.getStatus());
 
 
-      Assert.assertEquals(504, poller.request().post().getStatus());
+      Assert.assertEquals(503, poller.request().post().getStatus());
    }
 
    private static CountDownLatch listenerLatch;
