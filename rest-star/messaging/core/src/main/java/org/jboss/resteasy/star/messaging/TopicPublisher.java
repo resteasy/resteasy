@@ -5,21 +5,18 @@ import org.hornetq.api.core.client.ClientProducer;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 
-import javax.ws.rs.core.MultivaluedMap;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TopicSender
+public class TopicPublisher implements MessagePublisher
 {
    private TopicMessageRepository repository;
    private ClientSessionFactory sessionFactory;
    private String destination;
 
-   public Message post(MultivaluedMap<String, String> headers, byte[] body) throws Exception
+   public void publish(Message msg) throws Exception
    {
-      Message msg = repository.addMessage(headers, body);
       ClientSession session = sessionFactory.createSession();
       try
       {
@@ -29,7 +26,6 @@ public class TopicSender
          System.out.println("sending message: " + msg.getId());
          producer.send(message);
          session.start();
-         return msg;
       }
       finally
       {

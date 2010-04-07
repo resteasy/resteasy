@@ -21,21 +21,22 @@ public class TopicResource
    private CurrentTopicIndex current;
    private ClientSessionFactory factory;
    private String topicName;
-   private TopicSenderResource sender;
+   private Object sender;
    private TopicPollerResource poller;
    private TopicSubscriberResource subscribers;
 
-   public TopicResource(TopicMessageRepository repository, CurrentTopicIndex current, ClientSessionFactory factory, String topicName)
+   public TopicResource(TopicMessageRepository repository, CurrentTopicIndex current, ClientSessionFactory factory, String topicName, Object sender)
    {
       this.repository = repository;
       this.current = current;
       this.factory = factory;
       this.topicName = topicName;
+      this.sender = sender;
 
-      sender = new TopicSenderResource(repository, factory, topicName);
       poller = new TopicPollerResource(repository, current);
       subscribers = new TopicSubscriberResource(topicName, repository, factory);
    }
+
 
    @Path("poller")
    public TopicPollerResource poller()
@@ -43,8 +44,8 @@ public class TopicResource
       return poller;
    }
 
-   @Path("sender")
-   public TopicSenderResource sender()
+   @Path("create-next")
+   public Object sender()
    {
       return sender;
    }
@@ -78,6 +79,7 @@ public class TopicResource
       Response.ResponseBuilder builder = Response.ok();
       setSenderLink(builder, uriInfo);
       setTopLink(builder, uriInfo);
+      setNextLink(builder, uriInfo);
       setSubscribersLink(builder, uriInfo);
       return builder.build();
    }
@@ -87,9 +89,9 @@ public class TopicResource
       String basePath = info.getMatchedURIs().get(1);
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
-      builder.path("sender");
+      builder.path("create-next");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "sender", "sender", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "create-next", "create-next", uri, null);
    }
 
    protected void setSubscribersLink(Response.ResponseBuilder response, UriInfo info)
@@ -108,9 +110,21 @@ public class TopicResource
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
       builder.path("poller");
-      builder.path("top");
+      builder.path("last");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "top", "top", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "last", "last", uri, null);
+   }
+
+   protected void setNextLink(Response.ResponseBuilder response, UriInfo info)
+   {
+      String basePath = info.getMatchedURIs().get(1);
+      UriBuilder builder = info.getBaseUriBuilder();
+      builder.path(basePath);
+      builder.path("poller");
+      builder.path("next");
+      builder.queryParam("index", "-1");
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "next", "next", uri, null);
    }
 
 
