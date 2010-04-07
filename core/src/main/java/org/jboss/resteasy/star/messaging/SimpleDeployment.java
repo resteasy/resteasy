@@ -29,7 +29,7 @@ public class SimpleDeployment
    protected Registry registry;
    protected Map<String, TopicSequencer> sequencers = new HashMap<String, TopicSequencer>();
    protected List<TopicDeployment> topics = new ArrayList<TopicDeployment>();
-   protected List<String> queues = new ArrayList<String>();
+   protected List<QueueDeployment> queues = new ArrayList<QueueDeployment>();
    protected DestinationResource destination;
 
    public HornetQServer getServer()
@@ -82,12 +82,12 @@ public class SimpleDeployment
       this.destination = destination;
    }
 
-   public List<String> getQueues()
+   public List<QueueDeployment> getQueues()
    {
       return queues;
    }
 
-   public void setQueues(List<String> queues)
+   public void setQueues(List<QueueDeployment> queues)
    {
       this.queues = queues;
    }
@@ -119,6 +119,7 @@ public class SimpleDeployment
          session.close();
 
          TopicMessageRepository repository = new TopicMessageRepository();
+         repository.setDestination(topicName);
          CurrentTopicIndex messageIndex = new CurrentTopicIndex();
          TopicPublisher pub = new TopicPublisher();
          pub.setDestination(topicName);
@@ -143,8 +144,9 @@ public class SimpleDeployment
          sequencer.start();
          sequencers.put(topicName, sequencer);
       }
-      for (String queueName : queues)
+      for (QueueDeployment queueDeployment : queues)
       {
+         String queueName = queueDeployment.getName();
          ClientSession session = sf.createSession(false, false, false);
          session.createQueue(queueName, queueName, true);
          session.close();
@@ -152,6 +154,24 @@ public class SimpleDeployment
          QueueResource queue = new QueueResource();
          queue.setDestination(queueName);
          queue.setSessionFactory(sf);
+         queue.getRepository().setDestination(queueName);
+
+         QueuePublisher pub = new QueuePublisher();
+         pub.setDestination(queueName);
+         pub.setRepository(queue.getRepository());
+         pub.setSessionFactory(sf);
+
+         Object sender = null;
+         if (queueDeployment.isDuplicatesAllowed())
+         {
+            sender = new CreateNext(queue.getRepository(), pub);
+         }
+         else
+         {
+            sender = new ReliableCreateNext(queue.getRepository(), pub);
+         }
+         queue.setSender(sender);
+
          destination.getQueues().put(queueName, queue);
          queue.start();
       }
