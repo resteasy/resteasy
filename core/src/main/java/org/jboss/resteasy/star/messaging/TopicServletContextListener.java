@@ -29,7 +29,7 @@ public class TopicServletContextListener implements ServletContextListener
       String[] split = topics.split(",");
       for (String topic : split)
       {
-         deployment.getTopics().add(topic.trim());
+         deployment.getTopics().add(new TopicDeployment(topic, true));
       }
       try
       {

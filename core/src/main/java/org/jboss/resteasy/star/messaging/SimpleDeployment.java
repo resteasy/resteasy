@@ -28,7 +28,7 @@ public class SimpleDeployment
    protected HornetQServer server;
    protected Registry registry;
    protected Map<String, TopicSequencer> sequencers = new HashMap<String, TopicSequencer>();
-   protected List<String> topics = new ArrayList<String>();
+   protected List<TopicDeployment> topics = new ArrayList<TopicDeployment>();
    protected List<String> queues = new ArrayList<String>();
    protected DestinationResource destination;
 
@@ -62,14 +62,24 @@ public class SimpleDeployment
       this.sequencers = sequencers;
    }
 
-   public List<String> getTopics()
+   public List<TopicDeployment> getTopics()
    {
       return topics;
    }
 
-   public void setTopics(List<String> topics)
+   public void setTopics(List<TopicDeployment> topics)
    {
       this.topics = topics;
+   }
+
+   public DestinationResource getDestination()
+   {
+      return destination;
+   }
+
+   public void setDestination(DestinationResource destination)
+   {
+      this.destination = destination;
    }
 
    public List<String> getQueues()
@@ -101,15 +111,29 @@ public class SimpleDeployment
 
       destination = new DestinationResource();
 
-      for (String topicName : topics)
+      for (TopicDeployment topicDeployment : topics)
       {
          ClientSession session = sf.createSession(false, false, false);
+         String topicName = topicDeployment.getName();
          session.createQueue(topicName, topicName, true);
          session.close();
 
          TopicMessageRepository repository = new TopicMessageRepository();
          CurrentTopicIndex messageIndex = new CurrentTopicIndex();
-         TopicResource topic = new TopicResource(repository, messageIndex, sf, topicName);
+         TopicPublisher pub = new TopicPublisher();
+         pub.setDestination(topicName);
+         pub.setRepository(repository);
+         pub.setSessionFactory(sf);
+         Object sender = null;
+         if (topicDeployment.isDuplicatesAllowed())
+         {
+            sender = new CreateNext(repository, pub);
+         }
+         else
+         {
+            sender = new ReliableCreateNext(repository, pub);
+         }
+         TopicResource topic = new TopicResource(repository, messageIndex, sf, topicName, sender);
          destination.getTopics().put(topicName, topic);
          TopicSequencer sequencer = new TopicSequencer();
          sequencer.setCurrent(messageIndex);

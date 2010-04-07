@@ -2,7 +2,6 @@ package org.jboss.resteasy.star.messaging;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,7 +28,7 @@ public class TopicPollerResource
       this.current = current;
    }
 
-   @Path("/top")
+   @Path("/last")
    @GET
    public Response top(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                        @Context UriInfo info) throws Exception
@@ -44,53 +43,27 @@ public class TopicPollerResource
       return builder.build();
    }
 
-   @Path("/top")
-   @HEAD
-   public Response headTop(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                           @Context UriInfo info) throws Exception
-   {
-      TopicMessageIndex top = current.getCurrent();
-      if (top.getId() == -1)
-      {
-         return getHeadNext(wait, info, top);
-      }
-      Response.ResponseBuilder builder = getHeadMessage(info, top.getId());
-      builder.header("Content-Location", getContentLocation(info, top.getId()));
-      return builder.build();
-   }
-
    @Path("/next")
    @GET
    public Response next(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                         @QueryParam("index") long index,
                         @Context UriInfo info) throws Exception
    {
+      if (index == -1)
+      {
+         TopicMessageIndex top = current.getCurrent();
+         return getNext(wait, info, top);
+      }
       TopicMessageIndex top = repository.getMessageIndex(index);
       if (top == null)
       {
          Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE.getStatusCode());
          setTopLink(responseBuilder, info);
+         setNextLink(responseBuilder, info);
          return responseBuilder.build();
       }
 
       return getNext(wait, info, top);
-   }
-
-   @Path("/next")
-   @HEAD
-   public Response headNext(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                            @QueryParam("index") long index,
-                            @Context UriInfo info) throws Exception
-   {
-      TopicMessageIndex top = repository.getMessageIndex(index);
-      if (top == null)
-      {
-         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.GONE.getStatusCode());
-         setTopLink(responseBuilder, info);
-         return responseBuilder.build();
-      }
-
-      return getHeadNext(wait, info, top);
    }
 
    protected Response.ResponseBuilder getMessage(UriInfo info, long id)
@@ -111,10 +84,10 @@ public class TopicPollerResource
    }
 
    @Path("/messages/{id}")
-   @HEAD
-   public Response headMessage(@Context UriInfo info, @PathParam("id") long id)
+   @GET
+   public Response getMessageResource(@Context UriInfo info, @PathParam("id") long id)
    {
-      Response.ResponseBuilder responseBuilder = getHeadMessage(info, id);
+      Response.ResponseBuilder responseBuilder = getMessage(info, id);
       return responseBuilder.build();
    }
 
@@ -163,30 +136,27 @@ public class TopicPollerResource
       LinkHeaderSupport.setLinkHeader(response, "next", "next", uri, null);
    }
 
+   protected void setNextLink(Response.ResponseBuilder response, UriInfo info)
+   {
+      String basePath = info.getMatchedURIs().get(1);
+      UriBuilder builder = info.getBaseUriBuilder();
+      builder.path(basePath);
+      builder.path("next");
+      builder.queryParam("index", "-1");
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "next", "next", uri, null);
+   }
+
    protected Response getNext(long wait, UriInfo info, TopicMessageIndex top)
            throws InterruptedException
    {
       boolean ready = top.getLatch().await(wait, TimeUnit.SECONDS);
       if (!ready)
       {
-         return Response.status(504).build();
+         return Response.status(503).build();
       }
       long id = top.getNext();
       Response.ResponseBuilder builder = getMessage(info, id);
-      builder.header("Content-Location", getContentLocation(info, id));
-      return builder.build();
-   }
-
-   protected Response getHeadNext(long wait, UriInfo info, TopicMessageIndex top)
-           throws InterruptedException
-   {
-      boolean ready = top.getLatch().await(wait, TimeUnit.SECONDS);
-      if (!ready)
-      {
-         return Response.status(504).build();
-      }
-      long id = top.getNext();
-      Response.ResponseBuilder builder = getHeadMessage(info, id);
       builder.header("Content-Location", getContentLocation(info, id));
       return builder.build();
    }
@@ -197,8 +167,9 @@ public class TopicPollerResource
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
       builder.path("poller");
+      builder.path("last");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "top", "top", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "last", "last", uri, null);
    }
 
    protected void setDestinationLink(Response.ResponseBuilder response, UriInfo info)

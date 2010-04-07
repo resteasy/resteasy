@@ -5,8 +5,8 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.SimpleDeployment;
+import org.jboss.resteasy.star.messaging.TopicDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -17,6 +17,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -30,7 +32,7 @@ public class TopicTest extends BaseResourceTest
    public static void setup() throws Exception
    {
       server = new SimpleDeployment();
-      server.getTopics().add("test");
+      server.getTopics().add(new TopicDeployment("test", true));
       server.setRegistry(deployment.getRegistry());
       server.start();
    }
@@ -49,18 +51,21 @@ public class TopicTest extends BaseResourceTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("sender");
-      Link top = response.getLinkHeader().getLinkByTitle("top");
+      Link sender = response.getLinkHeader().getLinkByTitle("create-next");
+      Link next = response.getLinkHeader().getLinkByTitle("next");
+      Link last = response.getLinkHeader().getLinkByTitle("last");
 
-      Assert.assertEquals(504, top.request().get().getStatus());
+      Assert.assertEquals(503, next.request().get().getStatus());
+      Assert.assertEquals(503, last.request().get().getStatus());
+      System.out.println("create-next is: " + sender);
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(1)).post().getStatus());
-      Link next = top;
+      next = last;
       ClientResponse<String> res = next.request().get(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals(Integer.toString(1), res.getEntity());
       System.out.println("***: " + res.getLinkHeader());
       next = res.getLinkHeader().getLinkByTitle("next");
-      Assert.assertEquals(504, next.request().get().getStatus());
+      Assert.assertEquals(503, next.request().get().getStatus());
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(2)).post().getStatus());
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(3)).post().getStatus());
 
@@ -78,7 +83,7 @@ public class TopicTest extends BaseResourceTest
 
       System.out.println("***: " + res.getLinkHeader());
       next = res.getLinkHeader().getLinkByTitle("next");
-      Assert.assertEquals(504, next.request().get().getStatus());
+      Assert.assertEquals(503, next.request().get().getStatus());
    }
 
    private static CountDownLatch listenerLatch;
@@ -103,7 +108,8 @@ public class TopicTest extends BaseResourceTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("sender");
+      Link sender = response.getLinkHeader().getLinkByTitle("create-next");
+      Assert.assertNotNull(sender);
       Link subscribers = response.getLinkHeader().getLinkByTitle("subscribers");
 
 
