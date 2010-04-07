@@ -1,9 +1,10 @@
 package org.jboss.resteasy.star.messaging;
 
+import org.jboss.resteasy.spi.NoLogWebApplicationException;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -40,11 +41,18 @@ public class ReliableCreateNext
    @Path("{id}")
    public Response create(@PathParam("id") long id, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
    {
+      String matched = uriInfo.getMatchedURIs().get(1);
+      UriBuilder nextBuilder = uriInfo.getBaseUriBuilder();
+      long nextId = messageRepository.generateId();
+      nextBuilder.path(matched).path(Long.toString(nextId));
+      URI next = nextBuilder.build();
+
       if (messageRepository.getMessage(id) != null)
       {
          Response.ResponseBuilder builder = Response.status(405);
          builder.entity("Message has already been created").type("text/plain");
-         throw new WebApplicationException(builder.build());
+         LinkHeaderSupport.setLinkHeader(builder, "create-next", "create-next", next.toString(), "*/*");
+         throw new NoLogWebApplicationException(builder.build());
       }
       Message message = messageRepository.createMessage(id, headers.getRequestHeaders(), body);
       try
@@ -57,12 +65,6 @@ public class ReliableCreateNext
       }
       URI location = messageRepository.getMessageUri(id, uriInfo);
       Response.ResponseBuilder builder = Response.created(location);
-      String matched = uriInfo.getMatchedURIs().get(1);
-      UriBuilder nextBuilder = uriInfo.getBaseUriBuilder();
-
-      long nextId = messageRepository.generateId();
-      nextBuilder.path(matched).path(Long.toString(nextId));
-      URI next = nextBuilder.build();
       LinkHeaderSupport.setLinkHeader(builder, "create-next", "create-next", next.toString(), "*/*");
       return builder.build();
    }

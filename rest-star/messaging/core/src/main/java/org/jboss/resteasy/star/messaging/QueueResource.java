@@ -115,9 +115,9 @@ public class QueueResource
    protected void setPollerLink(Response.ResponseBuilder response, UriInfo info)
    {
       UriBuilder builder = info.getRequestUriBuilder();
-      builder.path("poller");
+      builder.path("consume-next");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "poller", "poller", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "consume-next", "consume-next", uri, null);
    }
 
 
@@ -177,15 +177,7 @@ public class QueueResource
       return sender;
    }
 
-   protected String getContentLocation(UriInfo info, long id)
-   {
-      UriBuilder builder = info.getRequestUriBuilder();
-      builder.path("messages/" + id);
-      return builder.build().toString();
-   }
-
-
-   @Path("poller")
+   @Path("consume-next")
    @POST
    public Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                         @Context UriInfo info)
@@ -195,7 +187,7 @@ public class QueueResource
          QueuedMessage message = queue.poll(wait, TimeUnit.SECONDS);
          if (message == null)
          {
-            return Response.status(504).build();
+            return Response.status(503).build();
          }
          synchronized (message)
          {
