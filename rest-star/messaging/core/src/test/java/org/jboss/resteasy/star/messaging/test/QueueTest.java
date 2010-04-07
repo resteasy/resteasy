@@ -3,6 +3,7 @@ package org.jboss.resteasy.star.messaging.test;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.star.messaging.QueueDeployment;
 import org.jboss.resteasy.star.messaging.SimpleDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
@@ -29,7 +30,7 @@ public class QueueTest extends BaseResourceTest
    public static void setup() throws Exception
    {
       server = new SimpleDeployment();
-      server.getQueues().add("testQueue");
+      server.getQueues().add(new QueueDeployment("testQueue", true));
       server.setRegistry(deployment.getRegistry());
       server.start();
    }
@@ -48,8 +49,8 @@ public class QueueTest extends BaseResourceTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("sender");
-      System.out.println("sender: " + sender);
+      Link sender = response.getLinkHeader().getLinkByTitle("create-next");
+      System.out.println("create-next: " + sender);
       Link poller = response.getLinkHeader().getLinkByTitle("poller");
       System.out.println("poller: " + poller);
 

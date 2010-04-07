@@ -17,13 +17,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -39,16 +37,12 @@ public class QueueResource
    protected QueueMessageRepository repository = new QueueMessageRepository();
    protected ClientSessionFactory sessionFactory;
    protected String destination;
-   protected QueueSender sender;
+   protected Object sender;
    protected int numConsumers = 5;
    protected List<ClientSession> consumers = new ArrayList<ClientSession>();
 
    public void start() throws Exception
    {
-      sender = new QueueSender();
-      sender.setDestination(destination);
-      sender.setRepository(repository);
-      sender.setSessionFactory(sessionFactory);
       for (int i = 0; i < numConsumers; i++)
       {
          ClientSession session = sessionFactory.createSession();
@@ -72,6 +66,16 @@ public class QueueResource
          {
          }
       }
+   }
+
+   public Object getSender()
+   {
+      return sender;
+   }
+
+   public void setSender(Object sender)
+   {
+      this.sender = sender;
    }
 
    @GET
@@ -103,9 +107,9 @@ public class QueueResource
    protected void setSenderLink(Response.ResponseBuilder response, UriInfo info)
    {
       UriBuilder builder = info.getRequestUriBuilder();
-      builder.path("sender");
+      builder.path("create-next");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "sender", "sender", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "create-next", "create-next", uri, null);
    }
 
    protected void setPollerLink(Response.ResponseBuilder response, UriInfo info)
@@ -167,13 +171,10 @@ public class QueueResource
       this.destination = destination;
    }
 
-   @POST
-   @Path("sender")
-   public Response post(@Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body) throws Exception
+   @Path("create-next")
+   public Object post() throws Exception
    {
-      Message msg = sender.post(headers.getRequestHeaders(), body);
-      String link = getContentLocation(uriInfo, msg.getId());
-      return Response.created(new URI(link)).build();
+      return sender;
    }
 
    protected String getContentLocation(UriInfo info, long id)
