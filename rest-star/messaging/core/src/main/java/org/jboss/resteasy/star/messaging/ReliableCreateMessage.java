@@ -13,16 +13,18 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
 /**
+ * implements reliable "create", "create-next" pattern defined by REST-* Messaging specificaiton
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ReliableCreateNext
+public class ReliableCreateMessage
 {
 
    private MessageRepository messageRepository;
    private MessagePublisher publisher;
 
-   public ReliableCreateNext(MessageRepository messageRepository, MessagePublisher publisher)
+   public ReliableCreateMessage(MessageRepository messageRepository, MessagePublisher publisher)
    {
       this.messageRepository = messageRepository;
       this.publisher = publisher;

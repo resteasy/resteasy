@@ -49,8 +49,8 @@ public class QueueTest extends BaseResourceTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create-next");
-      System.out.println("create-next: " + sender);
+      Link sender = response.getLinkHeader().getLinkByTitle("create");
+      System.out.println("create: " + sender);
       Link poller = response.getLinkHeader().getLinkByTitle("consume-next");
       System.out.println("poller: " + poller);
 

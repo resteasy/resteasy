@@ -128,11 +128,11 @@ public class SimpleDeployment
          Object sender = null;
          if (topicDeployment.isDuplicatesAllowed())
          {
-            sender = new CreateNext(repository, pub);
+            sender = new CreateMessage(repository, pub);
          }
          else
          {
-            sender = new ReliableCreateNext(repository, pub);
+            sender = new ReliableCreateMessage(repository, pub);
          }
          TopicResource topic = new TopicResource(repository, messageIndex, sf, topicName, sender);
          destination.getTopics().put(topicName, topic);
@@ -164,11 +164,11 @@ public class SimpleDeployment
          Object sender = null;
          if (queueDeployment.isDuplicatesAllowed())
          {
-            sender = new CreateNext(queue.getRepository(), pub);
+            sender = new CreateMessage(queue.getRepository(), pub);
          }
          else
          {
-            sender = new ReliableCreateNext(queue.getRepository(), pub);
+            sender = new ReliableCreateMessage(queue.getRepository(), pub);
          }
          queue.setSender(sender);
 

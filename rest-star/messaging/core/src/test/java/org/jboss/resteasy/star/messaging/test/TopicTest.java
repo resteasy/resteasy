@@ -52,13 +52,13 @@ public class TopicTest extends BaseResourceTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create-next");
+      Link sender = response.getLinkHeader().getLinkByTitle("create");
       Link next = response.getLinkHeader().getLinkByTitle("next");
       Link last = response.getLinkHeader().getLinkByTitle("last");
 
       Assert.assertEquals(503, next.request().get().getStatus());
       Assert.assertEquals(503, last.request().get().getStatus());
-      System.out.println("create-next is: " + sender);
+      System.out.println("create is: " + sender);
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(1)).post().getStatus());
       next = last;
       ClientResponse<String> res = next.request().get(String.class);
@@ -94,13 +94,13 @@ public class TopicTest extends BaseResourceTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create-next");
+      Link sender = response.getLinkHeader().getLinkByTitle("create");
       Link next = response.getLinkHeader().getLinkByTitle("next");
       Link last = response.getLinkHeader().getLinkByTitle("last");
 
       Assert.assertEquals(503, next.request().get().getStatus());
       Assert.assertEquals(503, last.request().get().getStatus());
-      System.out.println("create-next is: " + sender);
+      System.out.println("create is: " + sender);
       response = sender.request().body("text/plain", Integer.toString(1)).post();
       Assert.assertEquals(307, response.getStatus());
       sender = response.getLocation();
@@ -166,7 +166,7 @@ public class TopicTest extends BaseResourceTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create-next");
+      Link sender = response.getLinkHeader().getLinkByTitle("create");
       Assert.assertNotNull(sender);
       Link subscribers = response.getLinkHeader().getLinkByTitle("subscribers");
 

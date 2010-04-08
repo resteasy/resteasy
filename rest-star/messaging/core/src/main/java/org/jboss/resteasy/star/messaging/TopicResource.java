@@ -44,7 +44,7 @@ public class TopicResource
       return poller;
    }
 
-   @Path("create-next")
+   @Path("create")
    public Object sender()
    {
       return sender;
@@ -89,9 +89,9 @@ public class TopicResource
       String basePath = info.getMatchedURIs().get(1);
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
-      builder.path("create-next");
+      builder.path("create");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "create-next", "create-next", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "create", "create", uri, null);
    }
 
    protected void setSubscribersLink(Response.ResponseBuilder response, UriInfo info)

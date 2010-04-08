@@ -9,15 +9,17 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
 /**
+ * Implements simple "create" link.  Returns 201 with Location of created resource as per HTTP
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CreateNext
+public class CreateMessage
 {
    private MessageRepository messageRepository;
    private MessagePublisher publisher;
 
-   public CreateNext(MessageRepository messageRepository, MessagePublisher publisher)
+   public CreateMessage(MessageRepository messageRepository, MessagePublisher publisher)
    {
       this.messageRepository = messageRepository;
       this.publisher = publisher;
