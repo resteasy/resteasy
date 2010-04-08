@@ -107,9 +107,9 @@ public class QueueResource
    protected void setSenderLink(Response.ResponseBuilder response, UriInfo info)
    {
       UriBuilder builder = info.getRequestUriBuilder();
-      builder.path("create-next");
+      builder.path("create");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "create-next", "create-next", uri, null);
+      LinkHeaderSupport.setLinkHeader(response, "create", "create", uri, null);
    }
 
    protected void setPollerLink(Response.ResponseBuilder response, UriInfo info)
@@ -171,7 +171,7 @@ public class QueueResource
       this.destination = destination;
    }
 
-   @Path("create-next")
+   @Path("create")
    public Object post() throws Exception
    {
       return sender;
