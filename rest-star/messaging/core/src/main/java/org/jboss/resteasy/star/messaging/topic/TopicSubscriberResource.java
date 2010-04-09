@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.topic;
 
 import org.hornetq.api.core.client.ClientSessionFactory;
 

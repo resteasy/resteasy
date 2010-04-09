@@ -56,6 +56,7 @@ public class TopicTest extends BaseResourceTest
       Link next = response.getLinkHeader().getLinkByTitle("next");
       Link last = response.getLinkHeader().getLinkByTitle("last");
 
+      System.out.println("next: " + next);
       Assert.assertEquals(503, next.request().get().getStatus());
       Assert.assertEquals(503, last.request().get().getStatus());
       System.out.println("create is: " + sender);

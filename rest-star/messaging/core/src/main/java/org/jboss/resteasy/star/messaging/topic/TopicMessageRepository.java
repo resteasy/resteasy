@@ -1,4 +1,8 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.topic;
+
+import org.jboss.resteasy.star.messaging.DestinationResource;
+import org.jboss.resteasy.star.messaging.Message;
+import org.jboss.resteasy.star.messaging.MessageRepository;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -13,11 +17,10 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class TopicMessageRepository implements MessageRepository<Message>
 {
-   private ConcurrentHashMap<Long, TopicMessageIndex> messageIndex = new ConcurrentHashMap<Long, TopicMessageIndex>();
-   private ConcurrentHashMap<Long, Message> repository = new ConcurrentHashMap<Long, Message>();
+   private ConcurrentHashMap<String, TopicMessageIndex> messageIndex = new ConcurrentHashMap<String, TopicMessageIndex>();
+   private ConcurrentHashMap<String, Message> repository = new ConcurrentHashMap<String, Message>();
    private AtomicLong counter = new AtomicLong(0);
    private String destination;
-   private String path;
 
    public TopicMessageRepository()
    {
@@ -33,17 +36,17 @@ public class TopicMessageRepository implements MessageRepository<Message>
       this.destination = destination;
    }
 
-   public long generateId()
+   public String generateId()
    {
-      return counter.getAndIncrement();
+      return Long.toString(counter.getAndIncrement());
    }
 
    public Message createMessage(MultivaluedMap<String, String> headers, byte[] body)
    {
-      return createMessage(counter.getAndIncrement(), headers, body);
+      return createMessage(Long.toString(counter.getAndIncrement()), headers, body);
    }
 
-   public Message createMessage(long id, MultivaluedMap<String, String> headers, byte[] body)
+   public Message createMessage(String id, MultivaluedMap<String, String> headers, byte[] body)
    {
       Message msg = new Message();
       msg.setId(id);
@@ -53,26 +56,26 @@ public class TopicMessageRepository implements MessageRepository<Message>
       return msg;
    }
 
-   public URI getMessageUri(long id, UriInfo uriInfo)
+   public URI getMessageUri(String id, UriInfo uriInfo)
    {
       UriBuilder builder = uriInfo.getBaseUriBuilder();
       builder.path(DestinationResource.class, "findTopic")
               .path(TopicResource.class, "poller")
               .path(TopicPollerResource.class, "getMessageResource");
-      return builder.build(destination, Long.toString(id));
+      return builder.build(destination, id);
    }
 
-   public Message getMessage(long id)
+   public Message getMessage(String id)
    {
       return repository.get(id);
    }
 
-   public TopicMessageIndex getMessageIndex(long id)
+   public TopicMessageIndex getMessageIndex(String id)
    {
       return messageIndex.get(id);
    }
 
-   public TopicMessageIndex addIndex(long id)
+   public TopicMessageIndex addIndex(String id)
    {
       TopicMessageIndex index = new TopicMessageIndex();
       index.setId(id);

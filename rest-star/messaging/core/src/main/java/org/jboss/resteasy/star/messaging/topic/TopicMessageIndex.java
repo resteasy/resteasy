@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.topic;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -8,26 +8,26 @@ import java.util.concurrent.CountDownLatch;
  */
 public class TopicMessageIndex
 {
-   private long id = -1;
-   private long next;
+   private String id;
+   private String next;
    private CountDownLatch latch;
 
-   public long getId()
+   public String getId()
    {
       return id;
    }
 
-   public void setId(long id)
+   public void setId(String id)
    {
       this.id = id;
    }
 
-   public long getNext()
+   public String getNext()
    {
       return next;
    }
 
-   public void setNext(long next)
+   public void setNext(String next)
    {
       this.next = next;
    }

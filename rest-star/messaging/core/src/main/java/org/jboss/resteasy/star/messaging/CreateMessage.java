@@ -37,7 +37,7 @@ public class CreateMessage
       {
          throw new RuntimeException(e);
       }
-      long id = message.getId();
+      String id = message.getId();
       URI location = messageRepository.getMessageUri(id, uriInfo);
       Response.ResponseBuilder builder = Response.created(location);
       UriBuilder nextBuilder = uriInfo.getAbsolutePathBuilder();

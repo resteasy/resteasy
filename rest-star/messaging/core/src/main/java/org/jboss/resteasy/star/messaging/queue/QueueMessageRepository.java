@@ -1,4 +1,7 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.queue;
+
+import org.jboss.resteasy.star.messaging.DestinationResource;
+import org.jboss.resteasy.star.messaging.MessageRepository;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -13,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class QueueMessageRepository implements MessageRepository<QueuedMessage>
 {
-   private ConcurrentHashMap<Long, QueuedMessage> repository = new ConcurrentHashMap<Long, QueuedMessage>();
+   private ConcurrentHashMap<String, QueuedMessage> repository = new ConcurrentHashMap<String, QueuedMessage>();
    private AtomicLong counter = new AtomicLong(0);
    private String destination;
 
@@ -31,15 +34,15 @@ public class QueueMessageRepository implements MessageRepository<QueuedMessage>
       this.destination = destination;
    }
 
-   public QueuedMessage getMessage(long id)
+   public QueuedMessage getMessage(String id)
    {
       return repository.get(id);
    }
 
    @Override
-   public long generateId()
+   public String generateId()
    {
-      return counter.getAndIncrement();
+      return Long.toString(counter.getAndIncrement());
    }
 
    @Override
@@ -49,7 +52,7 @@ public class QueueMessageRepository implements MessageRepository<QueuedMessage>
    }
 
    @Override
-   public QueuedMessage createMessage(long id, MultivaluedMap<String, String> headers, byte[] body)
+   public QueuedMessage createMessage(String id, MultivaluedMap<String, String> headers, byte[] body)
    {
       QueuedMessage msg = new QueuedMessage();
       msg.setId(id);
@@ -60,11 +63,11 @@ public class QueueMessageRepository implements MessageRepository<QueuedMessage>
    }
 
    @Override
-   public URI getMessageUri(long id, UriInfo uriInfo)
+   public URI getMessageUri(String id, UriInfo uriInfo)
    {
       UriBuilder builder = uriInfo.getBaseUriBuilder();
       builder.path(DestinationResource.class, "findQueue")
               .path(QueueResource.class, "getMessage");
-      return builder.build(destination, Long.toString(id));
+      return builder.build(destination, id);
    }
 }

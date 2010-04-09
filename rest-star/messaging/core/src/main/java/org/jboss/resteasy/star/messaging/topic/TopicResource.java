@@ -1,6 +1,7 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.topic;
 
 import org.hornetq.api.core.client.ClientSessionFactory;
+import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -122,7 +123,6 @@ public class TopicResource
       builder.path(basePath);
       builder.path("poller");
       builder.path("next");
-      builder.queryParam("index", "-1");
       String uri = builder.build().toString();
       LinkHeaderSupport.setLinkHeader(response, "next", "next", uri, null);
    }

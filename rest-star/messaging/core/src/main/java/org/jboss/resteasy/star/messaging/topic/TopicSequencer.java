@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.topic;
 
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
@@ -70,7 +70,7 @@ public class TopicSequencer implements MessageHandler
 
    public void onMessage(ClientMessage notification)
    {
-      long id = notification.getLongProperty("m-id");
+      String id = notification.getStringProperty("m-id");
       System.out.println("Received message: " + id);
       TopicMessageIndex top = current.getCurrent();
       TopicMessageIndex newIndex = repository.addIndex(id);

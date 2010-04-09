@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.queue;
 
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
@@ -64,7 +64,7 @@ public class QueueListener implements MessageHandler
 
    public void onMessage(ClientMessage notification)
    {
-      long id = notification.getLongProperty("m-id");
+      String id = notification.getStringProperty("m-id");
       System.out.println("onMessage: " + id);
       QueuedMessage message = repository.getMessage(id);
       if (message == null)

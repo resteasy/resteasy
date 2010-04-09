@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.topic;
 
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
@@ -9,6 +9,7 @@ import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
+import org.jboss.resteasy.star.messaging.Message;
 
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class ConsumerForwarding implements MessageHandler
 
    public void onMessage(ClientMessage notification)
    {
-      long id = notification.getLongProperty("m-id");
+      String id = notification.getStringProperty("m-id");
       Message message = repository.getMessage(id);
       ClientRequest request = new ClientRequest(uri, executor);
       for (Map.Entry<String, List<String>> entry : message.getHeaders().entrySet())

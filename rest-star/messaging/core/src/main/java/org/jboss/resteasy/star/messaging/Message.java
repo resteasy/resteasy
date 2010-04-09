@@ -11,16 +11,16 @@ import java.io.Serializable;
  */
 public class Message implements Serializable
 {
-   private long id = -1;
+   private String id = "";
    private CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
    private byte[] body;
 
-   public long getId()
+   public String getId()
    {
       return id;
    }
 
-   public void setId(long id)
+   public void setId(String id)
    {
       this.id = id;
    }

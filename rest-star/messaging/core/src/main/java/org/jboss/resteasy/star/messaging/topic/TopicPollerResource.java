@@ -1,4 +1,8 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.topic;
+
+import org.jboss.resteasy.star.messaging.Constants;
+import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
+import org.jboss.resteasy.star.messaging.Message;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -34,7 +38,7 @@ public class TopicPollerResource
                        @Context UriInfo info) throws Exception
    {
       TopicMessageIndex top = current.getCurrent();
-      if (top.getId() == -1)
+      if (top.getId() == null)
       {
          return getNext(wait, info, top);
       }
@@ -46,10 +50,10 @@ public class TopicPollerResource
    @Path("/next")
    @GET
    public Response next(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                        @QueryParam("index") long index,
+                        @QueryParam("index") @DefaultValue("") String index,
                         @Context UriInfo info) throws Exception
    {
-      if (index == -1)
+      if (index.equals(""))
       {
          TopicMessageIndex top = current.getCurrent();
          return getNext(wait, info, top);
@@ -66,7 +70,7 @@ public class TopicPollerResource
       return getNext(wait, info, top);
    }
 
-   protected Response.ResponseBuilder getMessage(UriInfo info, long id)
+   protected Response.ResponseBuilder getMessage(UriInfo info, String id)
    {
       Message msg = repository.getMessage(id);
       Response.ResponseBuilder responseBuilder = getMessageResponse(info, msg);
@@ -85,22 +89,10 @@ public class TopicPollerResource
 
    @Path("/messages/{id}")
    @GET
-   public Response getMessageResource(@Context UriInfo info, @PathParam("id") long id)
+   public Response getMessageResource(@Context UriInfo info, @PathParam("id") String id)
    {
       Response.ResponseBuilder responseBuilder = getMessage(info, id);
       return responseBuilder.build();
-   }
-
-   protected Response.ResponseBuilder getHeadMessage(UriInfo info, long id)
-   {
-      Message msg = repository.getMessage(id);
-      Response.ResponseBuilder responseBuilder = getMessageResponse(info, msg);
-      if (msg.getBody() == null)
-      {
-         String type = msg.getHeaders().getFirst("Content-Type");
-         responseBuilder.type(type);
-      }
-      return responseBuilder;
    }
 
    protected Response.ResponseBuilder getMessageResponse(UriInfo info, Message msg)
@@ -116,12 +108,12 @@ public class TopicPollerResource
       return responseBuilder;
    }
 
-   public static String getContentLocation(UriInfo info, long id)
+   public static String getContentLocation(UriInfo info, String id)
    {
       String basePath = info.getMatchedURIs().get(1);
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
-      builder.path("/messages/" + id);
+      builder.path("messages").path(id);
       return builder.build().toString();
    }
 
@@ -155,7 +147,7 @@ public class TopicPollerResource
       {
          return Response.status(503).build();
       }
-      long id = top.getNext();
+      String id = top.getNext();
       Response.ResponseBuilder builder = getMessage(info, id);
       builder.header("Content-Location", getContentLocation(info, id));
       return builder.build();

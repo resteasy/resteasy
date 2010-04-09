@@ -10,13 +10,13 @@ import java.net.URI;
  */
 public interface MessageRepository<M extends Message>
 {
-   long generateId();
+   String generateId();
 
    M createMessage(MultivaluedMap<String, String> headers, byte[] body);
 
-   M createMessage(long id, MultivaluedMap<String, String> headers, byte[] body);
+   M createMessage(String id, MultivaluedMap<String, String> headers, byte[] body);
 
-   M getMessage(long id);
+   M getMessage(String id);
 
-   URI getMessageUri(long id, UriInfo uriInfo);
+   URI getMessageUri(String id, UriInfo uriInfo);
 }
