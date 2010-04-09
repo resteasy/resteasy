@@ -1,9 +1,11 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.queue;
 
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.star.messaging.Constants;
+import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -206,7 +208,7 @@ public class QueueResource
    @Path("messages/{id}/state")
    @POST
    public Response acknowledge(
-           @PathParam("id") long id,
+           @PathParam("id") String id,
            @FormParam("acknowledge") boolean acknowledge,
            @Context Request request)
    {

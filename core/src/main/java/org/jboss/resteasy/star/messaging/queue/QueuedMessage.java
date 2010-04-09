@@ -1,4 +1,6 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.queue;
+
+import org.jboss.resteasy.star.messaging.Message;
 
 import java.util.concurrent.CountDownLatch;
 

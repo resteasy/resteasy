@@ -1,5 +1,8 @@
 package org.jboss.resteasy.star.messaging;
 
+import org.jboss.resteasy.star.messaging.queue.QueueResource;
+import org.jboss.resteasy.star.messaging.topic.TopicResource;
+
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;

@@ -33,20 +33,20 @@ public class ReliableCreateMessage
    @POST
    public Response redirectCreation(@Context UriInfo uriInfo)
    {
-      long id = messageRepository.generateId();
+      String id = messageRepository.generateId();
       Response.ResponseBuilder res = Response.status(Response.Status.TEMPORARY_REDIRECT.getStatusCode());
-      res.location(uriInfo.getAbsolutePathBuilder().path(Long.toString(id)).build());
+      res.location(uriInfo.getAbsolutePathBuilder().path(id).build());
       return res.build();
    }
 
    @POST
    @Path("{id}")
-   public Response create(@PathParam("id") long id, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
+   public Response create(@PathParam("id") String id, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
    {
       String matched = uriInfo.getMatchedURIs().get(1);
       UriBuilder nextBuilder = uriInfo.getBaseUriBuilder();
-      long nextId = messageRepository.generateId();
-      nextBuilder.path(matched).path(Long.toString(nextId));
+      String nextId = messageRepository.generateId();
+      nextBuilder.path(matched).path(nextId);
       URI next = nextBuilder.build();
 
       if (messageRepository.getMessage(id) != null)

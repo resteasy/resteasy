@@ -1,9 +1,11 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.queue;
 
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientProducer;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
+import org.jboss.resteasy.star.messaging.Message;
+import org.jboss.resteasy.star.messaging.MessagePublisher;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -22,7 +24,7 @@ public class QueuePublisher implements MessagePublisher
       {
          ClientProducer producer = session.createProducer(destination);
          ClientMessage message = session.createMessage(false);
-         message.putLongProperty("m-id", msg.getId());
+         message.putStringProperty("m-id", msg.getId());
          System.out.println("sending to message queue: " + msg.getId());
          producer.send(message);
          session.start();

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.topic;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -13,8 +13,8 @@ public class CurrentTopicIndex
    public CurrentTopicIndex()
    {
       current = new TopicMessageIndex();
-      current.setId(-1);
-      current.setNext(-1);
+      current.setId(null);
+      current.setNext(null);
       current.setLatch(new CountDownLatch(1));
    }
 
