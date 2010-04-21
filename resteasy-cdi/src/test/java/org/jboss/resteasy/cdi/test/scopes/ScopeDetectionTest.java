@@ -1,6 +1,6 @@
 package org.jboss.resteasy.cdi.test.scopes;
 
-import org.jboss.resteasy.cdi.Bootstrap;
+import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
@@ -9,12 +9,12 @@ import static org.junit.Assert.assertFalse;
 
 public class ScopeDetectionTest
 {
-   private Bootstrap bootstrap;
+   private ResteasyCdiExtension bootstrap;
 
    @Before
    public void prepare()
    {
-      bootstrap = new Bootstrap();
+      bootstrap = new ResteasyCdiExtension();
    }
    
    @Test

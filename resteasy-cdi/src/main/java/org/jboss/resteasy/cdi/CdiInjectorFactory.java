@@ -5,7 +5,11 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -19,8 +23,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.jboss.resteasy.cdi.Bootstrap.lookupResteasyCdiConfiguration;
-
 /**
  * 
  * @author Jozef Hartinger
@@ -32,13 +34,15 @@ public class CdiInjectorFactory implements InjectorFactory
    private PropertyInjector noopPropertyInjector = new NoopPropertyInjector();
    private InjectorFactory delegate;
    private BeanManager manager;
-   private ResteasyCdiConfiguration configuration;
+   private ResteasyCdiExtension extension;
+   private Map<Class<?>, Class<?>> sessionBeanInterface;
 
    public CdiInjectorFactory()
    {
       this.delegate = ResteasyProviderFactory.getInstance().getInjectorFactory();
       this.manager = lookupBeanManager();
-      this.configuration = lookupResteasyCdiConfiguration(manager);
+      this.extension = lookupResteasyCdiExtension();
+      sessionBeanInterface = extension.getSessionBeanInterface();
    }
    
 
@@ -52,9 +56,9 @@ public class CdiInjectorFactory implements InjectorFactory
          return new CdiConstructorInjector(clazz, manager);
       }
       
-      if (configuration.containsSessionBeanClass((constructor.getDeclaringClass())))
+      if (sessionBeanInterface.containsKey((constructor.getDeclaringClass())))
       {
-         Class<?> intfc = configuration.getSessionBeanLocalInterface(clazz);
+         Class<?> intfc = sessionBeanInterface.get(clazz);
          log.debug("Using interface {} for lookup of Session Bean {}.", intfc, clazz);
          return new CdiConstructorInjector(intfc, manager);
       }
@@ -102,5 +106,17 @@ public class CdiInjectorFactory implements InjectorFactory
             throw new RuntimeException("Unable to obtain BeanManager.", ne);
          }
       }
+   }
+   
+   /**
+    * Lookup ResteasyCdiExtension instance that was instantiated during CDI bootstrap
+    * @return ResteasyCdiExtension instance
+    */
+   private ResteasyCdiExtension lookupResteasyCdiExtension()
+   {
+       Set<Bean<?>> beans = manager.getBeans(ResteasyCdiExtension.class);
+       Bean<?> bean = manager.resolve(beans);
+       CreationalContext<?> context = manager.createCreationalContext(bean);
+       return (ResteasyCdiExtension) manager.getReference(bean, ResteasyCdiExtension.class, context);
    }
 }
