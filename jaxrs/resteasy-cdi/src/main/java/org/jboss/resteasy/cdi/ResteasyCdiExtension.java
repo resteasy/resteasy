@@ -4,18 +4,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -39,9 +35,9 @@ import org.slf4j.LoggerFactory;
  * @author Jozef Hartinger
  * 
  */
-public class Bootstrap implements Extension
+public class ResteasyCdiExtension implements Extension
 {
-   private final Logger log = LoggerFactory.getLogger(Bootstrap.class);
+   private final Logger log = LoggerFactory.getLogger(ResteasyCdiExtension.class);
    
    // Scope literals
    public static final Annotation requestScopedLiteral = new AnnotationLiteral<RequestScoped>()
@@ -142,12 +138,6 @@ public class Bootstrap implements Extension
       }
    }
    
-   public void setResteasyCdiConfiguration(@Observes AfterBeanDiscovery event, BeanManager manager)
-   {
-      ResteasyCdiConfiguration configuration = lookupResteasyCdiConfiguration(manager);
-      configuration.setSessionBeanInterfaceMap(sessionBeanInterface);
-   }
-   
    private void addSessionBeanInterface(Bean<?> bean)
    {
       for (Type type : bean.getTypes())
@@ -215,15 +205,9 @@ public class Bootstrap implements Extension
    {
       return annotation.annotationType().isAnnotationPresent(Stereotype.class);
    }
-   
-   /**
-    * Does a lookup for the contextual instance of ResteasyCdiConfiguration
-    */
-   public static ResteasyCdiConfiguration lookupResteasyCdiConfiguration(BeanManager manager)
+
+   public Map<Class<?>, Class<?>> getSessionBeanInterface()
    {
-      Set<Bean<?>> beans = manager.getBeans(ResteasyCdiConfiguration.class);
-      Bean<?> bean = manager.resolve(beans);
-      CreationalContext<?> context = manager.createCreationalContext(bean);
-      return (ResteasyCdiConfiguration) manager.getReference(bean, ResteasyCdiConfiguration.class, context);
+      return sessionBeanInterface;
    }
 }
