@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>2.0-beta-2</version>
+        <version>2.0-beta-3-SNAPSHOT</version>
     </parent>
 
     <name>RESTEasy Maven Import</name>
@@ -17,87 +17,87 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>abdera-atom-provider</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>async-http-jbossweb</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>async-http-servlet-3.0</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>async-http-tomcat6</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>jaxrs-api</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-atom-provider</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-cache-core</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-guice</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxb-provider</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jettison-provider</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jackson-provider</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-fastinfoset-provider</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxrs</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-multipart-provider</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-spring</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-yaml-provider</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>tjws</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.0-beta-3-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
