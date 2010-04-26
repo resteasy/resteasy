@@ -58,6 +58,10 @@ public @interface LinkResource {
 	 * If there are too many parameters for the current path, only the leftmost useful ones will be used.
 	 * </p>
 	 * <p>
+	 * Defaults to using discovery of values from the entity itself with {@link ResourceID @ResourceID},
+	 * {@link ResourceIDs @ResourceIDs}, JAXB's @XmlID or JPA's @Id and {@link ParentResource @ParentResource}.
+	 * </p>
+	 * <p>
 	 * This is not used for {@link ResourceFacade} entities, which provide their own list of path parameters.
 	 * </p>
 	 */
