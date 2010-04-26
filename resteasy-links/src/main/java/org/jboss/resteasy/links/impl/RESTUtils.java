@@ -71,10 +71,13 @@ public class RESTUtils {
 
 	private static Field findInjectionField(Object entity) {
 		Class<?> klass = entity.getClass();
-		for(Field f : klass.getDeclaredFields()){
-			if(f.getType().equals(RESTServiceDiscovery.class))
-				return f;
-		}
+		do{
+			for(Field f : klass.getDeclaredFields()){
+				if(f.getType().equals(RESTServiceDiscovery.class))
+					return f;
+			}
+			klass = klass.getSuperclass();
+		}while(klass != null);
 		return null;
 	}
 
@@ -240,7 +243,7 @@ public class RESTUtils {
 		List<String> paramNames = ((UriBuilderImpl)uriBuilder).getPathParamNamesInDeclarationOrder();
 		if(paramNames.isEmpty())
 			return uriBuilder.build();
-		// try @XmlID
+		// try to find the IDs
 		List<Object> params = findURIParamsFromResource(entity);
 		if(params.size() == paramNames.size())
 			return uriBuilder.build(params.toArray());
@@ -253,9 +256,8 @@ public class RESTUtils {
 	private static List<Object> findURIParamsFromResource(Object entity) {
 		List<Object> ids = new ArrayList<Object>();
 		do{
-			Object id = BeanUtils.findID(entity);
-			if(id != null)
-				ids.add(0, id);
+			List<Object> theseIDs = BeanUtils.findIDs(entity);
+			ids.addAll(0, theseIDs);
 		}while((entity = BeanUtils.findParentResource(entity)) != null);
 		return ids;
 	}
