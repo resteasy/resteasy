@@ -287,6 +287,8 @@ public class Serve implements ServletContext, Serializable
 
    public Properties mime;
 
+   protected List<ServeConnection> connections = new ArrayList<ServeConnection>();
+
    // / Constructor.
    public Serve(Map arguments, PrintStream logStream)
    {
@@ -310,6 +312,7 @@ public class Serve implements ServletContext, Serializable
       });
       setAccessLogged();
       keepAlive = arguments.get(ARG_KEEPALIVE) == null || ((Boolean) arguments.get(ARG_KEEPALIVE)).booleanValue();
+      System.out.println("KEEPALIVE!: " + keepAlive);
       int timeoutKeepAliveSec;
       try
       {
@@ -688,6 +691,14 @@ public class Serve implements ServletContext, Serializable
       }
       catch (InterruptedException e)
       {
+      }
+      synchronized(connections)
+      {
+         for (ServeConnection conn : connections)
+         {
+            conn.closeSocket();
+         }
+         connections.clear();
       }
    }
 
@@ -1527,7 +1538,7 @@ public class Serve implements ServletContext, Serializable
 
       protected List ingoings;
 
-      protected boolean stopped;
+      protected volatile boolean stopped;
 
       private boolean noCheckClose;
 
@@ -1537,6 +1548,12 @@ public class Serve implements ServletContext, Serializable
          connections = new ArrayList();
          ingoings = new ArrayList();
          setDaemon(true);
+      }
+
+      public void end()
+      {
+         stopped = true;
+         this.interrupt();
       }
 
       synchronized void addConnection(ServeConnection conn)
@@ -1857,6 +1874,10 @@ public class Serve implements ServletContext, Serializable
             logPlaceholders = new Object[12];
          }
          serve.threadPool.executeThread(this);
+         synchronized(serve.connections)
+         {
+            serve.connections.add(this);
+         }
       }
 
       private void initSSLAttrs()
@@ -1949,6 +1970,20 @@ public class Serve implements ServletContext, Serializable
          }
          if (ioe != null)
             throw ioe;
+      }
+
+      public void closeSocket()
+      {
+         if (socket != null)
+         {
+            try
+            {
+               socket.close();
+            }
+            catch (IOException e)
+            {
+            }
+         }
       }
 
       // protected void finalize() throws Throwable {
@@ -2056,6 +2091,10 @@ public class Serve implements ServletContext, Serializable
          {
             synchronized (this)
             {
+               synchronized(serve.connections)
+               {
+                  serve.connections.remove(this);
+               }
                if (socket != null)
                   try
                   {
