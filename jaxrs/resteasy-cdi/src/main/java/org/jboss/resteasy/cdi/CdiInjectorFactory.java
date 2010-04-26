@@ -116,6 +116,10 @@ public class CdiInjectorFactory implements InjectorFactory
    {
        Set<Bean<?>> beans = manager.getBeans(ResteasyCdiExtension.class);
        Bean<?> bean = manager.resolve(beans);
+       if (bean == null)
+       {
+          throw new IllegalStateException("Unable to obtain ResteasyCdiExtension instance.");
+       }
        CreationalContext<?> context = manager.createCreationalContext(bean);
        return (ResteasyCdiExtension) manager.getReference(bean, ResteasyCdiExtension.class, context);
    }
