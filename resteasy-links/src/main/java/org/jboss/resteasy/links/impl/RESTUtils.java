@@ -17,6 +17,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -186,7 +187,9 @@ public class RESTUtils {
 			RESTServiceDiscovery ret, LinkResource service, String rel) {
 		Map<String, ? extends Object> pathParameters = entity.pathParameters();
 		// do we need any path parameters?
-		UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(m.getDeclaringClass()).path(m);
+		UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(m.getDeclaringClass());
+		if(m.isAnnotationPresent(Path.class))
+			uriBuilder.path(m);
 		URI uri;
 		List<String> paramNames = ((UriBuilderImpl)uriBuilder).getPathParamNamesInDeclarationOrder();
 		if(paramNames.isEmpty())
@@ -208,8 +211,9 @@ public class RESTUtils {
 	private static void addInstanceService(Method m, Object entity,
 			UriInfo uriInfo, RESTServiceDiscovery ret, LinkResource service,
 			String rel) {
-		UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(m.getDeclaringClass())
-		.path(m);
+		UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(m.getDeclaringClass());
+		if(m.isAnnotationPresent(Path.class))
+			uriBuilder.path(m);
 		URI uri = buildURI(uriBuilder, service, entity, m);
 
 		if (rel.length() == 0) {
