@@ -564,11 +564,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             ParameterizedType pt = (ParameterizedType) type;
             if (pt.getRawType().equals(ExceptionMapper.class))
             {
-               exceptionMappers.put(Types.getRawType(pt.getActualTypeArguments()[0]), provider);
+               addExceptionMapper(provider, pt.getActualTypeArguments()[0]);
             }
          }
       }
 
+   }
+   
+   public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
+   {
+      Class<?> exceptionClass = Types.getRawType(exceptionType);
+      if (!Throwable.class.isAssignableFrom(exceptionClass))
+      {
+         throw new RuntimeException("Incorrect type parameter. ExceptionMapper requires a subclass of java.lang.Throwable as its type parameter.");
+      }
+      exceptionMappers.put(exceptionClass, provider);
    }
 
    /**
@@ -610,28 +620,33 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             ParameterizedType pt = (ParameterizedType) type;
             if (pt.getRawType().equals(ContextResolver.class))
             {
-               Class<?> aClass = Types.getRawType(pt.getActualTypeArguments()[0]);
-               MediaTypeMap<ContextResolver> resolvers = contextResolvers.get(aClass);
-               if (resolvers == null)
-               {
-                  resolvers = new MediaTypeMap<ContextResolver>();
-                  contextResolvers.put(aClass, resolvers);
-               }
-               Produces produces = provider.getClass().getAnnotation(Produces.class);
-               if (produces != null)
-               {
-                  for (String produce : produces.value())
-                  {
-                     MediaType mime = MediaType.valueOf(produce);
-                     resolvers.add(mime, provider);
-                  }
-               }
-               else
-               {
-                  resolvers.add(new MediaType("*", "*"), provider);
-               }
+               addContextResolver(provider, pt.getActualTypeArguments()[0]);
             }
          }
+      }
+   }
+   
+   public void addContextResolver(ContextResolver provider, Type typeParameter)
+   {
+      Class<?> parameterClass = Types.getRawType(typeParameter);
+      MediaTypeMap<ContextResolver> resolvers = contextResolvers.get(parameterClass);
+      if (resolvers == null)
+      {
+         resolvers = new MediaTypeMap<ContextResolver>();
+         contextResolvers.put(parameterClass, resolvers);
+      }
+      Produces produces = provider.getClass().getAnnotation(Produces.class);
+      if (produces != null)
+      {
+         for (String produce : produces.value())
+         {
+            MediaType mime = MediaType.valueOf(produce);
+            resolvers.add(mime, provider);
+         }
+      }
+      else
+      {
+         resolvers.add(new MediaType("*", "*"), provider);
       }
    }
 
@@ -658,12 +673,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             ParameterizedType pt = (ParameterizedType) type;
             if (pt.getRawType().equals(StringConverter.class))
             {
-               Class<?> aClass = Types.getRawType(pt.getActualTypeArguments()[0]);
-               stringConverters.put(aClass, provider);
+               addStringConverter(provider, pt.getActualTypeArguments()[0]);
             }
          }
       }
    }
+   
+   public void addStringConverter(StringConverter provider, Type typeParameter)
+   {
+      Class<?> parameterClass = Types.getRawType(typeParameter);
+      stringConverters.put(parameterClass, provider);
+   }
+   
 
    public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> provider)
    {
