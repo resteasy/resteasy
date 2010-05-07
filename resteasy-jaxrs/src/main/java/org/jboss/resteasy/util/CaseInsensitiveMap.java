@@ -17,7 +17,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>
+public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Serializable
 {
 
    private static class KeySetWrapper implements Set<String>

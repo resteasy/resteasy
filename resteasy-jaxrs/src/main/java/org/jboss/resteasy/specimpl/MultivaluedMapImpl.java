@@ -1,9 +1,11 @@
 package org.jboss.resteasy.specimpl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -48,7 +50,7 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
    
    public void addAll(MultivaluedMapImpl<K, V> other)
    {
-      for (Entry<K, List<V>> entry : other.entrySet())
+      for (Map.Entry<K, List<V>> entry : other.entrySet())
       {
          getList(entry.getKey()).addAll(entry.getValue());
       }
