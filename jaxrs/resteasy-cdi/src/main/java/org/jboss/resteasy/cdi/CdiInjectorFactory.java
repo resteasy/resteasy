@@ -84,7 +84,11 @@ public class CdiInjectorFactory implements InjectorFactory
       return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
    }
    
-   private BeanManager lookupBeanManager()
+   /**
+    * Lookup BeanManager in JNDI
+    * @return BeanManager instance
+    */
+   protected BeanManager lookupBeanManager()
    {
       InitialContext ctx = null;
       try
