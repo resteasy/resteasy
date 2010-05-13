@@ -13,6 +13,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.ServletContext;
 
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.ConstructorInjector;
@@ -85,30 +86,58 @@ public class CdiInjectorFactory implements InjectorFactory
    }
    
    /**
-    * Lookup BeanManager in JNDI
+    * Do a lookup for BeanManager instance. JNDI and ServletContext is searched.
     * @return BeanManager instance
     */
    protected BeanManager lookupBeanManager()
    {
-      InitialContext ctx = null;
+      BeanManager beanManager = null;
+      
+      // Do a lookup for BeanManager in JNDI (this is the only *portable* way)
+      beanManager = lookupBeanManagerInJndi("java:comp/BeanManager");
+      if (beanManager != null)
+      {
+         log.info("Found BeanManager at java:comp/BeanManager");
+         return beanManager;
+      }
+      
+      // Do a lookup for BeanManager at an alternative JNDI location (workaround for WELDINT-19)
+      beanManager = lookupBeanManagerInJndi("java:app/BeanManager");
+      if (beanManager != null)
+      {
+         log.info("Found BeanManager at java:app/BeanManager");
+         return beanManager;
+      }
+      
+      // Look for BeanManager in ServletContext
+      ServletContext servletContext = ResteasyProviderFactory.getContextData(ServletContext.class);
+      beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
+      if (beanManager != null)
+      {
+         log.info("Found BeanManager in ServletContext");
+         return beanManager;
+      }
+      
+      throw new RuntimeException("Unable to lookup BeanManager.");
+   }
+   
+   private BeanManager lookupBeanManagerInJndi(String name)
+   {
       try
       {
-         log.debug("Doing a lookup of BeanManager in java:comp/BeanManager");
-         ctx = new InitialContext();
-         return (BeanManager) ctx.lookup("java:comp/BeanManager");
+         InitialContext ctx = new InitialContext();
+         log.debug("Doing a lookup for BeanManager in {}", name);
+         return (BeanManager) ctx.lookup(name);
       }
       catch (NamingException e)
       {
-         // Workaround for WELDINT-19
-         try
-         {
-            log.debug("Lookup failed. Trying java:app/BeanManager");
-            return (BeanManager) ctx.lookup("java:app/BeanManager");
-         }
-         catch (NamingException ne)
-         {
-            throw new RuntimeException("Unable to obtain BeanManager.", ne);
-         }
+         log.debug("Unable to obtain BeanManager from {}", name);
+         return null;
+      }
+      catch (NoClassDefFoundError ncdfe)
+      {
+         log.debug("Unable to perform JNDI lookups. You are probably running on GAE.");
+         return null;
       }
    }
    
