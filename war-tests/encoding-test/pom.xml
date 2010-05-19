@@ -5,7 +5,7 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>encoding-test</artifactId>
     <packaging>war</packaging>
-    <version>1.2.1.GA_CP-SNAPSHOT</version>
+    <version>1.2.1.GA_CP-01</version>
     <name>encoding-test</name>
     <url>http://maven.apache.org</url>
     <repositories>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.2.1.GA_CP-SNAPSHOT</version>
+            <version>1.2.1.GA_CP-01</version>
         </dependency>
 
     </dependencies>

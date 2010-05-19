@@ -6,7 +6,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>1.2.1.GA_CP-SNAPSHOT</version>
+        <version>1.2.1.GA_CP-01</version>
     </parent>
     <artifactId>resteasy-guice</artifactId>
 
