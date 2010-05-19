@@ -88,7 +88,6 @@
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -284,11 +283,7 @@
 
     <repositories>
         <repository>
-            <id>jakarta</id>
-            <url>http://jakarta.apache.org/commons/httpclient/</url>
-        </repository>
-        <repository>
-            <id>jboss</id>
+            <id>jboss-maven2</id>
             <url>http://repository.jboss.org/maven2</url>
         </repository>
         <repository>
@@ -309,17 +304,19 @@
             <id>ibiblio mirror</id>
             <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
         </repository>
+        <repository>
+            <id>jboss-maven2-brew</id>
+            <url>http://repository.jboss.org/maven2-brew</url>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>maven2-repository.dev.java.net</id>
-            <url>http://download.java.net/maven/2</url>
+            <id>jboss-maven2</id>
+            <url>http://repository.jboss.org/maven2</url>
         </pluginRepository>
         <pluginRepository>
-            <id>maven-repository.dev.java.net</id>
-            <name>Java.net Maven 1 Repository (legacy)</name>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
+            <id>jboss-maven2-brew</id>
+            <url>http://repository.jboss.org/maven2-brew</url>
         </pluginRepository>
     </pluginRepositories>
     <build>
