@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>guice-hello</artifactId>
-    <version>1.2.1.GA_CP-01</version>
+    <version>1.2.1.GA_CP01</version>
     <packaging>war</packaging>
     <name>guice hello example</name>
     <description>guice hello world example</description>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-guice</artifactId>
-            <version>1.2.1.GA_CP-01</version>
+            <version>1.2.1.GA_CP01</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>

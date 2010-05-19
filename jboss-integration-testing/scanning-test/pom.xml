@@ -5,7 +5,7 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>scanning-test-pom</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.1.GA_CP-01</version>
+    <version>1.2.1.GA_CP01</version>
 
     <modules>
         <module>scanning-test-jar</module>

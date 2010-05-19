@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>1.2.1.GA_CP-01</version>
+        <version>1.2.1.GA_CP01</version>
     </parent>
     <name>Resteasy JAX-RS EJB Test</name>
     <modelVersion>4.0.0</modelVersion>
