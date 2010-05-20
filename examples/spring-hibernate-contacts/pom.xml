@@ -26,7 +26,7 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-bom</artifactId>
-                <version>1.2.1.GA_CP-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -48,6 +48,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
+			<version>${project.version}</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>
@@ -67,6 +68,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-spring</artifactId>
+			<version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
