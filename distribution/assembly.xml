@@ -55,10 +55,6 @@
             <outputDirectory>examples/api-clients</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../examples/oreilly-workbook</directory>
-            <outputDirectory>examples/oreilly-workbook</outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>../docbook/target/docbook/publish/en-US</directory>
             <outputDirectory>docs/userguide</outputDirectory>
         </fileSet>

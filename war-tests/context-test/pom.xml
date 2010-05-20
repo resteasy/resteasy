@@ -7,23 +7,7 @@
     <packaging>war</packaging>
     <version>1.2.1.GA_CP-SNAPSHOT</version>
     <name>context-test</name>
-    <url>http://maven.apache.org</url>
-    <repositories>
-        <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.org/maven2</url>
-        </repository>
-        <repository>
-            <id>java.net</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </repository>
-        <repository>
-            <id>maven repo</id>
-            <name>maven repo</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-    </repositories>
+    <url>http://maven.apache.org</url> 
 
     <dependencies>
         <dependency>

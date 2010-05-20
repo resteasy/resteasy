@@ -12,23 +12,7 @@
     <version>1.2.1.GA_CP-SNAPSHOT</version>
     <name>Resteasy Spring integration</name>
 
-    <repositories>
-        <!--<repository>-->
-        <!--<id>java.net</id>-->
-        <!--<url>http://download.java.net/maven/1</url>-->
-        <!--<layout>legacy</layout>-->
-        <!--</repository>-->
-        <!--<repository>-->
-        <!--<id>maven repo</id>-->
-        <!--<name>maven repo</name>-->
-        <!--<url>http://repo1.maven.org/maven2/</url>-->
-        <!--</repository>-->
-        <!-- For resteasy -->
-        <!--<repository>-->
-        <!--<id>jboss</id>-->
-        <!--<name>jboss repo</name>-->
-        <!--<url>http://repository.jboss.org/maven2</url>-->
-        <!--</repository>-->
+    <repositories>  
         <repository>
             <id>jboss-brew</id>
             <url>http://repository.jboss.org/maven2-brew</url>

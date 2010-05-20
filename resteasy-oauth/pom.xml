@@ -10,6 +10,13 @@
     <artifactId>resteasy-oauth</artifactId>
     <name>RESTEasy JAX-RS OAuth</name>
 
+    <repositories>     
+        <repository>
+            <id>oauth</id>
+            <url>http://oauth.googlecode.com/svn/code/maven</url>
+        </repository>
+	</repositories>
+
     <dependencies>
         <dependency>
             <groupId>net.oauth.core</groupId>
