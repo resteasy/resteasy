@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy.examples</groupId>
 	<artifactId>api-clients</artifactId>
-	<version>1.2.1.GA_CP-SNAPSHOT</version>
+	<version>1.2.1.GA_CP02</version>
 
 	<repositories>
 		<!-- For resteasy -->
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
-			<version>1.2.1.GA_CP-SNAPSHOT</version>
+			<version>1.2.1.GA_CP02</version>
 			<!-- filter out unwanted jars -->
 			<exclusions>
 				<exclusion>
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxb-provider</artifactId>
-			<version>1.2.1.GA_CP-SNAPSHOT</version>
+			<version>1.2.1.GA_CP02</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
