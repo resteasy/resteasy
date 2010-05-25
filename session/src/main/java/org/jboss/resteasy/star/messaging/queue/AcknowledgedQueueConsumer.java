@@ -5,7 +5,6 @@ import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
-import org.jboss.resteasy.star.messaging.SimpleMessage;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -50,9 +49,9 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
    }
 
    @Override
-   public synchronized SimpleMessage receive(long timeoutSecs) throws Exception
+   public synchronized ClientMessage receive(long timeoutSecs) throws Exception
    {
-      SimpleMessage msg = super.receive(timeoutSecs);
+      ClientMessage msg = super.receive(timeoutSecs);
       if (msg != null)
       {
          currentAckTask = ackTimeoutService.submit(this);
