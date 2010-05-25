@@ -7,24 +7,18 @@ import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.Constants;
+import org.jboss.resteasy.star.messaging.HttpMessage;
 import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
-import org.jboss.resteasy.star.messaging.SimpleMessage;
 
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -75,30 +69,10 @@ public class QueueConsumer
       ex.printStackTrace();
    }
 
-   public synchronized SimpleMessage receive(long timeoutSecs) throws Exception
+   public synchronized ClientMessage receive(long timeoutSecs) throws Exception
    {
       System.out.println("receive in consumer: " + id);
-      ClientMessage message = receiveFromConsumer(timeoutSecs);
-      if (message == null)
-      {
-         return null;
-      }
-      try
-      {
-         int size = message.getBodySize();
-         byte[] bytes = new byte[size];
-         message.getBodyBuffer().readBytes(bytes);
-
-         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-         ObjectInputStream ois = new ObjectInputStream(bais);
-         SimpleMessage msg = (SimpleMessage) ois.readObject();
-         return msg;
-      }
-      catch (Exception ex)
-      {
-         failedToUnmarshallMessage(ex);
-         return null;
-      }
+      return receiveFromConsumer(timeoutSecs);
    }
 
    public String getId()
@@ -143,7 +117,7 @@ public class QueueConsumer
       {
          synchronized (this)
          {
-            SimpleMessage message = receive(wait);
+            ClientMessage message = receive(wait);
             if (message == null)
             {
                System.out.println("Timed out waiting for message receive.");
@@ -161,25 +135,11 @@ public class QueueConsumer
       }
    }
 
-   protected Response.ResponseBuilder getMessageResponse(SimpleMessage msg, UriInfo info, String basePath)
+   protected Response.ResponseBuilder getMessageResponse(ClientMessage msg, UriInfo info, String basePath)
    {
       Response.ResponseBuilder responseBuilder = Response.ok();
       setMessageResponseLinks(info, basePath, responseBuilder);
-      for (String header : msg.getHeaders().keySet())
-      {
-         List values = msg.getHeaders().get(header);
-         for (Object value : values) responseBuilder.header(header, value);
-      }
-      if (msg.getBody() != null)
-      {
-         responseBuilder.entity(msg.getBody());
-         String type = msg.getHeaders().getFirst("Content-Type");
-         responseBuilder.type(type);
-      }
-      else
-      {
-         responseBuilder.status(204);
-      }
+      HttpMessage.buildMessage(msg, responseBuilder);
       return responseBuilder;
    }
 

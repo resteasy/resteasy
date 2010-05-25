@@ -1,16 +1,11 @@
 package org.jboss.resteasy.star.messaging.queue;
 
 import org.hornetq.api.core.client.ClientMessage;
-import org.hornetq.api.core.client.ClientProducer;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.star.messaging.SimpleMessage;
+import org.jboss.resteasy.star.messaging.HttpMessage;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -56,17 +51,7 @@ public class PostMessage
    protected ClientMessage createHornetQMessage(HttpHeaders headers, byte[] body, boolean durable, ClientSession session) throws Exception
    {
       ClientMessage message = session.createMessage(durable);
-      SimpleMessage msg = new SimpleMessage(headers, body);
-
-      ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-
-      oos.writeObject(msg);
-
-      oos.flush();
-
-      message.getBodyBuffer().writeBytes(baos.toByteArray());
+      HttpMessage.writeHttpMessage(headers, body, message);
       return message;
    }
 }
