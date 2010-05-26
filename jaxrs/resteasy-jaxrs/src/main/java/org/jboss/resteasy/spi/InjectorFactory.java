@@ -21,4 +21,6 @@ public interface InjectorFactory
    MethodInjector createMethodInjector(Class root, Method method);
 
    ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations);
+
+   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault);
 }
