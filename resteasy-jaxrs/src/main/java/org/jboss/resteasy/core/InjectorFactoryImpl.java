@@ -54,7 +54,13 @@ public class InjectorFactoryImpl implements InjectorFactory
       return new MethodInjectorImpl(root, method, providerFactory);
    }
 
-   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
+         Type genericType, Annotation[] annotations)
+   {
+      return createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, true);
+   }
+   
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault)
    {
       DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
       boolean encode = findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
@@ -106,9 +112,13 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new ContextParameterInjector(type, providerFactory);
       }
-      else
+      else if (useDefault)
       {
          return new MessageBodyParameterInjector(injectTargetClass, injectTarget, type, genericType, annotations, providerFactory);
+      }
+      else
+      {
+         return null;
       }
    }
 

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Jozef Hartinger
  * 
  */
+@SuppressWarnings("unchecked")
 public class CdiInjectorFactory implements InjectorFactory
 {
    private static final Logger log = LoggerFactory.getLogger(CdiInjectorFactory.class);
@@ -81,6 +82,12 @@ public class CdiInjectorFactory implements InjectorFactory
    }
    
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
+   {
+      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
+   }
+   
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
+         Type genericType, Annotation[] annotations, boolean useDefault)
    {
       return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
    }

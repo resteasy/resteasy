@@ -1,16 +1,9 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Failure;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InternalServerErrorException;
-import org.jboss.resteasy.spi.PropertyInjector;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,6 +15,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jboss.resteasy.annotations.Body;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InternalServerErrorException;
+import org.jboss.resteasy.spi.PropertyInjector;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.FindAnnotation;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,9 +48,9 @@ public class PropertyInjectorImpl implements PropertyInjector
 
    protected List<SetterMethod> setters = new ArrayList<SetterMethod>();
    protected HashMap<Long, Method> setterhashes = new HashMap<Long, Method>();
-   protected Class clazz;
+   protected Class<?> clazz;
 
-   public PropertyInjectorImpl(Class clazz, ResteasyProviderFactory factory)
+   public PropertyInjectorImpl(Class<?> clazz, ResteasyProviderFactory factory)
    {
       this.clazz = clazz;
 
@@ -57,7 +60,7 @@ public class PropertyInjectorImpl implements PropertyInjector
    public static long methodHash(Method method)
            throws Exception
    {
-      Class[] parameterTypes = method.getParameterTypes();
+      Class<?>[] parameterTypes = method.getParameterTypes();
       StringBuilder methodDesc = new StringBuilder(method.getName()).append("(");
       for (int j = 0; j < parameterTypes.length; j++)
       {
@@ -83,7 +86,7 @@ public class PropertyInjectorImpl implements PropertyInjector
 
    }
 
-   static String getTypeString(Class cl)
+   static String getTypeString(Class<?> cl)
    {
       if (cl == Byte.TYPE)
       {
@@ -131,17 +134,17 @@ public class PropertyInjectorImpl implements PropertyInjector
       }
    }
 
-   protected void populateMap(Class clazz, ResteasyProviderFactory factory)
+   protected void populateMap(Class<?> clazz, ResteasyProviderFactory factory)
    {
       for (Field field : clazz.getDeclaredFields())
       {
          Annotation[] annotations = field.getAnnotations();
          if (annotations == null || annotations.length == 0) continue;
-         Class type = field.getType();
+         Class<?> type = field.getType();
          Type genericType = field.getGenericType();
 
-         ValueInjector extractor = factory.getInjectorFactory().createParameterExtractor(clazz, field, type, genericType, annotations);
-         if (extractor != null && !(extractor instanceof MessageBodyParameterInjector))
+         ValueInjector extractor = getParameterExtractor(clazz, factory, field, annotations, type, genericType);
+         if (extractor != null)
          {
             if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
             fieldMap.put(field, extractor);
@@ -155,11 +158,11 @@ public class PropertyInjectorImpl implements PropertyInjector
          Annotation[] annotations = method.getAnnotations();
          if (annotations == null || annotations.length == 0) continue;
 
-         Class type = method.getParameterTypes()[0];
+         Class<?> type = method.getParameterTypes()[0];
          Type genericType = method.getGenericParameterTypes()[0];
 
-         ValueInjector extractor = factory.getInjectorFactory().createParameterExtractor(clazz, method, type, genericType, annotations);
-         if (extractor != null && !(extractor instanceof MessageBodyParameterInjector))
+         ValueInjector extractor = getParameterExtractor(clazz, factory, method, annotations, type, genericType);
+         if (extractor != null)
          {
             long hash = 0;
             try
@@ -186,6 +189,14 @@ public class PropertyInjectorImpl implements PropertyInjector
          populateMap(clazz.getSuperclass(), factory);
 
 
+   }
+
+   private ValueInjector getParameterExtractor(Class<?> clazz, ResteasyProviderFactory factory, AccessibleObject accessibleObject,
+         Annotation[] annotations, Class<?> type, Type genericType)
+   {
+      boolean extractBody = FindAnnotation.findAnnotation(annotations, Body.class) != null;
+      return factory.getInjectorFactory().createParameterExtractor(clazz, accessibleObject, type, genericType,
+            annotations, extractBody);
    }
 
    public void inject(HttpRequest request, HttpResponse response, Object target) throws Failure
