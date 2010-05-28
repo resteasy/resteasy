@@ -36,6 +36,8 @@ public abstract class BaseResourceTest
    public static void after() throws Exception
    {
       EmbeddedContainer.stop();
+      dispatcher = null;
+      deployment = null;
    }
 
    public Registry getRegistry()
