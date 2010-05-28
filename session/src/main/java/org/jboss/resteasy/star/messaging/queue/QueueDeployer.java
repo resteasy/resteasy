@@ -7,6 +7,7 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.star.messaging.queue.push.PushConsumerResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class QueueDeployer
    protected Registry registry;
    protected List<QueueDeployment> queues = new ArrayList<QueueDeployment>();
    protected QueueDestinationsResource destination;
-   protected ExecutorService ackTimExecutorService;
+   protected ExecutorService ackTimeoutExecutorService;
    protected ClientSessionFactory sessionFactory;
    protected boolean started;
 
@@ -56,14 +57,14 @@ public class QueueDeployer
       this.queues = queues;
    }
 
-   public ExecutorService getAckTimExecutorService()
+   public ExecutorService getAckTimeoutExecutorService()
    {
-      return ackTimExecutorService;
+      return ackTimeoutExecutorService;
    }
 
-   public void setAckTimExecutorService(ExecutorService ackTimExecutorService)
+   public void setAckTimeoutExecutorService(ExecutorService ackTimeoutExecutorService)
    {
-      this.ackTimExecutorService = ackTimExecutorService;
+      this.ackTimeoutExecutorService = ackTimeoutExecutorService;
    }
 
    public ClientSessionFactory getSessionFactory()
@@ -79,7 +80,7 @@ public class QueueDeployer
    public void start() throws Exception
    {
 
-      if (ackTimExecutorService == null) ackTimExecutorService = Executors.newCachedThreadPool();
+      if (ackTimeoutExecutorService == null) ackTimeoutExecutorService = Executors.newCachedThreadPool();
       if (sessionFactory == null)
          sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
 
@@ -128,12 +129,17 @@ public class QueueDeployer
       {
          AcknowledgedConsumersResource acked = new AcknowledgedConsumersResource();
          acked.setAckTimeoutSeconds(queueDeployment.getAckTimeoutSeconds());
-         acked.setAckTimeoutService(ackTimExecutorService);
+         acked.setAckTimeoutService(ackTimeoutExecutorService);
          consumers = acked;
       }
       consumers.setDestination(queueName);
       consumers.setSessionFactory(sessionFactory);
       queueResource.setConsumers(consumers);
+
+      PushConsumerResource push = new PushConsumerResource();
+      push.setDestination(queueName);
+      push.setSessionFactory(sessionFactory);
+      queueResource.setPushConsumers(push);
 
       PostMessage sender = null;
       if (queueDeployment.isDuplicatesAllowed())

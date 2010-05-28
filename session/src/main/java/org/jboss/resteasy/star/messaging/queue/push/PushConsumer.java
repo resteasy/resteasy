@@ -52,6 +52,11 @@ public class PushConsumer implements MessageHandler
       return registration;
    }
 
+   public String getDestination()
+   {
+      return destination;
+   }
+
    public void start() throws Exception
    {
       if (registration.getAuthenticationMechanism() != null)
@@ -80,6 +85,7 @@ public class PushConsumer implements MessageHandler
       session = factory.createSession(false, false);
       consumer = session.createConsumer(destination);
       consumer.setMessageHandler(this);
+      session.start();
    }
 
    public void stop()

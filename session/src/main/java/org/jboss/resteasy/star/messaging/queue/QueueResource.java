@@ -2,6 +2,7 @@ package org.jboss.resteasy.star.messaging.queue;
 
 import org.jboss.resteasy.star.messaging.Constants;
 import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
+import org.jboss.resteasy.star.messaging.queue.push.PushConsumerResource;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -24,6 +25,7 @@ public class QueueResource
    protected String destination;
    protected PostMessage sender;
    protected ConsumersResource consumers;
+   protected PushConsumerResource pushConsumers;
 
    public void start() throws Exception
    {
@@ -32,6 +34,7 @@ public class QueueResource
    public void stop()
    {
       consumers.stop();
+      pushConsumers.stop();
    }
 
    public PostMessage getSender()
@@ -57,6 +60,7 @@ public class QueueResource
       setSenderLink(builder, uriInfo);
       setSenderLink(builder, uriInfo);
       setPollerLink(builder, uriInfo);
+      setPushSubscriptionsLink(builder, uriInfo);
       return builder.build();
    }
 
@@ -67,6 +71,7 @@ public class QueueResource
       Response.ResponseBuilder builder = Response.ok();
       setSenderLink(builder, uriInfo);
       setPollerLink(builder, uriInfo);
+      setPushSubscriptionsLink(builder, uriInfo);
       return builder.build();
    }
 
@@ -84,6 +89,14 @@ public class QueueResource
       builder.path("consume-next");
       String uri = builder.build().toString();
       LinkHeaderSupport.setLinkHeader(response, "consume-next", "consume-next", uri, null);
+   }
+
+   protected void setPushSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
+   {
+      UriBuilder builder = info.getRequestUriBuilder();
+      builder.path("push-subscriptions");
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "push-subscriptions", "push-subscriptions", uri, null);
    }
 
 
@@ -131,5 +144,16 @@ public class QueueResource
    public ConsumersResource getConsumers()
    {
       return consumers;
+   }
+
+   public void setPushConsumers(PushConsumerResource pushConsumers)
+   {
+      this.pushConsumers = pushConsumers;
+   }
+
+   @Path("push-subscriptions")
+   public PushConsumerResource getPushConsumers()
+   {
+      return pushConsumers;
    }
 }

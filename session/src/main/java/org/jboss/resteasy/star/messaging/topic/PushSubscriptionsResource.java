@@ -1,7 +1,10 @@
-package org.jboss.resteasy.star.messaging.queue.push;
+package org.jboss.resteasy.star.messaging.topic;
 
+import org.hornetq.api.core.HornetQException;
+import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
+import org.jboss.resteasy.star.messaging.queue.push.PushConsumer;
 import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 
 import javax.ws.rs.DELETE;
@@ -22,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class PushConsumerResource
+public class PushSubscriptionsResource
 {
    protected Map<String, PushConsumer> consumers = new ConcurrentHashMap<String, PushConsumer>();
    protected ClientSessionFactory sessionFactory;
@@ -35,6 +38,45 @@ public class PushConsumerResource
       for (PushConsumer consumer : consumers.values())
       {
          consumer.stop();
+         if (consumer.getRegistration().isDurable() == false)
+         {
+            deleteSubscriberQueue(consumer);
+         }
+      }
+   }
+
+   public void createSubscription(String subscriptionName, boolean durable)
+   {
+      ClientSession session = null;
+      try
+      {
+         session = sessionFactory.createSession();
+
+         if (durable)
+         {
+            session.createQueue(destination, subscriptionName, true);
+         }
+         else
+         {
+            session.createTemporaryQueue(destination, subscriptionName);
+         }
+      }
+      catch (HornetQException e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
+         if (session != null)
+         {
+            try
+            {
+               session.close();
+            }
+            catch (HornetQException e)
+            {
+            }
+         }
       }
    }
 
@@ -44,7 +86,8 @@ public class PushConsumerResource
    {
       System.out.println("PushRegistration: " + registration);
       String genId = sessionCounter.getAndIncrement() + "-" + startup;
-      PushConsumer consumer = new PushConsumer(sessionFactory, destination, genId, registration);
+      createSubscription(genId, registration.isDurable());
+      PushConsumer consumer = new PushConsumer(sessionFactory, genId, genId, registration);
       try
       {
          consumer.start();
@@ -84,6 +127,7 @@ public class PushConsumerResource
          throw new WebApplicationException(Response.status(404).entity("Could not find consumer.").type("text/plain").build());
       }
       consumer.stop();
+      deleteSubscriberQueue(consumer);
    }
 
    public Map<String, PushConsumer> getConsumers()
@@ -110,4 +154,33 @@ public class PushConsumerResource
    {
       this.destination = destination;
    }
+
+   private void deleteSubscriberQueue(PushConsumer consumer)
+   {
+      String subscriptionName = consumer.getDestination();
+      ClientSession session = null;
+      try
+      {
+         session = sessionFactory.createSession();
+
+         session.deleteQueue(subscriptionName);
+      }
+      catch (HornetQException e)
+      {
+      }
+      finally
+      {
+         if (session != null)
+         {
+            try
+            {
+               session.close();
+            }
+            catch (HornetQException e)
+            {
+            }
+         }
+      }
+   }
+
 }
