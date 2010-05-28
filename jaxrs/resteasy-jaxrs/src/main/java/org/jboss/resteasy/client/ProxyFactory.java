@@ -1,22 +1,22 @@
 package org.jboss.resteasy.client;
 
-import org.jboss.resteasy.client.core.ClientInvoker;
-import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
-import org.jboss.resteasy.client.core.ClientProxy;
-import org.jboss.resteasy.client.core.extractors.DefaultEntityExtractorFactory;
-import org.jboss.resteasy.client.core.extractors.ClientErrorHandler;
-import org.jboss.resteasy.client.core.extractors.EntityExtractor;
-import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
-import org.jboss.resteasy.spi.ProviderFactoryDelegate;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.IsHttpMethod;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Set;
+
+import org.jboss.resteasy.client.core.ClientInvoker;
+import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
+import org.jboss.resteasy.client.core.ClientProxy;
+import org.jboss.resteasy.client.core.extractors.DefaultEntityExtractorFactory;
+import org.jboss.resteasy.client.core.extractors.EntityExtractor;
+import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
+import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
+import org.jboss.resteasy.spi.ProviderFactoryDelegate;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.IsHttpMethod;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -54,7 +54,7 @@ public class ProxyFactory
 
    @SuppressWarnings("unchecked")
    public static <T> T create(Class<T> clazz, URI baseUri, ClientExecutor executor,
-         ResteasyProviderFactory providerFactory, DefaultEntityExtractorFactory extractorFactory)
+         ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory)
    {
       HashMap<Method, ClientInvoker> methodMap = new HashMap<Method, ClientInvoker>();
 
@@ -70,8 +70,7 @@ public class ProxyFactory
          {
             throw new RuntimeException("You must use at least one, but no more than one http method annotation on: " + method.toString());
          }
-         ClientErrorHandler errorHandler = new ClientErrorHandler(providerFactory.getClientErrorInterceptors());
-         EntityExtractor extractor = extractorFactory.createExtractor(method, errorHandler);
+         EntityExtractor extractor = extractorFactory.createExtractor(method);
          ClientInvoker invoker = new ClientInvoker(baseUri, clazz, method, providerFactory, executor, extractor);
          ClientInvokerInterceptorFactory.applyDefaultInterceptors(invoker, providerFactory, clazz, method);
          invoker.setHttpMethod(httpMethods.iterator().next());

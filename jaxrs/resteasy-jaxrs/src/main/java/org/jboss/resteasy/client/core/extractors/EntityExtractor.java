@@ -1,10 +1,10 @@
 package org.jboss.resteasy.client.core.extractors;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.core.BaseClientResponse;
 
 /**
- * EntityExtractors extract objects from responses.  Different types of extractors
+ * EntityExtractor extract objects from responses. An extractor can extract a
+ * status, a header, a cookie, the response body, the clientRequest object, the
+ * clientResponse object, or anything else that a "response object" might need.
  * 
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
@@ -13,5 +13,5 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
  */
 public interface EntityExtractor<T>
 {
-   T extractEntity(ClientRequest request, BaseClientResponse<T> clientResponse);
+   T extractEntity(ClientRequestContext context, Object... args);
 }

@@ -11,6 +11,8 @@ import javax.ws.rs.ext.Providers;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.core.extractors.ClientErrorHandler;
+import org.jboss.resteasy.client.core.extractors.ClientRequestContext;
 import org.jboss.resteasy.client.core.extractors.EntityExtractor;
 import org.jboss.resteasy.client.core.marshallers.ClientMarshallerFactory;
 import org.jboss.resteasy.client.core.marshallers.Marshaller;
@@ -93,9 +95,11 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
          {
             throw new RuntimeException(e);
          }
+         ClientErrorHandler errorHandler = new ClientErrorHandler(providerFactory.getClientErrorInterceptors());
          clientResponse.setAttributeExceptionsTo(method.toString());
          clientResponse.setAnnotations(method.getAnnotations());
-         return extractor.extractEntity(request, clientResponse);
+         ClientRequestContext clientRequestContext = new ClientRequestContext(request, clientResponse, errorHandler);
+         return extractor.extractEntity(clientRequestContext);
       }
       finally
       {
