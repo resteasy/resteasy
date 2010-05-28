@@ -111,6 +111,7 @@ public class PushConsumer implements MessageHandler
    @Override
    public void onMessage(ClientMessage clientMessage)
    {
+      System.out.println("onMessage: " + id);
       Link next = nextPost;
       String httpMethod = method;
 

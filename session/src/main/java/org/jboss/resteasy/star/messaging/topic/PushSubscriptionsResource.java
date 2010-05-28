@@ -1,11 +1,11 @@
 package org.jboss.resteasy.star.messaging.topic;
 
 import org.hornetq.api.core.HornetQException;
+import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.jboss.resteasy.star.messaging.queue.push.PushConsumer;
-import org.jboss.resteasy.star.messaging.queue.push.PushStore;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,7 +32,7 @@ public class PushSubscriptionsResource
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected final AtomicLong sessionCounter = new AtomicLong(1);
-   protected PushStore pushStore;
+   protected TopicPushStore pushStore;
 
    public void stop()
    {
@@ -46,12 +46,12 @@ public class PushSubscriptionsResource
       }
    }
 
-   public PushStore getPushStore()
+   public TopicPushStore getPushStore()
    {
       return pushStore;
    }
 
-   public void setPushStore(PushStore pushStore)
+   public void setPushStore(TopicPushStore pushStore)
    {
       this.pushStore = pushStore;
    }
@@ -89,6 +89,30 @@ public class PushSubscriptionsResource
             }
          }
       }
+   }
+
+   public void addRegistration(PushTopicRegistration reg) throws Exception
+   {
+      String destination = reg.getDestination();
+      ClientSession session = sessionFactory.createSession(false, false, false);
+      ClientSession.QueueQuery query = session.queueQuery(new SimpleString(destination));
+      if (!query.isExists())
+      {
+         throw new Exception("Durable subscriber no longer exists: " + destination + " for push subscriber: " + reg.getTarget().getDelegate());
+      }
+      PushConsumer consumer = new PushConsumer(sessionFactory, reg.getDestination(), reg.getId(), reg);
+      try
+      {
+         consumer.start();
+      }
+      catch (Exception e)
+      {
+         consumer.stop();
+         throw new Exception("Failed starting push subscriber for " + destination + " of push subscriber: " + reg.getTarget().getDelegate(), e);
+      }
+
+      consumers.put(reg.getId(), consumer);
+
    }
 
 
