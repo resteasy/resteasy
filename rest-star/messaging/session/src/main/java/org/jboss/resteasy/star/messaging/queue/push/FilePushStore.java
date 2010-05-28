@@ -23,7 +23,7 @@ public class FilePushStore implements PushStore
 {
    @XmlRootElement(name = "push-store")
    @XmlAccessorType(XmlAccessType.PROPERTY)
-   private static class Store
+   protected static class Store
    {
       private List<PushRegistration> list = new ArrayList<PushRegistration>();
 
@@ -39,9 +39,9 @@ public class FilePushStore implements PushStore
       }
    }
 
-   private Map<String, PushRegistration> map = new HashMap<String, PushRegistration>();
-   private File file;
-   private JAXBContext ctx;
+   protected Map<String, PushRegistration> map = new HashMap<String, PushRegistration>();
+   protected File file;
+   protected JAXBContext ctx;
 
    public FilePushStore(String filename) throws Exception
    {

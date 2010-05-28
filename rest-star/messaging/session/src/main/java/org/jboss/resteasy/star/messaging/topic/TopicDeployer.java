@@ -28,6 +28,28 @@ public class TopicDeployer
    protected ExecutorService ackTimeoutExecutorService;
    protected ClientSessionFactory sessionFactory;
    protected boolean started;
+   protected String pushStoreFile;
+   protected TopicPushStore pushStore;
+
+   public String getPushStoreFile()
+   {
+      return pushStoreFile;
+   }
+
+   public void setPushStoreFile(String pushStoreFile)
+   {
+      this.pushStoreFile = pushStoreFile;
+   }
+
+   public TopicPushStore getPushStore()
+   {
+      return pushStore;
+   }
+
+   public void setPushStore(TopicPushStore pushStore)
+   {
+      this.pushStore = pushStore;
+   }
 
    public Registry getRegistry()
    {
@@ -78,6 +100,11 @@ public class TopicDeployer
 
 
       started = true;
+
+      if (pushStoreFile != null && pushStore == null)
+      {
+         pushStore = new FileTopicPushStore(pushStoreFile);
+      }
 
       for (TopicDeployment topic : topics)
       {
@@ -140,6 +167,17 @@ public class TopicDeployer
       sender.setDestination(queueName);
       sender.setSessionFactory(sessionFactory);
       topicResource.setSender(sender);
+
+      if (pushStore != null)
+      {
+         push.setPushStore(pushStore);
+         List<PushTopicRegistration> regs = pushStore.getByTopic(queueName);
+         for (PushTopicRegistration reg : regs)
+         {
+            push.addRegistration(reg);
+         }
+      }
+
 
       destination.getTopics().put(queueName, topicResource);
       topicResource.start();

@@ -9,10 +9,6 @@ import org.hornetq.core.server.HornetQServers;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.Constants;
-import org.jboss.resteasy.star.messaging.queue.QueueDeployer;
-import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServerDeployer;
 import org.jboss.resteasy.star.messaging.topic.TopicDeployer;
 import org.jboss.resteasy.star.messaging.topic.TopicDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -35,7 +31,6 @@ public class AutoAckTopicTest extends BaseResourceTest
    @BeforeClass
    public static void setup() throws Exception
    {
-
       Configuration configuration = new ConfigurationImpl();
       configuration.setPersistenceEnabled(false);
       configuration.setSecurityEnabled(false);

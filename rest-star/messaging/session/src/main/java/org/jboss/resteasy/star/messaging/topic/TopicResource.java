@@ -30,6 +30,7 @@ public class TopicResource
    public void stop()
    {
       subscriptions.stop();
+      pushSubscriptions.stop();
    }
 
    public PostMessage getSender()
