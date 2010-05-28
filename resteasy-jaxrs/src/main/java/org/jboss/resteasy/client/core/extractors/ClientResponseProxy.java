@@ -4,33 +4,33 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.core.BaseClientResponse;
-
 /**
+ * Implement a client proxy for ProxyFactory. This class implements each method
+ * using an EntityExtractor
+ * 
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
+ * @see ProxyFactory
+ * @see EntityExtractor
+ * @see EntityExtractorFactory
+ * @see ResponseObjectEntityExtractorFactory
  */
 @SuppressWarnings("unchecked")
 public class ClientResponseProxy implements InvocationHandler
 {
-   private ClientRequest request;
-   private BaseClientResponse response;
-   private Map<Method, ResponseHandler> methodMap;
+   private ClientRequestContext context;
+   private Map<Method, EntityExtractor<?>> methodMap;
    private Class<?> clazz;
 
-   public ClientResponseProxy(ClientRequest request, BaseClientResponse response, Map<Method, ResponseHandler> methodMap,
-         Class<?> clazz)
+   public ClientResponseProxy(ClientRequestContext context, Map<Method, EntityExtractor<?>> methodMap, Class<?> clazz)
    {
       super();
-      this.request = request;
-      this.response = response;
       this.methodMap = methodMap;
       this.clazz = clazz;
+      this.context = context;
    }
 
-   public Object invoke(Object o, Method method, Object[] args)
-         throws Throwable
+   public Object invoke(Object o, Method method, Object[] args) throws Throwable
    {
       // equals and hashCode were added for cases where the proxy is added to
       // collections. The Spring transaction management, for example, adds
@@ -45,8 +45,11 @@ public class ClientResponseProxy implements InvocationHandler
          return this.hashCode();
       }
 
-      ResponseHandler handler = methodMap.get(method);
-      return handler.getResponseObject(request, response, args);
+      EntityExtractor entityExtractor = methodMap.get(method);
+      if (entityExtractor == null)
+         throw new RuntimeException("Could not process method " + method);
+
+      return entityExtractor.extractEntity(context, entityExtractor, args);
    }
 
    @Override

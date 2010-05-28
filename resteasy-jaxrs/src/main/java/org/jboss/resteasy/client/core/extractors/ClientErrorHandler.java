@@ -7,13 +7,21 @@ import java.util.List;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 
+/**
+ * This class handles client errors (of course...).  
+ *  
+ * @author Solomon.Duskis
+ *
+ */
+
+// TODO: expand this class for more robust, complicated error handling
+
 public class ClientErrorHandler
 {
    private List<ClientErrorInterceptor> interceptors;
 
    public ClientErrorHandler(List<ClientErrorInterceptor> interceptors)
    {
-      super();
       this.interceptors = interceptors;
    }
 
