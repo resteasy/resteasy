@@ -7,7 +7,10 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.star.messaging.queue.push.FilePushStore;
 import org.jboss.resteasy.star.messaging.queue.push.PushConsumerResource;
+import org.jboss.resteasy.star.messaging.queue.push.PushStore;
+import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,19 @@ public class QueueDeployer
    protected ExecutorService ackTimeoutExecutorService;
    protected ClientSessionFactory sessionFactory;
    protected boolean started;
+   protected QueueSettings defaultSettings = QueueSettings.defaultSettings;
+   protected String pushStoreFile;
+   protected PushStore pushStore;
+
+   public QueueSettings getDefaultSettings()
+   {
+      return defaultSettings;
+   }
+
+   public void setDefaultSettings(QueueSettings defaultSettings)
+   {
+      this.defaultSettings = defaultSettings;
+   }
 
    public Registry getRegistry()
    {
@@ -77,6 +93,26 @@ public class QueueDeployer
       this.sessionFactory = sessionFactory;
    }
 
+   public String getPushStoreFile()
+   {
+      return pushStoreFile;
+   }
+
+   public void setPushStoreFile(String pushStoreFile)
+   {
+      this.pushStoreFile = pushStoreFile;
+   }
+
+   public PushStore getPushStore()
+   {
+      return pushStore;
+   }
+
+   public void setPushStore(PushStore pushStore)
+   {
+      this.pushStore = pushStore;
+   }
+
    public void start() throws Exception
    {
 
@@ -88,6 +124,11 @@ public class QueueDeployer
       destination = new QueueDestinationsResource();
 
       started = true;
+
+      if (pushStoreFile != null && pushStore == null)
+      {
+         pushStore = new FilePushStore(pushStoreFile);
+      }
 
       for (QueueDeployment queueDeployment : queues)
       {
@@ -155,8 +196,18 @@ public class QueueDeployer
       sender.setSessionFactory(sessionFactory);
       queueResource.setSender(sender);
 
-      destination.getQueues().put(queueName, queueResource);
+      if (pushStore != null)
+      {
+         push.setPushStore(pushStore);
+         List<PushRegistration> regs = pushStore.getByDestination(queueName);
+         for (PushRegistration reg : regs)
+         {
+            push.addRegistration(reg);
+         }
+      }
+
       queueResource.start();
+      destination.getQueues().put(queueName, queueResource);
    }
 
    public void stop() throws Exception
