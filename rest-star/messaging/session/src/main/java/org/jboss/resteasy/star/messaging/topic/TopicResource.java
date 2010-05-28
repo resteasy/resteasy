@@ -1,16 +1,10 @@
 package org.jboss.resteasy.star.messaging.topic;
 
-import org.jboss.resteasy.star.messaging.Constants;
 import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
-import org.jboss.resteasy.star.messaging.queue.ConsumersResource;
 import org.jboss.resteasy.star.messaging.queue.PostMessage;
-import org.jboss.resteasy.star.messaging.queue.QueueConsumer;
 
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -27,6 +21,7 @@ public class TopicResource
    protected String destination;
    protected PostMessage sender;
    protected SubscriptionsResource subscriptions;
+   protected PushSubscriptionsResource pushSubscriptions;
 
    public void start() throws Exception
    {
@@ -59,6 +54,7 @@ public class TopicResource
       Response.ResponseBuilder builder = Response.ok(msg);
       setSenderLink(builder, uriInfo);
       setSubscriptionsLink(builder, uriInfo);
+      setPushSubscriptionsLink(builder, uriInfo);
       return builder.build();
    }
 
@@ -69,6 +65,7 @@ public class TopicResource
       Response.ResponseBuilder builder = Response.ok();
       setSenderLink(builder, uriInfo);
       setSubscriptionsLink(builder, uriInfo);
+      setPushSubscriptionsLink(builder, uriInfo);
       return builder.build();
    }
 
@@ -86,6 +83,14 @@ public class TopicResource
       builder.path("subscriptions");
       String uri = builder.build().toString();
       LinkHeaderSupport.setLinkHeader(response, "subscriptions", "subscriptions", uri, null);
+   }
+
+   protected void setPushSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
+   {
+      UriBuilder builder = info.getRequestUriBuilder();
+      builder.path("push-subscriptions");
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "push-subscriptions", "push-subscriptions", uri, null);
    }
 
 
@@ -115,5 +120,16 @@ public class TopicResource
    public SubscriptionsResource getSubscriptions()
    {
       return subscriptions;
+   }
+
+   @Path("push-subscriptions")
+   public PushSubscriptionsResource getPushSubscriptions()
+   {
+      return pushSubscriptions;
+   }
+
+   public void setPushSubscriptions(PushSubscriptionsResource pushSubscriptions)
+   {
+      this.pushSubscriptions = pushSubscriptions;
    }
 }

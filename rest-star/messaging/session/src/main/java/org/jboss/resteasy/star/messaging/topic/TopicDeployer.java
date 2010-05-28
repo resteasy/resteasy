@@ -10,7 +10,6 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.queue.PostMessage;
 import org.jboss.resteasy.star.messaging.queue.PostMessageDupsOk;
 import org.jboss.resteasy.star.messaging.queue.PostMessageNoDups;
-import org.jboss.resteasy.star.messaging.queue.QueueDestinationsResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class TopicDeployer
    protected Registry registry;
    protected List<TopicDeployment> topics = new ArrayList<TopicDeployment>();
    protected TopicDestinationsResource destination = new TopicDestinationsResource();
-   protected ExecutorService ackTimExecutorService;
+   protected ExecutorService ackTimeoutExecutorService;
    protected ClientSessionFactory sessionFactory;
    protected boolean started;
 
@@ -50,14 +49,14 @@ public class TopicDeployer
       this.topics = topics;
    }
 
-   public ExecutorService getAckTimExecutorService()
+   public ExecutorService getAckTimeoutExecutorService()
    {
-      return ackTimExecutorService;
+      return ackTimeoutExecutorService;
    }
 
-   public void setAckTimExecutorService(ExecutorService ackTimExecutorService)
+   public void setAckTimeoutExecutorService(ExecutorService ackTimeoutExecutorService)
    {
-      this.ackTimExecutorService = ackTimExecutorService;
+      this.ackTimeoutExecutorService = ackTimeoutExecutorService;
    }
 
    public ClientSessionFactory getSessionFactory()
@@ -73,7 +72,7 @@ public class TopicDeployer
    public void start() throws Exception
    {
 
-      if (ackTimExecutorService == null) ackTimExecutorService = Executors.newCachedThreadPool();
+      if (ackTimeoutExecutorService == null) ackTimeoutExecutorService = Executors.newCachedThreadPool();
       if (sessionFactory == null)
          sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
 
@@ -119,10 +118,14 @@ public class TopicDeployer
       }
       else
       {
-         subscriptionsResource.setConsumerFactory(AcknowledgedSubscriptionResource.getFactory(ackTimExecutorService, topicDeployment.getAckTimeoutSeconds()));
+         subscriptionsResource.setConsumerFactory(AcknowledgedSubscriptionResource.getFactory(ackTimeoutExecutorService, topicDeployment.getAckTimeoutSeconds()));
       }
       subscriptionsResource.setDestination(queueName);
       subscriptionsResource.setSessionFactory(sessionFactory);
+      PushSubscriptionsResource push = new PushSubscriptionsResource();
+      push.setDestination(queueName);
+      push.setSessionFactory(sessionFactory);
+      topicResource.setPushSubscriptions(push);
 
       PostMessage sender = null;
       if (topicDeployment.isDuplicatesAllowed())

@@ -80,4 +80,16 @@ public class PushRegistration implements Serializable
    {
       this.headers = headers;
    }
+
+   @Override
+   public String toString()
+   {
+      return "PushRegistration{" +
+              "durable=" + durable +
+              ", target=" + target +
+              ", authenticationMechanism=" + authenticationMechanism +
+              ", headers=" + headers +
+              ", subscription='" + subscription + '\'' +
+              '}';
+   }
 }

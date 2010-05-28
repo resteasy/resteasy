@@ -22,6 +22,15 @@ public class XmlLink implements Serializable
    protected Link delegate;
    protected String method;
 
+   public XmlLink(Link delegate)
+   {
+      this.delegate = delegate;
+   }
+
+   public XmlLink()
+   {
+   }
+
    @XmlAttribute
    public String getMethod()
    {
@@ -98,9 +107,13 @@ public class XmlLink implements Serializable
       return getDelegate().request(executor);
    }
 
+   @Override
    public String toString()
    {
-      return getDelegate().toString();
+      return "XmlLink{" +
+              "delegate=" + delegate +
+              ", method='" + method + '\'' +
+              '}';
    }
 
    public Link getDelegate()
@@ -108,5 +121,6 @@ public class XmlLink implements Serializable
       if (delegate == null) delegate = new Link();
       return delegate;
    }
+
 
 }

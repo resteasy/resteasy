@@ -39,4 +39,13 @@ public class XmlHttpHeader implements Serializable
    {
       this.value = value;
    }
+
+   @Override
+   public String toString()
+   {
+      return "XmlHttpHeader{" +
+              "name='" + name + '\'' +
+              ", value='" + value + '\'' +
+              '}';
+   }
 }
