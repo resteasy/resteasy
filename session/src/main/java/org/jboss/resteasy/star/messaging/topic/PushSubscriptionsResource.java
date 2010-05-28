@@ -5,7 +5,7 @@ import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.jboss.resteasy.star.messaging.queue.push.PushConsumer;
-import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
+import org.jboss.resteasy.star.messaging.queue.push.PushStore;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,6 +32,7 @@ public class PushSubscriptionsResource
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected final AtomicLong sessionCounter = new AtomicLong(1);
+   protected PushStore pushStore;
 
    public void stop()
    {
@@ -43,6 +44,16 @@ public class PushSubscriptionsResource
             deleteSubscriberQueue(consumer);
          }
       }
+   }
+
+   public PushStore getPushStore()
+   {
+      return pushStore;
+   }
+
+   public void setPushStore(PushStore pushStore)
+   {
+      this.pushStore = pushStore;
    }
 
    public void createSubscription(String subscriptionName, boolean durable)
@@ -82,20 +93,28 @@ public class PushSubscriptionsResource
 
 
    @POST
-   public Response create(@Context UriInfo uriInfo, PushRegistration registration)
+   public Response create(@Context UriInfo uriInfo, PushTopicRegistration registration)
    {
       System.out.println("PushRegistration: " + registration);
-      String genId = sessionCounter.getAndIncrement() + "-" + startup;
+      // todo put some logic here to check for duplicates
+      String genId = sessionCounter.getAndIncrement() + "-topic-" + destination + "-" + startup;
+      registration.setId(genId);
+      registration.setDestination(genId);
+      registration.setTopic(destination);
       createSubscription(genId, registration.isDurable());
       PushConsumer consumer = new PushConsumer(sessionFactory, genId, genId, registration);
       try
       {
          consumer.start();
+         if (registration.isDurable() && pushStore != null)
+         {
+            pushStore.add(registration);
+         }
       }
       catch (Exception e)
       {
          consumer.stop();
-         throw new WebApplicationException(Response.serverError().entity("Failed to start consumer.").type("text/plain").build());
+         throw new WebApplicationException(e, Response.serverError().entity("Failed to start consumer.").type("text/plain").build());
       }
 
       consumers.put(genId, consumer);
@@ -107,14 +126,14 @@ public class PushSubscriptionsResource
    @GET
    @Path("{consumer-id")
    @Produces("application/xml")
-   public PushRegistration getConsumer(@PathParam("consumer-id") String consumerId)
+   public PushTopicRegistration getConsumer(@PathParam("consumer-id") String consumerId)
    {
       PushConsumer consumer = consumers.get(consumerId);
       if (consumer == null)
       {
          throw new WebApplicationException(Response.status(404).entity("Could not find consumer.").type("text/plain").build());
       }
-      return consumer.getRegistration();
+      return (PushTopicRegistration) consumer.getRegistration();
    }
 
    @DELETE

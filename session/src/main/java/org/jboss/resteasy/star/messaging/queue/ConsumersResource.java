@@ -54,7 +54,7 @@ public class ConsumersResource
    public QueueConsumer createConsumer()
            throws HornetQException
    {
-      String genId = sessionCounter.getAndIncrement() + "-" + startup;
+      String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
       QueueConsumer consumer = instantiate(genId);
       queueConsumers.put(genId, consumer);
       return consumer;

@@ -86,6 +86,7 @@ public class PushConsumer implements MessageHandler
       consumer = session.createConsumer(destination);
       consumer.setMessageHandler(this);
       session.start();
+      System.out.println("Push consumer started for: " + nextPost);
    }
 
    public void stop()

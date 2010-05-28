@@ -2,6 +2,7 @@ package org.jboss.resteasy.star.messaging.queue.push.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -17,24 +18,37 @@ import java.util.List;
  */
 @XmlRootElement(name = "push-registration")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = {"subscription", "durable", "target", "authenticationMechanism", "headers"})
+@XmlType(propOrder = {"destination", "durable", "target", "authenticationMechanism", "headers"})
 public class PushRegistration implements Serializable
 {
+   private String id;
    private boolean durable;
    private XmlLink target;
    private Authentication authenticationMechanism;
    private List<XmlHttpHeader> headers = new ArrayList<XmlHttpHeader>();
-   private String subscription;
+   private String destination;
 
-   @XmlElement
-   public String getSubscription()
+
+   @XmlAttribute
+   public String getId()
    {
-      return subscription;
+      return id;
    }
 
-   public void setSubscription(String subscription)
+   public void setId(String id)
    {
-      this.subscription = subscription;
+      this.id = id;
+   }
+
+   @XmlElement
+   public String getDestination()
+   {
+      return destination;
+   }
+
+   public void setDestination(String destination)
+   {
+      this.destination = destination;
    }
 
    @XmlElement
@@ -89,7 +103,7 @@ public class PushRegistration implements Serializable
               ", target=" + target +
               ", authenticationMechanism=" + authenticationMechanism +
               ", headers=" + headers +
-              ", subscription='" + subscription + '\'' +
+              ", subscription='" + destination + '\'' +
               '}';
    }
 }

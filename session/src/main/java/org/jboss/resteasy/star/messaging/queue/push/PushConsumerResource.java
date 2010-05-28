@@ -29,6 +29,12 @@ public class PushConsumerResource
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected final AtomicLong sessionCounter = new AtomicLong(1);
+   protected PushStore pushStore;
+
+   public void start()
+   {
+
+   }
 
    public void stop()
    {
@@ -38,21 +44,45 @@ public class PushConsumerResource
       }
    }
 
+   public PushStore getPushStore()
+   {
+      return pushStore;
+   }
+
+   public void setPushStore(PushStore pushStore)
+   {
+      this.pushStore = pushStore;
+   }
+
+   public void addRegistration(PushRegistration reg) throws Exception
+   {
+      PushConsumer consumer = new PushConsumer(sessionFactory, destination, reg.getId(), reg);
+      consumer.start();
+      consumers.put(reg.getId(), consumer);
+   }
 
    @POST
    public Response create(@Context UriInfo uriInfo, PushRegistration registration)
    {
       System.out.println("PushRegistration: " + registration);
+
+      // todo put some logic here to check for duplicates
       String genId = sessionCounter.getAndIncrement() + "-" + startup;
+      registration.setId(genId);
+      registration.setDestination(destination);
       PushConsumer consumer = new PushConsumer(sessionFactory, destination, genId, registration);
       try
       {
          consumer.start();
+         if (registration.isDurable() && pushStore != null)
+         {
+            pushStore.add(registration);
+         }
       }
       catch (Exception e)
       {
          consumer.stop();
-         throw new WebApplicationException(Response.serverError().entity("Failed to start consumer.").type("text/plain").build());
+         throw new WebApplicationException(e, Response.serverError().entity("Failed to start consumer.").type("text/plain").build());
       }
 
       consumers.put(genId, consumer);
