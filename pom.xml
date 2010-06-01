@@ -205,7 +205,7 @@
             <dependency>
                 <groupId>org.codehaus.jettison</groupId>
                 <artifactId>jettison</artifactId>
-                <version>1.1</version>
+                <version>1.2</version>
                 <exclusions>
                     <!-- This results in duplicate stax-api jars. This is the older
             one. A newer is brought in by com.sun.xml.bind:jaxb-impl -->
