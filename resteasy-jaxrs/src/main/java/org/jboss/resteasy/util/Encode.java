@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
  */
 public class Encode
 {
+   private static final String UTF_8 = "UTF-8";
+
    private static final Pattern PARAM_REPLACEMENT = Pattern.compile("_resteasy_uri_parameter");
 
    private static final String[] pathEncoding = new String[128];
@@ -354,7 +356,7 @@ public class Encode
             continue;
          }
          int idx = segment.charAt(i);
-         String encoding = encodingMap[idx];
+         String encoding = encode(idx, encodingMap);
          if (encoding == null)
          {
             result.append(segment.charAt(i));
@@ -365,6 +367,32 @@ public class Encode
          }
       }
       return result.toString();
+   }
+
+   /**
+    * @param zhar        integer representation of character
+    * @param encodingMap encoding map
+    * @return URL encoded character
+    */
+   private static String encode(int zhar, String[] encodingMap)
+   {
+      String encoded;
+      if (zhar < encodingMap.length)
+      {
+         encoded = encodingMap[zhar];
+      }
+      else
+      {
+         try
+         {
+            encoded = URLEncoder.encode(Character.toString((char) zhar), UTF_8);
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      return encoded;
    }
 
    private static String pathParamReplacement(String segment, List<String> params)
@@ -400,7 +428,7 @@ public class Encode
          {
             try
             {
-               decoded.add(URLDecoder.decode(entry.getKey(), "UTF-8"), URLDecoder.decode(value, "UTF-8"));
+               decoded.add(URLDecoder.decode(entry.getKey(), UTF_8), URLDecoder.decode(value, UTF_8));
             }
             catch (UnsupportedEncodingException e)
             {
@@ -421,7 +449,7 @@ public class Encode
          {
             try
             {
-               decoded.add(URLEncoder.encode(entry.getKey(), "UTF-8"), URLEncoder.encode(value, "UTF-8"));
+               decoded.add(URLEncoder.encode(entry.getKey(), UTF_8), URLEncoder.encode(value, UTF_8));
             }
             catch (UnsupportedEncodingException e)
             {
@@ -436,7 +464,7 @@ public class Encode
    {
       try
       {
-         return URLDecoder.decode(string, "UTF-8");
+         return URLDecoder.decode(string, UTF_8);
       }
       catch (UnsupportedEncodingException e)
       {
