@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>net.oauth.core</groupId>
-            <artifactId>oauth</artifactId>
+            <artifactId>oauth-provider</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
