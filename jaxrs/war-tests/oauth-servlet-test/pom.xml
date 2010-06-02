@@ -40,7 +40,7 @@
                 <version>6.1.15</version>
                 <configuration>
                     <!-- By default the artifactId is taken, override it with something simple -->
-                    <contextPath>/</contextPath>
+                    <contextPath>/oauth-servlet-test</contextPath>
                     <scanIntervalSeconds>2</scanIntervalSeconds>
                     <stopKey>foo</stopKey>
                     <stopPort>9999</stopPort>
