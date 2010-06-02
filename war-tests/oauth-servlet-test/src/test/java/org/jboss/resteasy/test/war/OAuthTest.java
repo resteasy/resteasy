@@ -31,11 +31,11 @@ import org.apache.commons.httpclient.auth.AuthScope;
  */
 public class OAuthTest
 {
-	static final String RequestURL = "http://localhost:9095/oauth/requestToken";
-	static final String AccessURL = "http://localhost:9095/oauth/accessToken";
-	static final String ProtectedURL = "http://localhost:9095/rest/security";
-	
-	
+    
+   static final String RequestURL = "http://localhost:9095/oauth-servlet-test/oauth/requestToken";
+   static final String AccessURL = "http://localhost:9095/oauth-servlet-test/oauth/accessToken";
+   static final String ProtectedURL = "http://localhost:9095/oauth-servlet-test/rest/security";
+   
    @Test
    public void testRequestNoParams() throws Exception
    {
