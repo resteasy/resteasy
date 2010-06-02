@@ -30,7 +30,7 @@
     <orderEntry type="library" exported="" name="Maven: javax.xml.bind:jaxb-api:2.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.xml.stream:stax-api:1.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.sun.xml.stream:sjsxp:1.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.codehaus.jettison:jettison:1.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.codehaus.jettison:jettison:1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="module" module-name="tjws" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.1" level="project" />
