@@ -264,10 +264,11 @@ public class Types
       }
       return null;
    }
-   
+
    /**
-    * Finds an actual value of a type variable. The method looks in a class hierarchy for a class defining the variable 
+    * Finds an actual value of a type variable. The method looks in a class hierarchy for a class defining the variable
     * and returns the value if present.
+    *
     * @param clazz
     * @param typeVariable
     * @return actual type of the type variable
@@ -277,15 +278,22 @@ public class Types
       if (typeVariable.getGenericDeclaration() instanceof Class<?>)
       {
          Class<?> classDeclaringTypeVariable = (Class<?>) typeVariable.getGenericDeclaration();
-         
+
          // find the generic version of classDeclaringTypeVariable
+
+         Type fromInterface = getTypeVariableViaGenericInterface(clazz, classDeclaringTypeVariable, typeVariable);
+         if (fromInterface != null)
+         {
+            return fromInterface;
+         }
+
          while (clazz.getSuperclass() != null)
          {
             if (clazz.getSuperclass().equals(classDeclaringTypeVariable))
             {
                // found it
                ParameterizedType parameterizedSuperclass = (ParameterizedType) clazz.getGenericSuperclass();
-               
+
                for (int i = 0; i < classDeclaringTypeVariable.getTypeParameters().length; i++)
                {
                   TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
@@ -299,7 +307,34 @@ public class Types
             clazz = clazz.getSuperclass();
          }
       }
-      
+
       throw new RuntimeException("Unable to determine value of type parameter " + typeVariable);
+   }
+
+
+   private static Type getTypeVariableViaGenericInterface(Class<?> clazz, Class<?> classDeclaringTypeVariable, TypeVariable<?> typeVariable)
+   {
+      for (Type genericInterface : clazz.getGenericInterfaces())
+      {
+
+         if (genericInterface instanceof ParameterizedType)
+         {
+            ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
+
+            for (int i = 0; i < classDeclaringTypeVariable.getTypeParameters().length; i++)
+            {
+               TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
+               if (tv.equals(typeVariable))
+               {
+                  return parameterizedType.getActualTypeArguments()[i];
+               }
+            }
+         }
+         else if (genericInterface instanceof Class)
+         {
+            return getTypeVariableViaGenericInterface((Class<?>) genericInterface, classDeclaringTypeVariable, typeVariable);
+         }
+      }
+      return null;
    }
 }
