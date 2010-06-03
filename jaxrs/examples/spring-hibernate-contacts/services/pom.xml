@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.jboss.resteasy.examples</groupId>
-        <artifactId>spring-hibernate-contacts</artifactId>
+        <artifactId>examples-spring-hibernate-contacts</artifactId>
         <version>2.0-beta-3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
-    <artifactId>spring-hibernate-contacts-services</artifactId>
+    <artifactId>examples-spring-hibernate-contacts-services</artifactId>
     <packaging>war</packaging>
     <name>Example: Spring + Hibernate Contacts - Services</name>
     <version>2.0-beta-3-SNAPSHOT</version>

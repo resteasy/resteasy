@@ -4,10 +4,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
-    <artifactId>spring-hibernate-contacts</artifactId>
+    <artifactId>examples-spring-hibernate-contacts</artifactId>
     <packaging>pom</packaging>
     <version>2.0-beta-3-SNAPSHOT</version>
-    <name>RestContact Maven Webapp</name>
+    <name>Example: RestContact Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <repositories>
         <repository>
