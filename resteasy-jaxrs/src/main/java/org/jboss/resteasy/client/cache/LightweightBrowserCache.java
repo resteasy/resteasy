@@ -91,8 +91,7 @@ public class LightweightBrowserCache implements BrowserCache
 
       if (bytes.addAndGet(sizeDiff) > maxBytes)
       {
-         bytes.set(0);
-         internalCache.clear();
+         clear();
          bytes.addAndGet(sizeDiff);
       }
       return internalCache.put(key, mediaType, headers, cached, expires, etag, lastModified);
