@@ -297,8 +297,14 @@
             </dependency>
             <dependency>
                 <groupId>net.oauth.core</groupId>
-                <artifactId>oauth</artifactId>
-                <version>20090825</version>
+                <artifactId>oauth-provider</artifactId>
+                <version>20100527</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
+                </exclusions> 
             </dependency>
         </dependencies>
     </dependencyManagement>
