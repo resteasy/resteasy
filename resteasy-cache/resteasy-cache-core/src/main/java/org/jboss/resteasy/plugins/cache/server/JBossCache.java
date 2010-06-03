@@ -32,8 +32,8 @@ public class JBossCache implements ServerCache
       private final int expires;
       private final long timestamp = System.currentTimeMillis();
       private final MultivaluedMap<String, Object> headers;
-      private String etag;
-      private MediaType mediaType;
+      private final String etag;
+      private final MediaType mediaType;
 
       private CacheEntry(MultivaluedMap<String, Object> headers, byte[] cached, int expires, String etag, MediaType mediaType)
       {
@@ -152,9 +152,10 @@ public class JBossCache implements ServerCache
       {
          Node leaf = (Node) obj;
          CacheEntry entry = (CacheEntry) leaf.get("entry");
+         if (entry == null) continue;
          if (accept.isCompatible(entry.getMediaType()))
          {
-            return (Entry) leaf.get("entry");
+            return entry;
          }
       }
       return null;
@@ -162,12 +163,13 @@ public class JBossCache implements ServerCache
 
    public Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag)
    {
-      System.out.println("adding...");
+      // there's a race condition here with a concurrent get() method above.  Too bad JBoss Cache doesn't have a way to create
+      // a node before hand then insert it
+      CacheEntry cacheEntry = new CacheEntry(headers, entity, cc.getMaxAge(), etag, mediaType);
       Node parent = cache.getRoot().addChild(Fqn.fromElements(uri));
       Node leaf = parent.addChild(Fqn.fromElements(mediaType.toString()));
-      leaf.put(ExpirationAlgorithmConfig.EXPIRATION_KEY, (cc.getMaxAge() * 1000) + System.currentTimeMillis());
-      CacheEntry cacheEntry = new CacheEntry(headers, entity, cc.getMaxAge(), etag, mediaType);
       leaf.put("entry", cacheEntry);
+      leaf.put(ExpirationAlgorithmConfig.EXPIRATION_KEY, (cc.getMaxAge() * 1000) + System.currentTimeMillis());
       return cacheEntry;
    }
 
