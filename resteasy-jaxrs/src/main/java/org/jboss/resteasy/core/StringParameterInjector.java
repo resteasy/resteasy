@@ -19,6 +19,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -172,6 +173,10 @@ public class StringParameterInjector
       {
          values = new ArrayList<String>(1);
          values.add(defaultValue);
+      }
+      else if (values == null)
+      {
+         values = Collections.emptyList();
       }
       if (type.isArray())
       {

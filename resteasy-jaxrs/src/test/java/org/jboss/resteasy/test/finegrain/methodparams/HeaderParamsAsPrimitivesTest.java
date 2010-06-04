@@ -5,7 +5,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -26,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -712,7 +713,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/boolean")
       public String doGetBoolean(@HeaderParam("boolean") List<Boolean> v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.size());
          return "content";
       }
 
@@ -720,7 +721,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/byte")
       public String doGetByte(@HeaderParam("byte") List<Byte> v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.size());
          return "content";
       }
 
@@ -728,7 +729,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/short")
       public String doGetShort(@HeaderParam("short") List<Short> v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.size());
          return "content";
       }
 
@@ -736,7 +737,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/int")
       public String doGetInteger(@HeaderParam("int") List<Integer> v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.size());
          return "content";
       }
 
@@ -744,7 +745,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/long")
       public String doGetLong(@HeaderParam("long") List<Long> v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.size());
          return "content";
       }
 
@@ -752,7 +753,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGetFloat(@HeaderParam("float") List<Float> v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.size());
          return "content";
       }
 
@@ -760,7 +761,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGetDouble(@HeaderParam("double") List<Double> v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.size());
          return "content";
       }
    }
@@ -946,7 +947,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/boolean")
       public String doGetBoolean(@HeaderParam("boolean") boolean[] v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.length);
          return "content";
       }
 
@@ -954,7 +955,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/short")
       public String doGetShort(@HeaderParam("short") short[] v)
       {
-         Assert.assertEquals(null, v);
+         Assert.assertEquals(0, v.length);
          return "content";
       }
    }
