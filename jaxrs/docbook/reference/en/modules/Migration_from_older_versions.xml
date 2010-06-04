@@ -15,6 +15,10 @@
              <listitem>
                There is a new Filter implementation that is the preferred deployment mechanism.  Servlet-based deployments are still supported, but it is suggested you use to using a FilterDispatcher.  See documentation for more details.
              </listitem>
+             <listitem>
+                 As per required by the spec List or array injection of empty values will return an empty collection or array, not null.  I.e.
+                 (@QueryParam("name") List&lt;String&gt; param)  param will be an empty List.  Resteasy 1.2.x and earlier would return null.
+             </listitem>
          </itemizedlist>
       </para>
    </sect1>
