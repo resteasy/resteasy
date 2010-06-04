@@ -111,8 +111,8 @@
     </build>
     <modules>
         <module>core</module>
-        <module>services</module>
         <module>persistence</module>
+        <module>services</module>
         <module>client</module>
     </modules>
 </project>

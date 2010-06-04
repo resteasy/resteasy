@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy.examples</groupId>
-            <artifactId>spring-hibernate-contacts-core</artifactId>
+            <artifactId>examples-spring-hibernate-contacts-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
