@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.war;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,14 +14,14 @@ import org.junit.Test;
  */
 public class JSAPITest
 {
-	static final String JSAPIURL = "http://localhost:9095/rest-js";
-	
-	
+   static final String JSAPIURL = "http://localhost:9095/rest-js";
+
+
    @Test
    public void test() throws Exception
    {
       HttpClient client = new HttpClient();
-      
+
       GetMethod method = new GetMethod(JSAPIURL);
       int status = client.executeMethod(method);
       Assert.assertEquals(HttpResponseCodes.SC_OK, status);
@@ -28,14 +29,36 @@ public class JSAPITest
       int i = 0;
       int last = 0;
       int line = 1;
-      while((i = response.indexOf('\n', i)) > 0){
-    	  System.err.print(line+": ");
-    	  System.err.print(response.substring(last, i+1));
-    	  line++;
-    	  i++;
-    	  last = i;
+      while ((i = response.indexOf('\n', i)) > 0)
+      {
+         System.err.print(line + ": ");
+         System.err.print(response.substring(last, i + 1));
+         line++;
+         i++;
+         last = i;
       }
       method.releaseConnection();
    }
-   
+
+   @Test
+   public void testJson() throws Exception
+   {
+      ClientRequest request = new ClientRequest("http://localhost:9095/rest/mine/pairs");
+      request.accept("application/json");
+      String rtn = request.getTarget(String.class);
+
+      System.out.println("**************");
+      System.out.println();
+      System.out.println(rtn);
+      request.clear();
+
+      request = new ClientRequest("http://localhost:9095/rest/mine/pairs");
+      request.accept("application/xml");
+      rtn = request.getTarget(String.class);
+
+      System.out.println("******  XML  ********");
+      System.out.println();
+      System.out.println(rtn);
+   }
+
 }
