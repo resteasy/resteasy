@@ -32,4 +32,10 @@ public class FilterBootstrap extends ListenerBootstrap
       if (val == null) val = super.getParameter(name);
       return val;
    }
+
+   @Override
+   public String getInitParameter(String name)
+   {
+      return config.getInitParameter(name);
+   }
 }

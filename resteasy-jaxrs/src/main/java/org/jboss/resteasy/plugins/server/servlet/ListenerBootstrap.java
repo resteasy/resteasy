@@ -47,4 +47,10 @@ public class ListenerBootstrap extends ConfigurationBootstrap
    {
       return servletContext.getInitParameter(name);
    }
+
+   @Override
+   public String getInitParameter(String name)
+   {
+      return servletContext.getInitParameter(name);
+   }
 }

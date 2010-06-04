@@ -28,7 +28,21 @@ abstract public class ConfigurationBootstrap
    private final static Logger logger = LoggerFactory.getLogger(ConfigurationBootstrap.class);
    private ResteasyDeployment deployment = new ResteasyDeployment();
 
+   /**
+    * i.e. Servlet init-param first is searched, then servlet context
+    *
+    * @param name
+    * @return
+    */
    public abstract String getParameter(String name);
+
+   /**
+    * Only provide parameter from a servlet or filter init param
+    *
+    * @param name
+    * @return
+    */
+   public abstract String getInitParameter(String name);
 
    public abstract URL[] getScanningUrls();
 

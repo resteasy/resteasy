@@ -17,5 +17,6 @@
         <module>context-test</module>
         <module>oauth-servlet-test</module>
         <module>jsapi-servlet-test</module>
+        <module>application-test</module>
     </modules>
 </project>

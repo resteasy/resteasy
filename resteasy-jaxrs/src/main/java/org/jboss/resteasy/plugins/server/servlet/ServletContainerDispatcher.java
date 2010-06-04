@@ -77,7 +77,8 @@ public class ServletContainerDispatcher
       }
       else
       {
-         String application = bootstrap.getParameter("javax.ws.rs.Application");
+         // ResteasyBootstrap inited us.  Check to see if the servlet defines an Application class
+         String application = bootstrap.getInitParameter("javax.ws.rs.Application");
          if (application != null)
          {
             try
@@ -138,6 +139,7 @@ public class ServletContainerDispatcher
             }
             else if (obj.getClass().isAnnotationPresent(Provider.class))
             {
+               logger.info("Adding singleton provider " + obj.getClass().getName() + " from Application " + Application.class.getName());
                providers.add(obj);
             }
             else
@@ -149,7 +151,7 @@ public class ServletContainerDispatcher
       for (Class clazz : actualProviderClasses) providerFactory.registerProvider(clazz);
       for (Object obj : providers) providerFactory.registerProviderInstance(obj);
       for (Class clazz : actualResourceClasses) dispatcher.getRegistry().addPerRequestResource(clazz);
-      for (Object obj : providers) dispatcher.getRegistry().addSingletonResource(obj);
+      for (Object obj : resources) dispatcher.getRegistry().addSingletonResource(obj);
    }
 
 
