@@ -55,7 +55,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +75,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * This helps out a lot when the desired media type is a wildcard and to weed out all the possible
     * default mappings.
     */
-   protected static class MessageBodyKey<T> implements Comparable<MessageBodyKey<T>>, MediaTypeMap.Typed
+   protected static class SortedKey<T> implements Comparable<SortedKey<T>>, MediaTypeMap.Typed
    {
       public Class readerClass;
       public T obj;
@@ -88,14 +87,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public Class template = null;
 
 
-      private MessageBodyKey(Class intf, T reader, boolean isBuiltin)
+      private SortedKey(Class intf, T reader, boolean isBuiltin)
       {
          this(intf, reader);
          this.isBuiltin = isBuiltin;
       }
 
 
-      private MessageBodyKey(Class intf, T reader)
+      private SortedKey(Class intf, T reader)
       {
          this.readerClass = reader.getClass();
          this.obj = reader;
@@ -127,15 +126,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          */
       }
 
-      public class MessageBodyKeyComparator implements Comparator<MessageBodyKey>
-      {
-         public int compare(MessageBodyKey messageBodyKey, MessageBodyKey messageBodyKey1)
-         {
-            return 0;
-         }
-      }
-
-      public int compareTo(MessageBodyKey<T> tMessageBodyKey)
+      public int compareTo(SortedKey<T> tMessageBodyKey)
       {
          // Sort more specific template parameter types before non-specific
          // Sort user provider before builtins
@@ -156,12 +147,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
-
-   protected MediaTypeMap<MessageBodyKey<MessageBodyReader>> messageBodyReaders = new MediaTypeMap<MessageBodyKey<MessageBodyReader>>();
-   protected MediaTypeMap<MessageBodyKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<MessageBodyKey<MessageBodyWriter>>();
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
    protected Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
    protected Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
-   protected Map<Class<?>, MediaTypeMap<ContextResolver>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<ContextResolver>>();
+   protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
    protected Map<Class<?>, StringConverter> stringConverters = new HashMap<Class<?>, StringConverter>();
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
@@ -473,7 +463,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
    {
-      MessageBodyKey<MessageBodyReader> key = new MessageBodyKey<MessageBodyReader>(MessageBodyReader.class, provider, isBuiltin);
+      SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider, isBuiltin);
       injectProperties(provider);
       providers.put(provider.getClass(), provider);
       Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
@@ -517,7 +507,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       providers.put(provider.getClass(), provider);
       injectProperties(provider);
       Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
-      MessageBodyKey<MessageBodyWriter> key = new MessageBodyKey<MessageBodyWriter>(MessageBodyWriter.class, provider, isBuiltin);
+      SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider, isBuiltin);
       if (consumeMime != null)
       {
          for (String consume : consumeMime.value())
@@ -534,9 +524,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<MessageBodyKey<MessageBodyReader>> readers = messageBodyReaders.getPossible(mediaType, type);
+      List<SortedKey<MessageBodyReader>> readers = messageBodyReaders.getPossible(mediaType, type);
 
-      for (MessageBodyKey<MessageBodyReader> reader : readers)
+      for (SortedKey<MessageBodyReader> reader : readers)
       {
          if (reader.obj.isReadable(type, genericType, annotations, mediaType))
          {
@@ -570,7 +560,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
 
    }
-   
+
    public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
    {
       Class<?> exceptionClass = Types.getRawType(exceptionType);
@@ -604,11 +594,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addContextResolver(Class<? extends ContextResolver> resolver)
    {
+      addContextResolver(resolver, false);
+   }
+
+   public void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
+   {
       ContextResolver writer = getProviderInstance(resolver);
-      addContextResolver(writer);
+      addContextResolver(writer, builtin);
    }
 
    public void addContextResolver(ContextResolver provider)
+   {
+      addContextResolver(provider, false);
+   }
+
+   public void addContextResolver(ContextResolver provider, boolean builtin)
    {
       providers.put(provider.getClass(), provider);
       injectProperties(provider);
@@ -620,33 +620,39 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             ParameterizedType pt = (ParameterizedType) type;
             if (pt.getRawType().equals(ContextResolver.class))
             {
-               addContextResolver(provider, pt.getActualTypeArguments()[0]);
+               addContextResolver(provider, pt.getActualTypeArguments()[0], builtin);
             }
          }
       }
    }
-   
+
    public void addContextResolver(ContextResolver provider, Type typeParameter)
    {
+      addContextResolver(provider, typeParameter, false);
+   }
+
+   public void addContextResolver(ContextResolver provider, Type typeParameter, boolean builtin)
+   {
       Class<?> parameterClass = Types.getRawType(typeParameter);
-      MediaTypeMap<ContextResolver> resolvers = contextResolvers.get(parameterClass);
+      MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(parameterClass);
       if (resolvers == null)
       {
-         resolvers = new MediaTypeMap<ContextResolver>();
+         resolvers = new MediaTypeMap<SortedKey<ContextResolver>>();
          contextResolvers.put(parameterClass, resolvers);
       }
       Produces produces = provider.getClass().getAnnotation(Produces.class);
+      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(provider.getClass(), provider, builtin);
       if (produces != null)
       {
          for (String produce : produces.value())
          {
             MediaType mime = MediaType.valueOf(produce);
-            resolvers.add(mime, provider);
+            resolvers.add(mime, key);
          }
       }
       else
       {
-         resolvers.add(new MediaType("*", "*"), provider);
+         resolvers.add(new MediaType("*", "*"), key);
       }
    }
 
@@ -678,13 +684,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
       }
    }
-   
+
    public void addStringConverter(StringConverter provider, Type typeParameter)
    {
       Class<?> parameterClass = Types.getRawType(typeParameter);
       stringConverters.put(parameterClass, provider);
    }
-   
+
 
    public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> provider)
    {
@@ -705,9 +711,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
    {
-      MediaTypeMap<ContextResolver> resolvers = contextResolvers.get(clazz);
+      MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(clazz);
       if (resolvers == null) return null;
-      return resolvers.getPossible(type);
+      List<ContextResolver> rtn = new ArrayList<ContextResolver>();
+
+      List<SortedKey<ContextResolver>> list = resolvers.getPossible(type);
+      for (SortedKey<ContextResolver> resolver : list)
+      {
+         rtn.add(resolver.obj);
+      }
+      return rtn;
    }
 
    public StringConverter getStringConverter(Class<?> clazz)
@@ -819,7 +832,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addContextResolver(provider);
+            addContextResolver(provider, true);
          }
          catch (Exception e)
          {
@@ -969,8 +982,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<MessageBodyKey<MessageBodyWriter>> writers = messageBodyWriters.getPossible(mediaType, type);
-      for (MessageBodyKey<MessageBodyWriter> writer : writers)
+      List<SortedKey<MessageBodyWriter>> writers = messageBodyWriters.getPossible(mediaType, type);
+      for (SortedKey<MessageBodyWriter> writer : writers)
       {
          //System.out.println("matching: " + writer.obj.getClass());
          if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
