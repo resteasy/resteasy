@@ -173,6 +173,16 @@ public class RESTUtils {
 	}
 
 	private static boolean checkEJBConstraint(Method m) {
+		// Use dynamic class loading here since if the EJB annotation class is not present
+		// it cannot be on the method, so we don't have to check for it
+		try {
+			Class.forName("javax.annotation.security.RolesAllowed");
+		} catch (ClassNotFoundException e) {
+			// class not here, therefore not on method either
+			return true;
+		}
+		// From now on we can use this class since it's there. I (Stef Epardaud) don't think we need to 
+		// remove the reference here and use reflection.
 		RolesAllowed rolesAllowed = m.getAnnotation(RolesAllowed.class);
 		if(rolesAllowed == null)
 			return true;
