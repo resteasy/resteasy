@@ -41,9 +41,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RESTUtils {
-	
+
 	private final static Logger logger = LoggerFactory
-       .getLogger(RESTUtils.class);
+	.getLogger(RESTUtils.class);
 
 	public static <T> T addDiscovery(T entity, UriInfo uriInfo, ResourceMethodRegistry registry) {
 		// find the field to inject first
@@ -108,7 +108,7 @@ public class RESTUtils {
 			RESTServiceDiscovery ret) {
 		// find a single service
 		LinkResource service = m
-				.getAnnotation(LinkResource.class);
+		.getAnnotation(LinkResource.class);
 		if(service != null)
 			processLinkResource(m, entity, uriInfo, ret, service);
 		// find a multi-service
@@ -168,7 +168,7 @@ public class RESTUtils {
 		String constraint = service.constraint();
 		if(constraint == null || constraint.length() == 0)
 			return checkEJBConstraint(m);
-		Boolean ret = EL.evaluateBoolean(getELContext(m, object), object, constraint);
+		Boolean ret = evaluateELBoolean(m, getELContext(m, object), object, constraint);
 		return ret != null && ret.booleanValue();
 	}
 
@@ -250,7 +250,7 @@ public class RESTUtils {
 		if (uriTemplates.length > 0) {
 			Object[] values = new Object[uriTemplates.length];
 			for (int i = 0; i < values.length; i++)
-				values[i] = EL.evaluate(getELContext(m, entity), entity, uriTemplates[i]);
+				values[i] = evaluateEL(m, getELContext(m, entity), entity, uriTemplates[i]);
 			return uriBuilder.build(values);
 		} 
 		// do we need any path parameters?
@@ -283,11 +283,11 @@ public class RESTUtils {
 		if(c.isAnnotationPresent(LinkELProvider.class))
 			return c.getAnnotation(LinkELProvider.class);
 		Package p = c.getPackage();
-		if(p.isAnnotationPresent(LinkELProvider.class))
+		if(p != null && p.isAnnotationPresent(LinkELProvider.class))
 			return p.getAnnotation(LinkELProvider.class);
 		return null;
 	}
-	
+
 	private static ELProvider getELProvider(Method m){
 		LinkELProvider linkElProvider = findLinkELProvider(m);
 		if(linkElProvider == null)
@@ -296,12 +296,12 @@ public class RESTUtils {
 		try{
 			return elProviderClass.newInstance();
 		}catch(Exception x){
-			if(logger.isWarnEnabled())
-				logger.warn("Could not instantiate ELProvider class "+elProviderClass.getName(), x);
-			return null;
+			if(logger.isErrorEnabled())
+				logger.error("Could not instantiate ELProvider class "+elProviderClass.getName(), x);
+			throw new ServiceDiscoveryException(m, "Failed to instantiate ELProvider: "+elProviderClass.getName(), x);
 		}
 	}
-	
+
 	private static ELContext getELContext(Method m, Object base){
 		ELContext ours = EL.createELContext(base);
 		ELProvider elProvider = getELProvider(m);
@@ -309,7 +309,7 @@ public class RESTUtils {
 			return elProvider.getContext(ours);
 		return ours;
 	}
-	
+
 	public static Map<String, ? extends Object> derivePathParameters(UriInfo uriInfo){
 		MultivaluedMap<String, String> pathParameters = uriInfo.getPathParameters();
 		Map<String, String> ret = new HashMap<String,String>();
@@ -318,4 +318,25 @@ public class RESTUtils {
 		}
 		return ret;
 	}
+
+	public static Object evaluateEL(Method m, ELContext context, Object base, String expression) {
+		try{
+			return EL.EXPRESSION_FACTORY.createValueExpression(context, expression,
+					Object.class).getValue(context);
+		}catch(Exception x){
+			throw new ServiceDiscoveryException(m, "Failed to evaluate EL expression: "+expression, x);
+
+		}
+	}
+
+	public static Boolean evaluateELBoolean(Method m, ELContext context, Object base, String expression) {
+		try{
+			return (Boolean) EL.EXPRESSION_FACTORY.createValueExpression(context, expression,
+					Boolean.class).getValue(context);
+		}catch(Exception x){
+			throw new ServiceDiscoveryException(m, "Failed to evaluate EL expression: "+expression, x);
+
+		}
+	}
+
 }

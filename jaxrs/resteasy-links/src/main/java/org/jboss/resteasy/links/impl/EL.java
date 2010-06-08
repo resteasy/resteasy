@@ -57,14 +57,4 @@ public class EL {
 
 		};
 	}
-
-	public static Object evaluate(ELContext context, Object base, String expression) {
-		return EXPRESSION_FACTORY.createValueExpression(context, expression,
-				Object.class).getValue(context);
-	}
-
-	public static Boolean evaluateBoolean(ELContext context, Object base, String expression) {
-		return (Boolean) EXPRESSION_FACTORY.createValueExpression(context, expression,
-				Boolean.class).getValue(context);
-	}
 }

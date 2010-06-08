@@ -10,4 +10,8 @@ public class ServiceDiscoveryException extends Failure {
 		super("Discovery failed for method "+m.getDeclaringClass().getName()+"."+m.getName()+": "+s);
 	}
 
+	public ServiceDiscoveryException(Method m, String s, Throwable cause) {
+		super("Discovery failed for method "+m.getDeclaringClass().getName()+"."+m.getName()+": "+s, cause);
+	}
+
 }
