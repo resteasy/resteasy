@@ -1,13 +1,13 @@
 package org.jboss.resteasy.plugins.cache.server;
 
-import org.jboss.resteasy.core.ResourceMethod;
-import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
+import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
@@ -42,7 +42,7 @@ public class ServerCacheHitInterceptor implements PreProcessInterceptor
       if (!request.getHttpMethod().equalsIgnoreCase("GET")) return null;
 
       String key = request.getUri().getRequestUri().toString();
-      MediaType chosenType = method.matchByType(request.getHttpHeaders().getAcceptableMediaTypes());
+      MediaType chosenType = method.matchByType(request.getHttpHeaders().getAcceptableMediaTypes(), null);
       ServerCache.Entry entry = cache.get(key, chosenType);
       if (entry != null)
       {

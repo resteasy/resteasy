@@ -18,6 +18,7 @@ import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
@@ -206,6 +207,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
 
    public ServerResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
+      request.setAttribute(ResourceMethod.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       uriInfo.pushCurrentResource(target);
@@ -221,7 +223,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
             Object type = jaxrsResponse.getMetadata().getFirst(
                     HttpHeaderNames.CONTENT_TYPE);
             if (type == null)
-               jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, resolveContentType(request));
+               jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, resolveContentType(request, jaxrsResponse.getEntity()));
          }
          return jaxrsResponse;
 
@@ -263,7 +265,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);
-      builder.type(resolveContentType(request));
+      builder.type(resolveContentType(request, rtn));
       ServerResponse jaxrsResponse = (ServerResponse) builder.build();
       jaxrsResponse.setGenericType(genericReturnType);
       return prepareResponse(jaxrsResponse);
@@ -331,9 +333,9 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       return matches;
    }
 
-   protected MediaType resolveContentType(HttpRequest in)
+   protected MediaType resolveContentType(HttpRequest in, Object entity)
    {
-      MediaType responseContentType = matchByType(in.getHttpHeaders().getAcceptableMediaTypes());
+      MediaType responseContentType = matchByType(in.getHttpHeaders().getAcceptableMediaTypes(), entity);
       if (responseContentType == null)
       {
          responseContentType = MediaType.WILDCARD_TYPE;
@@ -348,7 +350,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       return responseContentType;
    }
 
-   public MediaType matchByType(List<MediaType> accepts)
+   public MediaType matchByType(List<MediaType> accepts, Object entity)
    {
       if (accepts == null || accepts.size() == 0)
       {
@@ -356,7 +358,10 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
          else return produces[0];
       }
 
-      if (produces == null || produces.length == 0) return accepts.get(0);
+      if (produces == null || produces.length == 0)
+      {
+         return resolveContentTypeByAccept(accepts, entity);
+      }
 
       for (MediaType accept : accepts)
       {
@@ -365,7 +370,31 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
             if (type.isCompatible(accept)) return type;
          }
       }
-      return null;
+      return MediaType.WILDCARD_TYPE;
+   }
+
+   protected MediaType resolveContentTypeByAccept(List<MediaType> accepts, Object entity)
+   {
+      if (accepts == null || accepts.size() == 0 || entity == null)
+      {
+         return MediaType.WILDCARD_TYPE;
+      }
+      Class clazz = entity.getClass();
+      Type type = null;
+      if (entity instanceof GenericEntity)
+      {
+         GenericEntity gen = (GenericEntity) entity;
+         clazz = gen.getRawType();
+         type = gen.getType();
+      }
+      for (MediaType accept : accepts)
+      {
+         if (providerFactory.getMessageBodyWriter(clazz, type, method.getAnnotations(), accept) != null)
+         {
+            return accept;
+         }
+      }
+      return MediaType.WILDCARD_TYPE;
    }
 
    public Set<String> getHttpMethods()
