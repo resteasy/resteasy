@@ -14,11 +14,13 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
+import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -26,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -187,12 +190,12 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void handleException(HttpRequest request, HttpResponse response, Exception e)
    {
-      if (executeExceptionMapper(response, e)) return;
+      if (executeExceptionMapper(request, response, e)) return;
 
       // ApplicationException needs to come first as it does its own executeExceptionMapper() call
       if (e instanceof ApplicationException)
       {
-         handleApplicationException(response, (ApplicationException) e);
+         handleApplicationException(request, response, (ApplicationException) e);
       }
       else if (e instanceof WriterException)
       {
@@ -204,7 +207,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else if (e instanceof WebApplicationException)
       {
-         handleWebApplicationException(response, (WebApplicationException) e);
+         handleWebApplicationException(request, response, (WebApplicationException) e);
       }
       else if (e instanceof Failure)
       {
@@ -225,7 +228,7 @@ public class SynchronousDispatcher implements Dispatcher
 
       if (failure.getResponse() != null)
       {
-         writeFailure(response, failure.getResponse());
+         writeFailure(request, response, failure.getResponse());
       }
       else
       {
@@ -254,7 +257,7 @@ public class SynchronousDispatcher implements Dispatcher
     * @param exception
     * @return true if an ExceptionMapper was found and executed
     */
-   public boolean executeExceptionMapper(HttpResponse response, Throwable exception)
+   public boolean executeExceptionMapper(HttpRequest request, HttpResponse response, Throwable exception)
    {
       ExceptionMapper mapper = null;
 
@@ -267,28 +270,28 @@ public class SynchronousDispatcher implements Dispatcher
       }
       if (mapper != null)
       {
-         writeFailure(response, mapper.toResponse(exception));
+         writeFailure(request, response, mapper.toResponse(exception));
          return true;
       }
       return false;
    }
 
-   protected void handleApplicationException(HttpResponse response, ApplicationException e)
+   protected void handleApplicationException(HttpRequest request, HttpResponse response, ApplicationException e)
    {
-      if (executeExceptionMapper(response, e.getCause()))
+      if (executeExceptionMapper(request, response, e.getCause()))
       {
          return;
       }
       if (e.getCause() instanceof WebApplicationException)
       {
-         handleWebApplicationException(response, (WebApplicationException) e.getCause());
+         handleWebApplicationException(request, response, (WebApplicationException) e.getCause());
          return;
       }
       else
       {
          if (unwrappedExceptions.contains(e.getCause().getClass().getName()))
          {
-            unwrapException(response, e.getCause());
+            unwrapException(request, response, e.getCause());
          }
          else
          {
@@ -297,15 +300,15 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected void unwrapException(HttpResponse response, Throwable e)
+   protected void unwrapException(HttpRequest request, HttpResponse response, Throwable e)
    {
-      if (executeExceptionMapper(response, e.getCause()))
+      if (executeExceptionMapper(request, response, e.getCause()))
       {
          return;
       }
       if (e.getCause() instanceof WebApplicationException)
       {
-         handleWebApplicationException(response, (WebApplicationException) e.getCause());
+         handleWebApplicationException(request, response, (WebApplicationException) e.getCause());
          return;
       }
       else
@@ -324,13 +327,13 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else if (e.getCause() != null)
       {
-         if (executeExceptionMapper(response, e.getCause()))
+         if (executeExceptionMapper(request, response, e.getCause()))
          {
             return;
          }
          if (e.getCause() instanceof WebApplicationException)
          {
-            handleWebApplicationException(response, (WebApplicationException) e.getCause());
+            handleWebApplicationException(request, response, (WebApplicationException) e.getCause());
             return;
          }
          if (e.getCause() instanceof Failure)
@@ -356,13 +359,13 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else if (e.getCause() != null)
       {
-         if (executeExceptionMapper(response, e.getCause()))
+         if (executeExceptionMapper(request, response, e.getCause()))
          {
             return;
          }
          if (e.getCause() instanceof WebApplicationException)
          {
-            handleWebApplicationException(response, (WebApplicationException) e.getCause());
+            handleWebApplicationException(request, response, (WebApplicationException) e.getCause());
             return;
          }
          if (e.getCause() instanceof Failure)
@@ -375,12 +378,12 @@ public class SynchronousDispatcher implements Dispatcher
       handleFailure(request, response, e);
    }
 
-   protected void writeFailure(HttpResponse response, Response jaxrsResponse)
+   protected void writeFailure(HttpRequest request, HttpResponse response, Response jaxrsResponse)
    {
       response.reset();
       try
       {
-         writeJaxrsResponse(response, jaxrsResponse);
+         writeJaxrsResponse(request, response, jaxrsResponse);
       }
       catch (WebApplicationException ex)
       {
@@ -397,12 +400,12 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected void handleWebApplicationException(HttpResponse response, WebApplicationException wae)
+   protected void handleWebApplicationException(HttpRequest request, HttpResponse response, WebApplicationException wae)
    {
       if (!(wae instanceof NoLogWebApplicationException)) logger.error("failed to execute", wae);
       if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
 
-      writeFailure(response, wae.getResponse());
+      writeFailure(request, response, wae.getResponse());
    }
 
    public void pushContextObjects(HttpRequest request, HttpResponse response)
@@ -464,7 +467,7 @@ public class SynchronousDispatcher implements Dispatcher
 
          try
          {
-            if (jaxrsResponse != null) writeJaxrsResponse(response, jaxrsResponse);
+            if (jaxrsResponse != null) writeJaxrsResponse(request, response, jaxrsResponse);
          }
          catch (Exception e)
          {
@@ -510,7 +513,7 @@ public class SynchronousDispatcher implements Dispatcher
          pushContextObjects(request, response);
          try
          {
-            if (jaxrsResponse != null) writeJaxrsResponse(response, jaxrsResponse);
+            if (jaxrsResponse != null) writeJaxrsResponse(request, response, jaxrsResponse);
          }
          catch (Exception e)
          {
@@ -523,12 +526,53 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected void writeJaxrsResponse(HttpResponse response, Response jaxrsResponse)
+   protected void writeJaxrsResponse(HttpRequest request, HttpResponse response, Response jaxrsResponse)
            throws WriterException
    {
       ServerResponse serverResponse = (ServerResponse) jaxrsResponse;
+      Object type = jaxrsResponse.getMetadata().getFirst(
+              HttpHeaderNames.CONTENT_TYPE);
+      if (type == null && jaxrsResponse.getEntity() != null)
+      {
+         ResourceMethod method = (ResourceMethod) request.getAttribute(ResourceMethod.class.getName());
+         if (method != null)
+         {
+            jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, method.resolveContentType(request, jaxrsResponse.getEntity()));
+         }
+         else
+         {
+            MediaType contentType = resolveContentTypeByAccept(request.getHttpHeaders().getAcceptableMediaTypes(), jaxrsResponse.getEntity());
+            jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, contentType);
+         }
+      }
+
       serverResponse.writeTo(response, providerFactory);
    }
+
+   protected MediaType resolveContentTypeByAccept(List<MediaType> accepts, Object entity)
+   {
+      if (accepts == null || accepts.size() == 0 || entity == null)
+      {
+         return MediaType.WILDCARD_TYPE;
+      }
+      Class clazz = entity.getClass();
+      Type type = null;
+      if (entity instanceof GenericEntity)
+      {
+         GenericEntity gen = (GenericEntity) entity;
+         clazz = gen.getRawType();
+         type = gen.getType();
+      }
+      for (MediaType accept : accepts)
+      {
+         if (providerFactory.getMessageBodyWriter(clazz, type, null, accept) != null)
+         {
+            return accept;
+         }
+      }
+      return MediaType.WILDCARD_TYPE;
+   }
+
 
    public void addHttpPreprocessor(HttpRequestPreprocessor httpPreprocessor)
    {
