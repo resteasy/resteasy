@@ -45,9 +45,9 @@
                     {
                         var data = eval("(" + xhr.responseText + ")");
                         document.getElementById("zone").innerHTML = "<h2>Books:</h2>";
-                        for (i = 0; i < 3; i++)
+                        for (i = 0; i < 2; i++)
                         {
-                            document.getElementById("zone").innerHTML += data.listing.books[i].@title + ', by <i>' + data.listing.books[i].author + "</i><br/>";
+                            document.getElementById("zone").innerHTML += data.listing.books[i]['@title'] + ', by <i>' + data.listing.books[i].author + "</i><br/>";
                         }
                     }
                     else
