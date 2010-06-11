@@ -47,6 +47,7 @@
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
                 <!ENTITY Authentication SYSTEM "modules/Authentication.xml">
+                <!ENTITY CDI SYSTEM "modules/CDI.xml">
                 ]>
 
 <book>
@@ -125,7 +126,8 @@
    &Authentication;
    &RESTEasy_EJB_Integration;
    &RESTEasy_Spring_Integration;
-    &Seam;
+   &CDI;
+   &Seam;
     &Guice;
    &RESTEasy_Client_Framework;
    &AJAX_Client;
