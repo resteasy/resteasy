@@ -52,6 +52,42 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
+   {
+      getDelegate().addExceptionMapper(provider, exceptionType);
+   }
+
+   @Override
+   public void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
+   {
+      getDelegate().addContextResolver(resolver, builtin);
+   }
+
+   @Override
+   public void addContextResolver(ContextResolver provider, boolean builtin)
+   {
+      getDelegate().addContextResolver(provider, builtin);
+   }
+
+   @Override
+   public void addContextResolver(ContextResolver provider, Type typeParameter)
+   {
+      getDelegate().addContextResolver(provider, typeParameter);
+   }
+
+   @Override
+   public void addContextResolver(ContextResolver provider, Type typeParameter, boolean builtin)
+   {
+      getDelegate().addContextResolver(provider, typeParameter, builtin);
+   }
+
+   @Override
+   public void addStringConverter(StringConverter provider, Type typeParameter)
+   {
+      getDelegate().addStringConverter(provider, typeParameter);
+   }
+
+   @Override
    public boolean isRegisterBuiltins()
    {
       return getDelegate().isRegisterBuiltins();

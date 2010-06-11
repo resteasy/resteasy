@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
@@ -138,12 +139,22 @@ class FactoryFinder
             if (factoryClassName != null &&
                     !"".equals(factoryClassName))
             {
-               return newInstance(factoryClassName, classLoader);
+               try
+               {
+                  return newInstance(factoryClassName, classLoader);
+               }
+               catch (ClassNotFoundException e)
+               {
+                  URL url = classLoader.getResource(serviceId);
+
+                  throw new ClassNotFoundException("Could not find from factory file" + url, e);
+               }
             }
          }
       }
       catch (Exception ex)
       {
+         throw new RuntimeException(ex);
       }
 
 

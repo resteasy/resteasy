@@ -128,7 +128,7 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
          final MediaType mediaType = request.getHttpHeaders().getMediaType();
          if (mediaType == null)
          {
-            throw new BadRequestException("content-type was null and expecting to extract a body");
+            throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
          }
 
          // We have to do this hack because of servlets and servlet filters
@@ -148,12 +148,12 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
       }
       catch (IOException e)
       {
-         throw new BadRequestException("Failure extracting body", e);
+         throw new BadRequestException("Failure extracting body into " + this.target, e);
       }
    }
 
    public Object inject()
    {
-      throw new RuntimeException("Illegal to inject a message body into a singleton");
+      throw new RuntimeException("Illegal to inject a message body into a singleton into " + this.target);
    }
 }

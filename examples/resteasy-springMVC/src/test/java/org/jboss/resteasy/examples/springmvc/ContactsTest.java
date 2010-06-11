@@ -1,13 +1,5 @@
 package org.jboss.resteasy.examples.springmvc;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -19,6 +11,14 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 public class ContactsTest
 {
@@ -47,7 +47,7 @@ public class ContactsTest
    public static void setup()
    {
       server = new TJWSEmbeddedSpringMVCServer(
-            "classpath:springmvc-servlet.xml", 8080);
+              "classpath:springmvc-servlet.xml", 8080);
       server.start();
 
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
@@ -64,16 +64,17 @@ public class ContactsTest
    public void testData()
    {
       Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
+      Assert.assertEquals(response.getStatus(), 201);
       String duskisUri = (String) response.getMetadata().getFirst(
-            HttpHeaderNames.LOCATION);
+              HttpHeaderNames.LOCATION);
       System.out.println(duskisUri);
       Assert.assertTrue(duskisUri.endsWith(ContactsResource.CONTACTS_URL
-            + "/data/Duskis"));
+              + "/data/Duskis"));
       Assert
-            .assertEquals("Solomon", proxy.getContact(duskisUri).getFirstName());
+              .assertEquals("Solomon", proxy.getContact(duskisUri).getFirstName());
       proxy.createContact(new Contact("Bill", "Burkie"));
       System.out.println(proxy.getString(ContactsResource.CONTACTS_URL
-            + "/data"));
+              + "/data"));
    }
 
    @Ignore
