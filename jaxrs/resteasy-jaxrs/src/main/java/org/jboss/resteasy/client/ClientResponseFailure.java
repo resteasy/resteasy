@@ -10,6 +10,7 @@ public class ClientResponseFailure extends RuntimeException
 
    public ClientResponseFailure(ClientResponse response)
    {
+      super("Failed with status: " + response.getStatus());
       this.response = response;
    }
 

@@ -1,5 +1,15 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.annotations.Body;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InternalServerErrorException;
+import org.jboss.resteasy.spi.PropertyInjector;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.FindAnnotation;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.lang.annotation.Annotation;
@@ -15,16 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jboss.resteasy.annotations.Body;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Failure;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InternalServerErrorException;
-import org.jboss.resteasy.spi.PropertyInjector;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -192,11 +192,12 @@ public class PropertyInjectorImpl implements PropertyInjector
    }
 
    private ValueInjector getParameterExtractor(Class<?> clazz, ResteasyProviderFactory factory, AccessibleObject accessibleObject,
-         Annotation[] annotations, Class<?> type, Type genericType)
+                                               Annotation[] annotations, Class<?> type, Type genericType)
    {
-      boolean extractBody = FindAnnotation.findAnnotation(annotations, Body.class) != null;
-      return factory.getInjectorFactory().createParameterExtractor(clazz, accessibleObject, type, genericType,
-            annotations, extractBody);
+      boolean extractBody = (FindAnnotation.findAnnotation(annotations, Body.class) != null);
+      ValueInjector injector = factory.getInjectorFactory().createParameterExtractor(clazz, accessibleObject, type, genericType,
+              annotations, extractBody);
+      return injector;
    }
 
    public void inject(HttpRequest request, HttpResponse response, Object target) throws Failure

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.core;
 
-import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.spi.ConstructorInjector;
@@ -23,6 +22,8 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+
+import static org.jboss.resteasy.util.FindAnnotation.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -55,11 +56,11 @@ public class InjectorFactoryImpl implements InjectorFactory
    }
 
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
-         Type genericType, Annotation[] annotations)
+                                                 Type genericType, Annotation[] annotations)
    {
       return createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, true);
    }
-   
+
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault)
    {
       DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
@@ -122,12 +123,4 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
    }
 
-   /**
-    * This method should not be called.  Call providerFactory.getInjectorFactory().createParameterExtractor() instead 
-    */
-   @Deprecated
-   public static ValueInjector getParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
-   {
-      return providerFactory.getInjectorFactory().createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
-   }
 }

@@ -1,20 +1,5 @@
 package org.jboss.resteasy.cdi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.Set;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -24,10 +9,22 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * 
  * @author Jozef Hartinger
- * 
  */
 @SuppressWarnings("unchecked")
 public class CdiInjectorFactory implements InjectorFactory
@@ -46,7 +43,7 @@ public class CdiInjectorFactory implements InjectorFactory
       this.extension = lookupResteasyCdiExtension();
       sessionBeanInterface = extension.getSessionBeanInterface();
    }
-   
+
 
    public ConstructorInjector createConstructor(Constructor constructor)
    {
@@ -57,14 +54,14 @@ public class CdiInjectorFactory implements InjectorFactory
          log.debug("Using CdiConstructorInjector for class {}.", clazz);
          return new CdiConstructorInjector(clazz, manager);
       }
-      
+
       if (sessionBeanInterface.containsKey((constructor.getDeclaringClass())))
       {
          Class<?> intfc = sessionBeanInterface.get(clazz);
          log.debug("Using interface {} for lookup of Session Bean {}.", intfc, clazz);
          return new CdiConstructorInjector(intfc, manager);
       }
-      
+
       log.debug("No CDI beans found for {}. Using default ConstructorInjector.", clazz);
       return delegate.createConstructor(constructor);
    }
@@ -80,26 +77,27 @@ public class CdiInjectorFactory implements InjectorFactory
       // wrapper and then again by RESTEasy. To eliminate this, we return a noop PropertyInjector.
       return noopPropertyInjector;
    }
-   
+
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
    {
       return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
    }
-   
+
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
-         Type genericType, Annotation[] annotations, boolean useDefault)
+                                                 Type genericType, Annotation[] annotations, boolean useDefault)
    {
-      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
+      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, useDefault);
    }
-   
+
    /**
     * Do a lookup for BeanManager instance. JNDI and ServletContext is searched.
+    *
     * @return BeanManager instance
     */
    protected BeanManager lookupBeanManager()
    {
       BeanManager beanManager = null;
-      
+
       // Do a lookup for BeanManager in JNDI (this is the only *portable* way)
       beanManager = lookupBeanManagerInJndi("java:comp/BeanManager");
       if (beanManager != null)
@@ -107,7 +105,7 @@ public class CdiInjectorFactory implements InjectorFactory
          log.info("Found BeanManager at java:comp/BeanManager");
          return beanManager;
       }
-      
+
       // Do a lookup for BeanManager at an alternative JNDI location (workaround for WELDINT-19)
       beanManager = lookupBeanManagerInJndi("java:app/BeanManager");
       if (beanManager != null)
@@ -115,7 +113,7 @@ public class CdiInjectorFactory implements InjectorFactory
          log.info("Found BeanManager at java:app/BeanManager");
          return beanManager;
       }
-      
+
       // Look for BeanManager in ServletContext
       ServletContext servletContext = ResteasyProviderFactory.getContextData(ServletContext.class);
       beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
@@ -124,10 +122,10 @@ public class CdiInjectorFactory implements InjectorFactory
          log.info("Found BeanManager in ServletContext");
          return beanManager;
       }
-      
+
       throw new RuntimeException("Unable to lookup BeanManager.");
    }
-   
+
    private BeanManager lookupBeanManagerInJndi(String name)
    {
       try
@@ -147,20 +145,21 @@ public class CdiInjectorFactory implements InjectorFactory
          return null;
       }
    }
-   
+
    /**
     * Lookup ResteasyCdiExtension instance that was instantiated during CDI bootstrap
+    *
     * @return ResteasyCdiExtension instance
     */
    private ResteasyCdiExtension lookupResteasyCdiExtension()
    {
-       Set<Bean<?>> beans = manager.getBeans(ResteasyCdiExtension.class);
-       Bean<?> bean = manager.resolve(beans);
-       if (bean == null)
-       {
-          throw new IllegalStateException("Unable to obtain ResteasyCdiExtension instance.");
-       }
-       CreationalContext<?> context = manager.createCreationalContext(bean);
-       return (ResteasyCdiExtension) manager.getReference(bean, ResteasyCdiExtension.class, context);
+      Set<Bean<?>> beans = manager.getBeans(ResteasyCdiExtension.class);
+      Bean<?> bean = manager.resolve(beans);
+      if (bean == null)
+      {
+         throw new IllegalStateException("Unable to obtain ResteasyCdiExtension instance.");
+      }
+      CreationalContext<?> context = manager.createCreationalContext(bean);
+      return (ResteasyCdiExtension) manager.getReference(bean, ResteasyCdiExtension.class, context);
    }
 }
