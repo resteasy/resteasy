@@ -11,13 +11,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ClientExecutor;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -28,7 +29,7 @@ public class TwitterClient
    public static void main(String[] args) throws Exception
    {
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-      final ClientExecutor clientExecutor = new ApacheHttpClientExecutor(createClient(args[0], args[1]));
+      final ClientExecutor clientExecutor = new ApacheHttpClient4Executor(createClient(args[0], args[1]));
       TwitterResource twitter = ProxyFactory.create(TwitterResource.class,
             "http://twitter.com", clientExecutor);
       System.out.println("===> first run");
@@ -59,15 +60,16 @@ public class TwitterClient
          System.out.println(status);
    }
 
-   private static HttpClient createClient(String userId, String password)
-   {
-      Credentials credentials = new UsernamePasswordCredentials(userId,
-            password);
-      HttpClient httpClient = new HttpClient();
-      httpClient.getState().setCredentials(AuthScope.ANY, credentials);
-      httpClient.getParams().setAuthenticationPreemptive(true);
-      return httpClient;
-   }
+	private static HttpClient createClient(String userId, String password) {
+
+		Credentials credentials = new UsernamePasswordCredentials(userId,
+				password);
+		HttpClient httpClient = new DefaultHttpClient();
+		((DefaultHttpClient) httpClient).getCredentialsProvider()
+				.setCredentials(AuthScope.ANY, credentials);
+
+		return httpClient;
+	}
 
    @XmlRootElement
    public static class Statuses
