@@ -32,14 +32,17 @@ public class TwitterClient
       final ClientExecutor clientExecutor = new ApacheHttpClient4Executor(createClient(args[0], args[1]));
       TwitterResource twitter = ProxyFactory.create(TwitterResource.class,
             "http://twitter.com", clientExecutor);
+      
       System.out.println("===> first run");
+      twitter
+      .updateStatus("1st: I programmatically tweeted with the RESTEasy Client at "
+            + new Date());
       printStatuses(twitter.getFriendsTimelines());
       
-      twitter
-            .updateStatus("I programmatically tweeted with the RESTEasy Client at "
-                  + new Date());
-      
       System.out.println("===> second run");
+      twitter
+      .updateStatus("2nd: I programmatically tweeted with the RESTEasy Client at "
+            + new Date());
       printStatuses(twitter.getFriendsTimelines());
    }
 
