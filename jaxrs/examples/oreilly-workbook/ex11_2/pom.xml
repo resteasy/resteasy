@@ -1,5 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>com.oreilly.rest.workbook</groupId>
+        <artifactId>workbook-pom</artifactId>
+        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.oreilly.rest.workbook</groupId>
     <artifactId>workbook-ex11_2</artifactId>
@@ -21,19 +27,19 @@
         <repository>
             <id>jboss</id>
             <name>jboss repo</name>
-            <url>http://repository.jboss.org/maven2</url>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.0-beta-3-SNAPSHOT</version>
+            <version>2.0-beta-3</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>2.0-beta-3-SNAPSHOT</version>
+            <version>2.0-beta-3</version>
         </dependency>
         <dependency>
             <groupId>javax.persistence</groupId>

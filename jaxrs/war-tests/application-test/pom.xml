@@ -1,40 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>2.0-beta-3</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>test-application-war</artifactId>
     <packaging>war</packaging>
-    <version>2.0-beta-3-SNAPSHOT</version>
     <name>test-application-war</name>
     <url>http://maven.apache.org</url>
-    <repositories>
-        <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.org/maven2</url>
-        </repository>
-        <repository>
-            <id>java.net</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </repository>
-        <repository>
-            <id>maven repo</id>
-            <name>maven repo</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-    </repositories>
+    <properties>
+        <skip.deploy>true</skip.deploy>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.1</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.0-beta-3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>
@@ -42,6 +32,13 @@
     <build>
         <finalName>test-application-war</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>

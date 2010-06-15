@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>2.0-beta-3-SNAPSHOT</version>
+        <version>2.0-beta-3</version>
     </parent>
     <name>Resteasy Examples</name>
     <url>http://wiki.jboss.org/wiki/Wiki.jsp?page=RESTeasyJAXRS</url>
@@ -11,6 +11,20 @@
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>testable-examples-pom</artifactId>
     <packaging>pom</packaging>
+
+    <!-- this is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
+         pom.xml as a template -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <modules>
         <module>jaxb-json</module>

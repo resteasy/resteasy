@@ -2,8 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>com.oreilly.rest.workbook</groupId>
-        <artifactId>ex11_1_pom</artifactId>
+        <artifactId>workbook-pom</artifactId>
         <version>1.0</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ex11_1-ear</artifactId>

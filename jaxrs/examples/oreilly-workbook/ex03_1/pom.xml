@@ -2,6 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>com.oreilly.rest.workbook</groupId>
+        <artifactId>workbook-pom</artifactId>
+        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.oreilly.rest.workbook</groupId>
     <artifactId>workbook-ex03_1</artifactId>
@@ -10,30 +16,11 @@
     <name>ex03_1</name>
     <description/>
 
-    <repositories>
-        <repository>
-            <id>java.net</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </repository>
-        <repository>
-            <id>maven repo</id>
-            <name>maven repo</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        <!-- For resteasy -->
-        <repository>
-            <id>jboss</id>
-            <name>jboss repo</name>
-            <url>http://repository.jboss.org/maven2</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.0-beta-3-SNAPSHOT</version>
+            <version>2.0-beta-3</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
