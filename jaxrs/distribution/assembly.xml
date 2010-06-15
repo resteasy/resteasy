@@ -65,13 +65,6 @@
     </fileSets>
     <dependencySets>
         <dependencySet>
-            <unpack>true</unpack>
-            <includes>
-                <include>org.jboss.resteasy:resteasy-jaxrs-war</include>
-            </includes>
-            <outputDirectory>resteasy-jaxrs.war</outputDirectory>
-        </dependencySet>
-        <dependencySet>
             <unpack>false</unpack>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
@@ -90,6 +83,9 @@
                 <include>org.jboss.resteasy:async-http-tomcat6</include>
                 <include>org.jboss.resteasy:resteasy-cache-core</include>
                 <include>org.jboss.resteasy:resteasy-oauth</include>
+                <include>org.jboss.resteasy:resteasy-cdi</include>
+                <include>org.jboss.resteasy:resteasy-jsapi</include>
+                <include>org.jboss.resteasy:resteasy-links</include>
             </includes>
             <excludes>
                 <exclude>org.jboss.resteasy:resteasy-jaxrs-war</exclude>
