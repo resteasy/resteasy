@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.resteasy</groupId>
-    <version>2.0-beta-3-SNAPSHOT</version>
+    <version>2.0-beta-3</version>
     <artifactId>ejb-integration-example</artifactId>
     <packaging>pom</packaging>
     <properties>
@@ -25,13 +25,35 @@
         <repository>
             <id>jboss</id>
             <name>jboss repo</name>
-            <url>http://repository.jboss.org/maven2</url>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
             <id>scannotation</id>
             <url>http://scannotation.sf.net/maven2</url>
         </repository>
     </repositories>
+
+    <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
+         pom.xml as a template -->
+    <distributionManagement>
+        <repository>
+            <id>jboss-releases-repository</id>
+            <name>JBoss Releases Repository</name>
+            <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <modules>
         <module>ejb</module>
