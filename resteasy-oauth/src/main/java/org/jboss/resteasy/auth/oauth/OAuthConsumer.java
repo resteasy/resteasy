@@ -13,4 +13,9 @@ public interface OAuthConsumer {
 	 * Returns the OAuth Consumer's private secret.
 	 */
 	String getSecret();
+	
+	/**
+     * Returns the OAuth Consumer's display name.
+     */
+    String getDisplayName();
 }

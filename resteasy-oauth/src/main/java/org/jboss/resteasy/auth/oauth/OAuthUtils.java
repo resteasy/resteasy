@@ -121,7 +121,11 @@ public class OAuthUtils {
 		logger.debug("Error ["+httpCode+"]: "+message);
 		resp.getWriter().append(message);
 		resp.setStatus(httpCode);
-		resp.setHeader(AUTHENTICATE_HEADER, "OAuth realm=\""+provider.getRealm()+"\"");
+		String headerValue = "OAuth";
+		if (provider.getRealm() != null && provider.getRealm().length() > 0) {
+		    headerValue += (" realm=\"" + provider.getRealm() + "\"");
+		}
+		resp.setHeader(AUTHENTICATE_HEADER, headerValue);
 	}
 
 	/**

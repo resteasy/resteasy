@@ -18,6 +18,10 @@ public class OAuthProviderChecker implements OAuthProvider {
 			throw new RuntimeException("OAuthProvider should not return null");
 		return arg;
 	}
+	
+	public OAuthConsumer registerConsumer(String consumerKey, String displayName) throws OAuthException {
+        return checkNull(provider.registerConsumer(consumerKey, displayName));
+    }
 
 	public OAuthConsumer getConsumer(String consumerKey) throws OAuthException {
 		return checkNull(provider.getConsumer(consumerKey));
@@ -27,7 +31,7 @@ public class OAuthProviderChecker implements OAuthProvider {
 		return checkNull(provider.getRealm());
 	}
 
-	public OAuthToken getRequestToken(String consumerKey, String requestKey)
+	public OAuthRequestToken getRequestToken(String consumerKey, String requestKey)
 			throws OAuthException {
 		return checkNull(provider.getRequestToken(consumerKey, requestKey));
 	}
@@ -46,9 +50,9 @@ public class OAuthProviderChecker implements OAuthProvider {
 		return checkNull(provider.makeAccessToken(consumerKey, requestKey, verifier));
 	}
 
-	public OAuthToken makeRequestToken(String consumerKey, String callback)
+	public OAuthToken makeRequestToken(String consumerKey, String callback, String[] scopes)
 			throws OAuthException {
-		return checkNull(provider.makeRequestToken(consumerKey, callback));
+		return checkNull(provider.makeRequestToken(consumerKey, callback, scopes));
 	}
 
 	public String authoriseRequestToken(String consumerKey, String requestKey)

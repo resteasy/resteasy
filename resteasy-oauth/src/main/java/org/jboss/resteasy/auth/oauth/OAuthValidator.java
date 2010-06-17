@@ -57,7 +57,7 @@ public class OAuthValidator extends SimpleOAuthValidator {
         message.requireParameters(OAuth.OAUTH_TIMESTAMP, OAuth.OAUTH_NONCE);
         long timestamp = Long.parseLong(message.getParameter(OAuth.OAUTH_TIMESTAMP));
         long now = currentTimeMsec();
-        validateTimestamp(message, timestamp, token);
+        validateTimestamp(message, now, token);
         validateNonce(message, timestamp, now);
     }
 

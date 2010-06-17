@@ -26,9 +26,9 @@ public class MyProvider extends OAuthMemoryProvider {
 		super(Realm);
 		addConsumer(Consumer1Key, Consumer1Secret);
 		try {
-			addRequestKey(Consumer1Key, Consumer1Request1Key, Consumer1Request1Secret, Consumer1Request1Callback);
+			addRequestKey(Consumer1Key, Consumer1Request1Key, Consumer1Request1Secret, Consumer1Request1Callback, new String[]{});
 			authoriseRequestToken(Consumer1Key, Consumer1Request1Key, Consumer1Request1Verifier);
-			addRequestKey(Consumer1Key, Consumer1Request2Key, Consumer1Request2Secret, Consumer1Request2Callback);
+			addRequestKey(Consumer1Key, Consumer1Request2Key, Consumer1Request2Secret, Consumer1Request2Callback, new String[]{});
 			addAccessKey(Consumer1Key, Consumer1Access1Key, Consumer1Access1Secret, Consumer1Access1Principal, Consumer1Access1Roles);
 		} catch (OAuthException e) {
 			// should not happen

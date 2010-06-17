@@ -34,5 +34,6 @@
         <module>api-clients</module>
         <module>resteasy-springMVC</module>
         <module>oreilly-workbook</module>
+        <module>oauth</module>
     </modules>
 </project>
