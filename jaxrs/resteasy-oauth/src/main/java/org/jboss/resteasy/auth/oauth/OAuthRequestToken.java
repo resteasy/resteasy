@@ -1,0 +1,40 @@
+package org.jboss.resteasy.auth.oauth;
+
+import java.net.HttpURLConnection;
+
+/**
+ * Represents either an OAuth Access or Request Token.
+ * @author Stéphane Épardaud <stef@epardaud.fr>
+ */
+public class OAuthRequestToken extends OAuthToken {
+    
+    private String callback;
+    private String verifier;
+    
+    public OAuthRequestToken(String token, String secret, String callback,
+                             String[] scopes, long timeToLive, OAuthConsumer consumer) {
+        super(token, secret, scopes, timeToLive, consumer);
+        this.callback = callback;
+    }
+    /**
+     * Returns this Token's callback
+     */
+    public String getCallback() {
+        return callback;
+    }
+    
+    /**
+     * Returns this Token's verifier
+     */
+    public synchronized String getVerifier() {
+        return verifier;
+    }
+    
+    public synchronized void setVerifier(String verifier) throws OAuthException {
+        if (this.verifier != null) {
+            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "This request token has already been authorized");
+        }
+        this.verifier = verifier;
+    }
+    
+}
