@@ -12,6 +12,15 @@ public interface OAuthProvider {
 	 */
 	public String getRealm();
 
+	
+	/**
+     * Creates a new OAuth Consumer
+     * @param consumerKey the Consumer key.
+     * @return the OAuth Consumer for the given Consumer key.
+     * @throws OAuthException thrown if Consumer can not be registered.
+     */
+    public OAuthConsumer registerConsumer(String consumerKey, String displayName) throws OAuthException;
+
 	/**
 	 * Returns the OAuth Consumer for the given Consumer key. If no such Consumer exists, throw an OAuthException.
 	 * @param consumerKey the Consumer key to load.
@@ -25,9 +34,9 @@ public interface OAuthProvider {
 	 * @param consumerKey the Consumer key whose Request Token we want to load
 	 * @param requestToken the Request Token to load
 	 * @return the OAuth Request Token for the given Consumer key and Request Token
-	 * @throws OAuthException thrown if the given Consumer or Request Token do not exist.
+	 * @throws OAuthException thrown if the given Request Token does not exist.
 	 */
-	public OAuthToken getRequestToken(String consumerKey, String requestToken) throws OAuthException;
+	public OAuthRequestToken getRequestToken(String consumerKey, String requestToken) throws OAuthException;
 
 	/**
 	 * Returns the OAuth Access Token for the given Consumer key and Access Token. If no such Consumer or Access Token exist, throw an OAuthException.
@@ -42,10 +51,12 @@ public interface OAuthProvider {
 	 * Make a new OAuth Request Token for the given Consumer, using the given callback.
 	 * @param consumerKey the Consumer key for whom to create a new Request Token
 	 * @param callback the Client-specified callback for this Request Token
+	 * @param scopes resource URIs or other IDs representing the resources 
+	 *               the consumer would like to access
 	 * @return a new OAuth Request Token for the given Consumer
 	 * @throws OAuthException thrown if the given Consumer does not exist
 	 */
-	public OAuthToken makeRequestToken(String consumerKey, String callback) throws OAuthException;
+	public OAuthToken makeRequestToken(String consumerKey, String callback, String[] scopes) throws OAuthException;
 
 	/**
 	 * Make a new OAuth Access Token for the given Consumer, using the given Request Token and Verifier. 

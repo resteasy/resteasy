@@ -2,6 +2,9 @@ package org.jboss.resteasy.auth.oauth;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -29,10 +32,20 @@ public class OAuthServlet extends HttpServlet {
 	private final static Logger logger = LoggerFactory.getLogger(OAuthServlet.class);
 
 	/**
+     * Servlet context parameter name for the Consumer Registration URL
+     */
+    final static String PARAM_CONSUMER_REGISTRATION_URL = "oauth.provider.consumer.registration";
+	
+	/**
 	 * Servlet context parameter name for the Request Token distribution URL
 	 */
 	final static String PARAM_REQUEST_TOKEN_URL = "oauth.provider.tokens.request";
 
+	/**
+     * Servlet context parameter name for the Request Token authorization URL
+     */
+    final static String PARAM_TOKEN_AUTHORIZATION_URL = "oauth.provider.tokens.authorization";
+	
 	/**
 	 * Servlet context parameter name for the Request Token echange URL
 	 */
@@ -43,7 +56,12 @@ public class OAuthServlet extends HttpServlet {
 	 */
 	final static String PARAM_PROVIDER_CLASS = "oauth.provider.provider-class";
 	
-	private String requestTokenURL, accessTokenURL;
+	/**
+     * Relative path for the token authorization confirmation URL 
+     */
+    final static String TOKEN_AUTHORIZATION_CONFIRM_URL = "/authorization/confirm";
+	
+	private String requestTokenURL, accessTokenURL, consumerRegistrationURL, authorizationURL;
 	private OAuthProvider provider;
 	private OAuthValidator validator;
 	
@@ -55,6 +73,14 @@ public class OAuthServlet extends HttpServlet {
 		
 		// load the context-parameters 
 		ServletContext context = config.getServletContext();
+		consumerRegistrationURL = context.getInitParameter(PARAM_CONSUMER_REGISTRATION_URL);
+        if(consumerRegistrationURL == null)
+            consumerRegistrationURL = "/registration";
+		
+        authorizationURL = context.getInitParameter(PARAM_TOKEN_AUTHORIZATION_URL);
+        if(authorizationURL == null)
+            authorizationURL = "/authorization";
+        
 		requestTokenURL = context.getInitParameter(PARAM_REQUEST_TOKEN_URL);
 		if(requestTokenURL == null)
 			requestTokenURL = "/requestToken";
@@ -83,6 +109,12 @@ public class OAuthServlet extends HttpServlet {
 			serveRequestToken(req, resp);
 		else if(pathInfo.equals(accessTokenURL))
 			serveAccessToken(req, resp);
+		else if(pathInfo.equals(consumerRegistrationURL))
+            serveConsumerRegistration(req, resp);
+		else if(pathInfo.equals(authorizationURL))
+            serveTokenAuthorization(req, resp);
+		else if(pathInfo.startsWith(TOKEN_AUTHORIZATION_CONFIRM_URL)) 
+		    serveTokenAuthorizationConfirmation(req, resp);
 		else
 			resp.sendError(HttpURLConnection.HTTP_NOT_FOUND);
 	}
@@ -97,8 +129,7 @@ public class OAuthServlet extends HttpServlet {
 					OAuth.OAUTH_SIGNATURE_METHOD,
 					OAuth.OAUTH_SIGNATURE,
 					OAuth.OAUTH_TIMESTAMP,
-					OAuth.OAUTH_NONCE,
-					OAuth.OAUTH_CALLBACK);
+					OAuth.OAUTH_NONCE);
 			logger.debug("Parameters present");
 
 			String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
@@ -113,7 +144,8 @@ public class OAuthServlet extends HttpServlet {
 			validator.validateMessage(message, accessor, null);
 
 			// create a new Request Token
-			OAuthToken token = provider.makeRequestToken(consumerKey, message.getParameter(OAuth.OAUTH_CALLBACK));
+			OAuthToken token = provider.makeRequestToken(consumerKey, 
+			        message.getParameter(OAuth.OAUTH_CALLBACK), req.getParameterValues("oauth_scope"));
 
 			// send the Token information to the Client
 			OAuthUtils.sendValues(resp, OAuth.OAUTH_TOKEN, token.getToken(),OAuth.OAUTH_TOKEN_SECRET, token.getSecret(), OAuthUtils.OAUTH_CALLBACK_CONFIRMED_PARAM, "true");
@@ -181,4 +213,159 @@ public class OAuthServlet extends HttpServlet {
 			OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
 		}
 	}
+	
+	private void serveConsumerRegistration(HttpServletRequest req,
+            HttpServletResponse resp) throws IOException {
+        logger.debug("Consumer registration");
+        
+        try{
+            String[] values = req.getParameterValues(OAuth.OAUTH_CONSUMER_KEY);
+            if (values == null || values.length != 1) {
+                // perhaps many consumers can be registered in one go in the future
+                resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
+                return;
+            }
+            
+            String consumerKey = URLDecoder.decode(values[0], "UTF-8");
+            String displayName = null;
+            values = req.getParameterValues("oauth_consumer_display_name");
+            if (values != null && values.length == 1) {
+                displayName = URLDecoder.decode(values[0], "UTF-8");
+            }
+            
+            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = 
+                provider.registerConsumer(consumerKey, displayName);
+            
+            // send the shared key back to the registered consumer
+            OAuthUtils.sendValues(resp, "oauth_consumer_secret", consumer.getSecret());
+            resp.setStatus(HttpURLConnection.HTTP_OK);
+            logger.debug("All OK");
+
+        } catch (Exception x) {
+            logger.error("Exception ", x);
+            OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
+        }
+    }
+	
+	private void serveTokenAuthorization(HttpServletRequest req,
+            HttpServletResponse resp) throws IOException {
+        logger.debug("Consumer token authorization request");
+        
+        try{
+            String[] values = req.getParameterValues(OAuth.OAUTH_TOKEN);
+            if (values == null || values.length != 1) {
+                resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
+                return;
+            }
+            String requestTokenKey = values[0];
+            
+            OAuthRequestToken requestToken = provider.getRequestToken(null, requestTokenKey);
+            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = requestToken.getConsumer();
+            
+            // build the end user authentication and token authorization form
+            String acceptHeader = req.getHeader("Accept");
+            // TODO : properly check accept values, also support JSON
+            String format = acceptHeader.startsWith("application/xml") ? "xml" : "html";
+            
+            requestEndUserConfirmation(req, resp, consumer, requestToken, format);
+            
+        } catch (Exception x) {
+            logger.error("Exception ", x);
+            OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
+        }
+    }
+	
+	private void requestEndUserConfirmation(HttpServletRequest req,
+	                                        HttpServletResponse resp, 
+	                                        org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
+	                                        OAuthRequestToken requestToken,
+	                                        String format) {
+        // TODO: 
+	    // This is a work in progress
+	    // We're starting with some custom XML format - schema needs to be provided
+	    // for HTML : HTML template needs to be available
+	    // XML/HTML templates will need to be available as resources and XSLT/etc
+	    // can be used to inject parameters such as customer id, scopes, etc into them
+	    String uri = getAuthorizationConfirmURI(req, requestToken.getToken());
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("<tokenAuthorizationRequest xmlns=\"http://org.jboss.com/resteasy/oauth\" ")
+	        .append("replyTo=\"").append(uri).append("\">");
+	    sb.append("<consumerId>").append(consumer.getKey()).append("</consumerId>");
+	    if (consumer.getDisplayName() != null) {
+	        sb.append("<consumerName>").append(consumer.getKey()).append("</consumerName>");
+	    }
+	    if (requestToken.getScopes() != null) {
+	        sb.append("<requestScope>").append(requestToken.getScopes()[0]).append("</requestScope>");
+	    }
+	    sb.append("</tokenAuthorizationRequest>");
+	    try {
+    	    resp.getWriter().append(sb.toString());
+    	    resp.setStatus(HttpURLConnection.HTTP_OK);
+	    } catch (IOException ex) {
+	        resp.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
+	    }
+	}
+	
+	public String getAuthorizationConfirmURI(HttpServletRequest req, String tokenKey) {
+	    String requestURI = req.getRequestURL().toString();
+        int index = requestURI.lastIndexOf(authorizationURL);
+        String baseURI = requestURI.substring(0, index);
+        return baseURI + TOKEN_AUTHORIZATION_CONFIRM_URL + "?"
+            + OAuth.OAUTH_TOKEN + "=" + OAuthUtils.encodeForOAuth(tokenKey);
+	}
+	
+	private void serveTokenAuthorizationConfirmation(HttpServletRequest req,
+            HttpServletResponse resp) throws IOException {
+        logger.debug("Consumer registration");
+        
+        try{
+            String[] values = req.getParameterValues(OAuth.OAUTH_TOKEN);
+            if (values == null || values.length != 1) {
+                resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
+                return;
+            }
+            String requestTokenKey = values[0];
+            
+            OAuthRequestToken requestToken = provider.getRequestToken(null, requestTokenKey);
+            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = requestToken.getConsumer();
+            
+            values = req.getParameterValues("oauth_end_user_decision");
+            if (values == null || values.length != 1) {
+                resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
+                return;
+            }
+            
+            boolean authorized = "yes".equals(values[0]);
+            
+            String callback = requestToken.getCallback();
+            if (authorized) 
+            {
+                String verifier = provider.authoriseRequestToken(consumer.getKey(), requestToken.getToken());
+                
+                if (callback == null) {
+                    OAuthUtils.sendValues(resp, OAuth.OAUTH_TOKEN, requestTokenKey, OAuth.OAUTH_VERIFIER, verifier);
+                    resp.setStatus(HttpURLConnection.HTTP_OK);
+                } else {
+                    List<OAuth.Parameter> parameters = new ArrayList<OAuth.Parameter>();
+                    parameters.add(new OAuth.Parameter(OAuth.OAUTH_TOKEN, requestTokenKey));
+                    parameters.add(new OAuth.Parameter(OAuth.OAUTH_VERIFIER, verifier));
+                    String location = OAuth.addParameters(callback, parameters);
+                    resp.addHeader("Location", location);
+                    resp.setStatus(303);
+                }
+            } 
+            else
+            {
+                // TODO : make sure this response is OAuth compliant 
+                OAuthUtils.makeErrorResponse(resp, "Token has not been authorized", 503, provider);
+            }
+            
+            logger.debug("All OK");
+
+        } catch (Exception x) {
+            logger.error("Exception ", x);
+            OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
+        }
+    }
 }
+

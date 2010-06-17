@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * OAuthProvider that keeps all data in memory. Mainly used as an example and for tests.
@@ -19,11 +20,14 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	private static class Consumer implements OAuthConsumer {
 		private String consumerKey;
 		private String consumerSecret;
-		private Map<String, Token> tokens = Collections.synchronizedMap(new HashMap<String, Token>());
+		private String displayName;
+		private Map<String, OAuthRequestToken> requestTokens = Collections.synchronizedMap(new HashMap<String, OAuthRequestToken>());
+		private Map<String, OAuthToken> accessTokens = Collections.synchronizedMap(new HashMap<String, OAuthToken>());
 
-		public Consumer(String consumerKey, String consumerSecret) {
+		public Consumer(String consumerKey, String consumerSecret, String displayName) {
 			this.consumerKey = consumerKey;
 			this.consumerSecret = consumerSecret;
+			this.displayName = displayName;
 		}
 		
 		public String getKey() {
@@ -32,182 +36,82 @@ public class OAuthMemoryProvider implements OAuthProvider {
 		public String getSecret() {
 			return consumerSecret;
 		}
-		public RequestToken getRequestToken(String requestKey) throws OAuthException{
+		public OAuthRequestToken getRequestToken(String requestKey) throws OAuthException{
 			// get is atomic
-			Token ret = tokens.get(requestKey);
-			if(ret == null || !ret.isRequestToken())
+			OAuthRequestToken ret = requestTokens.get(requestKey);
+			if(ret == null)
 				throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such request key "+requestKey);
-			return (RequestToken)ret;
+			return ret;
 		}
 
-		public Token getAccessToken(String accessKey) throws OAuthException{
+		public boolean equals(Object obj) {
+		    if (obj instanceof Consumer) {
+		        return consumerKey.equals(((Consumer)obj).consumerKey);
+		    } else {
+		        return false;
+		    }
+		}
+		
+		public int hashCode() {
+		    return consumerKey.hashCode();
+		}
+		
+		public OAuthToken getAccessToken(String accessKey) throws OAuthException{
 			// get is atomic
-			Token ret = tokens.get(accessKey);
-			if(ret == null || ret.isRequestToken())
+			OAuthToken ret = accessTokens.get(accessKey);
+			if(ret == null)
 				throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such access key "+accessKey);
 			return ret;
 		}
 
-		public OAuthToken makeRequestTokens(String callback) {
+		public OAuthRequestToken makeRequestToken(String callback, String[] scopes) {
 			// generation of a new token must be synchronized
-			synchronized(tokens){
+			synchronized(requestTokens){
 				String newToken;
 				do{
 					newToken = makeRandomString();
-				}while(tokens.containsKey(newToken));
-				RequestToken token = new RequestToken(this, newToken, makeRandomString(), callback);
-				tokens.put(token.getToken(), token);
+				}while(requestTokens.containsKey(newToken));
+				OAuthRequestToken token = 
+				    new OAuthRequestToken(newToken, makeRandomString(), callback, scopes, -1, this);
+				requestTokens.put(token.getToken(), token);
 				return token;
 			}
 		}
 
-		public long verifyAndRemoveRequestToken(String requestToken, String verifier) throws OAuthException {
+		public OAuthRequestToken verifyAndRemoveRequestToken(String requestToken, String verifier) throws OAuthException {
 			// removal of request token must be synchronized
-			synchronized(tokens){
-				RequestToken request = getRequestToken(requestToken);
+			synchronized(requestTokens){
+				OAuthRequestToken request = getRequestToken(requestToken);
 				// check the verifier, which is only set when the request token was accepted
-				request.checkVerifier(verifier);
+				if(verifier == null || !verifier.equals(request.getVerifier()))
+	                throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid verifier code for token "+requestToken);
 				// then let's go through and exchange this for an access token
-				tokens.remove(requestToken);
-				return request.timestamp;
+				return requestTokens.remove(requestToken);
 			}
 		}
-		public OAuthToken makeAccessTokens(String requestToken, long timestamp) throws OAuthException {
+		public OAuthToken makeAccessTokens(OAuthRequestToken requestToken) throws OAuthException {
 			// generation of a new token must be synchronized
-			synchronized(tokens){
+			synchronized(accessTokens){
 				// make the access token start with the request token's timestamp 
 				String newToken;
 				do{
 					newToken = makeRandomString();
-				}while(tokens.containsKey(newToken));
-				Token token = new Token(this, newToken, makeRandomString(), timestamp);
-				tokens.put(token.getToken(), token);
+				}while(accessTokens.containsKey(newToken));
+				OAuthToken token = new OAuthToken(newToken, makeRandomString(), 
+				                                  requestToken.getScopes(), -1, this);
+				accessTokens.put(token.getToken(), token);
 				return token;
 			}
 		}
-	}
 
-	private static class RequestToken extends Token {
-
-		private String verifier;
-		private String callback;
-
-		public RequestToken(Consumer consumer, String token, String secret, String callback) {
-			super(consumer, token, secret);
-			this.callback = callback;
-		}
-
-		public void checkVerifier(String verifier) throws OAuthException {
-			if(this.verifier == null || this.verifier.length() == 0)
-				throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Request token was not authorized "+token);
-			if(verifier == null || !verifier.equals(this.verifier))
-				throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid verifier code for token "+token);
-		}
-
-
-		public String getVerifier() {
-			return verifier;
-		}
-
-		public void setVerifier(String verifier) {
-			this.verifier = verifier;
-		}
-
-		public String getCallback() {
-			return callback;
-		}
-		
-		@Override
-		public boolean isRequestToken() {
-			return true;
-		}
-
-		public String authorise() throws OAuthException {
-			if(this.verifier != null && this.verifier.length() != 0)
-				throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Request token was already authorized "+token);
-			this.verifier = makeRandomString();
-			return verifier;
-		}
-	}
-	
- 	private static class Token implements OAuthToken {
-		protected String token;
-		protected String secret;
-		protected long timestamp;
-		private Set<String> roles;
-		private String principalName;
-		private Consumer consumer;
-
-		public Token(Consumer consumer, String token, String secret) {
-			this.consumer = consumer;
-			this.token = token;
-			this.secret = secret;
-		}
-
-		public Token(Consumer consumer, String token, String secret,
-				long timestamp) {
-			this(consumer, token, secret);
-			this.timestamp = timestamp;
-		}
-
-		public boolean isRequestToken() {
-			return false;
-		}
-
-		public long getTimestamp() {
-			return timestamp;
-		}
-		
-		/*
-		 * This is synchronized to make sure the timestamp we check is the one we accept  
-		 */
-		public synchronized void setTimestamp(long timestamp) throws OAuthException {
-			if(this.timestamp > timestamp)
-				throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid timestamp "+timestamp);
-			this.timestamp = timestamp;
-		}
-
-		public String getToken() {
-			return token;
-		}
-		public String getSecret() {
-			return secret;
-		}
-
-		public String getPrincipalName() {
-			return principalName;
-		}
-
-		public Principal getPrincipal(){
-			final String principalName = this.principalName;
-			return new Principal(){
-				public String getName() {
-					return principalName;
-				}
-			};
-		}
-		
-		public Set<String> getRoles() {
-			return roles;
-		}
-
-		public void setRoles(Set<String> roles) {
-			this.roles = roles;
-		}
-
-		public void setPrincipalName(String principalName) {
-			this.principalName = principalName;
-		}
-
-		public Consumer getConsumer() {
-			return consumer;
-		}
-		
+        public String getDisplayName() {
+            return null;
+        }
 	}
 
 	private String realm;
-	private Map<String, Consumer> consumers = Collections.synchronizedMap(new HashMap<String,Consumer>());
-
+	private ConcurrentHashMap<String, Consumer> consumers = new ConcurrentHashMap<String,Consumer>();
+	private ConcurrentHashMap<String, OAuthRequestToken> requestTokens = new ConcurrentHashMap<String,OAuthRequestToken>();
 	public OAuthMemoryProvider(String realm){
 		this.realm = realm;
 	}
@@ -220,21 +124,22 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	// For subclassers
 	
 	protected void addConsumer(String consumerKey, String consumerSecret){
-		consumers.put(consumerKey, new Consumer(consumerKey, consumerSecret));
+		consumers.put(consumerKey, new Consumer(consumerKey, consumerSecret, null));
 	}
 
-	protected void addRequestKey(String consumerKey, String requestToken, String requestSecret, String callback) throws OAuthException{
+	protected void addRequestKey(String consumerKey, String requestToken, String requestSecret, String callback, String[] scopes) throws OAuthException{
 		Consumer consumer = _getConsumer(consumerKey);
-		Token token = new RequestToken(consumer, requestToken, requestSecret, callback);
-		consumer.tokens.put(requestToken, token);
+		OAuthRequestToken token = new OAuthRequestToken(requestToken, requestSecret, callback, scopes, -1, consumer);
+		consumer.requestTokens.put(requestToken, token);
+		requestTokens.put(requestToken, token);
 	}
 	
 	protected void addAccessKey(String consumerKey,	String accessToken, String accessSecret, String principalName, String... roles) throws OAuthException {
 		Consumer consumer = _getConsumer(consumerKey);
-		Token token = new Token(consumer, accessToken, accessSecret, 0);
+		TokenWithCredentials token = new TokenWithCredentials(accessToken, accessSecret, null, -1, consumer);
 		token.setPrincipalName(principalName);
 		token.setRoles(new HashSet<String>(Arrays.asList(roles)));
-		consumer.tokens.put(accessToken, token);
+		consumer.accessTokens.put(accessToken, token);
 	}
 
 	protected void authoriseRequestToken(String consumerKey, String requestToken, String verifier) throws OAuthException{
@@ -256,16 +161,32 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	}
 
 	public String authoriseRequestToken(String consumerKey, String requestToken) throws OAuthException{
-		return _getConsumer(consumerKey).getRequestToken(requestToken).authorise();
+	    String verifier = makeRandomString();
+		_getConsumer(consumerKey).getRequestToken(requestToken).setVerifier(verifier);
+		return verifier;
 	}
 
+	public OAuthConsumer registerConsumer(String consumerKey, String displayName) throws OAuthException {
+	    Consumer consumer = consumers.get(consumerKey);
+        if (consumer != null) {
+            return consumer;
+        }
+        consumer = new Consumer(consumerKey, makeRandomString(), displayName);
+        consumers.putIfAbsent(consumerKey, consumer);
+        return consumer;
+	}
+	
 	public OAuthConsumer getConsumer(String consumerKey) throws OAuthException {
 		return _getConsumer(consumerKey);
 	}
 
-	public OAuthToken getRequestToken(String consumerKey, String requestToken)
+	public OAuthRequestToken getRequestToken(String consumerKey, String requestToken)
 	throws OAuthException {
-		return _getConsumer(consumerKey).getRequestToken(requestToken);
+	    OAuthRequestToken token = getRequestToken(requestToken);
+	    if (consumerKey != null && !token.getConsumer().getKey().equals(consumerKey)) {
+	        throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such consumer key "+consumerKey);
+	    }
+		return token;
 	}
 
 	public OAuthToken getAccessToken(String consumerKey, String accessToken)
@@ -274,19 +195,66 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	}
 
 	public void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException {
-		((Token)token).setTimestamp(timestamp);
+	    if(token.getTimestamp() > timestamp)
+            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid timestamp "+timestamp);
 	}
 
 	public OAuthToken makeAccessToken(String consumerKey,
 			String requestToken, String verifier) throws OAuthException {
 		Consumer consumer = _getConsumer(consumerKey);
-		long timestamp = consumer.verifyAndRemoveRequestToken(requestToken, verifier);
-		return consumer.makeAccessTokens(requestToken, timestamp);
+		consumer.verifyAndRemoveRequestToken(requestToken, verifier);
+		OAuthRequestToken token = requestTokens.remove(requestToken);
+		
+		return consumer.makeAccessTokens(token);
 	}
 
-	public OAuthToken makeRequestToken(String consumerKey, String callback)
+	public OAuthRequestToken makeRequestToken(String consumerKey, String callback, String[] scopes)
 			throws OAuthException {
-		return _getConsumer(consumerKey).makeRequestTokens(callback);
+		OAuthRequestToken token = _getConsumer(consumerKey).makeRequestToken(callback, scopes);
+		requestTokens.put(token.getToken(), token);
+		return token;
 	}
 
+    public OAuthRequestToken getRequestToken(String requestToken)
+            throws OAuthException {
+        OAuthRequestToken token = requestTokens.get(requestToken);
+        if (token == null) {
+            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such request token " + requestToken);
+        }
+        return token;
+    }
+
+    private static class TokenWithCredentials extends OAuthToken {
+        private String principalName;
+        private Set<String> roleNames;
+        
+        public TokenWithCredentials(String token, String secret, String[] scopes, long timeToLive,
+                OAuthConsumer consumer) {
+            super(token, secret, scopes, timeToLive, consumer);
+        }
+        
+        public void setPrincipalName(String name) {
+            this.principalName = name;
+        }
+        
+        public void setRoles(Set<String> roles) {
+            this.roleNames = roles;
+        }
+        
+        @Override
+        public Principal getPrincipal() {
+            return new Principal() {
+
+                public String getName() {
+                    return principalName;
+                };
+            
+            };
+        }
+        
+        @Override
+        public Set<String> getRoles() {
+            return roleNames;
+        }
+    }
 }
