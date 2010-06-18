@@ -6,10 +6,15 @@
    <display-name>Archetype Created Web Application</display-name>
    <context-param>
       <param-name>resteasy.jndi.resources</param-name>
-      <param-value>ejb-integration-test/SimpleResourceBean/local,ejb-integration-test/LocatingResourceBean/local
+      <param-value>ejb-integration-test/SimpleResourceBean/local,ejb-integration-test/LocatingResourceBean/local,ejb-integration-test/FooResourceBean/local
       </param-value>
    </context-param>
 
+	<context-param>
+      <param-name>resteasy.providers</param-name>
+      <param-value>org.resteasy.test.ejb.exception.FooExceptionMapper</param-value>
+	</context-param>
+	
    <listener>
       <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
    </listener>
