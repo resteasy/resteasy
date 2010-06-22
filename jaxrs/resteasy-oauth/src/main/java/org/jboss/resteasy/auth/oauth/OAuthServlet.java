@@ -144,8 +144,13 @@ public class OAuthServlet extends HttpServlet {
 			validator.validateMessage(message, accessor, null);
 
 			// create a new Request Token
+			String callbackURI = message.getParameter(OAuth.OAUTH_CALLBACK);
+			if (callbackURI != null && consumer.getConnectURI() != null
+			        && !callbackURI.startsWith(consumer.getConnectURI())) {
+			    throw new OAuthException(400, "Wrong callback URI");
+			}
 			OAuthToken token = provider.makeRequestToken(consumerKey, 
-			        message.getParameter(OAuth.OAUTH_CALLBACK), req.getParameterValues("oauth_scope"));
+			                            callbackURI, req.getParameterValues("xoauth_scope"));
 
 			// send the Token information to the Client
 			OAuthUtils.sendValues(resp, OAuth.OAUTH_TOKEN, token.getToken(),OAuth.OAUTH_TOKEN_SECRET, token.getSecret(), OAuthUtils.OAUTH_CALLBACK_CONFIRMED_PARAM, "true");
@@ -182,7 +187,7 @@ public class OAuthServlet extends HttpServlet {
 			// load some parameters
 			String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
 			String requestTokenString = message.getParameter(OAuth.OAUTH_TOKEN);
-			String verifier = message.getParameter("oauth_verifier");
+			String verifier = message.getParameter(OAuth.OAUTH_VERIFIER);
 			
 			// get the Request Token to exchange
 			OAuthToken requestToken = provider.getRequestToken(consumerKey, requestTokenString);
@@ -228,16 +233,22 @@ public class OAuthServlet extends HttpServlet {
             
             String consumerKey = URLDecoder.decode(values[0], "UTF-8");
             String displayName = null;
-            values = req.getParameterValues("oauth_consumer_display_name");
+            values = req.getParameterValues("xoauth_consumer_display_name");
             if (values != null && values.length == 1) {
                 displayName = URLDecoder.decode(values[0], "UTF-8");
             }
             
+            String connectURI = null;
+            values = req.getParameterValues("xoauth_consumer_connect_uri");
+            if (values != null && values.length == 1) {
+                connectURI = URLDecoder.decode(values[0], "UTF-8");
+            }
+            
             org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = 
-                provider.registerConsumer(consumerKey, displayName);
+                provider.registerConsumer(consumerKey, displayName, connectURI);
             
             // send the shared key back to the registered consumer
-            OAuthUtils.sendValues(resp, "oauth_consumer_secret", consumer.getSecret());
+            OAuthUtils.sendValues(resp, "xoauth_consumer_secret", consumer.getSecret());
             resp.setStatus(HttpURLConnection.HTTP_OK);
             logger.debug("All OK");
 
@@ -329,7 +340,7 @@ public class OAuthServlet extends HttpServlet {
             OAuthRequestToken requestToken = provider.getRequestToken(null, requestTokenKey);
             org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = requestToken.getConsumer();
             
-            values = req.getParameterValues("oauth_end_user_decision");
+            values = req.getParameterValues("xoauth_end_user_decision");
             if (values == null || values.length != 1) {
                 resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
                 return;

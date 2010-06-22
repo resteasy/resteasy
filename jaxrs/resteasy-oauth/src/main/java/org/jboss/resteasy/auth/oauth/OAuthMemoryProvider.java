@@ -3,10 +3,7 @@ package org.jboss.resteasy.auth.oauth;
 import java.net.HttpURLConnection;
 import java.security.Principal;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,137 +14,105 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class OAuthMemoryProvider implements OAuthProvider {
 	
-	private static class Consumer implements OAuthConsumer {
-		private String consumerKey;
-		private String consumerSecret;
-		private String displayName;
-		private Map<String, OAuthRequestToken> requestTokens = Collections.synchronizedMap(new HashMap<String, OAuthRequestToken>());
-		private Map<String, OAuthToken> accessTokens = Collections.synchronizedMap(new HashMap<String, OAuthToken>());
-
-		public Consumer(String consumerKey, String consumerSecret, String displayName) {
-			this.consumerKey = consumerKey;
-			this.consumerSecret = consumerSecret;
-			this.displayName = displayName;
-		}
-		
-		public String getKey() {
-			return consumerKey;
-		}
-		public String getSecret() {
-			return consumerSecret;
-		}
-		public OAuthRequestToken getRequestToken(String requestKey) throws OAuthException{
-			// get is atomic
-			OAuthRequestToken ret = requestTokens.get(requestKey);
-			if(ret == null)
-				throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such request key "+requestKey);
-			return ret;
-		}
-
-		public boolean equals(Object obj) {
-		    if (obj instanceof Consumer) {
-		        return consumerKey.equals(((Consumer)obj).consumerKey);
-		    } else {
-		        return false;
-		    }
-		}
-		
-		public int hashCode() {
-		    return consumerKey.hashCode();
-		}
-		
-		public OAuthToken getAccessToken(String accessKey) throws OAuthException{
-			// get is atomic
-			OAuthToken ret = accessTokens.get(accessKey);
-			if(ret == null)
-				throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such access key "+accessKey);
-			return ret;
-		}
-
-		public OAuthRequestToken makeRequestToken(String callback, String[] scopes) {
-			// generation of a new token must be synchronized
-			synchronized(requestTokens){
-				String newToken;
-				do{
-					newToken = makeRandomString();
-				}while(requestTokens.containsKey(newToken));
-				OAuthRequestToken token = 
-				    new OAuthRequestToken(newToken, makeRandomString(), callback, scopes, -1, this);
-				requestTokens.put(token.getToken(), token);
-				return token;
-			}
-		}
-
-		public OAuthRequestToken verifyAndRemoveRequestToken(String requestToken, String verifier) throws OAuthException {
-			// removal of request token must be synchronized
-			synchronized(requestTokens){
-				OAuthRequestToken request = getRequestToken(requestToken);
-				// check the verifier, which is only set when the request token was accepted
-				if(verifier == null || !verifier.equals(request.getVerifier()))
-	                throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid verifier code for token "+requestToken);
-				// then let's go through and exchange this for an access token
-				return requestTokens.remove(requestToken);
-			}
-		}
-		public OAuthToken makeAccessTokens(OAuthRequestToken requestToken) throws OAuthException {
-			// generation of a new token must be synchronized
-			synchronized(accessTokens){
-				// make the access token start with the request token's timestamp 
-				String newToken;
-				do{
-					newToken = makeRandomString();
-				}while(accessTokens.containsKey(newToken));
-				OAuthToken token = new OAuthToken(newToken, makeRandomString(), 
-				                                  requestToken.getScopes(), -1, this);
-				accessTokens.put(token.getToken(), token);
-				return token;
-			}
-		}
-
-        public String getDisplayName() {
-            return null;
-        }
-	}
-
 	private String realm;
-	private ConcurrentHashMap<String, Consumer> consumers = new ConcurrentHashMap<String,Consumer>();
+	private ConcurrentHashMap<String, OAuthConsumer> consumers = new ConcurrentHashMap<String,OAuthConsumer>();
 	private ConcurrentHashMap<String, OAuthRequestToken> requestTokens = new ConcurrentHashMap<String,OAuthRequestToken>();
+	private ConcurrentHashMap<String, OAuthToken> accessTokens = new ConcurrentHashMap<String,OAuthToken>();
+	
 	public OAuthMemoryProvider(String realm){
 		this.realm = realm;
 	}
+
+	private OAuthToken doMakeAccessTokens(OAuthRequestToken requestToken) throws OAuthException {
+        String newToken;
+        do{
+            newToken = makeRandomString();
+        }while(accessTokens.containsKey(newToken));
+        OAuthToken token = new OAuthToken(newToken, makeRandomString(), 
+                                          requestToken.getScopes(), -1, requestToken.getConsumer());
+        accessTokens.put(token.getToken(), token);
+        return token;
+	}
+	
+	private OAuthToken doGetAccessToken(String consumerKey, String accessKey) throws OAuthException{
+        // get is atomic
+        OAuthToken ret = accessTokens.get(accessKey);
+        if (!ret.getConsumer().getKey().equals(consumerKey)) {
+            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Consumer is invalid");
+        }
+        if(ret == null)
+            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such access key "+accessKey);
+        return ret;
+    }
+
+    private OAuthRequestToken doMakeRequestToken(String consumerKey, String callback, String[] scopes) 
+        throws OAuthException {
+        OAuthConsumer consumer = _getConsumer(consumerKey);
+        String newToken;
+        do{
+            newToken = makeRandomString();
+        }while(requestTokens.containsKey(newToken));
+        OAuthRequestToken token = 
+            new OAuthRequestToken(newToken, makeRandomString(), callback, scopes, -1, consumer);
+        requestTokens.put(token.getToken(), token);
+        return token;
+    }
+
+    private OAuthRequestToken doGetRequestToken(String customerKey, String requestKey) throws OAuthException{
+        // get is atomic
+        OAuthRequestToken ret = requestTokens.get(requestKey);
+        checkCustomerKey(ret, customerKey);
+        if(ret == null)
+            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such request key "+requestKey);
+        return ret;
+    }
+    
+    public OAuthRequestToken verifyAndRemoveRequestToken(String customerKey, String requestToken, String verifier) throws OAuthException {
+        OAuthRequestToken request = getRequestToken(requestToken);
+        checkCustomerKey(request, customerKey);
+        // check the verifier, which is only set when the request token was accepted
+        if(verifier == null || !verifier.equals(request.getVerifier()))
+            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid verifier code for token "+requestToken);
+        // then let's go through and exchange this for an access token
+        return requestTokens.remove(requestToken);
+    }
 	
 	private static String makeRandomString(){
 		return UUID.randomUUID().toString();
 	}
 
+	private void checkCustomerKey(OAuthToken token, String customerKey) throws OAuthException {
+	    if (customerKey != null && !customerKey.equals(token.getConsumer().getKey())) {
+            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid customer key");
+        }
+	}
 	//
 	// For subclassers
 	
 	protected void addConsumer(String consumerKey, String consumerSecret){
-		consumers.put(consumerKey, new Consumer(consumerKey, consumerSecret, null));
+		consumers.put(consumerKey, new OAuthConsumer(consumerKey, consumerSecret, null, null));
 	}
 
 	protected void addRequestKey(String consumerKey, String requestToken, String requestSecret, String callback, String[] scopes) throws OAuthException{
-		Consumer consumer = _getConsumer(consumerKey);
+	    OAuthConsumer consumer = _getConsumer(consumerKey);
 		OAuthRequestToken token = new OAuthRequestToken(requestToken, requestSecret, callback, scopes, -1, consumer);
-		consumer.requestTokens.put(requestToken, token);
 		requestTokens.put(requestToken, token);
 	}
 	
 	protected void addAccessKey(String consumerKey,	String accessToken, String accessSecret, String principalName, String... roles) throws OAuthException {
-		Consumer consumer = _getConsumer(consumerKey);
+		OAuthConsumer consumer = _getConsumer(consumerKey);
 		TokenWithCredentials token = new TokenWithCredentials(accessToken, accessSecret, null, -1, consumer);
 		token.setPrincipalName(principalName);
 		token.setRoles(new HashSet<String>(Arrays.asList(roles)));
-		consumer.accessTokens.put(accessToken, token);
+		accessTokens.put(accessToken, token);
 	}
 
 	protected void authoriseRequestToken(String consumerKey, String requestToken, String verifier) throws OAuthException{
-		_getConsumer(consumerKey).getRequestToken(requestToken).setVerifier(verifier);
+		doGetRequestToken(consumerKey, requestToken).setVerifier(verifier);
 	}
 
-	protected Consumer _getConsumer(String consumerKey) throws OAuthException{
-		Consumer ret = consumers.get(consumerKey); 
+	protected OAuthConsumer _getConsumer(String consumerKey) throws OAuthException{
+		OAuthConsumer ret = consumers.get(consumerKey); 
 		if(ret == null)
 			throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such consumer key "+consumerKey);
 		return ret;
@@ -162,16 +127,17 @@ public class OAuthMemoryProvider implements OAuthProvider {
 
 	public String authoriseRequestToken(String consumerKey, String requestToken) throws OAuthException{
 	    String verifier = makeRandomString();
-		_getConsumer(consumerKey).getRequestToken(requestToken).setVerifier(verifier);
+		doGetRequestToken(consumerKey, requestToken).setVerifier(verifier);
 		return verifier;
 	}
 
-	public OAuthConsumer registerConsumer(String consumerKey, String displayName) throws OAuthException {
-	    Consumer consumer = consumers.get(consumerKey);
+	public OAuthConsumer registerConsumer(String consumerKey, 
+	        String displayName, String connectURI) throws OAuthException {
+	    OAuthConsumer consumer = consumers.get(consumerKey);
         if (consumer != null) {
             return consumer;
         }
-        consumer = new Consumer(consumerKey, makeRandomString(), displayName);
+        consumer = new OAuthConsumer(consumerKey, makeRandomString(), displayName, connectURI);
         consumers.putIfAbsent(consumerKey, consumer);
         return consumer;
 	}
@@ -191,7 +157,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
 
 	public OAuthToken getAccessToken(String consumerKey, String accessToken)
 	throws OAuthException {
-		return _getConsumer(consumerKey).getAccessToken(accessToken);
+		return doGetAccessToken(consumerKey, accessToken);
 	}
 
 	public void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException {
@@ -201,16 +167,13 @@ public class OAuthMemoryProvider implements OAuthProvider {
 
 	public OAuthToken makeAccessToken(String consumerKey,
 			String requestToken, String verifier) throws OAuthException {
-		Consumer consumer = _getConsumer(consumerKey);
-		consumer.verifyAndRemoveRequestToken(requestToken, verifier);
-		OAuthRequestToken token = requestTokens.remove(requestToken);
-		
-		return consumer.makeAccessTokens(token);
+		OAuthRequestToken token = verifyAndRemoveRequestToken(consumerKey, requestToken, verifier);
+		return doMakeAccessTokens(token);
 	}
 
 	public OAuthRequestToken makeRequestToken(String consumerKey, String callback, String[] scopes)
 			throws OAuthException {
-		OAuthRequestToken token = _getConsumer(consumerKey).makeRequestToken(callback, scopes);
+	    OAuthRequestToken token = doMakeRequestToken(consumerKey, callback, scopes);
 		requestTokens.put(token.getToken(), token);
 		return token;
 	}

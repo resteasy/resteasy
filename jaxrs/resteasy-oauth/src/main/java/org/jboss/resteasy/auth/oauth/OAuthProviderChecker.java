@@ -19,8 +19,9 @@ public class OAuthProviderChecker implements OAuthProvider {
 		return arg;
 	}
 	
-	public OAuthConsumer registerConsumer(String consumerKey, String displayName) throws OAuthException {
-        return checkNull(provider.registerConsumer(consumerKey, displayName));
+	public OAuthConsumer registerConsumer(String consumerKey, String displayName, String connectURI) 
+	    throws OAuthException {
+        return checkNull(provider.registerConsumer(consumerKey, displayName, connectURI));
     }
 
 	public OAuthConsumer getConsumer(String consumerKey) throws OAuthException {

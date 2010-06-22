@@ -19,7 +19,8 @@ public interface OAuthProvider {
      * @return the OAuth Consumer for the given Consumer key.
      * @throws OAuthException thrown if Consumer can not be registered.
      */
-    public OAuthConsumer registerConsumer(String consumerKey, String displayName) throws OAuthException;
+    public OAuthConsumer registerConsumer(String consumerKey, 
+            String displayName, String connectURI) throws OAuthException;
 
 	/**
 	 * Returns the OAuth Consumer for the given Consumer key. If no such Consumer exists, throw an OAuthException.
