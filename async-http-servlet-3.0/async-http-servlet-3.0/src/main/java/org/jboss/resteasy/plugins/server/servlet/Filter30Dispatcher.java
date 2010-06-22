@@ -13,11 +13,12 @@ import javax.ws.rs.core.HttpHeaders;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServlet30Dispatcher extends HttpServletDispatcher
+public class Filter30Dispatcher extends FilterDispatcher
 {
    @Override
-   protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest httpServletRequest, HttpHeaders httpHeaders, UriInfoImpl uriInfo, HttpResponse httpResponse, HttpServletResponse httpServletResponse)
+   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest httpServletRequest, HttpHeaders httpHeaders, UriInfoImpl uriInfo, HttpResponse httpResponse, HttpServletResponse httpServletResponse)
    {
       return new Servlet3AsyncHttpRequest(httpServletRequest, httpServletResponse, httpResponse, httpHeaders, uriInfo, httpMethod, (SynchronousDispatcher) getDispatcher());
    }
+
 }

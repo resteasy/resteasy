@@ -48,9 +48,9 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       servletContainerDispatcher.service(httpMethod, request, response, true);
    }
 
-   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse)
+   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
-      return createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);
+      return createHttpRequest(httpMethod, request, headers, uriInfo, theResponse, response);
    }
 
 
@@ -59,7 +59,7 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       return createServletResponse(response);
    }
 
-   protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse)
+   protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
       return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) getDispatcher());
    }

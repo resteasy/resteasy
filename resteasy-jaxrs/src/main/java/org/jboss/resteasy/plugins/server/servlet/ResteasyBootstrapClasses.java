@@ -15,6 +15,7 @@ public interface ResteasyBootstrapClasses
            FilterDispatcher.class.getName(),
            "org.jboss.resteasy.plugins.server.servlet.JBossWebDispatcherServlet",
            "org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher",
+           "org.jboss.resteasy.plugins.server.servlet.Filter30Dispatcher",
            "org.jboss.resteasy.plugins.server.servlet.Tomcat6CometDispatcherServlet"
    };
 
