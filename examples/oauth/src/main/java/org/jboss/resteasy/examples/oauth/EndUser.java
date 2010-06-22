@@ -120,7 +120,7 @@ public class EndUser
       }
       String replyTo = evaluateBody(new ByteArrayInputStream(body.getBytes()),
                                         "/ns:tokenAuthorizationRequest/@replyTo");
-      replyTo += "&oauth_end_user_decision=" + decision.toLowerCase();
+      replyTo += "&xoauth_end_user_decision=" + decision.toLowerCase();
       return confirmAuthorization(replyTo);
    }
    

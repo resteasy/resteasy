@@ -98,7 +98,7 @@ public class ConsumerResource
       }
       // check that we got all tokens
       Map<String, String> response = OAuth.newMap(OAuth.decodeForm(method.getResponseBodyAsString()));
-      String secret = response.get("oauth_consumer_secret");
+      String secret = response.get("xoauth_consumer_secret");
       if (secret == null) {
           throw new RuntimeException("No secret available");
       }
@@ -183,7 +183,7 @@ public class ConsumerResource
 	   OAuthConsumer consumer = new OAuthConsumer(callbackURI, consumerKey, consumerSecret, null);
 	   OAuthAccessor accessor = new OAuthAccessor(consumer);
 	   message.addParameter(OAuth.OAUTH_CALLBACK, consumer.callbackURL);
-	   message.addParameter("oauth_scope", scope);
+	   message.addParameter("xoauth_scope", scope);
 	   message.addRequiredParameters(accessor);
 	   return OAuth.addParameters(message.URL, message.getParameters());
    }

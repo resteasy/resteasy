@@ -53,10 +53,11 @@ URIs
 1. The end user starts with issuing a request to the 3rd party consumer web application :
 
 - POST http://localhost:9095/examples-oauth/rest/consumer/end-user-service
-       ?oauth_scope=http://localhost:9095/examples-oauth/rest/server
+       ?xoauth_scope=http://localhost:9095/examples-oauth/rest/server
 
-The end user asks the 3rd party consumer to access the resource at the oauth_scope URI
-on its behalf and do something useful with it that this consumer can do.
+The end user asks the 3rd party consumer to access the resource at the xoauth_scope URI
+on its behalf and do something useful with it that this consumer can do. Note that parameters
+such as "xoauth_scope" are prepended with 'x' (extensions).
 
 1.1. The consumer registers itself with the server - note, in the reality the consumer
 will do it well in advance :
@@ -77,9 +78,9 @@ Authorization: OAuth
         oauth_nonce="wIjqoS",
         oauth_callback="http://localhost:9095/examples-oauth/rest/consumer/token-authorization",
         oauth_signature="74KNZJeDHnMBp0EMJ9ZHt%2FXKycU%3D",
-        oauth_scope="http://localhost:9095/examples-oauth/rest/server"
+        xoauth_scope=http://localhost:9095/examples-oauth/rest/server
         
-Note that all the values are shown without them being encoded for the simplicity.
+All the values are shown without them being encoded for the simplicity.
  
 Note that oauth_callback points to the address where the end user will eventually post
 the verifier authorizing the request token.
@@ -114,7 +115,7 @@ is allowed to access "http://localhost:9095/examples-oauth/rest/server"
 8. After the end user says 'yes' the Java agent replies to the server :
 
 POST http://localhost:9095/examples-oauth/oauth/authorization-confirm
-      ?oauth_token=123456789&oauth_end_user_decision=yes
+      ?oauth_token=123456789&xoauth_end_user_decision=yes
 Authorization: Basic ...
 
 Note that at steps 5 and 8 the end user authenticates itself to the server so that
