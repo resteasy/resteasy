@@ -12,6 +12,13 @@ import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+/**
+ * Helper class that allows you to pre-initialize an Executor, preset some ClientRequest attributes (like follow redirects)
+ * and define some client-side interceptors you want applied
+ *
+ * @author Solomon Duskis
+ * @version $Revision: 1 $
+ */
 public class ClientRequestFactory
 {
    private ResteasyProviderFactory providerFactory;
@@ -30,17 +37,6 @@ public class ClientRequestFactory
    public ClientRequestFactory(URI base)
    {
       init(null, null, base);
-   }
-
-   public ClientRequestFactory(HttpClient httpClient)
-   {
-      this(httpClient, null);
-   }
-
-   public ClientRequestFactory(HttpClient httpClient,
-         ResteasyProviderFactory instance)
-   {
-      this(new ApacheHttpClientExecutor(httpClient), instance);
    }
 
    public ClientRequestFactory(ClientExecutor executor, URI base)
@@ -176,7 +172,7 @@ public class ClientRequestFactory
 
    public <T> T createProxy(Class<T> clazz, String baseUri)
    {
-      return createProxy(clazz, ProxyFactory.createUri(baseUri));
+      return createProxy(clazz, URI.create(baseUri));
    }
 
    public <T> T createProxy(Class<T> clazz, URI baseUri)

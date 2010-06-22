@@ -6,7 +6,9 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpResponse;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -18,9 +20,12 @@ import java.io.IOException;
  */
 public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 {
-   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
+   protected HttpServletResponse response;
+
+   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
    {
       super(httpServletRequest, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
+      this.response = response;
    }
 
    @Override
@@ -31,7 +36,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    @Override
    public AsynchronousResponse createAsynchronousResponse(long l)
    {
-      request.suspend(l);
+      final AsyncContext context = request.startAsync(request, response);
       asynchronousResponse = new AbstractAsynchronousResponse()
       {
          public void setResponse(Response response)
@@ -43,35 +48,11 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             }
             finally
             {
-               try
-               {
-                  request.complete();
-               }
-               catch (IOException e)
-               {
-                  throw new RuntimeException(e);
-               }
+               context.complete();
             }
          }
       };
       return asynchronousResponse;
    }
 
-   @Override
-   public boolean isInitial()
-   {
-      return request.isInitial();
-   }
-
-   @Override
-   public boolean isSuspended()
-   {
-      return request.isSuspended();
-   }
-
-   @Override
-   public boolean isTimeout()
-   {
-      return request.isTimeout();
-   }
 }

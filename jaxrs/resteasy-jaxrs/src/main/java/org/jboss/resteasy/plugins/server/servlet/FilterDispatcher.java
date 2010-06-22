@@ -22,7 +22,7 @@ import java.io.IOException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class FilterDispatcher implements Filter, HttpRequestFactory, HttpResponseFactory
+public class FilterDispatcher implements Filter,  HttpRequestFactory, HttpResponseFactory
 {
    protected ServletContainerDispatcher servletContainerDispatcher;
 
@@ -41,7 +41,7 @@ public class FilterDispatcher implements Filter, HttpRequestFactory, HttpRespons
 
    }
 
-   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse)
+   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
       return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) getDispatcher());
    }
