@@ -26,15 +26,19 @@ public class OAuthRequestToken extends OAuthToken {
     /**
      * Returns this Token's verifier
      */
-    public synchronized String getVerifier() {
-        return verifier;
+    public String getVerifier() {
+        synchronized (this) {
+            return verifier;
+        }
     }
     
-    public synchronized void setVerifier(String verifier) throws OAuthException {
-        if (this.verifier != null) {
-            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "This request token has already been authorized");
+    public void setVerifier(String verifier) throws OAuthException {
+        synchronized (this) {
+            if (this.verifier != null) {
+                throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "This request token has already been authorized");
+            }
+            this.verifier = verifier;
         }
-        this.verifier = verifier;
     }
     
 }

@@ -60,6 +60,11 @@ public class OAuthServlet extends HttpServlet {
      * Relative path for the token authorization confirmation URL 
      */
     final static String TOKEN_AUTHORIZATION_CONFIRM_URL = "/authorization/confirm";
+    
+    /**
+     * Relative path for the token authorization confirmation URL 
+     */
+    final static String CONSUMER_SCOPES_REGISTRATION_URL = "/consumer-scopes";
 	
 	private String requestTokenURL, accessTokenURL, consumerRegistrationURL, authorizationURL;
 	private OAuthProvider provider;
@@ -115,6 +120,8 @@ public class OAuthServlet extends HttpServlet {
             serveTokenAuthorization(req, resp);
 		else if(pathInfo.startsWith(TOKEN_AUTHORIZATION_CONFIRM_URL)) 
 		    serveTokenAuthorizationConfirmation(req, resp);
+		else if(pathInfo.startsWith(CONSUMER_SCOPES_REGISTRATION_URL)) 
+            serveConsumerScopesRegistrationRequest(req, resp);
 		else
 			resp.sendError(HttpURLConnection.HTTP_NOT_FOUND);
 	}
@@ -226,7 +233,6 @@ public class OAuthServlet extends HttpServlet {
         try{
             String[] values = req.getParameterValues(OAuth.OAUTH_CONSUMER_KEY);
             if (values == null || values.length != 1) {
-                // perhaps many consumers can be registered in one go in the future
                 resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
                 return;
             }
@@ -249,6 +255,46 @@ public class OAuthServlet extends HttpServlet {
             
             // send the shared key back to the registered consumer
             OAuthUtils.sendValues(resp, "xoauth_consumer_secret", consumer.getSecret());
+            resp.setStatus(HttpURLConnection.HTTP_OK);
+            logger.debug("All OK");
+
+        } catch (Exception x) {
+            logger.error("Exception ", x);
+            OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
+        }
+    }
+	
+	/**
+	 * Consumer scopes are URIs which the consumer will be able to access directly, by-passing the enduser
+	 * authorization (aka OAuth 2-leg, as a replacement for Basic Auth)
+	 * 
+	 * This is strictly an administrative level operation and should be protected at the OAuthServlet level;
+	 * Typically, it will be a domain administrator who will perform this request on behalf of the
+	 * consumers.
+	 * 
+	 * TODO: add serveConsumerScopesRegistrationPage - which will offer a list of registered consumers
+	 *       to admins; this page will eventually lead to serveConsumerScopesRegistrationRequest
+	 * TODO: perhaps we may want to introduce a dedicated servlet dedicated to managing consumers 
+     */
+	private void serveConsumerScopesRegistrationRequest(HttpServletRequest req,
+            HttpServletResponse resp) throws IOException {
+        logger.debug("Consumer registration");
+        
+        try{
+            String[] values = req.getParameterValues(OAuth.OAUTH_CONSUMER_KEY);
+            if (values == null || values.length != 1) {
+                resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
+                return;
+            }
+            
+            String consumerKey = URLDecoder.decode(values[0], "UTF-8");
+            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = provider.getConsumer(consumerKey);
+            String[] scopes = req.getParameterValues("xoauth_scopes");
+            if (scopes != null) {
+                consumer.setScopes(scopes);
+            }
+            
+            
             resp.setStatus(HttpURLConnection.HTTP_OK);
             logger.debug("All OK");
 
