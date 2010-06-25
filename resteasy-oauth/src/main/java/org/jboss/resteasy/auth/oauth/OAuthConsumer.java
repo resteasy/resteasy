@@ -1,5 +1,9 @@
 package org.jboss.resteasy.auth.oauth;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
  * Represents an OAuth Consumer.
@@ -11,6 +15,7 @@ public class OAuthConsumer {
     private String secret;
     private String displayName;
     private String connectURI;
+    private Set<String> scopes;
     
     public OAuthConsumer(String key, String secret, String displayName, String connectURI) {
         this.key = key;
@@ -48,4 +53,23 @@ public class OAuthConsumer {
     public String getConnectURI() {
         return connectURI;
     }
+    
+    /**
+     * Returns the OAuth Consumer's scopes. These are the scopes the consumer
+     * will be able to access directly 
+     */
+    public String[] getScopes() {
+        
+        synchronized (this) {
+            return scopes.toArray(new String[]{});
+        }
+    }
+    
+    public void setScopes(String[] scopes) {
+        synchronized (this) {
+            this.scopes = new HashSet<String>(Arrays.asList(scopes));
+        }
+    }
+    
+    
 }
