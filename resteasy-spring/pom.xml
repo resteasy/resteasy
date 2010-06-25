@@ -111,6 +111,30 @@
             <version>4.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>httpunit</groupId>
+            <artifactId>httpunit</artifactId>
+            <scope>test</scope>
+            <version>1.7</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jtidy</groupId>
+                    <artifactId>jtidy</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!--
            Needed for javax.annotation.security.* which is part of javaee 6 XXX
            should this dependency be <scope>provided</scope> and only used if

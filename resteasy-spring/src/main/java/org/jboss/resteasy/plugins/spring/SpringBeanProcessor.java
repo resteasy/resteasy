@@ -45,6 +45,13 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
 
    protected class ResteasyBeanPostProcessor implements BeanPostProcessor
    {
+      private ConfigurableListableBeanFactory beanFactory;
+  
+      protected ResteasyBeanPostProcessor(ConfigurableListableBeanFactory beanFactory) 
+      {
+         this.beanFactory = beanFactory;
+      }
+
       public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException
       {
          return bean;
@@ -58,7 +65,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
          PropertyInjector propertyInjector = resourceFactory.getPropertyInjector();
 
          HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
-         if (request == null)
+         if (isSingleton(beanName) || request == null)
          {
             propertyInjector.inject(bean);
          }
@@ -69,6 +76,18 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
          }
 
          return bean;
+      }
+
+      private boolean isSingleton(String beanName)
+      {
+         boolean isSingleton = false;
+         try {
+    	     BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
+             isSingleton = beanDef.isSingleton();
+         } catch (org.springframework.beans.factory.NoSuchBeanDefinitionException nsbde) {
+             // cannot distinguish between singleton & prototype
+         }
+         return isSingleton;
       }
    }
 
@@ -164,7 +183,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor
       {
          beanFactory.registerResolvableDependency(Dispatcher.class, getDispatcher());
       }
-      beanFactory.addBeanPostProcessor(new ResteasyBeanPostProcessor());
+      beanFactory.addBeanPostProcessor(new ResteasyBeanPostProcessor(beanFactory));
       Collection<String> ignoreList = createIgnoreList(beanFactory);
 
       List<SpringResourceFactory> springResourceFactories = new ArrayList<SpringResourceFactory>();
