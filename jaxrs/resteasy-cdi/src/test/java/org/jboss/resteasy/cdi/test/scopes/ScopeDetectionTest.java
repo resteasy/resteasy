@@ -1,7 +1,6 @@
 package org.jboss.resteasy.cdi.test.scopes;
 
-import org.jboss.resteasy.cdi.ResteasyCdiExtension;
-import org.junit.Before;
+import org.jboss.resteasy.cdi.Utils;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -9,47 +8,39 @@ import static org.junit.Assert.assertFalse;
 
 public class ScopeDetectionTest
 {
-   private ResteasyCdiExtension bootstrap;
-
-   @Before
-   public void prepare()
-   {
-      bootstrap = new ResteasyCdiExtension();
-   }
-   
    @Test
    public void testImplicitlyDeclaredScope()
    {
-      assertTrue(bootstrap.hasScopeDefined(Resource1.class));
+      assertTrue(Utils.isScopeDefined(Resource1.class));
    }
 
    @Test
    public void testScopeDeclaredInStereotype()
    {
-      assertTrue(bootstrap.hasScopeDefined(Resource2.class));
+      assertTrue(Utils.isScopeDefined(Resource2.class));
    }
 
    @Test
    public void testScopeDeclaredTransitivelyInStereotype()
    {
-      assertTrue(bootstrap.hasScopeDefined(Resource3.class));
+      assertTrue(Utils.isScopeDefined(Resource3.class));
    }
 
    @Test
    public void testNoScopeDeclaration()
    {
-      assertFalse(bootstrap.hasScopeDefined(Resource4.class));
+      assertFalse(Utils.isScopeDefined(Resource4.class));
    }
 
    @Test
    public void testStereotypeWithoutScopeDeclaration()
    {
-      assertFalse(bootstrap.hasScopeDefined(Resource5.class));
+      assertFalse(Utils.isScopeDefined(Resource5.class));
    }
 
    @Test
    public void testImplicitlyDeclaredScopeWithNoScopeStereotype()
    {
-      assertTrue(bootstrap.hasScopeDefined(Resource6.class));
+      assertTrue(Utils.isScopeDefined(Resource6.class));
    }
 }

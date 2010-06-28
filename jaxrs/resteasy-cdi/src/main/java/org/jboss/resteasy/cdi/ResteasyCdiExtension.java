@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Extension;
@@ -18,7 +16,6 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessSessionBean;
 import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Scope;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
 
@@ -88,7 +85,7 @@ public class ResteasyCdiExtension implements Extension
    
    protected <T> AnnotatedType<T> wrapAnnotatedType(AnnotatedType<T> type, Annotation scope)
    {
-      if (hasScopeDefined(type.getJavaClass()))
+      if (Utils.isScopeDefined(type.getJavaClass()))
       {
          log.debug("Bean {} has a scope defined.", type.getJavaClass());
          return type; // leave it as it is
@@ -112,7 +109,7 @@ public class ResteasyCdiExtension implements Extension
          return;
       }
       
-      if (isJaxrsComponent(event.getAnnotatedType().getJavaClass()))
+      if (Utils.isJaxrsComponent(event.getAnnotatedType().getJavaClass()))
       {
          event.setInjectionTarget(wrapInjectionTarget(event));
       }
@@ -132,7 +129,7 @@ public class ResteasyCdiExtension implements Extension
    {
       Bean<Object> sessionBean = event.getBean();
       
-      if (isJaxrsComponent(sessionBean.getBeanClass()))
+      if (Utils.isJaxrsComponent(sessionBean.getBeanClass()))
       {
          addSessionBeanInterface(sessionBean);
       }
@@ -144,68 +141,18 @@ public class ResteasyCdiExtension implements Extension
       {
          if ((type instanceof Class<?>) && ((Class<?>) type).isInterface())
          {
-            sessionBeanInterface.put(bean.getBeanClass(),(Class<?>) type);
-            break; // TODO we only pick up the first interface
-         }
-      }
-   }
-   
-   /**
-    * Find out if a given class is a JAX-RS component
-    * 
-    * @return true if and only if a give class is a JAX-RS resource, provider
-    * or javax.ws.rs.core.Application subclass.
-    */
-   private boolean isJaxrsComponent(Class<?> clazz)
-   {
-      Provider providerAnnotation = clazz.getAnnotation(Provider.class);
-      return ((providerAnnotation != null) || (GetRestful.isRootResource(clazz)) || (Application.class.isAssignableFrom(clazz)));
-   }
-   
-   /**
-    * Find out if a given class has is explicitly bound to a scope.
-    * 
-    * @return true if and only if a given class is annotated with a scope annotation
-    * or with a stereotype which (transitively) declares a scope
-    */
-   public boolean hasScopeDefined(Class<?> clazz)
-   {
-      for (Annotation annotation : clazz.getAnnotations())
-      {
-         if (isScope(annotation))
-         {
-            return true;
-         }
-         if (isStereotype(annotation))
-         {
-            if (hasScopeDefined(annotation.annotationType()))
+            Class<?> clazz = (Class<?>) type;
+            if (Utils.isJaxrsAnnotatedClass(clazz))
             {
-               return true;
+               sessionBeanInterface.put(bean.getBeanClass(),(Class<?>) type);
+               log.debug("{} local interface will be used for {} lookup", type, bean.getBeanClass());
+               return;
             }
          }
       }
-      return false;
+      log.debug("No lookup interface found for {}", bean.getBeanClass());
    }
    
-   /**
-    * Find out if a given annotation is a scope.
-    * @return true if and only if a given annotation is a scope
-    */
-   private boolean isScope(Annotation annotation)
-   {
-      Class<?> annotationType = annotation.annotationType();
-      return ((annotationType.isAnnotationPresent(NormalScope.class)) || (annotationType.isAnnotationPresent(Scope.class)));
-   }
-   
-   /**
-    * Find out if a given annotation is a stereotype.
-    * @return true if and only if a given annotation is a stereotype
-    */
-   private boolean isStereotype(Annotation annotation)
-   {
-      return annotation.annotationType().isAnnotationPresent(Stereotype.class);
-   }
-
    public Map<Class<?>, Class<?>> getSessionBeanInterface()
    {
       return sessionBeanInterface;
