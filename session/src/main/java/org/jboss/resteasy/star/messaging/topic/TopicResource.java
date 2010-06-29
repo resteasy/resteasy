@@ -1,7 +1,7 @@
 package org.jboss.resteasy.star.messaging.topic;
 
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
 import org.jboss.resteasy.star.messaging.queue.PostMessage;
+import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;

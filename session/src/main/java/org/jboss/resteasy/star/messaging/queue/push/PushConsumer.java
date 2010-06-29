@@ -13,10 +13,10 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.HttpMessage;
 import org.jboss.resteasy.star.messaging.queue.push.xml.BasicAuth;
 import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 import org.jboss.resteasy.star.messaging.queue.push.xml.XmlHttpHeader;
+import org.jboss.resteasy.star.messaging.util.HttpMessageHelper;
 
 import javax.ws.rs.core.Response;
 
@@ -139,7 +139,7 @@ public class PushConsumer implements MessageHandler
             request.header(header.getName(), header.getValue());
          }
 
-         HttpMessage.buildMessage(clientMessage, request, contentType);
+         HttpMessageHelper.buildMessage(clientMessage, request, contentType);
 
          ClientResponse response = request.httpMethod(httpMethod);
          if ((response.getStatus() >= 200 && response.getStatus() < 299) || response.getStatus() == 303 || response.getStatus() == 304)

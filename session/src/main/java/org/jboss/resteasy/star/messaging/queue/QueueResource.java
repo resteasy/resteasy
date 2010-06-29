@@ -1,8 +1,8 @@
 package org.jboss.resteasy.star.messaging.queue;
 
-import org.jboss.resteasy.star.messaging.Constants;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
 import org.jboss.resteasy.star.messaging.queue.push.PushConsumerResource;
+import org.jboss.resteasy.star.messaging.util.Constants;
+import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.util;
 
 import org.jboss.resteasy.spi.Link;
 

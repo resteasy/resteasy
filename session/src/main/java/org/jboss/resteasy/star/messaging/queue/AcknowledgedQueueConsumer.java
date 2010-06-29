@@ -4,7 +4,7 @@ import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
+import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;

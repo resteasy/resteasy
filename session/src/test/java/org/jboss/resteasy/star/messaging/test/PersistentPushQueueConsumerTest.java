@@ -104,8 +104,9 @@ public class PersistentPushQueueConsumerTest
       ClientResponse res = sender.request().body("text/plain", Integer.toString(1)).post();
       Assert.assertEquals(201, res.getStatus());
 
-
+      Thread.sleep(100);
       res = consumeNext.request().post(String.class);
+
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
       Link session = res.getLinkHeader().getLinkByTitle("session");

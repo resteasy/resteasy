@@ -3,11 +3,10 @@ package org.jboss.resteasy.star.messaging.topic;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
 import org.jboss.resteasy.star.messaging.queue.ConsumerFactory;
 import org.jboss.resteasy.star.messaging.queue.QueueConsumer;
+import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
-import javax.ws.rs.HEAD;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
