@@ -3,7 +3,7 @@ package org.jboss.resteasy.star.messaging.queue;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.resteasy.star.messaging.HttpMessage;
+import org.jboss.resteasy.star.messaging.util.HttpMessageHelper;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -51,7 +51,7 @@ public class PostMessage
    protected ClientMessage createHornetQMessage(HttpHeaders headers, byte[] body, boolean durable, ClientSession session) throws Exception
    {
       ClientMessage message = session.createMessage(durable);
-      HttpMessage.writeHttpMessage(headers, body, message);
+      HttpMessageHelper.writeHttpMessage(headers, body, message);
       return message;
    }
 }

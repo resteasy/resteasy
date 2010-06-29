@@ -4,8 +4,6 @@ import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
 import org.jboss.resteasy.star.messaging.queue.ConsumerFactory;
 import org.jboss.resteasy.star.messaging.queue.QueueConsumer;
 
@@ -17,7 +15,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;

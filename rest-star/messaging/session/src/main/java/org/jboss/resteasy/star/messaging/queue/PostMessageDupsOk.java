@@ -3,7 +3,7 @@ package org.jboss.resteasy.star.messaging.queue;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientProducer;
 import org.hornetq.api.core.client.ClientSession;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
+import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.WebApplicationException;

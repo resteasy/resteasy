@@ -1,8 +1,9 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.util;
 
 import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientMessage;
 import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.star.messaging.HttpHeaderProperty;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -15,8 +16,10 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpMessage
+public class HttpMessageHelper
 {
+   public static final String POSTED_AS_HTTP_MESSAGE = "postedAsHttpMessage";
+
    public static boolean isTransferableHttpHeader(String key)
    {
       String lowerKey = key.toLowerCase();
@@ -28,17 +31,17 @@ public class HttpMessage
       for (SimpleString key : message.getPropertyNames())
       {
          String k = key.toString();
-         if (isTransferableHttpHeader(k))
-         {
-            builder.header(k, message.getStringProperty(k));
-         }
+         String headerName = HttpHeaderProperty.fromPropertyName(k);
+         if (headerName == null) continue;
+         builder.header(headerName, message.getStringProperty(k));
       }
       int size = message.getBodyBuffer().readInt();
       if (size > 0)
       {
          byte[] body = new byte[size];
          message.getBodyBuffer().readBytes(body);
-         if (message.getBooleanProperty("postedAsHttpMessage") != null)
+         Boolean aBoolean = message.getBooleanProperty(POSTED_AS_HTTP_MESSAGE);
+         if (aBoolean != null && aBoolean.booleanValue())
          {
             builder.entity(body);
          }
@@ -65,15 +68,14 @@ public class HttpMessage
       for (SimpleString key : message.getPropertyNames())
       {
          String k = key.toString();
-         if (isTransferableHttpHeader(k))
+         String headerName = HttpHeaderProperty.fromPropertyName(k);
+         if (headerName == null) continue;
+         String value = message.getStringProperty(k);
+         request.header(headerName, value);
+         // override default content type if it is set as a message property
+         if (headerName.equalsIgnoreCase("content-type"))
          {
-            String value = message.getStringProperty(k);
-            request.header(k, value);
-            // override default content type if it is set as a message property
-            if (k.equalsIgnoreCase("content-type"))
-            {
-               contentType = value;
-            }
+            contentType = value;
          }
       }
       int size = message.getBodyBuffer().readInt();
@@ -81,7 +83,7 @@ public class HttpMessage
       {
          byte[] body = new byte[size];
          message.getBodyBuffer().readBytes(body);
-         if (message.getBooleanProperty("postedAsHttpMessage") != null)
+         if (message.getBooleanProperty(POSTED_AS_HTTP_MESSAGE) != null)
          {
             request.body(contentType, body);
          }
@@ -114,10 +116,10 @@ public class HttpMessage
          {
             List<String> vals = hdrs.get(key);
             String value = concatenateHeaderValue(vals);
-            message.putStringProperty(key, value);
+            message.putStringProperty(HttpHeaderProperty.toPropertyName(key), value);
          }
       }
-      message.putBooleanProperty("postedAsHttpMessage", true);
+      message.putBooleanProperty(POSTED_AS_HTTP_MESSAGE, true);
       message.getBodyBuffer().writeInt(body.length);
       message.getBodyBuffer().writeBytes(body);
    }

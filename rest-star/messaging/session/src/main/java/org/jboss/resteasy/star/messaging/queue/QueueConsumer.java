@@ -6,9 +6,9 @@ import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.Constants;
-import org.jboss.resteasy.star.messaging.HttpMessage;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
+import org.jboss.resteasy.star.messaging.util.Constants;
+import org.jboss.resteasy.star.messaging.util.HttpMessageHelper;
+import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
@@ -139,7 +139,7 @@ public class QueueConsumer
    {
       Response.ResponseBuilder responseBuilder = Response.ok();
       setMessageResponseLinks(info, basePath, responseBuilder);
-      HttpMessage.buildMessage(msg, responseBuilder);
+      HttpMessageHelper.buildMessage(msg, responseBuilder);
       return responseBuilder;
    }
 
