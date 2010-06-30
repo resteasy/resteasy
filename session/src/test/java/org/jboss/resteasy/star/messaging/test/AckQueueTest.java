@@ -13,9 +13,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import java.util.concurrent.CountDownLatch;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -61,7 +58,7 @@ public class AckQueueTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       Link sender = response.getLinkHeader().getLinkByTitle("create");
       System.out.println("create: " + sender);
-      Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
+      Link consumeNext = response.getLinkHeader().getLinkByTitle("acknowledge-next");
       System.out.println("poller: " + consumeNext);
 
       {
@@ -76,7 +73,7 @@ public class AckQueueTest extends BaseResourceTest
          Assert.assertNotNull(ack);
          Link session = res.getLinkHeader().getLinkByTitle("session");
          System.out.println("session: " + session);
-         consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+         consumeNext = res.getLinkHeader().getLinkByTitle("acknowledge-next");
          System.out.println("consumeNext: " + consumeNext);
 
          Thread.sleep(2000);
@@ -84,7 +81,7 @@ public class AckQueueTest extends BaseResourceTest
          ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();
          Assert.assertEquals(412, ackRes.getStatus());
          System.out.println("**** Successfully failed ack");
-         consumeNext = ackRes.getLinkHeader().getLinkByTitle("consume-next");
+         consumeNext = ackRes.getLinkHeader().getLinkByTitle("acknowledge-next");
          System.out.println("consumeNext: " + consumeNext);
       }
       {
@@ -95,7 +92,7 @@ public class AckQueueTest extends BaseResourceTest
          Assert.assertNotNull(ack);
          Link session = res.getLinkHeader().getLinkByTitle("session");
          System.out.println("session: " + session);
-         consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+         consumeNext = res.getLinkHeader().getLinkByTitle("acknowledge-next");
          System.out.println("consumeNext: " + consumeNext);
 
          ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();
@@ -121,7 +118,7 @@ public class AckQueueTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       Link sender = response.getLinkHeader().getLinkByTitle("create");
       System.out.println("create: " + sender);
-      Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
+      Link consumeNext = response.getLinkHeader().getLinkByTitle("acknowledge-next");
       System.out.println("poller: " + consumeNext);
 
       ClientResponse res = sender.request().body("text/plain", Integer.toString(1)).post();
@@ -134,10 +131,11 @@ public class AckQueueTest extends BaseResourceTest
       Assert.assertNotNull(ack);
       Link session = res.getLinkHeader().getLinkByTitle("session");
       System.out.println("session: " + session);
-      consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+      consumeNext = res.getLinkHeader().getLinkByTitle("acknowledge-next");
       System.out.println("consumeNext: " + consumeNext);
       ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, ackRes.getStatus());
+      consumeNext = ackRes.getLinkHeader().getLinkByTitle("acknowledge-next");
 
 
       res = sender.request().body("text/plain", Integer.toString(2)).post();
@@ -151,7 +149,7 @@ public class AckQueueTest extends BaseResourceTest
       Assert.assertNotNull(ack);
       session = res.getLinkHeader().getLinkByTitle("session");
       System.out.println("session: " + session);
-      res.getLinkHeader().getLinkByTitle("consume-next");
+      res.getLinkHeader().getLinkByTitle("acknowledge-next");
       System.out.println("consumeNext: " + consumeNext);
       ackRes = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, ackRes.getStatus());
@@ -168,12 +166,12 @@ public class AckQueueTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       Link sender = response.getLinkHeader().getLinkByTitle("create");
       System.out.println("create: " + sender);
-      Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
+      Link consumeNext = response.getLinkHeader().getLinkByTitle("acknowledge-next");
       System.out.println("poller: " + consumeNext);
 
       ClientResponse<String> res = consumeNext.request().post(String.class);
       Assert.assertEquals(503, res.getStatus());
-      consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+      consumeNext = res.getLinkHeader().getLinkByTitle("acknowledge-next");
       System.out.println(consumeNext);
       Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(1)).post().getStatus());
       res = consumeNext.request().post(String.class);
@@ -212,47 +210,4 @@ public class AckQueueTest extends BaseResourceTest
 
    private static CountDownLatch listenerLatch;
 
-   @Path("/listener")
-   public static class Listener
-   {
-      @POST
-      @Consumes("text/plain")
-      public void post(String message)
-      {
-         System.out.println(message);
-         listenerLatch.countDown();
-
-      }
-   }
-
-   /*
-   @Test
-   public void testPush() throws Exception
-   {
-      ClientRequest request = new ClientRequest(generateURL("/topics/test"));
-
-      ClientResponse response = request.head();
-      Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("sender");
-      Link subscribers = response.getLinkHeader().getLinkByTitle("subscribers");
-
-
-      listenerLatch = new CountDownLatch(1);
-      response = subscribers.request().body("text/uri-list", "http://localhost:8085/listener").post();
-      Assert.assertEquals(201, response.getStatus());
-      String subscriber = (String) response.getHeaders().getFirst("Location");
-      System.out.println("subscriber: " + subscriber);
-
-      TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
-      server.setPort(8085);
-      server.start();
-      server.getDeployment().getRegistry().addPerRequestResource(Listener.class);
-
-      Assert.assertEquals(201, sender.request().body("text/plain", Integer.toString(1)).post().getStatus());
-
-      Assert.assertTrue(listenerLatch.await(2, TimeUnit.SECONDS));
-
-
-   }
-   */
 }

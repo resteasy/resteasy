@@ -122,8 +122,7 @@ public class QueueConsumer
             {
                System.out.println("Timed out waiting for message receive.");
                Response.ResponseBuilder builder = Response.status(503).entity("Timed out waiting for message receive.").type("text/plain");
-               setSessionLink(builder, info, basePath);
-               setConsumeNextLink(builder, info, basePath);
+               setPollTimeoutLinks(info, basePath, builder);
                return builder.build();
             }
             return getMessageResponse(message, info, basePath).build();
@@ -133,6 +132,12 @@ public class QueueConsumer
       {
          throw new RuntimeException(e);
       }
+   }
+
+   protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
+   {
+      setSessionLink(builder, info, basePath);
+      setConsumeNextLink(builder, info, basePath);
    }
 
    protected Response.ResponseBuilder getMessageResponse(ClientMessage msg, UriInfo info, String basePath)

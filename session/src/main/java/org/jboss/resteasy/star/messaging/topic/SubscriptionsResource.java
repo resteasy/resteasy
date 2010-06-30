@@ -4,7 +4,6 @@ import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.resteasy.star.messaging.queue.ConsumerFactory;
 import org.jboss.resteasy.star.messaging.queue.QueueConsumer;
 
 import javax.ws.rs.DELETE;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -32,7 +32,28 @@ public class SubscriptionsResource
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected AtomicLong sessionCounter = new AtomicLong(1);
-   protected ConsumerFactory consumerFactory;
+   protected ExecutorService ackTimeoutService;
+   protected long ackTimeoutSeconds;
+
+   public ExecutorService getAckTimeoutService()
+   {
+      return ackTimeoutService;
+   }
+
+   public void setAckTimeoutService(ExecutorService ackTimeoutService)
+   {
+      this.ackTimeoutService = ackTimeoutService;
+   }
+
+   public long getAckTimeoutSeconds()
+   {
+      return ackTimeoutSeconds;
+   }
+
+   public void setAckTimeoutSeconds(long ackTimeoutSeconds)
+   {
+      this.ackTimeoutSeconds = ackTimeoutSeconds;
+   }
 
    public ClientSessionFactory getSessionFactory()
    {
@@ -68,16 +89,6 @@ public class SubscriptionsResource
       }
    }
 
-   public ConsumerFactory getConsumerFactory()
-   {
-      return consumerFactory;
-   }
-
-   public void setConsumerFactory(ConsumerFactory consumerFactory)
-   {
-      this.consumerFactory = consumerFactory;
-   }
-
    protected String generateSubscriptionName()
    {
       return startup + "-" + sessionCounter.getAndIncrement();
@@ -85,6 +96,7 @@ public class SubscriptionsResource
 
    @POST
    public Response createSubscription(@FormParam("durable") @DefaultValue("false") boolean durable,
+                                      @FormParam("autoAck") @DefaultValue("true") boolean autoAck,
                                       @Context UriInfo uriInfo)
    {
       String subscriptionName = generateSubscriptionName();
@@ -101,14 +113,23 @@ public class SubscriptionsResource
          {
             session.createTemporaryQueue(destination, subscriptionName);
          }
-         QueueConsumer consumer = consumerFactory.createConsumer(subscriptionName, sessionFactory, subscriptionName);
+         QueueConsumer consumer = createConsumer(durable, autoAck, subscriptionName);
          queueConsumers.put(consumer.getId(), consumer);
-         Subscription subscription = (Subscription) consumer;
-         subscription.setDurable(durable);
+
          UriBuilder location = uriInfo.getAbsolutePathBuilder();
+         if (autoAck) location.path("auto-ack");
+         else location.path("acknowledged");
          location.path(consumer.getId());
          Response.ResponseBuilder builder = Response.created(location.build());
-         SubscriptionResource.setConsumeNextLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/" + consumer.getId());
+         if (autoAck)
+         {
+            SubscriptionResource.setConsumeNextLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId());
+         }
+         else
+         {
+            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
+
+         }
          return builder.build();
 
       }
@@ -131,47 +152,85 @@ public class SubscriptionsResource
       }
    }
 
-   @Path("{subscription-id}")
-   public QueueConsumer getSubscription(
+   protected QueueConsumer createConsumer(boolean durable, boolean autoAck, String subscriptionName)
+           throws HornetQException
+   {
+      QueueConsumer consumer;
+      if (autoAck)
+      {
+         SubscriptionResource subscription = new SubscriptionResource(sessionFactory, subscriptionName, subscriptionName);
+         subscription.setDurable(durable);
+         consumer = subscription;
+      }
+      else
+      {
+         AcknowledgedSubscriptionResource subscription = new AcknowledgedSubscriptionResource(sessionFactory, subscriptionName, subscriptionName, this.ackTimeoutService, this.ackTimeoutSeconds);
+         subscription.setDurable(durable);
+         consumer = subscription;
+      }
+      return consumer;
+   }
+
+   @Path("auto-ack/{subscription-id}")
+   public QueueConsumer getAutoAckSubscription(
            @PathParam("subscription-id") String subscriptionId)
    {
       QueueConsumer consumer = queueConsumers.get(subscriptionId);
       if (consumer == null)
       {
-         ClientSession session = null;
-         try
-         {
-            session = sessionFactory.createSession();
+         consumer = recreateQueueConsumer(subscriptionId, true);
+      }
+      return consumer;
+   }
 
-            ClientSession.QueueQuery query = session.queueQuery(new SimpleString(subscriptionId));
-            if (query.isExists())
-            {
+   @Path("acknowledged/{subscription-id}")
+   public QueueConsumer getAcknoledgeSubscription(
+           @PathParam("subscription-id") String subscriptionId)
+   {
+      QueueConsumer consumer = queueConsumers.get(subscriptionId);
+      if (consumer == null)
+      {
+         consumer = recreateQueueConsumer(subscriptionId, false);
+      }
+      return consumer;
+   }
 
-               consumer = consumerFactory.createConsumer(subscriptionId, sessionFactory, subscriptionId);
-               queueConsumers.put(consumer.getId(), consumer);
-            }
-            else
-            {
-               throw new WebApplicationException(Response.serverError()
-                       .entity("Failed to match a subscriber to URL" + subscriptionId)
-                       .type("text/plain").build());
-            }
-         }
-         catch (HornetQException e)
+   private QueueConsumer recreateQueueConsumer(String subscriptionId, boolean autoAck)
+   {
+      QueueConsumer consumer;
+      ClientSession session = null;
+      try
+      {
+         session = sessionFactory.createSession();
+
+         ClientSession.QueueQuery query = session.queueQuery(new SimpleString(subscriptionId));
+         if (query.isExists())
          {
-            throw new RuntimeException(e);
+
+            consumer = createConsumer(true, autoAck, subscriptionId);
+            queueConsumers.put(consumer.getId(), consumer);
          }
-         finally
+         else
          {
-            if (session != null)
+            throw new WebApplicationException(Response.serverError()
+                    .entity("Failed to match a subscriber to URL" + subscriptionId)
+                    .type("text/plain").build());
+         }
+      }
+      catch (HornetQException e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
+         if (session != null)
+         {
+            try
             {
-               try
-               {
-                  session.close();
-               }
-               catch (HornetQException e)
-               {
-               }
+               session.close();
+            }
+            catch (HornetQException e)
+            {
             }
          }
       }
@@ -179,7 +238,15 @@ public class SubscriptionsResource
    }
 
 
-   @Path("{subscription-id}")
+   @Path("acknowledged/{subscription-id}")
+   @DELETE
+   public void deleteAckSubscription(
+           @PathParam("subscription-id") String consumerId)
+   {
+      deleteSubscription(consumerId);
+   }
+
+   @Path("auto-ack/{subscription-id}")
    @DELETE
    public void deleteSubscription(
            @PathParam("subscription-id") String consumerId)
