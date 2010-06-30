@@ -9,6 +9,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -22,6 +23,28 @@ public class ConsumersResource
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected AtomicLong sessionCounter = new AtomicLong(1);
+   protected ExecutorService ackTimeoutService;
+   protected long ackTimeoutSeconds;
+
+   public ExecutorService getAckTimeoutService()
+   {
+      return ackTimeoutService;
+   }
+
+   public void setAckTimeoutService(ExecutorService ackTimeoutService)
+   {
+      this.ackTimeoutService = ackTimeoutService;
+   }
+
+   public long getAckTimeoutSeconds()
+   {
+      return ackTimeoutSeconds;
+   }
+
+   public void setAckTimeoutSeconds(long ackTimeoutSeconds)
+   {
+      this.ackTimeoutSeconds = ackTimeoutSeconds;
+   }
 
    public ClientSessionFactory getSessionFactory()
    {
@@ -55,15 +78,17 @@ public class ConsumersResource
            throws HornetQException
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
-      QueueConsumer consumer = instantiate(genId);
+      QueueConsumer consumer = new QueueConsumer(sessionFactory, destination, genId);
       queueConsumers.put(genId, consumer);
       return consumer;
    }
 
-   protected QueueConsumer instantiate(String genId)
+   public QueueConsumer createAcknowledgedConsumer()
            throws HornetQException
    {
-      QueueConsumer consumer = new QueueConsumer(sessionFactory, destination, genId);
+      String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
+      QueueConsumer consumer = new AcknowledgedQueueConsumer(sessionFactory, destination, genId, ackTimeoutService, ackTimeoutSeconds);
+      queueConsumers.put(genId, consumer);
       return consumer;
    }
 

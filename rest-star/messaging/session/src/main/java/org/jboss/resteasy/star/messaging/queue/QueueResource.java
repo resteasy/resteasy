@@ -58,8 +58,8 @@ public class QueueResource
               + "</queue/>";
       Response.ResponseBuilder builder = Response.ok(msg);
       setSenderLink(builder, uriInfo);
-      setSenderLink(builder, uriInfo);
-      setPollerLink(builder, uriInfo);
+      setConsumeNextLink(builder, uriInfo);
+      setAcknowledgeNextLink(builder, uriInfo);
       setPushSubscriptionsLink(builder, uriInfo);
       return builder.build();
    }
@@ -70,7 +70,8 @@ public class QueueResource
    {
       Response.ResponseBuilder builder = Response.ok();
       setSenderLink(builder, uriInfo);
-      setPollerLink(builder, uriInfo);
+      setConsumeNextLink(builder, uriInfo);
+      setAcknowledgeNextLink(builder, uriInfo);
       setPushSubscriptionsLink(builder, uriInfo);
       return builder.build();
    }
@@ -83,13 +84,22 @@ public class QueueResource
       LinkHeaderSupport.setLinkHeader(response, "create", "create", uri, null);
    }
 
-   protected void setPollerLink(Response.ResponseBuilder response, UriInfo info)
+   protected void setConsumeNextLink(Response.ResponseBuilder response, UriInfo info)
    {
       UriBuilder builder = info.getRequestUriBuilder();
       builder.path("consume-next");
       String uri = builder.build().toString();
       LinkHeaderSupport.setLinkHeader(response, "consume-next", "consume-next", uri, null);
    }
+
+   protected void setAcknowledgeNextLink(Response.ResponseBuilder response, UriInfo info)
+   {
+      UriBuilder builder = info.getRequestUriBuilder();
+      builder.path("acknowledge-next");
+      String uri = builder.build().toString();
+      LinkHeaderSupport.setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, null);
+   }
+
 
    protected void setPushSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
    {
@@ -122,14 +132,32 @@ public class QueueResource
    }
 
 
-   @Path("consume-next")
+   @Path("acknowledge-next")
    @POST
-   public Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                        @Context UriInfo info)
+   public Response acknowledgeNext(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+                                   @Context UriInfo info)
    {
+      System.out.println("acknowledge-next received, will create new session");
       try
       {
-         System.out.println("Consume-next received, will create new session");
+         QueueConsumer consumer = consumers.createAcknowledgedConsumer();
+         String basePath = info.getMatchedURIs().get(1) + "/consumers/" + consumer.getId();
+         return consumer.runPoll(wait, info, basePath);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Path("consume-next")
+   @POST
+   public Response consumeNext(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+                               @Context UriInfo info)
+   {
+      System.out.println("consume-next received, will create new session");
+      try
+      {
          QueueConsumer consumer = consumers.createConsumer();
          String basePath = info.getMatchedURIs().get(1) + "/consumers/" + consumer.getId();
          return consumer.runPoll(wait, info, basePath);

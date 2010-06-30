@@ -138,15 +138,9 @@ public class TopicDeployer
       topicResource.setDestination(queueName);
       SubscriptionsResource subscriptionsResource = new SubscriptionsResource();
       topicResource.setSubscriptions(subscriptionsResource);
+      subscriptionsResource.setAckTimeoutSeconds(topicDeployment.getAckTimeoutSeconds());
+      subscriptionsResource.setAckTimeoutService(ackTimeoutExecutorService);
 
-      if (topicDeployment.isAutoAcknowledge())
-      {
-         subscriptionsResource.setConsumerFactory(SubscriptionResource.getFactory());
-      }
-      else
-      {
-         subscriptionsResource.setConsumerFactory(AcknowledgedSubscriptionResource.getFactory(ackTimeoutExecutorService, topicDeployment.getAckTimeoutSeconds()));
-      }
       subscriptionsResource.setDestination(queueName);
       subscriptionsResource.setSessionFactory(sessionFactory);
       PushSubscriptionsResource push = new PushSubscriptionsResource();

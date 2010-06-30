@@ -161,18 +161,9 @@ public class QueueDeployer
       QueueResource queueResource = new QueueResource();
       queueResource.setDestination(queueName);
 
-      ConsumersResource consumers = null;
-      if (queueDeployment.isAutoAcknowledge())
-      {
-         consumers = new ConsumersResource();
-      }
-      else
-      {
-         AcknowledgedConsumersResource acked = new AcknowledgedConsumersResource();
-         acked.setAckTimeoutSeconds(queueDeployment.getAckTimeoutSeconds());
-         acked.setAckTimeoutService(ackTimeoutExecutorService);
-         consumers = acked;
-      }
+      ConsumersResource consumers = new ConsumersResource();
+      consumers.setAckTimeoutSeconds(queueDeployment.getAckTimeoutSeconds());
+      consumers.setAckTimeoutService(ackTimeoutExecutorService);
       consumers.setDestination(queueName);
       consumers.setSessionFactory(sessionFactory);
       queueResource.setConsumers(consumers);

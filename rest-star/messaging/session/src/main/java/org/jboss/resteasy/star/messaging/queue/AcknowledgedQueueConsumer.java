@@ -4,9 +4,12 @@ import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.star.messaging.util.Constants;
 import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -70,6 +73,15 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
       }
       return message;
    }
+
+   @Path("acknowledge-next")
+   @POST
+   public Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+                        @Context UriInfo info)
+   {
+      return runPoll(wait, info, info.getMatchedURIs().get(1));
+   }
+
 
    public String getAckToken()
    {
@@ -221,6 +233,27 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
 
    }
 
+   @Path("acknowledgement/{ackToken}/next")
+   @POST
+   public Response acknowledgeAndNext(
+           @HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+           @PathParam("ackToken") String ackToken,
+           @Context UriInfo uriInfo)
+   {
+      boolean acknowledged = acknowledge(ackToken);
+      String basePath = uriInfo.getMatchedURIs().get(1);
+      if (!acknowledged)
+      {
+         Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
+                 .entity("Requeued before acknowledgement")
+                 .type("text/plain");
+         setAcknowledgeNextLink(builder, uriInfo, basePath);
+         return builder.build();
+      }
+      return runPoll(wait, uriInfo, basePath);
+
+   }
+
    @Path("acknowledgement/{ackToken}")
    @POST
    public Response acknowledge(
@@ -257,7 +290,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
 
    protected void setAcknowledgeLinks(UriInfo uriInfo, String basePath, Response.ResponseBuilder builder)
    {
-      setConsumeNextLink(builder, uriInfo, basePath);
+      setAcknowledgeNextLink(builder, uriInfo, basePath);
       setSessionLink(builder, uriInfo, basePath);
    }
 
@@ -265,8 +298,16 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
    @Override
    protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
    {
-      super.setMessageResponseLinks(info, basePath, builder);
       setAcknowledgementLink(builder, info, basePath);
+      setAcknowledgementAndNextLink(builder, info, basePath);
+      setSessionLink(builder, info, basePath);
+   }
+
+   @Override
+   protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
+   {
+      setAcknowledgeNextLink(builder, info, basePath);
+      setSessionLink(builder, info, basePath);
    }
 
    protected void setAcknowledgementLink(Response.ResponseBuilder response, UriInfo info, String basePath)
@@ -279,5 +320,28 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
       Link link = new Link("acknowledgement", "acknowledgement", uri, MediaType.APPLICATION_FORM_URLENCODED, null);
       LinkHeaderSupport.setLinkHeader(response, link);
    }
+
+   protected void setAcknowledgementAndNextLink(Response.ResponseBuilder response, UriInfo info, String basePath)
+   {
+      UriBuilder builder = info.getBaseUriBuilder();
+      builder.path(basePath)
+              .path("acknowledgement")
+              .path(getAckToken())
+              .path("next");
+      String uri = builder.build().toString();
+      Link link = new Link("acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED, null);
+      LinkHeaderSupport.setLinkHeader(response, link);
+   }
+
+   public static void setAcknowledgeNextLink(Response.ResponseBuilder response, UriInfo info, String basePath)
+   {
+      UriBuilder builder = info.getBaseUriBuilder();
+      builder.path(basePath)
+              .path("acknowledge-next");
+      String uri = builder.build().toString();
+      Link link = new Link("acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED, null);
+      LinkHeaderSupport.setLinkHeader(response, link);
+   }
+
 
 }
