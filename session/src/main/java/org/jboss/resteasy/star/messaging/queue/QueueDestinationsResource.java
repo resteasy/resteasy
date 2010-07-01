@@ -76,7 +76,7 @@ public class QueueDestinationsResource
 
       ConsumersResource consumers = new ConsumersResource();
       consumers.setAckTimeoutSeconds(timeoutSeconds);
-      consumers.setAckTimeoutService(manager.getAckTimeoutExecutorService());
+      consumers.setAckTimeoutService(manager.getThreadPool());
       consumers.setDestination(queueName);
       consumers.setSessionFactory(manager.getSessionFactory());
       queueResource.setConsumers(consumers);
