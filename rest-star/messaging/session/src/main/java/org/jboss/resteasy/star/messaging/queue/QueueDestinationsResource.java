@@ -52,7 +52,7 @@ public class QueueDestinationsResource
             DestinationSettings queueSettings = manager.getDefaultSettings();
             boolean defaultDurable = queueSettings.isDurableSend() || query.isDurable();
 
-            queue = createQueueResource(queueName, defaultDurable, queueSettings.getAckTimeoutSeconds(), queueSettings.isDuplicatesAllowed());
+            queue = createQueueResource(queueName, defaultDurable, queueSettings.getConsumerSessionTimeoutSeconds(), queueSettings.isDuplicatesAllowed());
          }
          finally
          {

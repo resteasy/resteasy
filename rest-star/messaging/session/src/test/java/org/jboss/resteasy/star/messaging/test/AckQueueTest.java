@@ -26,7 +26,7 @@ public class AckQueueTest extends BaseMessageTest
    {
       manager = new QueueServiceManager();
       QueueDeployment deployment1 = new QueueDeployment("testQueue", true);
-      deployment1.setAckTimeoutSeconds(1000);
+      deployment1.setConsumerSessionTimeoutSeconds(1000);
       manager.getQueues().add(deployment1);
       manager.setRegistry(deployment.getRegistry());
       manager.start();
@@ -42,7 +42,7 @@ public class AckQueueTest extends BaseMessageTest
    public void testAckTimeout() throws Exception
    {
       QueueDeployment deployment = new QueueDeployment();
-      deployment.setAckTimeoutSeconds(1);
+      deployment.setConsumerSessionTimeoutSeconds(1);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testAck");

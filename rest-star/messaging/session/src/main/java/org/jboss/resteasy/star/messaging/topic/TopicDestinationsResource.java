@@ -48,7 +48,7 @@ public class TopicDestinationsResource
             DestinationSettings queueSettings = manager.getDefaultSettings();
             boolean defaultDurable = queueSettings.isDurableSend() || query.isDurable();
 
-            topic = createTopicResource(name, defaultDurable, queueSettings.getAckTimeoutSeconds(), queueSettings.isDuplicatesAllowed());
+            topic = createTopicResource(name, defaultDurable, queueSettings.getConsumerSessionTimeoutSeconds(), queueSettings.isDuplicatesAllowed());
          }
          finally
          {
