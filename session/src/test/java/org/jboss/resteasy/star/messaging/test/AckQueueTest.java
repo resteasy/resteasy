@@ -13,8 +13,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
-
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
@@ -29,7 +27,9 @@ public class AckQueueTest extends BaseResourceTest
    public static void setup() throws Exception
    {
       server = new QueueServerDeployer();
-      server.getQueues().add(new QueueDeployment("testQueue", true, false));
+      QueueDeployment deployment1 = new QueueDeployment("testQueue", true, false);
+      deployment1.setAckTimeoutSeconds(1000);
+      server.getQueues().add(deployment1);
       server.setRegistry(deployment.getRegistry());
       server.start();
    }
@@ -208,6 +208,114 @@ public class AckQueueTest extends BaseResourceTest
       Assert.assertEquals(204, session.request().delete().getStatus());
    }
 
-   private static CountDownLatch listenerLatch;
+   @Test
+   public void testReconnect() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
 
+      ClientResponse response = request.head();
+      Assert.assertEquals(200, response.getStatus());
+      Link sender = response.getLinkHeader().getLinkByTitle("create");
+      System.out.println("create: " + sender);
+      Link consumeNext = response.getLinkHeader().getLinkByTitle("acknowledge-next");
+      System.out.println("poller: " + consumeNext);
+
+      ClientResponse res = sender.request().body("text/plain", Integer.toString(1)).post();
+      Assert.assertEquals(201, res.getStatus());
+
+      res = consumeNext.request().post(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      Link ack = res.getLinkHeader().getLinkByTitle("acknowledgement");
+      System.out.println("ack: " + ack);
+      Assert.assertNotNull(ack);
+      Link session = res.getLinkHeader().getLinkByTitle("session");
+      System.out.println("session: " + session);
+      consumeNext = res.getLinkHeader().getLinkByTitle("acknowledge-next");
+      System.out.println("consumeNext: " + consumeNext);
+      ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();
+      Assert.assertEquals(204, ackRes.getStatus());
+      consumeNext = ackRes.getLinkHeader().getLinkByTitle("acknowledge-next");
+      System.out.println("before close session consumeNext: " + consumeNext);
+
+      // test reconnect with a disconnected acknowledge-next
+      Assert.assertEquals(204, session.request().delete().getStatus());
+
+      res = sender.request().body("text/plain", Integer.toString(2)).post();
+      Assert.assertEquals(201, res.getStatus());
+
+
+      res = consumeNext.request().header(Constants.WAIT_HEADER, "10").post(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      ack = res.getLinkHeader().getLinkByTitle("acknowledgement");
+      System.out.println("ack: " + ack);
+      Assert.assertNotNull(ack);
+      ackRes = ack.request().formParameter("acknowledge", "true").post();
+      Assert.assertEquals(204, ackRes.getStatus());
+      session = ackRes.getLinkHeader().getLinkByTitle("session");
+      consumeNext = ackRes.getLinkHeader().getLinkByTitle("acknowledge-next");
+      System.out.println("session: " + session);
+
+      // test reconnect with disconnected acknowledge
+
+      res = sender.request().body("text/plain", Integer.toString(3)).post();
+      Assert.assertEquals(201, res.getStatus());
+      res = consumeNext.request().header(Constants.WAIT_HEADER, "10").post(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      ack = res.getLinkHeader().getLinkByTitle("acknowledgement");
+      System.out.println("ack: " + ack);
+      Assert.assertNotNull(ack);
+
+      Assert.assertEquals(204, session.request().delete().getStatus());
+
+      ackRes = ack.request().formParameter("acknowledge", "true").post();
+      Assert.assertEquals(412, ackRes.getStatus());
+      session = ackRes.getLinkHeader().getLinkByTitle("session");
+      consumeNext = ackRes.getLinkHeader().getLinkByTitle("acknowledge-next");
+      res = consumeNext.request().header(Constants.WAIT_HEADER, "10").post(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      ack = res.getLinkHeader().getLinkByTitle("acknowledgement");
+      System.out.println("ack: " + ack);
+      Assert.assertNotNull(ack);
+      ackRes = ack.request().formParameter("acknowledge", "true").post();
+      Assert.assertEquals(204, ackRes.getStatus());
+      session = ackRes.getLinkHeader().getLinkByTitle("session");
+
+      Assert.assertEquals(204, session.request().delete().getStatus());
+   }
+
+   @Test
+   public void testAcknowledgeNext() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
+
+      ClientResponse response = request.head();
+      Assert.assertEquals(200, response.getStatus());
+      Link sender = response.getLinkHeader().getLinkByTitle("create");
+      System.out.println("create: " + sender);
+      Link consumeNext = response.getLinkHeader().getLinkByTitle("acknowledge-next");
+      System.out.println("poller: " + consumeNext);
+
+      ClientResponse res = sender.request().body("text/plain", Integer.toString(1)).post();
+      Assert.assertEquals(201, res.getStatus());
+
+      res = consumeNext.request().post(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      consumeNext = res.getLinkHeader().getLinkByTitle("acknowledge-next");
+      System.out.println(consumeNext);
+      res = sender.request().body("text/plain", Integer.toString(2)).post();
+      Assert.assertEquals(201, res.getStatus());
+
+      res = consumeNext.request().header(Constants.WAIT_HEADER, "10").post(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      Assert.assertEquals("2", res.getEntity(String.class));
+      Link ack = res.getLinkHeader().getLinkByTitle("acknowledgement");
+      System.out.println("ack: " + ack);
+      Assert.assertNotNull(ack);
+      ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();
+      Assert.assertEquals(204, ackRes.getStatus());
+      Link session = ackRes.getLinkHeader().getLinkByTitle("session");
+      System.out.println("session: " + session);
+
+      Assert.assertEquals(204, session.request().delete().getStatus());
+   }
 }

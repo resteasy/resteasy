@@ -92,22 +92,48 @@ public class ConsumersResource
       return consumer;
    }
 
-   @Path("{consumer-id}")
+   @Path("auto-ack/{consumer-id}")
    public QueueConsumer getConsumer(
-           @PathParam("consumer-id") String consumerId)
+           @PathParam("consumer-id") String consumerId) throws Exception
    {
       QueueConsumer consumer = queueConsumers.get(consumerId);
       if (consumer == null)
       {
-         throw new WebApplicationException(Response.serverError()
-                 .entity("Failed to match a consumer to URL" + consumerId)
-                 .type("text/plain").build());
+         consumer = createConsumer();
+         if (queueConsumers.putIfAbsent(consumerId, consumer) != null)
+         {
+            consumer.shutdown();
+         }
+      }
+      return consumer;
+   }
+
+   @Path("acknowledged/{consumer-id}")
+   public QueueConsumer getAcknowledgedConsumer(
+           @PathParam("consumer-id") String consumerId) throws Exception
+   {
+      QueueConsumer consumer = queueConsumers.get(consumerId);
+      if (consumer == null)
+      {
+         consumer = createAcknowledgedConsumer();
+         if (queueConsumers.putIfAbsent(consumerId, consumer) != null)
+         {
+            consumer.shutdown();
+         }
       }
       return consumer;
    }
 
 
-   @Path("{consumer-id}")
+   @Path("acknowledged/{consumer-id}")
+   @DELETE
+   public void closeAcknowledgedSession(
+           @PathParam("consumer-id") String consumerId)
+   {
+      closeSession(consumerId);
+   }
+
+   @Path("auto-ack/{consumer-id}")
    @DELETE
    public void closeSession(
            @PathParam("consumer-id") String consumerId)
