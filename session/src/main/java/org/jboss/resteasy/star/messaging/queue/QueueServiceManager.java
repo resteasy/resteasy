@@ -152,7 +152,7 @@ public class QueueServiceManager
       }
       session.close();
 
-      destination.createQueueResource(queueName, queueDeployment.isDurableSend(), queueDeployment.getAckTimeoutSeconds(), queueDeployment.isDuplicatesAllowed());
+      destination.createQueueResource(queueName, queueDeployment.isDurableSend(), queueDeployment.getConsumerSessionTimeoutSeconds(), queueDeployment.isDuplicatesAllowed());
 
    }
 

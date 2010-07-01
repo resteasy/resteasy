@@ -147,7 +147,7 @@ public class TopicServiceManager
       }
       session.close();
 
-      destination.createTopicResource(queueName, defaultDurable, topicDeployment.getAckTimeoutSeconds(), topicDeployment.isDuplicatesAllowed());
+      destination.createTopicResource(queueName, defaultDurable, topicDeployment.getConsumerSessionTimeoutSeconds(), topicDeployment.isDuplicatesAllowed());
    }
 
    public void stop()

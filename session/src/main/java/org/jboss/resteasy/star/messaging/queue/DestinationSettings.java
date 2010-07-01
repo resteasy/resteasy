@@ -8,7 +8,7 @@ public class DestinationSettings
 {
    protected boolean duplicatesAllowed;
    private boolean durableSend;
-   private long ackTimeoutSeconds = 10;
+   private long consumerSessionTimeoutSeconds = 10;
 
    public boolean isDuplicatesAllowed()
    {
@@ -20,14 +20,14 @@ public class DestinationSettings
       this.duplicatesAllowed = duplicatesAllowed;
    }
 
-   public long getAckTimeoutSeconds()
+   public long getConsumerSessionTimeoutSeconds()
    {
-      return ackTimeoutSeconds;
+      return consumerSessionTimeoutSeconds;
    }
 
-   public void setAckTimeoutSeconds(long ackTimeoutSeconds)
+   public void setConsumerSessionTimeoutSeconds(long consumerSessionTimeoutSeconds)
    {
-      this.ackTimeoutSeconds = ackTimeoutSeconds;
+      this.consumerSessionTimeoutSeconds = consumerSessionTimeoutSeconds;
    }
 
    public boolean isDurableSend()
