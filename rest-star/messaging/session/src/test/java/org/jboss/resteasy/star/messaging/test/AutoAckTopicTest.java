@@ -1,17 +1,10 @@
 package org.jboss.resteasy.star.messaging.test;
 
-import org.hornetq.api.core.TransportConfiguration;
-import org.hornetq.core.config.Configuration;
-import org.hornetq.core.config.impl.ConfigurationImpl;
-import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
-import org.hornetq.core.server.HornetQServer;
-import org.hornetq.core.server.HornetQServers;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.topic.TopicDeployer;
 import org.jboss.resteasy.star.messaging.topic.TopicDeployment;
-import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -23,23 +16,14 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AutoAckTopicTest extends BaseResourceTest
+public class AutoAckTopicTest extends BaseMessageTest
 {
-   public static HornetQServer server;
-   public static TopicDeployer topicDeployer;
+   public static TopicServiceManager topicDeployer;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      Configuration configuration = new ConfigurationImpl();
-      configuration.setPersistenceEnabled(false);
-      configuration.setSecurityEnabled(false);
-      configuration.getAcceptorConfigurations().add(new TransportConfiguration(InVMAcceptorFactory.class.getName()));
-
-      server = HornetQServers.newHornetQServer(configuration);
-      server.start();
-
-      topicDeployer = new TopicDeployer();
+      topicDeployer = new TopicServiceManager();
       topicDeployer.setRegistry(deployment.getRegistry());
       topicDeployer.start();
    }
@@ -48,15 +32,12 @@ public class AutoAckTopicTest extends BaseResourceTest
    public static void shutdown() throws Exception
    {
       topicDeployer.stop();
-      server.stop();
-      server = null;
    }
 
    @Test
    public void testSuccessFirst() throws Exception
    {
       TopicDeployment deployment = new TopicDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testTopic");

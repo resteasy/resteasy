@@ -3,11 +3,9 @@ package org.jboss.resteasy.star.messaging.test;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.queue.QueueDeployer;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServerDeployer;
+import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.util.Constants;
-import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -19,25 +17,25 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AckQueueTest extends BaseResourceTest
+public class AckQueueTest extends BaseMessageTest
 {
-   public static QueueDeployer server;
+   public static QueueServiceManager manager;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      server = new QueueServerDeployer();
-      QueueDeployment deployment1 = new QueueDeployment("testQueue", true, false);
+      manager = new QueueServiceManager();
+      QueueDeployment deployment1 = new QueueDeployment("testQueue", true);
       deployment1.setAckTimeoutSeconds(1000);
-      server.getQueues().add(deployment1);
-      server.setRegistry(deployment.getRegistry());
-      server.start();
+      manager.getQueues().add(deployment1);
+      manager.setRegistry(deployment.getRegistry());
+      manager.start();
    }
 
    @AfterClass
    public static void shutdown() throws Exception
    {
-      server.stop();
+      manager.stop();
    }
 
    @Test
@@ -45,11 +43,10 @@ public class AckQueueTest extends BaseResourceTest
    {
       QueueDeployment deployment = new QueueDeployment();
       deployment.setAckTimeoutSeconds(1);
-      deployment.setAutoAcknowledge(false);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testAck");
-      server.deploy(deployment);
+      manager.deploy(deployment);
 
 
       ClientRequest request = new ClientRequest(generateURL("/queues/testAck"));

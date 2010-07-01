@@ -7,9 +7,7 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.star.messaging.queue.PostMessage;
-import org.jboss.resteasy.star.messaging.queue.PostMessageDupsOk;
-import org.jboss.resteasy.star.messaging.queue.PostMessageNoDups;
+import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +18,27 @@ import java.util.concurrent.Executors;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TopicDeployer
+public class TopicServiceManager
 {
    protected Registry registry;
    protected List<TopicDeployment> topics = new ArrayList<TopicDeployment>();
-   protected TopicDestinationsResource destination = new TopicDestinationsResource();
+   protected TopicDestinationsResource destination;
    protected ExecutorService ackTimeoutExecutorService;
    protected ClientSessionFactory sessionFactory;
    protected boolean started;
    protected String pushStoreFile;
    protected TopicPushStore pushStore;
+   protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
+
+   public DestinationSettings getDefaultSettings()
+   {
+      return defaultSettings;
+   }
+
+   public void setDefaultSettings(DestinationSettings defaultSettings)
+   {
+      this.defaultSettings = defaultSettings;
+   }
 
    public String getPushStoreFile()
    {
@@ -110,6 +119,10 @@ public class TopicDeployer
       {
          deploy(topic);
       }
+      if (destination == null)
+      {
+         destination = new TopicDestinationsResource(this);
+      }
       registry.addSingletonResource(destination);
    }
 
@@ -134,47 +147,7 @@ public class TopicDeployer
       }
       session.close();
 
-      TopicResource topicResource = new TopicResource();
-      topicResource.setDestination(queueName);
-      SubscriptionsResource subscriptionsResource = new SubscriptionsResource();
-      topicResource.setSubscriptions(subscriptionsResource);
-      subscriptionsResource.setAckTimeoutSeconds(topicDeployment.getAckTimeoutSeconds());
-      subscriptionsResource.setAckTimeoutService(ackTimeoutExecutorService);
-
-      subscriptionsResource.setDestination(queueName);
-      subscriptionsResource.setSessionFactory(sessionFactory);
-      PushSubscriptionsResource push = new PushSubscriptionsResource();
-      push.setDestination(queueName);
-      push.setSessionFactory(sessionFactory);
-      topicResource.setPushSubscriptions(push);
-
-      PostMessage sender = null;
-      if (topicDeployment.isDuplicatesAllowed())
-      {
-         sender = new PostMessageDupsOk();
-      }
-      else
-      {
-         sender = new PostMessageNoDups();
-      }
-      sender.setDefaultDurable(defaultDurable);
-      sender.setDestination(queueName);
-      sender.setSessionFactory(sessionFactory);
-      topicResource.setSender(sender);
-
-      if (pushStore != null)
-      {
-         push.setPushStore(pushStore);
-         List<PushTopicRegistration> regs = pushStore.getByTopic(queueName);
-         for (PushTopicRegistration reg : regs)
-         {
-            push.addRegistration(reg);
-         }
-      }
-
-
-      destination.getTopics().put(queueName, topicResource);
-      topicResource.start();
+      destination.createTopicResource(queueName, defaultDurable, topicDeployment.getAckTimeoutSeconds(), topicDeployment.isDuplicatesAllowed());
    }
 
    public void stop() throws Exception

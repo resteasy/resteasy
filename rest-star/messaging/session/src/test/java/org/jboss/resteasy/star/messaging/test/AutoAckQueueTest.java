@@ -3,11 +3,9 @@ package org.jboss.resteasy.star.messaging.test;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.queue.QueueDeployer;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServerDeployer;
+import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.util.Constants;
-import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -19,33 +17,32 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AutoAckQueueTest extends BaseResourceTest
+public class AutoAckQueueTest extends BaseMessageTest
 {
-   public static QueueDeployer server;
+   public static QueueServiceManager manager;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      server = new QueueServerDeployer();
-      server.setRegistry(deployment.getRegistry());
-      server.start();
+      manager = new QueueServiceManager();
+      manager.setRegistry(deployment.getRegistry());
+      manager.start();
    }
 
    @AfterClass
    public static void shutdown() throws Exception
    {
-      server.stop();
+      manager.stop();
    }
 
    @Test
    public void testSuccessFirst() throws Exception
    {
       QueueDeployment deployment = new QueueDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue");
-      server.deploy(deployment);
+      manager.deploy(deployment);
 
       ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
 

@@ -1,12 +1,12 @@
 package org.jboss.resteasy.star.messaging.topic;
 
-import org.jboss.resteasy.star.messaging.queue.QueueSettings;
+import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TopicDeployment extends QueueSettings
+public class TopicDeployment extends DestinationSettings
 {
    private String name;
 

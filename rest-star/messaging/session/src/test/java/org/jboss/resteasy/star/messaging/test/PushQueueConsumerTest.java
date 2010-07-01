@@ -3,12 +3,10 @@ package org.jboss.resteasy.star.messaging.test;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.queue.QueueDeployer;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServerDeployer;
+import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 import org.jboss.resteasy.star.messaging.queue.push.xml.XmlLink;
-import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,40 +18,38 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class PushQueueConsumerTest extends BaseResourceTest
+public class PushQueueConsumerTest extends BaseMessageTest
 {
-   public static QueueDeployer server;
+   public static QueueServiceManager manager;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      server = new QueueServerDeployer();
-      server.setRegistry(deployment.getRegistry());
-      server.start();
+      manager = new QueueServiceManager();
+      manager.setRegistry(deployment.getRegistry());
+      manager.start();
 
    }
 
    @AfterClass
    public static void shutdown() throws Exception
    {
-      server.stop();
+      manager.stop();
    }
 
    @Test
    public void testSuccessFirst() throws Exception
    {
       QueueDeployment deployment = new QueueDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue");
-      server.deploy(deployment);
+      manager.deploy(deployment);
       QueueDeployment deployment2 = new QueueDeployment();
-      deployment2.setAutoAcknowledge(true);
       deployment2.setDuplicatesAllowed(true);
       deployment2.setDurableSend(false);
       deployment2.setName("forwardQueue");
-      server.deploy(deployment2);
+      manager.deploy(deployment2);
 
       ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
 
