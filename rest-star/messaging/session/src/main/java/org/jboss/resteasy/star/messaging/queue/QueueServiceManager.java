@@ -21,24 +21,24 @@ import java.util.concurrent.Executors;
  */
 public class QueueServiceManager
 {
-   protected Registry registry;
    protected List<QueueDeployment> queues = new ArrayList<QueueDeployment>();
    protected QueueDestinationsResource destination;
-   protected ExecutorService ackTimeoutExecutorService;
    protected ClientSessionFactory sessionFactory;
    protected boolean started;
    protected String pushStoreFile;
    protected PushStore pushStore;
    protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
+   protected Registry registry;
+   protected ExecutorService threadPool;
 
-   public DestinationSettings getDefaultSettings()
+   public ExecutorService getThreadPool()
    {
-      return defaultSettings;
+      return threadPool;
    }
 
-   public void setDefaultSettings(DestinationSettings defaultSettings)
+   public void setThreadPool(ExecutorService threadPool)
    {
-      this.defaultSettings = defaultSettings;
+      this.threadPool = threadPool;
    }
 
    public Registry getRegistry()
@@ -49,6 +49,16 @@ public class QueueServiceManager
    public void setRegistry(Registry registry)
    {
       this.registry = registry;
+   }
+
+   public DestinationSettings getDefaultSettings()
+   {
+      return defaultSettings;
+   }
+
+   public void setDefaultSettings(DestinationSettings defaultSettings)
+   {
+      this.defaultSettings = defaultSettings;
    }
 
    public QueueDestinationsResource getDestination()
@@ -69,16 +79,6 @@ public class QueueServiceManager
    public void setQueues(List<QueueDeployment> queues)
    {
       this.queues = queues;
-   }
-
-   public ExecutorService getAckTimeoutExecutorService()
-   {
-      return ackTimeoutExecutorService;
-   }
-
-   public void setAckTimeoutExecutorService(ExecutorService ackTimeoutExecutorService)
-   {
-      this.ackTimeoutExecutorService = ackTimeoutExecutorService;
    }
 
    public ClientSessionFactory getSessionFactory()
@@ -114,7 +114,7 @@ public class QueueServiceManager
    public void start() throws Exception
    {
 
-      if (ackTimeoutExecutorService == null) ackTimeoutExecutorService = Executors.newCachedThreadPool();
+      if (threadPool == null) threadPool = Executors.newCachedThreadPool();
       if (sessionFactory == null)
          sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
 
@@ -156,7 +156,7 @@ public class QueueServiceManager
 
    }
 
-   public void stop() throws Exception
+   public void stop()
    {
       for (QueueResource queue : destination.getQueues().values())
       {

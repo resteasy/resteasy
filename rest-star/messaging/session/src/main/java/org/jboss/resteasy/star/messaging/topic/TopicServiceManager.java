@@ -23,7 +23,7 @@ public class TopicServiceManager
    protected Registry registry;
    protected List<TopicDeployment> topics = new ArrayList<TopicDeployment>();
    protected TopicDestinationsResource destination;
-   protected ExecutorService ackTimeoutExecutorService;
+   protected ExecutorService threadPool;
    protected ClientSessionFactory sessionFactory;
    protected boolean started;
    protected String pushStoreFile;
@@ -80,14 +80,14 @@ public class TopicServiceManager
       this.topics = topics;
    }
 
-   public ExecutorService getAckTimeoutExecutorService()
+   public ExecutorService getThreadPool()
    {
-      return ackTimeoutExecutorService;
+      return threadPool;
    }
 
-   public void setAckTimeoutExecutorService(ExecutorService ackTimeoutExecutorService)
+   public void setThreadPool(ExecutorService threadPool)
    {
-      this.ackTimeoutExecutorService = ackTimeoutExecutorService;
+      this.threadPool = threadPool;
    }
 
    public ClientSessionFactory getSessionFactory()
@@ -103,7 +103,7 @@ public class TopicServiceManager
    public void start() throws Exception
    {
 
-      if (ackTimeoutExecutorService == null) ackTimeoutExecutorService = Executors.newCachedThreadPool();
+      if (threadPool == null) threadPool = Executors.newCachedThreadPool();
       if (sessionFactory == null)
          sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
 
@@ -150,7 +150,7 @@ public class TopicServiceManager
       destination.createTopicResource(queueName, defaultDurable, topicDeployment.getAckTimeoutSeconds(), topicDeployment.isDuplicatesAllowed());
    }
 
-   public void stop() throws Exception
+   public void stop()
    {
       for (TopicResource topic : destination.getTopics().values())
       {

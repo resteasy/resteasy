@@ -76,7 +76,7 @@ public class TopicDestinationsResource
       SubscriptionsResource subscriptionsResource = new SubscriptionsResource();
       topicResource.setSubscriptions(subscriptionsResource);
       subscriptionsResource.setAckTimeoutSeconds(timeoutSeconds);
-      subscriptionsResource.setAckTimeoutService(manager.getAckTimeoutExecutorService());
+      subscriptionsResource.setAckTimeoutService(manager.getThreadPool());
 
       subscriptionsResource.setDestination(topicName);
       subscriptionsResource.setSessionFactory(manager.getSessionFactory());
