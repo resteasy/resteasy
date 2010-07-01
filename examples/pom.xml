@@ -34,5 +34,6 @@
         <module>resteasy-springMVC</module>
         <module>oreilly-workbook</module>
         <module>oauth</module>
+        <module>oauth-push-messaging</module>
     </modules>
 </project>

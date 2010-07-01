@@ -158,5 +158,5 @@ GET http://localhost:9095/examples-oauth/rest/server
 
 and finally replies to the end user at step 10
 
-14. End users prints :  "Success : Resource1" where "Resource1" is the reprsentation of the resource
+14. End users prints :  "Success : Resource1" where "Resource1" is the representation of the resource
 which the end user owns but accessed by the consumer on its behalf.

@@ -59,14 +59,14 @@ public class OAuthServlet extends HttpServlet {
 	/**
      * Relative path for the token authorization confirmation URL 
      */
-    final static String TOKEN_AUTHORIZATION_CONFIRM_URL = "/authorization/confirm";
-    
-    /**
-     * Relative path for the token authorization confirmation URL 
-     */
     final static String CONSUMER_SCOPES_REGISTRATION_URL = "/consumer-scopes";
 	
-	private String requestTokenURL, accessTokenURL, consumerRegistrationURL, authorizationURL;
+	/**
+     * Relative path for the token authorization confirmation URL 
+     */
+    final static String TOKEN_AUTHORIZATION_CONFIRM_URL = "/authorization/confirm";
+    
+    private String requestTokenURL, accessTokenURL, consumerRegistrationURL, authorizationURL;
 	private OAuthProvider provider;
 	private OAuthValidator validator;
 	
@@ -289,7 +289,7 @@ public class OAuthServlet extends HttpServlet {
             
             String consumerKey = URLDecoder.decode(values[0], "UTF-8");
             org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = provider.getConsumer(consumerKey);
-            String[] scopes = req.getParameterValues("xoauth_scopes");
+            String[] scopes = req.getParameterValues("xoauth_scope");
             if (scopes != null) {
                 consumer.setScopes(scopes);
             }
