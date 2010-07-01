@@ -4,9 +4,8 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueDeployer;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServerDeployer;
+import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 import org.jboss.resteasy.star.messaging.queue.push.xml.XmlLink;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -28,7 +27,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class PersistentPushQueueConsumerTest
 {
-   public static QueueDeployer server;
+   public static QueueServiceManager manager;
    public static File pushStore;
    protected static ResteasyDeployment deployment;
 
@@ -49,21 +48,23 @@ public class PersistentPushQueueConsumerTest
 
    public static void startup() throws Exception
    {
+      BaseMessageTest.setupHornetQServer();
       deployment = EmbeddedContainer.start();
-      server = new QueueServerDeployer();
-      server.setPushStoreFile(pushStore.toString());
-      server.setRegistry(deployment.getRegistry());
-      server.start();
+      manager = new QueueServiceManager();
+      manager.setPushStoreFile(pushStore.toString());
+      manager.setRegistry(deployment.getRegistry());
+      manager.start();
 
 
    }
 
    public static void shutdown() throws Exception
    {
-      server.stop();
-      server = null;
+      manager.stop();
+      manager = null;
       EmbeddedContainer.stop();
       deployment = null;
+      BaseMessageTest.shutdownHornetqServer();
    }
 
    @Test
@@ -119,16 +120,14 @@ public class PersistentPushQueueConsumerTest
            throws Exception
    {
       QueueDeployment deployment = new QueueDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue");
-      server.deploy(deployment);
+      manager.deploy(deployment);
       QueueDeployment deployment2 = new QueueDeployment();
-      deployment2.setAutoAcknowledge(true);
       deployment2.setDuplicatesAllowed(true);
       deployment2.setDurableSend(false);
       deployment2.setName("forwardQueue");
-      server.deploy(deployment2);
+      manager.deploy(deployment2);
    }
 }

@@ -8,10 +8,8 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.Hornetq;
-import org.jboss.resteasy.star.messaging.queue.QueueDeployer;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServerDeployer;
-import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -28,28 +26,27 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TransformTest extends BaseResourceTest
+public class TransformTest extends BaseMessageTest
 {
-   public static QueueDeployer server;
+   public static QueueServiceManager manager;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      server = new QueueServerDeployer();
-      server.setRegistry(deployment.getRegistry());
-      server.start();
+      manager = new QueueServiceManager();
+      manager.setRegistry(deployment.getRegistry());
+      manager.start();
       QueueDeployment deployment = new QueueDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue");
-      server.deploy(deployment);
+      manager.deploy(deployment);
    }
 
    @AfterClass
    public static void shutdown() throws Exception
    {
-      server.stop();
+      manager.stop();
    }
 
    @XmlRootElement
@@ -103,7 +100,7 @@ public class TransformTest extends BaseResourceTest
 
    public static void publish(String destination, Serializable object, String contentType) throws Exception
    {
-      ClientSession session = server.getSessionFactory().createSession();
+      ClientSession session = manager.getSessionFactory().createSession();
       try
       {
          ClientProducer producer = session.createProducer(destination);
@@ -213,12 +210,11 @@ public class TransformTest extends BaseResourceTest
    public void testJmsConsumer() throws Exception
    {
       QueueDeployment deployment = new QueueDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue2");
-      server.deploy(deployment);
-      ClientSession session = server.getSessionFactory().createSession();
+      manager.deploy(deployment);
+      ClientSession session = manager.getSessionFactory().createSession();
       try
       {
          session.createConsumer("testQueue2").setMessageHandler(new Listener());

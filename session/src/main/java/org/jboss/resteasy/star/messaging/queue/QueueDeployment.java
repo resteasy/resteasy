@@ -4,7 +4,7 @@ package org.jboss.resteasy.star.messaging.queue;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class QueueDeployment extends QueueSettings
+public class QueueDeployment extends DestinationSettings
 {
    private String name;
 
@@ -12,11 +12,10 @@ public class QueueDeployment extends QueueSettings
    {
    }
 
-   public QueueDeployment(String name, boolean duplicatesAllowed, boolean autoAcknowledge)
+   public QueueDeployment(String name, boolean duplicatesAllowed)
    {
       this.name = name;
       this.duplicatesAllowed = duplicatesAllowed;
-      this.autoAcknowledge = autoAcknowledge;
    }
 
    public String getName()

@@ -8,9 +8,7 @@ import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.queue.push.FilePushStore;
-import org.jboss.resteasy.star.messaging.queue.push.PushConsumerResource;
 import org.jboss.resteasy.star.messaging.queue.push.PushStore;
-import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +19,7 @@ import java.util.concurrent.Executors;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class QueueDeployer
+public class QueueServiceManager
 {
    protected Registry registry;
    protected List<QueueDeployment> queues = new ArrayList<QueueDeployment>();
@@ -29,16 +27,16 @@ public class QueueDeployer
    protected ExecutorService ackTimeoutExecutorService;
    protected ClientSessionFactory sessionFactory;
    protected boolean started;
-   protected QueueSettings defaultSettings = QueueSettings.defaultSettings;
    protected String pushStoreFile;
    protected PushStore pushStore;
+   protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
 
-   public QueueSettings getDefaultSettings()
+   public DestinationSettings getDefaultSettings()
    {
       return defaultSettings;
    }
 
-   public void setDefaultSettings(QueueSettings defaultSettings)
+   public void setDefaultSettings(DestinationSettings defaultSettings)
    {
       this.defaultSettings = defaultSettings;
    }
@@ -121,7 +119,7 @@ public class QueueDeployer
          sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
 
 
-      destination = new QueueDestinationsResource();
+      destination = new QueueDestinationsResource(this);
 
       started = true;
 
@@ -148,57 +146,14 @@ public class QueueDeployer
       ClientSession session = sessionFactory.createSession(false, false, false);
       ClientSession.QueueQuery query = session.queueQuery(new SimpleString(queueName));
       boolean defaultDurable = queueDeployment.isDurableSend();
-      if (query.isExists())
-      {
-         defaultDurable = query.isDurable();
-      }
-      else
+      if (!query.isExists())
       {
          session.createQueue(queueName, queueName, queueDeployment.isDurableSend());
       }
       session.close();
 
-      QueueResource queueResource = new QueueResource();
-      queueResource.setDestination(queueName);
+      destination.createQueueResource(queueName, queueDeployment.isDurableSend(), queueDeployment.getAckTimeoutSeconds(), queueDeployment.isDuplicatesAllowed());
 
-      ConsumersResource consumers = new ConsumersResource();
-      consumers.setAckTimeoutSeconds(queueDeployment.getAckTimeoutSeconds());
-      consumers.setAckTimeoutService(ackTimeoutExecutorService);
-      consumers.setDestination(queueName);
-      consumers.setSessionFactory(sessionFactory);
-      queueResource.setConsumers(consumers);
-
-      PushConsumerResource push = new PushConsumerResource();
-      push.setDestination(queueName);
-      push.setSessionFactory(sessionFactory);
-      queueResource.setPushConsumers(push);
-
-      PostMessage sender = null;
-      if (queueDeployment.isDuplicatesAllowed())
-      {
-         sender = new PostMessageDupsOk();
-      }
-      else
-      {
-         sender = new PostMessageNoDups();
-      }
-      sender.setDefaultDurable(defaultDurable);
-      sender.setDestination(queueName);
-      sender.setSessionFactory(sessionFactory);
-      queueResource.setSender(sender);
-
-      if (pushStore != null)
-      {
-         push.setPushStore(pushStore);
-         List<PushRegistration> regs = pushStore.getByDestination(queueName);
-         for (PushRegistration reg : regs)
-         {
-            push.addRegistration(reg);
-         }
-      }
-
-      queueResource.start();
-      destination.getQueues().put(queueName, queueResource);
    }
 
    public void stop() throws Exception

@@ -12,8 +12,8 @@ import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.star.messaging.queue.push.xml.XmlLink;
 import org.jboss.resteasy.star.messaging.topic.PushTopicRegistration;
-import org.jboss.resteasy.star.messaging.topic.TopicDeployer;
 import org.jboss.resteasy.star.messaging.topic.TopicDeployment;
+import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -39,7 +39,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
 public class PersistentPushTopicConsumerTest
 {
    public static HornetQServer server;
-   public static TopicDeployer topicDeployer;
+   public static TopicServiceManager topicDeployer;
    public static File pushStore;
    protected static ResteasyDeployment deployment;
 
@@ -73,7 +73,7 @@ public class PersistentPushTopicConsumerTest
       deployment = EmbeddedContainer.start();
 
 
-      topicDeployer = new TopicDeployer();
+      topicDeployer = new TopicServiceManager();
       topicDeployer.setRegistry(deployment.getRegistry());
       topicDeployer.setPushStoreFile(pushStore.toString());
       topicDeployer.start();
@@ -173,7 +173,6 @@ public class PersistentPushTopicConsumerTest
            throws Exception
    {
       TopicDeployment deployment = new TopicDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testTopic");

@@ -7,10 +7,8 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.HttpHeaderProperty;
 import org.jboss.resteasy.star.messaging.Jms;
-import org.jboss.resteasy.star.messaging.queue.QueueDeployer;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServerDeployer;
-import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -36,25 +34,25 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JMSTest extends BaseResourceTest
+public class JMSTest extends BaseMessageTest
 {
-   public static QueueDeployer server;
+   public static QueueServiceManager manager;
    public static ConnectionFactory connectionFactory;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      server = new QueueServerDeployer();
-      server.setRegistry(deployment.getRegistry());
-      server.start();
-      connectionFactory = new HornetQConnectionFactory(server.getSessionFactory());
+      manager = new QueueServiceManager();
+      manager.setRegistry(deployment.getRegistry());
+      manager.start();
+      connectionFactory = new HornetQConnectionFactory(manager.getSessionFactory());
 
    }
 
    @AfterClass
    public static void shutdown() throws Exception
    {
-      server.stop();
+      manager.stop();
    }
 
    @XmlRootElement
@@ -165,11 +163,10 @@ public class JMSTest extends BaseResourceTest
       String queueName = HornetQDestination.createQueueAddressFromName("testQueue2").toString();
       System.out.println("Queue name: " + queueName);
       QueueDeployment deployment = new QueueDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName(queueName);
-      server.deploy(deployment);
+      manager.deploy(deployment);
       Connection conn = connectionFactory.createConnection();
       try
       {
@@ -215,11 +212,10 @@ public class JMSTest extends BaseResourceTest
       String queueName = HornetQDestination.createQueueAddressFromName("testQueue").toString();
       System.out.println("Queue name: " + queueName);
       QueueDeployment deployment = new QueueDeployment();
-      deployment.setAutoAcknowledge(true);
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName(queueName);
-      server.deploy(deployment);
+      manager.deploy(deployment);
       ClientRequest request = new ClientRequest(generateURL("/queues/" + queueName));
 
       ClientResponse response = request.head();
