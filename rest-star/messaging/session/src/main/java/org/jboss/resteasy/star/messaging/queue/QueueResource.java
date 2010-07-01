@@ -141,7 +141,7 @@ public class QueueResource
       try
       {
          QueueConsumer consumer = consumers.createAcknowledgedConsumer();
-         String basePath = info.getMatchedURIs().get(1) + "/consumers/" + consumer.getId();
+         String basePath = info.getMatchedURIs().get(1) + "/consumers/acknowledged/" + consumer.getId();
          return consumer.runPoll(wait, info, basePath);
       }
       catch (Exception e)
@@ -159,7 +159,7 @@ public class QueueResource
       try
       {
          QueueConsumer consumer = consumers.createConsumer();
-         String basePath = info.getMatchedURIs().get(1) + "/consumers/" + consumer.getId();
+         String basePath = info.getMatchedURIs().get(1) + "/consumers/auto-ack/" + consumer.getId();
          return consumer.runPoll(wait, info, basePath);
       }
       catch (Exception e)

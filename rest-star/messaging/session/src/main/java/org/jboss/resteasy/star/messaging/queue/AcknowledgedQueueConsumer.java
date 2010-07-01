@@ -34,6 +34,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
    protected long ackTimeoutSeconds;
    protected volatile AckStateMachine ack;
    protected volatile Future currentAckTask;
+   protected boolean shutdown = false;
 
    public AcknowledgedQueueConsumer(ClientSessionFactory factory, String destination, String id, ExecutorService ackTimeoutService, long ackTimeoutSeconds)
            throws HornetQException
@@ -160,6 +161,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
          currentAckTask.cancel(true);
          currentAckTask = null;
       }
+      shutdown = true;
 
 
    }
@@ -245,7 +247,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
       if (!acknowledged)
       {
          Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
-                 .entity("Requeued before acknowledgement")
+                 .entity("Could not acknowledge previous message, it was probably requeued from a timeout")
                  .type("text/plain");
          setAcknowledgeNextLink(builder, uriInfo, basePath);
          return builder.build();
@@ -281,7 +283,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
       else
       {
          Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
-                 .entity("Requeued before acknowledgement")
+                 .entity("Could not acknowledge message, it was probably requeued from a timeout")
                  .type("text/plain");
          setAcknowledgeLinks(uriInfo, basePath, builder);
          return builder.build();
