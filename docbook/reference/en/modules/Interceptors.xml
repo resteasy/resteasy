@@ -104,7 +104,7 @@ public interface MessageBodyWriterContext
 </programlisting>
         <para>
             MessageBodyReaderInterceptors and MessageBodyWriterInterceptors can be used on the serverside or client side.
-            The must be annotated with @org.jboss.resteasy.annotations.interception.ServerInterceptor or
+            They must be annotated with @org.jboss.resteasy.annotations.interception.ServerInterceptor or
             @org.jboss.resteasy.annotations.interception.ClientInterceptor so that resteasy knows whether or not
             to add them to the interceptor list.  If you do not annotate your interceptor classes with one or both
             of these annotations, you will receive a deployment error.  They also
