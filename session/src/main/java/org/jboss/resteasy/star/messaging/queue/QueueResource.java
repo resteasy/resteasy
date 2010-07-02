@@ -36,6 +36,7 @@ public class QueueResource
    {
       consumers.stop();
       pushConsumers.stop();
+      sender.cleanup();
    }
 
    public PostMessage getSender()

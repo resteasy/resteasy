@@ -31,6 +31,7 @@ public class TopicResource
    {
       subscriptions.stop();
       pushSubscriptions.stop();
+      sender.cleanup();
    }
 
    public PostMessage getSender()

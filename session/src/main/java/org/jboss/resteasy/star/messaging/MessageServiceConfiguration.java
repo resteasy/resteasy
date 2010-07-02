@@ -16,8 +16,8 @@ public class MessageServiceConfiguration
    private int consumerWindowSize = -1;
    private boolean defaultDurableSend = false;
    private boolean dupsOk = true;
-   private String topicPushStoreFile;
-   private String queuePushStoreFile;
+   private String topicPushStoreFile = "./topic-push-store.xml";
+   private String queuePushStoreFile = "./queue-push-store.xml";
 
    @XmlElement(name = "default-durable-send")
    public boolean isDefaultDurableSend()

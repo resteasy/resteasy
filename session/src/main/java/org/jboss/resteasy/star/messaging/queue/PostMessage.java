@@ -1,11 +1,17 @@
 package org.jboss.resteasy.star.messaging.queue;
 
+import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
+import org.hornetq.api.core.client.ClientProducer;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.star.messaging.util.HttpMessageHelper;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -16,6 +22,21 @@ public class PostMessage
    protected ClientSessionFactory sessionFactory;
    protected String destination;
    protected boolean defaultDurable = false;
+
+   protected static class Pooled
+   {
+      public ClientSession session;
+      public ClientProducer producer;
+
+      private Pooled(ClientSession session, ClientProducer producer)
+      {
+         this.session = session;
+         this.producer = producer;
+      }
+   }
+
+   protected ArrayBlockingQueue<Pooled> pool;
+   protected int poolSize = 10;
 
    public ClientSessionFactory getSessionFactory()
    {
@@ -45,6 +66,60 @@ public class PostMessage
    public void setDefaultDurable(boolean defaultDurable)
    {
       this.defaultDurable = defaultDurable;
+   }
+
+   public int getPoolSize()
+   {
+      return poolSize;
+   }
+
+   public void setPoolSize(int poolSize)
+   {
+      this.poolSize = poolSize;
+   }
+
+   public void init() throws Exception
+   {
+      pool = new ArrayBlockingQueue<Pooled>(poolSize);
+      for (int i = 0; i < poolSize; i++)
+      {
+         addPooled();
+      }
+   }
+
+   protected void addPooled()
+           throws HornetQException
+   {
+      ClientSession session = sessionFactory.createSession();
+      ClientProducer producer = session.createProducer(destination);
+      session.start();
+      pool.add(new Pooled(session, producer));
+   }
+
+   protected Pooled getPooled()
+           throws InterruptedException
+   {
+      Pooled pooled = pool.poll(1, TimeUnit.SECONDS);
+      if (pooled == null)
+      {
+         throw new WebApplicationException(Response.status(503).entity("Timed out waiting for available producer.").type("text/plain").build());
+      }
+      return pooled;
+   }
+
+   public void cleanup()
+   {
+      for (Pooled pooled : pool)
+      {
+         try
+         {
+            pooled.session.close();
+         }
+         catch (HornetQException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
    }
 
 

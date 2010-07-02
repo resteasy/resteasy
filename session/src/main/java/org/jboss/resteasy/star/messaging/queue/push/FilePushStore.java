@@ -49,7 +49,15 @@ public class FilePushStore implements PushStore
       this.ctx = JAXBContext.newInstance(Store.class, PushRegistration.class, PushTopicRegistration.class);
       if (file.exists())
       {
-         Store store = (Store) ctx.createUnmarshaller().unmarshal(file);
+         Store store = null;
+         try
+         {
+            store = (Store) ctx.createUnmarshaller().unmarshal(file);
+         }
+         catch (Exception e)
+         {
+            System.err.println("Failed to load push store" + filename + " , it is probably corrupted");
+         }
          for (PushRegistration reg : store.getList())
          {
             System.out.println("adding registration: " + reg.getId());
@@ -96,7 +104,6 @@ public class FilePushStore implements PushStore
    protected void save()
            throws JAXBException
    {
-      System.out.println("SAVING!!!!");
       Store store = new Store();
       store.getList().addAll(map.values());
       ctx.createMarshaller().marshal(store, System.out);

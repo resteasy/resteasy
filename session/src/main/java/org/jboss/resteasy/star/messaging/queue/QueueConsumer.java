@@ -115,7 +115,7 @@ public class QueueConsumer
          ClientMessage message = receive(wait);
          if (message == null)
          {
-            System.out.println("Timed out waiting for message receive.");
+            //System.out.println("Timed out waiting for message receive.");
             Response.ResponseBuilder builder = Response.status(503).entity("Timed out waiting for message receive.").type("text/plain");
             setPollTimeoutLinks(info, basePath, builder);
             return builder.build();

@@ -64,7 +64,7 @@ public class PushConsumerResource
    @POST
    public Response create(@Context UriInfo uriInfo, PushRegistration registration)
    {
-      System.out.println("PushRegistration: " + registration);
+      //System.out.println("PushRegistration: " + registration);
 
       // todo put some logic here to check for duplicates
       String genId = sessionCounter.getAndIncrement() + "-" + startup;

@@ -106,12 +106,14 @@ public class MessageServiceManager
       queueManager.setConsumerSessionFactory(consumerSessionFactory);
       queueManager.setDefaultSettings(defaultSettings);
       queueManager.setPushStoreFile(configuration.getQueuePushStoreFile());
+      queueManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
 
       topicManager.setRegistry(registry);
       topicManager.setTimeoutTask(timeoutTask);
       topicManager.setConsumerSessionFactory(consumerSessionFactory);
       topicManager.setDefaultSettings(defaultSettings);
       topicManager.setPushStoreFile(configuration.getTopicPushStoreFile());
+      topicManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
 
       queueManager.start();
       topicManager.start();

@@ -246,14 +246,6 @@ public class SubscriptionsResource implements TimeoutTask.Callback
          }
          else
          {
-            ClientSession.BindingQuery bquery = session.bindingQuery(new SimpleString(destination));
-            if (bquery != null)
-            {
-               for (SimpleString s : bquery.getQueueNames())
-               {
-                  System.out.println("binding for: " + destination + " is: " + s.toString());
-               }
-            }
             throw new WebApplicationException(Response.serverError()
                     .entity("Failed to match a subscriber to URL" + subscriptionId)
                     .type("text/plain").build());
@@ -296,7 +288,7 @@ public class SubscriptionsResource implements TimeoutTask.Callback
       QueueConsumer consumer = queueConsumers.remove(consumerId);
       if (consumer == null)
       {
-         String msg = "Failed to match a subscription to URL" + consumerId;
+         String msg = "Failed to match a subscription to URL " + consumerId;
          System.out.println(msg);
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                  .entity(msg)

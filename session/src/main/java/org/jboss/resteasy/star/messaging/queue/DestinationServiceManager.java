@@ -20,6 +20,17 @@ public abstract class DestinationServiceManager
    protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
    protected Registry registry;
    protected TimeoutTask timeoutTask;
+   protected int producerPoolSize;
+
+   public int getProducerPoolSize()
+   {
+      return producerPoolSize;
+   }
+
+   public void setProducerPoolSize(int producerPoolSize)
+   {
+      this.producerPoolSize = producerPoolSize;
+   }
 
    public ClientSessionFactory getConsumerSessionFactory()
    {
