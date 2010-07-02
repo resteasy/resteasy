@@ -8,7 +8,7 @@ public class DestinationSettings
 {
    protected boolean duplicatesAllowed;
    private boolean durableSend;
-   private int consumerSessionTimeoutSeconds = 10;
+   private int consumerSessionTimeoutSeconds = 1000;
 
    public boolean isDuplicatesAllowed()
    {

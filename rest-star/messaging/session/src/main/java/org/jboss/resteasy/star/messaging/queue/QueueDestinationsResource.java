@@ -78,12 +78,12 @@ public class QueueDestinationsResource
       consumers.setConsumerTimeoutSeconds(timeoutSeconds);
       consumers.setConsumerTimeoutTask(manager.getTimeoutTask());
       consumers.setDestination(queueName);
-      consumers.setSessionFactory(manager.getSessionFactory());
+      consumers.setSessionFactory(manager.getConsumerSessionFactory());
       queueResource.setConsumers(consumers);
 
       PushConsumerResource push = new PushConsumerResource();
       push.setDestination(queueName);
-      push.setSessionFactory(manager.getSessionFactory());
+      push.setSessionFactory(manager.getConsumerSessionFactory());
       queueResource.setPushConsumers(push);
 
       PostMessage sender = null;

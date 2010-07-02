@@ -4,10 +4,7 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.topic.TopicDeployment;
-import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -18,22 +15,6 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class AutoAckTopicTest extends BaseMessageTest
 {
-   public static TopicServiceManager topicDeployer;
-
-   @BeforeClass
-   public static void setup() throws Exception
-   {
-      topicDeployer = new TopicServiceManager();
-      topicDeployer.setRegistry(deployment.getRegistry());
-      topicDeployer.start();
-   }
-
-   @AfterClass
-   public static void shutdown() throws Exception
-   {
-      topicDeployer.stop();
-   }
-
    @Test
    public void testSuccessFirst() throws Exception
    {
@@ -41,7 +22,7 @@ public class AutoAckTopicTest extends BaseMessageTest
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testTopic");
-      topicDeployer.deploy(deployment);
+      manager.getTopicManager().deploy(deployment);
 
       ClientRequest request = new ClientRequest(generateURL("/topics/testTopic"));
 

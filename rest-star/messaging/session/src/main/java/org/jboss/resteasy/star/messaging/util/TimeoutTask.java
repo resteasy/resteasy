@@ -40,6 +40,16 @@ public class TimeoutTask implements Runnable
       thread.interrupt();
    }
 
+   public int getInterval()
+   {
+      return interval;
+   }
+
+   public synchronized void setInterval(int interval)
+   {
+      this.interval = interval;
+   }
+
    public void start()
    {
       thread = new Thread(this);

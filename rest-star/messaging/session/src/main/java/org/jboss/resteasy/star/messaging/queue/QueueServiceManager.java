@@ -1,98 +1,22 @@
 package org.jboss.resteasy.star.messaging.queue;
 
 import org.hornetq.api.core.SimpleString;
-import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ClientSession;
-import org.hornetq.api.core.client.ClientSessionFactory;
-import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
-import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.queue.push.FilePushStore;
 import org.jboss.resteasy.star.messaging.queue.push.PushStore;
-import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class QueueServiceManager
+public class QueueServiceManager extends DestinationServiceManager
 {
+   protected PushStore pushStore;
    protected List<QueueDeployment> queues = new ArrayList<QueueDeployment>();
    protected QueueDestinationsResource destination;
-   protected ClientSessionFactory sessionFactory;
-   protected boolean started;
-   protected String pushStoreFile;
-   protected PushStore pushStore;
-   protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
-   protected Registry registry;
-   protected ExecutorService threadPool;
-   protected TimeoutTask timeoutTask;
-   protected int timeoutTaskInterval = 1;
-
-   public ExecutorService getThreadPool()
-   {
-      return threadPool;
-   }
-
-   public void setThreadPool(ExecutorService threadPool)
-   {
-      this.threadPool = threadPool;
-   }
-
-   public TimeoutTask getTimeoutTask()
-   {
-      return timeoutTask;
-   }
-
-   public void setTimeoutTask(TimeoutTask timeoutTask)
-   {
-      this.timeoutTask = timeoutTask;
-   }
-
-   public int getTimeoutTaskInterval()
-   {
-      return timeoutTaskInterval;
-   }
-
-   public void setTimeoutTaskInterval(int timeoutTaskInterval)
-   {
-      this.timeoutTaskInterval = timeoutTaskInterval;
-   }
-
-   public Registry getRegistry()
-   {
-      return registry;
-   }
-
-   public void setRegistry(Registry registry)
-   {
-      this.registry = registry;
-   }
-
-   public DestinationSettings getDefaultSettings()
-   {
-      return defaultSettings;
-   }
-
-   public void setDefaultSettings(DestinationSettings defaultSettings)
-   {
-      this.defaultSettings = defaultSettings;
-   }
-
-   public QueueDestinationsResource getDestination()
-   {
-      return destination;
-   }
-
-   public void setDestination(QueueDestinationsResource destination)
-   {
-      this.destination = destination;
-   }
 
    public List<QueueDeployment> getQueues()
    {
@@ -102,26 +26,6 @@ public class QueueServiceManager
    public void setQueues(List<QueueDeployment> queues)
    {
       this.queues = queues;
-   }
-
-   public ClientSessionFactory getSessionFactory()
-   {
-      return sessionFactory;
-   }
-
-   public void setSessionFactory(ClientSessionFactory sessionFactory)
-   {
-      this.sessionFactory = sessionFactory;
-   }
-
-   public String getPushStoreFile()
-   {
-      return pushStoreFile;
-   }
-
-   public void setPushStoreFile(String pushStoreFile)
-   {
-      this.pushStoreFile = pushStoreFile;
    }
 
    public PushStore getPushStore()
@@ -134,18 +38,10 @@ public class QueueServiceManager
       this.pushStore = pushStore;
    }
 
+   @Override
    public void start() throws Exception
    {
-
-      if (sessionFactory == null)
-         sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
-      if (timeoutTask == null)
-      {
-         if (threadPool == null) threadPool = Executors.newCachedThreadPool();
-         timeoutTask = new TimeoutTask(timeoutTaskInterval);
-         threadPool.execute(timeoutTask);
-      }
-
+      initDefaults();
 
       destination = new QueueDestinationsResource(this);
 
@@ -183,6 +79,7 @@ public class QueueServiceManager
 
    }
 
+   @Override
    public void stop()
    {
       for (QueueResource queue : destination.getQueues().values())

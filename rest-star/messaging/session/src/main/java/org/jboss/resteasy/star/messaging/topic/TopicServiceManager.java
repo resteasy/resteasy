@@ -1,77 +1,21 @@
 package org.jboss.resteasy.star.messaging.topic;
 
 import org.hornetq.api.core.SimpleString;
-import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ClientSession;
-import org.hornetq.api.core.client.ClientSessionFactory;
-import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
-import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
-import org.jboss.resteasy.star.messaging.util.TimeoutTask;
+import org.jboss.resteasy.star.messaging.queue.DestinationServiceManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TopicServiceManager
+public class TopicServiceManager extends DestinationServiceManager
 {
-   protected Registry registry;
+   protected TopicPushStore pushStore;
    protected List<TopicDeployment> topics = new ArrayList<TopicDeployment>();
    protected TopicDestinationsResource destination;
-   protected ExecutorService threadPool;
-   protected ClientSessionFactory sessionFactory;
-   protected boolean started;
-   protected String pushStoreFile;
-   protected TopicPushStore pushStore;
-   protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
-   protected TimeoutTask timeoutTask;
-   protected int timeoutTaskInterval = 1;
-
-   public TimeoutTask getTimeoutTask()
-   {
-      return timeoutTask;
-   }
-
-   public void setTimeoutTask(TimeoutTask timeoutTask)
-   {
-      this.timeoutTask = timeoutTask;
-   }
-
-   public int getTimeoutTaskInterval()
-   {
-      return timeoutTaskInterval;
-   }
-
-   public void setTimeoutTaskInterval(int timeoutTaskInterval)
-   {
-      this.timeoutTaskInterval = timeoutTaskInterval;
-   }
-
-   public DestinationSettings getDefaultSettings()
-   {
-      return defaultSettings;
-   }
-
-   public void setDefaultSettings(DestinationSettings defaultSettings)
-   {
-      this.defaultSettings = defaultSettings;
-   }
-
-   public String getPushStoreFile()
-   {
-      return pushStoreFile;
-   }
-
-   public void setPushStoreFile(String pushStoreFile)
-   {
-      this.pushStoreFile = pushStoreFile;
-   }
 
    public TopicPushStore getPushStore()
    {
@@ -81,16 +25,6 @@ public class TopicServiceManager
    public void setPushStore(TopicPushStore pushStore)
    {
       this.pushStore = pushStore;
-   }
-
-   public Registry getRegistry()
-   {
-      return registry;
-   }
-
-   public void setRegistry(Registry registry)
-   {
-      this.registry = registry;
    }
 
    public List<TopicDeployment> getTopics()
@@ -103,38 +37,9 @@ public class TopicServiceManager
       this.topics = topics;
    }
 
-   public ExecutorService getThreadPool()
-   {
-      return threadPool;
-   }
-
-   public void setThreadPool(ExecutorService threadPool)
-   {
-      this.threadPool = threadPool;
-   }
-
-   public ClientSessionFactory getSessionFactory()
-   {
-      return sessionFactory;
-   }
-
-   public void setSessionFactory(ClientSessionFactory sessionFactory)
-   {
-      this.sessionFactory = sessionFactory;
-   }
-
    public void start() throws Exception
    {
-
-      if (sessionFactory == null)
-         sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
-      if (timeoutTask == null)
-      {
-         if (threadPool == null) threadPool = Executors.newCachedThreadPool();
-         timeoutTask = new TimeoutTask(timeoutTaskInterval);
-         threadPool.execute(timeoutTask);
-      }
-
+      initDefaults();
 
       started = true;
 
