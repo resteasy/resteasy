@@ -4,9 +4,7 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.topic.TopicDeployment;
-import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
 import org.jboss.resteasy.star.messaging.util.Constants;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,23 +17,12 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class AckTopicTest extends BaseMessageTest
 {
-   public static TopicServiceManager manager;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      manager = new TopicServiceManager();
       TopicDeployment deployment1 = new TopicDeployment("testQueue", true);
-      deployment1.setConsumerSessionTimeoutSeconds(1000);
-      manager.getTopics().add(deployment1);
-      manager.setRegistry(deployment.getRegistry());
-      manager.start();
-   }
-
-   @AfterClass
-   public static void shutdown() throws Exception
-   {
-      manager.stop();
+      manager.getTopicManager().deploy(deployment1);
    }
 
    @Test
@@ -46,7 +33,7 @@ public class AckTopicTest extends BaseMessageTest
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testAck");
-      manager.deploy(deployment);
+      manager.getTopicManager().deploy(deployment);
 
 
       ClientRequest request = new ClientRequest(generateURL("/topics/testAck"));

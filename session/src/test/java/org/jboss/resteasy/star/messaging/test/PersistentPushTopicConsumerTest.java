@@ -10,10 +10,11 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.star.messaging.MessageServiceConfiguration;
+import org.jboss.resteasy.star.messaging.MessageServiceManager;
 import org.jboss.resteasy.star.messaging.queue.push.xml.XmlLink;
 import org.jboss.resteasy.star.messaging.topic.PushTopicRegistration;
 import org.jboss.resteasy.star.messaging.topic.TopicDeployment;
-import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -39,7 +40,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
 public class PersistentPushTopicConsumerTest
 {
    public static HornetQServer server;
-   public static TopicServiceManager topicDeployer;
+   public static MessageServiceManager manager;
    public static File pushStore;
    protected static ResteasyDeployment deployment;
 
@@ -73,10 +74,12 @@ public class PersistentPushTopicConsumerTest
       deployment = EmbeddedContainer.start();
 
 
-      topicDeployer = new TopicServiceManager();
-      topicDeployer.setRegistry(deployment.getRegistry());
-      topicDeployer.setPushStoreFile(pushStore.toString());
-      topicDeployer.start();
+      manager = new MessageServiceManager();
+      manager.setRegistry(deployment.getRegistry());
+      MessageServiceConfiguration config = new MessageServiceConfiguration();
+      config.setTopicPushStoreFile(pushStore.toString());
+      manager.setConfiguration(config);
+      manager.start();
 
       deployment.getRegistry().addPerRequestResource(Receiver.class);
 
@@ -84,8 +87,8 @@ public class PersistentPushTopicConsumerTest
 
    public static void shutdown() throws Exception
    {
-      topicDeployer.stop();
-      topicDeployer = null;
+      manager.stop();
+      manager = null;
       EmbeddedContainer.stop();
       deployment = null;
    }
@@ -176,7 +179,7 @@ public class PersistentPushTopicConsumerTest
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testTopic");
-      topicDeployer.deploy(deployment);
+      manager.getTopicManager().deploy(deployment);
 
 
    }

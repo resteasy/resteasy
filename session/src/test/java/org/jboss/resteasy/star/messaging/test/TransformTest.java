@@ -9,8 +9,6 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.Hornetq;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,25 +26,15 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class TransformTest extends BaseMessageTest
 {
-   public static QueueServiceManager manager;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      manager = new QueueServiceManager();
-      manager.setRegistry(deployment.getRegistry());
-      manager.start();
       QueueDeployment deployment = new QueueDeployment();
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue");
-      manager.deploy(deployment);
-   }
-
-   @AfterClass
-   public static void shutdown() throws Exception
-   {
-      manager.stop();
+      manager.getQueueManager().deploy(deployment);
    }
 
    @XmlRootElement
@@ -100,7 +88,7 @@ public class TransformTest extends BaseMessageTest
 
    public static void publish(String destination, Serializable object, String contentType) throws Exception
    {
-      ClientSession session = manager.getSessionFactory().createSession();
+      ClientSession session = manager.getQueueManager().getSessionFactory().createSession();
       try
       {
          ClientProducer producer = session.createProducer(destination);
@@ -213,8 +201,8 @@ public class TransformTest extends BaseMessageTest
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue2");
-      manager.deploy(deployment);
-      ClientSession session = manager.getSessionFactory().createSession();
+      manager.getQueueManager().deploy(deployment);
+      ClientSession session = manager.getQueueManager().getSessionFactory().createSession();
       try
       {
          session.createConsumer("testQueue2").setMessageHandler(new Listener());

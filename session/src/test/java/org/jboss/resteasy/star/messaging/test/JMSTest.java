@@ -8,8 +8,6 @@ import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.HttpHeaderProperty;
 import org.jboss.resteasy.star.messaging.Jms;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,23 +34,12 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class JMSTest extends BaseMessageTest
 {
-   public static QueueServiceManager manager;
    public static ConnectionFactory connectionFactory;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      manager = new QueueServiceManager();
-      manager.setRegistry(deployment.getRegistry());
-      manager.start();
-      connectionFactory = new HornetQConnectionFactory(manager.getSessionFactory());
-
-   }
-
-   @AfterClass
-   public static void shutdown() throws Exception
-   {
-      manager.stop();
+      connectionFactory = new HornetQConnectionFactory(manager.getQueueManager().getSessionFactory());
    }
 
    @XmlRootElement
@@ -166,7 +153,7 @@ public class JMSTest extends BaseMessageTest
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName(queueName);
-      manager.deploy(deployment);
+      manager.getQueueManager().deploy(deployment);
       Connection conn = connectionFactory.createConnection();
       try
       {
@@ -215,7 +202,7 @@ public class JMSTest extends BaseMessageTest
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName(queueName);
-      manager.deploy(deployment);
+      manager.getQueueManager().deploy(deployment);
       ClientRequest request = new ClientRequest(generateURL("/queues/" + queueName));
 
       ClientResponse response = request.head();

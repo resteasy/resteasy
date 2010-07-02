@@ -4,8 +4,9 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.star.messaging.MessageServiceConfiguration;
+import org.jboss.resteasy.star.messaging.MessageServiceManager;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 import org.jboss.resteasy.star.messaging.queue.push.xml.XmlLink;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -27,7 +28,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class PersistentPushQueueConsumerTest
 {
-   public static QueueServiceManager manager;
+   public static MessageServiceManager manager;
    public static File pushStore;
    protected static ResteasyDeployment deployment;
 
@@ -49,9 +50,12 @@ public class PersistentPushQueueConsumerTest
    public static void startup() throws Exception
    {
       BaseMessageTest.setupHornetQServer();
+
       deployment = EmbeddedContainer.start();
-      manager = new QueueServiceManager();
-      manager.setPushStoreFile(pushStore.toString());
+      manager = new MessageServiceManager();
+      MessageServiceConfiguration config = new MessageServiceConfiguration();
+      config.setQueuePushStoreFile(pushStore.toString());
+      manager.setConfiguration(config);
       manager.setRegistry(deployment.getRegistry());
       manager.start();
 
@@ -123,11 +127,11 @@ public class PersistentPushQueueConsumerTest
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue");
-      manager.deploy(deployment);
+      manager.getQueueManager().deploy(deployment);
       QueueDeployment deployment2 = new QueueDeployment();
       deployment2.setDuplicatesAllowed(true);
       deployment2.setDurableSend(false);
       deployment2.setName("forwardQueue");
-      manager.deploy(deployment2);
+      manager.getQueueManager().deploy(deployment2);
    }
 }

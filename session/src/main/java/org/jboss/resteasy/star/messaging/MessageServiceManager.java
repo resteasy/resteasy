@@ -1,6 +1,11 @@
 package org.jboss.resteasy.star.messaging;
 
+import org.hornetq.api.core.TransportConfiguration;
+import org.hornetq.api.core.client.ClientSessionFactory;
+import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
+import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
 import org.jboss.resteasy.star.messaging.util.TimeoutTask;
@@ -20,6 +25,7 @@ public class MessageServiceManager
    protected TopicServiceManager topicManager = new TopicServiceManager();
    protected TimeoutTask timeoutTask;
    protected int timeoutTaskInterval = 1;
+   protected MessageServiceConfiguration configuration = new MessageServiceConfiguration();
 
    public int getTimeoutTaskInterval()
    {
@@ -29,6 +35,10 @@ public class MessageServiceManager
    public void setTimeoutTaskInterval(int timeoutTaskInterval)
    {
       this.timeoutTaskInterval = timeoutTaskInterval;
+      if (timeoutTask != null)
+      {
+         timeoutTask.setInterval(timeoutTaskInterval);
+      }
    }
 
    public ExecutorService getThreadPool()
@@ -56,34 +66,52 @@ public class MessageServiceManager
       return queueManager;
    }
 
-   public void setQueueManager(QueueServiceManager queueManager)
-   {
-      this.queueManager = queueManager;
-   }
-
    public TopicServiceManager getTopicManager()
    {
       return topicManager;
    }
 
-   public void setTopicManager(TopicServiceManager topicManager)
+   public MessageServiceConfiguration getConfiguration()
    {
-      this.topicManager = topicManager;
+      return configuration;
+   }
+
+   public void setConfiguration(MessageServiceConfiguration configuration)
+   {
+      this.configuration = configuration;
    }
 
    public void start() throws Exception
    {
       if (threadPool == null) threadPool = Executors.newCachedThreadPool();
+      if (configuration == null) configuration = new MessageServiceConfiguration();
+      timeoutTaskInterval = configuration.getTimeoutTaskInterval();
       timeoutTask = new TimeoutTask(timeoutTaskInterval);
       threadPool.execute(timeoutTask);
 
-      queueManager.setTimeoutTask(timeoutTask);
-      queueManager.setThreadPool(threadPool);
-      queueManager.setRegistry(registry);
+      DestinationSettings defaultSettings = new DestinationSettings();
+      defaultSettings.setConsumerSessionTimeoutSeconds(configuration.getConsumerSessionTimeoutSeconds());
+      defaultSettings.setDuplicatesAllowed(configuration.isDupsOk());
+      defaultSettings.setDurableSend(configuration.isDefaultDurableSend());
 
-      topicManager.setThreadPool(threadPool);
+      ClientSessionFactory consumerSessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
+      if (configuration.getConsumerWindowSize() != -1)
+      {
+         consumerSessionFactory.setConsumerWindowSize(configuration.getConsumerWindowSize());
+      }
+
+
+      queueManager.setTimeoutTask(timeoutTask);
+      queueManager.setRegistry(registry);
+      queueManager.setConsumerSessionFactory(consumerSessionFactory);
+      queueManager.setDefaultSettings(defaultSettings);
+      queueManager.setPushStoreFile(configuration.getQueuePushStoreFile());
+
       topicManager.setRegistry(registry);
       topicManager.setTimeoutTask(timeoutTask);
+      topicManager.setConsumerSessionFactory(consumerSessionFactory);
+      topicManager.setDefaultSettings(defaultSettings);
+      topicManager.setPushStoreFile(configuration.getTopicPushStoreFile());
 
       queueManager.start();
       topicManager.start();

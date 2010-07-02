@@ -4,10 +4,7 @@ import org.hornetq.api.core.SimpleString;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.MessageServiceManager;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -18,22 +15,6 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class FindDestinationTest extends BaseMessageTest
 {
-   public static MessageServiceManager manager;
-
-   @BeforeClass
-   public static void setupManager() throws Exception
-   {
-      manager = new MessageServiceManager();
-      manager.setRegistry(deployment.getRegistry());
-      manager.start();
-   }
-
-   @AfterClass
-   public static void shutdownManager() throws Exception
-   {
-      manager.stop();
-   }
-
    @Test
    public void testFindQueue() throws Exception
    {

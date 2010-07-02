@@ -4,12 +4,9 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.queue.QueueDeployment;
-import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 import org.jboss.resteasy.star.messaging.queue.push.xml.XmlLink;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -20,23 +17,6 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class PushQueueConsumerTest extends BaseMessageTest
 {
-   public static QueueServiceManager manager;
-
-   @BeforeClass
-   public static void setup() throws Exception
-   {
-      manager = new QueueServiceManager();
-      manager.setRegistry(deployment.getRegistry());
-      manager.start();
-
-   }
-
-   @AfterClass
-   public static void shutdown() throws Exception
-   {
-      manager.stop();
-   }
-
    @Test
    public void testSuccessFirst() throws Exception
    {
@@ -44,12 +24,12 @@ public class PushQueueConsumerTest extends BaseMessageTest
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
       deployment.setName("testQueue");
-      manager.deploy(deployment);
+      manager.getQueueManager().deploy(deployment);
       QueueDeployment deployment2 = new QueueDeployment();
       deployment2.setDuplicatesAllowed(true);
       deployment2.setDurableSend(false);
       deployment2.setName("forwardQueue");
-      manager.deploy(deployment2);
+      manager.getQueueManager().deploy(deployment2);
 
       ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
 

@@ -79,10 +79,10 @@ public class TopicDestinationsResource
       subscriptionsResource.setConsumerTimeoutTask(manager.getTimeoutTask());
 
       subscriptionsResource.setDestination(topicName);
-      subscriptionsResource.setSessionFactory(manager.getSessionFactory());
+      subscriptionsResource.setSessionFactory(manager.getConsumerSessionFactory());
       PushSubscriptionsResource push = new PushSubscriptionsResource();
       push.setDestination(topicName);
-      push.setSessionFactory(manager.getSessionFactory());
+      push.setSessionFactory(manager.getConsumerSessionFactory());
       topicResource.setPushSubscriptions(push);
 
       PostMessage sender = null;
