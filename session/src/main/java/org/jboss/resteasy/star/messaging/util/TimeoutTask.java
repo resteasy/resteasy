@@ -1,6 +1,8 @@
 package org.jboss.resteasy.star.messaging.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,9 +74,15 @@ public class TimeoutTask implements Runnable
          }
          synchronized (this)
          {
-            for (Map.Entry<String, Callback> reg : callbacks.entrySet())
+            List<String> list = new ArrayList<String>(callbacks.size());
+            for (String token : callbacks.keySet())
             {
-               reg.getValue().testTimeout(reg.getKey());
+               list.add(token);
+            }
+            for (String token : list)
+            {
+               Callback callback = callbacks.get(token);
+               callback.testTimeout(token);
             }
          }
 

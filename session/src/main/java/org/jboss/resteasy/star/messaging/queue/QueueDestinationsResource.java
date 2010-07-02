@@ -73,12 +73,13 @@ public class QueueDestinationsResource
    {
       QueueResource queueResource = new QueueResource();
       queueResource.setDestination(queueName);
+      queueResource.setServiceManager(manager);
 
       ConsumersResource consumers = new ConsumersResource();
       consumers.setConsumerTimeoutSeconds(timeoutSeconds);
-      consumers.setConsumerTimeoutTask(manager.getTimeoutTask());
       consumers.setDestination(queueName);
       consumers.setSessionFactory(manager.getConsumerSessionFactory());
+      consumers.setServiceManager(manager);
       queueResource.setConsumers(consumers);
 
       PushConsumerResource push = new PushConsumerResource();
@@ -95,6 +96,7 @@ public class QueueDestinationsResource
       {
          sender = new PostMessageNoDups();
       }
+      sender.setServiceManager(manager);
       sender.setDefaultDurable(defaultDurable);
       sender.setDestination(queueName);
       sender.setSessionFactory(manager.getSessionFactory());

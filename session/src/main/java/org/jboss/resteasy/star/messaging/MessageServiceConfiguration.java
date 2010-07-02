@@ -18,6 +18,18 @@ public class MessageServiceConfiguration
    private boolean dupsOk = true;
    private String topicPushStoreFile = "./topic-push-store.xml";
    private String queuePushStoreFile = "./queue-push-store.xml";
+   private boolean useLinkHeaders = false;
+
+   @XmlElement(name = "use-link-headers")
+   public boolean isUseLinkHeaders()
+   {
+      return useLinkHeaders;
+   }
+
+   public void setUseLinkHeaders(boolean useLinkHeaders)
+   {
+      this.useLinkHeaders = useLinkHeaders;
+   }
 
    @XmlElement(name = "default-durable-send")
    public boolean isDefaultDurableSend()

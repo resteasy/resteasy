@@ -3,7 +3,6 @@ package org.jboss.resteasy.star.messaging.queue;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientProducer;
-import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.WebApplicationException;
@@ -68,7 +67,7 @@ public class PostMessageDupsOk extends PostMessage
       Response.ResponseBuilder builder = Response.status(201);
       UriBuilder nextBuilder = uriInfo.getAbsolutePathBuilder();
       URI next = nextBuilder.build();
-      LinkHeaderSupport.setLinkHeader(builder, "create-next", "create-next", next.toString(), "*/*");
+      serviceManager.getLinkStrategy().setLinkHeader(builder, "create-next", "create-next", next.toString(), "*/*");
       return builder.build();
    }
 

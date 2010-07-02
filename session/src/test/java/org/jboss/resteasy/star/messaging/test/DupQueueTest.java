@@ -29,9 +29,9 @@ public class DupQueueTest extends BaseMessageTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create");
+      Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
+      Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("poller: " + consumeNext);
 
       ClientResponse res = sender.request().body("text/plain", Integer.toString(1)).post();
@@ -43,24 +43,24 @@ public class DupQueueTest extends BaseMessageTest
       Assert.assertEquals(201, res.getStatus());
       res = sender.request().body("text/plain", Integer.toString(1)).post();
       Assert.assertEquals(201, res.getStatus());
-      sender = res.getLinkHeader().getLinkByTitle("create-next");
+      sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "create-next");
       res = sender.request().body("text/plain", Integer.toString(2)).post();
       Assert.assertEquals(201, res.getStatus());
 
       res = consumeNext.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
-      Link session = res.getLinkHeader().getLinkByTitle("session");
+      Link session = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
       System.out.println("session: " + session);
-      consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+      consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
       System.out.println("consumeNext: " + consumeNext);
 
       res = consumeNext.request().header(Constants.WAIT_HEADER, "10").post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("2", res.getEntity(String.class));
-      session = res.getLinkHeader().getLinkByTitle("session");
+      session = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
       System.out.println("session: " + session);
-      consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+      consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
       System.out.println("consumeNext: " + consumeNext);
       res = consumeNext.request().post(String.class);
       Assert.assertEquals(503, res.getStatus());

@@ -73,10 +73,11 @@ public class TopicDestinationsResource
    {
       TopicResource topicResource = new TopicResource();
       topicResource.setDestination(topicName);
+      topicResource.setServiceManager(manager);
       SubscriptionsResource subscriptionsResource = new SubscriptionsResource();
       topicResource.setSubscriptions(subscriptionsResource);
       subscriptionsResource.setConsumerTimeoutSeconds(timeoutSeconds);
-      subscriptionsResource.setConsumerTimeoutTask(manager.getTimeoutTask());
+      subscriptionsResource.setServiceManager(manager);
 
       subscriptionsResource.setDestination(topicName);
       subscriptionsResource.setSessionFactory(manager.getConsumerSessionFactory());
@@ -98,6 +99,7 @@ public class TopicDestinationsResource
       sender.setDestination(topicName);
       sender.setSessionFactory(manager.getSessionFactory());
       sender.setPoolSize(manager.getProducerPoolSize());
+      sender.setServiceManager(manager);
       sender.init();
       topicResource.setSender(sender);
 

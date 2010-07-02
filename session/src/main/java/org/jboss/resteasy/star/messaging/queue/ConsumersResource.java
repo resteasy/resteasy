@@ -23,8 +23,18 @@ public class ConsumersResource implements TimeoutTask.Callback
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected AtomicLong sessionCounter = new AtomicLong(1);
-   protected TimeoutTask consumerTimeoutTask;
    protected int consumerTimeoutSeconds;
+   protected DestinationServiceManager serviceManager;
+
+   public DestinationServiceManager getServiceManager()
+   {
+      return serviceManager;
+   }
+
+   public void setServiceManager(DestinationServiceManager serviceManager)
+   {
+      this.serviceManager = serviceManager;
+   }
 
    public ClientSessionFactory getSessionFactory()
    {
@@ -44,16 +54,6 @@ public class ConsumersResource implements TimeoutTask.Callback
    public void setDestination(String destination)
    {
       this.destination = destination;
-   }
-
-   public TimeoutTask getConsumerTimeoutTask()
-   {
-      return consumerTimeoutTask;
-   }
-
-   public void setConsumerTimeoutTask(TimeoutTask consumerTimeoutTask)
-   {
-      this.consumerTimeoutTask = consumerTimeoutTask;
    }
 
    public int getConsumerTimeoutSeconds()
@@ -82,7 +82,7 @@ public class ConsumersResource implements TimeoutTask.Callback
                System.out.println("**** shutdown because of session timeout for: " + consumer.getId());
                consumer.shutdown();
                queueConsumers.remove(consumer.getId());
-               consumerTimeoutTask.remove(consumer.getId());
+               serviceManager.getTimeoutTask().remove(consumer.getId());
             }
          }
       }
@@ -100,11 +100,11 @@ public class ConsumersResource implements TimeoutTask.Callback
            throws HornetQException
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
-      QueueConsumer consumer = new QueueConsumer(sessionFactory, destination, genId);
+      QueueConsumer consumer = new QueueConsumer(sessionFactory, destination, genId, serviceManager);
       synchronized (timeoutLock)
       {
          queueConsumers.put(genId, consumer);
-         consumerTimeoutTask.add(this, consumer.getId());
+         serviceManager.getTimeoutTask().add(this, consumer.getId());
       }
       return consumer;
    }
@@ -113,11 +113,11 @@ public class ConsumersResource implements TimeoutTask.Callback
            throws HornetQException
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
-      QueueConsumer consumer = new AcknowledgedQueueConsumer(sessionFactory, destination, genId);
+      QueueConsumer consumer = new AcknowledgedQueueConsumer(sessionFactory, destination, genId, serviceManager);
       synchronized (timeoutLock)
       {
          queueConsumers.put(genId, consumer);
-         consumerTimeoutTask.add(this, consumer.getId());
+         serviceManager.getTimeoutTask().add(this, consumer.getId());
       }
       return consumer;
    }
@@ -129,7 +129,7 @@ public class ConsumersResource implements TimeoutTask.Callback
       QueueConsumer consumer = queueConsumers.get(consumerId);
       if (consumer == null)
       {
-         QueueConsumer tmp = new QueueConsumer(sessionFactory, destination, consumerId);
+         QueueConsumer tmp = new QueueConsumer(sessionFactory, destination, consumerId, serviceManager);
          consumer = putConsumer(consumerId, tmp);
       }
       return consumer;
@@ -142,7 +142,7 @@ public class ConsumersResource implements TimeoutTask.Callback
       QueueConsumer consumer = queueConsumers.get(consumerId);
       if (consumer == null)
       {
-         QueueConsumer tmp = new AcknowledgedQueueConsumer(sessionFactory, destination, consumerId);
+         QueueConsumer tmp = new AcknowledgedQueueConsumer(sessionFactory, destination, consumerId, serviceManager);
          ;
          consumer = putConsumer(consumerId, tmp);
       }
@@ -162,7 +162,7 @@ public class ConsumersResource implements TimeoutTask.Callback
          else
          {
             consumer = tmp;
-            consumerTimeoutTask.add(this, consumer.getId());
+            serviceManager.getTimeoutTask().add(this, consumer.getId());
          }
          return consumer;
       }

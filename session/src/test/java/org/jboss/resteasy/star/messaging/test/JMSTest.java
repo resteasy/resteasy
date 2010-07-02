@@ -167,9 +167,9 @@ public class JMSTest extends BaseMessageTest
 
          ClientResponse response = request.head();
          Assert.assertEquals(200, response.getStatus());
-         Link sender = response.getLinkHeader().getLinkByTitle("create");
+         Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
          System.out.println("create: " + sender);
-         Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
+         Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
          System.out.println("consume-next: " + consumeNext);
 
          // test that Accept header is used to set content-type
@@ -207,9 +207,9 @@ public class JMSTest extends BaseMessageTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create");
+      Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
+      Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("consume-next: " + consumeNext);
 
       // test that Accept header is used to set content-type
@@ -224,7 +224,7 @@ public class JMSTest extends BaseMessageTest
          Assert.assertEquals("application/xml", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);
          Assert.assertEquals(order, order2);
-         consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+         consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
          Assert.assertNotNull(consumeNext);
       }
 
@@ -240,7 +240,7 @@ public class JMSTest extends BaseMessageTest
          Assert.assertEquals("application/json", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);
          Assert.assertEquals(order, order2);
-         consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+         consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
          Assert.assertNotNull(consumeNext);
       }
 
@@ -256,7 +256,7 @@ public class JMSTest extends BaseMessageTest
          Assert.assertEquals("application/xml", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);
          Assert.assertEquals(order, order2);
-         consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+         consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
          Assert.assertNotNull(consumeNext);
       }
    }

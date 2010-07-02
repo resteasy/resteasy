@@ -4,6 +4,7 @@ import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
+import org.jboss.resteasy.star.messaging.queue.DestinationServiceManager;
 import org.jboss.resteasy.star.messaging.queue.QueueConsumer;
 import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
@@ -32,17 +33,17 @@ public class SubscriptionsResource implements TimeoutTask.Callback
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected AtomicLong sessionCounter = new AtomicLong(1);
-   protected TimeoutTask consumerTimeoutTask;
    protected int consumerTimeoutSeconds;
+   protected DestinationServiceManager serviceManager;
 
-   public TimeoutTask getConsumerTimeoutTask()
+   public DestinationServiceManager getServiceManager()
    {
-      return consumerTimeoutTask;
+      return serviceManager;
    }
 
-   public void setConsumerTimeoutTask(TimeoutTask consumerTimeoutTask)
+   public void setServiceManager(DestinationServiceManager serviceManager)
    {
-      this.consumerTimeoutTask = consumerTimeoutTask;
+      this.serviceManager = serviceManager;
    }
 
    public int getConsumerTimeoutSeconds()
@@ -91,7 +92,7 @@ public class SubscriptionsResource implements TimeoutTask.Callback
                System.out.println("**** shutdown because of session timeout for: " + consumer.getId());
                consumer.shutdown();
                queueConsumers.remove(consumer.getId());
-               consumerTimeoutTask.remove(consumer.getId());
+               serviceManager.getTimeoutTask().remove(consumer.getId());
             }
          }
       }
@@ -137,7 +138,7 @@ public class SubscriptionsResource implements TimeoutTask.Callback
          }
          QueueConsumer consumer = createConsumer(durable, autoAck, subscriptionName);
          queueConsumers.put(consumer.getId(), consumer);
-         consumerTimeoutTask.add(this, consumer.getId());
+         serviceManager.getTimeoutTask().add(this, consumer.getId());
 
          UriBuilder location = uriInfo.getAbsolutePathBuilder();
          if (autoAck) location.path("auto-ack");
@@ -146,11 +147,11 @@ public class SubscriptionsResource implements TimeoutTask.Callback
          Response.ResponseBuilder builder = Response.created(location.build());
          if (autoAck)
          {
-            SubscriptionResource.setConsumeNextLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId());
+            SubscriptionResource.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId());
          }
          else
          {
-            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
+            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
 
          }
          return builder.build();
@@ -181,13 +182,13 @@ public class SubscriptionsResource implements TimeoutTask.Callback
       QueueConsumer consumer;
       if (autoAck)
       {
-         SubscriptionResource subscription = new SubscriptionResource(sessionFactory, subscriptionName, subscriptionName);
+         SubscriptionResource subscription = new SubscriptionResource(sessionFactory, subscriptionName, subscriptionName, serviceManager);
          subscription.setDurable(durable);
          consumer = subscription;
       }
       else
       {
-         AcknowledgedSubscriptionResource subscription = new AcknowledgedSubscriptionResource(sessionFactory, subscriptionName, subscriptionName);
+         AcknowledgedSubscriptionResource subscription = new AcknowledgedSubscriptionResource(sessionFactory, subscriptionName, subscriptionName, serviceManager);
          subscription.setDurable(durable);
          consumer = subscription;
       }
@@ -236,7 +237,7 @@ public class SubscriptionsResource implements TimeoutTask.Callback
                if (consumer == null)
                {
                   consumer = tmp;
-                  consumerTimeoutTask.add(this, subscriptionId);
+                  serviceManager.getTimeoutTask().add(this, subscriptionId);
                }
                else
                {
