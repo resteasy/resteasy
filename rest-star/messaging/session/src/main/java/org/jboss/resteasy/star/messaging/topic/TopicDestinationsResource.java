@@ -97,6 +97,8 @@ public class TopicDestinationsResource
       sender.setDefaultDurable(defaultDurable);
       sender.setDestination(topicName);
       sender.setSessionFactory(manager.getSessionFactory());
+      sender.setPoolSize(manager.getProducerPoolSize());
+      sender.init();
       topicResource.setSender(sender);
 
       if (manager.getPushStore() != null)

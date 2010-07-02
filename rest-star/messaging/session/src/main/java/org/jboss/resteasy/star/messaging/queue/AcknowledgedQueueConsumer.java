@@ -161,7 +161,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       if (message != null)
       {
          ack = new Acknowledgement((counter++) + startup, message);
-         System.out.println("---> Setting ack: " + ack.getAckToken());
+         //System.out.println("---> Setting ack: " + ack.getAckToken());
       }
       return message;
    }

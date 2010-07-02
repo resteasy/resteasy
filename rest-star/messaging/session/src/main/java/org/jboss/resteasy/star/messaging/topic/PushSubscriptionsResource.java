@@ -119,7 +119,7 @@ public class PushSubscriptionsResource
    @POST
    public Response create(@Context UriInfo uriInfo, PushTopicRegistration registration)
    {
-      System.out.println("PushRegistration: " + registration);
+      //System.out.println("PushRegistration: " + registration);
       // todo put some logic here to check for duplicates
       String genId = sessionCounter.getAndIncrement() + "-topic-" + destination + "-" + startup;
       registration.setId(genId);

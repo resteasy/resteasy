@@ -89,17 +89,17 @@ public class QueueDestinationsResource
       PostMessage sender = null;
       if (duplicates)
       {
-         System.out.println(queueName + ": dups ok");
          sender = new PostMessageDupsOk();
       }
       else
       {
-         System.out.println(queueName + ": no dups");
          sender = new PostMessageNoDups();
       }
       sender.setDefaultDurable(defaultDurable);
       sender.setDestination(queueName);
       sender.setSessionFactory(manager.getSessionFactory());
+      sender.setPoolSize(manager.getProducerPoolSize());
+      sender.init();
       queueResource.setSender(sender);
 
       if (manager.getPushStore() != null)

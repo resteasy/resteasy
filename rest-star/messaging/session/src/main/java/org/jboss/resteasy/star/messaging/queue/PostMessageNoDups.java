@@ -1,8 +1,8 @@
 package org.jboss.resteasy.star.messaging.queue;
 
+import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientProducer;
-import org.hornetq.api.core.client.ClientSession;
 import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
 import javax.ws.rs.POST;
@@ -44,20 +44,27 @@ public class PostMessageNoDups extends PostMessage
 
    public void publish(HttpHeaders headers, byte[] body, String dup, boolean durable) throws Exception
    {
-      ClientSession session = sessionFactory.createSession();
+      Pooled pooled = getPooled();
       try
       {
-         ClientProducer producer = session.createProducer(destination);
-         ClientMessage message = createHornetQMessage(headers, body, durable, session);
+         ClientProducer producer = pooled.producer;
+         ClientMessage message = createHornetQMessage(headers, body, durable, pooled.session);
          message.putStringProperty(ClientMessage.HDR_DUPLICATE_DETECTION_ID.toString(), dup);
          producer.send(message);
-         session.start();
+         pool.add(pooled);
       }
-      finally
+      catch (Exception ex)
       {
-         session.close();
+         try
+         {
+            pooled.session.close();
+         }
+         catch (HornetQException e)
+         {
+         }
+         addPooled();
+         throw ex;
       }
-
    }
 
    @POST
