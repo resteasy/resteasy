@@ -1,5 +1,6 @@
 package org.jboss.resteasy.star.messaging.queue;
 
+import org.hornetq.api.core.HornetQException;
 import org.jboss.resteasy.star.messaging.queue.push.PushConsumerResource;
 import org.jboss.resteasy.star.messaging.util.Constants;
 import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
@@ -137,16 +138,32 @@ public class QueueResource
    public Response acknowledgeNext(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                                    @Context UriInfo info)
    {
-      System.out.println("acknowledge-next received, will create new session");
       try
       {
-         QueueConsumer consumer = consumers.createAcknowledgedConsumer();
-         String basePath = info.getMatchedURIs().get(1) + "/consumers/acknowledged/" + consumer.getId();
-         return consumer.runPoll(wait, info, basePath);
+         for (int i = 0; i < 5; i++)
+         {
+            Response response = doAcknowledgeNext(wait, info);
+            if (response != null) return response;
+         }
+         return Response.serverError().type("text/plain").entity("Closed session, could not retry").build();
       }
       catch (Exception e)
       {
          throw new RuntimeException(e);
+      }
+   }
+
+   private Response doAcknowledgeNext(long wait, UriInfo info) throws Exception
+   {
+      QueueConsumer consumer = consumers.createAcknowledgedConsumer();
+      if (!consumer.isClosed())
+      {
+         String basePath = info.getMatchedURIs().get(1) + "/consumers/acknowledged/" + consumer.getId();
+         return consumer.runPoll(wait, info, basePath);
+      }
+      else
+      {
+         return null;
       }
    }
 
@@ -155,16 +172,36 @@ public class QueueResource
    public Response consumeNext(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
                                @Context UriInfo info)
    {
-      System.out.println("consume-next received, will create new session");
       try
       {
-         QueueConsumer consumer = consumers.createConsumer();
-         String basePath = info.getMatchedURIs().get(1) + "/consumers/auto-ack/" + consumer.getId();
-         return consumer.runPoll(wait, info, basePath);
+         for (int i = 0; i < 5; i++)
+         {
+            Response response = doConsumeNext(wait, info);
+            if (response != null) return response;
+         }
+         return Response.serverError().type("text/plain").entity("Closed session, could not retry").build();
       }
       catch (Exception e)
       {
          throw new RuntimeException(e);
+      }
+   }
+
+   private Response doConsumeNext(long wait, UriInfo info)
+           throws HornetQException
+   {
+      QueueConsumer consumer = consumers.createConsumer();
+      synchronized (consumer)
+      {
+         if (!consumer.isClosed())
+         {
+            String basePath = info.getMatchedURIs().get(1) + "/consumers/auto-ack/" + consumer.getId();
+            return consumer.runPoll(wait, info, basePath);
+         }
+         else
+         {
+            return null;
+         }
       }
    }
 

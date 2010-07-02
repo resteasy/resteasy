@@ -2,6 +2,7 @@ package org.jboss.resteasy.star.messaging.queue;
 
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientSessionFactory;
+import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
@@ -9,42 +10,21 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ConsumersResource
+public class ConsumersResource implements TimeoutTask.Callback
 {
    protected ConcurrentHashMap<String, QueueConsumer> queueConsumers = new ConcurrentHashMap<String, QueueConsumer>();
    protected ClientSessionFactory sessionFactory;
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected AtomicLong sessionCounter = new AtomicLong(1);
-   protected ExecutorService ackTimeoutService;
-   protected long ackTimeoutSeconds;
-
-   public ExecutorService getAckTimeoutService()
-   {
-      return ackTimeoutService;
-   }
-
-   public void setAckTimeoutService(ExecutorService ackTimeoutService)
-   {
-      this.ackTimeoutService = ackTimeoutService;
-   }
-
-   public long getAckTimeoutSeconds()
-   {
-      return ackTimeoutSeconds;
-   }
-
-   public void setAckTimeoutSeconds(long ackTimeoutSeconds)
-   {
-      this.ackTimeoutSeconds = ackTimeoutSeconds;
-   }
+   protected TimeoutTask consumerTimeoutTask;
+   protected int consumerTimeoutSeconds;
 
    public ClientSessionFactory getSessionFactory()
    {
@@ -66,6 +46,48 @@ public class ConsumersResource
       this.destination = destination;
    }
 
+   public TimeoutTask getConsumerTimeoutTask()
+   {
+      return consumerTimeoutTask;
+   }
+
+   public void setConsumerTimeoutTask(TimeoutTask consumerTimeoutTask)
+   {
+      this.consumerTimeoutTask = consumerTimeoutTask;
+   }
+
+   public int getConsumerTimeoutSeconds()
+   {
+      return consumerTimeoutSeconds;
+   }
+
+   public void setConsumerTimeoutSeconds(int consumerTimeoutSeconds)
+   {
+      this.consumerTimeoutSeconds = consumerTimeoutSeconds;
+   }
+
+   private Object timeoutLock = new Object();
+
+   @Override
+   public void testTimeout(String target)
+   {
+      synchronized (timeoutLock)
+      {
+         QueueConsumer consumer = queueConsumers.get(target);
+         if (consumer == null) return;
+         synchronized (consumer)
+         {
+            if (System.currentTimeMillis() - consumer.getLastPingTime() > consumerTimeoutSeconds * 1000)
+            {
+               System.out.println("**** shutdown because of session timeout for: " + consumer.getId());
+               consumer.shutdown();
+               queueConsumers.remove(consumer.getId());
+               consumerTimeoutTask.remove(consumer.getId());
+            }
+         }
+      }
+   }
+
    public void stop()
    {
       for (QueueConsumer consumer : queueConsumers.values())
@@ -79,7 +101,11 @@ public class ConsumersResource
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
       QueueConsumer consumer = new QueueConsumer(sessionFactory, destination, genId);
-      queueConsumers.put(genId, consumer);
+      synchronized (timeoutLock)
+      {
+         queueConsumers.put(genId, consumer);
+         consumerTimeoutTask.add(this, consumer.getId());
+      }
       return consumer;
    }
 
@@ -87,8 +113,12 @@ public class ConsumersResource
            throws HornetQException
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
-      QueueConsumer consumer = new AcknowledgedQueueConsumer(sessionFactory, destination, genId, ackTimeoutService, ackTimeoutSeconds);
-      queueConsumers.put(genId, consumer);
+      QueueConsumer consumer = new AcknowledgedQueueConsumer(sessionFactory, destination, genId);
+      synchronized (timeoutLock)
+      {
+         queueConsumers.put(genId, consumer);
+         consumerTimeoutTask.add(this, consumer.getId());
+      }
       return consumer;
    }
 
@@ -99,11 +129,8 @@ public class ConsumersResource
       QueueConsumer consumer = queueConsumers.get(consumerId);
       if (consumer == null)
       {
-         consumer = createConsumer();
-         if (queueConsumers.putIfAbsent(consumerId, consumer) != null)
-         {
-            consumer.shutdown();
-         }
+         QueueConsumer tmp = new QueueConsumer(sessionFactory, destination, consumerId);
+         consumer = putConsumer(consumerId, tmp);
       }
       return consumer;
    }
@@ -115,13 +142,30 @@ public class ConsumersResource
       QueueConsumer consumer = queueConsumers.get(consumerId);
       if (consumer == null)
       {
-         consumer = createAcknowledgedConsumer();
-         if (queueConsumers.putIfAbsent(consumerId, consumer) != null)
-         {
-            consumer.shutdown();
-         }
+         QueueConsumer tmp = new AcknowledgedQueueConsumer(sessionFactory, destination, consumerId);
+         ;
+         consumer = putConsumer(consumerId, tmp);
       }
       return consumer;
+   }
+
+   private QueueConsumer putConsumer(String consumerId, QueueConsumer tmp)
+   {
+      synchronized (timeoutLock)
+      {
+         QueueConsumer consumer;
+         consumer = queueConsumers.putIfAbsent(consumerId, tmp);
+         if (consumer != null)
+         {
+            tmp.shutdown();
+         }
+         else
+         {
+            consumer = tmp;
+            consumerTimeoutTask.add(this, consumer.getId());
+         }
+         return consumer;
+      }
    }
 
 

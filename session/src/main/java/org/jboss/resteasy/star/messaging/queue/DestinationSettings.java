@@ -8,7 +8,7 @@ public class DestinationSettings
 {
    protected boolean duplicatesAllowed;
    private boolean durableSend;
-   private long consumerSessionTimeoutSeconds = 10;
+   private int consumerSessionTimeoutSeconds = 10;
 
    public boolean isDuplicatesAllowed()
    {
@@ -20,12 +20,12 @@ public class DestinationSettings
       this.duplicatesAllowed = duplicatesAllowed;
    }
 
-   public long getConsumerSessionTimeoutSeconds()
+   public int getConsumerSessionTimeoutSeconds()
    {
       return consumerSessionTimeoutSeconds;
    }
 
-   public void setConsumerSessionTimeoutSeconds(long consumerSessionTimeoutSeconds)
+   public void setConsumerSessionTimeoutSeconds(int consumerSessionTimeoutSeconds)
    {
       this.consumerSessionTimeoutSeconds = consumerSessionTimeoutSeconds;
    }

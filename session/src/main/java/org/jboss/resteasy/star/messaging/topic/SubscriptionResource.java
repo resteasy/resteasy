@@ -3,7 +3,6 @@ package org.jboss.resteasy.star.messaging.topic;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.queue.ConsumerFactory;
 import org.jboss.resteasy.star.messaging.queue.QueueConsumer;
 import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
@@ -50,18 +49,6 @@ public class SubscriptionResource extends QueueConsumer implements Subscription
       String uri = builder.build().toString();
       Link link = new Link("subscription", "subscription", uri, MediaType.APPLICATION_XML, null);
       LinkHeaderSupport.setLinkHeader(response, link);
-   }
-
-   public static ConsumerFactory getFactory()
-   {
-      return new ConsumerFactory()
-      {
-         @Override
-         public QueueConsumer createConsumer(String id, ClientSessionFactory factory, String destination) throws HornetQException
-         {
-            return new SubscriptionResource(factory, destination, id);
-         }
-      };
    }
 
 }

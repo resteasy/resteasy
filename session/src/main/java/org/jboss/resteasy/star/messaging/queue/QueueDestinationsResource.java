@@ -68,15 +68,15 @@ public class QueueDestinationsResource
       return queue;
    }
 
-   public QueueResource createQueueResource(String queueName, boolean defaultDurable, long timeoutSeconds, boolean duplicates)
+   public QueueResource createQueueResource(String queueName, boolean defaultDurable, int timeoutSeconds, boolean duplicates)
            throws Exception
    {
       QueueResource queueResource = new QueueResource();
       queueResource.setDestination(queueName);
 
       ConsumersResource consumers = new ConsumersResource();
-      consumers.setAckTimeoutSeconds(timeoutSeconds);
-      consumers.setAckTimeoutService(manager.getThreadPool());
+      consumers.setConsumerTimeoutSeconds(timeoutSeconds);
+      consumers.setConsumerTimeoutTask(manager.getTimeoutTask());
       consumers.setDestination(queueName);
       consumers.setSessionFactory(manager.getSessionFactory());
       queueResource.setConsumers(consumers);

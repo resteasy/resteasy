@@ -5,6 +5,7 @@ import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.star.messaging.queue.QueueConsumer;
+import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -18,41 +19,40 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SubscriptionsResource
+public class SubscriptionsResource implements TimeoutTask.Callback
 {
    protected ConcurrentHashMap<String, QueueConsumer> queueConsumers = new ConcurrentHashMap<String, QueueConsumer>();
    protected ClientSessionFactory sessionFactory;
    protected String destination;
    protected final String startup = Long.toString(System.currentTimeMillis());
    protected AtomicLong sessionCounter = new AtomicLong(1);
-   protected ExecutorService ackTimeoutService;
-   protected long ackTimeoutSeconds;
+   protected TimeoutTask consumerTimeoutTask;
+   protected int consumerTimeoutSeconds;
 
-   public ExecutorService getAckTimeoutService()
+   public TimeoutTask getConsumerTimeoutTask()
    {
-      return ackTimeoutService;
+      return consumerTimeoutTask;
    }
 
-   public void setAckTimeoutService(ExecutorService ackTimeoutService)
+   public void setConsumerTimeoutTask(TimeoutTask consumerTimeoutTask)
    {
-      this.ackTimeoutService = ackTimeoutService;
+      this.consumerTimeoutTask = consumerTimeoutTask;
    }
 
-   public long getAckTimeoutSeconds()
+   public int getConsumerTimeoutSeconds()
    {
-      return ackTimeoutSeconds;
+      return consumerTimeoutSeconds;
    }
 
-   public void setAckTimeoutSeconds(long ackTimeoutSeconds)
+   public void setConsumerTimeoutSeconds(int consumerTimeoutSeconds)
    {
-      this.ackTimeoutSeconds = ackTimeoutSeconds;
+      this.consumerTimeoutSeconds = consumerTimeoutSeconds;
    }
 
    public ClientSessionFactory getSessionFactory()
@@ -73,6 +73,28 @@ public class SubscriptionsResource
    public void setDestination(String destination)
    {
       this.destination = destination;
+   }
+
+   private Object timeoutLock = new Object();
+
+   @Override
+   public void testTimeout(String target)
+   {
+      synchronized (timeoutLock)
+      {
+         QueueConsumer consumer = queueConsumers.get(target);
+         if (consumer == null) return;
+         synchronized (consumer)
+         {
+            if (System.currentTimeMillis() - consumer.getLastPingTime() > consumerTimeoutSeconds * 1000)
+            {
+               System.out.println("**** shutdown because of session timeout for: " + consumer.getId());
+               consumer.shutdown();
+               queueConsumers.remove(consumer.getId());
+               consumerTimeoutTask.remove(consumer.getId());
+            }
+         }
+      }
    }
 
    public void stop()
@@ -115,6 +137,7 @@ public class SubscriptionsResource
          }
          QueueConsumer consumer = createConsumer(durable, autoAck, subscriptionName);
          queueConsumers.put(consumer.getId(), consumer);
+         consumerTimeoutTask.add(this, consumer.getId());
 
          UriBuilder location = uriInfo.getAbsolutePathBuilder();
          if (autoAck) location.path("auto-ack");
@@ -164,7 +187,7 @@ public class SubscriptionsResource
       }
       else
       {
-         AcknowledgedSubscriptionResource subscription = new AcknowledgedSubscriptionResource(sessionFactory, subscriptionName, subscriptionName, this.ackTimeoutService, this.ackTimeoutSeconds);
+         AcknowledgedSubscriptionResource subscription = new AcknowledgedSubscriptionResource(sessionFactory, subscriptionName, subscriptionName);
          subscription.setDurable(durable);
          consumer = subscription;
       }
@@ -206,12 +229,31 @@ public class SubscriptionsResource
          ClientSession.QueueQuery query = session.queueQuery(new SimpleString(subscriptionId));
          if (query.isExists())
          {
-
-            consumer = createConsumer(true, autoAck, subscriptionId);
-            queueConsumers.put(consumer.getId(), consumer);
+            synchronized (timeoutLock)
+            {
+               QueueConsumer tmp = createConsumer(true, autoAck, subscriptionId);
+               consumer = queueConsumers.putIfAbsent(subscriptionId, tmp);
+               if (consumer == null)
+               {
+                  consumer = tmp;
+                  consumerTimeoutTask.add(this, subscriptionId);
+               }
+               else
+               {
+                  tmp.shutdown();
+               }
+            }
          }
          else
          {
+            ClientSession.BindingQuery bquery = session.bindingQuery(new SimpleString(destination));
+            if (bquery != null)
+            {
+               for (SimpleString s : bquery.getQueueNames())
+               {
+                  System.out.println("binding for: " + destination + " is: " + s.toString());
+               }
+            }
             throw new WebApplicationException(Response.serverError()
                     .entity("Failed to match a subscriber to URL" + subscriptionId)
                     .type("text/plain").build());
@@ -254,8 +296,10 @@ public class SubscriptionsResource
       QueueConsumer consumer = queueConsumers.remove(consumerId);
       if (consumer == null)
       {
+         String msg = "Failed to match a subscription to URL" + consumerId;
+         System.out.println(msg);
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                 .entity("Failed to match a subscription to URL" + consumerId)
+                 .entity(msg)
                  .type("text/plain").build());
       }
       consumer.shutdown();

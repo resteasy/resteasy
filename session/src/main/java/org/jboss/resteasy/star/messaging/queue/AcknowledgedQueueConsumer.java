@@ -18,30 +18,125 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
+public class AcknowledgedQueueConsumer extends QueueConsumer
 {
    protected long counter;
    protected String startup = Long.toString(System.currentTimeMillis());
-   protected ExecutorService ackTimeoutService;
-   protected long ackTimeoutSeconds;
-   protected volatile AckStateMachine ack;
-   protected volatile Future currentAckTask;
-   protected boolean shutdown = false;
+   protected volatile Acknowledgement ack;
 
-   public AcknowledgedQueueConsumer(ClientSessionFactory factory, String destination, String id, ExecutorService ackTimeoutService, long ackTimeoutSeconds)
+   public AcknowledgedQueueConsumer(ClientSessionFactory factory, String destination, String id)
            throws HornetQException
    {
       super(factory, destination, id);
-      this.ackTimeoutService = ackTimeoutService;
-      this.ackTimeoutSeconds = ackTimeoutSeconds;
+   }
+
+   @Path("acknowledge-next")
+   @POST
+   public synchronized Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+                                     @Context UriInfo info)
+   {
+      if (closed)
+      {
+         UriBuilder builder = info.getBaseUriBuilder();
+         builder.path(info.getMatchedURIs().get(1))
+                 .path("acknowledge-next");
+         String uri = builder.build().toString();
+
+         // redirect to another acknowledge-next
+
+         return Response.status(307).location(URI.create(uri)).build();
+      }
+      return runPoll(wait, info, info.getMatchedURIs().get(1));
+   }
+
+
+   @Override
+   public synchronized void shutdown()
+   {
+      super.shutdown();
+      if (ack != null)
+      {
+         ack = null;
+      }
+   }
+
+
+   @Path("acknowledgement/{ackToken}/next")
+   @POST
+   public synchronized Response acknowledgeAndNext(
+           @HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+           @PathParam("ackToken") String ackToken,
+           @Context UriInfo uriInfo)
+   {
+      ping();
+      String basePath = uriInfo.getMatchedURIs().get(1);
+      if (closed)
+      {
+         return failAcknowledgement(uriInfo, basePath);
+      }
+      boolean acknowledged = acknowledge(ackToken);
+      if (!acknowledged)
+      {
+         return failAcknowledgement(uriInfo, basePath);
+      }
+      return runPoll(wait, uriInfo, basePath);
+
+   }
+
+   private Response failAcknowledgement(UriInfo uriInfo, String basePath)
+   {
+      Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
+              .entity("Could not acknowledge previous message, it was probably requeued from a timeout")
+              .type("text/plain");
+      setAcknowledgeLinks(uriInfo, basePath, builder);
+      return builder.build();
+   }
+
+   @Path("acknowledgement/{ackToken}")
+   @POST
+   public synchronized Response acknowledge(
+           @PathParam("ackToken") String ackToken,
+           @FormParam("acknowledge") boolean doAcknowledge,
+           @Context UriInfo uriInfo)
+   {
+      ping();
+      String basePath = uriInfo.getMatchedURIs().get(1);
+      if (closed)
+      {
+         Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
+                 .entity("Could not acknowledge message, it was probably requeued from a timeout")
+                 .type("text/plain");
+         setAcknowledgeLinks(uriInfo, basePath, builder);
+         return builder.build();
+      }
+      if (!doAcknowledge)
+      {
+         unacknowledge(ackToken);
+         Response.ResponseBuilder builder = Response.noContent();
+         setAcknowledgeLinks(uriInfo, basePath, builder);
+         return builder.build();
+      }
+      boolean acknowledged = acknowledge(ackToken);
+      if (acknowledged)
+      {
+         Response.ResponseBuilder builder = Response.noContent();
+         setAcknowledgeLinks(uriInfo, basePath, builder);
+         return builder.build();
+      }
+      else
+      {
+         Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
+                 .entity("Could not acknowledge message, it was probably requeued from a timeout")
+                 .type("text/plain");
+         setAcknowledgeLinks(uriInfo, basePath, builder);
+         return builder.build();
+      }
    }
 
    @Override
@@ -53,69 +148,60 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
    }
 
    @Override
-   public synchronized ClientMessage receive(long timeoutSecs) throws Exception
+   protected ClientMessage receive(long timeoutSecs) throws Exception
    {
       ClientMessage msg = super.receive(timeoutSecs);
-      if (msg != null)
-      {
-         currentAckTask = ackTimeoutService.submit(this);
-      }
       return msg;
    }
 
    @Override
-   protected synchronized ClientMessage receiveFromConsumer(long timeoutSecs) throws Exception
+   protected ClientMessage receiveFromConsumer(long timeoutSecs) throws Exception
    {
       ClientMessage message = super.receiveFromConsumer(timeoutSecs);
       if (message != null)
       {
-         ack = new AckStateMachine((counter++) + startup, message);
+         ack = new Acknowledgement((counter++) + startup, message);
          System.out.println("---> Setting ack: " + ack.getAckToken());
       }
       return message;
    }
 
-   @Path("acknowledge-next")
-   @POST
-   public Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                        @Context UriInfo info)
-   {
-      return runPoll(wait, info, info.getMatchedURIs().get(1));
-   }
 
-
-   public String getAckToken()
+   protected String getAckToken()
    {
       return ack.getAckToken();
    }
 
-   public boolean acknowledge(String ackToken)
+   protected boolean acknowledge(String ackToken)
    {
-      AckStateMachine tmpAck = null;
-      synchronized (this)
+
+      if (ack == null) return false;
+      if (!ack.getAckToken().equals(ackToken))
       {
-         tmpAck = ack;
-         if (tmpAck == null)
-         {
-            return false;
-         }
+         return false;
       }
-      return tmpAck.acknowledgeSend(ackToken);
+      try
+      {
+         ack.getMessage().acknowledge();
+      }
+      catch (HornetQException e)
+      {
+         throw new RuntimeException(e);
+      }
+      return true;
    }
 
-   public void unacknowledge()
+   protected void unacknowledge(String ackToken)
    {
-      AckStateMachine tmpAck = null;
-      synchronized (this)
-      {
-         tmpAck = ack;
-      }
-      tmpAck.unacknowledgeSend();
-   }
 
-   private void reset()
-   {
-      System.out.println("reseting consumer");
+      if (ack == null) return;
+      if (!ack.getAckToken().equals(ackToken))
+      {
+         return;
+      }
+
+      // close session so message gets redelivered
+
       try
       {
          consumer.close();
@@ -144,151 +230,11 @@ public class AcknowledgedQueueConsumer extends QueueConsumer implements Runnable
       catch (Exception e)
       {
          shutdown();
+         throw new RuntimeException();
+
       }
    }
 
-   @Override
-   public synchronized void shutdown()
-   {
-      super.shutdown();
-      if (ack != null)
-      {
-         ack.unacknowledgeSend();
-         ack = null;
-      }
-      if (currentAckTask != null)
-      {
-         currentAckTask.cancel(true);
-         currentAckTask = null;
-      }
-      shutdown = true;
-
-
-   }
-
-
-   @Override
-   public void run()
-   {
-      System.out.println("------ starting ack timeout task -----");
-      try
-      {
-         AckStateMachine tmpAck = null;
-         synchronized (this)
-         {
-            tmpAck = ack;
-         }
-         if (tmpAck == null) return;
-         boolean obtained = tmpAck.getAck().await(ackTimeoutSeconds, TimeUnit.SECONDS);
-         synchronized (this)
-         {
-            if (isClosed)
-            {
-               System.out.println("invalidating because its old");
-               tmpAck.invalidate();
-               return;
-            }
-            if (obtained == false)
-            {
-               System.out.println("invalidating because timeout");
-               reset();
-               tmpAck.invalidate();
-            }
-            else
-            {
-               if (tmpAck.isUnacknowledged())
-               {
-                  reset();
-                  tmpAck.invalidate();
-               }
-               else
-               {
-                  try
-                  {
-                     System.out.println("acknowledging message");
-                     tmpAck.getMessage().acknowledge();
-                     tmpAck.acknowledge();
-                  }
-                  catch (HornetQException e)
-                  {
-                     System.out.println("Unable to acknowledge message");
-                     tmpAck.invalidate();
-                     reset();
-                  }
-
-               }
-            }
-            currentAckTask = null;
-            ack = null;
-         }
-      }
-      catch (Exception e)
-      {
-         currentAckTask = null;
-         System.out.println("Ack timeout task interuppted");
-      }
-      finally
-      {
-         System.out.println("------ Ending ack timeout task -----");
-      }
-
-
-   }
-
-   @Path("acknowledgement/{ackToken}/next")
-   @POST
-   public Response acknowledgeAndNext(
-           @HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-           @PathParam("ackToken") String ackToken,
-           @Context UriInfo uriInfo)
-   {
-      boolean acknowledged = acknowledge(ackToken);
-      String basePath = uriInfo.getMatchedURIs().get(1);
-      if (!acknowledged)
-      {
-         Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
-                 .entity("Could not acknowledge previous message, it was probably requeued from a timeout")
-                 .type("text/plain");
-         setAcknowledgeNextLink(builder, uriInfo, basePath);
-         return builder.build();
-      }
-      return runPoll(wait, uriInfo, basePath);
-
-   }
-
-   @Path("acknowledgement/{ackToken}")
-   @POST
-   public Response acknowledge(
-           @PathParam("ackToken") String ackToken,
-           @FormParam("acknowledge") boolean doAcknowledge,
-           @Context UriInfo uriInfo)
-   {
-      System.out.println("acknowledge: " + ackToken);
-      if (ack != null) System.out.println("current token: " + ack.getAckToken());
-      String basePath = uriInfo.getMatchedURIs().get(1);
-      if (!doAcknowledge)
-      {
-         unacknowledge();
-         Response.ResponseBuilder builder = Response.noContent();
-         setAcknowledgeLinks(uriInfo, basePath, builder);
-         return builder.build();
-      }
-      boolean acknowledged = acknowledge(ackToken);
-      if (acknowledged)
-      {
-         Response.ResponseBuilder builder = Response.noContent();
-         setAcknowledgeLinks(uriInfo, basePath, builder);
-         return builder.build();
-      }
-      else
-      {
-         Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
-                 .entity("Could not acknowledge message, it was probably requeued from a timeout")
-                 .type("text/plain");
-         setAcknowledgeLinks(uriInfo, basePath, builder);
-         return builder.build();
-      }
-   }
 
    protected void setAcknowledgeLinks(UriInfo uriInfo, String basePath, Response.ResponseBuilder builder)
    {
