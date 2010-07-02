@@ -35,17 +35,17 @@ public class PushQueueConsumerTest extends BaseMessageTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create");
+      Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link pushSubscriptions = response.getLinkHeader().getLinkByTitle("push-subscriptions");
+      Link pushSubscriptions = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
       System.out.println("push subscriptions: " + pushSubscriptions);
 
       request = new ClientRequest(generateURL("/queues/forwardQueue"));
       response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link forwardSender = response.getLinkHeader().getLinkByTitle("create");
+      Link forwardSender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + forwardSender);
-      Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
+      Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("poller: " + consumeNext);
 
       PushRegistration reg = new PushRegistration();
@@ -62,7 +62,7 @@ public class PushQueueConsumerTest extends BaseMessageTest
       res = consumeNext.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
-      Link session = res.getLinkHeader().getLinkByTitle("session");
+      Link session = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
       Assert.assertEquals(204, session.request().delete().getStatus());
    }
 }

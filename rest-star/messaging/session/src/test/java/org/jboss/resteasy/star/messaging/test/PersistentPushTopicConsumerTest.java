@@ -104,9 +104,9 @@ public class PersistentPushTopicConsumerTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create");
+      Link sender = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link pushSubscriptions = response.getLinkHeader().getLinkByTitle("push-subscriptions");
+      Link pushSubscriptions = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "push-subscriptions");
       System.out.println("push subscriptions: " + pushSubscriptions);
 
       String sub1 = generateURL("/subscribers/1");

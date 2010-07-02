@@ -5,6 +5,7 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 /**
@@ -21,6 +22,18 @@ public abstract class DestinationServiceManager
    protected Registry registry;
    protected TimeoutTask timeoutTask;
    protected int producerPoolSize;
+   protected LinkStrategy linkStrategy;
+
+   public LinkStrategy getLinkStrategy()
+   {
+      return linkStrategy;
+   }
+
+   public void setLinkStrategy(LinkStrategy linkStrategy)
+   {
+      this.linkStrategy = linkStrategy;
+   }
+
 
    public int getProducerPoolSize()
    {

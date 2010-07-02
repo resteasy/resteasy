@@ -8,7 +8,7 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.util.Constants;
 import org.jboss.resteasy.star.messaging.util.HttpMessageHelper;
-import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
+import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
@@ -34,6 +34,17 @@ public class QueueConsumer
    protected boolean closed;
    protected String id;
    protected long lastPing = System.currentTimeMillis();
+   protected DestinationServiceManager serviceManager;
+
+   public DestinationServiceManager getServiceManager()
+   {
+      return serviceManager;
+   }
+
+   public void setServiceManager(DestinationServiceManager serviceManager)
+   {
+      this.serviceManager = serviceManager;
+   }
 
    public long getLastPingTime()
    {
@@ -45,11 +56,12 @@ public class QueueConsumer
       lastPing = System.currentTimeMillis();
    }
 
-   public QueueConsumer(ClientSessionFactory factory, String destination, String id) throws HornetQException
+   public QueueConsumer(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager) throws HornetQException
    {
       this.factory = factory;
       this.destination = destination;
       this.id = id;
+      this.serviceManager = serviceManager;
 
       createSession(factory, destination);
    }
@@ -157,7 +169,7 @@ public class QueueConsumer
    protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
    {
       setSessionLink(builder, info, basePath);
-      setConsumeNextLink(builder, info, basePath);
+      setConsumeNextLink(serviceManager.getLinkStrategy(), builder, info, basePath);
    }
 
    protected Response.ResponseBuilder getMessageResponse(ClientMessage msg, UriInfo info, String basePath)
@@ -170,18 +182,17 @@ public class QueueConsumer
 
    protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder responseBuilder)
    {
-      setConsumeNextLink(responseBuilder, info, basePath);
+      setConsumeNextLink(serviceManager.getLinkStrategy(), responseBuilder, info, basePath);
       setSessionLink(responseBuilder, info, basePath);
    }
 
-   public static void setConsumeNextLink(Response.ResponseBuilder response, UriInfo info, String basePath)
+   public static void setConsumeNextLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath)
    {
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath)
               .path("consume-next");
       String uri = builder.build().toString();
-      Link link = new Link("consume-next", "consume-next", uri, MediaType.APPLICATION_FORM_URLENCODED, null);
-      LinkHeaderSupport.setLinkHeader(response, link);
+      linkStrategy.setLinkHeader(response, "consume-next", "consume-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }
 
    protected void setSessionLink(Response.ResponseBuilder response, UriInfo info, String basePath)
@@ -190,6 +201,6 @@ public class QueueConsumer
       builder.path(basePath);
       String uri = builder.build().toString();
       Link link = new Link("session", "session", uri, MediaType.APPLICATION_XML, null);
-      LinkHeaderSupport.setLinkHeader(response, link);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "session", "session", uri, MediaType.APPLICATION_XML);
    }
 }

@@ -3,9 +3,8 @@ package org.jboss.resteasy.star.messaging.queue;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.util.Constants;
-import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
+import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -30,10 +29,10 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
    protected String startup = Long.toString(System.currentTimeMillis());
    protected volatile Acknowledgement ack;
 
-   public AcknowledgedQueueConsumer(ClientSessionFactory factory, String destination, String id)
+   public AcknowledgedQueueConsumer(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager)
            throws HornetQException
    {
-      super(factory, destination, id);
+      super(factory, destination, id, serviceManager);
    }
 
    @Path("acknowledge-next")
@@ -238,7 +237,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
 
    protected void setAcknowledgeLinks(UriInfo uriInfo, String basePath, Response.ResponseBuilder builder)
    {
-      setAcknowledgeNextLink(builder, uriInfo, basePath);
+      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, basePath);
       setSessionLink(builder, uriInfo, basePath);
    }
 
@@ -254,7 +253,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
    @Override
    protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
    {
-      setAcknowledgeNextLink(builder, info, basePath);
+      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, info, basePath);
       setSessionLink(builder, info, basePath);
    }
 
@@ -265,8 +264,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
               .path("acknowledgement")
               .path(getAckToken());
       String uri = builder.build().toString();
-      Link link = new Link("acknowledgement", "acknowledgement", uri, MediaType.APPLICATION_FORM_URLENCODED, null);
-      LinkHeaderSupport.setLinkHeader(response, link);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "acknowledgement", "acknowledgement", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }
 
    protected void setAcknowledgementAndNextLink(Response.ResponseBuilder response, UriInfo info, String basePath)
@@ -277,18 +275,16 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
               .path(getAckToken())
               .path("next");
       String uri = builder.build().toString();
-      Link link = new Link("acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED, null);
-      LinkHeaderSupport.setLinkHeader(response, link);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }
 
-   public static void setAcknowledgeNextLink(Response.ResponseBuilder response, UriInfo info, String basePath)
+   public static void setAcknowledgeNextLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath)
    {
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath)
               .path("acknowledge-next");
       String uri = builder.build().toString();
-      Link link = new Link("acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED, null);
-      LinkHeaderSupport.setLinkHeader(response, link);
+      linkStrategy.setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }
 
 

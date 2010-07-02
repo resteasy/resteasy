@@ -3,7 +3,6 @@ package org.jboss.resteasy.star.messaging.queue;
 import org.hornetq.api.core.HornetQException;
 import org.jboss.resteasy.star.messaging.queue.push.PushConsumerResource;
 import org.jboss.resteasy.star.messaging.util.Constants;
-import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -21,10 +20,8 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class QueueResource
+public class QueueResource extends DestinationResource
 {
-   protected String destination;
-   protected PostMessage sender;
    protected ConsumersResource consumers;
    protected PushConsumerResource pushConsumers;
 
@@ -37,16 +34,6 @@ public class QueueResource
       consumers.stop();
       pushConsumers.stop();
       sender.cleanup();
-   }
-
-   public PostMessage getSender()
-   {
-      return sender;
-   }
-
-   public void setSender(PostMessage sender)
-   {
-      this.sender = sender;
    }
 
    @GET
@@ -83,7 +70,7 @@ public class QueueResource
       UriBuilder builder = info.getRequestUriBuilder();
       builder.path("create");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "create", "create", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "create", "create", uri, null);
    }
 
    protected void setConsumeNextLink(Response.ResponseBuilder response, UriInfo info)
@@ -91,7 +78,7 @@ public class QueueResource
       UriBuilder builder = info.getRequestUriBuilder();
       builder.path("consume-next");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "consume-next", "consume-next", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "consume-next", "consume-next", uri, null);
    }
 
    protected void setAcknowledgeNextLink(Response.ResponseBuilder response, UriInfo info)
@@ -99,7 +86,7 @@ public class QueueResource
       UriBuilder builder = info.getRequestUriBuilder();
       builder.path("acknowledge-next");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, null);
    }
 
 
@@ -108,19 +95,9 @@ public class QueueResource
       UriBuilder builder = info.getRequestUriBuilder();
       builder.path("push-subscriptions");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "push-subscriptions", "push-subscriptions", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "push-subscriptions", "push-subscriptions", uri, null);
    }
 
-
-   public String getDestination()
-   {
-      return destination;
-   }
-
-   public void setDestination(String destination)
-   {
-      this.destination = destination;
-   }
 
    public void setConsumers(ConsumersResource consumers)
    {

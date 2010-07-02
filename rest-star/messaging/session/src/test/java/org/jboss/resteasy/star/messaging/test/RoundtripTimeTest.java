@@ -28,9 +28,9 @@ public class RoundtripTimeTest extends BaseMessageTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = response.getLinkHeader().getLinkByTitle("create");
+      Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
+      Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("consume-next: " + consumeNext);
 
 
@@ -46,7 +46,7 @@ public class RoundtripTimeTest extends BaseMessageTest
       for (int i = 0; i < num; i++)
       {
          ClientResponse res = consumeNext.request().post(String.class);
-         consumeNext = res.getLinkHeader().getLinkByTitle("consume-next");
+         consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
          Assert.assertEquals(200, res.getStatus());
          Assert.assertEquals(Integer.toString(i + 1), res.getEntity(String.class));
       }

@@ -22,6 +22,8 @@ public class PostMessage
    protected ClientSessionFactory sessionFactory;
    protected String destination;
    protected boolean defaultDurable = false;
+   protected DestinationServiceManager serviceManager;
+
 
    protected static class Pooled
    {
@@ -37,6 +39,16 @@ public class PostMessage
 
    protected ArrayBlockingQueue<Pooled> pool;
    protected int poolSize = 10;
+
+   public DestinationServiceManager getServiceManager()
+   {
+      return serviceManager;
+   }
+
+   public void setServiceManager(DestinationServiceManager serviceManager)
+   {
+      this.serviceManager = serviceManager;
+   }
 
    public ClientSessionFactory getSessionFactory()
    {

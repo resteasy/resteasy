@@ -1,7 +1,6 @@
 package org.jboss.resteasy.star.messaging.topic;
 
-import org.jboss.resteasy.star.messaging.queue.PostMessage;
-import org.jboss.resteasy.star.messaging.util.LinkHeaderSupport;
+import org.jboss.resteasy.star.messaging.queue.DestinationResource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -16,10 +15,8 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TopicResource
+public class TopicResource extends DestinationResource
 {
-   protected String destination;
-   protected PostMessage sender;
    protected SubscriptionsResource subscriptions;
    protected PushSubscriptionsResource pushSubscriptions;
 
@@ -32,16 +29,6 @@ public class TopicResource
       subscriptions.stop();
       pushSubscriptions.stop();
       sender.cleanup();
-   }
-
-   public PostMessage getSender()
-   {
-      return sender;
-   }
-
-   public void setSender(PostMessage sender)
-   {
-      this.sender = sender;
    }
 
    @GET
@@ -76,7 +63,7 @@ public class TopicResource
       UriBuilder builder = info.getRequestUriBuilder();
       builder.path("create");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "create", "create", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "create", "create", uri, null);
    }
 
    protected void setSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
@@ -84,7 +71,7 @@ public class TopicResource
       UriBuilder builder = info.getRequestUriBuilder();
       builder.path("subscriptions");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "subscriptions", "subscriptions", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "subscriptions", "subscriptions", uri, null);
    }
 
    protected void setPushSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
@@ -92,19 +79,9 @@ public class TopicResource
       UriBuilder builder = info.getRequestUriBuilder();
       builder.path("push-subscriptions");
       String uri = builder.build().toString();
-      LinkHeaderSupport.setLinkHeader(response, "push-subscriptions", "push-subscriptions", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "push-subscriptions", "push-subscriptions", uri, null);
    }
 
-
-   public String getDestination()
-   {
-      return destination;
-   }
-
-   public void setDestination(String destination)
-   {
-      this.destination = destination;
-   }
 
    public void setSubscriptions(SubscriptionsResource subscriptions)
    {

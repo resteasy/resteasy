@@ -8,6 +8,9 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
+import org.jboss.resteasy.star.messaging.util.CustomHeaderLinkStrategy;
+import org.jboss.resteasy.star.messaging.util.LinkHeaderLinkStrategy;
+import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 import java.util.concurrent.ExecutorService;
@@ -100,6 +103,15 @@ public class MessageServiceManager
          consumerSessionFactory.setConsumerWindowSize(configuration.getConsumerWindowSize());
       }
 
+      LinkStrategy linkStrategy = new LinkHeaderLinkStrategy();
+      if (configuration.isUseLinkHeaders())
+      {
+         linkStrategy = new LinkHeaderLinkStrategy();
+      }
+      else
+      {
+         linkStrategy = new CustomHeaderLinkStrategy();
+      }
 
       queueManager.setTimeoutTask(timeoutTask);
       queueManager.setRegistry(registry);
@@ -107,6 +119,7 @@ public class MessageServiceManager
       queueManager.setDefaultSettings(defaultSettings);
       queueManager.setPushStoreFile(configuration.getQueuePushStoreFile());
       queueManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
+      queueManager.setLinkStrategy(linkStrategy);
 
       topicManager.setRegistry(registry);
       topicManager.setTimeoutTask(timeoutTask);
@@ -114,6 +127,7 @@ public class MessageServiceManager
       topicManager.setDefaultSettings(defaultSettings);
       topicManager.setPushStoreFile(configuration.getTopicPushStoreFile());
       topicManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
+      topicManager.setLinkStrategy(linkStrategy);
 
       queueManager.start();
       topicManager.start();

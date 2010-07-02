@@ -3,6 +3,7 @@ package org.jboss.resteasy.star.messaging.topic;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.star.messaging.queue.AcknowledgedQueueConsumer;
+import org.jboss.resteasy.star.messaging.queue.DestinationServiceManager;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -15,10 +16,10 @@ public class AcknowledgedSubscriptionResource extends AcknowledgedQueueConsumer 
 {
    private boolean durable;
 
-   public AcknowledgedSubscriptionResource(ClientSessionFactory factory, String destination, String id)
+   public AcknowledgedSubscriptionResource(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager)
            throws HornetQException
    {
-      super(factory, destination, id);
+      super(factory, destination, id, serviceManager);
    }
 
    public boolean isDurable()
@@ -34,8 +35,8 @@ public class AcknowledgedSubscriptionResource extends AcknowledgedQueueConsumer 
    @Override
    protected void setAcknowledgeLinks(UriInfo uriInfo, String basePath, Response.ResponseBuilder builder)
    {
-      setAcknowledgeNextLink(builder, uriInfo, basePath);
-      SubscriptionResource.setSubscriptionLink(builder, uriInfo, basePath);
+      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, basePath);
+      SubscriptionResource.setSubscriptionLink(serviceManager.getLinkStrategy(), builder, uriInfo, basePath);
    }
 
    @Override
@@ -43,7 +44,7 @@ public class AcknowledgedSubscriptionResource extends AcknowledgedQueueConsumer 
    {
       setAcknowledgementLink(builder, info, basePath);
       setAcknowledgementAndNextLink(builder, info, basePath);
-      SubscriptionResource.setSubscriptionLink(builder, info, basePath);
+      SubscriptionResource.setSubscriptionLink(serviceManager.getLinkStrategy(), builder, info, basePath);
    }
 
 }
