@@ -3,6 +3,7 @@ package org.jboss.resteasy.star.messaging;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
+import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +18,18 @@ public class MessageServiceManager
    protected ExecutorService threadPool;
    protected QueueServiceManager queueManager = new QueueServiceManager();
    protected TopicServiceManager topicManager = new TopicServiceManager();
+   protected TimeoutTask timeoutTask;
+   protected int timeoutTaskInterval = 1;
+
+   public int getTimeoutTaskInterval()
+   {
+      return timeoutTaskInterval;
+   }
+
+   public void setTimeoutTaskInterval(int timeoutTaskInterval)
+   {
+      this.timeoutTaskInterval = timeoutTaskInterval;
+   }
 
    public ExecutorService getThreadPool()
    {
@@ -61,11 +74,16 @@ public class MessageServiceManager
    public void start() throws Exception
    {
       if (threadPool == null) threadPool = Executors.newCachedThreadPool();
+      timeoutTask = new TimeoutTask(timeoutTaskInterval);
+      threadPool.execute(timeoutTask);
 
+      queueManager.setTimeoutTask(timeoutTask);
       queueManager.setThreadPool(threadPool);
-      topicManager.setThreadPool(threadPool);
       queueManager.setRegistry(registry);
+
+      topicManager.setThreadPool(threadPool);
       topicManager.setRegistry(registry);
+      topicManager.setTimeoutTask(timeoutTask);
 
       queueManager.start();
       topicManager.start();

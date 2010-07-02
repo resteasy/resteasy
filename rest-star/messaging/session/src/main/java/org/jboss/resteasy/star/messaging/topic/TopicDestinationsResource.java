@@ -69,14 +69,14 @@ public class TopicDestinationsResource
       return topics;
    }
 
-   public TopicResource createTopicResource(String topicName, boolean defaultDurable, long timeoutSeconds, boolean duplicates) throws Exception
+   public TopicResource createTopicResource(String topicName, boolean defaultDurable, int timeoutSeconds, boolean duplicates) throws Exception
    {
       TopicResource topicResource = new TopicResource();
       topicResource.setDestination(topicName);
       SubscriptionsResource subscriptionsResource = new SubscriptionsResource();
       topicResource.setSubscriptions(subscriptionsResource);
-      subscriptionsResource.setAckTimeoutSeconds(timeoutSeconds);
-      subscriptionsResource.setAckTimeoutService(manager.getThreadPool());
+      subscriptionsResource.setConsumerTimeoutSeconds(timeoutSeconds);
+      subscriptionsResource.setConsumerTimeoutTask(manager.getTimeoutTask());
 
       subscriptionsResource.setDestination(topicName);
       subscriptionsResource.setSessionFactory(manager.getSessionFactory());

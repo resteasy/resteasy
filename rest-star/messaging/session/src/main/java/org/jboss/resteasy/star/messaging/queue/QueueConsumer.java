@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -30,8 +31,19 @@ public class QueueConsumer
    protected ClientSession session;
    protected ClientConsumer consumer;
    protected String destination;
-   protected boolean isClosed;
+   protected boolean closed;
    protected String id;
+   protected long lastPing = System.currentTimeMillis();
+
+   public long getLastPingTime()
+   {
+      return lastPing;
+   }
+
+   protected void ping()
+   {
+      lastPing = System.currentTimeMillis();
+   }
 
    public QueueConsumer(ClientSessionFactory factory, String destination, String id) throws HornetQException
    {
@@ -42,47 +54,20 @@ public class QueueConsumer
       createSession(factory, destination);
    }
 
-   protected void createSession(ClientSessionFactory factory, String destination)
-           throws HornetQException
-   {
-      session = factory.createSession(true, true);
-      consumer = session.createConsumer(destination);
-      session.start();
-   }
-
-   protected synchronized ClientMessage receiveFromConsumer(long timeoutSecs) throws Exception
-   {
-      if (timeoutSecs <= 0)
-      {
-         return consumer.receiveImmediate();
-      }
-      else
-      {
-         return consumer.receive(timeoutSecs * 1000);
-      }
-
-   }
-
-   protected synchronized void failedToUnmarshallMessage(Exception ex)
-   {
-      System.err.println("Failed to unmarshall message.  Acknowledging and ignoring");
-      ex.printStackTrace();
-   }
-
-   public synchronized ClientMessage receive(long timeoutSecs) throws Exception
-   {
-      System.out.println("receive in consumer: " + id);
-      return receiveFromConsumer(timeoutSecs);
-   }
-
    public String getId()
    {
       return id;
    }
 
+   public boolean isClosed()
+   {
+      return closed;
+   }
+
    public synchronized void shutdown()
    {
-      isClosed = true;
+      if (closed) return;
+      closed = true;
       try
       {
          consumer.close();
@@ -105,33 +90,68 @@ public class QueueConsumer
 
    @Path("consume-next")
    @POST
-   public Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                        @Context UriInfo info)
+   public synchronized Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+                                     @Context UriInfo info)
    {
+      if (closed)
+      {
+         UriBuilder builder = info.getBaseUriBuilder();
+         builder.path(info.getMatchedURIs().get(1))
+                 .path("consume-next");
+         String uri = builder.build().toString();
+
+         // redirect to another consume-next
+
+         return Response.status(307).location(URI.create(uri)).build();
+      }
       return runPoll(wait, info, info.getMatchedURIs().get(1));
    }
 
-   public Response runPoll(long wait, UriInfo info, String basePath)
+   public synchronized Response runPoll(long wait, UriInfo info, String basePath)
    {
+      ping();
       try
       {
-         synchronized (this)
+         ClientMessage message = receive(wait);
+         if (message == null)
          {
-            ClientMessage message = receive(wait);
-            if (message == null)
-            {
-               System.out.println("Timed out waiting for message receive.");
-               Response.ResponseBuilder builder = Response.status(503).entity("Timed out waiting for message receive.").type("text/plain");
-               setPollTimeoutLinks(info, basePath, builder);
-               return builder.build();
-            }
-            return getMessageResponse(message, info, basePath).build();
+            System.out.println("Timed out waiting for message receive.");
+            Response.ResponseBuilder builder = Response.status(503).entity("Timed out waiting for message receive.").type("text/plain");
+            setPollTimeoutLinks(info, basePath, builder);
+            return builder.build();
          }
+         return getMessageResponse(message, info, basePath).build();
       }
       catch (Exception e)
       {
          throw new RuntimeException(e);
       }
+   }
+
+   protected void createSession(ClientSessionFactory factory, String destination)
+           throws HornetQException
+   {
+      session = factory.createSession(true, true);
+      consumer = session.createConsumer(destination);
+      session.start();
+   }
+
+   protected ClientMessage receiveFromConsumer(long timeoutSecs) throws Exception
+   {
+      if (timeoutSecs <= 0)
+      {
+         return consumer.receiveImmediate();
+      }
+      else
+      {
+         return consumer.receive(timeoutSecs * 1000);
+      }
+
+   }
+
+   protected ClientMessage receive(long timeoutSecs) throws Exception
+   {
+      return receiveFromConsumer(timeoutSecs);
    }
 
    protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)

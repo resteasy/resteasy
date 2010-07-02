@@ -8,6 +8,7 @@ import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
+import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,28 @@ public class TopicServiceManager
    protected String pushStoreFile;
    protected TopicPushStore pushStore;
    protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
+   protected TimeoutTask timeoutTask;
+   protected int timeoutTaskInterval = 1;
+
+   public TimeoutTask getTimeoutTask()
+   {
+      return timeoutTask;
+   }
+
+   public void setTimeoutTask(TimeoutTask timeoutTask)
+   {
+      this.timeoutTask = timeoutTask;
+   }
+
+   public int getTimeoutTaskInterval()
+   {
+      return timeoutTaskInterval;
+   }
+
+   public void setTimeoutTaskInterval(int timeoutTaskInterval)
+   {
+      this.timeoutTaskInterval = timeoutTaskInterval;
+   }
 
    public DestinationSettings getDefaultSettings()
    {
@@ -103,9 +126,14 @@ public class TopicServiceManager
    public void start() throws Exception
    {
 
-      if (threadPool == null) threadPool = Executors.newCachedThreadPool();
       if (sessionFactory == null)
          sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
+      if (timeoutTask == null)
+      {
+         if (threadPool == null) threadPool = Executors.newCachedThreadPool();
+         timeoutTask = new TimeoutTask(timeoutTaskInterval);
+         threadPool.execute(timeoutTask);
+      }
 
 
       started = true;
@@ -115,13 +143,14 @@ public class TopicServiceManager
          pushStore = new FileTopicPushStore(pushStoreFile);
       }
 
-      for (TopicDeployment topic : topics)
-      {
-         deploy(topic);
-      }
       if (destination == null)
       {
          destination = new TopicDestinationsResource(this);
+      }
+
+      for (TopicDeployment topic : topics)
+      {
+         deploy(topic);
       }
       registry.addSingletonResource(destination);
    }

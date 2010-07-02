@@ -14,6 +14,13 @@ public class TopicDeployment extends DestinationSettings
    {
    }
 
+
+   public TopicDeployment(String name, boolean duplicatesAllowed)
+   {
+      this.name = name;
+      this.duplicatesAllowed = duplicatesAllowed;
+   }
+
    public String getName()
    {
       return name;

@@ -9,6 +9,7 @@ import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.queue.push.FilePushStore;
 import org.jboss.resteasy.star.messaging.queue.push.PushStore;
+import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ public class QueueServiceManager
    protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
    protected Registry registry;
    protected ExecutorService threadPool;
+   protected TimeoutTask timeoutTask;
+   protected int timeoutTaskInterval = 1;
 
    public ExecutorService getThreadPool()
    {
@@ -39,6 +42,26 @@ public class QueueServiceManager
    public void setThreadPool(ExecutorService threadPool)
    {
       this.threadPool = threadPool;
+   }
+
+   public TimeoutTask getTimeoutTask()
+   {
+      return timeoutTask;
+   }
+
+   public void setTimeoutTask(TimeoutTask timeoutTask)
+   {
+      this.timeoutTask = timeoutTask;
+   }
+
+   public int getTimeoutTaskInterval()
+   {
+      return timeoutTaskInterval;
+   }
+
+   public void setTimeoutTaskInterval(int timeoutTaskInterval)
+   {
+      this.timeoutTaskInterval = timeoutTaskInterval;
    }
 
    public Registry getRegistry()
@@ -114,9 +137,14 @@ public class QueueServiceManager
    public void start() throws Exception
    {
 
-      if (threadPool == null) threadPool = Executors.newCachedThreadPool();
       if (sessionFactory == null)
          sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
+      if (timeoutTask == null)
+      {
+         if (threadPool == null) threadPool = Executors.newCachedThreadPool();
+         timeoutTask = new TimeoutTask(timeoutTaskInterval);
+         threadPool.execute(timeoutTask);
+      }
 
 
       destination = new QueueDestinationsResource(this);
@@ -145,7 +173,6 @@ public class QueueServiceManager
       String queueName = queueDeployment.getName();
       ClientSession session = sessionFactory.createSession(false, false, false);
       ClientSession.QueueQuery query = session.queueQuery(new SimpleString(queueName));
-      boolean defaultDurable = queueDeployment.isDurableSend();
       if (!query.isExists())
       {
          session.createQueue(queueName, queueName, queueDeployment.isDurableSend());
@@ -164,6 +191,7 @@ public class QueueServiceManager
       }
       try
       {
+         timeoutTask.stop();
          sessionFactory.close();
       }
       catch (Exception e)
