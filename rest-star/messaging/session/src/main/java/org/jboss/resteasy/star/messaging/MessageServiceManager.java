@@ -4,7 +4,6 @@ import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
@@ -13,6 +12,10 @@ import org.jboss.resteasy.star.messaging.util.LinkHeaderLinkStrategy;
 import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
+import javax.xml.bind.JAXBContext;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,13 +25,13 @@ import java.util.concurrent.Executors;
  */
 public class MessageServiceManager
 {
-   protected Registry registry;
    protected ExecutorService threadPool;
    protected QueueServiceManager queueManager = new QueueServiceManager();
    protected TopicServiceManager topicManager = new TopicServiceManager();
    protected TimeoutTask timeoutTask;
    protected int timeoutTaskInterval = 1;
    protected MessageServiceConfiguration configuration = new MessageServiceConfiguration();
+   protected String configurationUrl;
 
    public int getTimeoutTaskInterval()
    {
@@ -54,16 +57,6 @@ public class MessageServiceManager
       this.threadPool = threadPool;
    }
 
-   public Registry getRegistry()
-   {
-      return registry;
-   }
-
-   public void setRegistry(Registry registry)
-   {
-      this.registry = registry;
-   }
-
    public QueueServiceManager getQueueManager()
    {
       return queueManager;
@@ -79,6 +72,16 @@ public class MessageServiceManager
       return configuration;
    }
 
+   public String getConfigurationUrl()
+   {
+      return configurationUrl;
+   }
+
+   public void setConfigurationUrl(String configurationUrl)
+   {
+      this.configurationUrl = configurationUrl;
+   }
+
    public void setConfiguration(MessageServiceConfiguration configuration)
    {
       this.configuration = configuration;
@@ -86,8 +89,29 @@ public class MessageServiceManager
 
    public void start() throws Exception
    {
+      if (configuration == null)
+      {
+         if (configurationUrl == null)
+         {
+            configuration = new MessageServiceConfiguration();
+         }
+         else
+         {
+            URL url = getClass().getClassLoader().getResource(configurationUrl);
+
+            if (url == null)
+            {
+               // The URL is outside of the classloader. Trying a pure url now
+               url = new URL(configurationUrl);
+            }
+            JAXBContext jaxb = JAXBContext.newInstance(MessageServiceConfiguration.class);
+            Reader reader = new InputStreamReader(url.openStream());
+            configuration = (MessageServiceConfiguration) jaxb.createUnmarshaller().unmarshal(reader);
+
+
+         }
+      }
       if (threadPool == null) threadPool = Executors.newCachedThreadPool();
-      if (configuration == null) configuration = new MessageServiceConfiguration();
       timeoutTaskInterval = configuration.getTimeoutTaskInterval();
       timeoutTask = new TimeoutTask(timeoutTaskInterval);
       threadPool.execute(timeoutTask);
@@ -114,14 +138,12 @@ public class MessageServiceManager
       }
 
       queueManager.setTimeoutTask(timeoutTask);
-      queueManager.setRegistry(registry);
       queueManager.setConsumerSessionFactory(consumerSessionFactory);
       queueManager.setDefaultSettings(defaultSettings);
       queueManager.setPushStoreFile(configuration.getQueuePushStoreFile());
       queueManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
       queueManager.setLinkStrategy(linkStrategy);
 
-      topicManager.setRegistry(registry);
       topicManager.setTimeoutTask(timeoutTask);
       topicManager.setConsumerSessionFactory(consumerSessionFactory);
       topicManager.setDefaultSettings(defaultSettings);

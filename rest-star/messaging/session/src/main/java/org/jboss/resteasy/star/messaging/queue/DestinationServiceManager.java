@@ -4,7 +4,6 @@ import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
@@ -19,7 +18,6 @@ public abstract class DestinationServiceManager
    protected boolean started;
    protected String pushStoreFile;
    protected DestinationSettings defaultSettings = DestinationSettings.defaultSettings;
-   protected Registry registry;
    protected TimeoutTask timeoutTask;
    protected int producerPoolSize;
    protected LinkStrategy linkStrategy;
@@ -63,11 +61,6 @@ public abstract class DestinationServiceManager
    public void setTimeoutTask(TimeoutTask timeoutTask)
    {
       this.timeoutTask = timeoutTask;
-   }
-
-   public void setRegistry(Registry registry)
-   {
-      this.registry = registry;
    }
 
    public DestinationSettings getDefaultSettings()

@@ -75,11 +75,12 @@ public class PersistentPushTopicConsumerTest
 
 
       manager = new MessageServiceManager();
-      manager.setRegistry(deployment.getRegistry());
       MessageServiceConfiguration config = new MessageServiceConfiguration();
       config.setTopicPushStoreFile(pushStore.toString());
       manager.setConfiguration(config);
       manager.start();
+      deployment.getRegistry().addSingletonResource(manager.getQueueManager().getDestination());
+      deployment.getRegistry().addSingletonResource(manager.getTopicManager().getDestination());
 
       deployment.getRegistry().addPerRequestResource(Receiver.class);
 

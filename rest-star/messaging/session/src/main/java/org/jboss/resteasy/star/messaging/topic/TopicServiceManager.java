@@ -37,6 +37,16 @@ public class TopicServiceManager extends DestinationServiceManager
       this.topics = topics;
    }
 
+   public TopicDestinationsResource getDestination()
+   {
+      return destination;
+   }
+
+   public void setDestination(TopicDestinationsResource destination)
+   {
+      this.destination = destination;
+   }
+
    public void start() throws Exception
    {
       initDefaults();
@@ -57,7 +67,6 @@ public class TopicServiceManager extends DestinationServiceManager
       {
          deploy(topic);
       }
-      registry.addSingletonResource(destination);
    }
 
    public void deploy(TopicDeployment topicDeployment)

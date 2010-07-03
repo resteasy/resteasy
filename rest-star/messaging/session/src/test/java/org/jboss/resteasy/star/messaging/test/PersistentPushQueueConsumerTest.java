@@ -1,5 +1,11 @@
 package org.jboss.resteasy.star.messaging.test;
 
+import org.hornetq.api.core.TransportConfiguration;
+import org.hornetq.core.config.Configuration;
+import org.hornetq.core.config.impl.ConfigurationImpl;
+import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
+import org.hornetq.core.server.HornetQServer;
+import org.hornetq.core.server.HornetQServers;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
@@ -31,6 +37,7 @@ public class PersistentPushQueueConsumerTest
    public static MessageServiceManager manager;
    public static File pushStore;
    protected static ResteasyDeployment deployment;
+   public static HornetQServer hornetqServer;
 
    @BeforeClass
    public static void setup() throws Exception
@@ -49,15 +56,22 @@ public class PersistentPushQueueConsumerTest
 
    public static void startup() throws Exception
    {
-      BaseMessageTest.setupHornetQServer();
+      Configuration configuration = new ConfigurationImpl();
+      configuration.setPersistenceEnabled(false);
+      configuration.setSecurityEnabled(false);
+      configuration.getAcceptorConfigurations().add(new TransportConfiguration(InVMAcceptorFactory.class.getName()));
+
+      hornetqServer = HornetQServers.newHornetQServer(configuration);
+      hornetqServer.start();
 
       deployment = EmbeddedContainer.start();
       manager = new MessageServiceManager();
       MessageServiceConfiguration config = new MessageServiceConfiguration();
       config.setQueuePushStoreFile(pushStore.toString());
       manager.setConfiguration(config);
-      manager.setRegistry(deployment.getRegistry());
       manager.start();
+      deployment.getRegistry().addSingletonResource(manager.getQueueManager().getDestination());
+      deployment.getRegistry().addSingletonResource(manager.getTopicManager().getDestination());
 
 
    }
@@ -68,7 +82,8 @@ public class PersistentPushQueueConsumerTest
       manager = null;
       EmbeddedContainer.stop();
       deployment = null;
-      BaseMessageTest.shutdownHornetqServer();
+      hornetqServer.stop();
+      hornetqServer = null;
    }
 
    @Test

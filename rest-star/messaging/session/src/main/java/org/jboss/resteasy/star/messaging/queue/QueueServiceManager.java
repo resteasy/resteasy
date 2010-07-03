@@ -38,6 +38,16 @@ public class QueueServiceManager extends DestinationServiceManager
       this.pushStore = pushStore;
    }
 
+   public QueueDestinationsResource getDestination()
+   {
+      return destination;
+   }
+
+   public void setDestination(QueueDestinationsResource destination)
+   {
+      this.destination = destination;
+   }
+
    @Override
    public void start() throws Exception
    {
@@ -56,7 +66,6 @@ public class QueueServiceManager extends DestinationServiceManager
       {
          deploy(queueDeployment);
       }
-      registry.addSingletonResource(destination);
    }
 
    public void deploy(QueueDeployment queueDeployment)
