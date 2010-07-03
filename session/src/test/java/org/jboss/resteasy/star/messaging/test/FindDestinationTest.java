@@ -18,7 +18,7 @@ public class FindDestinationTest extends BaseMessageTest
    @Test
    public void testFindQueue() throws Exception
    {
-      server.createQueue(new SimpleString("testQueue"), new SimpleString("testQueue"), null, false, false);
+      server.getHornetqServer().createQueue(new SimpleString("testQueue"), new SimpleString("testQueue"), null, false, false);
 
       ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
 
@@ -43,7 +43,7 @@ public class FindDestinationTest extends BaseMessageTest
    @Test
    public void testFindTopic() throws Exception
    {
-      server.createQueue(new SimpleString("testTopic"), new SimpleString("testTopic"), null, false, false);
+      server.getHornetqServer().createQueue(new SimpleString("testTopic"), new SimpleString("testTopic"), null, false, false);
       ClientRequest request = new ClientRequest(generateURL("/topics/testTopic"));
 
       ClientResponse response = request.head();
