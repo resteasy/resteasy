@@ -176,6 +176,18 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return location;
    }
 
+   @Override
+   public Link getHeaderAsLink(String headerName)
+   {
+      String value = headers.getFirst(headerName);
+      if (value == null) return null;
+      String type = headers.getFirst(headerName + "-type");
+      Link link = new Link();
+      link.setHref(value);
+      link.setType(type);
+      return link;
+   }
+
    public void setAlternateMediaType(String alternateMediaType)
    {
       this.alternateMediaType = alternateMediaType;

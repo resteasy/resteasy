@@ -101,7 +101,7 @@ public abstract class ClientResponse<T> extends Response
    public abstract <T2> T2 getEntity(GenericType<T2> type, Annotation[] annotations);
 
    /**
-    * Get the link headers of the response.
+    * Get the <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">link headers</a> of the response.
     *
     * @return non-null
     */
@@ -113,6 +113,16 @@ public abstract class ClientResponse<T> extends Response
     * @return
     */
    public abstract Link getLocation();
+
+   /**
+    * Header is assumed to be a URL, a Link object is created from it if it exists.  Also, the type field of the
+    * link with be initialized if there is another header appended with -Type.  i.e. if the header was "custom"
+    * it will also look for a header of custom-type and expect that this is a media type.
+    *
+    * @param headerName
+    * @return null if it doesn't exist
+    */
+   public abstract Link getHeaderAsLink(String headerName);
 
    public abstract void releaseConnection();
 }
