@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -23,6 +24,7 @@ public class ServletBootstrap extends ListenerBootstrap
    {
       ResteasyDeployment deployment = super.createDeployment();
       deployment.getDefaultContextObjects().put(ServletConfig.class, config);
+      deployment.getDefaultContextObjects().put(ServletContext.class, config.getServletContext());
       return deployment;
    }
 
