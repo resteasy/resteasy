@@ -1,6 +1,7 @@
 package org.jboss.resteasy.star.messaging.integration;
 
 import org.jboss.netty.util.internal.ConcurrentHashMap;
+import org.jboss.resteasy.star.messaging.BindingRegistry;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

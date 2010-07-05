@@ -5,6 +5,7 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.hornetq.core.remoting.impl.invm.TransportConstants;
+import org.jboss.resteasy.star.messaging.integration.JndiComponentRegistry;
 import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
@@ -35,6 +36,17 @@ public class MessageServiceManager
    protected MessageServiceConfiguration configuration = new MessageServiceConfiguration();
    protected boolean configSet = false;
    protected String configurationUrl;
+   protected BindingRegistry registry;
+
+   public BindingRegistry getRegistry()
+   {
+      return registry;
+   }
+
+   public void setRegistry(BindingRegistry registry)
+   {
+      this.registry = registry;
+   }
 
    public int getTimeoutTaskInterval()
    {
@@ -115,6 +127,17 @@ public class MessageServiceManager
 
          }
       }
+      if (registry == null)
+      {
+         try
+         {
+            registry = new JndiComponentRegistry();
+         }
+         catch (Exception e)
+         {
+            System.err.println("Warning: Failed to instantiate an InitialContext for binding created queues/topics.");
+         }
+      }
       if (threadPool == null) threadPool = Executors.newCachedThreadPool();
       timeoutTaskInterval = configuration.getTimeoutTaskInterval();
       timeoutTask = new TimeoutTask(timeoutTaskInterval);
@@ -152,6 +175,7 @@ public class MessageServiceManager
       queueManager.setPushStoreFile(configuration.getQueuePushStoreFile());
       queueManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
       queueManager.setLinkStrategy(linkStrategy);
+      queueManager.setRegistry(registry);
 
       topicManager.setSessionFactory(sessionFactory);
       topicManager.setTimeoutTask(timeoutTask);
@@ -160,6 +184,7 @@ public class MessageServiceManager
       topicManager.setPushStoreFile(configuration.getTopicPushStoreFile());
       topicManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
       topicManager.setLinkStrategy(linkStrategy);
+      topicManager.setRegistry(registry);
 
       queueManager.start();
       topicManager.start();

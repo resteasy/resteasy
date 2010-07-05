@@ -3,15 +3,25 @@ package org.jboss.resteasy.star.messaging.topic;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientSession;
+import org.hornetq.jms.client.HornetQDestination;
+import org.hornetq.jms.client.HornetQTopic;
+import org.hornetq.jms.server.config.TopicConfiguration;
+import org.hornetq.jms.server.impl.JMSServerConfigParserImpl;
 import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 import org.jboss.resteasy.star.messaging.queue.PostMessage;
 import org.jboss.resteasy.star.messaging.queue.PostMessageDupsOk;
 import org.jboss.resteasy.star.messaging.queue.PostMessageNoDups;
+import org.w3c.dom.Document;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +39,52 @@ public class TopicDestinationsResource
    public TopicDestinationsResource(TopicServiceManager manager)
    {
       this.manager = manager;
+   }
+
+   @POST
+   @Consumes("application/hornetq.jms.topic+xml")
+   public Response createJmsQueue(@Context UriInfo uriInfo, Document document)
+   {
+      try
+      {
+         JMSServerConfigParserImpl parser = new JMSServerConfigParserImpl();
+         TopicConfiguration topic = parser.parseTopicConfiguration(document.getDocumentElement());
+         HornetQTopic hqTopic = HornetQDestination.createTopic(topic.getName());
+         String topicName = hqTopic.getAddress();
+         ClientSession session = manager.getSessionFactory().createSession(false, false, false);
+         try
+         {
+
+            ClientSession.QueueQuery query = session.queueQuery(new SimpleString(topicName));
+            if (!query.isExists())
+            {
+               session.createQueue(topicName, topicName, "__HQX=-1", true);
+
+            }
+            else
+            {
+               throw new WebApplicationException(Response.status(412).type("text/plain").entity("Queue already exists.").build());
+            }
+         }
+         finally
+         {
+            try { session.close(); } catch (Exception ignored) {}
+         }
+         if (topic.getBindings() != null && topic.getBindings().length > 0 && manager.getRegistry() != null)
+         {
+            for (String binding : topic.getBindings())
+            {
+               manager.getRegistry().bind(binding, hqTopic);
+            }
+         }
+         URI uri = uriInfo.getRequestUriBuilder().path(topicName).build();
+         return Response.created(uri).build();
+      }
+      catch (Exception e)
+      {
+         if (e instanceof WebApplicationException) throw (WebApplicationException) e;
+         throw new WebApplicationException(e, Response.serverError().type("text/plain").entity("Failed to create queue.").build());
+      }
    }
 
    @Path("/{topic-name}")
