@@ -20,7 +20,6 @@ public class EmbeddedRestHornetQ
       tjws.setPort(port);
       tjws.setRootResourcePath("");
       tjws.setSecurityDomain(null);
-      manager.setConfigurationUrl("hornetq-rest.xml");
       initEmbeddedHornetQ();
    }
 
@@ -56,6 +55,25 @@ public class EmbeddedRestHornetQ
       manager.start();
       tjws.getDeployment().getRegistry().addSingletonResource(manager.getQueueManager().getDestination());
       tjws.getDeployment().getRegistry().addSingletonResource(manager.getTopicManager().getDestination());
+   }
+
+   public void stop() throws Exception
+   {
+      try
+      {
+         tjws.stop();
+      }
+      catch (Exception e)
+      {
+      }
+      try
+      {
+         manager.stop();
+      }
+      catch (Exception e)
+      {
+      }
+      embeddedHornetQ.stop();
    }
 
 }

@@ -16,4 +16,6 @@ public class EmbeddedRestHornetQJMS extends EmbeddedRestHornetQ
    {
       return ((EmbeddedHornetQJMS) embeddedHornetQ).getRegistry();
    }
+
+
 }

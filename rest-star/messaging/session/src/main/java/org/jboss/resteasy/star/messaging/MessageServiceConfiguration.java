@@ -18,7 +18,19 @@ public class MessageServiceConfiguration
    private boolean dupsOk = true;
    private String topicPushStoreFile = "./topic-push-store.xml";
    private String queuePushStoreFile = "./queue-push-store.xml";
+   private String inVmId = "0";
    private boolean useLinkHeaders = false;
+
+   @XmlElement(name = "server-in-vm-id")
+   public String getInVmId()
+   {
+      return inVmId;
+   }
+
+   public void setInVmId(String inVmId)
+   {
+      this.inVmId = inVmId;
+   }
 
    @XmlElement(name = "use-link-headers")
    public boolean isUseLinkHeaders()

@@ -4,6 +4,7 @@ import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
+import org.hornetq.core.remoting.impl.invm.TransportConstants;
 import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
 import org.jboss.resteasy.star.messaging.topic.TopicServiceManager;
@@ -16,6 +17,7 @@ import javax.xml.bind.JAXBContext;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,6 +33,7 @@ public class MessageServiceManager
    protected TimeoutTask timeoutTask;
    protected int timeoutTaskInterval = 1;
    protected MessageServiceConfiguration configuration = new MessageServiceConfiguration();
+   protected boolean configSet = false;
    protected String configurationUrl;
 
    public int getTimeoutTaskInterval()
@@ -85,11 +88,12 @@ public class MessageServiceManager
    public void setConfiguration(MessageServiceConfiguration configuration)
    {
       this.configuration = configuration;
+      this.configSet = true;
    }
 
    public void start() throws Exception
    {
-      if (configuration == null)
+      if (configuration == null || configSet == false)
       {
          if (configurationUrl == null)
          {
@@ -121,11 +125,15 @@ public class MessageServiceManager
       defaultSettings.setDuplicatesAllowed(configuration.isDupsOk());
       defaultSettings.setDurableSend(configuration.isDefaultDurableSend());
 
-      ClientSessionFactory consumerSessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName()));
+      HashMap<String, Object> transportConfig = new HashMap<String, Object>();
+      transportConfig.put(TransportConstants.SERVER_ID_PROP_NAME, configuration.getInVmId());
+      ClientSessionFactory consumerSessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName(), transportConfig));
       if (configuration.getConsumerWindowSize() != -1)
       {
          consumerSessionFactory.setConsumerWindowSize(configuration.getConsumerWindowSize());
       }
+
+      ClientSessionFactory sessionFactory = new ClientSessionFactoryImpl(new TransportConfiguration(InVMConnectorFactory.class.getName(), transportConfig));
 
       LinkStrategy linkStrategy = new LinkHeaderLinkStrategy();
       if (configuration.isUseLinkHeaders())
@@ -137,6 +145,7 @@ public class MessageServiceManager
          linkStrategy = new CustomHeaderLinkStrategy();
       }
 
+      queueManager.setSessionFactory(sessionFactory);
       queueManager.setTimeoutTask(timeoutTask);
       queueManager.setConsumerSessionFactory(consumerSessionFactory);
       queueManager.setDefaultSettings(defaultSettings);
@@ -144,6 +153,7 @@ public class MessageServiceManager
       queueManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
       queueManager.setLinkStrategy(linkStrategy);
 
+      topicManager.setSessionFactory(sessionFactory);
       topicManager.setTimeoutTask(timeoutTask);
       topicManager.setConsumerSessionFactory(consumerSessionFactory);
       topicManager.setDefaultSettings(defaultSettings);
