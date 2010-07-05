@@ -36,13 +36,14 @@ public class EmbeddedHornetQ
 
    public void start() throws Exception
    {
-      init();
+      initStart();
       hornetQServer.start();
 
    }
 
-   protected void init()
+   protected void initStart() throws Exception
    {
+      configuration.start();
       if (securityManager == null)
       {
          securityManager = new HornetQSecurityManagerImpl();
@@ -55,5 +56,10 @@ public class EmbeddedHornetQ
       {
          hornetQServer = new HornetQServerImpl(configuration, mbeanServer, securityManager);
       }
+   }
+
+   public void stop() throws Exception
+   {
+      hornetQServer.stop();
    }
 }

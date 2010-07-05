@@ -21,7 +21,7 @@ public class EmbeddedHornetQJMS extends EmbeddedHornetQ
 
    public void start() throws Exception
    {
-      super.init();
+      super.initStart();
       serverManager = new JMSServerManagerImpl(hornetQServer);
       if (registry == null)
       {

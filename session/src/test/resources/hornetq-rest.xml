@@ -1,0 +1,3 @@
+<rest-messaging>
+    <use-link-headers>true</use-link-headers>
+</rest-messaging>
