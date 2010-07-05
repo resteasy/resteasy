@@ -80,7 +80,7 @@ public class JMSServerManagerImpl implements JMSServerManager, ActivateCallback
     */
    private Context context;
 
-   private ComponentRegistry registry;
+   private BindingRegistry registry;
 
    private Map<String, HornetQQueue> queues = new HashMap<String, HornetQQueue>();
 
@@ -294,7 +294,7 @@ public class JMSServerManagerImpl implements JMSServerManager, ActivateCallback
       started = false;
    }
 
-   public void setRegistry(ComponentRegistry registry)
+   public void setRegistry(BindingRegistry registry)
    {
       this.registry = registry;
    }
