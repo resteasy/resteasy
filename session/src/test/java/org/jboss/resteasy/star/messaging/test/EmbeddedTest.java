@@ -4,7 +4,7 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.HttpHeaderProperty;
-import org.jboss.resteasy.star.messaging.integration.ComponentRegistry;
+import org.jboss.resteasy.star.messaging.integration.BindingRegistry;
 import org.jboss.resteasy.star.messaging.integration.EmbeddedRestHornetQJMS;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -46,7 +46,7 @@ public class EmbeddedTest
 
    public static void publish(String destination, Serializable object, String contentType) throws Exception
    {
-      ComponentRegistry reg = server.getRegistry();
+      BindingRegistry reg = server.getRegistry();
       Destination dest = (Destination) reg.lookup(destination);
       ConnectionFactory factory = (ConnectionFactory) reg.lookup("ConnectionFactory");
       Connection conn = factory.createConnection();

@@ -12,7 +12,7 @@ public class EmbeddedRestHornetQJMS extends EmbeddedRestHornetQ
       embeddedHornetQ = new EmbeddedHornetQJMS();
    }
 
-   public ComponentRegistry getRegistry()
+   public BindingRegistry getRegistry()
    {
       return ((EmbeddedHornetQJMS) embeddedHornetQ).getRegistry();
    }

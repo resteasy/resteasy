@@ -6,7 +6,7 @@ import org.jboss.netty.util.internal.ConcurrentHashMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MapComponentRegistry implements ComponentRegistry
+public class MapComponentRegistry implements BindingRegistry
 {
    protected ConcurrentHashMap<String, Object> registry = new ConcurrentHashMap<String, Object>();
 

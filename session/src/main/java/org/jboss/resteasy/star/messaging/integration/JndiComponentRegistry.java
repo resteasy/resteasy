@@ -8,7 +8,7 @@ import javax.naming.NamingException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JndiComponentRegistry implements ComponentRegistry
+public class JndiComponentRegistry implements BindingRegistry
 {
    private Context context;
 

@@ -7,14 +7,14 @@ package org.jboss.resteasy.star.messaging.integration;
 public class EmbeddedHornetQJMS extends EmbeddedHornetQ
 {
    protected JMSServerManagerImpl serverManager;
-   protected ComponentRegistry registry;
+   protected BindingRegistry registry;
 
-   public ComponentRegistry getRegistry()
+   public BindingRegistry getRegistry()
    {
       return registry;
    }
 
-   public void setRegistry(ComponentRegistry registry)
+   public void setRegistry(BindingRegistry registry)
    {
       this.registry = registry;
    }
