@@ -3,7 +3,7 @@
 
 <para>
 
-RESTEasy integrates with Spring 2.5.  We are interested in other forms of Spring integration, so please help contribute.
+RESTEasy integrates with Spring 3.0.x.  We are interested in other forms of Spring integration, so please help contribute.
 </para>
 <sect2 id="SpringBeanProcessor">
    <title>Basic Integration</title>
