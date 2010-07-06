@@ -102,6 +102,7 @@ public abstract class ClientResponse<T> extends Response
 
    /**
     * Get the <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">link headers</a> of the response.
+    * All Link objects returned will automatically have the same ClientExecutor as the request.
     *
     * @return non-null
     */
@@ -109,6 +110,7 @@ public abstract class ClientResponse<T> extends Response
 
    /**
     * Get the Location header as a Link so you can easily execute on it.
+    * All Link objects returned will automatically have the same ClientExecutor as the request.
     *
     * @return
     */
@@ -118,6 +120,8 @@ public abstract class ClientResponse<T> extends Response
     * Header is assumed to be a URL, a Link object is created from it if it exists.  Also, the type field of the
     * link with be initialized if there is another header appended with -Type.  i.e. if the header was "custom"
     * it will also look for a header of custom-type and expect that this is a media type.
+    * <p/>
+    * All Link objects returned will automatically have the same ClientExecutor as the request.
     *
     * @param headerName
     * @return null if it doesn't exist

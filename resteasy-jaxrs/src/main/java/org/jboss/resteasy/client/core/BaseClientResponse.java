@@ -172,6 +172,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
       location = new Link();
       location.setHref(header);
+      location.setExecutor(executor);
 
       return location;
    }
@@ -185,6 +186,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       Link link = new Link();
       link.setHref(value);
       link.setType(type);
+      link.setExecutor(executor);
       return link;
    }
 
