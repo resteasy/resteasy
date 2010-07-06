@@ -41,7 +41,6 @@ import org.hornetq.jms.server.impl.JMSServerDeployer;
 import org.hornetq.jms.server.management.JMSManagementService;
 import org.hornetq.jms.server.management.impl.JMSManagementServiceImpl;
 import org.hornetq.utils.TimeAndCounterIDGenerator;
-import org.jboss.resteasy.star.messaging.BindingRegistry;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

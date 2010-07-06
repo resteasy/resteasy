@@ -4,7 +4,7 @@ import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
-import org.jboss.resteasy.star.messaging.BindingRegistry;
+import org.jboss.resteasy.star.messaging.integration.BindingRegistry;
 import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 

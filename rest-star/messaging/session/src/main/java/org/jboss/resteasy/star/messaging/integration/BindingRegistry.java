@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.jboss.resteasy.star.messaging.integration;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
