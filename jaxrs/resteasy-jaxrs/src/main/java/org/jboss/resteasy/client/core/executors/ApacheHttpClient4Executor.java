@@ -49,6 +49,11 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       this.httpClient = httpClient;
    }
 
+   public HttpClient getHttpClient()
+   {
+      return httpClient;
+   }
+
    public static CaseInsensitiveMap<String> extractHeaders(
            HttpResponse response)
    {

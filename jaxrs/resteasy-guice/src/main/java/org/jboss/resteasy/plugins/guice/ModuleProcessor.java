@@ -4,9 +4,9 @@ import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Stage;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
-import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.slf4j.Logger;
@@ -34,9 +34,21 @@ public class ModuleProcessor
       processInjector(injector);
    }
 
+   public void process(final Stage stage, final Module... modules)
+   {
+      final Injector injector = Guice.createInjector(stage, modules);
+      processInjector(injector);
+   }
+
    public void process(final Iterable<Module> modules)
    {
       final Injector injector = Guice.createInjector(modules);
+      processInjector(injector);
+   }
+
+   public void process(final Stage stage, final Iterable<Module> modules)
+   {
+      final Injector injector = Guice.createInjector(stage, modules);
       processInjector(injector);
    }
 
@@ -54,12 +66,12 @@ public class ModuleProcessor
                logger.info("registering factory for {}", beanClass);
                registry.addResourceFactory(resourceFactory);
             }
-            if (beanClass.isAnnotationPresent(Provider.class)) {
+            if (beanClass.isAnnotationPresent(Provider.class))
+            {
                logger.info("registering provider instance for {}", beanClass);
                providerFactory.registerProviderInstance(binding.getProvider().get());
             }
          }
       }
    }
-
 }

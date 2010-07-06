@@ -1,17 +1,18 @@
 package org.jboss.resteasy.plugins.guice;
 
 import com.google.inject.Module;
+import com.google.inject.Stage;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootstrap implements ServletContextListener
 {
@@ -25,7 +26,33 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       final ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) context.getAttribute(ResteasyProviderFactory.class.getName());
       final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
       final List<Module> modules = getModules(context);
-      processor.process(modules);
+      final Stage stage = getStage(context);
+      if (stage == null)
+      {
+         processor.process(modules);
+      }
+      else
+      {
+         processor.process(stage, modules);
+      }
+   }
+
+   private Stage getStage(ServletContext context)
+   {
+      final String stageAsString = context.getInitParameter("resteasy.guice.stage");
+      if (stageAsString == null)
+      {
+         return null;
+      }
+      try
+      {
+         return Stage.valueOf(stageAsString.trim());
+      }
+      catch (IllegalArgumentException e)
+      {
+         throw new RuntimeException("Injector stage is not defined properly. " + stageAsString + " is wrong value." +
+                 " Possible values are PRODUCTION, DEVELOPMENT, TOOL.");
+      }
    }
 
    private List<Module> getModules(final ServletContext context)
