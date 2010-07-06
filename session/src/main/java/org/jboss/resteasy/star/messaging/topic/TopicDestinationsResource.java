@@ -14,6 +14,7 @@ import org.jboss.resteasy.star.messaging.queue.PostMessageNoDups;
 import org.w3c.dom.Document;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -86,6 +87,46 @@ public class TopicDestinationsResource
          throw new WebApplicationException(e, Response.serverError().type("text/plain").entity("Failed to create queue.").build());
       }
    }
+
+   @DELETE
+   @Path("/{topic-name}")
+   public void deleteTopic(@PathParam("topic-name") String name) throws Exception
+   {
+      TopicResource topic = topics.remove(name);
+      if (topic != null)
+      {
+         try
+         {
+            topic.stop();
+         }
+         catch (Exception e)
+         {
+
+         }
+      }
+
+      ClientSession session = manager.getSessionFactory().createSession(false, false, false);
+      try
+      {
+
+         SimpleString topicName = new SimpleString(name);
+         ClientSession.QueueQuery query = session.queueQuery(topicName);
+         if (query.isExists())
+         {
+            session.deleteQueue(topicName);
+         }
+         else
+         {
+            throw new WebApplicationException(Response.status(405).type("text/plain").entity("Queue does not exists").build());
+         }
+      }
+      finally
+      {
+         try { session.close(); } catch (Exception ignored) {}
+      }
+
+   }
+
 
    @Path("/{topic-name}")
    public TopicResource findQueue(@PathParam("topic-name") String name) throws Exception

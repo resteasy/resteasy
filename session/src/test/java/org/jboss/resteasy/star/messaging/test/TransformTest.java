@@ -24,7 +24,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class TransformTest extends BaseMessageTest
+public class TransformTest extends MessageTestBase
 {
 
    @BeforeClass
@@ -118,9 +118,9 @@ public class TransformTest extends BaseMessageTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
+      Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
+      Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("consume-next: " + consumeNext);
 
       // test that Accept header is used to set content-type
@@ -136,7 +136,7 @@ public class TransformTest extends BaseMessageTest
          Assert.assertEquals("application/xml", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);
          Assert.assertEquals(order, order2);
-         consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
+         consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
          Assert.assertNotNull(consumeNext);
       }
 
@@ -152,7 +152,7 @@ public class TransformTest extends BaseMessageTest
          Assert.assertEquals("application/json", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);
          Assert.assertEquals(order, order2);
-         consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
+         consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
          Assert.assertNotNull(consumeNext);
       }
 
@@ -168,7 +168,7 @@ public class TransformTest extends BaseMessageTest
          Assert.assertEquals("application/xml", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);
          Assert.assertEquals(order, order2);
-         consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
+         consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
          Assert.assertNotNull(consumeNext);
       }
    }
@@ -214,9 +214,9 @@ public class TransformTest extends BaseMessageTest
 
          ClientResponse response = request.head();
          Assert.assertEquals(200, response.getStatus());
-         Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
+         Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
          System.out.println("create: " + sender);
-         Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
+         Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
          System.out.println("consume-next: " + consumeNext);
 
          // test that Accept header is used to set content-type

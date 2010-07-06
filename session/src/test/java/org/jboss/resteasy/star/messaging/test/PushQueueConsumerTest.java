@@ -15,7 +15,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class PushQueueConsumerTest extends BaseMessageTest
+public class PushQueueConsumerTest extends MessageTestBase
 {
    @Test
    public void testSuccessFirst() throws Exception
@@ -35,17 +35,17 @@ public class PushQueueConsumerTest extends BaseMessageTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
+      Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link pushSubscriptions = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
+      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
       System.out.println("push subscriptions: " + pushSubscriptions);
 
       request = new ClientRequest(generateURL("/queues/forwardQueue"));
       response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link forwardSender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
+      Link forwardSender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + forwardSender);
-      Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
+      Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("poller: " + consumeNext);
 
       PushRegistration reg = new PushRegistration();
@@ -62,7 +62,7 @@ public class PushQueueConsumerTest extends BaseMessageTest
       res = consumeNext.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
-      Link session = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
       Assert.assertEquals(204, session.request().delete().getStatus());
    }
 }

@@ -97,17 +97,17 @@ public class PersistentPushQueueConsumerTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
+      Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link pushSubscriptions = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
+      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
       System.out.println("push subscriptions: " + pushSubscriptions);
 
       request = new ClientRequest(generateURL("/queues/forwardQueue"));
       response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link forwardSender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
+      Link forwardSender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + forwardSender);
-      Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
+      Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("poller: " + consumeNext);
 
       PushRegistration reg = new PushRegistration();
@@ -129,7 +129,7 @@ public class PersistentPushQueueConsumerTest
 
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
-      Link session = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
       Assert.assertEquals(204, session.request().delete().getStatus());
 
       shutdown();
