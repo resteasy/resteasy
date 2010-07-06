@@ -1,7 +1,5 @@
 package org.jboss.resteasy.star.messaging.integration;
 
-import org.jboss.resteasy.star.messaging.BindingRegistry;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

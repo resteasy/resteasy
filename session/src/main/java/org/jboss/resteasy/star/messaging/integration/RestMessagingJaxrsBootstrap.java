@@ -20,8 +20,7 @@ public class RestMessagingJaxrsBootstrap extends Application
 
    public RestMessagingJaxrsBootstrap(@Context ServletContext context) throws Exception
    {
-      System.out.println("IN CONSTRUCTOR!!!!");
-      String configfile = context.getInitParameter("rest.messaging.configfile");
+      String configfile = context.getInitParameter("rest.messaging.config.file");
       if (configfile != null)
       {
          URL url = context.getResource(configfile);

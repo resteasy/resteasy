@@ -5,6 +5,7 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.core.client.impl.ClientSessionFactoryImpl;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.hornetq.core.remoting.impl.invm.TransportConstants;
+import org.jboss.resteasy.star.messaging.integration.BindingRegistry;
 import org.jboss.resteasy.star.messaging.integration.JndiComponentRegistry;
 import org.jboss.resteasy.star.messaging.queue.DestinationSettings;
 import org.jboss.resteasy.star.messaging.queue.QueueServiceManager;
