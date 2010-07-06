@@ -32,6 +32,9 @@
                     embebbable server. TJWS has a number of startup/shutdown
                     race conditions we had to fix in order to make unit testing viable.
                 </listitem>
+                <listitem>
+                    Spring integration compiled against Spring 3.0.3.  It may or may not still work with 2.5.6 and lower
+                </listitem>
             </itemizedlist>
         </para>
     </sect1>
