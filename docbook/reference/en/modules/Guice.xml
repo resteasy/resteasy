@@ -66,4 +66,47 @@ public class HelloModule implements Module
     any other RESTEasy configuration option within your web.xml file.  Also notice that there is a
     resteasy.guice.modules context-param.  This can take a comma delimited list of class names that
     are Guice Modules.</para>
+    <section>
+        <title>Configuring Stage</title>
+        <para>
+            You can configure the stage Guice uses to deploy your modules by specific a context param, resteasy.guice.stage.
+            If this value is not specified, Resteasy uses whatever Guice's default is.
+        </para>
+<programlisting>
+<![CDATA[
+<web-app>
+    <display-name>Guice Hello</display-name>
+
+    <context-param>
+        <param-name>resteasy.guice.modules</param-name>
+        <param-value>org.jboss.resteasy.examples.guice.hello.HelloModule</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.guice.stage</param-name>
+        <param-value>PRODUCTION</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>
+            org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextListener
+        </listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>
+            org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+        </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+]]>
+        
+    </section>
 </chapter>
