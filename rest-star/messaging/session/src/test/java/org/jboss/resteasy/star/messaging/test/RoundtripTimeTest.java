@@ -13,7 +13,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class RoundtripTimeTest extends BaseMessageTest
+public class RoundtripTimeTest extends MessageTestBase
 {
    @Test
    public void testSuccessFirst() throws Exception
@@ -28,9 +28,9 @@ public class RoundtripTimeTest extends BaseMessageTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
+      Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
+      Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("consume-next: " + consumeNext);
 
 
@@ -46,7 +46,7 @@ public class RoundtripTimeTest extends BaseMessageTest
       for (int i = 0; i < num; i++)
       {
          ClientResponse res = consumeNext.request().post(String.class);
-         consumeNext = BaseMessageTest.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
+         consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
          Assert.assertEquals(200, res.getStatus());
          Assert.assertEquals(Integer.toString(i + 1), res.getEntity(String.class));
       }

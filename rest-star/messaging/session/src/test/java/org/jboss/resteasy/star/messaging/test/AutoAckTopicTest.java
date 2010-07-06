@@ -13,7 +13,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AutoAckTopicTest extends BaseMessageTest
+public class AutoAckTopicTest extends MessageTestBase
 {
    @Test
    public void testSuccessFirst() throws Exception
@@ -28,15 +28,15 @@ public class AutoAckTopicTest extends BaseMessageTest
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link sender = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "create");
-      Link subscriptions = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "subscriptions");
+      Link sender = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "create");
+      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "subscriptions");
 
 
       ClientResponse res = subscriptions.request().post();
       Assert.assertEquals(201, res.getStatus());
       Link sub1 = res.getLocation();
       Assert.assertNotNull(sub1);
-      Link consumeNext1 = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
+      Link consumeNext1 = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
       Assert.assertNotNull(consumeNext1);
       System.out.println("consumeNext1: " + consumeNext1);
 
@@ -45,7 +45,7 @@ public class AutoAckTopicTest extends BaseMessageTest
       Assert.assertEquals(201, res.getStatus());
       Link sub2 = res.getLocation();
       Assert.assertNotNull(sub2);
-      Link consumeNext2 = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
+      Link consumeNext2 = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
       Assert.assertNotNull(consumeNext1);
 
 
@@ -57,22 +57,22 @@ public class AutoAckTopicTest extends BaseMessageTest
       res = consumeNext1.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
-      consumeNext1 = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
+      consumeNext1 = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
 
       res = consumeNext1.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("2", res.getEntity(String.class));
-      consumeNext1 = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
+      consumeNext1 = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
 
       res = consumeNext2.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
-      consumeNext2 = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
+      consumeNext2 = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
 
       res = consumeNext2.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("2", res.getEntity(String.class));
-      consumeNext2 = BaseMessageTest.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
+      consumeNext2 = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consume-next");
       Assert.assertEquals(204, sub1.request().delete().getStatus());
       Assert.assertEquals(204, sub2.request().delete().getStatus());
    }

@@ -12,6 +12,7 @@ import org.jboss.resteasy.star.messaging.queue.push.xml.PushRegistration;
 import org.w3c.dom.Document;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -95,6 +96,45 @@ public class QueueDestinationsResource
    public Map<String, QueueResource> getQueues()
    {
       return queues;
+   }
+
+   @DELETE
+   @Path("/{queue-name}")
+   public void deleteQueue(@PathParam("queue-name") String name) throws Exception
+   {
+      QueueResource queue = queues.remove(name);
+      if (queue != null)
+      {
+         try
+         {
+            queue.stop();
+         }
+         catch (Exception e)
+         {
+
+         }
+      }
+
+      ClientSession session = manager.getSessionFactory().createSession(false, false, false);
+      try
+      {
+
+         SimpleString queueName = new SimpleString(name);
+         ClientSession.QueueQuery query = session.queueQuery(queueName);
+         if (query.isExists())
+         {
+            session.deleteQueue(queueName);
+         }
+         else
+         {
+            throw new WebApplicationException(Response.status(405).type("text/plain").entity("Queue does not exists").build());
+         }
+      }
+      finally
+      {
+         try { session.close(); } catch (Exception ignored) {}
+      }
+
    }
 
    @Path("/{queue-name}")
