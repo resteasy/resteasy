@@ -107,6 +107,6 @@ public class HelloModule implements Module
 
 </web-app>
 ]]>
-        
+</programlisting>        
     </section>
 </chapter>
