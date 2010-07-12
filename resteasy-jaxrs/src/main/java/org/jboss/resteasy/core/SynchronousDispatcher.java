@@ -190,7 +190,7 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void handleException(HttpRequest request, HttpResponse response, Exception e)
    {
-      if (executeExceptionMapper(request, response, e)) return;
+      if (executeExactExceptionMapper(request, response, e)) return;
 
       // ApplicationException needs to come first as it does its own executeExceptionMapper() call
       if (e instanceof ApplicationException)
@@ -251,7 +251,24 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    /**
-    * Execute an ExceptionMapper if one exists for the given exception
+    * If there exists an Exception mapper for exception, execute it, otherwise, do NOT recurse up class hierarchy
+    * of exception.
+    *
+    * @param request
+    * @param response
+    * @param exception
+    * @return
+    */
+   public boolean executeExactExceptionMapper(HttpRequest request, HttpResponse response, Throwable exception)
+   {
+      ExceptionMapper mapper = providerFactory.getExceptionMapper(exception.getClass());
+      if (mapper == null) return false;
+      writeFailure(request, response, mapper.toResponse(exception));
+      return true;
+   }
+
+   /**
+    * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found
     *
     * @param response
     * @param exception
