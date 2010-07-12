@@ -112,8 +112,7 @@ public class SimpleResource
    <sect1 id="Asynch_HTTP_Servlet3">
       <title>Servlet 3.0 Support</title>
       <para>
-         As of October 20th, 2008, only Jetty 7.0.pre3 (mortbay.org) supports the current draft of the unfinished
-         Servlet 3.0 specification so you will have to download and use Jetty to get this going.
+         Our Servlet 3.0 support has only been tested with JBoss AS 6 M4 (trunk SVN as of 7/12/2010).
       </para>
       <para>
          Your deployed Resteasy applications must also use a different Resteasy servlet,
@@ -122,11 +121,18 @@ public class SimpleResource
          async-http-servlet-3.0 artifact id. web.xml:
       </para>
       <programlisting>
-&lt;servlet&gt;
-   &lt;servlet-name>Resteasy&lt;/servlet-name&gt;
-   &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher&lt;/servlet-class&gt;
-&lt;/servlet&gt;
+<![CDATA[
+   <servlet>
+      <servlet-name>Resteasy</servlet-name>
+      <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher</servlet-class>
+      <async-supported>true</async-supported>
+   </servlet>]]>
       </programlisting>
+       <para>
+           There's also a Filter30Dispatcher class if you want to use Resteasy as a filter.  If you are running within
+           JBoss AS 6 M4 or higher, you do not have to add this config to your web.xml if you are relying on the app
+           server to do automatic scanning and have web.xml empty.
+       </para>
    </sect1>
    <sect1 id="Asynch_HTTP_JBossWeb">
       <title>JBossWeb, JBoss AS 5.0.x Support</title>
