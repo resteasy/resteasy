@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -36,6 +35,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    @Override
    public AsynchronousResponse createAsynchronousResponse(long l)
    {
+      suspended = true;
       final AsyncContext context = request.startAsync(request, response);
       asynchronousResponse = new AbstractAsynchronousResponse()
       {
