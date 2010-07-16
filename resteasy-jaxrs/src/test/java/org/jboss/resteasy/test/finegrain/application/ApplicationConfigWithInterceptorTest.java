@@ -15,7 +15,10 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,10 +34,20 @@ public class ApplicationConfigWithInterceptorTest
    {
       @GET
       @Produces("text/plain")
+      @Path("/good")
       public String get()
       {
          return "hello";
       }
+      
+      @GET
+      @Produces("text/plain")
+      @Path("/bad")
+      public String response()
+      {
+         throw new WebApplicationException(Response.status(Status.CONFLICT).entity("conflicted").build());
+      }
+
    }
 
    @Provider
@@ -80,11 +93,23 @@ public class ApplicationConfigWithInterceptorTest
    }
 
    @Test
-   public void testIt() throws Exception
+   public void testNormalReturn() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/my"));
+      doTest("/my/good", 200);
+   }
+
+   @Test
+   public void testWebApplicationExceptionWithResponse() throws Exception
+   {
+      doTest("/my/bad", 409);
+   }
+
+   @SuppressWarnings("unchecked")
+   private void doTest(String path, int expectedStatus) throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL(path));
       ClientResponse response = request.get();
-      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(expectedStatus, response.getStatus());
       Assert.assertNotNull(response.getHeaders().getFirst("custom-header"));
 
    }
