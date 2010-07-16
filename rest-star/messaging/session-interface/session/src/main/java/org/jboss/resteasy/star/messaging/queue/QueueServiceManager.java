@@ -91,6 +91,7 @@ public class QueueServiceManager extends DestinationServiceManager
    @Override
    public void stop()
    {
+      if (started == false) return;
       for (QueueResource queue : destination.getQueues().values())
       {
          queue.stop();

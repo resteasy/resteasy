@@ -117,7 +117,7 @@ public class TopicDestinationsResource
          }
          else
          {
-            throw new WebApplicationException(Response.status(405).type("text/plain").entity("Queue does not exists").build());
+            throw new WebApplicationException(Response.status(405).type("text/plain").entity("Topic '" + name + "' does not exist").build());
          }
       }
       finally
@@ -129,7 +129,7 @@ public class TopicDestinationsResource
 
 
    @Path("/{topic-name}")
-   public TopicResource findQueue(@PathParam("topic-name") String name) throws Exception
+   public TopicResource findTopic(@PathParam("topic-name") String name) throws Exception
    {
       TopicResource topic = topics.get(name);
       if (topic == null)
@@ -140,7 +140,8 @@ public class TopicDestinationsResource
             ClientSession.QueueQuery query = session.queueQuery(new SimpleString(name));
             if (!query.isExists())
             {
-               throw new WebApplicationException(Response.status(404).type("text/plain").entity("Queue does not exist").build());
+               System.err.println("Topic '" + name + "' does not exist");
+               throw new WebApplicationException(Response.status(404).type("text/plain").entity("Topic '" + name + "' does not exist").build());
             }
             DestinationSettings queueSettings = manager.getDefaultSettings();
             boolean defaultDurable = queueSettings.isDurableSend() || query.isDurable();

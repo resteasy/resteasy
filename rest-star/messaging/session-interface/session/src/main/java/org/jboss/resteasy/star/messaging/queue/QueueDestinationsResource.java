@@ -127,7 +127,7 @@ public class QueueDestinationsResource
          }
          else
          {
-            throw new WebApplicationException(Response.status(405).type("text/plain").entity("Queue does not exists").build());
+            throw new WebApplicationException(Response.status(405).type("text/plain").entity("Queue '" + name + "' does not exist").build());
          }
       }
       finally
@@ -150,7 +150,7 @@ public class QueueDestinationsResource
             ClientSession.QueueQuery query = session.queueQuery(new SimpleString(queueName));
             if (!query.isExists())
             {
-               throw new WebApplicationException(Response.status(404).type("text/plain").entity("Queue does not exist").build());
+               throw new WebApplicationException(Response.status(404).type("text/plain").entity("Queue '" + name + "' does not exist").build());
             }
             DestinationSettings queueSettings = manager.getDefaultSettings();
             boolean defaultDurable = queueSettings.isDurableSend() || query.isDurable();

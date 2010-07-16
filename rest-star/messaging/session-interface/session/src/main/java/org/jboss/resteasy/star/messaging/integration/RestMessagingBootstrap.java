@@ -13,12 +13,12 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class RestMessagingJaxrsBootstrap extends Application
+public class RestMessagingBootstrap extends Application
 {
    MessageServiceManager manager = new MessageServiceManager();
    HashSet<Object> singletons = new HashSet<Object>();
 
-   public RestMessagingJaxrsBootstrap(@Context ServletContext context) throws Exception
+   public RestMessagingBootstrap(@Context ServletContext context) throws Exception
    {
       String configfile = context.getInitParameter("rest.messaging.config.file");
       if (configfile != null)
