@@ -18,6 +18,7 @@ import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -245,7 +246,15 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
          }
       }
 
-      Object rtn = methodInjector.invoke(request, response, target);
+      Object rtn = null;
+      try 
+      {
+         rtn = methodInjector.invoke(request, response, target);
+      } catch (WebApplicationException wae) {
+         prepareResponse(ServerResponse.copyIfNotServerResponse(wae.getResponse()));
+         throw wae;
+      }
+
       if (request.isSuspended())
       {
          AbstractAsynchronousResponse asyncResponse = (AbstractAsynchronousResponse) request.getAsynchronousResponse();
