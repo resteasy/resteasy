@@ -43,7 +43,8 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       if (closed)
       {
          UriBuilder builder = info.getBaseUriBuilder();
-         builder.path(info.getMatchedURIs().get(1))
+         String path = info.getMatchedURIs().get(1);
+         builder.path(path)
                  .path("acknowledge-next");
          String uri = builder.build().toString();
 

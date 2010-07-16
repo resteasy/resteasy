@@ -193,9 +193,9 @@ public class MessageServiceManager
 
    public void stop()
    {
-      queueManager.stop();
+      if (queueManager != null) queueManager.stop();
       queueManager = null;
-      topicManager.stop();
+      if (topicManager != null) topicManager.stop();
       topicManager = null;
    }
 

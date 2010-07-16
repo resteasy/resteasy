@@ -11,6 +11,7 @@ import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -144,14 +145,15 @@ public class SubscriptionsResource implements TimeoutTask.Callback
          if (autoAck) location.path("auto-ack");
          else location.path("acknowledged");
          location.path(consumer.getId());
+         location.matrixParam("durable", durable);
          Response.ResponseBuilder builder = Response.created(location.build());
          if (autoAck)
          {
-            SubscriptionResource.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId());
+            SubscriptionResource.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId() + ";durable=" + durable);
          }
          else
          {
-            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
+            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId() + ";durable=" + durable);
 
          }
          return builder.build();
@@ -197,29 +199,31 @@ public class SubscriptionsResource implements TimeoutTask.Callback
 
    @Path("auto-ack/{subscription-id}")
    public QueueConsumer getAutoAckSubscription(
-           @PathParam("subscription-id") String subscriptionId)
+           @PathParam("subscription-id") String subscriptionId,
+           @MatrixParam("durable") @DefaultValue("true") boolean durable)
    {
       QueueConsumer consumer = queueConsumers.get(subscriptionId);
       if (consumer == null)
       {
-         consumer = recreateQueueConsumer(subscriptionId, true);
+         consumer = recreateTopicConsumer(subscriptionId, true, durable);
       }
       return consumer;
    }
 
    @Path("acknowledged/{subscription-id}")
    public QueueConsumer getAcknoledgeSubscription(
-           @PathParam("subscription-id") String subscriptionId)
+           @PathParam("subscription-id") String subscriptionId,
+           @MatrixParam("durable") @DefaultValue("true") boolean durable)
    {
       QueueConsumer consumer = queueConsumers.get(subscriptionId);
       if (consumer == null)
       {
-         consumer = recreateQueueConsumer(subscriptionId, false);
+         consumer = recreateTopicConsumer(subscriptionId, false, durable);
       }
       return consumer;
    }
 
-   private QueueConsumer recreateQueueConsumer(String subscriptionId, boolean autoAck)
+   private QueueConsumer recreateTopicConsumer(String subscriptionId, boolean autoAck, boolean durable)
    {
       QueueConsumer consumer;
       ClientSession session = null;

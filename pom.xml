@@ -48,7 +48,7 @@
     </developers>
 
     <modules>
-        <module>session</module>
+        <module>session-interface</module>
     </modules>
 
     <dependencyManagement>

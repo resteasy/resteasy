@@ -95,6 +95,7 @@ public class TopicServiceManager extends DestinationServiceManager
 
    public void stop()
    {
+      if (started == false) return;
       for (TopicResource topic : destination.getTopics().values())
       {
          topic.stop();
