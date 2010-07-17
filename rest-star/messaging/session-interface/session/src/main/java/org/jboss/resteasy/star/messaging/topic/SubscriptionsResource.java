@@ -145,15 +145,14 @@ public class SubscriptionsResource implements TimeoutTask.Callback
          if (autoAck) location.path("auto-ack");
          else location.path("acknowledged");
          location.path(consumer.getId());
-         location.matrixParam("durable", durable);
          Response.ResponseBuilder builder = Response.created(location.build());
          if (autoAck)
          {
-            SubscriptionResource.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId() + ";durable=" + durable);
+            SubscriptionResource.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId());
          }
          else
          {
-            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId() + ";durable=" + durable);
+            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
 
          }
          return builder.build();
@@ -199,31 +198,29 @@ public class SubscriptionsResource implements TimeoutTask.Callback
 
    @Path("auto-ack/{subscription-id}")
    public QueueConsumer getAutoAckSubscription(
-           @PathParam("subscription-id") String subscriptionId,
-           @MatrixParam("durable") @DefaultValue("true") boolean durable)
+           @PathParam("subscription-id") String subscriptionId)
    {
       QueueConsumer consumer = queueConsumers.get(subscriptionId);
       if (consumer == null)
       {
-         consumer = recreateTopicConsumer(subscriptionId, true, durable);
+         consumer = recreateTopicConsumer(subscriptionId, true);
       }
       return consumer;
    }
 
    @Path("acknowledged/{subscription-id}")
    public QueueConsumer getAcknoledgeSubscription(
-           @PathParam("subscription-id") String subscriptionId,
-           @MatrixParam("durable") @DefaultValue("true") boolean durable)
+           @PathParam("subscription-id") String subscriptionId)
    {
       QueueConsumer consumer = queueConsumers.get(subscriptionId);
       if (consumer == null)
       {
-         consumer = recreateTopicConsumer(subscriptionId, false, durable);
+         consumer = recreateTopicConsumer(subscriptionId, false);
       }
       return consumer;
    }
 
-   private QueueConsumer recreateTopicConsumer(String subscriptionId, boolean autoAck, boolean durable)
+   private QueueConsumer recreateTopicConsumer(String subscriptionId, boolean autoAck)
    {
       QueueConsumer consumer;
       ClientSession session = null;
@@ -251,8 +248,8 @@ public class SubscriptionsResource implements TimeoutTask.Callback
          }
          else
          {
-            throw new WebApplicationException(Response.serverError()
-                    .entity("Failed to match a subscriber to URL" + subscriptionId)
+            throw new WebApplicationException(Response.status(405)
+                    .entity("Failed to find subscriber " + subscriptionId + " you will have to reconnect")
                     .type("text/plain").build());
          }
       }
