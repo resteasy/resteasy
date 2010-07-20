@@ -60,4 +60,9 @@ public class OAuthProviderChecker implements OAuthProvider {
 			throws OAuthException {
 		return checkNull(provider.authoriseRequestToken(consumerKey, requestKey));
 	}
+
+    public OAuthConsumer registerConsumerScopes(String consumerKey, String[] scopes)
+            throws OAuthException {
+        return checkNull(provider.registerConsumerScopes(consumerKey, scopes));
+    }
 }

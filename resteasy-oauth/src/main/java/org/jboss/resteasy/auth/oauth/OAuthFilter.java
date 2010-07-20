@@ -54,7 +54,7 @@ public class OAuthFilter implements Filter {
 		_doFilter((HttpServletRequest)request, (HttpServletResponse)response, filterChain);
 	}
 	
-	private void _doFilter(HttpServletRequest request, HttpServletResponse response,
+	protected void _doFilter(HttpServletRequest request, HttpServletResponse response,
 			FilterChain filterChain) throws IOException, ServletException {
 	    
 	    String requestURI = request.getRequestURL().toString();
@@ -88,25 +88,8 @@ public class OAuthFilter implements Filter {
     			    OAuthUtils.makeErrorResponse(response, "Wrong scope", HttpURLConnection.HTTP_BAD_REQUEST, provider);
     			    return;
     			}
-    			
-    			// set the Client's credentials
-    			final Principal principal = accessToken.getPrincipal();
-    			final Set<String> roles = accessToken.getRoles();
-    			request = new HttpServletRequestWrapper(request){
-    				@Override
-    				public Principal getUserPrincipal(){
-    					return principal;
-    				}
-    				@Override
-    				public boolean isUserInRole(String role){
-    					return roles.contains(role);
-    				}
-    				@Override
-    				public String getAuthType(){
-    					return OAUTH_AUTH_METHOD;
-    				}
-    			};
-			} else {
+    			request = createSecurityContext(request, accessToken.getConsumer(), accessToken);
+    		} else {
 			    // verify if it is a valid 2-leg OAuth request
 			    org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = provider.getConsumer(consumerKey);
 	            String[] scopes = consumer.getScopes();
@@ -119,6 +102,7 @@ public class OAuthFilter implements Filter {
                 OAuthAccessor accessor = new OAuthAccessor(_consumer);
                 // validate the message
                 validator.validateMessage(message, accessor, null);
+                request = createSecurityContext(request, consumer, null);
 			}
 			
 			// let the request through with the new credentials
@@ -135,6 +119,33 @@ public class OAuthFilter implements Filter {
 
 	}
 
+	protected HttpServletRequest createSecurityContext(HttpServletRequest request, 
+	                                                   org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
+	                                                   OAuthToken accessToken) 
+	{
+	    if (accessToken != null)
+	    {
+	        // set the Client's credentials
+            final Principal principal = accessToken.getPrincipal();
+            final Set<String> roles = accessToken.getRoles();
+            request = new HttpServletRequestWrapper(request){
+                @Override
+                public Principal getUserPrincipal(){
+                    return principal;
+                }
+                @Override
+                public boolean isUserInRole(String role){
+                    return roles.contains(role);
+                }
+                @Override
+                public String getAuthType(){
+                    return OAUTH_AUTH_METHOD;
+                }
+            };
+	    } 
+	    return request;
+	}
+	
 	private boolean validateScopes(String requestURI, String[] scopes) {
 	    if (scopes == null) {
 	        return true;

@@ -20,6 +20,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.auth.oauth.OAuthUtils;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.xml.sax.InputSource;
 
 
@@ -44,6 +45,7 @@ public class EndUser
    
    public static void main(String [] args) throws Exception {
        EndUser user = new EndUser();
+       
        // Step1 : request a service from a 3rd party service
        String authorizationURI = user.requestServiceFromThirdPartyWebApp();
        // Step2 : authorize a consumer's temporarily request token
@@ -51,6 +53,37 @@ public class EndUser
        // Step3 : return an authorized request token to the consumer using the provided callback URI
        String endUserResourceData = user.setCallback(callback);
        System.out.println("Success : " + endUserResourceData);
+       
+       // confirm the end user can access its own resources directly
+       if (!"true".equals(System.getProperty("jetty")))
+       {
+           accessEndUserResource("/resource1");
+           accessEndUserResource("/resource2");
+           accessEndUserResource("/invisible");
+       }
+   }
+   
+   private static void accessEndUserResource(String relativeURI) throws Exception
+   {
+       HttpClient client = new HttpClient();
+       GetMethod method = new GetMethod(EndUserResourceURL + relativeURI);
+       
+       Base64 base64 = new Base64();
+       String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
+       
+       int status = client.executeMethod(method);
+       if ("/invisible".equals(relativeURI)) {
+           if (status != 401) {
+               throw new RuntimeException("End user can access the invisible resource");
+           } else {
+               return;
+           }
+       }
+       if (HttpResponseCodes.SC_OK != status) {
+           throw new RuntimeException("End user can not access its own resources");
+       }
+       System.out.println("End user resource : " + method.getResponseBodyAsString());
    }
    
    /**

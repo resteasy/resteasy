@@ -59,7 +59,7 @@ public class OAuthServlet extends HttpServlet {
 	/**
      * Relative path for the token authorization confirmation URL 
      */
-    final static String CONSUMER_SCOPES_REGISTRATION_URL = "/consumer-scopes";
+    final static String CONSUMER_SCOPES_REGISTRATION_URL = "/consumer/scopes";
 	
 	/**
      * Relative path for the token authorization confirmation URL 
@@ -80,7 +80,7 @@ public class OAuthServlet extends HttpServlet {
 		ServletContext context = config.getServletContext();
 		consumerRegistrationURL = context.getInitParameter(PARAM_CONSUMER_REGISTRATION_URL);
         if(consumerRegistrationURL == null)
-            consumerRegistrationURL = "/registration";
+            consumerRegistrationURL = "/consumer/registration";
 		
         authorizationURL = context.getInitParameter(PARAM_TOKEN_AUTHORIZATION_URL);
         if(authorizationURL == null)
@@ -288,10 +288,9 @@ public class OAuthServlet extends HttpServlet {
             }
             
             String consumerKey = URLDecoder.decode(values[0], "UTF-8");
-            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = provider.getConsumer(consumerKey);
             String[] scopes = req.getParameterValues("xoauth_scope");
             if (scopes != null) {
-                consumer.setScopes(scopes);
+                provider.registerConsumerScopes(consumerKey, scopes);
             }
             
             

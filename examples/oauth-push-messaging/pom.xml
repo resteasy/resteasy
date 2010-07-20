@@ -67,6 +67,11 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.7</version>
+        </dependency>
     </dependencies>
 
     <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
@@ -80,7 +85,7 @@
     </distributionManagement>
 
     <build>
-        <finalName>examples-oauth</finalName>
+        <finalName>examples-oauth-push-messaging</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

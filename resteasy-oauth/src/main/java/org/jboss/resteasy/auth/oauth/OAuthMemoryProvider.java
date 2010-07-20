@@ -19,6 +19,10 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	private ConcurrentHashMap<String, OAuthRequestToken> requestTokens = new ConcurrentHashMap<String,OAuthRequestToken>();
 	private ConcurrentHashMap<String, OAuthToken> accessTokens = new ConcurrentHashMap<String,OAuthToken>();
 	
+	public OAuthMemoryProvider(){
+        this("default");
+    }
+	
 	public OAuthMemoryProvider(String realm){
 		this.realm = realm;
 	}
@@ -137,7 +141,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
         if (consumer != null) {
             return consumer;
         }
-        consumer = new OAuthConsumer(consumerKey, makeRandomString(), displayName, connectURI);
+        consumer = new OAuthConsumer(consumerKey, "therealfrog", displayName, connectURI);
         consumers.putIfAbsent(consumerKey, consumer);
         return consumer;
 	}
@@ -219,5 +223,12 @@ public class OAuthMemoryProvider implements OAuthProvider {
         public Set<String> getRoles() {
             return roleNames;
         }
+    }
+
+    public OAuthConsumer registerConsumerScopes(String consumerKey, String[] scopes)
+            throws OAuthException {
+        OAuthConsumer consumer = _getConsumer(consumerKey);
+        consumer.setScopes(scopes);
+        return consumer;
     }
 }

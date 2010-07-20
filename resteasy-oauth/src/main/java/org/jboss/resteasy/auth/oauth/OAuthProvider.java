@@ -22,6 +22,16 @@ public interface OAuthProvider {
     public OAuthConsumer registerConsumer(String consumerKey, 
             String displayName, String connectURI) throws OAuthException;
 
+    
+    /**
+     * Registers Consumer Scopes
+     * @param consumerKey the Consumer key.
+     * @return scopes the consumer scopes
+     * @throws OAuthException thrown if Consumer can not be registered.
+     */
+    public OAuthConsumer registerConsumerScopes(String consumerKey, 
+            String[] scopes) throws OAuthException;
+    
 	/**
 	 * Returns the OAuth Consumer for the given Consumer key. If no such Consumer exists, throw an OAuthException.
 	 * @param consumerKey the Consumer key to load.

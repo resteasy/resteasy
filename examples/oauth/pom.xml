@@ -67,6 +67,23 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.7</version>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.security</groupId>
+          <artifactId>jboss-security-spi</artifactId>
+          <version>2.0.4</version>
+          <scope>provided</scope>
+       </dependency>
+       <dependency>
+          <groupId>org.jboss.security</groupId>
+          <artifactId>jbosssx</artifactId>
+          <version>2.0.4</version>
+          <scope>provided</scope>
+       </dependency>
     </dependencies>
 
     <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this

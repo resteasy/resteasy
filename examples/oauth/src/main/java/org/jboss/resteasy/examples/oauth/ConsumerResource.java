@@ -47,7 +47,7 @@ public class ConsumerResource
        TokenAuthorizationURL = props.getProperty("token.authorization.url");
    }
    
-   private static final String DEFAULT_CONSUMER_ID = "http://www.third-party-service.com";
+   private static final String DEFAULT_CONSUMER_ID = "consumer";
    
    @Context
    private UriInfo ui;
@@ -61,6 +61,9 @@ public class ConsumerResource
        endUserScope = scope;
        // consumer registration - this will be done earlier in the real cases
        consumerSecret = getSharedSecret(DEFAULT_CONSUMER_ID);
+       
+       accessWithoutToken(scope);
+       
        // request a temporarily request token
        requestToken = getRequestToken(DEFAULT_CONSUMER_ID, consumerSecret, getCallbackURI(), scope);
        // and redirect the end user to the token authorization URI for this request token
@@ -69,6 +72,16 @@ public class ConsumerResource
                URI.create(getAuthorizationURL(DEFAULT_CONSUMER_ID, requestToken))).build();
    }
 
+   private void accessWithoutToken(String uri) throws Exception
+   {
+       HttpClient client = new HttpClient();
+       GetMethod method = new GetMethod(uri + "/resource1");
+       int status = client.executeMethod(method);
+       if (400 != status) {
+           throw new RuntimeException("Consumer has not been authorized yet but already can access the resource");
+       }
+   }
+   
    
    @Path("token-authorization")
    @POST
@@ -77,6 +90,9 @@ public class ConsumerResource
        
        // exchange the authorized request token for the access token
        Token accessToken = getAccessToken(DEFAULT_CONSUMER_ID, consumerSecret, requestToken);
+       
+       // try to get the admin space 
+       tryAccessEndUserAdminResource(accessToken);
        // and finally use it to access the user resource
        String response = accessEndUserResource(accessToken);
        return Response.ok().type("text/plain").entity(response).build();
@@ -176,6 +192,20 @@ public class ConsumerResource
 	        method.releaseConnection();
 	    }
    }
+	
+	public void tryAccessEndUserAdminResource(Token accessToken) throws Exception
+    {
+        HttpClient client = new HttpClient();
+        GetMethod method = new GetMethod(getEndUserURL("/resource2", DEFAULT_CONSUMER_ID, consumerSecret, accessToken.getToken(), accessToken.getSecret()));
+        try {
+            int status = client.executeMethod(method);
+            if (401 != status) {
+                throw new RuntimeException("Unexpected status");
+            }
+        } finally {
+            method.releaseConnection();
+        }
+   }	
 
    private String getRequestURL(String consumerKey, String consumerSecret, 
                                 String callbackURI, String scope) throws Exception {
