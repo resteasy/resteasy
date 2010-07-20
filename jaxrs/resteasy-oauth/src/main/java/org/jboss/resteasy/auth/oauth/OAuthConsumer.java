@@ -61,7 +61,7 @@ public class OAuthConsumer {
     public String[] getScopes() {
         
         synchronized (this) {
-            return scopes.toArray(new String[]{});
+            return scopes != null ? scopes.toArray(new String[]{}) : null;
         }
     }
     

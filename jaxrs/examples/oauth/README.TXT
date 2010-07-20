@@ -19,12 +19,23 @@ Default port is 9095.
 
 Running the project and manually testing it:
 ===========================================
-- Run "mvn jetty:run" in one console. 
-  Alternatively, copy target/example-oauth.war to a web/app container, example :
+- Deploy the war 
+ * Jetty
+  Run "mvn jetty:run" in one console.
+ * JBoss  
+  update src/main/webapp/WEB-INF/web.xml so that OAuthBasicAuthentication filter is used
+  instead of OAuthDBFilter (just update the comments in web.xml), rebuild and copy 
+  target/example-oauth.war to JBoss :
   "cp target/example-oauth.war $JBOSS_HOME/server/default/deploy" followed by
   "$JBOSS_HOME/bin/run.sh"   
 - Execute the client :
+ * Jetty :
+  mvn exec:java -Dexec.mainClass=org.jboss.resteasy.examples.oauth.EndUser -Djetty=true
+ * JBoss :  
   mvn exec:java -Dexec.mainClass=org.jboss.resteasy.examples.oauth.EndUser
+  
+Note that when JBoss is used, a JBoss Security based filter (OAuthBasicAuthentication) 
+is used to perform both OAuth (by delegating to its superclass) and Basic Authentication.   
   
 Demo Description
 ================
@@ -160,3 +171,4 @@ and finally replies to the end user at step 10
 
 14. End users prints :  "Success : Resource1" where "Resource1" is the representation of the resource
 which the end user owns but accessed by the consumer on its behalf.
+

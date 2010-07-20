@@ -67,6 +67,9 @@ public class Subscriber
    {
       HttpClient client = new HttpClient();
       PostMethod method = new PostMethod(ConsumerRegistrationURL);
+      Base64 base64 = new Base64();
+      String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+      method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
       method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
       int status = client.executeMethod(method);
       if (HttpResponseCodes.SC_OK != status) {
@@ -108,6 +111,9 @@ public class Subscriber
    {
       HttpClient client = new HttpClient();
       PostMethod method = new PostMethod(MessagingServiceCallbackRegistrationURL);
+      Base64 base64 = new Base64();
+      String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+      method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
       method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
       method.addParameter("xoauth_consumer_secret", consumerSecret);
       method.addParameter("callback", callback);
@@ -122,6 +128,9 @@ public class Subscriber
    {
       HttpClient client = new HttpClient();
       PostMethod method = new PostMethod(MessagingServiceMessagesURL);
+      Base64 base64 = new Base64();
+      String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+      method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
       method.setRequestEntity(new StringRequestEntity("Hello !", "text/plain", "UTF-8"));
       int status = client.executeMethod(method);
       if (HttpResponseCodes.SC_OK != status) {
@@ -134,6 +143,9 @@ public class Subscriber
    {
        HttpClient client = new HttpClient();
        GetMethod method = new GetMethod(MessageReceiverGetURL);
+       Base64 base64 = new Base64();
+       String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
        int status = client.executeMethod(method);
        if (HttpResponseCodes.SC_OK != status) {
            throw new RuntimeException("Messages can not be received");

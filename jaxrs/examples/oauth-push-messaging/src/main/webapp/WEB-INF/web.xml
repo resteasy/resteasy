@@ -6,7 +6,7 @@
 
     <context-param>
         <param-name>oauth.provider.provider-class</param-name>
-        <param-value>org.jboss.resteasy.examples.oauth.MyProvider</param-value>
+        <param-value>org.jboss.resteasy.examples.oauth.OAuthPushMessagingProvider</param-value>
     </context-param>
 
     <context-param>
@@ -21,14 +21,19 @@
        <param-value>/rest</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>resteasy.role.based.security</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <filter>
 		<filter-name>OAuth Filter</filter-name>
-		<filter-class>org.jboss.resteasy.auth.oauth.OAuthFilter</filter-class>
+		<filter-class>org.jboss.resteasy.examples.oauth.OAuthAuthenticationFilter</filter-class>
 	</filter>
 	
     <filter-mapping>
         <filter-name>OAuth Filter</filter-name>
-        <url-pattern>/rest/receiver/sink/*</url-pattern>
+        <url-pattern>/rest/receiver/*</url-pattern>
     </filter-mapping>
 
     <listener>
@@ -54,11 +59,32 @@
         <servlet-name>Resteasy</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
-<!--
+
     <security-constraint>
       <web-resource-collection>
          <web-resource-name>OAuth</web-resource-name>
-         <url-pattern>/oauth/consumer-scopes/*</url-pattern>
+         <url-pattern>/oauth/consumer/*</url-pattern>
+      </web-resource-collection>
+       <auth-constraint>
+         <role-name>JBossAdmin</role-name>
+      </auth-constraint>
+    </security-constraint>
+    
+    <security-constraint>
+      <web-resource-collection>
+         <web-resource-name>MessageReceiver</web-resource-name>
+         <url-pattern>/rest/receiver/*</url-pattern>
+         <http-method>GET</http-method>
+      </web-resource-collection>
+       <auth-constraint>
+         <role-name>JBossAdmin</role-name>
+      </auth-constraint>
+    </security-constraint>
+    
+    <security-constraint>
+      <web-resource-collection>
+         <web-resource-name>MessagingService</web-resource-name>
+         <url-pattern>/rest/service/*</url-pattern>
       </web-resource-collection>
        <auth-constraint>
          <role-name>JBossAdmin</role-name>
@@ -73,5 +99,5 @@
     <security-role>
       <role-name>JBossAdmin</role-name>
     </security-role>
--->   
+
 </web-app>

@@ -6,7 +6,7 @@
 
     <context-param>
         <param-name>oauth.provider.provider-class</param-name>
-        <param-value>org.jboss.resteasy.examples.oauth.MyProvider</param-value>
+        <param-value>org.jboss.resteasy.examples.oauth.OAuthDBProvider</param-value>
     </context-param>
 
     <context-param>
@@ -20,10 +20,20 @@
        <param-name>resteasy.servlet.mapping.prefix</param-name>
        <param-value>/rest</param-value>
     </context-param>
-
+    
+    <context-param>
+        <param-name>resteasy.role.based.security</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    
     <filter>
 		<filter-name>OAuth Filter</filter-name>
-		<filter-class>org.jboss.resteasy.auth.oauth.OAuthFilter</filter-class>
+		<!--
+		<filter-class>org.jboss.resteasy.examples.oauth.OAuthBasicAuthenticationFilter</filter-class>
+		-->
+		<filter-class>org.jboss.resteasy.examples.oauth.OAuthDBFilter</filter-class>
+		
+		
 	</filter>
 	
     <filter-mapping>
@@ -64,7 +74,7 @@
          <role-name>JBossAdmin</role-name>
       </auth-constraint>
     </security-constraint>
-    
+        
     <login-config>
       <auth-method>BASIC</auth-method>
       <realm-name>TokenAuthorization</realm-name>

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.examples.oauth;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,15 +13,15 @@ public class MessageReceiver
     private volatile String greetingMessage;
     
     @GET
-    @Path("message")
+    @RolesAllowed("JBossAdmin")
     public String getMessage()
     {
         return greetingMessage;
     }
     
     @POST
-    @Path("sink")
     @Consumes("text/plain")
+    @RolesAllowed("user")
     public Response receiveMessage(String value)
     {
         greetingMessage = value;
