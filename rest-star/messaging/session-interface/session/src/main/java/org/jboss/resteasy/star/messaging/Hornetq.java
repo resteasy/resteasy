@@ -2,6 +2,7 @@ package org.jboss.resteasy.star.messaging;
 
 import org.hornetq.api.core.client.ClientMessage;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.star.messaging.util.HttpMessageHelper;
 import org.jboss.resteasy.util.GenericType;
 
 import javax.ws.rs.core.MediaType;
@@ -156,4 +157,17 @@ public class Hornetq
          throw new RuntimeException(e);
       }
    }
+
+   /**
+    * Was this HornetQ message generated from a REST call?
+    *
+    * @param msg
+    * @return
+    */
+   public static boolean isHttpMessage(ClientMessage msg)
+   {
+      Boolean aBoolean = msg.getBooleanProperty(HttpMessageHelper.POSTED_AS_HTTP_MESSAGE);
+      return aBoolean != null && aBoolean.booleanValue() == true;
+   }
+
 }
