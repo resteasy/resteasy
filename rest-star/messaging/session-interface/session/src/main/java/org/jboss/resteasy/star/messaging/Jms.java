@@ -3,7 +3,6 @@ package org.jboss.resteasy.star.messaging;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.jms.client.HornetQMessage;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.star.messaging.util.HttpMessageHelper;
 import org.jboss.resteasy.util.GenericType;
 
 import javax.jms.JMSException;
@@ -97,6 +96,12 @@ public class Jms
       return getEntity(message, type.getType(), type.getGenericType(), factory);
    }
 
+   public static boolean isHttpMessage(Message message)
+   {
+      ClientMessage msg = ((HornetQMessage) message).getCoreMessage();
+      return Hornetq.isHttpMessage(msg);
+   }
+
    /**
     * Extract an object using a built-in RESTEasy JAX-RS MessageBodyReader
     *
@@ -112,14 +117,10 @@ public class Jms
    public static <T> T getEntity(Message message, Class<T> type, Type genericType, ResteasyProviderFactory factory) throws UnknownMediaType, UnmarshalException
    {
       ClientMessage msg = ((HornetQMessage) message).getCoreMessage();
-
-      Boolean aBoolean = msg.getBooleanProperty(HttpMessageHelper.POSTED_AS_HTTP_MESSAGE);
-      if (aBoolean == null || aBoolean.booleanValue() == false)
+      if (!Hornetq.isHttpMessage(msg))
       {
          throw new UnmarshalException("JMS Message was not posted from HTTP engine");
       }
-
-
       return Hornetq.getEntity(msg, type, genericType, factory);
    }
 
