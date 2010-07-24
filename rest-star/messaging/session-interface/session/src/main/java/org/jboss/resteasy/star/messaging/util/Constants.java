@@ -6,5 +6,5 @@ package org.jboss.resteasy.star.messaging.util;
  */
 public interface Constants
 {
-   String WAIT_HEADER = "X-RS-Wait";
+   String WAIT_HEADER = "Accept-Wait";
 }

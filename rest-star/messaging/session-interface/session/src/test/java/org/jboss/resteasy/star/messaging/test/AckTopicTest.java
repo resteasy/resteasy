@@ -285,44 +285,5 @@ public class AckTopicTest extends MessageTestBase
    }
 
 
-   @Test
-   public void testAcknowledgeNext() throws Exception
-   {
-      ClientRequest request = new ClientRequest(generateURL("/topics/testQueue"));
 
-      ClientResponse response = request.head();
-      Assert.assertEquals(200, response.getStatus());
-      Link sender = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "create");
-      System.out.println("create: " + sender);
-      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "subscriptions");
-      response = subscriptions.request().formParameter("autoAck", "false")
-              .formParameter("durable", "true")
-              .post();
-      Assert.assertEquals(201, response.getStatus());
-      Link sub1 = response.getLocation();
-      Assert.assertNotNull(sub1);
-      Link consumeNext = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "acknowledge-next");
-      System.out.println("poller: " + consumeNext);
-
-      ClientResponse res = sender.request().body("text/plain", Integer.toString(1)).post();
-      Assert.assertEquals(201, res.getStatus());
-
-      res = consumeNext.request().post(String.class);
-      Assert.assertEquals(200, res.getStatus());
-      consumeNext = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "acknowledge-next");
-      System.out.println(consumeNext);
-      res = sender.request().body("text/plain", Integer.toString(2)).post();
-      Assert.assertEquals(201, res.getStatus());
-
-      res = consumeNext.request().header(Constants.WAIT_HEADER, "10").post(String.class);
-      Assert.assertEquals(200, res.getStatus());
-      Assert.assertEquals("2", res.getEntity(String.class));
-      Link ack = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "acknowledgement");
-      System.out.println("ack: " + ack);
-      Assert.assertNotNull(ack);
-      ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();
-      Assert.assertEquals(204, ackRes.getStatus());
-
-      Assert.assertEquals(204, sub1.request().delete().getStatus());
-   }
 }

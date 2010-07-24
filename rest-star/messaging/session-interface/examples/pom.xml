@@ -1,0 +1,16 @@
+<project>
+    <name>Resteasy Star Messaging Examples</name>
+    <url>http://rest-easy.org</url>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy.star.messaging</groupId>
+    <artifactId>star-messaging-session-examples-pom</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>javascript-chat</module>
+        <module>multi-language-demo</module>
+        <module>jms-to-rest</module>
+    </modules>
+</project>
