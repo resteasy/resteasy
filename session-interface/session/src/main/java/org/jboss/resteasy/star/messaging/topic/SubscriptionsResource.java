@@ -148,11 +148,11 @@ public class SubscriptionsResource implements TimeoutTask.Callback
          Response.ResponseBuilder builder = Response.created(location.build());
          if (autoAck)
          {
-            SubscriptionResource.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId());
+            SubscriptionResource.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId(), "-1");
          }
          else
          {
-            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
+            AcknowledgedSubscriptionResource.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), "-1");
 
          }
          return builder.build();

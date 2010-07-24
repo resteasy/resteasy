@@ -92,7 +92,7 @@ public class TransformTest extends MessageTestBase
       try
       {
          ClientProducer producer = session.createProducer(destination);
-         ClientMessage message = session.createMessage(false);
+         ClientMessage message = session.createMessage(ClientMessage.OBJECT_TYPE, false);
          if (contentType == null)
          {
             Hornetq.setEntity(message, object);

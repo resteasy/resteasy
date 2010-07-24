@@ -9,6 +9,7 @@ import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -33,11 +34,13 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
            throws HornetQException
    {
       super(factory, destination, id, serviceManager);
+      autoAck = false;
    }
 
    @Path("acknowledge-next")
    @POST
    public synchronized Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+                                     @MatrixParam("index") long index,
                                      @Context UriInfo info)
    {
       if (closed)
@@ -52,7 +55,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
 
          return Response.status(307).location(URI.create(uri)).build();
       }
-      return runPoll(wait, info, info.getMatchedURIs().get(1));
+      return checkIndexAndPoll(wait, info, info.getMatchedURIs().get(1), index);
    }
 
 
@@ -66,37 +69,6 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       }
    }
 
-
-   @Path("acknowledgement/{ackToken}/next")
-   @POST
-   public synchronized Response acknowledgeAndNext(
-           @HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-           @PathParam("ackToken") String ackToken,
-           @Context UriInfo uriInfo)
-   {
-      ping();
-      String basePath = uriInfo.getMatchedURIs().get(1);
-      if (closed)
-      {
-         return failAcknowledgement(uriInfo, basePath);
-      }
-      boolean acknowledged = acknowledge(ackToken);
-      if (!acknowledged)
-      {
-         return failAcknowledgement(uriInfo, basePath);
-      }
-      return runPoll(wait, uriInfo, basePath);
-
-   }
-
-   private Response failAcknowledgement(UriInfo uriInfo, String basePath)
-   {
-      Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
-              .entity("Could not acknowledge previous message, it was probably requeued from a timeout")
-              .type("text/plain");
-      setAcknowledgeLinks(uriInfo, basePath, builder);
-      return builder.build();
-   }
 
    @Path("acknowledgement/{ackToken}")
    @POST
@@ -112,39 +84,66 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
          Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
                  .entity("Could not acknowledge message, it was probably requeued from a timeout")
                  .type("text/plain");
-         setAcknowledgeLinks(uriInfo, basePath, builder);
+         setAcknowledgeLinks(uriInfo, basePath, builder, "-1");
          return builder.build();
       }
-      if (!doAcknowledge)
+
+      if (ack == null || !ack.getAckToken().equals(ackToken))
       {
-         unacknowledge(ackToken);
-         Response.ResponseBuilder builder = Response.noContent();
-         setAcknowledgeLinks(uriInfo, basePath, builder);
+         Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
+                 .entity("Could not acknowledge message, it was probably requeued from a timeout or you have an old link")
+                 .type("text/plain");
+         setAcknowledgeLinks(uriInfo, basePath, builder, "-1");
          return builder.build();
       }
-      boolean acknowledged = acknowledge(ackToken);
-      if (acknowledged)
+      
+      // clear indexes as we know the client got the message and won't send a duplicate ack-next
+      previousIndex = -2;
+      lastConsumed = null;
+
+      if (ack.wasSet() && doAcknowledge != ack.isAcknowledged())
+      {
+         StringBuilder msg = new StringBuilder("Could not ");
+         if (doAcknowledge == false) msg.append("un");
+         msg.append("acknowledge message because it has already been ");
+         if (doAcknowledge == true) msg.append("un");
+         msg.append("acknowledged");
+
+         Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
+                 .entity(msg.toString())
+                 .type("text/plain");
+         setAcknowledgeLinks(uriInfo, basePath, builder, "-1");
+         return builder.build();
+      }
+
+      if (ack.wasSet() && doAcknowledge == ack.isAcknowledged())
       {
          Response.ResponseBuilder builder = Response.noContent();
-         setAcknowledgeLinks(uriInfo, basePath, builder);
+         setAcknowledgeLinks(uriInfo, basePath, builder, "-1");
          return builder.build();
+      }
+
+      if (doAcknowledge)
+      {
+         try
+         {
+            ack.acknowledge();
+            System.out.println("Acknowledge message: " + ack.getMessage());
+            ack.getMessage().acknowledge();
+         }
+         catch (HornetQException e)
+         {
+            throw new RuntimeException(e);
+         }
       }
       else
       {
-         Response.ResponseBuilder builder = Response.status(Response.Status.PRECONDITION_FAILED)
-                 .entity("Could not acknowledge message, it was probably requeued from a timeout")
-                 .type("text/plain");
-         setAcknowledgeLinks(uriInfo, basePath, builder);
-         return builder.build();
+         ack.unacknowledge();
+         unacknowledge();
       }
-   }
-
-   @Override
-   protected void createSession(ClientSessionFactory factory, String destination) throws HornetQException
-   {
-      session = factory.createSession();
-      consumer = session.createConsumer(destination);
-      session.start();
+      Response.ResponseBuilder builder = Response.noContent();
+      setAcknowledgeLinks(uriInfo, basePath, builder, "-1");
+      return builder.build();
    }
 
    @Override
@@ -172,34 +171,8 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       return ack.getAckToken();
    }
 
-   protected boolean acknowledge(String ackToken)
+   protected void unacknowledge()
    {
-
-      if (ack == null) return false;
-      if (!ack.getAckToken().equals(ackToken))
-      {
-         return false;
-      }
-      try
-      {
-         ack.getMessage().acknowledge();
-      }
-      catch (HornetQException e)
-      {
-         throw new RuntimeException(e);
-      }
-      return true;
-   }
-
-   protected void unacknowledge(String ackToken)
-   {
-
-      if (ack == null) return;
-      if (!ack.getAckToken().equals(ackToken))
-      {
-         return;
-      }
-
       // close session so message gets redelivered
 
       try
@@ -236,25 +209,24 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
    }
 
 
-   protected void setAcknowledgeLinks(UriInfo uriInfo, String basePath, Response.ResponseBuilder builder)
+   protected void setAcknowledgeLinks(UriInfo uriInfo, String basePath, Response.ResponseBuilder builder, String index)
    {
-      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, basePath);
+      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, basePath, index);
       setSessionLink(builder, uriInfo, basePath);
    }
 
 
    @Override
-   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
+   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder builder, String index)
    {
       setAcknowledgementLink(builder, info, basePath);
-      setAcknowledgementAndNextLink(builder, info, basePath);
       setSessionLink(builder, info, basePath);
    }
 
    @Override
-   protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
+   protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder, String index)
    {
-      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, info, basePath);
+      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, info, basePath, index);
       setSessionLink(builder, info, basePath);
    }
 
@@ -268,22 +240,15 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       serviceManager.getLinkStrategy().setLinkHeader(response, "acknowledgement", "acknowledgement", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }
 
-   protected void setAcknowledgementAndNextLink(Response.ResponseBuilder response, UriInfo info, String basePath)
-   {
-      UriBuilder builder = info.getBaseUriBuilder();
-      builder.path(basePath)
-              .path("acknowledgement")
-              .path(getAckToken())
-              .path("next");
-      String uri = builder.build().toString();
-      serviceManager.getLinkStrategy().setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
-   }
-
-   public static void setAcknowledgeNextLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath)
+   public static void setAcknowledgeNextLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath, String index)
    {
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath)
               .path("acknowledge-next");
+      if (index != null)
+      {
+         builder.matrixParam("index", index);
+      }
       String uri = builder.build().toString();
       linkStrategy.setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }

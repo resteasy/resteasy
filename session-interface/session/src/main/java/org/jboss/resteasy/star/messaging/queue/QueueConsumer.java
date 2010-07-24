@@ -7,11 +7,11 @@ import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.star.messaging.util.Constants;
-import org.jboss.resteasy.star.messaging.util.HttpMessageHelper;
 import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -22,6 +22,8 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
 /**
+ * Auto-acknowleged consumer
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -35,6 +37,11 @@ public class QueueConsumer
    protected String id;
    protected long lastPing = System.currentTimeMillis();
    protected DestinationServiceManager serviceManager;
+   protected boolean autoAck = true;
+
+   /** token used to create consume-next links */
+   protected long previousIndex = -1;
+   protected ConsumedMessage lastConsumed;
 
    public DestinationServiceManager getServiceManager()
    {
@@ -80,6 +87,8 @@ public class QueueConsumer
    {
       if (closed) return;
       closed = true;
+      lastConsumed = null;
+      previousIndex = -2;
       try
       {
          consumer.close();
@@ -103,6 +112,7 @@ public class QueueConsumer
    @Path("consume-next")
    @POST
    public synchronized Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
+                                     @MatrixParam("index") long index,
                                      @Context UriInfo info)
    {
       if (closed)
@@ -116,12 +126,42 @@ public class QueueConsumer
 
          return Response.status(307).location(URI.create(uri)).build();
       }
-      return runPoll(wait, info, info.getMatchedURIs().get(1));
+      return checkIndexAndPoll(wait, info, info.getMatchedURIs().get(1), index);
    }
 
    public synchronized Response runPoll(long wait, UriInfo info, String basePath)
    {
       ping();
+      return pollWithIndex(wait, info, basePath, -1);
+   }
+
+   protected Response checkIndexAndPoll(long wait, UriInfo info, String basePath, long index)
+   {
+      ping();
+
+      if (lastConsumed == null && index > 0)
+      {
+         return Response.status(412).entity("You are using an old consume-next link and are out of sync with the JMS session on the server").type("text/plain").build();
+      }
+      if (lastConsumed != null)
+      {
+         if (index == previousIndex)
+         {
+            String token = Long.toString(lastConsumed.getMessageID());
+            return getMessageResponse(lastConsumed, info, basePath, token).build();
+         }
+         if (index != lastConsumed.getMessageID())
+         {
+            return Response.status(412).entity("You are using an old consume-next link and are out of sync with the JMS session on the server").type("text/plain").build();
+         }
+      }
+
+
+      return pollWithIndex(wait, info, basePath, index);
+   }
+
+   protected Response pollWithIndex(long wait, UriInfo info, String basePath, long index)
+   {
       try
       {
          ClientMessage message = receive(wait);
@@ -129,10 +169,15 @@ public class QueueConsumer
          {
             //System.out.println("Timed out waiting for message receive.");
             Response.ResponseBuilder builder = Response.status(503).entity("Timed out waiting for message receive.").type("text/plain");
-            setPollTimeoutLinks(info, basePath, builder);
+            setPollTimeoutLinks(info, basePath, builder, Long.toString(index));
             return builder.build();
          }
-         return getMessageResponse(message, info, basePath).build();
+         previousIndex = index;
+         lastConsumed = ConsumedMessage.createConsumedMessage(message);
+         String token = Long.toString(lastConsumed.getMessageID());
+         Response response =  getMessageResponse(lastConsumed, info, basePath, token).build();
+         if (autoAck) message.acknowledge();
+         return response;
       }
       catch (Exception e)
       {
@@ -152,7 +197,7 @@ public class QueueConsumer
    {
       if (timeoutSecs <= 0)
       {
-         return consumer.receiveImmediate();
+         return consumer.receive(1);
       }
       else
       {
@@ -166,31 +211,35 @@ public class QueueConsumer
       return receiveFromConsumer(timeoutSecs);
    }
 
-   protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
+   protected void setPollTimeoutLinks(UriInfo info, String basePath, Response.ResponseBuilder builder, String index)
    {
       setSessionLink(builder, info, basePath);
-      setConsumeNextLink(serviceManager.getLinkStrategy(), builder, info, basePath);
+      setConsumeNextLink(serviceManager.getLinkStrategy(), builder, info, basePath, index);
    }
 
-   protected Response.ResponseBuilder getMessageResponse(ClientMessage msg, UriInfo info, String basePath)
+   protected Response.ResponseBuilder getMessageResponse(ConsumedMessage msg, UriInfo info, String basePath, String index)
    {
       Response.ResponseBuilder responseBuilder = Response.ok();
-      setMessageResponseLinks(info, basePath, responseBuilder);
-      HttpMessageHelper.buildMessage(msg, responseBuilder);
+      setMessageResponseLinks(info, basePath, responseBuilder, index);
+      msg.build(responseBuilder);
       return responseBuilder;
    }
 
-   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder responseBuilder)
+   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder responseBuilder, String index)
    {
-      setConsumeNextLink(serviceManager.getLinkStrategy(), responseBuilder, info, basePath);
+      setConsumeNextLink(serviceManager.getLinkStrategy(), responseBuilder, info, basePath, index);
       setSessionLink(responseBuilder, info, basePath);
    }
 
-   public static void setConsumeNextLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath)
+   public static void setConsumeNextLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath, String index)
    {
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath)
               .path("consume-next");
+      if (index != null)
+      {
+         builder.matrixParam("index", index);
+      }
       String uri = builder.build().toString();
       linkStrategy.setLinkHeader(response, "consume-next", "consume-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }

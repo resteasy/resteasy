@@ -33,17 +33,16 @@ public class AcknowledgedSubscriptionResource extends AcknowledgedQueueConsumer 
    }
 
    @Override
-   protected void setAcknowledgeLinks(UriInfo uriInfo, String basePath, Response.ResponseBuilder builder)
+   protected void setAcknowledgeLinks(UriInfo uriInfo, String basePath, Response.ResponseBuilder builder, String index)
    {
-      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, basePath);
+      setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, basePath, index);
       SubscriptionResource.setSubscriptionLink(serviceManager.getLinkStrategy(), builder, uriInfo, basePath);
    }
 
    @Override
-   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder builder)
+   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder builder, String index)
    {
       setAcknowledgementLink(builder, info, basePath);
-      setAcknowledgementAndNextLink(builder, info, basePath);
       SubscriptionResource.setSubscriptionLink(serviceManager.getLinkStrategy(), builder, info, basePath);
    }
 

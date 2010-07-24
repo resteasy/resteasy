@@ -36,9 +36,9 @@ public class SubscriptionResource extends QueueConsumer implements Subscription
    }
 
    @Override
-   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder responseBuilder)
+   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder responseBuilder, String index)
    {
-      setConsumeNextLink(serviceManager.getLinkStrategy(), responseBuilder, info, basePath);
+      setConsumeNextLink(serviceManager.getLinkStrategy(), responseBuilder, info, basePath, index);
       setSubscriptionLink(serviceManager.getLinkStrategy(), responseBuilder, info, basePath);
    }
 
