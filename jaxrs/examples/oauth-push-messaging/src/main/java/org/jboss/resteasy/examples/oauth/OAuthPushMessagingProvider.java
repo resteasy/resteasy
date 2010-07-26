@@ -44,12 +44,21 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
         try {
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, password);
+            initTables();
         } catch (Exception ex) {
             throw new RuntimeException("In memory OAuth DB can not be created " + ex.getMessage());
         }
     }
     
+    
+    
 	public OAuthPushMessagingProvider() {
+	    
+        
+    }
+	
+	private static void initTables() 
+	{
 	    try {
 
             // consumers
@@ -75,8 +84,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
             throw new RuntimeException("OAuth DB tables can not be created : " + ex.getMessage());
             
         }
-        
-    }
+	}
 	
     
     public String authoriseRequestToken(String consumerKey, String requestToken)
@@ -264,7 +272,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
         }
     }
     
-    private synchronized void update(String expression) throws SQLException {
+    private static synchronized void update(String expression) throws SQLException {
 
         Statement st = conn.createStatement();    // statements
 

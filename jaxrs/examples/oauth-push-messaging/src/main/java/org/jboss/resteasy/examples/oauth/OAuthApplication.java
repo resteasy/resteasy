@@ -17,6 +17,7 @@ public class OAuthApplication extends Application
    {
       singletons.add(new MessagingService());
       singletons.add(new MessageReceiver());
+      singletons.add(new SubscriberReceiver());
    }
 
    @Override

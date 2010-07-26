@@ -7,7 +7,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-@Path("receiver")
+@Path("receiver/standalone")
 public class MessageReceiver
 {
     private volatile String greetingMessage;
