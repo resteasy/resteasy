@@ -1,0 +1,14 @@
+<project>
+    <url>http://hornetq.org</url>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.hornetq.rest</groupId>
+    <artifactId>hornetq-rest-pom</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>session</module>
+        <module>examples</module>
+    </modules>
+</project>
