@@ -23,6 +23,7 @@ public class Subscriber
    private static final String MessagingServiceMessagesURL;
    private static final String MessageReceiverSinkURL;
    private static final String MessageReceiverGetURL;
+   private static final String MessageReceiverSubscriberGetURL;
    
    private static final String MESSAGING_SERVICE_ID = "http://www.messaging-service.com";
    
@@ -39,6 +40,7 @@ public class Subscriber
        MessagingServiceMessagesURL = props.getProperty("messaging.service.messages.url");
        MessageReceiverSinkURL = props.getProperty("message.receiver.sink.url");
        MessageReceiverGetURL = props.getProperty("message.receiver.get.url");
+       MessageReceiverSubscriberGetURL = props.getProperty("message.receiver.subscriber.get.url");
    }
    
 
@@ -59,8 +61,12 @@ public class Subscriber
        // 4. Act as as a producer and post few messages to the service
        subscriber.produceMessages();
        
-       // 5. Finally, get this message from our server
+       // 5. Finally, get this message from the message receiver server
        subscriber.getMessages();
+       
+       // Now, ask the subscriber capable of acting as a receiver to repeat the same sequence
+       // and get the message it receives
+       subscriber.getMessagesFromSubscriberReceiver();
    }
    
    public String registerMessagingService(String consumerKey) throws Exception
@@ -157,4 +163,24 @@ public class Subscriber
        }
        System.out.println("Success : " + message);
    }
+   
+   public void getMessagesFromSubscriberReceiver() 
+       throws Exception
+    {
+       HttpClient client = new HttpClient();
+       GetMethod method = new GetMethod(MessageReceiverSubscriberGetURL);
+       Base64 base64 = new Base64();
+       String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
+       int status = client.executeMethod(method);
+       if (HttpResponseCodes.SC_OK != status) {
+           throw new RuntimeException("Messages can not be received");
+       }
+       String message = method.getResponseBodyAsString();
+       if (!"Hello2 !".equals(message))
+       {
+           throw new RuntimeException("Wrong Message");
+       }
+       System.out.println("Message from the subscriber-receiver : " + message);
+    }
 }

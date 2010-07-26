@@ -6,32 +6,12 @@ package org.jboss.resteasy.auth.oauth;
  * 
  * @author Stéphane Épardaud <stef@epardaud.fr>
  */
-public interface OAuthProvider {
+public interface OAuthProvider extends OAuthConsumerRegistration {
 	/**
 	 * Returns the Realm of this provider
 	 */
 	public String getRealm();
 
-	
-	/**
-     * Creates a new OAuth Consumer
-     * @param consumerKey the Consumer key.
-     * @return the OAuth Consumer for the given Consumer key.
-     * @throws OAuthException thrown if Consumer can not be registered.
-     */
-    public OAuthConsumer registerConsumer(String consumerKey, 
-            String displayName, String connectURI) throws OAuthException;
-
-    
-    /**
-     * Registers Consumer Scopes
-     * @param consumerKey the Consumer key.
-     * @return scopes the consumer scopes
-     * @throws OAuthException thrown if Consumer can not be registered.
-     */
-    public OAuthConsumer registerConsumerScopes(String consumerKey, 
-            String[] scopes) throws OAuthException;
-    
 	/**
 	 * Returns the OAuth Consumer for the given Consumer key. If no such Consumer exists, throw an OAuthException.
 	 * @param consumerKey the Consumer key to load.

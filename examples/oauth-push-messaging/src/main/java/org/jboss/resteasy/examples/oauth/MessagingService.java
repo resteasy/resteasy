@@ -27,7 +27,7 @@ public class MessagingService
    @POST
    public Response registerCallbackURI(@FormParam("consumer_id") String consumerId,
                                        @FormParam("callback_uri") String callback) throws Exception {
-       this.messageSenderId = consumerId == null ? consumerId : DEFAULT_SENDER_ID;
+       this.messageSenderId = consumerId != null ? consumerId : DEFAULT_SENDER_ID;
        this.callbackURI = callback;
        return Response.ok().build();
    }
