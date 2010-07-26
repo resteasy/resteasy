@@ -114,9 +114,9 @@ public class Subscriber
       Base64 base64 = new Base64();
       String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
-      method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
-      method.addParameter("xoauth_consumer_secret", consumerSecret);
-      method.addParameter("callback", callback);
+      method.addParameter("consumer_id", consumerKey);
+      method.addParameter("consumer_secret", consumerSecret);
+      method.addParameter("callback_uri", callback);
       int status = client.executeMethod(method);
       if (HttpResponseCodes.SC_OK != status) {
           throw new RuntimeException("Callback Registration failed");
