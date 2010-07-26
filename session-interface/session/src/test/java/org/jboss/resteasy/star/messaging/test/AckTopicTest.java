@@ -54,7 +54,7 @@ public class AckTopicTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "subscriptions");
+      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "pull-subscriptions");
       response = subscriptions.request().formParameter("autoAck", "false")
               .formParameter("durable", "true")
               .post();
@@ -125,7 +125,7 @@ public class AckTopicTest extends MessageTestBase
       System.out.println("create: " + sender);
 
 
-      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "subscriptions");
+      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "pull-subscriptions");
       response = subscriptions.request().formParameter("autoAck", "false")
               .formParameter("durable", "true")
               .post();
@@ -181,7 +181,7 @@ public class AckTopicTest extends MessageTestBase
       System.out.println("create: " + sender);
 
 
-      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "subscriptions");
+      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "pull-subscriptions");
       response = subscriptions.request().formParameter("autoAck", "false")
               .formParameter("durable", "false")
               .post();
@@ -235,7 +235,7 @@ public class AckTopicTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "subscriptions");
+      Link subscriptions = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), response, "pull-subscriptions");
       response = subscriptions.request().formParameter("autoAck", "false")
               .formParameter("durable", "true")
               .post();
@@ -283,7 +283,6 @@ public class AckTopicTest extends MessageTestBase
 
 
    }
-
 
 
 }

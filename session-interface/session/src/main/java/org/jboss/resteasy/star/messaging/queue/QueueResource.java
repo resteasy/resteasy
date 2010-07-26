@@ -1,14 +1,9 @@
 package org.jboss.resteasy.star.messaging.queue;
 
-import org.hornetq.api.core.HornetQException;
 import org.jboss.resteasy.star.messaging.queue.push.PushConsumerResource;
-import org.jboss.resteasy.star.messaging.util.Constants;
 
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -47,9 +42,8 @@ public class QueueResource extends DestinationResource
               + "</queue/>";
       Response.ResponseBuilder builder = Response.ok(msg);
       setSenderLink(builder, uriInfo);
-      setConsumeNextLink(builder, uriInfo);
-      setAcknowledgeNextLink(builder, uriInfo);
-      setPushSubscriptionsLink(builder, uriInfo);
+      setConsumersLink(builder, uriInfo);
+      setPushConsumersLink(builder, uriInfo);
       return builder.build();
    }
 
@@ -59,9 +53,8 @@ public class QueueResource extends DestinationResource
    {
       Response.ResponseBuilder builder = Response.ok();
       setSenderLink(builder, uriInfo);
-      setConsumeNextLink(builder, uriInfo);
-      setAcknowledgeNextLink(builder, uriInfo);
-      setPushSubscriptionsLink(builder, uriInfo);
+      setConsumersLink(builder, uriInfo);
+      setPushConsumersLink(builder, uriInfo);
       return builder.build();
    }
 
@@ -73,29 +66,20 @@ public class QueueResource extends DestinationResource
       serviceManager.getLinkStrategy().setLinkHeader(response, "create", "create", uri, null);
    }
 
-   protected void setConsumeNextLink(Response.ResponseBuilder response, UriInfo info)
+   protected void setConsumersLink(Response.ResponseBuilder response, UriInfo info)
    {
       UriBuilder builder = info.getRequestUriBuilder();
-      builder.path("consume-next");
+      builder.path("pull-consumers");
       String uri = builder.build().toString();
-      serviceManager.getLinkStrategy().setLinkHeader(response, "consume-next", "consume-next", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "pull-consumers", "pull-consumers", uri, null);
    }
 
-   protected void setAcknowledgeNextLink(Response.ResponseBuilder response, UriInfo info)
+   protected void setPushConsumersLink(Response.ResponseBuilder response, UriInfo info)
    {
       UriBuilder builder = info.getRequestUriBuilder();
-      builder.path("acknowledge-next");
+      builder.path("push-consumers");
       String uri = builder.build().toString();
-      serviceManager.getLinkStrategy().setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, null);
-   }
-
-
-   protected void setPushSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
-   {
-      UriBuilder builder = info.getRequestUriBuilder();
-      builder.path("push-subscriptions");
-      String uri = builder.build().toString();
-      serviceManager.getLinkStrategy().setLinkHeader(response, "push-subscriptions", "push-subscriptions", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "push-consumers", "push-consumers", uri, null);
    }
 
 
@@ -111,79 +95,7 @@ public class QueueResource extends DestinationResource
    }
 
 
-   @Path("acknowledge-next")
-   @POST
-   public Response acknowledgeNext(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                                   @Context UriInfo info)
-   {
-      try
-      {
-         for (int i = 0; i < 5; i++)
-         {
-            Response response = doAcknowledgeNext(wait, info);
-            if (response != null) return response;
-         }
-         return Response.serverError().type("text/plain").entity("Closed session, could not retry").build();
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
-
-   private Response doAcknowledgeNext(long wait, UriInfo info) throws Exception
-   {
-      QueueConsumer consumer = consumers.createAcknowledgedConsumer();
-      if (!consumer.isClosed())
-      {
-         String basePath = info.getMatchedURIs().get(1) + "/consumers/acknowledged/" + consumer.getId();
-         return consumer.runPoll(wait, info, basePath);
-      }
-      else
-      {
-         return null;
-      }
-   }
-
-   @Path("consume-next")
-   @POST
-   public Response consumeNext(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                               @Context UriInfo info)
-   {
-      try
-      {
-         for (int i = 0; i < 5; i++)
-         {
-            Response response = doConsumeNext(wait, info);
-            if (response != null) return response;
-         }
-         return Response.serverError().type("text/plain").entity("Closed session, could not retry").build();
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
-
-   private Response doConsumeNext(long wait, UriInfo info)
-           throws HornetQException
-   {
-      QueueConsumer consumer = consumers.createConsumer();
-      synchronized (consumer)
-      {
-         if (!consumer.isClosed())
-         {
-            String basePath = info.getMatchedURIs().get(1) + "/consumers/auto-ack/" + consumer.getId();
-            return consumer.runPoll(wait, info, basePath);
-         }
-         else
-         {
-            return null;
-         }
-      }
-   }
-
-   @Path("consumers")
+   @Path("pull-consumers")
    public ConsumersResource getConsumers()
    {
       return consumers;
@@ -194,7 +106,7 @@ public class QueueResource extends DestinationResource
       this.pushConsumers = pushConsumers;
    }
 
-   @Path("push-subscriptions")
+   @Path("push-consumers")
    public PushConsumerResource getPushConsumers()
    {
       return pushConsumers;
