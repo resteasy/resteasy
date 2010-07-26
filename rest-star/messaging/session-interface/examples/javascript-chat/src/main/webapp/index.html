@@ -51,7 +51,7 @@
                     if (xhr.status == 200)
                     {
                        topicSender = xhr.getResponseHeader("msg-create");
-                       subscriptions = xhr.getResponseHeader("msg-subscriptions");
+                       subscriptions = xhr.getResponseHeader("msg-pull-subscriptions");
                        document.getElementById("errors").innerHTML = "Subscriptions URL: " + subscriptions;
                     }
                 }
@@ -149,7 +149,9 @@
     </p>
 
 </FORM>
-<div id="connection"></div><br>
+<div id="connection"></div>
+<br>
+
 <div id="errors"></div>
 
 <p>

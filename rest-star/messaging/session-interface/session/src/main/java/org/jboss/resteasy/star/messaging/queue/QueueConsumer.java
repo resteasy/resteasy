@@ -11,9 +11,9 @@ import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -39,7 +39,9 @@ public class QueueConsumer
    protected DestinationServiceManager serviceManager;
    protected boolean autoAck = true;
 
-   /** token used to create consume-next links */
+   /**
+    * token used to create consume-next links
+    */
    protected long previousIndex = -1;
    protected ConsumedMessage lastConsumed;
 
@@ -109,10 +111,10 @@ public class QueueConsumer
    }
 
 
-   @Path("consume-next")
+   @Path("consume-next{index}")
    @POST
    public synchronized Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                                     @MatrixParam("index") long index,
+                                     @PathParam("index") long index,
                                      @Context UriInfo info)
    {
       if (closed)
@@ -167,7 +169,6 @@ public class QueueConsumer
          ClientMessage message = receive(wait);
          if (message == null)
          {
-            //System.out.println("Timed out waiting for message receive.");
             Response.ResponseBuilder builder = Response.status(503).entity("Timed out waiting for message receive.").type("text/plain");
             setPollTimeoutLinks(info, basePath, builder, Long.toString(index));
             return builder.build();
@@ -175,7 +176,7 @@ public class QueueConsumer
          previousIndex = index;
          lastConsumed = ConsumedMessage.createConsumedMessage(message);
          String token = Long.toString(lastConsumed.getMessageID());
-         Response response =  getMessageResponse(lastConsumed, info, basePath, token).build();
+         Response response = getMessageResponse(lastConsumed, info, basePath, token).build();
          if (autoAck) message.acknowledge();
          return response;
       }
@@ -233,13 +234,10 @@ public class QueueConsumer
 
    public static void setConsumeNextLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath, String index)
    {
+      if (index == null) throw new IllegalArgumentException("index cannot be null");
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath)
-              .path("consume-next");
-      if (index != null)
-      {
-         builder.matrixParam("index", index);
-      }
+              .path("consume-next" + index);
       String uri = builder.build().toString();
       linkStrategy.setLinkHeader(response, "consume-next", "consume-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }
