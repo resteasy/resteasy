@@ -1,0 +1,126 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-reference-guide-${translation}</artifactId>
+    <version>2.1-SNAPSHOT</version>
+    <packaging>jdocbook</packaging>
+    <name>RESTEasy Reference Guide (${translation})</name>
+    <repositories>
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>maven2-repository.dev.java.net</id>
+            <url>http://download.java.net/maven/2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>maven-repository.dev.java.net</id>
+            <name>Java.net Maven 1 Repository (legacy)</name>
+            <url>http://download.java.net/maven/1</url>
+            <layout>legacy</layout>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-jdocbook-plugin</artifactId>
+                <version>2.1.2</version>
+                <extensions>true</extensions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jboss</groupId>
+                        <artifactId>jbossorg-docbook-xslt</artifactId>
+                        <version>1.1.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jboss</groupId>
+                        <artifactId>jbossorg-jdocbook-style</artifactId>
+                        <version>1.0.0</version>
+                        <type>jdocbook-style</type>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <!--minmemory>1024m</minmemory>
+                    <maxmemory>1024m</maxmemory -->
+                    <sourceDocumentName>master.xml</sourceDocumentName>
+                    <sourceDirectory>reference/en</sourceDirectory>
+                    <imageResource>
+                        <directory>reference/en</directory>
+                        <includes>
+                            <include>images/*</include>
+                        </includes>
+                    </imageResource>
+                    <!-- <cssResource>
+                       <directory>src/main/css</directory>
+                   </cssResource> -->
+                    <!--put back css -->
+
+                    <formats>
+                        <format>
+                            <formatName>html</formatName>
+                            <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
+                            <finalName>index.html</finalName>
+                        </format>
+                        <format>
+                            <formatName>html_single</formatName>
+                            <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
+                            <finalName>index.html</finalName>
+                        </format>
+
+                        <format>
+                            <formatName>pdf</formatName>
+                            <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
+                            <finalName>RESTEasy_Reference_Guide.pdf</finalName>
+                            <profilingTypeName>two_pass</profilingTypeName>
+                        </format>
+
+
+                        <!--<format>
+                            <formatName>eclipse</formatName>
+                            <stylesheetResource>classpath:/xslt/main-eclipse.xsl</stylesheetResource>
+                            <finalName>index.html</finalName>
+                        </format>-->
+                    </formats>
+                    <options>
+                        <xincludeSupported>true</xincludeSupported>
+                        <xmlTransformerType>saxon</xmlTransformerType>
+                        <!-- needed for uri-resolvers; can be ommitted if using 'current' uri scheme -->
+                        <!--     could also locate the docbook dependency and inspect its version... -->
+                        <!--docbookVersion>1.72.0</docbookVersion -->
+                        <docbookVersion>1.72.0</docbookVersion>
+                        <transformerParameters>
+                            <property>
+                                <name>javax.xml.parsers.DocumentBuilderFactory</name>
+                                <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
+                            </property>
+                            <property>
+                                <name>javax.xml.parsers.SAXParserFactory</name>
+                                <value>org.apache.xerces.jaxp.SAXParserFactoryImpl</value>
+                            </property>
+                            <!--<javax.xml.parsers.DocumentBuilderFactory>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</javax.xml.parsers.DocumentBuilderFactory>
+                            <javax.xml.parsers.SAXParserFactory>org.apache.xerces.jaxp.SAXParserFactoryImpl</javax.xml.parsers.SAXParserFactory>
+                            <javax.xml.validation.SchemaFactory:http\://www.w3.org/2001/XMLSchema>org.apache.xerces.jaxp.validation.XMLSchemaFactory</javax.xml.validation.SchemaFactory:http\://www.w3.org/2001/XMLSchema>-->
+                        </transformerParameters>
+                    </options>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <translation>en-US</translation>
+    </properties>
+</project>

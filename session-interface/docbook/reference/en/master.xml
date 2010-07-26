@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.docbook.org/xml/4.4/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>HornetQ REST Interface</title>
+
+    <releaseinfo>1.0-beta-1</releaseinfo>
+  </bookinfo>
+
+  <toc></toc>
+
+  <preface id="preface" revision="1">
+    <title>Preface</title>
+
+    <para>Commercial development support, production support and training for
+    RESTEasy and HornetQ is available through JBoss, a division of Red Hat
+    Inc. (see http://www.jboss.com/).</para>
+
+    <para></para>
+  </preface>
+
+  <chapter>
+    <title>Introduction</title>
+
+    <para>The HornetQ REST interface allows you to leverage the reliability
+    and scalability features of HornetQ over a simple REST/HTTP interface.
+    Messages are produced and consumed by sending and receiving simple HTTP
+    messages that contain the content you want to push around. For instance,
+    here's a simple example of posting an order to an order processing queue
+    express as an HTTP message:</para>
+
+    <para><programlisting>POST /queue/orders/create HTTP/1.1
+Host: example.com
+Content-Type: application/xml
+
+&lt;order&gt;
+   &lt;name&gt;Bill&lt;/name&gt;
+   &lt;item&gt;iPhone 4&lt;/item&gt;
+   &lt;cost&gt;$199.99&lt;/cost&gt;
+&lt;/order
+</programlisting>As you can see, we're just posting some arbitrary XML
+    document to a URL. When the XML is received on the server is it processed
+    within HornetQ as a JMS message and distributed through core HornetQ.
+    Simple and easy. Consuming messages from a queue or topic looks very
+    similar. We'll discuss the entire interface in detail later in this
+    docbook.</para>
+
+    <para></para>
+
+    <sect1>
+      <title>Goals of REST Interface</title>
+
+      <para>Why would you want to use HornetQ's REST interface? What are the
+      goals of the REST interface?</para>
+
+      <para></para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Zero client footprint. We want HornetQ to be usable by any
+          client/programming language that has an adequate HTTP client
+          library. You shouldn't have to download, install, and configure a
+          special library to interact with HornetQ.</para>
+        </listitem>
+
+        <listitem>
+          <para>Lightweight interoperability. The HTTP protocol is strong
+          enough to be our message exchange protocol. Since interactions are
+          RESTful the HTTP uniform interface provides all the interoperability
+          you need to communicate between different languages, platforms, and
+          even messaging implementations that choose to implement the same
+          RESTful interface as HornetQ (i.e. the <ulink
+          url="http://rest-star.org">REST-*</ulink> effort.)</para>
+        </listitem>
+
+        <listitem>
+          <para>No envelope (i.e. SOAP) or feed (i.e. Atom) format
+          requirements. You shouldn't have to learn and use a specific XML
+          document format in order to send and receive messages through
+          HornetQ's REST interface.</para>
+        </listitem>
+
+        <listitem>
+          <para>Leverage the reliability, scalability, and clustering features
+          of HornetQ on the back end without sacrificing the simplicity of a
+          REST interface.</para>
+
+          <para></para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+  </chapter>
+
+  <chapter>
+    <title>Installation and Configuration</title>
+
+    <para></para>
+  </chapter>
+</book>
