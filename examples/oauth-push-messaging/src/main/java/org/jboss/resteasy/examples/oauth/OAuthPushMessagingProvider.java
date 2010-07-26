@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.jboss.resteasy.auth.oauth.OAuthConsumer;
 import org.jboss.resteasy.auth.oauth.OAuthException;
+import org.jboss.resteasy.auth.oauth.OAuthPermissions;
 import org.jboss.resteasy.auth.oauth.OAuthProvider;
 import org.jboss.resteasy.auth.oauth.OAuthRequestToken;
 import org.jboss.resteasy.auth.oauth.OAuthToken;
@@ -61,11 +62,11 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
 	{
 	    try {
 
-            // consumers
+	        // consumers
             update(
                 "CREATE TABLE consumers ( id INTEGER IDENTITY, key VARCHAR(256)" + 
                 ", secret VARCHAR(256), display_name VARCHAR(256), connect_uri VARCHAR(256), "
-                + "roles VARCHAR(256), scopes VARCHAR(256), unique(key))");
+                + "roles VARCHAR(256), scopes VARCHAR(256), permissions VARCHAR(256), perm_type VARCHAR(256), unique(key))");
             
             // request tokens
             update(
@@ -78,6 +79,14 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 "CREATE TABLE access_tokens ( id INTEGER IDENTITY, consumer_key VARCHAR(256)" + 
                 ", token VARCHAR(256), secret VARCHAR(256), scopes VARCHAR(256),"
                 + " foreign key(consumer_key) references consumers(key))");
+            
+            // custom permissions to roles map
+            update(
+                "CREATE TABLE permissions ( id INTEGER IDENTITY, permission VARCHAR(256)" + 
+                ", role VARCHAR(256))");
+            
+            // add permissions to values map
+            registerCustomPermissionsAndRoles();
             
         } catch (SQLException ex) {
 
@@ -286,7 +295,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
     }
 
 
-    public OAuthConsumer registerConsumerScopes(String consumerKey,
+    public void registerConsumerScopes(String consumerKey,
             String[] scopes) throws OAuthException {
         
         try {
@@ -296,12 +305,40 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                         + "'" + scopes[0] + "'" 
                         + " WHERE key='" + consumerKey + "'");
             }
-         
-            return getConsumer(consumerKey);
          } catch (SQLException ex) {
              throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 
                      "Scopes for the consumer with key " + consumerKey + " can not be registered");
          }
 
     }
+
+    public void registerConsumerPermissions(String consumerKey,
+            OAuthPermissions permissions) throws OAuthException {
+        try {
+            if (permissions != null)
+            {
+                update("UPDATE consumers SET permissions="
+                        + "'" + permissions.getPermissions()[0] + "'"
+                        + ",perm_type='" + permissions.getPermissionType() + "'"
+                        + " WHERE key='" + consumerKey + "'");
+            }
+        } catch (SQLException ex) {
+             throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 
+                     "Scopes for the consumer with key " + consumerKey + " can not be registered");
+        }
+        
+    }
+    
+    private static void registerCustomPermissionsAndRoles() { 
+        
+        try {
+               update("INSERT INTO permissions(permission,role) "
+                       + "VALUES('" + "sendMessages" + "', '" + "MessagingService" + "'" 
+                       + ")");
+            
+        } catch (SQLException ex) {
+            throw new RuntimeException("Permissions can not be mapped to roles");
+        }
+    }
+    
 }

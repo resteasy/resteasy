@@ -101,6 +101,7 @@ public class Subscriber
        method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
        method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
        method.addParameter("xoauth_scope", scope);
+       method.addParameter("xoauth_permission", "sendMessages");
        int status = client.executeMethod(method);
        if (HttpResponseCodes.SC_OK != status) {
           throw new RuntimeException("Scopes can not be registered");

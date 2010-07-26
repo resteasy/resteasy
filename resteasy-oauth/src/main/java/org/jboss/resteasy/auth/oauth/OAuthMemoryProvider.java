@@ -138,7 +138,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	public OAuthConsumer registerConsumer(String consumerKey, 
 	        String displayName, String connectURI) throws OAuthException {
 	    OAuthConsumer consumer = consumers.get(consumerKey);
-        if (consumer != null) {
+        if (consumer == null) {
             return consumer;
         }
         consumer = new OAuthConsumer(consumerKey, "therealfrog", displayName, connectURI);
@@ -225,10 +225,15 @@ public class OAuthMemoryProvider implements OAuthProvider {
         }
     }
 
-    public OAuthConsumer registerConsumerScopes(String consumerKey, String[] scopes)
+    public void registerConsumerScopes(String consumerKey, String[] scopes)
             throws OAuthException {
         OAuthConsumer consumer = _getConsumer(consumerKey);
         consumer.setScopes(scopes);
-        return consumer;
+    }
+
+    public void registerConsumerPermissions(String consumerKey,
+            OAuthPermissions permissions) throws OAuthException {
+        // TODO Auto-generated method stub
+        
     }
 }

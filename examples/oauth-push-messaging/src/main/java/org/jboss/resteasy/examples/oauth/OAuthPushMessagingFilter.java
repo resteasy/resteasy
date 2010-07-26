@@ -85,7 +85,8 @@ public class OAuthPushMessagingFilter extends OAuthFilter {
     
         
     private Set<String> getRoles(String consumerKey) {
-        Set<String> roles = new HashSet<String>();    
+        Set<String> roles = new HashSet<String>();
+        // get the default roles which may've been allocated to a consumer
         try {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT roles FROM consumers WHERE"
@@ -96,6 +97,35 @@ public class OAuthPushMessagingFilter extends OAuthFilter {
             }
         } catch (SQLException ex) {
             throw new RuntimeException("No roles exist for consumer key " + consumerKey);
+        }
+        // get the public permissions if any 
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT permissions FROM consumers WHERE"
+                    + " key = '" + consumerKey + "'");
+            if (rs.next()) {
+                String permissions = rs.getString("permissions");
+                roles.addAll(convertPermissionsToRoles(permissions));
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("No roles exist for consumer key " + consumerKey);
+        }
+        return roles;
+    }
+    
+    private Set<String> convertPermissionsToRoles(String permissions) {
+        Set<String> roles = new HashSet<String>();
+        // get the default roles which may've been allocated to a consumer
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT role FROM permissions WHERE"
+                    + " permission='" + permissions + "'");
+            if (rs.next()) {
+                String rolesValues = rs.getString("role");
+                roles.add(rolesValues);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("No role exists for permission " + permissions);
         }
         return roles;
     }

@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.jboss.resteasy.auth.oauth.OAuthConsumer;
 import org.jboss.resteasy.auth.oauth.OAuthException;
+import org.jboss.resteasy.auth.oauth.OAuthPermissions;
 import org.jboss.resteasy.auth.oauth.OAuthProvider;
 import org.jboss.resteasy.auth.oauth.OAuthRequestToken;
 import org.jboss.resteasy.auth.oauth.OAuthToken;
@@ -275,7 +276,7 @@ public class OAuthDBProvider implements OAuthProvider {
     }
 
 
-    public OAuthConsumer registerConsumerScopes(String consumerKey,
+    public void registerConsumerScopes(String consumerKey,
             String[] scopes) throws OAuthException {
         try {
             if (scopes != null)
@@ -285,11 +286,17 @@ public class OAuthDBProvider implements OAuthProvider {
                         + " WHERE key='" + consumerKey + "'");
             }
          
-            return getConsumer(consumerKey);
          } catch (SQLException ex) {
              throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 
                      "Request token for the consumer with key " + consumerKey + " can not be authorized");
          }
 
+    }
+
+
+    public void registerConsumerPermissions(String consumerKey,
+            OAuthPermissions permissions) throws OAuthException {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -21,7 +21,7 @@ public class MessageReceiver
     
     @POST
     @Consumes("text/plain")
-    @RolesAllowed("user")
+    @RolesAllowed("MessagingService")
     public Response receiveMessage(String value)
     {
         greetingMessage = value;
