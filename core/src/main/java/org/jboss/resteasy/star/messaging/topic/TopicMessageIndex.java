@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging.topic;
+package org.hornetq.rest.topic;
 
 import java.util.concurrent.CountDownLatch;
 

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging.topic;
+package org.hornetq.rest.topic;
 
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;
@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
-import org.jboss.resteasy.star.messaging.Message;
+import org.hornetq.rest.Message;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.hornetq.rest;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;

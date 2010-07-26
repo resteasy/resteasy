@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging.test;
+package org.hornetq.rest.test;
 
 import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ClientConsumer;

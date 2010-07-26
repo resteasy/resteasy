@@ -9,11 +9,11 @@
 
 
     <listener>
-        <listener-class>org.jboss.resteasy.star.messaging.integration.HornetqBootstrapListener</listener-class>
+        <listener-class>org.hornetq.rest.integration.HornetqBootstrapListener</listener-class>
     </listener>
 
     <listener>
-        <listener-class>org.jboss.resteasy.star.messaging.integration.RestMessagingBootstrapListener</listener-class>
+        <listener-class>org.hornetq.rest.integration.RestMessagingBootstrapListener</listener-class>
     </listener>
 
     <filter>

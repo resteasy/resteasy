@@ -1,11 +1,11 @@
-package org.jboss.resteasy.star.messaging.topic;
+package org.hornetq.rest.topic;
 
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientProducer;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.resteasy.star.messaging.Message;
-import org.jboss.resteasy.star.messaging.MessagePublisher;
+import org.hornetq.rest.Message;
+import org.hornetq.rest.MessagePublisher;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

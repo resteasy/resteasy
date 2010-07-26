@@ -2,15 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.jboss.resteasy.star</groupId>
-        <artifactId>resteasy-star-messaging-all</artifactId>
+        <groupId>org.hornetq.rest</groupId>
+        <artifactId>hornetq-rest-all</artifactId>
         <version>1.0-beta-1</version>
     </parent>
 
-    <groupId>org.jboss.resteasy.star</groupId>
-    <artifactId>resteasy-star-messaging-session</artifactId>
+    <groupId>org.hornetq.rest</groupId>
+    <artifactId>hornetq-rest</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy Star Messaging Session-based Implementation</name>
+    <name>HornetQ REST Interface Implementation</name>
 
     <dependencies>
         <dependency>

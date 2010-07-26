@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.hornetq.rest;
 
 import org.jboss.resteasy.spi.Link;
 

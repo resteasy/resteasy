@@ -1,11 +1,11 @@
-package org.jboss.resteasy.star.messaging.queue;
+package org.hornetq.rest.queue;
 
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.Constants;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
+import org.hornetq.rest.Constants;
+import org.hornetq.rest.LinkHeaderSupport;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;

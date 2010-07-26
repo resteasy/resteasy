@@ -3,7 +3,7 @@
     <url>http://rest-easy.org</url>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jboss.resteasy.star.messaging.examples</groupId>
+    <groupId>org.hornetq.rest.messaging.examples</groupId>
     <artifactId>star-messaging-examples-pom</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
