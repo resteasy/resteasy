@@ -9,7 +9,6 @@ import org.jboss.resteasy.star.messaging.util.LinkStrategy;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,10 +36,10 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       autoAck = false;
    }
 
-   @Path("acknowledge-next")
+   @Path("acknowledge-next{index}")
    @POST
    public synchronized Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
-                                     @MatrixParam("index") long index,
+                                     @PathParam("index") long index,
                                      @Context UriInfo info)
    {
       if (closed)
@@ -96,7 +95,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
          setAcknowledgeLinks(uriInfo, basePath, builder, "-1");
          return builder.build();
       }
-      
+
       // clear indexes as we know the client got the message and won't send a duplicate ack-next
       previousIndex = -2;
       lastConsumed = null;
@@ -242,13 +241,10 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
 
    public static void setAcknowledgeNextLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath, String index)
    {
+      if (index == null) throw new IllegalArgumentException("index cannot be null");
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath)
-              .path("acknowledge-next");
-      if (index != null)
-      {
-         builder.matrixParam("index", index);
-      }
+              .path("acknowledge-next" + index);
       String uri = builder.build().toString();
       linkStrategy.setLinkHeader(response, "acknowledge-next", "acknowledge-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }

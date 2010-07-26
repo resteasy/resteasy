@@ -25,6 +25,16 @@ public class AcknowledgeConsume
       {
          throw new Exception("Failed to get root URL");
       }
+      String consumers = conn.getHeaderField("msg-pull-consumers");
+      conn.disconnect();
+      url = new URL(consumers);
+      conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("POST");
+      writeFormParams(conn, "autoAck=false");
+      if (conn.getResponseCode() != 201)
+      {
+         throw new Exception("Failed to create session");
+      }
       String acknowledgeNext = conn.getHeaderField("msg-acknowledge-next");
       conn.disconnect();
 
@@ -32,7 +42,7 @@ public class AcknowledgeConsume
       {
          public void run()
          {
-            synchronized (shutdown)
+            synchronized (shutdownLock)
             {
                shutdown = true;
                if (session != null)
@@ -61,7 +71,8 @@ public class AcknowledgeConsume
 
       while (true)
       {
-         synchronized(shutdownLock) {
+         synchronized (shutdownLock)
+         {
             if (shutdown) break;
             acknowledgeNext = receiveAndAcknowledge(acknowledgeNext);
          }
