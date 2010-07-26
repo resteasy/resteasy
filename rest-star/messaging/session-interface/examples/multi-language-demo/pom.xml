@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.jboss.resteasy.star</groupId>
-        <artifactId>resteasy-star-messaging-all</artifactId>
+        <groupId>org.hornetq.rest</groupId>
+        <artifactId>hornetq-rest-all</artifactId>
         <version>1.0-beta-1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.jboss.resteasy.star.message.examples</groupId>
+    <groupId>org.hornetq.rest.examples</groupId>
     <artifactId>multi-language-demo</artifactId>
     <packaging>war</packaging>
     <name>Order Flow Polyglot Demo</name>
@@ -125,8 +125,8 @@
             <artifactId>jboss-jms-api_1.1_spec</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.resteasy.star</groupId>
-            <artifactId>resteasy-star-messaging-session</artifactId>
+            <groupId>org.hornetq.rest</groupId>
+            <artifactId>hornetq-rest</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

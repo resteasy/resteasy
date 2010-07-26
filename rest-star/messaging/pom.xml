@@ -2,14 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>RESTEasy Star Messaging</name>
-    <groupId>org.jboss.resteasy.star</groupId>
-    <artifactId>resteasy-star-messaging-all</artifactId>
+    <name>HornetQ REST Interface Parent POM</name>
+    <groupId>org.hornetq.rest</groupId>
+    <artifactId>hornetq-rest-all</artifactId>
     <version>1.0-beta-1</version>
     <packaging>pom</packaging>
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
+        <resteasy.version>2.0.0.GA</resteasy.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -56,22 +57,22 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxrs</artifactId>
-                <version>2.0-RC1</version>
+                <version>${resteasy.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxb-provider</artifactId>
-                <version>2.0-RC1</version>
+                <version>${resteasy.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jackson-provider</artifactId>
-                <version>2.0-RC1</version>
+                <version>${resteasy.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-atom-provider</artifactId>
-                <version>2.0-RC1</version>
+                <version>${resteasy.version}</version>
             </dependency>
 
             <dependency>
@@ -108,7 +109,7 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>tjws</artifactId>
-                <version>2.0-RC1</version>
+                <version>${resteasy.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

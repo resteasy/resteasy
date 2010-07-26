@@ -23,7 +23,7 @@
 
     <listener>
         <listener-class>
-            org.jboss.resteasy.star.messaging.TopicServletContextListener
+            org.hornetq.rest.TopicServletContextListener
         </listener-class>
     </listener>
 

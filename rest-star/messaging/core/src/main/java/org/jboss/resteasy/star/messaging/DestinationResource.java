@@ -1,7 +1,7 @@
-package org.jboss.resteasy.star.messaging;
+package org.hornetq.rest;
 
-import org.jboss.resteasy.star.messaging.queue.QueueResource;
-import org.jboss.resteasy.star.messaging.topic.TopicResource;
+import org.hornetq.rest.queue.QueueResource;
+import org.hornetq.rest.topic.TopicResource;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

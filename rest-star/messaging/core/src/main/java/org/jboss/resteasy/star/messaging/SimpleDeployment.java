@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.hornetq.rest;
 
 import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ClientSession;
@@ -11,13 +11,13 @@ import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.hornetq.core.server.HornetQServer;
 import org.hornetq.core.server.HornetQServers;
 import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.star.messaging.queue.QueuePublisher;
-import org.jboss.resteasy.star.messaging.queue.QueueResource;
-import org.jboss.resteasy.star.messaging.topic.CurrentTopicIndex;
-import org.jboss.resteasy.star.messaging.topic.TopicMessageRepository;
-import org.jboss.resteasy.star.messaging.topic.TopicPublisher;
-import org.jboss.resteasy.star.messaging.topic.TopicResource;
-import org.jboss.resteasy.star.messaging.topic.TopicSequencer;
+import org.hornetq.rest.queue.QueuePublisher;
+import org.hornetq.rest.queue.QueueResource;
+import org.hornetq.rest.topic.CurrentTopicIndex;
+import org.hornetq.rest.topic.TopicMessageRepository;
+import org.hornetq.rest.topic.TopicPublisher;
+import org.hornetq.rest.topic.TopicResource;
+import org.hornetq.rest.topic.TopicSequencer;
 
 import java.util.ArrayList;
 import java.util.HashMap;

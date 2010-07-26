@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging;
+package org.hornetq.rest;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

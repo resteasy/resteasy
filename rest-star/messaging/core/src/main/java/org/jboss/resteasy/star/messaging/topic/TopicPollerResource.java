@@ -1,8 +1,8 @@
-package org.jboss.resteasy.star.messaging.topic;
+package org.hornetq.rest.topic;
 
-import org.jboss.resteasy.star.messaging.Constants;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
-import org.jboss.resteasy.star.messaging.Message;
+import org.hornetq.rest.Constants;
+import org.hornetq.rest.LinkHeaderSupport;
+import org.hornetq.rest.Message;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;

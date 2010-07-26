@@ -11,7 +11,7 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.util.Constants;
+import org.hornetq.rest.util.Constants;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.BeforeClass;

@@ -1,5 +1,4 @@
 import org.hornetq.jms.client.HornetQDestination;
-import org.jboss.resteasy.star.messaging.HttpHeaderProperty;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;

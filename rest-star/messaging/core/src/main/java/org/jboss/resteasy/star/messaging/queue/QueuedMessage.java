@@ -1,6 +1,6 @@
-package org.jboss.resteasy.star.messaging.queue;
+package org.hornetq.rest.queue;
 
-import org.jboss.resteasy.star.messaging.Message;
+import org.hornetq.rest.Message;
 
 import java.util.concurrent.CountDownLatch;
 

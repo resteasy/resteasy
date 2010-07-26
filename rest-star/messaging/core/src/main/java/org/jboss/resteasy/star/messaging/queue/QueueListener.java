@@ -1,4 +1,4 @@
-package org.jboss.resteasy.star.messaging.queue;
+package org.hornetq.rest.queue;
 
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientMessage;

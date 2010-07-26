@@ -1,7 +1,7 @@
-package org.jboss.resteasy.star.messaging.topic;
+package org.hornetq.rest.topic;
 
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.resteasy.star.messaging.LinkHeaderSupport;
+import org.hornetq.rest.LinkHeaderSupport;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;

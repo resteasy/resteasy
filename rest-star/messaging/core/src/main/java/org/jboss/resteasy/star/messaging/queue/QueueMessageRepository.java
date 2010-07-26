@@ -1,7 +1,7 @@
-package org.jboss.resteasy.star.messaging.queue;
+package org.hornetq.rest.queue;
 
-import org.jboss.resteasy.star.messaging.DestinationResource;
-import org.jboss.resteasy.star.messaging.MessageRepository;
+import org.hornetq.rest.DestinationResource;
+import org.hornetq.rest.MessageRepository;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;

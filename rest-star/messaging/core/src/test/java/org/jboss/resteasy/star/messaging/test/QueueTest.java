@@ -1,10 +1,10 @@
-package org.jboss.resteasy.star.messaging.test;
+package org.hornetq.rest.test;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.star.messaging.QueueDeployment;
-import org.jboss.resteasy.star.messaging.SimpleDeployment;
+import org.hornetq.rest.QueueDeployment;
+import org.hornetq.rest.SimpleDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 import org.junit.Assert;

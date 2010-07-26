@@ -1,10 +1,10 @@
 <project>
-    <name>Resteasy Star Messaging Examples</name>
+    <name>HornetQ REST Interface Examples</name>
     <url>http://rest-easy.org</url>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jboss.resteasy.star.messaging</groupId>
-    <artifactId>star-messaging-session-examples-pom</artifactId>
+    <groupId>org.hornetq.rest.examples</groupId>
+    <artifactId>hornetq-rest-examples-pom</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
 

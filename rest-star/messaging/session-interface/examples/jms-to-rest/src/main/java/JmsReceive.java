@@ -1,5 +1,5 @@
 import org.hornetq.jms.client.HornetQDestination;
-import org.jboss.resteasy.star.messaging.Jms;
+import org.hornetq.rest.Jms;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -8,7 +8,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
