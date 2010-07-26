@@ -16,12 +16,22 @@ public class OAuthConsumer {
     private String displayName;
     private String connectURI;
     private Set<String> scopes;
+    private OAuthPermissions permissions;
     
     public OAuthConsumer(String key, String secret, String displayName, String connectURI) {
         this.key = key;
         this.secret =  secret;
         this.displayName = displayName;
         this.connectURI = connectURI;
+    }
+    
+    public OAuthConsumer(String key, String secret, String displayName, String connectURI,
+                         OAuthPermissions perms) {
+        this.key = key;
+        this.secret =  secret;
+        this.displayName = displayName;
+        this.connectURI = connectURI;
+        this.permissions = perms;
     }
     
 	/**
@@ -71,5 +81,8 @@ public class OAuthConsumer {
         }
     }
     
-    
+
+    public OAuthPermissions getPermissions() {
+        return permissions;
+    }
 }
