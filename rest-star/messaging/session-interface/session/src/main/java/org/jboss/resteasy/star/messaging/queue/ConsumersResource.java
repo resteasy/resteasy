@@ -5,10 +5,16 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.jboss.resteasy.star.messaging.util.TimeoutTask;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -93,6 +99,48 @@ public class ConsumersResource implements TimeoutTask.Callback
       for (QueueConsumer consumer : queueConsumers.values())
       {
          consumer.shutdown();
+      }
+   }
+
+   @POST
+   public Response createSubscription(@FormParam("autoAck") @DefaultValue("true") boolean autoAck,
+                                      @Context UriInfo uriInfo)
+   {
+      try
+      {
+         QueueConsumer consumer = null;
+         if (autoAck)
+         {
+            consumer = createConsumer();
+         }
+         else
+         {
+            consumer = createAcknowledgedConsumer();
+         }
+
+         UriBuilder location = uriInfo.getAbsolutePathBuilder();
+         if (autoAck) location.path("auto-ack");
+         else location.path("acknowledged");
+         location.path(consumer.getId());
+         Response.ResponseBuilder builder = Response.created(location.build());
+         if (autoAck)
+         {
+            QueueConsumer.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId(), "-1");
+         }
+         else
+         {
+            AcknowledgedQueueConsumer.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), "-1");
+
+         }
+         return builder.build();
+
+      }
+      catch (HornetQException e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
       }
    }
 

@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * repost on same consume-next
@@ -45,6 +45,9 @@ public class RepostingTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
+      Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "true").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("resource consume-next: " + consumeNext);
 
@@ -91,7 +94,7 @@ public class RepostingTest extends MessageTestBase
 
       Assert.assertEquals(204, session.request().delete().getStatus());
 
-      
+
    }
 
    @Test
@@ -103,6 +106,9 @@ public class RepostingTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
+      Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "true").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("resource consume-next: " + consumeNext);
 
@@ -154,6 +160,9 @@ public class RepostingTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
+      Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "true").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("resource consume-next: " + consumeNext);
 
@@ -195,6 +204,9 @@ public class RepostingTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
+      Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "false").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "acknowledge-next");
       System.out.println("resource acknowledge-next: " + consumeNext);
 
@@ -209,7 +221,7 @@ public class RepostingTest extends MessageTestBase
       Link ack = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledgement");
       System.out.println("ack: " + ack);
       res = ack.request().formParameter("acknowledge", "true").post();
-      Assert.assertEquals(204, res.getStatus());      
+      Assert.assertEquals(204, res.getStatus());
       res = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, res.getStatus());
       res = ack.request().formParameter("acknowledge", "true").post();
@@ -252,6 +264,9 @@ public class RepostingTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
+      Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "false").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "acknowledge-next");
       System.out.println("resource acknowledge-next: " + consumeNext);
 
@@ -306,6 +321,9 @@ public class RepostingTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
+      Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "false").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "acknowledge-next");
       System.out.println("resource acknowledge-next: " + consumeNext);
 
@@ -359,6 +377,9 @@ public class RepostingTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
+      Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "false").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "acknowledge-next");
       System.out.println("resource acknowledge-next: " + consumeNext);
 
@@ -415,6 +436,9 @@ public class RepostingTest extends MessageTestBase
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
+      Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "false").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "acknowledge-next");
       System.out.println("resource acknowledge-next: " + consumeNext);
 
@@ -451,8 +475,6 @@ public class RepostingTest extends MessageTestBase
       res = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, res.getStatus());
       consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledge-next");
-
-
 
 
       res = consumeNext.request().post(String.class);

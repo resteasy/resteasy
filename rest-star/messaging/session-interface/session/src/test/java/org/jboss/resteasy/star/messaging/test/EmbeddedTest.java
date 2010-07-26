@@ -85,6 +85,9 @@ public class EmbeddedTest
       Assert.assertEquals(200, response.getStatus());
       Link sender = response.getLinkHeader().getLinkByTitle("create");
       System.out.println("create: " + sender);
+      Link consumers = response.getLinkHeader().getLinkByTitle("pull-consumers");
+      System.out.println("pull: " + consumers);
+      response = consumers.request().formParameter("autoAck", "true").post();
       Link consumeNext = response.getLinkHeader().getLinkByTitle("consume-next");
       System.out.println("consume-next: " + consumeNext);
 

@@ -69,9 +69,9 @@ public class TopicResource extends DestinationResource
    protected void setSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
    {
       UriBuilder builder = info.getRequestUriBuilder();
-      builder.path("subscriptions");
+      builder.path("pull-subscriptions");
       String uri = builder.build().toString();
-      serviceManager.getLinkStrategy().setLinkHeader(response, "subscriptions", "subscriptions", uri, null);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "pull-subscriptions", "pull-subscriptions", uri, null);
    }
 
    protected void setPushSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
@@ -95,7 +95,7 @@ public class TopicResource extends DestinationResource
    }
 
 
-   @Path("subscriptions")
+   @Path("pull-subscriptions")
    public SubscriptionsResource getSubscriptions()
    {
       return subscriptions;
