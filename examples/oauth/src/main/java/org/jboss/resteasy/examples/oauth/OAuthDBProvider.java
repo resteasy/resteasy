@@ -199,10 +199,13 @@ public class OAuthDBProvider implements OAuthProvider {
             String token = makeRandomString();
             String secret = makeRandomString();
             String[] scopes = requestToken.getScopes();
-            update("INSERT INTO access_tokens(token,consumer_key,secret,scopes) "
+            String[] permissions = requestToken.getPermissions();
+            update("INSERT INTO access_tokens(token,consumer_key,secret,scopes,permissions) "
                     + "VALUES('" + token + "', '" + consumerKey + "', '"
-                    + secret 
-                    + "', " + (scopes != null ? "'" + scopes[0] + "'" : null) + ")");
+                    + secret + "'" 
+                    + ", " + (scopes != null ? "'" + scopes[0] + "'" : null)
+                    + ", " + (permissions != null ? "'" + permissions[0] + "'" : null)
+                    + ")");
          
             return new OAuthToken(token, secret, 
                     requestToken.getScopes(), requestToken.getPermissions(), -1, requestToken.getConsumer());

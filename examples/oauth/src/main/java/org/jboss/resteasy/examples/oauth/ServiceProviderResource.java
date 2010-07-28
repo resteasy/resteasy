@@ -7,7 +7,7 @@ import javax.ws.rs.Path;
 @Path("server")
 public class ServiceProviderResource
 {
-    @RolesAllowed({"user","JBossAdmin"})
+    @RolesAllowed({"PrinterService","JBossAdmin"})
     @Path("/resource1")
     @GET
     public String getProtectedResource()

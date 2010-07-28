@@ -215,7 +215,7 @@ public class ConsumerResource
 	   OAuthAccessor accessor = new OAuthAccessor(consumer);
 	   message.addParameter(OAuth.OAUTH_CALLBACK, consumer.callbackURL);
 	   message.addParameter("xoauth_scope", scope);
-	   message.addParameter("xoauth_permission", "permission");
+	   message.addParameter("xoauth_permission", permission);
 	   message.addRequiredParameters(accessor);
 	   return OAuth.addParameters(message.URL, message.getParameters());
    }
