@@ -737,7 +737,7 @@ msg-create-next: http://example.com/queues/jms.queue.bar/create/003</programlist
     breaks the stateless principle of REST, but after much prototyping, this
     is the best way to work most effectively with HornetQ through a REST
     interface. We'll discuss later in this docbook some of the REST tradeoffs
-    we had to make to get an optimal interface.</para>
+    we had to make to get an optimal interface. </para>
 
     <para>You create consumer resources by doing a simple POST to the URL
     published by the <literal>msg-pull-consumers</literal> response header if
