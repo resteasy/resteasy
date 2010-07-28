@@ -5,6 +5,7 @@ import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientProducer;
 
 import javax.ws.rs.POST;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -48,13 +49,18 @@ public class PostMessageDupsOk extends PostMessage
 
    @POST
    public Response create(@Context HttpHeaders headers,
+                          @QueryParam("durable") Boolean durable,
                           @Context UriInfo uriInfo,
                           byte[] body)
    {
       try
       {
-         //System.out.println("sending message with PostMessageDupsOk");
-         publish(headers, body, defaultDurable);
+         boolean isDurable = defaultDurable;
+         if (durable != null)
+         {
+            isDurable = durable.booleanValue();
+         }
+         publish(headers, body, isDurable);
       }
       catch (Exception e)
       {

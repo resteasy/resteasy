@@ -7,6 +7,8 @@ import org.hornetq.rest.util.TimeoutTask;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -171,7 +173,30 @@ public class ConsumersResource implements TimeoutTask.Callback
    }
 
    @Path("auto-ack/{consumer-id}")
-   public QueueConsumer getConsumer(
+   @GET
+   public Response getConsumer(@PathParam("consumer-id") String consumerId,
+                               @Context UriInfo uriInfo) throws Exception
+   {
+      return headConsumer(consumerId, uriInfo);
+   }
+
+   @Path("auto-ack/{consumer-id}")
+   @HEAD
+   public Response headConsumer(@PathParam("consumer-id") String consumerId,
+                                @Context UriInfo uriInfo) throws Exception
+   {
+      QueueConsumer consumer = findConsumer(consumerId);
+      Response.ResponseBuilder builder = Response.noContent();
+      // we synchronize just in case a failed request is still processing
+      synchronized (consumer)
+      {
+         QueueConsumer.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
+      }
+      return builder.build();
+   }
+
+   @Path("auto-ack/{consumer-id}")
+   public QueueConsumer findConsumer(
            @PathParam("consumer-id") String consumerId) throws Exception
    {
       QueueConsumer consumer = queueConsumers.get(consumerId);
@@ -184,7 +209,39 @@ public class ConsumersResource implements TimeoutTask.Callback
    }
 
    @Path("acknowledged/{consumer-id}")
-   public QueueConsumer getAcknowledgedConsumer(
+   @GET
+   public Response getAcknowledgedConsumer(@PathParam("consumer-id") String consumerId,
+                                           @Context UriInfo uriInfo) throws Exception
+   {
+      return headAcknowledgedConsumer(consumerId, uriInfo);
+   }
+
+   @Path("acknowledged/{consumer-id}")
+   @HEAD
+   public Response headAcknowledgedConsumer(@PathParam("consumer-id") String consumerId,
+                                            @Context UriInfo uriInfo) throws Exception
+   {
+      AcknowledgedQueueConsumer consumer = (AcknowledgedQueueConsumer) findAcknowledgedConsumer(consumerId);
+      Response.ResponseBuilder builder = Response.ok();
+      // we synchronize just in case a failed request is still processing
+      synchronized (consumer)
+      {
+         Acknowledgement ack = consumer.getAck();
+         if (ack == null || ack.wasSet())
+         {
+            AcknowledgedQueueConsumer.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
+         }
+         else
+         {
+            consumer.setAcknowledgementLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
+         }
+      }
+      return builder.build();
+   }
+
+
+   @Path("acknowledged/{consumer-id}")
+   public QueueConsumer findAcknowledgedConsumer(
            @PathParam("consumer-id") String consumerId) throws Exception
    {
       QueueConsumer consumer = queueConsumers.get(consumerId);

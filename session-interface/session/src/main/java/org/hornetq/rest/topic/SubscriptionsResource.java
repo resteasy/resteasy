@@ -4,6 +4,8 @@ import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
+import org.hornetq.rest.queue.AcknowledgedQueueConsumer;
+import org.hornetq.rest.queue.Acknowledgement;
 import org.hornetq.rest.queue.DestinationServiceManager;
 import org.hornetq.rest.queue.QueueConsumer;
 import org.hornetq.rest.util.TimeoutTask;
@@ -11,6 +13,8 @@ import org.hornetq.rest.util.TimeoutTask;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -195,8 +199,32 @@ public class SubscriptionsResource implements TimeoutTask.Callback
       return consumer;
    }
 
+   @Path("auto-ack/{consumer-id}")
+   @GET
+   public Response getAutoAckSubscription(@PathParam("consumer-id") String consumerId,
+                                          @Context UriInfo uriInfo) throws Exception
+   {
+      return headAutoAckSubscription(consumerId, uriInfo);
+   }
+
+   @Path("auto-ack/{consumer-id}")
+   @HEAD
+   public Response headAutoAckSubscription(@PathParam("consumer-id") String consumerId,
+                                           @Context UriInfo uriInfo) throws Exception
+   {
+      QueueConsumer consumer = findAutoAckSubscription(consumerId);
+      Response.ResponseBuilder builder = Response.noContent();
+      // we synchronize just in case a failed request is still processing
+      synchronized (consumer)
+      {
+         QueueConsumer.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
+      }
+      return builder.build();
+   }
+
+
    @Path("auto-ack/{subscription-id}")
-   public QueueConsumer getAutoAckSubscription(
+   public QueueConsumer findAutoAckSubscription(
            @PathParam("subscription-id") String subscriptionId)
    {
       QueueConsumer consumer = queueConsumers.get(subscriptionId);
@@ -207,8 +235,39 @@ public class SubscriptionsResource implements TimeoutTask.Callback
       return consumer;
    }
 
+   @Path("acknowledged/{consumer-id}")
+   @GET
+   public Response getAcknowledgedConsumer(@PathParam("consumer-id") String consumerId,
+                                           @Context UriInfo uriInfo) throws Exception
+   {
+      return headAcknowledgedConsumer(consumerId, uriInfo);
+   }
+
+   @Path("acknowledged/{consumer-id}")
+   @HEAD
+   public Response headAcknowledgedConsumer(@PathParam("consumer-id") String consumerId,
+                                            @Context UriInfo uriInfo) throws Exception
+   {
+      AcknowledgedQueueConsumer consumer = (AcknowledgedQueueConsumer) findAcknoledgeSubscription(consumerId);
+      Response.ResponseBuilder builder = Response.ok();
+      // we synchronize just in case a failed request is still processing
+      synchronized (consumer)
+      {
+         Acknowledgement ack = consumer.getAck();
+         if (ack == null || ack.wasSet())
+         {
+            AcknowledgedQueueConsumer.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
+         }
+         else
+         {
+            consumer.setAcknowledgementLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
+         }
+      }
+      return builder.build();
+   }
+
    @Path("acknowledged/{subscription-id}")
-   public QueueConsumer getAcknoledgeSubscription(
+   public QueueConsumer findAcknoledgeSubscription(
            @PathParam("subscription-id") String subscriptionId)
    {
       QueueConsumer consumer = queueConsumers.get(subscriptionId);
