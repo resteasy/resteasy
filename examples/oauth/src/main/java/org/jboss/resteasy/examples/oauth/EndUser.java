@@ -140,12 +140,17 @@ public class EndUser
       String consumerName = evaluateBody(new ByteArrayInputStream(body.getBytes()),
                                         "/ns:tokenAuthorizationRequest/ns:consumerName/text()");
       String requestScope = evaluateBody(new ByteArrayInputStream(body.getBytes()),
-                                        "/ns:tokenAuthorizationRequest/ns:requestScope/text()");
+                                        "/ns:tokenAuthorizationRequest/ns:scopes/text()");
+      String requestPermission = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+                                        "/ns:tokenAuthorizationRequest/ns:permissions/text()");
       // TODO : ask about read/write permissions
       String message = "Authorize " 
                         + ("".equals(consumerName) ? consumerId : consumerName)
                         + System.getProperty("line.separator")
                         + " to access " + ("".equals(requestScope) ? "your resources" : requestScope)
+                        + (requestPermission == null ? "" :
+                            (System.getProperty("line.separator")
+                             + " and grant the following permissions : \"" + requestPermission + "\""))
                         + " (yes/no) ?";
       String decision = JOptionPane.showInputDialog(message);
       if (decision == null || !"yes".equalsIgnoreCase(decision)) {

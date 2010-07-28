@@ -356,11 +356,14 @@ public class OAuthServlet extends HttpServlet {
 	        .append("replyTo=\"").append(uri).append("\">");
 	    sb.append("<consumerId>").append(consumer.getKey()).append("</consumerId>");
 	    if (consumer.getDisplayName() != null) {
-	        sb.append("<consumerName>").append(consumer.getKey()).append("</consumerName>");
+	        sb.append("<consumerName>").append(consumer.getDisplayName()).append("</consumerName>");
 	    }
 	    if (requestToken.getScopes() != null) {
-	        sb.append("<requestScope>").append(requestToken.getScopes()[0]).append("</requestScope>");
+	        sb.append("<scopes>").append(requestToken.getScopes()[0]).append("</scopes>");
 	    }
+	    if (requestToken.getPermissions() != null) {
+            sb.append("<permissions>").append(requestToken.getPermissions()[0]).append("</permissions>");
+        }
 	    sb.append("</tokenAuthorizationRequest>");
 	    try {
     	    resp.getWriter().append(sb.toString());
