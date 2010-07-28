@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -56,7 +57,7 @@ public class ConsumerResource
    private volatile String endUserScope;
       
    @Path("end-user-service")
-   @POST
+   @GET
    public Response providerServiceToEndUser(@QueryParam("scope") String scope) throws Exception {
        endUserScope = scope;
        // consumer registration - this will be done earlier in the real cases
@@ -69,7 +70,7 @@ public class ConsumerResource
                                       getCallbackURI(), scope, "printResources");
        // and redirect the end user to the token authorization URI for this request token
        // be authorized - in the end we'll expect the token verifier
-       return Response.seeOther(
+       return Response.status(302).location(
                URI.create(getAuthorizationURL(DEFAULT_CONSUMER_ID, requestToken))).build();
    }
 

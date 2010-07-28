@@ -96,10 +96,12 @@ public class EndUser
    public String requestServiceFromThirdPartyWebApp() throws Exception
    {
       HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(ConsumerWebAppURL
+      
+      GetMethod method = new GetMethod(ConsumerWebAppURL
               + "?scope=" + OAuthUtils.encodeForOAuth(EndUserResourceURL));
+      method.setFollowRedirects(false);
       int status = client.executeMethod(method);
-      if (303 != status) {
+      if (302 != status) {
           // note that if the end user knows about the OAuth service's token authorization endpoint
           // then it can try to read the request token from the body and build the authorization URL
           // itself, in case the consumer has not provided the redirection URI
@@ -184,7 +186,7 @@ public class EndUser
       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
       
       int status = client.executeMethod(method);
-      if (303 != status) {
+      if (302 != status) {
           throw new RuntimeException("Initiation failed");
       }
       // check that we got all tokens

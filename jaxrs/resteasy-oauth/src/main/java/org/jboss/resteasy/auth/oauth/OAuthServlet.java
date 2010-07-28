@@ -6,6 +6,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -66,8 +67,13 @@ public class OAuthServlet extends HttpServlet {
      */
     final static String TOKEN_AUTHORIZATION_CONFIRM_URL = "/authorization/confirm";
     
+    /**
+     * Default token authorization HTML resource 
+     */
+    final static String DEFAULT_TOKEN_HTML_RESOURCE = "/token_authorization.jsp";
+    
     private String requestTokenURL, accessTokenURL, consumerRegistrationURL, authorizationURL;
-	private OAuthProvider provider;
+    private OAuthProvider provider;
 	private OAuthValidator validator;
 	
 	@Override
@@ -329,7 +335,7 @@ public class OAuthServlet extends HttpServlet {
             // build the end user authentication and token authorization form
             String acceptHeader = req.getHeader("Accept");
             // TODO : properly check accept values, also support JSON
-            String format = acceptHeader.startsWith("application/xml") ? "xml" : "html";
+            String format = acceptHeader == null || acceptHeader.startsWith("application/xml") ? "xml" : "html";
             
             requestEndUserConfirmation(req, resp, consumer, requestToken, format);
             
@@ -344,33 +350,56 @@ public class OAuthServlet extends HttpServlet {
 	                                        org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
 	                                        OAuthRequestToken requestToken,
 	                                        String format) {
-        // TODO: 
-	    // This is a work in progress
-	    // We're starting with some custom XML format - schema needs to be provided
-	    // for HTML : HTML template needs to be available
-	    // XML/HTML templates will need to be available as resources and XSLT/etc
-	    // can be used to inject parameters such as customer id, scopes, etc into them
-	    String uri = getAuthorizationConfirmURI(req, requestToken.getToken());
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("<tokenAuthorizationRequest xmlns=\"http://org.jboss.com/resteasy/oauth\" ")
-	        .append("replyTo=\"").append(uri).append("\">");
-	    sb.append("<consumerId>").append(consumer.getKey()).append("</consumerId>");
-	    if (consumer.getDisplayName() != null) {
-	        sb.append("<consumerName>").append(consumer.getDisplayName()).append("</consumerName>");
+	    
+	    if ("xml".equals(format))
+	    {
+	        // TODO : try to get a default XSLT template, if found then use it
+	        // and only use in code formatting if no template is available
+	        
+            String uri = getAuthorizationConfirmURI(req, requestToken.getToken());
+    	    StringBuilder sb = new StringBuilder();
+    	    sb.append("<tokenAuthorizationRequest xmlns=\"http://org.jboss.com/resteasy/oauth\" ")
+    	        .append("replyTo=\"").append(uri).append("\">");
+    	    sb.append("<consumerId>").append(consumer.getKey()).append("</consumerId>");
+    	    if (consumer.getDisplayName() != null) {
+    	        sb.append("<consumerName>").append(consumer.getDisplayName()).append("</consumerName>");
+    	    }
+    	    if (requestToken.getScopes() != null) {
+    	        sb.append("<scopes>").append(requestToken.getScopes()[0]).append("</scopes>");
+    	    }
+    	    if (requestToken.getPermissions() != null) {
+                sb.append("<permissions>").append(requestToken.getPermissions()[0]).append("</permissions>");
+            }
+    	    sb.append("</tokenAuthorizationRequest>");
+    	    try {
+        	    resp.getWriter().append(sb.toString());
+        	    resp.setStatus(HttpURLConnection.HTTP_OK);
+    	    } catch (IOException ex) {
+    	        resp.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
+    	    }
+	    } else if ("html".equals(format)) {
+	        // TODO : try to get a default XSLT template creating XHTML output, if found then use it
+            // and redirect if no template is available
+	        RequestDispatcher dispatcher = req.getRequestDispatcher(DEFAULT_TOKEN_HTML_RESOURCE);
+	        if (dispatcher == null) {
+	            resp.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+	            return;
+	        }
+	        try {
+	            req.setAttribute("oauth_consumer_id", consumer.getKey());
+	            req.setAttribute("oauth_consumer_display", consumer.getDisplayName());
+	            req.setAttribute("oauth_consumer_scopes", requestToken.getScopes());
+	            req.setAttribute("oauth_consumer_permissions", requestToken.getPermissions());
+	            req.setAttribute("oauth_token_confirm_uri", 
+	                    getAuthorizationConfirmURI(req, requestToken.getToken())
+	                    + "&xoauth_end_user_decision=yes");
+	            dispatcher.forward(req, resp);
+	        } catch (Exception ex) {
+	            resp.setStatus(500);
+	        }
 	    }
-	    if (requestToken.getScopes() != null) {
-	        sb.append("<scopes>").append(requestToken.getScopes()[0]).append("</scopes>");
-	    }
-	    if (requestToken.getPermissions() != null) {
-            sb.append("<permissions>").append(requestToken.getPermissions()[0]).append("</permissions>");
-        }
-	    sb.append("</tokenAuthorizationRequest>");
-	    try {
-    	    resp.getWriter().append(sb.toString());
-    	    resp.setStatus(HttpURLConnection.HTTP_OK);
-	    } catch (IOException ex) {
-	        resp.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
-	    }
+	    //else if ("json".equals(format)) {
+        //}
 	}
 	
 	public String getAuthorizationConfirmURI(HttpServletRequest req, String tokenKey) {
@@ -418,7 +447,7 @@ public class OAuthServlet extends HttpServlet {
                     parameters.add(new OAuth.Parameter(OAuth.OAUTH_VERIFIER, verifier));
                     String location = OAuth.addParameters(callback, parameters);
                     resp.addHeader("Location", location);
-                    resp.setStatus(303);
+                    resp.setStatus(302);
                 }
             } 
             else
