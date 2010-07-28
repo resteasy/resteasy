@@ -16,7 +16,6 @@ public class MyProvider extends OAuthMemoryProvider {
 	public final static String Consumer1Request2Secret = "laiu49w8up3io5";
 	public final static String Consumer1Request2Callback = "http://callback.net";
 	
-	public static final String Consumer1Access1Principal = "admin-name";
 	public static final String[] Consumer1Access1Roles = {"admin"};
 	public static final String Consumer1Access1Key = "o5i4eukolw9y8i65e25";
 	public static final String Consumer1Access1Secret = "p0w394dk5uqoirej";
@@ -29,7 +28,7 @@ public class MyProvider extends OAuthMemoryProvider {
 			addRequestKey(Consumer1Key, Consumer1Request1Key, Consumer1Request1Secret, Consumer1Request1Callback, new String[]{});
 			authoriseRequestToken(Consumer1Key, Consumer1Request1Key, Consumer1Request1Verifier);
 			addRequestKey(Consumer1Key, Consumer1Request2Key, Consumer1Request2Secret, Consumer1Request2Callback, new String[]{});
-			addAccessKey(Consumer1Key, Consumer1Access1Key, Consumer1Access1Secret, Consumer1Access1Principal, Consumer1Access1Roles);
+			addAccessKey(Consumer1Key, Consumer1Access1Key, Consumer1Access1Secret, Consumer1Access1Roles);
 		} catch (OAuthException e) {
 			// should not happen
 			throw new RuntimeException(e);

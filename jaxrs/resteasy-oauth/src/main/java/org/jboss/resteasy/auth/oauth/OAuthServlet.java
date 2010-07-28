@@ -157,7 +157,9 @@ public class OAuthServlet extends HttpServlet {
 			    throw new OAuthException(400, "Wrong callback URI");
 			}
 			OAuthToken token = provider.makeRequestToken(consumerKey, 
-			                            callbackURI, req.getParameterValues("xoauth_scope"));
+			                            callbackURI, 
+			                            req.getParameterValues("xoauth_scope"),
+			                            req.getParameterValues("xoauth_permission"));
 
 			// send the Token information to the Client
 			OAuthUtils.sendValues(resp, OAuth.OAUTH_TOKEN, token.getToken(),OAuth.OAUTH_TOKEN_SECRET, token.getSecret(), OAuthUtils.OAUTH_CALLBACK_CONFIRMED_PARAM, "true");

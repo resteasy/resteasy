@@ -48,6 +48,8 @@ public class OAuthDBFilter extends OAuthFilter {
             org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
             OAuthToken accessToken) 
     {
+        // Alternatively we can have an alias associated with a given key
+        // Example: www.messageing.service : kermit
         final Principal principal = new SimplePrincipal(consumer.getKey());
         final Set<String> roles = getRoles(consumer.getKey());
         

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.auth.oauth;
 
 import java.net.HttpURLConnection;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +32,8 @@ public class OAuthMemoryProvider implements OAuthProvider {
             newToken = makeRandomString();
         }while(accessTokens.containsKey(newToken));
         OAuthToken token = new OAuthToken(newToken, makeRandomString(), 
-                                          requestToken.getScopes(), -1, requestToken.getConsumer());
+                                          requestToken.getScopes(), requestToken.getPermissions(),
+                                          -1, requestToken.getConsumer());
         accessTokens.put(token.getToken(), token);
         return token;
 	}
@@ -49,7 +49,8 @@ public class OAuthMemoryProvider implements OAuthProvider {
         return ret;
     }
 
-    private OAuthRequestToken doMakeRequestToken(String consumerKey, String callback, String[] scopes) 
+    private OAuthRequestToken doMakeRequestToken(String consumerKey, String callback, 
+            String[] scopes, String[] permissions) 
         throws OAuthException {
         OAuthConsumer consumer = _getConsumer(consumerKey);
         String newToken;
@@ -57,7 +58,8 @@ public class OAuthMemoryProvider implements OAuthProvider {
             newToken = makeRandomString();
         }while(requestTokens.containsKey(newToken));
         OAuthRequestToken token = 
-            new OAuthRequestToken(newToken, makeRandomString(), callback, scopes, -1, consumer);
+            new OAuthRequestToken(newToken, makeRandomString(), callback, 
+                    scopes, permissions, -1, consumer);
         requestTokens.put(token.getToken(), token);
         return token;
     }
@@ -99,15 +101,15 @@ public class OAuthMemoryProvider implements OAuthProvider {
 
 	protected void addRequestKey(String consumerKey, String requestToken, String requestSecret, String callback, String[] scopes) throws OAuthException{
 	    OAuthConsumer consumer = _getConsumer(consumerKey);
-		OAuthRequestToken token = new OAuthRequestToken(requestToken, requestSecret, callback, scopes, -1, consumer);
+		OAuthRequestToken token = new OAuthRequestToken(requestToken, requestSecret, callback,
+		        scopes, null, -1, consumer);
 		requestTokens.put(requestToken, token);
 	}
 	
-	protected void addAccessKey(String consumerKey,	String accessToken, String accessSecret, String principalName, String... roles) throws OAuthException {
+	protected void addAccessKey(String consumerKey,	String accessToken, String accessSecret, String[] permissions) throws OAuthException {
 		OAuthConsumer consumer = _getConsumer(consumerKey);
-		TokenWithCredentials token = new TokenWithCredentials(accessToken, accessSecret, null, -1, consumer);
-		token.setPrincipalName(principalName);
-		token.setRoles(new HashSet<String>(Arrays.asList(roles)));
+		OAuthToken token = new OAuthToken(accessToken, accessSecret, 
+                null, permissions, -1, consumer);
 		accessTokens.put(accessToken, token);
 	}
 
@@ -175,9 +177,9 @@ public class OAuthMemoryProvider implements OAuthProvider {
 		return doMakeAccessTokens(token);
 	}
 
-	public OAuthRequestToken makeRequestToken(String consumerKey, String callback, String[] scopes)
-			throws OAuthException {
-	    OAuthRequestToken token = doMakeRequestToken(consumerKey, callback, scopes);
+	public OAuthRequestToken makeRequestToken(String consumerKey, String callback,
+	        String[] scopes, String[] permissions) throws OAuthException {
+	    OAuthRequestToken token = doMakeRequestToken(consumerKey, callback, scopes, permissions);
 		requestTokens.put(token.getToken(), token);
 		return token;
 	}
@@ -189,40 +191,6 @@ public class OAuthMemoryProvider implements OAuthProvider {
             throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such request token " + requestToken);
         }
         return token;
-    }
-
-    private static class TokenWithCredentials extends OAuthToken {
-        private String principalName;
-        private Set<String> roleNames;
-        
-        public TokenWithCredentials(String token, String secret, String[] scopes, long timeToLive,
-                OAuthConsumer consumer) {
-            super(token, secret, scopes, timeToLive, consumer);
-        }
-        
-        public void setPrincipalName(String name) {
-            this.principalName = name;
-        }
-        
-        public void setRoles(Set<String> roles) {
-            this.roleNames = roles;
-        }
-        
-        @Override
-        public Principal getPrincipal() {
-            return new Principal() {
-
-                public String getName() {
-                    return principalName;
-                };
-            
-            };
-        }
-        
-        @Override
-        public Set<String> getRoles() {
-            return roleNames;
-        }
     }
 
     public void registerConsumerScopes(String consumerKey, String[] scopes)
