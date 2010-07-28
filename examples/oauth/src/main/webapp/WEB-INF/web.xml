@@ -83,4 +83,5 @@
     <security-role>
       <role-name>JBossAdmin</role-name>
     </security-role>
+    
 </web-app>
