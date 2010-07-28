@@ -5,9 +5,9 @@ import org.hornetq.api.core.client.ClientConsumer;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.resteasy.spi.Link;
 import org.hornetq.rest.util.Constants;
 import org.hornetq.rest.util.LinkStrategy;
+import org.jboss.resteasy.spi.Link;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
@@ -44,6 +44,12 @@ public class QueueConsumer
     */
    protected long previousIndex = -1;
    protected ConsumedMessage lastConsumed;
+
+   public long getConsumeIndex()
+   {
+      if (lastConsumed == null) return -1;
+      return lastConsumed.getMessageID();
+   }
 
    public DestinationServiceManager getServiceManager()
    {

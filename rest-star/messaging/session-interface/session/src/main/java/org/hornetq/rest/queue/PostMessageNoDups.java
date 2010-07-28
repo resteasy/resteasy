@@ -7,6 +7,7 @@ import org.hornetq.api.core.client.ClientProducer;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -68,7 +69,7 @@ public class PostMessageNoDups extends PostMessage
 
    @POST
    @Path("{id}")
-   public Response create(@PathParam("id") String dupId, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
+   public Response create(@PathParam("id") String dupId, @QueryParam("durable") Boolean durable, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
    {
       String matched = uriInfo.getMatchedURIs().get(1);
       UriBuilder nextBuilder = uriInfo.getBaseUriBuilder();
@@ -76,10 +77,14 @@ public class PostMessageNoDups extends PostMessage
       nextBuilder.path(matched).path(nextId);
       URI next = nextBuilder.build();
 
-
+      boolean isDurable = defaultDurable;
+      if (durable != null)
+      {
+         isDurable = durable.booleanValue();
+      }
       try
       {
-         publish(headers, body, dupId, defaultDurable);
+         publish(headers, body, dupId, isDurable);
       }
       catch (Exception e)
       {

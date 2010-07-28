@@ -58,6 +58,10 @@ Content-Type: application/xml
 
       <itemizedlist>
         <listitem>
+          <para>Easily usable by machine-based (code) clients.</para>
+        </listitem>
+
+        <listitem>
           <para>Zero client footprint. We want HornetQ to be usable by any
           client/programming language that has an adequate HTTP client
           library. You shouldn't have to download, install, and configure a
@@ -95,6 +99,681 @@ Content-Type: application/xml
   <chapter>
     <title>Installation and Configuration</title>
 
-    <para></para>
+    <para>HornetQ's REST interface is installed as a Web archive (WAR). It
+    depends on the <ulink url="http://jboss.org/resteasy">RESTEasy</ulink>
+    project and can currently only run within a servlet container. Installing
+    the HornetQ REST interface is a little bit different depending whether
+    HornetQ is already installed and configured for your environment (i.e.
+    you're deploying within JBoss 6 AppServer) or you want the HornetQ REST
+    WAR to startup and manage the HornetQ server.</para>
+
+    <sect1>
+      <title>Installing Within Pre-configured Environment</title>
+
+      <para>The section should be used when you want to use the HornetQ REST
+      interface in an environment that already has HornetQ installed and
+      running, i.e. JBoss 6 Application Server. You must create a Web archive
+      (.WAR) file with the following web.xml settings:</para>
+
+      <programlisting>&lt;web-app&gt;
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.hornetq.rest.integration.RestMessagingBootstrapListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;filter&gt;
+        &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
+        &lt;filter-class&gt;
+            org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
+        &lt;/filter-class&gt;
+    &lt;/filter&gt;
+
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+&lt;/web-app</programlisting>
+
+      <para>Within your WEB-INF/lib directory you must have the
+      hornetq-rest.jar file. If RESTEasy is not installed within your
+      environment, you must add the RESTEasy jar files within the lib
+      directory as well. Here's a sample Maven pom.xml that can build your WAR
+      for this case.</para>
+
+      <programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;org.somebody&lt;/groupId&gt;
+    &lt;artifactId&gt;myapp&lt;/artifactId&gt;
+    &lt;packaging&gt;war&lt;/packaging&gt;
+    &lt;name&gt;My App&lt;/name&gt;
+     &lt;build&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;source&gt;1.6&lt;/source&gt;
+                    &lt;target&gt;1.6&lt;/target&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.hornetq.rest&lt;/groupId&gt;
+            &lt;artifactId&gt;hornetq-rest&lt;/artifactId&gt;
+            &lt;version&gt;1.0-beta-1&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;
+</programlisting>
+
+      <para></para>
+    </sect1>
+
+    <sect1>
+      <title>Bootstrapping HornetQ Along with REST</title>
+
+      <para>You can bootstrap HornetQ within your WAR as well. To do this, you
+      must have the HornetQ core and JMS jars along with Netty, Resteasy, and
+      the HornetQ REST jar within your WEB-INF/lib. You must also have a
+      hornetq-configuration.xml, hornetq-jms.xml, and hornetq-users.xml config
+      files within WEB-INF/classes. The examples that come with the HornetQ
+      REST distribution show how to do this. You must also add an additional
+      listener to your web.xml file. Here's an example:</para>
+
+      <programlisting>&lt;web-app&gt;
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.hornetq.rest.integration.HornetqBootstrapListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.hornetq.rest.integration.RestMessagingBootstrapListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;filter&gt;
+        &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
+        &lt;filter-class&gt;
+            org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
+        &lt;/filter-class&gt;
+    &lt;/filter&gt;
+
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+&lt;/web-app&gt;</programlisting>
+
+      <para>Here's a Maven pom.xml file for creating a WAR for this
+      environment. Make sure your hornetq configuration files are within the
+      src/main/resources directory so that they are stuffed within the WAR's
+      WEB-INF/classes directory!</para>
+
+      <programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;org.somebody&lt;/groupId&gt;
+    &lt;artifactId&gt;myapp&lt;/artifactId&gt;
+    &lt;packaging&gt;war&lt;/packaging&gt;
+    &lt;name&gt;My App&lt;/name&gt;
+     &lt;build&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;source&gt;1.6&lt;/source&gt;
+                    &lt;target&gt;1.6&lt;/target&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.hornetq&lt;/groupId&gt;
+            &lt;artifactId&gt;hornetq-core&lt;/artifactId&gt;
+            &lt;version&gt;2.1.1.GA&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jboss.netty&lt;/groupId&gt;
+            &lt;artifactId&gt;netty&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.hornetq&lt;/groupId&gt;
+            &lt;artifactId&gt;hornetq-jms&lt;/artifactId&gt;
+            &lt;version&gt;2.1.1.GA&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jboss.spec.javax.jms&lt;/groupId&gt;
+            &lt;artifactId&gt;jboss-jms-api_1.1_spec&lt;/artifactId&gt;
+            &lt;version&gt;1.0.0.Beta1&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.hornetq.rest&lt;/groupId&gt;
+            &lt;artifactId&gt;hornetq-rest&lt;/artifactId&gt;
+            &lt;version&gt;1.0-beta-1&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+            &lt;artifactId&gt;resteasy-jaxrs&lt;/artifactId&gt;
+            &lt;version&gt;2.0.0.GA&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+            &lt;artifactId&gt;resteasy-jaxb-provider&lt;/artifactId&gt;
+            &lt;version&gt;2.0.0.GA&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;</programlisting>
+
+      <para></para>
+    </sect1>
+
+    <sect1>
+      <title>REST Configuration</title>
+
+      <para>The HornetQ REST implementation does have some configuration
+      options. These are configured via XML configuration file that must be in
+      your WEB-INF/classes directory. You must set the web.xml context-param
+      rest.messaging.config.file to specify the name of the configuration
+      file. Below is the format of the XML configuration file and the default
+      values for each.</para>
+
+      <programlisting>&lt;rest-messaging&gt;
+   &lt;server-in-vm-id&gt;0&lt;/server-in-vm-id&gt;
+   &lt;use-link-headers&gt;false&lt;/use-link-headers&gt;
+   &lt;default-durable-send&gt;false&lt;/default-durable-send&gt;
+   &lt;dups-ok&gt;true&lt;/dups-ok&gt;
+   &lt;topic-push-store-file&gt;topic-push-store.xml&lt;/topic-push-store-file&gt;
+   &lt;queue-push-store-file&gt;queue-push-store.xml&lt;/queue-push-store-file&gt;
+   &lt;producer-session-pool-size&gt;10&lt;/producer-session-pool-size&gt;
+   &lt;session-timeout-task-interval&gt;1&lt;/session-timeout-task-interval&gt;
+   &lt;consumer-session-timeout-seconds&gt;300&lt;/consumer-session-timeout-seconds&gt;
+   &lt;consumer-window-size&gt;-1&lt;/consumer-window-size&gt;
+&lt;/rest-messaging
+</programlisting>
+
+      <para>Let's give an explanation of each config option.</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>server-in-vm-id</term>
+
+          <listitem>
+            <para>The HornetQ REST impl uses the IN-VM transport to
+            communicate with HornetQ It uses the default server id, which is
+            "0".</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>use-link-headers</term>
+
+          <listitem>
+            <para>By default, all links (URLs) are published using custom
+            headers. You can have the HornetQ REST implementation publish
+            links using the <ulink
+            url="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">Link
+            Header specification</ulink> instead if you desire.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>default-durable-send</term>
+
+          <listitem>
+            <para>Whether a posted message should be persisted by default if
+            the user does not specify a durable query parameter.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>dups-ok</term>
+
+          <listitem>
+            <para>If this is true, no duplicate detection protocol will be
+            enforced for message posting.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>topic-push-store-file</term>
+
+          <listitem>
+            <para>This must be a relative or absolute file system path. It
+            stores push registrations for topics so that if the server is
+            rebooted, the push connections remain active.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>queue-push-store-file</term>
+
+          <listitem>
+            <para>This must be a relative or absolute file system path. It
+            stores push registrations for queues so that if the server is
+            rebooted, the push connections remain active.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>producer-session-pool-size</term>
+
+          <listitem>
+            <para>The REST implementation pools HornetQ sessions for sending
+            messages. This is the size of the pool. That number of sessions
+            will be created at startup time.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>session-timeout-task-interval</term>
+
+          <listitem>
+            <para>Pull consumers and pull subscriptions can time out. This is
+            the interval the thread that checks for timed-out sessions will
+            run at. A value of 1 means it will run every 1 second.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>consumer-session-timeout-seconds</term>
+
+          <listitem>
+            <para>Timeout in seconds for pull consumers/subscriptions that
+            remain idle for that amount of time.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>consumer-window-size</term>
+
+          <listitem>
+            <para>For consumers, this config option is the same as the HornetQ
+            one of the same name. It will be used by sessions created by the
+            HornetQ REST implementation.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </sect1>
+  </chapter>
+
+  <chapter>
+    <title>HornetQ REST Interface Basics</title>
+
+    <para>The HornetQ REST interface publishes a variety of REST resources to
+    perform various tasks on a queue or topic. Only the top-level queue and
+    topic URI schemes are published to the outside world. You must discover
+    all over resources to interact with by looking for and traversing links.
+    You'll find published links within custom response headers and embedded in
+    published XML representations. Let's look at how this works.</para>
+
+    <sect1>
+      <title>Queue and Topic Resources</title>
+
+      <para>To interact with a queue or topic you do a HEAD or GET request on
+      the following URI pattern:</para>
+
+      <programlisting>/queues/{name}
+/topics/{name}
+</programlisting>
+
+      <para>The base of the URI is the base URL of the WAR you deployed the
+      HornetQ REST server within as defined in the Installation and
+      Configuration section of this document. Replace the {name} string within
+      the above URI pattern with the name of the queue or topic you are
+      interested in interacting with. For example if you have configured a JMS
+      topic named "foo" within your hornetq-jms.xml file, the URI name should
+      be "jms.topic.foo". If you have configured a JMS queue name "bar" within
+      your hornetq-jms.xml file, the URI name should be "jms.queue.bar".
+      Internally, HornetQ prepends the "jms.topic" or "jms.queue" strings to
+      the name of the deployed destination. Next, perform your HEAD or GET
+      request on this URI. Here's what a request/response would look
+      like.</para>
+
+      <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
+Host: example.com
+
+--- Response ---
+HTTP/1.1 200 Ok
+msg-create: http://example.com/queues/jms.queue.bar/create
+msg-pull-consumers: http://example.com/queues/jms.queue.bar/pull-consumers
+msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
+</programlisting>
+
+      <para>The HEAD or GET response contains a number of custom response
+      headers that are URLs to additional REST resources that allow you to
+      interact with the queue or topic in different ways. It is important not
+      to rely on the scheme of the URLs returned as they are an implementation
+      detail. Treat them as opaque and query for them each and every time you
+      initially interact (at boot time) with the server. If you treat all URLs
+      as opaque then you will be isolated from implementation changes as the
+      HornetQ REST interface evolves over time.</para>
+
+      <para></para>
+    </sect1>
+
+    <sect1>
+      <title>Queue Resource Response Headers</title>
+
+      <para>Below is a list of response headers you should expect when
+      interacting with a Queue resource.</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>msg-create</term>
+
+          <listitem>
+            <para>This is a URL you POST messages to. The semantics of this
+            link are described in Chapter 4.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>msg-pull-consumers</term>
+
+          <listitem>
+            <para>This is a URL for creating consumers that will pull from a
+            queue. The semantics of this link are described in Chapter
+            5.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>msg-push-consumers</term>
+
+          <listitem>
+            <para>This is a URL for registering other URLs you want the
+            HornetQ REST server to push messages to. The semantics of this
+            link are described in Chapter 6</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </sect1>
+
+    <sect1>
+      <title>Topic Resource Respones Headers</title>
+
+      <para>Below is a list of response headers you should expect when
+      interacting with a Queue resource.</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>msg-create</term>
+
+          <listitem>
+            <para>This is a URL you POST messages to. The semantics of this
+            link are described in Chapter 4.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>msg-pull-subscriptions</term>
+
+          <listitem>
+            <para>This is a URL for creating consumers that will pull from a
+            queue. The semantics of this link are described in Chapter
+            5.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>msg-push-subscriptions</term>
+
+          <listitem>
+            <para>This is a URL for registering other URLs you want the
+            HornetQ REST server to push messages to. The semantics of this
+            link are described in Chapter 6.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para></para>
+    </sect1>
+  </chapter>
+
+  <chapter>
+    <title>Posting Messages</title>
+
+    <para>This chapter discusses the protocol for posting messages to a queue
+    or a topic. In Chapter 3, you saw that a queue or topic resource publishes
+    variable custom headers that are links to other RESTful resources. The
+    <literal>msg-create</literal> header is the URL you post messages to.
+    Messages are published to a queue or topic by sending a simple HTTP
+    message to the URL published by the msg-create header. The HTTP message
+    contains whatever content you want to publish to the HornetQ destination.
+    Here's an example scenario:</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Obtain the starting <literal>msg-create</literal> header from
+        the queue or topic resource.</para>
+
+        <para><programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
+Host: example.com
+
+--- Response ---
+HTTP/1.1 200 Ok
+msg-create: http://example.com/queues/jms.queue.bar/create</programlisting></para>
+      </listitem>
+
+      <listitem>
+        <para>Do a POST to the URL contained in the
+        <literal>msg-create</literal> header.</para>
+
+        <para><programlisting>POST /queues/jms.queue.bar/create
+Host: example.xom
+Content-Type: application/xml
+
+&lt;order&gt;
+   &lt;name&gt;Bill&lt;/name&gt;
+   &lt;item&gt;iPhone4&lt;/name&gt;
+   &lt;cost&gt;$199.99&lt;/cost&gt;
+&lt;/order&gt;
+
+--- Response ---
+HTTP/1.1 201 Created
+msg-create-next: http://example.com/queues/jms.queue.bar/create/002
+</programlisting>A successful response will return a 201 response code. Also
+        notice that a <literal>msg-create-next</literal> response header is
+        sent as well. You must use this URL to POST your next message.</para>
+      </listitem>
+
+      <listitem>
+        <para>POST your next message to the queue using the URL returned in
+        the <literal>msg-create-next</literal> header.</para>
+
+        <para><programlisting>POST /queues/jms.queue.bar/create/002
+Host: example.com
+Content-Type: application/xml
+
+&lt;order&gt;
+   &lt;name&gt;Monica&lt;/name&gt;
+   &lt;item&gt;iPad&lt;/item&gt;
+   &lt;cost&gt;$499.99&lt;/cost&gt;
+&lt;/order&gt;
+
+--- Response --
+HTTP/1.1 201 Created
+msg-create-next: http://example.com/queues/jms.queue.bar/create/003
+</programlisting>Continue using the new <literal>msg-create-next</literal>
+        header returned with each response.</para>
+      </listitem>
+    </orderedlist>
+
+    <para>It is <emphasis>VERY IMPORTENT</emphasis> that you never re-use
+    returned <literal>msg-create-next</literal> headers to post new messages.
+    This URL may be uniquely generated for each message and used for duplicate
+    detection. If you lose the URL within the
+    <literal>msg-create-next</literal> header, then just go back to the queue
+    or topic resource to get the msg-create URL.</para>
+
+    <sect1>
+      <title>Duplicate Detection</title>
+
+      <para>Sometimes you might have network problems when posting new
+      messages to a queue or topic. You may do a POST and never receive a
+      response. Unfortunately, you don't know whether or not the server
+      received the message and so a re-post of the message might cause
+      duplicates to be posted to the queue or topic. By default, the HornetQ
+      REST interface is configured to accept duplicate messages. You can
+      change this by turning on duplicate message detection by setting the
+      <literal>dups-ok</literal> config option to <literal>false</literal> as
+      described in Chapter 3. What you do this, the initial POST to the
+      msg-create URL will redirect you, using the standard HTTP 307
+      redirection mechanism to a unique URL to POST to. All other interactions
+      remain the same as discussed earlier. Here's an example:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Obtain the starting <literal>msg-create</literal> header from
+          the queue or topic resource.</para>
+
+          <para><programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
+Host: example.com
+
+--- Response ---
+HTTP/1.1 200 Ok
+msg-create: http://example.com/queues/jms.queue.bar/create</programlisting></para>
+        </listitem>
+
+        <listitem>
+          <para>Do a POST to the URL contained in the
+          <literal>msg-create</literal> header.</para>
+
+          <para><programlisting>POST /queues/jms.queue.bar/create
+Host: example.xom
+Content-Type: application/xml
+
+&lt;order&gt;
+   &lt;name&gt;Bill&lt;/name&gt;
+   &lt;item&gt;iPhone4&lt;/name&gt;
+   &lt;cost&gt;$199.99&lt;/cost&gt;
+&lt;/order&gt;
+
+--- Response ---
+HTTP/1.1 307 Redirect
+Location: http://example.com/queues/jms.queue.bar/create/001
+</programlisting>A successful response will return a 307 response code. This
+          is standard HTTP protocol. It is telling you that you must re-POST
+          to the URL contained within the <literal>Location</literal>
+          header.</para>
+        </listitem>
+
+        <listitem>
+          <para>re-POST your message to the URL provided within the
+          <literal>Location</literal> header<literal>.</literal></para>
+
+          <para><programlisting>POST /queues/jms.queue.bar/create/001
+Host: example.com
+Content-Type: application/xml
+
+&lt;order&gt;
+   &lt;name&gt;Bill&lt;/name&gt;
+   &lt;item&gt;iPhone4&lt;/name&gt;
+   &lt;cost&gt;$199.99&lt;/cost&gt;
+&lt;/order&gt;
+
+--- Response --
+HTTP/1.1 201 Created
+msg-create-next: http://example.com/queues/jms.queue.bar/create/002
+</programlisting>You should receive a 201 Created response. If there is a
+          network failure, just re-POST to the Location header. For new
+          messages, use the returned <literal>msg-create-next</literal> header
+          returned with each response.</para>
+        </listitem>
+
+        <listitem>
+          <para>POST any new message to the returned
+          <literal>msg-create-next</literal> header.</para>
+
+          <para><programlisting>POST /queues/jms.queue.bar/create/002
+Host: example.com
+Content-Type: application/xml
+
+&lt;order&gt;
+   &lt;name&gt;Monica&lt;/name&gt;
+   &lt;item&gt;iPad&lt;/name&gt;
+   &lt;cost&gt;$499.99&lt;/cost&gt;
+&lt;/order&gt;
+
+--- Response --
+HTTP/1.1 201 Created
+msg-create-next: http://example.com/queues/jms.queue.bar/create/003</programlisting>If
+          there ever is a network problem, just repost to the URL provided in
+          the <literal>msg-create-next</literal> header.</para>
+        </listitem>
+      </orderedlist>
+
+      <para>How can this work? As you can see, with each successful response,
+      the HornetQ REST server returns a uniquely generated URL within the
+      msg-create-next header. This URL is dedicated to the next new message
+      you want to post. Behind the scenes, the code extracts an identify from
+      the URL and uses HornetQ's duplicate detection mechanism by setting the
+      DUPLICATE_DETECTION_ID property of the JMS message that is actually
+      posted to the system.</para>
+    </sect1>
+  </chapter>
+
+  <chapter>
+    <title>Consuming Messages via Pull</title>
+
+    <para>There are two different ways to consume messages from a topic or
+    queue. You can wait and have the messaging server push them to you, or you
+    can continuously poll the server yourself to see if messages are
+    available. This chapter discusses the latter. Consuming messages via a
+    pull works almost identically for queues and topics with some minor, but
+    important caveats. To start consuming you must create a consumer resource
+    on the server that is dedicated to your client. Now, this pretty much
+    breaks the stateless principle of REST, but after much prototyping, this
+    is the best way to work most effectively with HornetQ through a REST
+    interface. We'll discuss later in this docbook some of the REST tradeoffs
+    we had to make to get an optimal interface.</para>
+
+    <para>You create consumer resources by doing a simple POST to the URL
+    published by the <literal>msg-pull-consumers</literal> response header if
+    you're interacting with a queue, the
+    <literal>msg-pull-subscribers</literal> response header if you're
+    interacting with a topic. These headers are provided by the main queue or
+    topic resource discussed in Chapter 3. Doing an empty POST to one of these
+    URLs will create a consumer resource that follows an auto-acknowledge
+    protocol and, if you're interacting with a topic, creates a temporty
+    subscription to the topic. If you want to use the acknowledgement protocol
+    and/or create a durable subscription (topics only), then you must use the
+    form parameters (<literal>application/x-www-form-urlencoded</literal>)
+    described below.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>autoAck</term>
+
+        <listitem>
+          <para>A value of <literal>true</literal> or <literal>false</literal>
+          can be given. This defaults to <literal>true</literal> if you do not
+          pass this parameter.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>durable</term>
+
+        <listitem>
+          <para>A value of <literal>true</literal> or <literal>false</literal>
+          can be given. This defaults to <literal>false</literal> if you do
+          not pass this parameter. Only available on topics. This specifies
+          whether you want a durable subscription or not. A durable
+          subscription persists through server restart.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
   </chapter>
 </book>

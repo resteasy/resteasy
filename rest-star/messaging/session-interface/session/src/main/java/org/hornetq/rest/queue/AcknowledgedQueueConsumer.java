@@ -36,6 +36,11 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       autoAck = false;
    }
 
+   public synchronized Acknowledgement getAck()
+   {
+      return ack;
+   }
+
    @Path("acknowledge-next{index}")
    @POST
    public synchronized Response poll(@HeaderParam(Constants.WAIT_HEADER) @DefaultValue("0") long wait,
@@ -127,7 +132,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
          try
          {
             ack.acknowledge();
-            System.out.println("Acknowledge message: " + ack.getMessage());
+            //System.out.println("Acknowledge message: " + ack.getMessage());
             ack.getMessage().acknowledge();
          }
          catch (HornetQException e)
@@ -229,7 +234,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       setSessionLink(builder, info, basePath);
    }
 
-   protected void setAcknowledgementLink(Response.ResponseBuilder response, UriInfo info, String basePath)
+   public void setAcknowledgementLink(Response.ResponseBuilder response, UriInfo info, String basePath)
    {
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath)

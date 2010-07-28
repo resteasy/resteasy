@@ -16,8 +16,8 @@ public class MessageServiceConfiguration
    private int consumerWindowSize = -1;
    private boolean defaultDurableSend = false;
    private boolean dupsOk = true;
-   private String topicPushStoreFile = "./topic-push-store.xml";
-   private String queuePushStoreFile = "./queue-push-store.xml";
+   private String topicPushStoreFile = "topic-push-store.xml";
+   private String queuePushStoreFile = "queue-push-store.xml";
    private String inVmId = "0";
    private boolean useLinkHeaders = false;
 
