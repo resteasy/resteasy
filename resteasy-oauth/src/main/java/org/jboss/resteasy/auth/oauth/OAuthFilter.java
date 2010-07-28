@@ -2,8 +2,6 @@ package org.jboss.resteasy.auth.oauth;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.security.Principal;
-import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -13,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import net.oauth.OAuth;
@@ -123,26 +120,6 @@ public class OAuthFilter implements Filter {
 	                                                   org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
 	                                                   OAuthToken accessToken) 
 	{
-	    if (accessToken != null)
-	    {
-	        // set the Client's credentials
-            final Principal principal = accessToken.getPrincipal();
-            final Set<String> roles = accessToken.getRoles();
-            request = new HttpServletRequestWrapper(request){
-                @Override
-                public Principal getUserPrincipal(){
-                    return principal;
-                }
-                @Override
-                public boolean isUserInRole(String role){
-                    return roles.contains(role);
-                }
-                @Override
-                public String getAuthType(){
-                    return OAUTH_AUTH_METHOD;
-                }
-            };
-	    } 
 	    return request;
 	}
 	

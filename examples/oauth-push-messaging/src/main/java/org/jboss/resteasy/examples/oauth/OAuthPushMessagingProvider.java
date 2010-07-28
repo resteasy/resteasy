@@ -133,7 +133,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 }
                 
                 return new OAuthToken(token, secret, 
-                        scopes == null ? null : new String[] {scopes}, -1, getConsumer(tokenConsumerKey));
+                        scopes == null ? null : new String[] {scopes}, null, -1, getConsumer(tokenConsumerKey));
             } else {
                 throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such consumer key "+consumerKey);
             }
@@ -186,7 +186,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 }
                 
                 OAuthRequestToken newToken = new OAuthRequestToken(token, secret, callback, 
-                        scopes == null ? null : new String[] {scopes}, -1, getConsumer(tokenConsumerKey));
+                        scopes == null ? null : new String[] {scopes}, null, -1, getConsumer(tokenConsumerKey));
                 newToken.setVerifier(verifier);
                 return newToken;
             } else {
@@ -210,7 +210,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                     + "', " + (scopes != null ? "'" + scopes[0] + "'" : null) + ")");
          
             return new OAuthToken(token, secret, 
-                    requestToken.getScopes(), -1, requestToken.getConsumer());
+                    requestToken.getScopes(), null, -1, requestToken.getConsumer());
          } catch (SQLException ex) {
              throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 
                      "Request token for the consumer with key " + consumerKey + " can not be created");
@@ -235,7 +235,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
     }
     
     public OAuthToken makeRequestToken(String consumerKey, String callback,
-            String[] scopes) throws OAuthException {
+            String[] scopes, String[] permissions) throws OAuthException {
         try {
             String token = makeRandomString();
             String secret = makeRandomString();
@@ -244,7 +244,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                     + secret + "', '" + callback 
                     + "', " + (scopes != null ? "'" + scopes[0] + "'" : null) + ")");
          
-            return new OAuthRequestToken(token, secret, callback, scopes, -1, getConsumer(consumerKey));
+            return new OAuthRequestToken(token, secret, callback, scopes, null, -1, getConsumer(consumerKey));
          } catch (SQLException ex) {
              throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 
                      "Request token for the consumer with key " + consumerKey + " can not be created");

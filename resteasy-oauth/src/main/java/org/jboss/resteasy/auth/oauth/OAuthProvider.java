@@ -42,12 +42,13 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * Make a new OAuth Request Token for the given Consumer, using the given callback.
 	 * @param consumerKey the Consumer key for whom to create a new Request Token
 	 * @param callback the Client-specified callback for this Request Token
-	 * @param scopes resource URIs or other IDs representing the resources 
-	 *               the consumer would like to access
+	 * @param scopes resource URIs the consumer would like to access
+	 * @param scopes permissions the consumer is requesting
 	 * @return a new OAuth Request Token for the given Consumer
 	 * @throws OAuthException thrown if the given Consumer does not exist
 	 */
-	public OAuthToken makeRequestToken(String consumerKey, String callback, String[] scopes) throws OAuthException;
+	public OAuthToken makeRequestToken(String consumerKey, String callback, 
+	        String[] scopes, String[] permissions) throws OAuthException;
 
 	/**
 	 * Make a new OAuth Access Token for the given Consumer, using the given Request Token and Verifier. 

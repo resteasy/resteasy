@@ -47,7 +47,7 @@ public class ConsumerResource
        TokenAuthorizationURL = props.getProperty("token.authorization.url");
    }
    
-   private static final String DEFAULT_CONSUMER_ID = "consumer";
+   private static final String DEFAULT_CONSUMER_ID = "print-resources.com";
    
    @Context
    private UriInfo ui;
@@ -65,7 +65,8 @@ public class ConsumerResource
        accessWithoutToken(scope);
        
        // request a temporarily request token
-       requestToken = getRequestToken(DEFAULT_CONSUMER_ID, consumerSecret, getCallbackURI(), scope);
+       requestToken = getRequestToken(DEFAULT_CONSUMER_ID, consumerSecret, 
+                                      getCallbackURI(), scope, "printResources");
        // and redirect the end user to the token authorization URI for this request token
        // be authorized - in the end we'll expect the token verifier
        return Response.seeOther(
@@ -122,11 +123,11 @@ public class ConsumerResource
    }
    
    public Token getRequestToken(String consumerKey, String consumerSecret, 
-                                String callbackURI, String scope) throws Exception
+                                String callbackURI, String scope, String permission) throws Exception
    {
       HttpClient client = new HttpClient();
       GetMethod method = new GetMethod(
-              getRequestURL(consumerKey, consumerSecret, callbackURI, scope));
+              getRequestURL(consumerKey, consumerSecret, callbackURI, scope, permission));
       int status = client.executeMethod(method);
       if (HttpResponseCodes.SC_OK != status) {
           throw new RuntimeException("Request token can not be obtained");
@@ -208,12 +209,13 @@ public class ConsumerResource
    }	
 
    private String getRequestURL(String consumerKey, String consumerSecret, 
-                                String callbackURI, String scope) throws Exception {
+                                String callbackURI, String scope, String permission) throws Exception {
 	   OAuthMessage message = new OAuthMessage("GET", RequestTokenURL, Collections.<Map.Entry>emptyList());
 	   OAuthConsumer consumer = new OAuthConsumer(callbackURI, consumerKey, consumerSecret, null);
 	   OAuthAccessor accessor = new OAuthAccessor(consumer);
 	   message.addParameter(OAuth.OAUTH_CALLBACK, consumer.callbackURL);
 	   message.addParameter("xoauth_scope", scope);
+	   message.addParameter("xoauth_permission", "permission");
 	   message.addRequiredParameters(accessor);
 	   return OAuth.addParameters(message.URL, message.getParameters());
    }

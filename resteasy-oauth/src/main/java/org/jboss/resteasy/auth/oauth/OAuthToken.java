@@ -12,15 +12,18 @@ public class OAuthToken {
     private String token;
     private String secret;
     private String[] scopes;
+    private String[] permissions;
     private OAuthConsumer consumer;
     private long timeToLive;
     private long timestamp;
     
-    public OAuthToken(String token, String secret, String[] scopes, long timeToLive,
-                      OAuthConsumer consumer) {
+    public OAuthToken(String token, String secret, 
+                      String[] scopes, String[] permissions, 
+                      long timeToLive, OAuthConsumer consumer) {
         this.token = token;
         this.secret = secret;
         this.scopes = scopes;
+        this.permissions = permissions;
         this.timeToLive = timeToLive;
         this.consumer = consumer;
         this.timestamp = System.currentTimeMillis();
@@ -55,6 +58,13 @@ public class OAuthToken {
         return scopes;
     }
 	
+    /**
+     * Returns this Token's permissions
+     */
+    public String[] getPermissions() {
+        return permissions;    
+    }
+    
 	/**
      * Returns this Token's timestamp
      */
@@ -69,21 +79,5 @@ public class OAuthToken {
         return timeToLive;
     }
 	
-	/**
-	 * Returns this Token's Principal. This is the Principal that will be set for a Request Token when
-	 * the User authorises it, and will be returned by the Access Token to be used to set the logged in
-	 * Principal when the Consumer authenticates using this OAuth Access Token.
-	 */
-	public Principal getPrincipal() {
-	    return null;
-	}
-
-	/**
-	 * Returns this Token's role list. This is the role list that will be set for a Request Token when
-	 * the User authorises it, and will be returned by the Access Token to be used to set the logged in
-	 * role list when the Consumer authenticates using this OAuth Access Token.
-	 */
-	public Set<String> getRoles() {
-	    return null;    
-	}
+	
 }

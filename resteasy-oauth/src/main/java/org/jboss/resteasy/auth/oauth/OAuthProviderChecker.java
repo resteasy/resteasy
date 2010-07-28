@@ -51,9 +51,10 @@ public class OAuthProviderChecker implements OAuthProvider {
 		return checkNull(provider.makeAccessToken(consumerKey, requestKey, verifier));
 	}
 
-	public OAuthToken makeRequestToken(String consumerKey, String callback, String[] scopes)
+	public OAuthToken makeRequestToken(String consumerKey, String callback, 
+	                                   String[] scopes, String[] permissions)
 			throws OAuthException {
-		return checkNull(provider.makeRequestToken(consumerKey, callback, scopes));
+		return checkNull(provider.makeRequestToken(consumerKey, callback, scopes, permissions));
 	}
 
 	public String authoriseRequestToken(String consumerKey, String requestKey)
