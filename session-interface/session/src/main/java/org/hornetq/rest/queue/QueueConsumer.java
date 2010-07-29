@@ -7,7 +7,6 @@ import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.rest.util.Constants;
 import org.hornetq.rest.util.LinkStrategy;
-import org.jboss.resteasy.spi.Link;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
@@ -253,7 +252,6 @@ public class QueueConsumer
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);
       String uri = builder.build().toString();
-      Link link = new Link("session", "session", uri, MediaType.APPLICATION_XML, null);
-      serviceManager.getLinkStrategy().setLinkHeader(response, "session", "session", uri, MediaType.APPLICATION_XML);
+      serviceManager.getLinkStrategy().setLinkHeader(response, "consumer", "consumer", uri, MediaType.APPLICATION_XML);
    }
 }
