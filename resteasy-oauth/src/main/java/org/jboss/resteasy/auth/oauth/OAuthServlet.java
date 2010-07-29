@@ -408,7 +408,7 @@ public class OAuthServlet extends HttpServlet {
         String uri = baseURI + TOKEN_AUTHORIZATION_CONFIRM_URL;
         if (tokenKey != null) 
         {
-            uri += (OAuth.OAUTH_TOKEN + "=" + OAuthUtils.encodeForOAuth(tokenKey));
+            uri += ("?" + OAuth.OAUTH_TOKEN + "=" + OAuthUtils.encodeForOAuth(tokenKey));
         }
         return uri;
 	}
