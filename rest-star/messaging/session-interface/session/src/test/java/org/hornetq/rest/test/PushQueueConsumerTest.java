@@ -1,11 +1,11 @@
 package org.hornetq.rest.test;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.Link;
 import org.hornetq.rest.queue.QueueDeployment;
 import org.hornetq.rest.queue.push.xml.PushRegistration;
 import org.hornetq.rest.queue.push.xml.XmlLink;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.Link;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -65,7 +65,7 @@ public class PushQueueConsumerTest extends MessageTestBase
       res = consumeNext.request().post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
-      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");
       Assert.assertEquals(204, session.request().delete().getStatus());
    }
 }

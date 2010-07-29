@@ -6,15 +6,15 @@ import org.hornetq.core.config.impl.ConfigurationImpl;
 import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.hornetq.core.server.HornetQServer;
 import org.hornetq.core.server.HornetQServers;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.hornetq.rest.MessageServiceConfiguration;
 import org.hornetq.rest.MessageServiceManager;
 import org.hornetq.rest.queue.QueueDeployment;
 import org.hornetq.rest.queue.push.xml.PushRegistration;
 import org.hornetq.rest.queue.push.xml.XmlLink;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -132,7 +132,7 @@ public class PersistentPushQueueConsumerTest
 
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
-      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");
       Assert.assertEquals(204, session.request().delete().getStatus());
 
       shutdown();

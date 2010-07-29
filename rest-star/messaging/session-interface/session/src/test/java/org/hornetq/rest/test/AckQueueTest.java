@@ -1,12 +1,12 @@
 package org.hornetq.rest.test;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.Link;
 import org.hornetq.rest.queue.QueueDeployment;
 import org.hornetq.rest.util.Constants;
 import org.hornetq.rest.util.CustomHeaderLinkStrategy;
 import org.hornetq.rest.util.LinkHeaderLinkStrategy;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.Link;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -67,7 +67,7 @@ public class AckQueueTest extends MessageTestBase
          Link ack = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledgement");
          System.out.println("ack: " + ack);
          Assert.assertNotNull(ack);
-         Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+         Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");
          System.out.println("session: " + session);
          consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledge-next");
          System.out.println("consumeNext: " + consumeNext);
@@ -86,7 +86,7 @@ public class AckQueueTest extends MessageTestBase
          Link ack = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledgement");
          System.out.println("ack: " + ack);
          Assert.assertNotNull(ack);
-         Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+         Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");
          System.out.println("session: " + session);
          consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledge-next");
          System.out.println("consumeNext: " + consumeNext);
@@ -140,7 +140,7 @@ public class AckQueueTest extends MessageTestBase
       Link ack = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledgement");
       System.out.println("ack: " + ack);
       Assert.assertNotNull(ack);
-      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");
       System.out.println("session: " + session);
       consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledge-next");
       System.out.println("consumeNext: " + consumeNext);
@@ -161,7 +161,7 @@ public class AckQueueTest extends MessageTestBase
       ack = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledgement");
       System.out.println("ack: " + ack);
       Assert.assertNotNull(ack);
-      session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+      session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");
       System.out.println("session: " + session);
       ackRes = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, ackRes.getStatus());
@@ -229,7 +229,7 @@ public class AckQueueTest extends MessageTestBase
       System.out.println("ack: " + ack);
       ackRes = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, ackRes.getStatus());
-      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "consumer");
 
       Assert.assertEquals(503, consumeNext.request().post().getStatus());
       System.out.println(session);
@@ -267,7 +267,7 @@ public class AckQueueTest extends MessageTestBase
       Link ack = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledgement");
       System.out.println("ack: " + ack);
       Assert.assertNotNull(ack);
-      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");
       System.out.println("session: " + session);
       consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledge-next");
       System.out.println("consumeNext: " + consumeNext);
@@ -290,7 +290,7 @@ public class AckQueueTest extends MessageTestBase
       Assert.assertNotNull(ack);
       ackRes = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, ackRes.getStatus());
-      session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "session");
+      session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "consumer");
       consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "acknowledge-next");
       System.out.println("session: " + session);
 
@@ -308,7 +308,7 @@ public class AckQueueTest extends MessageTestBase
 
       ackRes = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(412, ackRes.getStatus());
-      session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "session");
+      session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "consumer");
       consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "acknowledge-next");
       res = consumeNext.request().header(Constants.WAIT_HEADER, "10").post(String.class);
       Assert.assertEquals(200, res.getStatus());
@@ -317,7 +317,7 @@ public class AckQueueTest extends MessageTestBase
       Assert.assertNotNull(ack);
       ackRes = ack.request().formParameter("acknowledge", "true").post();
       Assert.assertEquals(204, ackRes.getStatus());
-      session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "session");
+      session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "consumer");
 
       Assert.assertEquals(204, session.request().delete().getStatus());
    }

@@ -1,12 +1,12 @@
 package org.hornetq.rest.test;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.Link;
 import org.hornetq.rest.topic.TopicDeployment;
 import org.hornetq.rest.util.Constants;
 import org.hornetq.rest.util.CustomHeaderLinkStrategy;
 import org.hornetq.rest.util.LinkHeaderLinkStrategy;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.Link;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -76,7 +76,7 @@ public class AckTopicTest extends MessageTestBase
          Link ack = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "acknowledgement");
          System.out.println("ack: " + ack);
          Assert.assertNotNull(ack);
-         Link session = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "session");
+         Link session = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consumer");
          System.out.println("session: " + session);
          consumeNext = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "acknowledge-next");
          System.out.println("consumeNext: " + consumeNext);
@@ -144,7 +144,7 @@ public class AckTopicTest extends MessageTestBase
       Link ack = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "acknowledgement");
       System.out.println("ack: " + ack);
       Assert.assertNotNull(ack);
-      Link session = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consumer");
       System.out.println("session: " + session);
       consumeNext = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "acknowledge-next");
       System.out.println("consumeNext: " + consumeNext);
@@ -200,7 +200,7 @@ public class AckTopicTest extends MessageTestBase
       Link ack = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "acknowledgement");
       System.out.println("ack: " + ack);
       Assert.assertNotNull(ack);
-      Link session = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "session");
+      Link session = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "consumer");
       System.out.println("session: " + session);
       consumeNext = MessageTestBase.getLinkByTitle(manager.getTopicManager().getLinkStrategy(), res, "acknowledge-next");
       System.out.println("consumeNext: " + consumeNext);

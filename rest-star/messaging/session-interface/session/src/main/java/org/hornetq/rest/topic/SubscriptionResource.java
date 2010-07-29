@@ -4,12 +4,6 @@ import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.rest.queue.DestinationServiceManager;
 import org.hornetq.rest.queue.QueueConsumer;
-import org.hornetq.rest.util.LinkStrategy;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -34,20 +28,4 @@ public class SubscriptionResource extends QueueConsumer implements Subscription
    {
       this.durable = durable;
    }
-
-   @Override
-   protected void setMessageResponseLinks(UriInfo info, String basePath, Response.ResponseBuilder responseBuilder, String index)
-   {
-      setConsumeNextLink(serviceManager.getLinkStrategy(), responseBuilder, info, basePath, index);
-      setSubscriptionLink(serviceManager.getLinkStrategy(), responseBuilder, info, basePath);
-   }
-
-   public static void setSubscriptionLink(LinkStrategy linkStrategy, Response.ResponseBuilder response, UriInfo info, String basePath)
-   {
-      UriBuilder builder = info.getBaseUriBuilder();
-      builder.path(basePath);
-      String uri = builder.build().toString();
-      linkStrategy.setLinkHeader(response, "subscription", "subscription", uri, MediaType.APPLICATION_XML);
-   }
-
 }
