@@ -390,9 +390,8 @@ public class OAuthServlet extends HttpServlet {
 	            req.setAttribute("oauth_consumer_display", consumer.getDisplayName());
 	            req.setAttribute("oauth_consumer_scopes", requestToken.getScopes());
 	            req.setAttribute("oauth_consumer_permissions", requestToken.getPermissions());
-	            req.setAttribute("oauth_token_confirm_uri", 
-	                    getAuthorizationConfirmURI(req, requestToken.getToken())
-	                    + "&xoauth_end_user_decision=yes");
+	            req.setAttribute("oauth_request_token", requestToken.getToken());
+	            req.setAttribute("oauth_token_confirm_uri", getAuthorizationConfirmURI(req, null));
 	            dispatcher.forward(req, resp);
 	        } catch (Exception ex) {
 	            resp.setStatus(500);
@@ -406,8 +405,12 @@ public class OAuthServlet extends HttpServlet {
 	    String requestURI = req.getRequestURL().toString();
         int index = requestURI.lastIndexOf(authorizationURL);
         String baseURI = requestURI.substring(0, index);
-        return baseURI + TOKEN_AUTHORIZATION_CONFIRM_URL + "?"
-            + OAuth.OAUTH_TOKEN + "=" + OAuthUtils.encodeForOAuth(tokenKey);
+        String uri = baseURI + TOKEN_AUTHORIZATION_CONFIRM_URL;
+        if (tokenKey != null) 
+        {
+            uri += (OAuth.OAUTH_TOKEN + "=" + OAuthUtils.encodeForOAuth(tokenKey));
+        }
+        return uri;
 	}
 	
 	private void serveTokenAuthorizationConfirmation(HttpServletRequest req,
@@ -431,7 +434,7 @@ public class OAuthServlet extends HttpServlet {
                 return;
             }
             
-            boolean authorized = "yes".equals(values[0]);
+            boolean authorized = "yes".equals(values[0]) || "true".equals(values[0]);
             
             String callback = requestToken.getCallback();
             if (authorized) 
