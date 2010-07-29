@@ -34,6 +34,7 @@ public class ConsumerResource
    private static final String RequestTokenURL;
    private static final String TokenAuthorizationURL;
    private static final String AccessTokenURL;
+   private static final String EndUserResourceURL;
    
    static {
        Properties props = new Properties();
@@ -46,6 +47,7 @@ public class ConsumerResource
        RequestTokenURL = props.getProperty("request.token.url");
        AccessTokenURL = props.getProperty("access.token.url");
        TokenAuthorizationURL = props.getProperty("token.authorization.url");
+       EndUserResourceURL = props.getProperty("enduser.resource.url");
    }
    
    private static final String DEFAULT_CONSUMER_ID = "print-resources.com";
@@ -59,15 +61,15 @@ public class ConsumerResource
    @Path("end-user-service")
    @GET
    public Response providerServiceToEndUser(@QueryParam("scope") String scope) throws Exception {
-       endUserScope = scope;
+       endUserScope = scope == null || scope.isEmpty() ? EndUserResourceURL : scope;
        // consumer registration - this will be done earlier in the real cases
        consumerSecret = getSharedSecret(DEFAULT_CONSUMER_ID);
        
-       accessWithoutToken(scope);
+       accessWithoutToken(endUserScope);
        
        // request a temporarily request token
        requestToken = getRequestToken(DEFAULT_CONSUMER_ID, consumerSecret, 
-                                      getCallbackURI(), scope, "printResources");
+                                      getCallbackURI(), endUserScope, "printResources");
        // and redirect the end user to the token authorization URI for this request token
        // be authorized - in the end we'll expect the token verifier
        return Response.status(302).location(
