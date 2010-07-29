@@ -229,6 +229,7 @@ public class ResourceLocatorTest
       }
    }
 
+   @Produces(MediaType.TEXT_PLAIN)
    public interface RootInterface
    {
       @GET
@@ -245,7 +246,6 @@ public class ResourceLocatorTest
       @Consumes(MediaType.TEXT_PLAIN)
       String post(String s);
    }
-
 
    public static abstract class AbstractAnnotationFreeResouce implements RootInterface
    {
@@ -280,9 +280,11 @@ public class ResourceLocatorTest
 
           dispatcher.invoke(request, response);
 
-
           Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
           Assert.assertEquals("got", response.getContentAsString());
+          Assert.assertNotNull(response.getOutputHeaders().get("Content-Type"));
+          Assert.assertTrue(response.getOutputHeaders().get("Content-Type").size() > 0);
+          Assert.assertEquals(MediaType.TEXT_PLAIN_TYPE, response.getOutputHeaders().get("Content-Type").get(0));
       }
 
       {
@@ -291,7 +293,6 @@ public class ResourceLocatorTest
           MockHttpResponse response = new MockHttpResponse();
 
           dispatcher.invoke(request, response);
-
 
           Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
           Assert.assertEquals("posted: hello!", response.getContentAsString());
