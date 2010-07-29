@@ -87,9 +87,25 @@ public class ConsumerResource
    }
    
    
+   /**
+    * Browser-based redirection works better with GET
+    * 
+    */
+   @Path("token-authorization")
+   @GET
+   public Response setRequestTokenVerifierUsingGET(@QueryParam(OAuth.OAUTH_TOKEN) String token, 
+                                                   @QueryParam(OAuth.OAUTH_VERIFIER) String verifier) throws Exception {
+       return doSetRequestTokenVerifier(token, verifier);
+   }
+   
    @Path("token-authorization")
    @POST
-   public Response setRequestTokenVerifier(@QueryParam(OAuth.OAUTH_TOKEN) String token, @QueryParam(OAuth.OAUTH_VERIFIER) String verifier) throws Exception {
+   public Response setRequestTokenVerifierUsingPost(@QueryParam(OAuth.OAUTH_TOKEN) String token, 
+                                                    @QueryParam(OAuth.OAUTH_VERIFIER) String verifier) throws Exception {
+       return doSetRequestTokenVerifier(token, verifier);
+   }
+   
+   public Response doSetRequestTokenVerifier(String token, String verifier) throws Exception {
        requestToken.setVerifier(verifier);
        
        // exchange the authorized request token for the access token
