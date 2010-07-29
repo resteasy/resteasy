@@ -11,11 +11,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 /**
@@ -212,6 +216,85 @@ public class ResourceLocatorTest
 
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals(Directory.class.getName(), new String(response.getOutput()));
+      }
+   }
+
+   @Path("/collection")
+   public static class CollectionResource
+   {
+      @Path("annotation_free_subresource")
+      public Object getAnnotationFreeSubResource()
+      {
+         return new AnnotationFreeSubResource();
+      }
+   }
+
+   public interface RootInterface
+   {
+      @GET
+      String get();
+
+      @Path("{id}")
+      Object getSubSubResource(@PathParam("id") String id);
+   }
+
+   @Produces(MediaType.TEXT_PLAIN)
+   public interface SubInterface extends RootInterface
+   {
+      @POST
+      @Consumes(MediaType.TEXT_PLAIN)
+      String post(String s);
+   }
+
+
+   public static abstract class AbstractAnnotationFreeResouce implements RootInterface
+   {
+      public String get()
+      {
+         return "got";
+      }
+   }
+
+   public static class AnnotationFreeSubResource extends AbstractAnnotationFreeResouce implements SubInterface
+   {
+      public String post(String s)
+      {
+         return "posted: " + s;
+      }
+
+      public Object getSubSubResource(String id)
+      {
+         return null;
+      }
+   }
+
+   @Test
+   public void testAnnotationFreeSubresource() throws Exception
+   {
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+
+      dispatcher.getRegistry().addPerRequestResource(CollectionResource.class);
+      {
+          MockHttpRequest request = MockHttpRequest.get("/collection/annotation_free_subresource");
+          MockHttpResponse response = new MockHttpResponse();
+
+          dispatcher.invoke(request, response);
+
+
+          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+          Assert.assertEquals("got", response.getContentAsString());
+      }
+
+      {
+          MockHttpRequest request = MockHttpRequest.post("/collection/annotation_free_subresource");
+          request.content("hello!".getBytes()).contentType(MediaType.TEXT_PLAIN);
+          MockHttpResponse response = new MockHttpResponse();
+
+          dispatcher.invoke(request, response);
+
+
+          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+          Assert.assertEquals("posted: hello!", response.getContentAsString());
       }
    }
 }

@@ -56,7 +56,7 @@ public class GetRestful
       {
          return true;
       }
-      for (Method method : c.getMethods())
+      for (Method method : c.getDeclaredMethods())
       {
          if (method.isAnnotationPresent(Path.class))
          {
