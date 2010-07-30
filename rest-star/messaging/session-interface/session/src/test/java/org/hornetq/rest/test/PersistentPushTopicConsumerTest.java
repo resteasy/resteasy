@@ -6,15 +6,14 @@ import org.hornetq.core.config.impl.ConfigurationImpl;
 import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.hornetq.core.server.HornetQServer;
 import org.hornetq.core.server.HornetQServers;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.hornetq.rest.MessageServiceConfiguration;
 import org.hornetq.rest.MessageServiceManager;
 import org.hornetq.rest.queue.push.xml.XmlLink;
 import org.hornetq.rest.topic.PushTopicRegistration;
 import org.hornetq.rest.topic.TopicDeployment;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -24,8 +23,6 @@ import org.junit.Test;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -41,17 +38,11 @@ public class PersistentPushTopicConsumerTest
 {
    public static HornetQServer server;
    public static MessageServiceManager manager;
-   public static File pushStore;
    protected static ResteasyDeployment deployment;
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      pushStore = File.createTempFile("push-store", ".xml");
-      FileOutputStream fos = new FileOutputStream(pushStore);
-      fos.write("<push-store/>".getBytes());
-      fos.close();
-
       Configuration configuration = new ConfigurationImpl();
       configuration.setPersistenceEnabled(false);
       configuration.setSecurityEnabled(false);
@@ -64,7 +55,7 @@ public class PersistentPushTopicConsumerTest
    @AfterClass
    public static void cleanup() throws Exception
    {
-      pushStore.delete();
+      manager.getTopicManager().getPushStore().removeAll();
       server.stop();
       server = null;
    }
@@ -75,9 +66,6 @@ public class PersistentPushTopicConsumerTest
 
 
       manager = new MessageServiceManager();
-      MessageServiceConfiguration config = new MessageServiceConfiguration();
-      config.setTopicPushStoreFile(pushStore.toString());
-      manager.setConfiguration(config);
       manager.start();
       deployment.getRegistry().addSingletonResource(manager.getQueueManager().getDestination());
       deployment.getRegistry().addSingletonResource(manager.getTopicManager().getDestination());
@@ -97,7 +85,6 @@ public class PersistentPushTopicConsumerTest
    @Test
    public void testSuccessFirst() throws Exception
    {
-      System.out.println("temp file: " + pushStore);
       startup();
       deployTopic();
 
@@ -141,6 +128,7 @@ public class PersistentPushTopicConsumerTest
       Assert.assertEquals("1", Receiver.subscriber1);
       Assert.assertEquals("1", Receiver.subscriber2);
 
+      manager.getTopicManager().getPushStore().removeAll();
 
       shutdown();
    }

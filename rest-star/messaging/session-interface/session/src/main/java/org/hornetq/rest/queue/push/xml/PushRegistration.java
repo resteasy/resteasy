@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,7 +28,18 @@ public class PushRegistration implements Serializable
    private Authentication authenticationMechanism;
    private List<XmlHttpHeader> headers = new ArrayList<XmlHttpHeader>();
    private String destination;
+   private Object loadedFrom;
 
+   @XmlTransient
+   public Object getLoadedFrom()
+   {
+      return loadedFrom;
+   }
+
+   public void setLoadedFrom(Object loadedFrom)
+   {
+      this.loadedFrom = loadedFrom;
+   }
 
    @XmlAttribute
    public String getId()

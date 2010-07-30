@@ -12,10 +12,10 @@ import java.util.List;
  */
 public class FileTopicPushStore extends FilePushStore implements TopicPushStore
 {
-   public FileTopicPushStore(String filename)
+   public FileTopicPushStore(String dirname)
            throws Exception
    {
-      super(filename);
+      super(dirname);
    }
 
    @Override
