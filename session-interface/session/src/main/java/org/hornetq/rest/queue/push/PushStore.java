@@ -15,4 +15,8 @@ public interface PushStore
    void remove(PushRegistration reg) throws Exception;
 
    List<PushRegistration> getByDestination(String destination);
+
+   void update(PushRegistration reg) throws Exception;
+
+   void removeAll() throws Exception;
 }

@@ -16,8 +16,8 @@ public class MessageServiceConfiguration
    private int consumerWindowSize = -1;
    private boolean defaultDurableSend = false;
    private boolean dupsOk = true;
-   private String topicPushStoreFile = "topic-push-store.xml";
-   private String queuePushStoreFile = "queue-push-store.xml";
+   private String topicPushStoreDirectory = "./topic-push-store";
+   private String queuePushStoreDirectory = "./queue-push-store";
    private String inVmId = "0";
    private boolean useLinkHeaders = false;
 
@@ -66,25 +66,25 @@ public class MessageServiceConfiguration
    }
 
    @XmlElement(name = "topic-push-store-file")
-   public String getTopicPushStoreFile()
+   public String getTopicPushStoreDirectory()
    {
-      return topicPushStoreFile;
+      return topicPushStoreDirectory;
    }
 
-   public void setTopicPushStoreFile(String topicPushStoreFile)
+   public void setTopicPushStoreDirectory(String topicPushStoreDirectory)
    {
-      this.topicPushStoreFile = topicPushStoreFile;
+      this.topicPushStoreDirectory = topicPushStoreDirectory;
    }
 
    @XmlElement(name = "queue-push-store-file")
-   public String getQueuePushStoreFile()
+   public String getQueuePushStoreDirectory()
    {
-      return queuePushStoreFile;
+      return queuePushStoreDirectory;
    }
 
-   public void setQueuePushStoreFile(String queuePushStoreFile)
+   public void setQueuePushStoreDirectory(String queuePushStoreDirectory)
    {
-      this.queuePushStoreFile = queuePushStoreFile;
+      this.queuePushStoreDirectory = queuePushStoreDirectory;
    }
 
    @XmlElement(name = "producer-session-pool-size")

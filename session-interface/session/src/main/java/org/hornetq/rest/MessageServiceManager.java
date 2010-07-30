@@ -173,7 +173,7 @@ public class MessageServiceManager
       queueManager.setTimeoutTask(timeoutTask);
       queueManager.setConsumerSessionFactory(consumerSessionFactory);
       queueManager.setDefaultSettings(defaultSettings);
-      queueManager.setPushStoreFile(configuration.getQueuePushStoreFile());
+      queueManager.setPushStoreFile(configuration.getQueuePushStoreDirectory());
       queueManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
       queueManager.setLinkStrategy(linkStrategy);
       queueManager.setRegistry(registry);
@@ -182,7 +182,7 @@ public class MessageServiceManager
       topicManager.setTimeoutTask(timeoutTask);
       topicManager.setConsumerSessionFactory(consumerSessionFactory);
       topicManager.setDefaultSettings(defaultSettings);
-      topicManager.setPushStoreFile(configuration.getTopicPushStoreFile());
+      topicManager.setPushStoreFile(configuration.getTopicPushStoreDirectory());
       topicManager.setProducerPoolSize(configuration.getProducerSessionPoolSize());
       topicManager.setLinkStrategy(linkStrategy);
       topicManager.setRegistry(registry);

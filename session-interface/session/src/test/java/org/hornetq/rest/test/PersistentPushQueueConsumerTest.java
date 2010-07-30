@@ -6,7 +6,6 @@ import org.hornetq.core.config.impl.ConfigurationImpl;
 import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.hornetq.core.server.HornetQServer;
 import org.hornetq.core.server.HornetQServers;
-import org.hornetq.rest.MessageServiceConfiguration;
 import org.hornetq.rest.MessageServiceManager;
 import org.hornetq.rest.queue.QueueDeployment;
 import org.hornetq.rest.queue.push.xml.PushRegistration;
@@ -16,13 +15,8 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.FileOutputStream;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -35,24 +29,8 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
 public class PersistentPushQueueConsumerTest
 {
    public static MessageServiceManager manager;
-   public static File pushStore;
    protected static ResteasyDeployment deployment;
    public static HornetQServer hornetqServer;
-
-   @BeforeClass
-   public static void setup() throws Exception
-   {
-      pushStore = File.createTempFile("push-store", ".xml");
-      FileOutputStream fos = new FileOutputStream(pushStore);
-      fos.write("<push-store/>".getBytes());
-      fos.close();
-   }
-
-   @AfterClass
-   public static void cleanup() throws Exception
-   {
-      pushStore.delete();
-   }
 
    public static void startup() throws Exception
    {
@@ -66,9 +44,6 @@ public class PersistentPushQueueConsumerTest
 
       deployment = EmbeddedContainer.start();
       manager = new MessageServiceManager();
-      MessageServiceConfiguration config = new MessageServiceConfiguration();
-      config.setQueuePushStoreFile(pushStore.toString());
-      manager.setConfiguration(config);
       manager.start();
       deployment.getRegistry().addSingletonResource(manager.getQueueManager().getDestination());
       deployment.getRegistry().addSingletonResource(manager.getTopicManager().getDestination());
@@ -89,7 +64,6 @@ public class PersistentPushQueueConsumerTest
    @Test
    public void testSuccessFirst() throws Exception
    {
-      System.out.println("temp file: " + pushStore);
       startup();
       deployQueues();
 
@@ -135,6 +109,7 @@ public class PersistentPushQueueConsumerTest
       Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");
       Assert.assertEquals(204, session.request().delete().getStatus());
 
+      manager.getQueueManager().getPushStore().removeAll();
       shutdown();
    }
 
