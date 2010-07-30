@@ -4,8 +4,8 @@ import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.hornetq.rest.queue.push.PushConsumer;
+import org.jboss.netty.util.internal.ConcurrentHashMap;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -98,7 +98,7 @@ public class PushSubscriptionsResource
       ClientSession.QueueQuery query = session.queueQuery(new SimpleString(destination));
       if (!query.isExists())
       {
-         throw new Exception("Durable subscriber no longer exists: " + destination + " for push subscriber: " + reg.getTarget().getDelegate());
+         createSubscription(destination, reg.isDurable());
       }
       PushConsumer consumer = new PushConsumer(sessionFactory, reg.getDestination(), reg.getId(), reg);
       try
@@ -122,8 +122,11 @@ public class PushSubscriptionsResource
       //System.out.println("PushRegistration: " + registration);
       // todo put some logic here to check for duplicates
       String genId = sessionCounter.getAndIncrement() + "-topic-" + destination + "-" + startup;
+      if (registration.getDestination() == null)
+      {
+         registration.setDestination(genId);
+      }
       registration.setId(genId);
-      registration.setDestination(genId);
       registration.setTopic(destination);
       createSubscription(genId, registration.isDurable());
       PushConsumer consumer = new PushConsumer(sessionFactory, genId, genId, registration);
