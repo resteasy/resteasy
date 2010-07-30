@@ -55,7 +55,6 @@ public class PersistentPushTopicConsumerTest
    @AfterClass
    public static void cleanup() throws Exception
    {
-      manager.getTopicManager().getPushStore().removeAll();
       server.stop();
       server = null;
    }

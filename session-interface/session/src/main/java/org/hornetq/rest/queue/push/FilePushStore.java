@@ -106,7 +106,9 @@ public class FilePushStore implements PushStore
    @Override
    public synchronized void removeAll() throws Exception
    {
-      for (PushRegistration reg : map.values()) remove(reg);
+      ArrayList<PushRegistration> copy = new ArrayList<PushRegistration>();
+      copy.addAll(map.values());
+      for (PushRegistration reg : copy) remove(reg);
       this.dir.delete();
    }
 }
