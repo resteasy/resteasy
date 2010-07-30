@@ -504,7 +504,7 @@ msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
       <title>Topic Resource Respones Headers</title>
 
       <para>Below is a list of response headers you should expect when
-      interacting with a Queue resource.</para>
+      interacting with a Topic resource.</para>
 
       <variablelist>
         <varlistentry>
@@ -520,8 +520,8 @@ msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
           <term>msg-pull-subscriptions</term>
 
           <listitem>
-            <para>This is a URL for creating consumers that will pull from a
-            queue. The semantics of this link are described in Chapter
+            <para>This is a URL for creating subscribers that will pull from a
+            topic. The semantics of this link are described in Chapter
             5.</para>
           </listitem>
         </varlistentry>
@@ -722,6 +722,28 @@ msg-create-next: http://example.com/queues/jms.queue.bar/create/003</programlist
       DUPLICATE_DETECTION_ID property of the JMS message that is actually
       posted to the system.</para>
     </sect1>
+
+    <sect1>
+      <title>Persistent Messages</title>
+
+      <para>By default, posted messages are not durable and will not be
+      persisted in HornetQ's journal. You can create durable messages by
+      modifying the default configuration as expressed in Chapter 2.
+      Alternatively, you can set a URL query parameter called durable to true
+      when you post your messages to the links returned in the msg-create or
+      msg-create-next headers. here's an example of that.</para>
+
+      <programlisting>POST /queues/jms.queue.bar/create?durable=true
+Host: example.xom
+Content-Type: application/xml
+
+&lt;order&gt;
+   &lt;name&gt;Bill&lt;/name&gt;
+   &lt;item&gt;iPhone4&lt;/item&gt;
+   &lt;cost&gt;$199.99&lt;/cost&gt;
+&lt;/order&gt;
+</programlisting>
+    </sect1>
   </chapter>
 
   <chapter>
@@ -737,7 +759,7 @@ msg-create-next: http://example.com/queues/jms.queue.bar/create/003</programlist
     breaks the stateless principle of REST, but after much prototyping, this
     is the best way to work most effectively with HornetQ through a REST
     interface. We'll discuss later in this docbook some of the REST tradeoffs
-    we had to make to get an optimal interface. </para>
+    we had to make to get an optimal interface.</para>
 
     <para>You create consumer resources by doing a simple POST to the URL
     published by the <literal>msg-pull-consumers</literal> response header if
@@ -775,5 +797,362 @@ msg-create-next: http://example.com/queues/jms.queue.bar/create/003</programlist
         </listitem>
       </varlistentry>
     </variablelist>
+
+    <sect1>
+      <title>Auto-Acknowledge</title>
+
+      <para>This section focuses on the auto-acknowledge protocol for
+      consuming messages via a pull. Here's a list of the response headers and
+      URLs you'll be interested in.</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>msg-pull-consumers</term>
+
+          <listitem>
+            <para>The URL of a factory resource for creating queue consumer
+            resources. You will pull from these created resources.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>msg-pull-subscriptions</term>
+
+          <listitem>
+            <para>The URL of a factory resource for creating topic
+            subscription resources. You will pull from the created
+            resources.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>msg-consume-next</term>
+
+          <listitem>
+            <para>The URL you will pull the next message from. This is
+            returned from every response.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>msg-consumer</term>
+
+          <listitem>
+            <para>This is a URL pointing back to the consumer or subscription
+            resource created for the client.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <sect2>
+        <title>Creating an Auto-Ack Consumer or Subscription</title>
+
+        <para>Here is an example of creating an auto-acknowledged queue pull
+        consumer.</para>
+
+        <orderedlist>
+          <listitem>
+            <para>Find the pull-consumers URL by doing a HEAD or GET request
+            to the base queue resource.</para>
+
+            <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
+Host: example.com
+
+--- Response ---
+HTTP/1.1 200 Ok
+msg-create: http://example.com/queues/jms.queue.bar/create
+msg-pull-consumers: http://example.com/queues/jms.queue.bar/pull-consumers
+msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
+</programlisting>
+          </listitem>
+
+          <listitem>
+            <para>Next do an empty POST to the URL returned in the
+            <literal>msg-pull-consumers</literal> header.</para>
+
+            <programlisting>POST /queues/jms.queue.bar/pull-consumers HTTP/1.1
+Host: example.com
+
+--- response ---
+HTTP/1.1 201 Created
+Location: http://example.com/queues/jms.queue.bar/pull-consumers/auto-ack/333
+msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/auto-ack/333/consume-next-1
+</programlisting>
+
+            <para>The <literal>Location</literal> header points to the JMS
+            consumer resource that was created on the server. It is good to
+            remember this URL, although, as you'll see later, it is
+            transmitted with each response just to remind you.</para>
+          </listitem>
+        </orderedlist>
+
+        <para>Creating an auto-acknowledged consumer for a topic is pretty
+        much the same. Here's an example of creating a durable
+        auto-acknowledged topic pull subscription.</para>
+
+        <orderedlist>
+          <listitem>
+            <para>Find the <literal>pull-subscriptions</literal> URL by doing
+            a HEAD or GET request to the base topic resource</para>
+
+            <programlisting>HEAD /topics/jms.topic.bar HTTP/1.1
+Host: example.com
+
+--- Response ---
+HTTP/1.1 200 Ok
+msg-create: http://example.com/topics/jms.topic.foo/create
+msg-pull-subscriptions: http://example.com/topics/jms.topic.foo/pull-subscriptions
+msg-push-subscriptions: http://example.com/topics/jms.topic.foo/push-subscriptions
+</programlisting>
+          </listitem>
+
+          <listitem>
+            <para>Next do a POST to the URL returned in the
+            <literal>msg-pull-subscriptions</literal> header passing in a
+            <literal>true</literal> value for the <literal>durable</literal>
+            form parameter.</para>
+
+            <programlisting>POST /topics/jms.topic.foo/pull-subscriptions HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+
+durable=true
+
+--- Response ---
+HTTP/1.1 201 Created
+Location: http://example.com/topics/jms.topic.foo/pull-subscriptions/auto-ack/222
+msg-consume-next: http://example.com/topics/jms.topic.foo/pull-subscriptions/auto-ack/222/consume-next-1
+</programlisting>
+
+            <para>The <literal>Location</literal> header points to the JMS
+            subscription resource that was created on the server. It is good
+            to remember this URL, although, as you'll see later, it is
+            transmitted with each response just to remind you.</para>
+          </listitem>
+        </orderedlist>
+      </sect2>
+
+      <sect2>
+        <title>Consuming Messages</title>
+
+        <para>After you have created a consumer resource, you are ready to
+        start pulling messages from the server. Notice that when you created
+        the consumer for either the queue or topic, the response contained a
+        <literal>msg-consume-next</literal> response header. POST to the URL
+        contained within this header to consume the next message in the queue
+        or topic subscription. A successful POST causes the server to extract
+        a message from the queue or topic subscription, acknowledge it, and
+        return it to the consuming client. If there are no messages in the
+        queue or topic subscription, a 503 (Service Unavailable) HTTP code is
+        returned. I</para>
+
+        <warning>
+          <para>For both successful and unsuccessful posts to the
+          msg-consume-next URL, the response will usualy contain a new
+          msg-consume-next header. You must ALWAYS use this new URL returned
+          with the new msg-consume-next header.</para>
+        </warning>
+
+        <para>Here's an example of pulling multiple messages from the consumer
+        resource.</para>
+
+        <orderedlist>
+          <listitem>
+            <para>Do a POST on the msg-consume-next URL that was returned with
+            the consumber or subscription resource discussed earlier.</para>
+
+            <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-1
+Host: example.com
+
+--- Response ---
+HTTP/1.1 200 Ok
+Content-Type: application/xml
+msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-2
+msg-consumer: http://example.com/queues/jms.queue.bar/pull-consumers/333
+
+&lt;order&gt;...&lt;/order&gt;
+</programlisting>
+
+            <para>The POST returns the message consumed from the queue. It
+            also returns a new msg-consume-next link. Use this new link to get
+            the next message. Notice also a msg-consumer response header is
+            returned. This is a URL that points back to the consumer or
+            subscription resource. You will need that to clean up your
+            connection after you are finished using the queue or topic.</para>
+          </listitem>
+
+          <listitem>
+            <para>The POST returns the message consumed from the queue. It
+            also returns a new msg-consume-next link. Use this new link to get
+            the next message.</para>
+
+            <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-2
+Host: example.com
+
+--- Response ---
+Http/1.1 503 Service Unavailable
+Retry-After: 5
+msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-2
+</programlisting>
+
+            <para>In this case, there are no messages in the queue, so we get
+            a 503 response back. As per the HTTP 1.1 spec, a 503 response may
+            return a Retry-After head specifying the time in seconds that you
+            should retry a post. Also notice, that another new
+            msg-consume-next URL is present. Although it probabley is the same
+            URL you used last post, get in the habit of using URLs returned in
+            response headers as future versions of HornetQ REST might be
+            redirecting you or adding additional data to the URL after
+            timeouts like this.</para>
+          </listitem>
+
+          <listitem>
+            <para>POST again to get the next message.</para>
+
+            <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-2
+Host: example.com
+
+--- Response ---
+HTTP/1.1 200 Ok
+Content-Type: application/xml
+msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-3
+
+&lt;order&gt;...&lt;/order&gt;</programlisting>
+          </listitem>
+        </orderedlist>
+      </sect2>
+
+      <sect2>
+        <title>Recovering From Network Failures</title>
+
+        <para>If you experience a network failure and do not know if your post
+        to a msg-consume-next URL was successful or not, just re-do your POST.
+        A POST to a msg-consume-next URL is idempotent, meaning that it will
+        return the same result if you execute on any one msg-consume-next URL
+        more than once. Behind the scenes, the consumer resource caches the
+        last consumed message so that if there is a message failure and you do
+        a re-post, the cached last message will be returned (along with a new
+        msg-consume-next URL). This is the reason why the protocol always
+        requires you to use the next new msg-consume-next URL returned with
+        each response. Information about what state the client is in is
+        embedded within the actual URL.</para>
+      </sect2>
+
+      <sect2>
+        <title>Recovering From Client or Server Crashes</title>
+
+        <para>If the server crashes and you do a POST to the msg-consume-next
+        URL, the server will return a 412 (Preconditions Failed) response
+        code. This is telling you that the URL you are using is out of sync
+        with the server. The response will contain a new msg-consume-next
+        header to invoke on.</para>
+
+        <para>If the client crashes and you have not saved the last
+        msg-consume-next or the consumer resource URL (returned from Location
+        header on a create, or the msg-consumer header), then you must create
+        a new consumer or topic subscription. If you have remember the last
+        msg-consume-next link, you can just re-POST to it. If you have
+        remembered the consumer resource URL, you can do a GET or HEAD request
+        to obtain a new msg-consume-next URL.</para>
+
+        <para>The problem with the auto-acknowledge protocol is that if the
+        client or server crashes, it is possible for you to skip messages. The
+        scenario would happen if the server crashes after auto-acknowledging a
+        message and before the client receives the message. If you want more
+        reliable messaging, then you must use the acknowledgement
+        protocol.</para>
+      </sect2>
+    </sect1>
+
+    <sect1>
+      <title>Manual Acknowledgement</title>
+
+      <para>dd</para>
+
+      <sect2>
+        <title>Creating manually-acknowledged consumers or
+        subscriptions</title>
+
+        <para> </para>
+      </sect2>
+
+      <sect2>
+        <title>Consuming a Message</title>
+
+        <para> </para>
+      </sect2>
+
+      <sect2>
+        <title>Acknowledging a Message</title>
+
+        <para> </para>
+      </sect2>
+
+      <sect2>
+        <title>Recovering from Network Failures</title>
+
+        <para> </para>
+      </sect2>
+
+      <sect2>
+        <title>Recovering from Client or Server Crashes</title>
+
+        <para> </para>
+      </sect2>
+    </sect1>
+
+    <sect1>
+      <title>Blocking Pulls with Accept-Wait</title>
+
+      <para> </para>
+    </sect1>
+
+    <sect1>
+      <title>Clean Up Your Consumers!</title>
+
+      <para> </para>
+    </sect1>
+  </chapter>
+
+  <chapter>
+    <title>Pushing Messages</title>
+
+    <para> </para>
+
+    <sect1>
+      <title>Creating a Push Subscription</title>
+
+      <para> </para>
+    </sect1>
+
+    <sect1>
+      <title>Pushing to Authenticated Servers</title>
+
+      <para> </para>
+    </sect1>
+  </chapter>
+
+  <chapter>
+    <title>Securing the HornetQ REST Interface</title>
+
+    <para> </para>
+  </chapter>
+
+  <chapter>
+    <title>Mixing JMS and REST Interface</title>
+
+    <para> </para>
+
+    <sect1>
+      <title>JMS Producers - REST Consumers</title>
+
+      <para> </para>
+    </sect1>
+
+    <sect1>
+      <title>REST Producers - JMS Consumers</title>
+
+      <para> </para>
+    </sect1>
   </chapter>
 </book>
