@@ -83,8 +83,10 @@ public class HttpMessageHelper
       {
          byte[] body = new byte[size];
          message.getBodyBuffer().readBytes(body);
-         if (message.getBooleanProperty(POSTED_AS_HTTP_MESSAGE) != null)
+         Boolean aBoolean = message.getBooleanProperty(POSTED_AS_HTTP_MESSAGE);
+         if (aBoolean != null && aBoolean.booleanValue())
          {
+            //System.out.println("Building Message from HTTP message");
             request.body(contentType, body);
          }
          else
@@ -96,6 +98,7 @@ public class HttpMessageHelper
             {
                ObjectInputStream ois = new ObjectInputStream(bais);
                obj = ois.readObject();
+               //System.out.println("**** Building Message from object: " + obj.toString());
                request.body(contentType, obj);
             }
             catch (Exception e)

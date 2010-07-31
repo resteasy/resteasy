@@ -1,0 +1,3 @@
+<rest-messaging>
+    <dups-ok>false</dups-ok>
+</rest-messaging>

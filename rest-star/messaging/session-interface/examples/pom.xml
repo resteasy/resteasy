@@ -12,5 +12,7 @@
         <module>javascript-chat</module>
         <module>multi-language-demo</module>
         <module>jms-to-rest</module>
+        <module>push</module>
+        <module>dup-send</module>
     </modules>
 </project>
