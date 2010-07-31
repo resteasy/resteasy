@@ -30,15 +30,7 @@ public class RestMessagingBootstrapListener implements ServletContextListener
 
       if (configfile != null)
       {
-         try
-         {
-            URL url = context.getResource(configfile);
-            manager.setConfigurationUrl(url.toString());
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
+         manager.setConfigResourcePath(configfile);
       }
       try
       {

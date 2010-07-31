@@ -9,6 +9,7 @@ conn = httplib.HTTPConnection(consumersParsed.netloc)
 conn.request("POST", consumersParsed.path)
 res = conn.getresponse()
 consumeLink = res.getheader("msg-consume-next")
+session = res.getheader("Location")
 print consumeLink
 conn.close()
 
@@ -22,14 +23,12 @@ try:
         conn.request("POST", createParsed.path, None, headers)
         res = conn.getresponse()
         if res.status == 503:
-            session = res.getheader("msg-session")
             consumeLink = res.getheader("msg-consume-next")
         elif res.status == 200:
             print "Success!"
             data = res.read()
             print data
             consumeLink = res.getheader("msg-consume-next")
-            session = res.getheader("msg-session")
             print "Waiting"
         else:
             raise Exception('failed')

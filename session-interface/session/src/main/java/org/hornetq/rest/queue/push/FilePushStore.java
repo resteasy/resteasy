@@ -91,6 +91,7 @@ public class FilePushStore implements PushStore
       if (!this.dir.exists()) this.dir.mkdirs();
       File fp = new File(dir, "reg-" + reg.getId() + ".xml");
       reg.setLoadedFrom(fp);
+      //System.out.println("******* Saving: " + fp.getAbsolutePath());
       save(reg);
    }
 

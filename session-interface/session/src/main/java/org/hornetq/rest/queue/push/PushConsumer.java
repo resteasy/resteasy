@@ -138,7 +138,7 @@ public class PushConsumer implements MessageHandler
          {
             request.header(header.getName(), header.getValue());
          }
-
+         //System.out.println("******* building message");
          HttpMessageHelper.buildMessage(clientMessage, request, contentType);
 
          ClientResponse response = request.httpMethod(httpMethod);
@@ -150,11 +150,20 @@ public class PushConsumer implements MessageHandler
                if (createNext != null)
                {
                   nextPost = createNext;
-                  method = "PUT";
+                  method = "POST";
+               }
+            }
+            else if (response.getHeaders().containsKey("msg-create-next"))
+            {
+               Link createNext = response.getHeaderAsLink("msg-create-next");
+               if (createNext != null)
+               {
+                  nextPost = createNext;
+                  method = "POST";
                }
             }
             // If we crash here we're really f'cked
-            // gotta make a 2pc protocol here
+            // gotta make an ack send protocol here
             clientMessage.acknowledge();
             return;
          }

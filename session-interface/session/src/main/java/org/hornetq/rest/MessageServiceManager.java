@@ -36,7 +36,7 @@ public class MessageServiceManager
    protected int timeoutTaskInterval = 1;
    protected MessageServiceConfiguration configuration = new MessageServiceConfiguration();
    protected boolean configSet = false;
-   protected String configurationUrl;
+   protected String configResourcePath;
    protected BindingRegistry registry;
 
    public BindingRegistry getRegistry()
@@ -88,14 +88,14 @@ public class MessageServiceManager
       return configuration;
    }
 
-   public String getConfigurationUrl()
+   public String getConfigResourcePath()
    {
-      return configurationUrl;
+      return configResourcePath;
    }
 
-   public void setConfigurationUrl(String configurationUrl)
+   public void setConfigResourcePath(String configResourcePath)
    {
-      this.configurationUrl = configurationUrl;
+      this.configResourcePath = configResourcePath;
    }
 
    public void setConfiguration(MessageServiceConfiguration configuration)
@@ -108,18 +108,18 @@ public class MessageServiceManager
    {
       if (configuration == null || configSet == false)
       {
-         if (configurationUrl == null)
+         if (configResourcePath == null)
          {
             configuration = new MessageServiceConfiguration();
          }
          else
          {
-            URL url = getClass().getClassLoader().getResource(configurationUrl);
+            URL url = getClass().getClassLoader().getResource(configResourcePath);
 
             if (url == null)
             {
                // The URL is outside of the classloader. Trying a pure url now
-               url = new URL(configurationUrl);
+               url = new URL(configResourcePath);
             }
             JAXBContext jaxb = JAXBContext.newInstance(MessageServiceConfiguration.class);
             Reader reader = new InputStreamReader(url.openStream());
