@@ -8,6 +8,7 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.rest.util.HttpMessageHelper;
 
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -65,9 +66,16 @@ public class PostMessage
       }
    }
 
+   @PUT
+   @Path("{id}")
+   public Response putWithId(@PathParam("id") String dupId, @QueryParam("durable") Boolean durable, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
+   {
+      return postWithId(dupId, durable, headers, uriInfo, body);
+   }
+
    @POST
    @Path("{id}")
-   public Response createWithId(@PathParam("id") String dupId, @QueryParam("durable") Boolean durable, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
+   public Response postWithId(@PathParam("id") String dupId, @QueryParam("durable") Boolean durable, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
    {
       String matched = uriInfo.getMatchedURIs().get(1);
       UriBuilder nextBuilder = uriInfo.getBaseUriBuilder();
