@@ -203,7 +203,7 @@ public class ConsumersResource implements TimeoutTask.Callback
       if (consumer == null)
       {
          QueueConsumer tmp = new QueueConsumer(sessionFactory, destination, consumerId, serviceManager);
-         consumer = putConsumer(consumerId, tmp);
+         consumer = addConsumerToMap(consumerId, tmp);
       }
       return consumer;
    }
@@ -249,12 +249,12 @@ public class ConsumersResource implements TimeoutTask.Callback
       {
          QueueConsumer tmp = new AcknowledgedQueueConsumer(sessionFactory, destination, consumerId, serviceManager);
          ;
-         consumer = putConsumer(consumerId, tmp);
+         consumer = addConsumerToMap(consumerId, tmp);
       }
       return consumer;
    }
 
-   private QueueConsumer putConsumer(String consumerId, QueueConsumer tmp)
+   private QueueConsumer addConsumerToMap(String consumerId, QueueConsumer tmp)
    {
       synchronized (timeoutLock)
       {
