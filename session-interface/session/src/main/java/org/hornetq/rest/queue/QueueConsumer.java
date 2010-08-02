@@ -247,7 +247,7 @@ public class QueueConsumer
       linkStrategy.setLinkHeader(response, "consume-next", "consume-next", uri, MediaType.APPLICATION_FORM_URLENCODED);
    }
 
-   protected void setSessionLink(Response.ResponseBuilder response, UriInfo info, String basePath)
+   public void setSessionLink(Response.ResponseBuilder response, UriInfo info, String basePath)
    {
       UriBuilder builder = info.getBaseUriBuilder();
       builder.path(basePath);

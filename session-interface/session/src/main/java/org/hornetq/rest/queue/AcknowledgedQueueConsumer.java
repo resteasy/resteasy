@@ -1,7 +1,9 @@
 package org.hornetq.rest.queue;
 
 import org.hornetq.api.core.HornetQException;
+import org.hornetq.api.core.client.ClientConsumer;
 import org.hornetq.api.core.client.ClientMessage;
+import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.rest.util.Constants;
 import org.hornetq.rest.util.LinkStrategy;
@@ -177,26 +179,11 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
 
    protected void unacknowledge()
    {
-      // close session so message gets redelivered
+      // we close current session so that message is redelivered
+      // for temporary queues/topics, create a new session before closing old so we don't lose the temporary topic/queue
 
-      try
-      {
-         consumer.close();
-      }
-      catch (Exception e)
-      {
-      }
-
-      try
-      {
-         session.close();
-      }
-      catch (Exception e)
-      {
-      }
-
-      consumer = null;
-      session = null;
+      ClientConsumer old = consumer;
+      ClientSession oldSession = session;
 
       try
       {
@@ -207,8 +194,25 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
       catch (Exception e)
       {
          shutdown();
-         throw new RuntimeException();
+         throw new RuntimeException(e);
 
+      }
+      finally
+      {
+         try
+         {
+            old.close();
+         }
+         catch (HornetQException e)
+         {
+         }
+         try
+         {
+            oldSession.close();
+         }
+         catch (HornetQException e)
+         {
+         }
       }
    }
 

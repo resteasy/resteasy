@@ -114,31 +114,75 @@ public class SubscriptionsResource implements TimeoutTask.Callback
          }
 
       }
+      queueConsumers.clear();
    }
 
    protected String generateSubscriptionName()
    {
-      return startup + "-" + sessionCounter.getAndIncrement();
+      return startup + "-" + sessionCounter.getAndIncrement() + "-" + destination;
    }
 
    @POST
    public Response createSubscription(@FormParam("durable") @DefaultValue("false") boolean durable,
                                       @FormParam("autoAck") @DefaultValue("true") boolean autoAck,
+                                      @FormParam("name") String subscriptionName,
                                       @Context UriInfo uriInfo)
    {
-      String subscriptionName = generateSubscriptionName();
+      if (subscriptionName != null)
+      {
+         // see if this is a reconnect
+         QueueConsumer consumer = queueConsumers.get(subscriptionName);
+         if (consumer != null)
+         {
+            boolean acked = consumer instanceof AcknowledgedSubscriptionResource;
+            acked = !acked;
+            if (acked != autoAck)
+            {
+               throw new WebApplicationException(
+                       Response.status(412).entity("Consumer already exists and ack-modes don't match.").type("text/plain").build()
+               );
+            }
+            Subscription sub = (Subscription) consumer;
+            if (sub.isDurable() != durable)
+            {
+               throw new WebApplicationException(
+                       Response.status(412).entity("Consumer already exists and durability doesn't match.").type("text/plain").build()
+               );
+            }
+            Response.ResponseBuilder builder = Response.noContent();
+            if (autoAck)
+            {
+               headAutoAckSubscriptionResponse(uriInfo, consumer, builder);
+               consumer.setSessionLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId());
+            }
+            else
+            {
+               headAcknowledgedConsumerResponse(uriInfo, (AcknowledgedQueueConsumer) consumer, builder);
+               consumer.setSessionLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
+            }
+            return builder.build();
+         }
+      }
+      else
+      {
+         subscriptionName = generateSubscriptionName();
+      }
       ClientSession session = null;
       try
       {
-         session = sessionFactory.createSession();
+         // if this is not a reconnect, create the subscription queue
+         if (!subscriptionExists(subscriptionName))
+         {
+            session = sessionFactory.createSession();
 
-         if (durable)
-         {
-            session.createQueue(destination, subscriptionName, true);
-         }
-         else
-         {
-            session.createTemporaryQueue(destination, subscriptionName);
+            if (durable)
+            {
+               session.createQueue(destination, subscriptionName, true);
+            }
+            else
+            {
+               session.createTemporaryQueue(destination, subscriptionName);
+            }
          }
          QueueConsumer consumer = createConsumer(durable, autoAck, subscriptionName);
          queueConsumers.put(consumer.getId(), consumer);
@@ -214,12 +258,18 @@ public class SubscriptionsResource implements TimeoutTask.Callback
    {
       QueueConsumer consumer = findAutoAckSubscription(consumerId);
       Response.ResponseBuilder builder = Response.noContent();
+      headAutoAckSubscriptionResponse(uriInfo, consumer, builder);
+
+      return builder.build();
+   }
+
+   private void headAutoAckSubscriptionResponse(UriInfo uriInfo, QueueConsumer consumer, Response.ResponseBuilder builder)
+   {
       // we synchronize just in case a failed request is still processing
       synchronized (consumer)
       {
          QueueConsumer.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
       }
-      return builder.build();
    }
 
 
@@ -250,6 +300,13 @@ public class SubscriptionsResource implements TimeoutTask.Callback
    {
       AcknowledgedQueueConsumer consumer = (AcknowledgedQueueConsumer) findAcknoledgeSubscription(consumerId);
       Response.ResponseBuilder builder = Response.ok();
+      headAcknowledgedConsumerResponse(uriInfo, consumer, builder);
+
+      return builder.build();
+   }
+
+   private void headAcknowledgedConsumerResponse(UriInfo uriInfo, AcknowledgedQueueConsumer consumer, Response.ResponseBuilder builder)
+   {
       // we synchronize just in case a failed request is still processing
       synchronized (consumer)
       {
@@ -263,7 +320,6 @@ public class SubscriptionsResource implements TimeoutTask.Callback
             consumer.setAcknowledgementLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
          }
       }
-      return builder.build();
    }
 
    @Path("acknowledged/{subscription-id}")
@@ -278,38 +334,15 @@ public class SubscriptionsResource implements TimeoutTask.Callback
       return consumer;
    }
 
-   private QueueConsumer recreateTopicConsumer(String subscriptionId, boolean autoAck)
+   private boolean subscriptionExists(String subscriptionId)
    {
-      QueueConsumer consumer;
       ClientSession session = null;
       try
       {
          session = sessionFactory.createSession();
 
          ClientSession.QueueQuery query = session.queueQuery(new SimpleString(subscriptionId));
-         if (query.isExists())
-         {
-            synchronized (timeoutLock)
-            {
-               QueueConsumer tmp = createConsumer(true, autoAck, subscriptionId);
-               consumer = queueConsumers.putIfAbsent(subscriptionId, tmp);
-               if (consumer == null)
-               {
-                  consumer = tmp;
-                  serviceManager.getTimeoutTask().add(this, subscriptionId);
-               }
-               else
-               {
-                  tmp.shutdown();
-               }
-            }
-         }
-         else
-         {
-            throw new WebApplicationException(Response.status(405)
-                    .entity("Failed to find subscriber " + subscriptionId + " you will have to reconnect")
-                    .type("text/plain").build());
-         }
+         return query.isExists();
       }
       catch (HornetQException e)
       {
@@ -327,6 +360,43 @@ public class SubscriptionsResource implements TimeoutTask.Callback
             {
             }
          }
+      }
+
+   }
+
+   private QueueConsumer recreateTopicConsumer(String subscriptionId, boolean autoAck)
+   {
+      QueueConsumer consumer;
+      if (subscriptionExists(subscriptionId))
+      {
+         synchronized (timeoutLock)
+         {
+            QueueConsumer tmp = null;
+            try
+            {
+               tmp = createConsumer(true, autoAck, subscriptionId);
+            }
+            catch (HornetQException e)
+            {
+               throw new RuntimeException(e);
+            }
+            consumer = queueConsumers.putIfAbsent(subscriptionId, tmp);
+            if (consumer == null)
+            {
+               consumer = tmp;
+               serviceManager.getTimeoutTask().add(this, subscriptionId);
+            }
+            else
+            {
+               tmp.shutdown();
+            }
+         }
+      }
+      else
+      {
+         throw new WebApplicationException(Response.status(405)
+                 .entity("Failed to find subscriber " + subscriptionId + " you will have to reconnect")
+                 .type("text/plain").build());
       }
       return consumer;
    }
