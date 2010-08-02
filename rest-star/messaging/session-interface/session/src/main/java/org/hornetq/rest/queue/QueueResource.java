@@ -53,6 +53,7 @@ public class QueueResource extends DestinationResource
    {
       Response.ResponseBuilder builder = Response.ok();
       setSenderLink(builder, uriInfo);
+      setSenderWithIdLink(builder, uriInfo);
       setConsumersLink(builder, uriInfo);
       setPushConsumersLink(builder, uriInfo);
       return builder.build();
@@ -64,6 +65,15 @@ public class QueueResource extends DestinationResource
       builder.path("create");
       String uri = builder.build().toString();
       serviceManager.getLinkStrategy().setLinkHeader(response, "create", "create", uri, null);
+   }
+
+   protected void setSenderWithIdLink(Response.ResponseBuilder response, UriInfo info)
+   {
+      UriBuilder builder = info.getRequestUriBuilder();
+      builder.path("create");
+      String uri = builder.build().toString();
+      uri += "/{id}";
+      serviceManager.getLinkStrategy().setLinkHeader(response, "create-with-id", "create-with-id", uri, null);
    }
 
    protected void setConsumersLink(Response.ResponseBuilder response, UriInfo info)
@@ -89,7 +99,7 @@ public class QueueResource extends DestinationResource
    }
 
    @Path("create")
-   public Object post() throws Exception
+   public PostMessage post() throws Exception
    {
       return sender;
    }

@@ -1,6 +1,7 @@
 package org.hornetq.rest.topic;
 
 import org.hornetq.rest.queue.DestinationResource;
+import org.hornetq.rest.queue.PostMessage;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -53,6 +54,7 @@ public class TopicResource extends DestinationResource
    {
       Response.ResponseBuilder builder = Response.ok();
       setSenderLink(builder, uriInfo);
+      setSenderWithIdLink(builder, uriInfo);
       setSubscriptionsLink(builder, uriInfo);
       setPushSubscriptionsLink(builder, uriInfo);
       return builder.build();
@@ -64,6 +66,15 @@ public class TopicResource extends DestinationResource
       builder.path("create");
       String uri = builder.build().toString();
       serviceManager.getLinkStrategy().setLinkHeader(response, "create", "create", uri, null);
+   }
+
+   protected void setSenderWithIdLink(Response.ResponseBuilder response, UriInfo info)
+   {
+      UriBuilder builder = info.getRequestUriBuilder();
+      builder.path("create");
+      String uri = builder.build().toString();
+      uri += "/{id}";
+      serviceManager.getLinkStrategy().setLinkHeader(response, "create-with-id", "create-with-id", uri, null);
    }
 
    protected void setSubscriptionsLink(Response.ResponseBuilder response, UriInfo info)
@@ -89,7 +100,7 @@ public class TopicResource extends DestinationResource
    }
 
    @Path("create")
-   public Object post() throws Exception
+   public PostMessage post() throws Exception
    {
       return sender;
    }
