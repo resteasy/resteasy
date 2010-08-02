@@ -1,1415 +1,1619 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-"http://www.docbook.org/xml/4.4/docbookx.dtd">
+        "http://www.docbook.org/xml/4.4/docbookx.dtd">
 <book>
-  <bookinfo>
-    <title>HornetQ REST Interface</title>
+    <bookinfo>
+        <title>HornetQ REST Interface</title>
 
-    <releaseinfo>1.0-beta-1</releaseinfo>
-  </bookinfo>
+        <releaseinfo>1.0-beta-1</releaseinfo>
+    </bookinfo>
 
-  <toc></toc>
+    <toc></toc>
 
-  <preface id="preface" revision="1">
-    <title>Preface</title>
+    <preface id="preface" revision="1">
+        <title>Preface</title>
 
-    <para>Commercial development support, production support and training for
-    RESTEasy and HornetQ is available through JBoss, a division of Red Hat
-    Inc. (see http://www.jboss.com/).</para>
+        <para>Commercial development support, production support and training for
+            RESTEasy and HornetQ is available through JBoss, a division of Red Hat
+            Inc. (see http://www.jboss.com/).
+        </para>
 
-    <para></para>
-  </preface>
+        <para></para>
+    </preface>
 
-  <chapter>
-    <title>Introduction</title>
+    <chapter>
+        <title>Introduction</title>
 
-    <para>The HornetQ REST interface allows you to leverage the reliability
-    and scalability features of HornetQ over a simple REST/HTTP interface.
-    Messages are produced and consumed by sending and receiving simple HTTP
-    messages that contain the content you want to push around. For instance,
-    here's a simple example of posting an order to an order processing queue
-    express as an HTTP message:</para>
+        <para>The HornetQ REST interface allows you to leverage the reliability
+            and scalability features of HornetQ over a simple REST/HTTP interface.
+            Messages are produced and consumed by sending and receiving simple HTTP
+            messages that contain the content you want to push around. For instance,
+            here's a simple example of posting an order to an order processing queue
+            express as an HTTP message:
+        </para>
 
-    <para><programlisting>POST /queue/orders/create HTTP/1.1
-Host: example.com
-Content-Type: application/xml
+        <para><programlisting>POST /queue/orders/create HTTP/1.1
+            Host: example.com
+            Content-Type: application/xml
 
-&lt;order&gt;
-   &lt;name&gt;Bill&lt;/name&gt;
-   &lt;item&gt;iPhone 4&lt;/item&gt;
-   &lt;cost&gt;$199.99&lt;/cost&gt;
-&lt;/order
-</programlisting>As you can see, we're just posting some arbitrary XML
-    document to a URL. When the XML is received on the server is it processed
-    within HornetQ as a JMS message and distributed through core HornetQ.
-    Simple and easy. Consuming messages from a queue or topic looks very
-    similar. We'll discuss the entire interface in detail later in this
-    docbook.</para>
+            &lt;order&gt;
+            &lt;name&gt;Bill&lt;/name&gt;
+            &lt;item&gt;iPhone 4&lt;/item&gt;
+            &lt;cost&gt;$199.99&lt;/cost&gt;
+            &lt;/order
+        </programlisting>As you can see, we're just posting some arbitrary XML
+            document to a URL. When the XML is received on the server is it processed
+            within HornetQ as a JMS message and distributed through core HornetQ.
+            Simple and easy. Consuming messages from a queue or topic looks very
+            similar. We'll discuss the entire interface in detail later in this
+            docbook.
+        </para>
 
-    <para></para>
+        <para></para>
 
-    <sect1>
-      <title>Goals of REST Interface</title>
+        <sect1>
+            <title>Goals of REST Interface</title>
 
-      <para>Why would you want to use HornetQ's REST interface? What are the
-      goals of the REST interface?</para>
+            <para>Why would you want to use HornetQ's REST interface? What are the
+                goals of the REST interface?
+            </para>
 
-      <para></para>
+            <para></para>
 
-      <itemizedlist>
-        <listitem>
-          <para>Easily usable by machine-based (code) clients.</para>
-        </listitem>
+            <itemizedlist>
+                <listitem>
+                    <para>Easily usable by machine-based (code) clients.</para>
+                </listitem>
 
-        <listitem>
-          <para>Zero client footprint. We want HornetQ to be usable by any
-          client/programming language that has an adequate HTTP client
-          library. You shouldn't have to download, install, and configure a
-          special library to interact with HornetQ.</para>
-        </listitem>
+                <listitem>
+                    <para>Zero client footprint. We want HornetQ to be usable by any
+                        client/programming language that has an adequate HTTP client
+                        library. You shouldn't have to download, install, and configure a
+                        special library to interact with HornetQ.
+                    </para>
+                </listitem>
 
-        <listitem>
-          <para>Lightweight interoperability. The HTTP protocol is strong
-          enough to be our message exchange protocol. Since interactions are
-          RESTful the HTTP uniform interface provides all the interoperability
-          you need to communicate between different languages, platforms, and
-          even messaging implementations that choose to implement the same
-          RESTful interface as HornetQ (i.e. the <ulink
-          url="http://rest-star.org">REST-*</ulink> effort.)</para>
-        </listitem>
+                <listitem>
+                    <para>Lightweight interoperability. The HTTP protocol is strong
+                        enough to be our message exchange protocol. Since interactions are
+                        RESTful the HTTP uniform interface provides all the interoperability
+                        you need to communicate between different languages, platforms, and
+                        even messaging implementations that choose to implement the same
+                        RESTful interface as HornetQ (i.e. the
+                        <ulink
+                                url="http://rest-star.org">REST-*
+                        </ulink>
+                        effort.)
+                    </para>
+                </listitem>
 
-        <listitem>
-          <para>No envelope (i.e. SOAP) or feed (i.e. Atom) format
-          requirements. You shouldn't have to learn and use a specific XML
-          document format in order to send and receive messages through
-          HornetQ's REST interface.</para>
-        </listitem>
+                <listitem>
+                    <para>No envelope (i.e. SOAP) or feed (i.e. Atom) format
+                        requirements. You shouldn't have to learn and use a specific XML
+                        document format in order to send and receive messages through
+                        HornetQ's REST interface.
+                    </para>
+                </listitem>
 
-        <listitem>
-          <para>Leverage the reliability, scalability, and clustering features
-          of HornetQ on the back end without sacrificing the simplicity of a
-          REST interface.</para>
+                <listitem>
+                    <para>Leverage the reliability, scalability, and clustering features
+                        of HornetQ on the back end without sacrificing the simplicity of a
+                        REST interface.
+                    </para>
 
-          <para></para>
-        </listitem>
-      </itemizedlist>
-    </sect1>
-  </chapter>
+                    <para></para>
+                </listitem>
+            </itemizedlist>
+        </sect1>
+    </chapter>
 
-  <chapter>
-    <title>Installation and Configuration</title>
+    <chapter>
+        <title>Installation and Configuration</title>
 
-    <para>HornetQ's REST interface is installed as a Web archive (WAR). It
-    depends on the <ulink url="http://jboss.org/resteasy">RESTEasy</ulink>
-    project and can currently only run within a servlet container. Installing
-    the HornetQ REST interface is a little bit different depending whether
-    HornetQ is already installed and configured for your environment (i.e.
-    you're deploying within JBoss 6 AppServer) or you want the HornetQ REST
-    WAR to startup and manage the HornetQ server.</para>
+        <para>HornetQ's REST interface is installed as a Web archive (WAR). It
+            depends on the
+            <ulink url="http://jboss.org/resteasy">RESTEasy</ulink>
+            project and can currently only run within a servlet container. Installing
+            the HornetQ REST interface is a little bit different depending whether
+            HornetQ is already installed and configured for your environment (i.e.
+            you're deploying within JBoss 6 AppServer) or you want the HornetQ REST
+            WAR to startup and manage the HornetQ server.
+        </para>
 
-    <sect1>
-      <title>Installing Within Pre-configured Environment</title>
+        <sect1>
+            <title>Installing Within Pre-configured Environment</title>
 
-      <para>The section should be used when you want to use the HornetQ REST
-      interface in an environment that already has HornetQ installed and
-      running, i.e. JBoss 6 Application Server. You must create a Web archive
-      (.WAR) file with the following web.xml settings:</para>
+            <para>The section should be used when you want to use the HornetQ REST
+                interface in an environment that already has HornetQ installed and
+                running, i.e. JBoss 6 Application Server. You must create a Web archive
+                (.WAR) file with the following web.xml settings:
+            </para>
 
-      <programlisting>&lt;web-app&gt;
-    &lt;listener&gt;
-        &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
-    &lt;/listener&gt;
+            <programlisting>&lt;web-app&gt;
+                &lt;listener&gt;
+                &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+                &lt;/listener&gt;
 
-    &lt;listener&gt;
-        &lt;listener-class&gt;org.hornetq.rest.integration.RestMessagingBootstrapListener&lt;/listener-class&gt;
-    &lt;/listener&gt;
+                &lt;listener&gt;
+                &lt;listener-class&gt;org.hornetq.rest.integration.RestMessagingBootstrapListener&lt;/listener-class&gt;
+                &lt;/listener&gt;
 
-    &lt;filter&gt;
-        &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
-        &lt;filter-class&gt;
-            org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
-        &lt;/filter-class&gt;
-    &lt;/filter&gt;
+                &lt;filter&gt;
+                &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
+                &lt;filter-class&gt;
+                org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
+                &lt;/filter-class&gt;
+                &lt;/filter&gt;
 
-    &lt;filter-mapping&gt;
-        &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
-        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-    &lt;/filter-mapping&gt;
+                &lt;filter-mapping&gt;
+                &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
+                &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+                &lt;/filter-mapping&gt;
 
-&lt;/web-app</programlisting>
+                &lt;/web-app
+            </programlisting>
 
-      <para>Within your WEB-INF/lib directory you must have the
-      hornetq-rest.jar file. If RESTEasy is not installed within your
-      environment, you must add the RESTEasy jar files within the lib
-      directory as well. Here's a sample Maven pom.xml that can build your WAR
-      for this case.</para>
+            <para>Within your WEB-INF/lib directory you must have the
+                hornetq-rest.jar file. If RESTEasy is not installed within your
+                environment, you must add the RESTEasy jar files within the lib
+                directory as well. Here's a sample Maven pom.xml that can build your WAR
+                for this case.
+            </para>
 
-      <programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
-    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-    &lt;groupId&gt;org.somebody&lt;/groupId&gt;
-    &lt;artifactId&gt;myapp&lt;/artifactId&gt;
-    &lt;packaging&gt;war&lt;/packaging&gt;
-    &lt;name&gt;My App&lt;/name&gt;
-     &lt;build&gt;
-            &lt;plugin&gt;
+            <programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+                &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+                &lt;groupId&gt;org.somebody&lt;/groupId&gt;
+                &lt;artifactId&gt;myapp&lt;/artifactId&gt;
+                &lt;packaging&gt;war&lt;/packaging&gt;
+                &lt;name&gt;My App&lt;/name&gt;
+                &lt;build&gt;
+                &lt;plugin&gt;
                 &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
                 &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
                 &lt;configuration&gt;
-                    &lt;source&gt;1.6&lt;/source&gt;
-                    &lt;target&gt;1.6&lt;/target&gt;
+                &lt;source&gt;1.6&lt;/source&gt;
+                &lt;target&gt;1.6&lt;/target&gt;
                 &lt;/configuration&gt;
-            &lt;/plugin&gt;
-        &lt;/plugins&gt;
-    &lt;/build&gt;
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.hornetq.rest&lt;/groupId&gt;
-            &lt;artifactId&gt;hornetq-rest&lt;/artifactId&gt;
-            &lt;version&gt;1.0-beta-1&lt;/version&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-&lt;/project&gt;
-</programlisting>
+                &lt;/plugin&gt;
+                &lt;/plugins&gt;
+                &lt;/build&gt;
+                &lt;dependencies&gt;
+                &lt;dependency&gt;
+                &lt;groupId&gt;org.hornetq.rest&lt;/groupId&gt;
+                &lt;artifactId&gt;hornetq-rest&lt;/artifactId&gt;
+                &lt;version&gt;1.0-beta-1&lt;/version&gt;
+                &lt;/dependency&gt;
+                &lt;/dependencies&gt;
+                &lt;/project&gt;
+            </programlisting>
 
-      <para></para>
-    </sect1>
+            <para></para>
+        </sect1>
 
-    <sect1>
-      <title>Bootstrapping HornetQ Along with REST</title>
+        <sect1>
+            <title>Bootstrapping HornetQ Along with REST</title>
 
-      <para>You can bootstrap HornetQ within your WAR as well. To do this, you
-      must have the HornetQ core and JMS jars along with Netty, Resteasy, and
-      the HornetQ REST jar within your WEB-INF/lib. You must also have a
-      hornetq-configuration.xml, hornetq-jms.xml, and hornetq-users.xml config
-      files within WEB-INF/classes. The examples that come with the HornetQ
-      REST distribution show how to do this. You must also add an additional
-      listener to your web.xml file. Here's an example:</para>
+            <para>You can bootstrap HornetQ within your WAR as well. To do this, you
+                must have the HornetQ core and JMS jars along with Netty, Resteasy, and
+                the HornetQ REST jar within your WEB-INF/lib. You must also have a
+                hornetq-configuration.xml, hornetq-jms.xml, and hornetq-users.xml config
+                files within WEB-INF/classes. The examples that come with the HornetQ
+                REST distribution show how to do this. You must also add an additional
+                listener to your web.xml file. Here's an example:
+            </para>
 
-      <programlisting>&lt;web-app&gt;
-    &lt;listener&gt;
-        &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
-    &lt;/listener&gt;
+            <programlisting>&lt;web-app&gt;
+                &lt;listener&gt;
+                &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+                &lt;/listener&gt;
 
 
-    &lt;listener&gt;
-        &lt;listener-class&gt;org.hornetq.rest.integration.HornetqBootstrapListener&lt;/listener-class&gt;
-    &lt;/listener&gt;
+                &lt;listener&gt;
+                &lt;listener-class&gt;org.hornetq.rest.integration.HornetqBootstrapListener&lt;/listener-class&gt;
+                &lt;/listener&gt;
 
-    &lt;listener&gt;
-        &lt;listener-class&gt;org.hornetq.rest.integration.RestMessagingBootstrapListener&lt;/listener-class&gt;
-    &lt;/listener&gt;
+                &lt;listener&gt;
+                &lt;listener-class&gt;org.hornetq.rest.integration.RestMessagingBootstrapListener&lt;/listener-class&gt;
+                &lt;/listener&gt;
 
-    &lt;filter&gt;
-        &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
-        &lt;filter-class&gt;
-            org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
-        &lt;/filter-class&gt;
-    &lt;/filter&gt;
+                &lt;filter&gt;
+                &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
+                &lt;filter-class&gt;
+                org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
+                &lt;/filter-class&gt;
+                &lt;/filter&gt;
 
-    &lt;filter-mapping&gt;
-        &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
-        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-    &lt;/filter-mapping&gt;
+                &lt;filter-mapping&gt;
+                &lt;filter-name&gt;Rest-Messaging&lt;/filter-name&gt;
+                &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+                &lt;/filter-mapping&gt;
 
-&lt;/web-app&gt;</programlisting>
+                &lt;/web-app&gt;</programlisting>
 
-      <para>Here's a Maven pom.xml file for creating a WAR for this
-      environment. Make sure your hornetq configuration files are within the
-      src/main/resources directory so that they are stuffed within the WAR's
-      WEB-INF/classes directory!</para>
+            <para>Here's a Maven pom.xml file for creating a WAR for this
+                environment. Make sure your hornetq configuration files are within the
+                src/main/resources directory so that they are stuffed within the WAR's
+                WEB-INF/classes directory!
+            </para>
 
-      <programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
-    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-    &lt;groupId&gt;org.somebody&lt;/groupId&gt;
-    &lt;artifactId&gt;myapp&lt;/artifactId&gt;
-    &lt;packaging&gt;war&lt;/packaging&gt;
-    &lt;name&gt;My App&lt;/name&gt;
-     &lt;build&gt;
-            &lt;plugin&gt;
+            <programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+                &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+                &lt;groupId&gt;org.somebody&lt;/groupId&gt;
+                &lt;artifactId&gt;myapp&lt;/artifactId&gt;
+                &lt;packaging&gt;war&lt;/packaging&gt;
+                &lt;name&gt;My App&lt;/name&gt;
+                &lt;build&gt;
+                &lt;plugin&gt;
                 &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
                 &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
                 &lt;configuration&gt;
-                    &lt;source&gt;1.6&lt;/source&gt;
-                    &lt;target&gt;1.6&lt;/target&gt;
+                &lt;source&gt;1.6&lt;/source&gt;
+                &lt;target&gt;1.6&lt;/target&gt;
                 &lt;/configuration&gt;
-            &lt;/plugin&gt;
-        &lt;/plugins&gt;
-    &lt;/build&gt;
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.hornetq&lt;/groupId&gt;
-            &lt;artifactId&gt;hornetq-core&lt;/artifactId&gt;
-            &lt;version&gt;2.1.1.GA&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.jboss.netty&lt;/groupId&gt;
-            &lt;artifactId&gt;netty&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.hornetq&lt;/groupId&gt;
-            &lt;artifactId&gt;hornetq-jms&lt;/artifactId&gt;
-            &lt;version&gt;2.1.1.GA&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.jboss.spec.javax.jms&lt;/groupId&gt;
-            &lt;artifactId&gt;jboss-jms-api_1.1_spec&lt;/artifactId&gt;
-            &lt;version&gt;1.0.0.Beta1&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.hornetq.rest&lt;/groupId&gt;
-            &lt;artifactId&gt;hornetq-rest&lt;/artifactId&gt;
-            &lt;version&gt;1.0-beta-1&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-            &lt;artifactId&gt;resteasy-jaxrs&lt;/artifactId&gt;
-            &lt;version&gt;2.0.0.GA&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-            &lt;artifactId&gt;resteasy-jaxb-provider&lt;/artifactId&gt;
-            &lt;version&gt;2.0.0.GA&lt;/version&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-&lt;/project&gt;</programlisting>
-
-      <para></para>
-    </sect1>
-
-    <sect1>
-      <title>REST Configuration</title>
-
-      <para>The HornetQ REST implementation does have some configuration
-      options. These are configured via XML configuration file that must be in
-      your WEB-INF/classes directory. You must set the web.xml context-param
-      rest.messaging.config.file to specify the name of the configuration
-      file. Below is the format of the XML configuration file and the default
-      values for each.</para>
-
-      <programlisting>&lt;rest-messaging&gt;
-   &lt;server-in-vm-id&gt;0&lt;/server-in-vm-id&gt;
-   &lt;use-link-headers&gt;false&lt;/use-link-headers&gt;
-   &lt;default-durable-send&gt;false&lt;/default-durable-send&gt;
-   &lt;dups-ok&gt;true&lt;/dups-ok&gt;
-   &lt;topic-push-store-file&gt;topic-push-store.xml&lt;/topic-push-store-file&gt;
-   &lt;queue-push-store-file&gt;queue-push-store.xml&lt;/queue-push-store-file&gt;
-   &lt;producer-session-pool-size&gt;10&lt;/producer-session-pool-size&gt;
-   &lt;session-timeout-task-interval&gt;1&lt;/session-timeout-task-interval&gt;
-   &lt;consumer-session-timeout-seconds&gt;300&lt;/consumer-session-timeout-seconds&gt;
-   &lt;consumer-window-size&gt;-1&lt;/consumer-window-size&gt;
-&lt;/rest-messaging
-</programlisting>
-
-      <para>Let's give an explanation of each config option.</para>
-
-      <variablelist>
-        <varlistentry>
-          <term>server-in-vm-id</term>
-
-          <listitem>
-            <para>The HornetQ REST impl uses the IN-VM transport to
-            communicate with HornetQ It uses the default server id, which is
-            "0".</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>use-link-headers</term>
-
-          <listitem>
-            <para>By default, all links (URLs) are published using custom
-            headers. You can have the HornetQ REST implementation publish
-            links using the <ulink
-            url="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">Link
-            Header specification</ulink> instead if you desire.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>default-durable-send</term>
-
-          <listitem>
-            <para>Whether a posted message should be persisted by default if
-            the user does not specify a durable query parameter.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>dups-ok</term>
-
-          <listitem>
-            <para>If this is true, no duplicate detection protocol will be
-            enforced for message posting.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>topic-push-store-file</term>
-
-          <listitem>
-            <para>This must be a relative or absolute file system path. It
-            stores push registrations for topics so that if the server is
-            rebooted, the push connections remain active.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>queue-push-store-file</term>
-
-          <listitem>
-            <para>This must be a relative or absolute file system path. It
-            stores push registrations for queues so that if the server is
-            rebooted, the push connections remain active.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>producer-session-pool-size</term>
-
-          <listitem>
-            <para>The REST implementation pools HornetQ sessions for sending
-            messages. This is the size of the pool. That number of sessions
-            will be created at startup time.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>session-timeout-task-interval</term>
-
-          <listitem>
-            <para>Pull consumers and pull subscriptions can time out. This is
-            the interval the thread that checks for timed-out sessions will
-            run at. A value of 1 means it will run every 1 second.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>consumer-session-timeout-seconds</term>
-
-          <listitem>
-            <para>Timeout in seconds for pull consumers/subscriptions that
-            remain idle for that amount of time.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>consumer-window-size</term>
-
-          <listitem>
-            <para>For consumers, this config option is the same as the HornetQ
-            one of the same name. It will be used by sessions created by the
-            HornetQ REST implementation.</para>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-    </sect1>
-  </chapter>
-
-  <chapter>
-    <title>HornetQ REST Interface Basics</title>
-
-    <para>The HornetQ REST interface publishes a variety of REST resources to
-    perform various tasks on a queue or topic. Only the top-level queue and
-    topic URI schemes are published to the outside world. You must discover
-    all over resources to interact with by looking for and traversing links.
-    You'll find published links within custom response headers and embedded in
-    published XML representations. Let's look at how this works.</para>
-
-    <sect1>
-      <title>Queue and Topic Resources</title>
-
-      <para>To interact with a queue or topic you do a HEAD or GET request on
-      the following URI pattern:</para>
-
-      <programlisting>/queues/{name}
-/topics/{name}
-</programlisting>
-
-      <para>The base of the URI is the base URL of the WAR you deployed the
-      HornetQ REST server within as defined in the Installation and
-      Configuration section of this document. Replace the {name} string within
-      the above URI pattern with the name of the queue or topic you are
-      interested in interacting with. For example if you have configured a JMS
-      topic named "foo" within your hornetq-jms.xml file, the URI name should
-      be "jms.topic.foo". If you have configured a JMS queue name "bar" within
-      your hornetq-jms.xml file, the URI name should be "jms.queue.bar".
-      Internally, HornetQ prepends the "jms.topic" or "jms.queue" strings to
-      the name of the deployed destination. Next, perform your HEAD or GET
-      request on this URI. Here's what a request/response would look
-      like.</para>
-
-      <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
-Host: example.com
-
---- Response ---
-HTTP/1.1 200 Ok
-msg-create: http://example.com/queues/jms.queue.bar/create
-msg-pull-consumers: http://example.com/queues/jms.queue.bar/pull-consumers
-msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
-</programlisting>
-
-      <para>The HEAD or GET response contains a number of custom response
-      headers that are URLs to additional REST resources that allow you to
-      interact with the queue or topic in different ways. It is important not
-      to rely on the scheme of the URLs returned as they are an implementation
-      detail. Treat them as opaque and query for them each and every time you
-      initially interact (at boot time) with the server. If you treat all URLs
-      as opaque then you will be isolated from implementation changes as the
-      HornetQ REST interface evolves over time.</para>
-
-      <para></para>
-    </sect1>
-
-    <sect1>
-      <title>Queue Resource Response Headers</title>
-
-      <para>Below is a list of response headers you should expect when
-      interacting with a Queue resource.</para>
-
-      <variablelist>
-        <varlistentry>
-          <term>msg-create</term>
-
-          <listitem>
-            <para>This is a URL you POST messages to. The semantics of this
-            link are described in Chapter 4.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-pull-consumers</term>
-
-          <listitem>
-            <para>This is a URL for creating consumers that will pull from a
-            queue. The semantics of this link are described in Chapter
-            5.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-push-consumers</term>
-
-          <listitem>
-            <para>This is a URL for registering other URLs you want the
-            HornetQ REST server to push messages to. The semantics of this
-            link are described in Chapter 6</para>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-    </sect1>
-
-    <sect1>
-      <title>Topic Resource Respones Headers</title>
-
-      <para>Below is a list of response headers you should expect when
-      interacting with a Topic resource.</para>
-
-      <variablelist>
-        <varlistentry>
-          <term>msg-create</term>
-
-          <listitem>
-            <para>This is a URL you POST messages to. The semantics of this
-            link are described in Chapter 4.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-pull-subscriptions</term>
-
-          <listitem>
-            <para>This is a URL for creating subscribers that will pull from a
-            topic. The semantics of this link are described in Chapter
-            5.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-push-subscriptions</term>
-
-          <listitem>
-            <para>This is a URL for registering other URLs you want the
-            HornetQ REST server to push messages to. The semantics of this
-            link are described in Chapter 6.</para>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-
-      <para></para>
-    </sect1>
-  </chapter>
-
-  <chapter>
-    <title>Posting Messages</title>
-
-    <para>This chapter discusses the protocol for posting messages to a queue
-    or a topic. In Chapter 3, you saw that a queue or topic resource publishes
-    variable custom headers that are links to other RESTful resources. The
-    <literal>msg-create</literal> header is the URL you post messages to.
-    Messages are published to a queue or topic by sending a simple HTTP
-    message to the URL published by the msg-create header. The HTTP message
-    contains whatever content you want to publish to the HornetQ destination.
-    Here's an example scenario:</para>
-
-    <orderedlist>
-      <listitem>
-        <para>Obtain the starting <literal>msg-create</literal> header from
-        the queue or topic resource.</para>
-
-        <para><programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
-Host: example.com
-
---- Response ---
-HTTP/1.1 200 Ok
-msg-create: http://example.com/queues/jms.queue.bar/create</programlisting></para>
-      </listitem>
-
-      <listitem>
-        <para>Do a POST to the URL contained in the
-        <literal>msg-create</literal> header.</para>
-
-        <para><programlisting>POST /queues/jms.queue.bar/create
-Host: example.xom
-Content-Type: application/xml
-
-&lt;order&gt;
-   &lt;name&gt;Bill&lt;/name&gt;
-   &lt;item&gt;iPhone4&lt;/name&gt;
-   &lt;cost&gt;$199.99&lt;/cost&gt;
-&lt;/order&gt;
-
---- Response ---
-HTTP/1.1 201 Created
-msg-create-next: http://example.com/queues/jms.queue.bar/create/002
-</programlisting>A successful response will return a 201 response code. Also
-        notice that a <literal>msg-create-next</literal> response header is
-        sent as well. You must use this URL to POST your next message.</para>
-      </listitem>
-
-      <listitem>
-        <para>POST your next message to the queue using the URL returned in
-        the <literal>msg-create-next</literal> header.</para>
-
-        <para><programlisting>POST /queues/jms.queue.bar/create/002
-Host: example.com
-Content-Type: application/xml
-
-&lt;order&gt;
-   &lt;name&gt;Monica&lt;/name&gt;
-   &lt;item&gt;iPad&lt;/item&gt;
-   &lt;cost&gt;$499.99&lt;/cost&gt;
-&lt;/order&gt;
-
---- Response --
-HTTP/1.1 201 Created
-msg-create-next: http://example.com/queues/jms.queue.bar/create/003
-</programlisting>Continue using the new <literal>msg-create-next</literal>
-        header returned with each response.</para>
-      </listitem>
-    </orderedlist>
-
-    <para>It is <emphasis>VERY IMPORTENT</emphasis> that you never re-use
-    returned <literal>msg-create-next</literal> headers to post new messages.
-    This URL may be uniquely generated for each message and used for duplicate
-    detection. If you lose the URL within the
-    <literal>msg-create-next</literal> header, then just go back to the queue
-    or topic resource to get the msg-create URL.</para>
-
-    <sect1>
-      <title>Duplicate Detection</title>
-
-      <para>Sometimes you might have network problems when posting new
-      messages to a queue or topic. You may do a POST and never receive a
-      response. Unfortunately, you don't know whether or not the server
-      received the message and so a re-post of the message might cause
-      duplicates to be posted to the queue or topic. By default, the HornetQ
-      REST interface is configured to accept duplicate messages. You can
-      change this by turning on duplicate message detection by setting the
-      <literal>dups-ok</literal> config option to <literal>false</literal> as
-      described in Chapter 3. What you do this, the initial POST to the
-      msg-create URL will redirect you, using the standard HTTP 307
-      redirection mechanism to a unique URL to POST to. All other interactions
-      remain the same as discussed earlier. Here's an example:</para>
-
-      <orderedlist>
-        <listitem>
-          <para>Obtain the starting <literal>msg-create</literal> header from
-          the queue or topic resource.</para>
-
-          <para><programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
-Host: example.com
-
---- Response ---
-HTTP/1.1 200 Ok
-msg-create: http://example.com/queues/jms.queue.bar/create</programlisting></para>
-        </listitem>
-
-        <listitem>
-          <para>Do a POST to the URL contained in the
-          <literal>msg-create</literal> header.</para>
-
-          <para><programlisting>POST /queues/jms.queue.bar/create
-Host: example.xom
-Content-Type: application/xml
-
-&lt;order&gt;
-   &lt;name&gt;Bill&lt;/name&gt;
-   &lt;item&gt;iPhone4&lt;/name&gt;
-   &lt;cost&gt;$199.99&lt;/cost&gt;
-&lt;/order&gt;
-
---- Response ---
-HTTP/1.1 307 Redirect
-Location: http://example.com/queues/jms.queue.bar/create/001
-</programlisting>A successful response will return a 307 response code. This
-          is standard HTTP protocol. It is telling you that you must re-POST
-          to the URL contained within the <literal>Location</literal>
-          header.</para>
-        </listitem>
-
-        <listitem>
-          <para>re-POST your message to the URL provided within the
-          <literal>Location</literal> header<literal>.</literal></para>
-
-          <para><programlisting>POST /queues/jms.queue.bar/create/001
-Host: example.com
-Content-Type: application/xml
-
-&lt;order&gt;
-   &lt;name&gt;Bill&lt;/name&gt;
-   &lt;item&gt;iPhone4&lt;/name&gt;
-   &lt;cost&gt;$199.99&lt;/cost&gt;
-&lt;/order&gt;
-
---- Response --
-HTTP/1.1 201 Created
-msg-create-next: http://example.com/queues/jms.queue.bar/create/002
-</programlisting>You should receive a 201 Created response. If there is a
-          network failure, just re-POST to the Location header. For new
-          messages, use the returned <literal>msg-create-next</literal> header
-          returned with each response.</para>
-        </listitem>
-
-        <listitem>
-          <para>POST any new message to the returned
-          <literal>msg-create-next</literal> header.</para>
-
-          <para><programlisting>POST /queues/jms.queue.bar/create/002
-Host: example.com
-Content-Type: application/xml
-
-&lt;order&gt;
-   &lt;name&gt;Monica&lt;/name&gt;
-   &lt;item&gt;iPad&lt;/name&gt;
-   &lt;cost&gt;$499.99&lt;/cost&gt;
-&lt;/order&gt;
-
---- Response --
-HTTP/1.1 201 Created
-msg-create-next: http://example.com/queues/jms.queue.bar/create/003</programlisting>If
-          there ever is a network problem, just repost to the URL provided in
-          the <literal>msg-create-next</literal> header.</para>
-        </listitem>
-      </orderedlist>
-
-      <para>How can this work? As you can see, with each successful response,
-      the HornetQ REST server returns a uniquely generated URL within the
-      msg-create-next header. This URL is dedicated to the next new message
-      you want to post. Behind the scenes, the code extracts an identify from
-      the URL and uses HornetQ's duplicate detection mechanism by setting the
-      DUPLICATE_DETECTION_ID property of the JMS message that is actually
-      posted to the system.</para>
-    </sect1>
-
-    <sect1>
-      <title>Persistent Messages</title>
-
-      <para>By default, posted messages are not durable and will not be
-      persisted in HornetQ's journal. You can create durable messages by
-      modifying the default configuration as expressed in Chapter 2.
-      Alternatively, you can set a URL query parameter called durable to true
-      when you post your messages to the links returned in the msg-create or
-      msg-create-next headers. here's an example of that.</para>
-
-      <programlisting>POST /queues/jms.queue.bar/create?durable=true
-Host: example.xom
-Content-Type: application/xml
-
-&lt;order&gt;
-   &lt;name&gt;Bill&lt;/name&gt;
-   &lt;item&gt;iPhone4&lt;/item&gt;
-   &lt;cost&gt;$199.99&lt;/cost&gt;
-&lt;/order&gt;
-</programlisting>
-    </sect1>
-  </chapter>
-
-  <chapter>
-    <title>Consuming Messages via Pull</title>
-
-    <para>There are two different ways to consume messages from a topic or
-    queue. You can wait and have the messaging server push them to you, or you
-    can continuously poll the server yourself to see if messages are
-    available. This chapter discusses the latter. Consuming messages via a
-    pull works almost identically for queues and topics with some minor, but
-    important caveats. To start consuming you must create a consumer resource
-    on the server that is dedicated to your client. Now, this pretty much
-    breaks the stateless principle of REST, but after much prototyping, this
-    is the best way to work most effectively with HornetQ through a REST
-    interface. We'll discuss later in this docbook some of the REST tradeoffs
-    we had to make to get an optimal interface.</para>
-
-    <para>You create consumer resources by doing a simple POST to the URL
-    published by the <literal>msg-pull-consumers</literal> response header if
-    you're interacting with a queue, the
-    <literal>msg-pull-subscribers</literal> response header if you're
-    interacting with a topic. These headers are provided by the main queue or
-    topic resource discussed in Chapter 3. Doing an empty POST to one of these
-    URLs will create a consumer resource that follows an auto-acknowledge
-    protocol and, if you're interacting with a topic, creates a temporty
-    subscription to the topic. If you want to use the acknowledgement protocol
-    and/or create a durable subscription (topics only), then you must use the
-    form parameters (<literal>application/x-www-form-urlencoded</literal>)
-    described below.</para>
-
-    <variablelist>
-      <varlistentry>
-        <term>autoAck</term>
-
-        <listitem>
-          <para>A value of <literal>true</literal> or <literal>false</literal>
-          can be given. This defaults to <literal>true</literal> if you do not
-          pass this parameter.</para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>durable</term>
-
-        <listitem>
-          <para>A value of <literal>true</literal> or <literal>false</literal>
-          can be given. This defaults to <literal>false</literal> if you do
-          not pass this parameter. Only available on topics. This specifies
-          whether you want a durable subscription or not. A durable
-          subscription persists through server restart.</para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-
-    <sect1>
-      <title>Auto-Acknowledge</title>
-
-      <para>This section focuses on the auto-acknowledge protocol for
-      consuming messages via a pull. Here's a list of the response headers and
-      URLs you'll be interested in.</para>
-
-      <variablelist>
-        <varlistentry>
-          <term>msg-pull-consumers</term>
-
-          <listitem>
-            <para>The URL of a factory resource for creating queue consumer
-            resources. You will pull from these created resources.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-pull-subscriptions</term>
-
-          <listitem>
-            <para>The URL of a factory resource for creating topic
-            subscription resources. You will pull from the created
-            resources.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-consume-next</term>
-
-          <listitem>
-            <para>The URL you will pull the next message from. This is
-            returned from every response.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-consumer</term>
-
-          <listitem>
-            <para>This is a URL pointing back to the consumer or subscription
-            resource created for the client.</para>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-
-      <sect2>
-        <title>Creating an Auto-Ack Consumer or Subscription</title>
-
-        <para>Here is an example of creating an auto-acknowledged queue pull
-        consumer.</para>
-
-        <orderedlist>
-          <listitem>
-            <para>Find the pull-consumers URL by doing a HEAD or GET request
-            to the base queue resource.</para>
+                &lt;/plugin&gt;
+                &lt;/plugins&gt;
+                &lt;/build&gt;
+                &lt;dependencies&gt;
+                &lt;dependency&gt;
+                &lt;groupId&gt;org.hornetq&lt;/groupId&gt;
+                &lt;artifactId&gt;hornetq-core&lt;/artifactId&gt;
+                &lt;version&gt;2.1.1.GA&lt;/version&gt;
+                &lt;/dependency&gt;
+                &lt;dependency&gt;
+                &lt;groupId&gt;org.jboss.netty&lt;/groupId&gt;
+                &lt;artifactId&gt;netty&lt;/artifactId&gt;
+                &lt;/dependency&gt;
+                &lt;dependency&gt;
+                &lt;groupId&gt;org.hornetq&lt;/groupId&gt;
+                &lt;artifactId&gt;hornetq-jms&lt;/artifactId&gt;
+                &lt;version&gt;2.1.1.GA&lt;/version&gt;
+                &lt;/dependency&gt;
+                &lt;dependency&gt;
+                &lt;groupId&gt;org.jboss.spec.javax.jms&lt;/groupId&gt;
+                &lt;artifactId&gt;jboss-jms-api_1.1_spec&lt;/artifactId&gt;
+                &lt;version&gt;1.0.0.Beta1&lt;/version&gt;
+                &lt;/dependency&gt;
+                &lt;dependency&gt;
+                &lt;groupId&gt;org.hornetq.rest&lt;/groupId&gt;
+                &lt;artifactId&gt;hornetq-rest&lt;/artifactId&gt;
+                &lt;version&gt;1.0-beta-1&lt;/version&gt;
+                &lt;/dependency&gt;
+                &lt;dependency&gt;
+                &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+                &lt;artifactId&gt;resteasy-jaxrs&lt;/artifactId&gt;
+                &lt;version&gt;2.0.0.GA&lt;/version&gt;
+                &lt;/dependency&gt;
+                &lt;dependency&gt;
+                &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+                &lt;artifactId&gt;resteasy-jaxb-provider&lt;/artifactId&gt;
+                &lt;version&gt;2.0.0.GA&lt;/version&gt;
+                &lt;/dependency&gt;
+                &lt;/dependencies&gt;
+                &lt;/project&gt;</programlisting>
+
+            <para></para>
+        </sect1>
+
+        <sect1>
+            <title>REST Configuration</title>
+
+            <para>The HornetQ REST implementation does have some configuration
+                options. These are configured via XML configuration file that must be in
+                your WEB-INF/classes directory. You must set the web.xml context-param
+                rest.messaging.config.file to specify the name of the configuration
+                file. Below is the format of the XML configuration file and the default
+                values for each.
+            </para>
+
+            <programlisting>&lt;rest-messaging&gt;
+                &lt;server-in-vm-id&gt;0&lt;/server-in-vm-id&gt;
+                &lt;use-link-headers&gt;false&lt;/use-link-headers&gt;
+                &lt;default-durable-send&gt;false&lt;/default-durable-send&gt;
+                &lt;dups-ok&gt;true&lt;/dups-ok&gt;
+                &lt;topic-push-store-file&gt;topic-push-store.xml&lt;/topic-push-store-file&gt;
+                &lt;queue-push-store-file&gt;queue-push-store.xml&lt;/queue-push-store-file&gt;
+                &lt;producer-session-pool-size&gt;10&lt;/producer-session-pool-size&gt;
+                &lt;session-timeout-task-interval&gt;1&lt;/session-timeout-task-interval&gt;
+                &lt;consumer-session-timeout-seconds&gt;300&lt;/consumer-session-timeout-seconds&gt;
+                &lt;consumer-window-size&gt;-1&lt;/consumer-window-size&gt;
+                &lt;/rest-messaging
+            </programlisting>
+
+            <para>Let's give an explanation of each config option.</para>
+
+            <variablelist>
+                <varlistentry>
+                    <term>server-in-vm-id</term>
+
+                    <listitem>
+                        <para>The HornetQ REST impl uses the IN-VM transport to
+                            communicate with HornetQ It uses the default server id, which is
+                            "0".
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>use-link-headers</term>
+
+                    <listitem>
+                        <para>By default, all links (URLs) are published using custom
+                            headers. You can have the HornetQ REST implementation publish
+                            links using the
+                            <ulink
+                                    url="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">Link
+                                Header specification
+                            </ulink>
+                            instead if you desire.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>default-durable-send</term>
+
+                    <listitem>
+                        <para>Whether a posted message should be persisted by default if
+                            the user does not specify a durable query parameter.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>dups-ok</term>
+
+                    <listitem>
+                        <para>If this is true, no duplicate detection protocol will be
+                            enforced for message posting.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>topic-push-store-file</term>
+
+                    <listitem>
+                        <para>This must be a relative or absolute file system path. It
+                            stores push registrations for topics so that if the server is
+                            rebooted, the push connections remain active.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>queue-push-store-file</term>
+
+                    <listitem>
+                        <para>This must be a relative or absolute file system path. It
+                            stores push registrations for queues so that if the server is
+                            rebooted, the push connections remain active.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>producer-session-pool-size</term>
+
+                    <listitem>
+                        <para>The REST implementation pools HornetQ sessions for sending
+                            messages. This is the size of the pool. That number of sessions
+                            will be created at startup time.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>session-timeout-task-interval</term>
+
+                    <listitem>
+                        <para>Pull consumers and pull subscriptions can time out. This is
+                            the interval the thread that checks for timed-out sessions will
+                            run at. A value of 1 means it will run every 1 second.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>consumer-session-timeout-seconds</term>
+
+                    <listitem>
+                        <para>Timeout in seconds for pull consumers/subscriptions that
+                            remain idle for that amount of time.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>consumer-window-size</term>
+
+                    <listitem>
+                        <para>For consumers, this config option is the same as the HornetQ
+                            one of the same name. It will be used by sessions created by the
+                            HornetQ REST implementation.
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </sect1>
+    </chapter>
+
+    <chapter>
+        <title>HornetQ REST Interface Basics</title>
+
+        <para>The HornetQ REST interface publishes a variety of REST resources to
+            perform various tasks on a queue or topic. Only the top-level queue and
+            topic URI schemes are published to the outside world. You must discover
+            all over resources to interact with by looking for and traversing links.
+            You'll find published links within custom response headers and embedded in
+            published XML representations. Let's look at how this works.
+        </para>
+
+        <sect1>
+            <title>Queue and Topic Resources</title>
+
+            <para>To interact with a queue or topic you do a HEAD or GET request on
+                the following URI pattern:
+            </para>
+
+            <programlisting>/queues/{name}
+                /topics/{name}
+            </programlisting>
+
+            <para>The base of the URI is the base URL of the WAR you deployed the
+                HornetQ REST server within as defined in the Installation and
+                Configuration section of this document. Replace the {name} string within
+                the above URI pattern with the name of the queue or topic you are
+                interested in interacting with. For example if you have configured a JMS
+                topic named "foo" within your hornetq-jms.xml file, the URI name should
+                be "jms.topic.foo". If you have configured a JMS queue name "bar" within
+                your hornetq-jms.xml file, the URI name should be "jms.queue.bar".
+                Internally, HornetQ prepends the "jms.topic" or "jms.queue" strings to
+                the name of the deployed destination. Next, perform your HEAD or GET
+                request on this URI. Here's what a request/response would look
+                like.
+            </para>
 
             <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
-Host: example.com
+                Host: example.com
 
---- Response ---
-HTTP/1.1 200 Ok
-msg-create: http://example.com/queues/jms.queue.bar/create
-msg-pull-consumers: http://example.com/queues/jms.queue.bar/pull-consumers
-msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
-</programlisting>
-          </listitem>
+                --- Response ---
+                HTTP/1.1 200 Ok
+                msg-create: http://example.com/queues/jms.queue.bar/create
+                msg-pull-consumers: http://example.com/queues/jms.queue.bar/pull-consumers
+                msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
+            </programlisting>
 
-          <listitem>
-            <para>Next do an empty POST to the URL returned in the
-            <literal>msg-pull-consumers</literal> header.</para>
+            <para>The HEAD or GET response contains a number of custom response
+                headers that are URLs to additional REST resources that allow you to
+                interact with the queue or topic in different ways. It is important not
+                to rely on the scheme of the URLs returned as they are an implementation
+                detail. Treat them as opaque and query for them each and every time you
+                initially interact (at boot time) with the server. If you treat all URLs
+                as opaque then you will be isolated from implementation changes as the
+                HornetQ REST interface evolves over time.
+            </para>
 
-            <programlisting>POST /queues/jms.queue.bar/pull-consumers HTTP/1.1
-Host: example.com
+            <para></para>
+        </sect1>
 
---- response ---
-HTTP/1.1 201 Created
-Location: http://example.com/queues/jms.queue.bar/pull-consumers/auto-ack/333
-msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/auto-ack/333/consume-next-1
-</programlisting>
+        <sect1>
+            <title>Queue Resource Response Headers</title>
 
-            <para>The <literal>Location</literal> header points to the JMS
-            consumer resource that was created on the server. It is good to
-            remember this URL, although, as you'll see later, it is
-            transmitted with each response just to remind you.</para>
-          </listitem>
-        </orderedlist>
+            <para>Below is a list of response headers you should expect when
+                interacting with a Queue resource.
+            </para>
 
-        <para>Creating an auto-acknowledged consumer for a topic is pretty
-        much the same. Here's an example of creating a durable
-        auto-acknowledged topic pull subscription.</para>
+            <variablelist>
+                <varlistentry>
+                    <term>msg-create</term>
+
+                    <listitem>
+                        <para>This is a URL you POST messages to. The semantics of this
+                            link are described in Chapter 4.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-pull-consumers</term>
+
+                    <listitem>
+                        <para>This is a URL for creating consumers that will pull from a
+                            queue. The semantics of this link are described in Chapter
+                            5.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-push-consumers</term>
+
+                    <listitem>
+                        <para>This is a URL for registering other URLs you want the
+                            HornetQ REST server to push messages to. The semantics of this
+                            link are described in Chapter 6
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </sect1>
+
+        <sect1>
+            <title>Topic Resource Respones Headers</title>
+
+            <para>Below is a list of response headers you should expect when
+                interacting with a Topic resource.
+            </para>
+
+            <variablelist>
+                <varlistentry>
+                    <term>msg-create</term>
+
+                    <listitem>
+                        <para>This is a URL you POST messages to. The semantics of this
+                            link are described in Chapter 4.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-pull-subscriptions</term>
+
+                    <listitem>
+                        <para>This is a URL for creating subscribers that will pull from a
+                            topic. The semantics of this link are described in Chapter
+                            5.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-push-subscriptions</term>
+
+                    <listitem>
+                        <para>This is a URL for registering other URLs you want the
+                            HornetQ REST server to push messages to. The semantics of this
+                            link are described in Chapter 6.
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+
+            <para></para>
+        </sect1>
+    </chapter>
+
+    <chapter>
+        <title>Posting Messages</title>
+
+        <para>This chapter discusses the protocol for posting messages to a queue
+            or a topic. In Chapter 3, you saw that a queue or topic resource publishes
+            variable custom headers that are links to other RESTful resources. The
+            <literal>msg-create</literal>
+            header is the URL you post messages to.
+            Messages are published to a queue or topic by sending a simple HTTP
+            message to the URL published by the msg-create header. The HTTP message
+            contains whatever content you want to publish to the HornetQ destination.
+            Here's an example scenario:
+        </para>
 
         <orderedlist>
-          <listitem>
-            <para>Find the <literal>pull-subscriptions</literal> URL by doing
-            a HEAD or GET request to the base topic resource</para>
+            <listitem>
+                <para>Obtain the starting
+                    <literal>msg-create</literal>
+                    header from
+                    the queue or topic resource.
+                </para>
 
-            <programlisting>HEAD /topics/jms.topic.bar HTTP/1.1
-Host: example.com
+                <para>
+                    <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
+                        Host: example.com
 
---- Response ---
-HTTP/1.1 200 Ok
-msg-create: http://example.com/topics/jms.topic.foo/create
-msg-pull-subscriptions: http://example.com/topics/jms.topic.foo/pull-subscriptions
-msg-push-subscriptions: http://example.com/topics/jms.topic.foo/push-subscriptions
-</programlisting>
-          </listitem>
+                        --- Response ---
+                        HTTP/1.1 200 Ok
+                        msg-create: http://example.com/queues/jms.queue.bar/create
+                    </programlisting>
+                </para>
+            </listitem>
 
-          <listitem>
-            <para>Next do a POST to the URL returned in the
-            <literal>msg-pull-subscriptions</literal> header passing in a
-            <literal>true</literal> value for the <literal>durable</literal>
-            form parameter.</para>
+            <listitem>
+                <para>Do a POST to the URL contained in the
+                    <literal>msg-create</literal>
+                    header.
+                </para>
 
-            <programlisting>POST /topics/jms.topic.foo/pull-subscriptions HTTP/1.1
-Host: example.com
-Content-Type: application/x-www-form-urlencoded
+                <para><programlisting>POST /queues/jms.queue.bar/create
+                    Host: example.xom
+                    Content-Type: application/xml
 
-durable=true
+                    &lt;order&gt;
+                    &lt;name&gt;Bill&lt;/name&gt;
+                    &lt;item&gt;iPhone4&lt;/name&gt;
+                    &lt;cost&gt;$199.99&lt;/cost&gt;
+                    &lt;/order&gt;
 
---- Response ---
-HTTP/1.1 201 Created
-Location: http://example.com/topics/jms.topic.foo/pull-subscriptions/auto-ack/222
-msg-consume-next: http://example.com/topics/jms.topic.foo/pull-subscriptions/auto-ack/222/consume-next-1
-</programlisting>
+                    --- Response ---
+                    HTTP/1.1 201 Created
+                    msg-create-next: http://example.com/queues/jms.queue.bar/create/002
+                </programlisting>A successful response will return a 201 response code. Also
+                    notice that a
+                    <literal>msg-create-next</literal>
+                    response header is
+                    sent as well. You must use this URL to POST your next message.
+                </para>
+            </listitem>
 
-            <para>The <literal>Location</literal> header points to the JMS
-            subscription resource that was created on the server. It is good
-            to remember this URL, although, as you'll see later, it is
-            transmitted with each response just to remind you.</para>
-          </listitem>
+            <listitem>
+                <para>POST your next message to the queue using the URL returned in
+                    the
+                    <literal>msg-create-next</literal>
+                    header.
+                </para>
+
+                <para><programlisting>POST /queues/jms.queue.bar/create/002
+                    Host: example.com
+                    Content-Type: application/xml
+
+                    &lt;order&gt;
+                    &lt;name&gt;Monica&lt;/name&gt;
+                    &lt;item&gt;iPad&lt;/item&gt;
+                    &lt;cost&gt;$499.99&lt;/cost&gt;
+                    &lt;/order&gt;
+
+                    --- Response --
+                    HTTP/1.1 201 Created
+                    msg-create-next: http://example.com/queues/jms.queue.bar/create/003
+                </programlisting>Continue using the new
+                    <literal>msg-create-next</literal>
+                    header returned with each response.
+                </para>
+            </listitem>
         </orderedlist>
-      </sect2>
 
-      <sect2>
-        <title>Consuming Messages</title>
+        <para>It is
+            <emphasis>VERY IMPORTENT</emphasis>
+            that you never re-use
+            returned
+            <literal>msg-create-next</literal>
+            headers to post new messages.
+            This URL may be uniquely generated for each message and used for duplicate
+            detection. If you lose the URL within the
+            <literal>msg-create-next</literal>
+            header, then just go back to the queue
+            or topic resource to get the msg-create URL.
+        </para>
 
-        <para>After you have created a consumer resource, you are ready to
-        start pulling messages from the server. Notice that when you created
-        the consumer for either the queue or topic, the response contained a
-        <literal>msg-consume-next</literal> response header. POST to the URL
-        contained within this header to consume the next message in the queue
-        or topic subscription. A successful POST causes the server to extract
-        a message from the queue or topic subscription, acknowledge it, and
-        return it to the consuming client. If there are no messages in the
-        queue or topic subscription, a 503 (Service Unavailable) HTTP code is
-        returned. I</para>
+        <sect1>
+            <title>Duplicate Detection</title>
 
-        <warning>
-          <para>For both successful and unsuccessful posts to the
-          msg-consume-next URL, the response will usualy contain a new
-          msg-consume-next header. You must ALWAYS use this new URL returned
-          with the new msg-consume-next header.</para>
-        </warning>
+            <para>Sometimes you might have network problems when posting new
+                messages to a queue or topic. You may do a POST and never receive a
+                response. Unfortunately, you don't know whether or not the server
+                received the message and so a re-post of the message might cause
+                duplicates to be posted to the queue or topic. By default, the HornetQ
+                REST interface is configured to accept duplicate messages. You can
+                change this by turning on duplicate message detection by setting the
+                <literal>dups-ok</literal>
+                config option to
+                <literal>false</literal>
+                as
+                described in Chapter 3. What you do this, the initial POST to the
+                msg-create URL will redirect you, using the standard HTTP 307
+                redirection mechanism to a unique URL to POST to. All other interactions
+                remain the same as discussed earlier. Here's an example:
+            </para>
 
-        <para>Here's an example of pulling multiple messages from the consumer
-        resource.</para>
+            <orderedlist>
+                <listitem>
+                    <para>Obtain the starting
+                        <literal>msg-create</literal>
+                        header from
+                        the queue or topic resource.
+                    </para>
 
-        <orderedlist>
-          <listitem>
-            <para>Do a POST on the msg-consume-next URL that was returned with
-            the consumer or subscription resource discussed earlier.</para>
+                    <para>
+                        <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
+                            Host: example.com
 
-            <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-1
-Host: example.com
+                            --- Response ---
+                            HTTP/1.1 200 Ok
+                            msg-create: http://example.com/queues/jms.queue.bar/create
+                        </programlisting>
+                    </para>
+                </listitem>
 
---- Response ---
-HTTP/1.1 200 Ok
-Content-Type: application/xml
-msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-2
-msg-consumer: http://example.com/queues/jms.queue.bar/pull-consumers/333
+                <listitem>
+                    <para>Do a POST to the URL contained in the
+                        <literal>msg-create</literal>
+                        header.
+                    </para>
 
-&lt;order&gt;...&lt;/order&gt;
-</programlisting>
+                    <para><programlisting>POST /queues/jms.queue.bar/create
+                        Host: example.xom
+                        Content-Type: application/xml
 
-            <para>The POST returns the message consumed from the queue. It
-            also returns a new msg-consume-next link. Use this new link to get
-            the next message. Notice also a msg-consumer response header is
-            returned. This is a URL that points back to the consumer or
-            subscription resource. You will need that to clean up your
-            connection after you are finished using the queue or topic.</para>
-          </listitem>
+                        &lt;order&gt;
+                        &lt;name&gt;Bill&lt;/name&gt;
+                        &lt;item&gt;iPhone4&lt;/name&gt;
+                        &lt;cost&gt;$199.99&lt;/cost&gt;
+                        &lt;/order&gt;
 
-          <listitem>
-            <para>The POST returns the message consumed from the queue. It
-            also returns a new msg-consume-next link. Use this new link to get
-            the next message.</para>
+                        --- Response ---
+                        HTTP/1.1 307 Redirect
+                        Location: http://example.com/queues/jms.queue.bar/create/001
+                    </programlisting>A successful response will return a 307 response code. This
+                        is standard HTTP protocol. It is telling you that you must re-POST
+                        to the URL contained within the
+                        <literal>Location</literal>
+                        header.
+                    </para>
+                </listitem>
+
+                <listitem>
+                    <para>re-POST your message to the URL provided within the
+                        <literal>Location</literal>
+                        header
+                        <literal>.</literal>
+                    </para>
+
+                    <para><programlisting>POST /queues/jms.queue.bar/create/001
+                        Host: example.com
+                        Content-Type: application/xml
+
+                        &lt;order&gt;
+                        &lt;name&gt;Bill&lt;/name&gt;
+                        &lt;item&gt;iPhone4&lt;/name&gt;
+                        &lt;cost&gt;$199.99&lt;/cost&gt;
+                        &lt;/order&gt;
+
+                        --- Response --
+                        HTTP/1.1 201 Created
+                        msg-create-next: http://example.com/queues/jms.queue.bar/create/002
+                    </programlisting>You should receive a 201 Created response. If there is a
+                        network failure, just re-POST to the Location header. For new
+                        messages, use the returned
+                        <literal>msg-create-next</literal>
+                        header
+                        returned with each response.
+                    </para>
+                </listitem>
+
+                <listitem>
+                    <para>POST any new message to the returned
+                        <literal>msg-create-next</literal>
+                        header.
+                    </para>
+
+                    <para><programlisting>POST /queues/jms.queue.bar/create/002
+                        Host: example.com
+                        Content-Type: application/xml
+
+                        &lt;order&gt;
+                        &lt;name&gt;Monica&lt;/name&gt;
+                        &lt;item&gt;iPad&lt;/name&gt;
+                        &lt;cost&gt;$499.99&lt;/cost&gt;
+                        &lt;/order&gt;
+
+                        --- Response --
+                        HTTP/1.1 201 Created
+                        msg-create-next: http://example.com/queues/jms.queue.bar/create/003</programlisting>If
+                        there ever is a network problem, just repost to the URL provided in
+                        the
+                        <literal>msg-create-next</literal>
+                        header.
+                    </para>
+                </listitem>
+            </orderedlist>
+
+            <para>How can this work? As you can see, with each successful response,
+                the HornetQ REST server returns a uniquely generated URL within the
+                msg-create-next header. This URL is dedicated to the next new message
+                you want to post. Behind the scenes, the code extracts an identify from
+                the URL and uses HornetQ's duplicate detection mechanism by setting the
+                DUPLICATE_DETECTION_ID property of the JMS message that is actually
+                posted to the system.
+            </para>
+        </sect1>
+
+        <sect1>
+            <title>Persistent Messages</title>
+
+            <para>By default, posted messages are not durable and will not be
+                persisted in HornetQ's journal. You can create durable messages by
+                modifying the default configuration as expressed in Chapter 2.
+                Alternatively, you can set a URL query parameter called durable to true
+                when you post your messages to the links returned in the msg-create or
+                msg-create-next headers. here's an example of that.
+            </para>
+
+            <programlisting>POST /queues/jms.queue.bar/create?durable=true
+                Host: example.xom
+                Content-Type: application/xml
+
+                &lt;order&gt;
+                &lt;name&gt;Bill&lt;/name&gt;
+                &lt;item&gt;iPhone4&lt;/item&gt;
+                &lt;cost&gt;$199.99&lt;/cost&gt;
+                &lt;/order&gt;
+            </programlisting>
+        </sect1>
+    </chapter>
+
+    <chapter>
+        <title>Consuming Messages via Pull</title>
+
+        <para>There are two different ways to consume messages from a topic or
+            queue. You can wait and have the messaging server push them to you, or you
+            can continuously poll the server yourself to see if messages are
+            available. This chapter discusses the latter. Consuming messages via a
+            pull works almost identically for queues and topics with some minor, but
+            important caveats. To start consuming you must create a consumer resource
+            on the server that is dedicated to your client. Now, this pretty much
+            breaks the stateless principle of REST, but after much prototyping, this
+            is the best way to work most effectively with HornetQ through a REST
+            interface. We'll discuss later in this docbook some of the REST tradeoffs
+            we had to make to get an optimal interface.
+        </para>
+
+        <para>You create consumer resources by doing a simple POST to the URL
+            published by the
+            <literal>msg-pull-consumers</literal>
+            response header if
+            you're interacting with a queue, the
+            <literal>msg-pull-subscribers</literal>
+            response header if you're
+            interacting with a topic. These headers are provided by the main queue or
+            topic resource discussed in Chapter 3. Doing an empty POST to one of these
+            URLs will create a consumer resource that follows an auto-acknowledge
+            protocol and, if you're interacting with a topic, creates a temporty
+            subscription to the topic. If you want to use the acknowledgement protocol
+            and/or create a durable subscription (topics only), then you must use the
+            form parameters (<literal>application/x-www-form-urlencoded</literal>)
+            described below.
+        </para>
+
+        <variablelist>
+            <varlistentry>
+                <term>autoAck</term>
+
+                <listitem>
+                    <para>A value of
+                        <literal>true</literal>
+                        or
+                        <literal>false</literal>
+                        can be given. This defaults to
+                        <literal>true</literal>
+                        if you do not
+                        pass this parameter.
+                    </para>
+                </listitem>
+            </varlistentry>
+
+            <varlistentry>
+                <term>durable</term>
+
+                <listitem>
+                    <para>A value of
+                        <literal>true</literal>
+                        or
+                        <literal>false</literal>
+                        can be given. This defaults to
+                        <literal>false</literal>
+                        if you do
+                        not pass this parameter. Only available on topics. This specifies
+                        whether you want a durable subscription or not. A durable
+                        subscription persists through server restart.
+                    </para>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+
+        <sect1>
+            <title>Auto-Acknowledge</title>
+
+            <para>This section focuses on the auto-acknowledge protocol for
+                consuming messages via a pull. Here's a list of the response headers and
+                URLs you'll be interested in.
+            </para>
+
+            <variablelist>
+                <varlistentry>
+                    <term>msg-pull-consumers</term>
+
+                    <listitem>
+                        <para>The URL of a factory resource for creating queue consumer
+                            resources. You will pull from these created resources.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-pull-subscriptions</term>
+
+                    <listitem>
+                        <para>The URL of a factory resource for creating topic
+                            subscription resources. You will pull from the created
+                            resources.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-consume-next</term>
+
+                    <listitem>
+                        <para>The URL you will pull the next message from. This is
+                            returned from every response.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-consumer</term>
+
+                    <listitem>
+                        <para>This is a URL pointing back to the consumer or subscription
+                            resource created for the client.
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+
+            <sect2>
+                <title>Creating an Auto-Ack Consumer or Subscription</title>
+
+                <para>Here is an example of creating an auto-acknowledged queue pull
+                    consumer.
+                </para>
+
+                <orderedlist>
+                    <listitem>
+                        <para>Find the pull-consumers URL by doing a HEAD or GET request
+                            to the base queue resource.
+                        </para>
+
+                        <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
+                            Host: example.com
+
+                            --- Response ---
+                            HTTP/1.1 200 Ok
+                            msg-create: http://example.com/queues/jms.queue.bar/create
+                            msg-pull-consumers: http://example.com/queues/jms.queue.bar/pull-consumers
+                            msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
+                        </programlisting>
+                    </listitem>
+
+                    <listitem>
+                        <para>Next do an empty POST to the URL returned in the
+                            <literal>msg-pull-consumers</literal>
+                            header.
+                        </para>
+
+                        <programlisting>POST /queues/jms.queue.bar/pull-consumers HTTP/1.1
+                            Host: example.com
+
+                            --- response ---
+                            HTTP/1.1 201 Created
+                            Location: http://example.com/queues/jms.queue.bar/pull-consumers/auto-ack/333
+                            msg-consume-next:
+                            http://example.com/queues/jms.queue.bar/pull-consumers/auto-ack/333/consume-next-1
+                        </programlisting>
+
+                        <para>The
+                            <literal>Location</literal>
+                            header points to the JMS
+                            consumer resource that was created on the server. It is good to
+                            remember this URL, although, as you'll see later, it is
+                            transmitted with each response just to remind you.
+                        </para>
+                    </listitem>
+                </orderedlist>
+
+                <para>Creating an auto-acknowledged consumer for a topic is pretty
+                    much the same. Here's an example of creating a durable
+                    auto-acknowledged topic pull subscription.
+                </para>
+
+                <orderedlist>
+                    <listitem>
+                        <para>Find the
+                            <literal>pull-subscriptions</literal>
+                            URL by doing
+                            a HEAD or GET request to the base topic resource
+                        </para>
+
+                        <programlisting>HEAD /topics/jms.topic.bar HTTP/1.1
+                            Host: example.com
+
+                            --- Response ---
+                            HTTP/1.1 200 Ok
+                            msg-create: http://example.com/topics/jms.topic.foo/create
+                            msg-pull-subscriptions: http://example.com/topics/jms.topic.foo/pull-subscriptions
+                            msg-push-subscriptions: http://example.com/topics/jms.topic.foo/push-subscriptions
+                        </programlisting>
+                    </listitem>
+
+                    <listitem>
+                        <para>Next do a POST to the URL returned in the
+                            <literal>msg-pull-subscriptions</literal>
+                            header passing in a
+                            <literal>true</literal>
+                            value for the
+                            <literal>durable</literal>
+                            form parameter.
+                        </para>
+
+                        <programlisting>POST /topics/jms.topic.foo/pull-subscriptions HTTP/1.1
+                            Host: example.com
+                            Content-Type: application/x-www-form-urlencoded
+
+                            durable=true
+
+                            --- Response ---
+                            HTTP/1.1 201 Created
+                            Location: http://example.com/topics/jms.topic.foo/pull-subscriptions/auto-ack/222
+                            msg-consume-next:
+                            http://example.com/topics/jms.topic.foo/pull-subscriptions/auto-ack/222/consume-next-1
+                        </programlisting>
+
+                        <para>The
+                            <literal>Location</literal>
+                            header points to the JMS
+                            subscription resource that was created on the server. It is good
+                            to remember this URL, although, as you'll see later, it is
+                            transmitted with each response just to remind you.
+                        </para>
+                    </listitem>
+                </orderedlist>
+            </sect2>
+
+            <sect2>
+                <title>Consuming Messages</title>
+
+                <para>After you have created a consumer resource, you are ready to
+                    start pulling messages from the server. Notice that when you created
+                    the consumer for either the queue or topic, the response contained a
+                    <literal>msg-consume-next</literal>
+                    response header. POST to the URL
+                    contained within this header to consume the next message in the queue
+                    or topic subscription. A successful POST causes the server to extract
+                    a message from the queue or topic subscription, acknowledge it, and
+                    return it to the consuming client. If there are no messages in the
+                    queue or topic subscription, a 503 (Service Unavailable) HTTP code is
+                    returned. I
+                </para>
+
+                <warning>
+                    <para>For both successful and unsuccessful posts to the
+                        msg-consume-next URL, the response will usualy contain a new
+                        msg-consume-next header. You must ALWAYS use this new URL returned
+                        with the new msg-consume-next header.
+                    </para>
+                </warning>
+
+                <para>Here's an example of pulling multiple messages from the consumer
+                    resource.
+                </para>
+
+                <orderedlist>
+                    <listitem>
+                        <para>Do a POST on the msg-consume-next URL that was returned with
+                            the consumer or subscription resource discussed earlier.
+                        </para>
+
+                        <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-1
+                            Host: example.com
+
+                            --- Response ---
+                            HTTP/1.1 200 Ok
+                            Content-Type: application/xml
+                            msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-2
+                            msg-consumer: http://example.com/queues/jms.queue.bar/pull-consumers/333
+
+                            &lt;order&gt;...&lt;/order&gt;
+                        </programlisting>
+
+                        <para>The POST returns the message consumed from the queue. It
+                            also returns a new msg-consume-next link. Use this new link to get
+                            the next message. Notice also a msg-consumer response header is
+                            returned. This is a URL that points back to the consumer or
+                            subscription resource. You will need that to clean up your
+                            connection after you are finished using the queue or topic.
+                        </para>
+                    </listitem>
+
+                    <listitem>
+                        <para>The POST returns the message consumed from the queue. It
+                            also returns a new msg-consume-next link. Use this new link to get
+                            the next message.
+                        </para>
+
+                        <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-2
+                            Host: example.com
+
+                            --- Response ---
+                            Http/1.1 503 Service Unavailable
+                            Retry-After: 5
+                            msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-2
+                        </programlisting>
+
+                        <para>In this case, there are no messages in the queue, so we get
+                            a 503 response back. As per the HTTP 1.1 spec, a 503 response may
+                            return a Retry-After head specifying the time in seconds that you
+                            should retry a post. Also notice, that another new
+                            msg-consume-next URL is present. Although it probabley is the same
+                            URL you used last post, get in the habit of using URLs returned in
+                            response headers as future versions of HornetQ REST might be
+                            redirecting you or adding additional data to the URL after
+                            timeouts like this.
+                        </para>
+                    </listitem>
+
+                    <listitem>
+                        <para>POST again to get the next message.</para>
+
+                        <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-2
+                            Host: example.com
+
+                            --- Response ---
+                            HTTP/1.1 200 Ok
+                            Content-Type: application/xml
+                            msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-3
+
+                            &lt;order&gt;...&lt;/order&gt;</programlisting>
+                    </listitem>
+                </orderedlist>
+            </sect2>
+
+            <sect2>
+                <title>Recovering From Network Failures</title>
+
+                <para>If you experience a network failure and do not know if your post
+                    to a msg-consume-next URL was successful or not, just re-do your POST.
+                    A POST to a msg-consume-next URL is idempotent, meaning that it will
+                    return the same result if you execute on any one msg-consume-next URL
+                    more than once. Behind the scenes, the consumer resource caches the
+                    last consumed message so that if there is a message failure and you do
+                    a re-post, the cached last message will be returned (along with a new
+                    msg-consume-next URL). This is the reason why the protocol always
+                    requires you to use the next new msg-consume-next URL returned with
+                    each response. Information about what state the client is in is
+                    embedded within the actual URL.
+                </para>
+            </sect2>
+
+            <sect2>
+                <title>Recovering From Client or Server Crashes</title>
+
+                <para>If the server crashes and you do a POST to the msg-consume-next
+                    URL, the server will return a 412 (Preconditions Failed) response
+                    code. This is telling you that the URL you are using is out of sync
+                    with the server. The response will contain a new msg-consume-next
+                    header to invoke on.
+                </para>
+
+                <para>If the client crashes and you have not saved the last
+                    msg-consume-next or the consumer resource URL (returned from Location
+                    header on a create, or the msg-consumer header), then you must create
+                    a new consumer or topic subscription. If you have remember the last
+                    msg-consume-next link, you can just re-POST to it. If you have
+                    remembered the consumer resource URL, you can do a GET or HEAD request
+                    to obtain a new msg-consume-next URL.
+                </para>
+
+                <para>The problem with the auto-acknowledge protocol is that if the
+                    client or server crashes, it is possible for you to skip messages. The
+                    scenario would happen if the server crashes after auto-acknowledging a
+                    message and before the client receives the message. If you want more
+                    reliable messaging, then you must use the acknowledgement
+                    protocol.
+                </para>
+            </sect2>
+        </sect1>
+
+        <sect1>
+            <title>Manual Acknowledgement</title>
+
+            <para>The manual acknowledgement protocol is similar to the auto-ack
+                protocol except there is an additional round trip to the server to tell
+                it that you have received the message and that the server can internally
+                ack the message. Here is a list of the respone headers you will be
+                interested in.
+            </para>
+
+            <variablelist>
+                <varlistentry>
+                    <term>msg-pull-consumers</term>
+
+                    <listitem>
+                        <para>The URL of a factory resource for creating queue consumer
+                            resources. You will pull from these created resources
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-pull-subscriptions</term>
+
+                    <listitem>
+                        <para>The URL of a factory resource for creating topic
+                            subscription resources. You will pull from the created
+                            resources.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-acknowledge-next</term>
+
+                    <listitem>
+                        <para>URL used to obtain the next message in the queue or topic
+                            subscription. It does not acknowledge the message though.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-acknowledgement</term>
+
+                    <listitem>
+                        <para>URL used to acknowledge a message.</para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>msg-consumer</term>
+
+                    <listitem>
+                        <para>This is a URL pointing back to the consumer or subscription
+                            resource created for the client.
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+
+            <sect2>
+                <title>Creating manually-acknowledged consumers or
+                    subscriptions
+                </title>
+
+                <para>Here is an example of creating an auto-acknowledged queue pull
+                    consumer.
+                </para>
+
+                <orderedlist>
+                    <listitem>
+                        <para>Find the pull-consumers URL by doing a HEAD or GET request
+                            to the base queue resource.
+                        </para>
+
+                        <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
+                            Host: example.com
+
+                            --- Response ---
+                            HTTP/1.1 200 Ok
+                            msg-create: http://example.com/queues/jms.queue.bar/create
+                            msg-pull-consumers: http://example.com/queues/jms.queue.bar/pull-consumers
+                            msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
+                        </programlisting>
+                    </listitem>
+
+                    <listitem>
+                        <para>Next do a POST to the URL returned in the
+                            <literal>msg-pull-consumers</literal>
+                            header passing in a
+                            <literal>false</literal>
+                            value to the
+                            <literal>autoAck</literal>
+                            form parameter .
+                        </para>
+
+                        <programlisting>POST /queues/jms.queue.bar/pull-consumers HTTP/1.1
+                            Host: example.com
+                            Content-Type: application/x-www-form-urlencoded
+
+                            autoAck=false
+
+                            --- response ---
+                            HTTP/1.1 201 Created
+                            Location: http://example.com/queues/jms.queue.bar/pull-consumers/acknowledged/333
+                            msg-acknowledge-next:
+                            http://example.com/queues/jms.queue.bar/pull-consumers/acknowledged/333/acknowledge-next-1
+                        </programlisting>
+
+                        <para>The
+                            <literal>Location</literal>
+                            header points to the JMS
+                            consumer resource that was created on the server. It is good to
+                            remember this URL, although, as you'll see later, it is
+                            transmitted with each response just to remind you.
+                        </para>
+                    </listitem>
+                </orderedlist>
+
+                <para>Creating an manually-acknowledged consumer for a topic is pretty
+                    much the same. Here's an example of creating a durable
+                    manually-acknowledged topic pull subscription.
+                </para>
+
+                <orderedlist>
+                    <listitem>
+                        <para>Find the
+                            <literal>pull-subscriptions</literal>
+                            URL by doing
+                            a HEAD or GET request to the base topic resource
+                        </para>
+
+                        <programlisting>HEAD /topics/jms.topic.bar HTTP/1.1
+                            Host: example.com
+
+                            --- Response ---
+                            HTTP/1.1 200 Ok
+                            msg-create: http://example.com/topics/jms.topic.foo/create
+                            msg-pull-subscriptions: http://example.com/topics/jms.topic.foo/pull-subscriptions
+                            msg-push-subscriptions: http://example.com/topics/jms.topic.foo/push-subscriptions
+                        </programlisting>
+                    </listitem>
+
+                    <listitem>
+                        <para>Next do a POST to the URL returned in the
+                            <literal>msg-pull-subscriptions</literal>
+                            header passing in a
+                            <literal>true</literal>
+                            value for the
+                            <literal>durable</literal>
+                            form parameter and a
+                            <literal>false</literal>
+                            value to the
+                            <literal>autoAck</literal>
+                            form parameter.
+                        </para>
+
+                        <programlisting>POST /topics/jms.topic.foo/pull-subscriptions HTTP/1.1
+                            Host: example.com
+                            Content-Type: application/x-www-form-urlencoded
+
+                            durable=true&amp;autoAck=false
+
+                            --- Response ---
+                            HTTP/1.1 201 Created
+                            Location: http://example.com/topics/jms.topic.foo/pull-subscriptions/acknowledged/222
+                            msg-acknowledge-next:
+                            http://example.com/topics/jms.topic.foo/pull-subscriptions/acknowledged/222/consume-next-1
+                        </programlisting>
+
+                        <para>The
+                            <literal>Location</literal>
+                            header points to the JMS
+                            subscription resource that was created on the server. It is good
+                            to remember this URL, although, as you'll see later, it is
+                            transmitted with each response just to remind you.
+                        </para>
+                    </listitem>
+                </orderedlist>
+            </sect2>
+
+            <sect2>
+                <title>Consuming and Acknowledging a Message</title>
+
+                <para>After you have created a consumer resource, you are ready to
+                    start pulling messages from the server. Notice that when you created
+                    the consumer for either the queue or topic, the response contained a
+                    <literal>msg-acknowledge-next</literal>
+                    response header. POST to the
+                    URL contained within this header to consume the next message in the
+                    queue or topic subscription. If there are no messages in the queue or
+                    topic subscription, a 503 (Service Unavailable) HTTP code is returned.
+                    A successful POST causes the server to extract a message from the
+                    queue or topic subscription and return it to the consuming client. It
+                    does not acknowledge the message though. The response will contain the
+                    <literal>acknowledgement</literal>
+                    header which you will use to
+                    acknowledge the message.
+                </para>
+
+                <para>Here's an example of pulling multiple messages from the consumer
+                    resource.
+                </para>
+
+                <orderedlist>
+                    <listitem>
+                        <para>Do a POST on the msg-acknowledge-next URL that was returned
+                            with the consumer or subscription resource discussed
+                            earlier.
+                        </para>
+
+                        <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-1
+                            Host: example.com
+
+                            --- Response ---
+                            HTTP/1.1 200 Ok
+                            Content-Type: application/xml
+                            msg-acknowledgement:
+                            http://example.com/queues/jms.queue.bar/pull-consumers/333/acknowledgement/2
+                            msg-consumer: http://example.com/queues/jms.queue.bar/pull-consumers/333
+
+                            &lt;order&gt;...&lt;/order&gt;
+                        </programlisting>
+
+                        <para>The POST returns the message consumed from the queue. It
+                            also returns a msg-acknowledgement link. You will use this new
+                            link to acknowledge the message. Notice also a msg-consumer
+                            response header is returned. This is a URL that points back to the
+                            consumer or subscription resource. You will need that to clean up
+                            your connection after you are finished using the queue or
+                            topic.
+                        </para>
+                    </listitem>
+
+                    <listitem>
+                        <para>Acknowledge or unacknowledge the message by doing a POST to
+                            the URL contained in the msg-acknowledgement header. You must pass
+                            an acknowledge form parameter set to true or false depending on
+                            whether you want to acknowledge or unacknowledge the message on
+                            the server.
+                        </para>
+
+                        <programlisting>POST /queues/jms.queue.bar/pull-consumers/acknowledgement/2
+                            Host: example.com
+                            Content-Type: application/x-www-form-urlencoded
+
+                            acknowledge=true
+
+                            --- Response ---
+                            Http/1.1 200 Ok
+                            msg-acknowledge-next:
+                            http://example.com/queues/jms.queue.bar/pull-consumers/333/acknowledge-next-2
+                        </programlisting>
+
+                        <para>Whether you acknowledge or unacknowledge the message, the
+                            response will contain a new msg-acknowledge-next header that you
+                            must use to obtain the next message.
+                        </para>
+                    </listitem>
+                </orderedlist>
+            </sect2>
+
+            <sect2>
+                <title>Recovering From Network Failures</title>
+
+                <para>If you experience a network failure and do not know if your post
+                    to a msg-acknowledge-next or msg-acknowledgement URL was successful or
+                    not, just re-do your POST. A POST to one of these URLs is idempotent,
+                    meaning that it will return the same result if you re-post. Behind the
+                    scenes, the consumer resource keeps track of its current state. If the
+                    last action was a call to msg-acknowledge-next, it will have the last
+                    message cached, so that if a re-post is done, it will return the
+                    message again. Same goes with re-posting to msg-acknowledgement. The
+                    server remembers its last state and will return the same results. If
+                    you look at the URLs you'll see that they contain information about
+                    the expected current state of the server. This is how the server knows
+                    what the client is expecting.
+                </para>
+            </sect2>
+
+            <sect2>
+                <title>Recovering From Client or Server Crashes</title>
+
+                <para>If the server crashes and while you are doing a POST to the
+                    msg-acknowledge-next URL, just re-post. Everything should reconnect
+                    all right. On the other hand, if the server crashes while you are
+                    doing a POST to msg-acknowledgement, the server will return a 412
+                    (Preconditions Failed) response code. This is telling you that the URL
+                    you are using is out of sync with the server and the message you are
+                    acknowledging was probably re-enqueued. The response will contain a
+                    new msg-acknowledge-next header to invoke on.
+                </para>
+
+                <para>As long as you have "bookmarked" the consumer resource URL
+                    (returned from Location header on a create, or the msg-consumer
+                    header), you can recover from client crashes by doing a GET or HEAD
+                    request on the consumer resource to obtain what state you are in. If
+                    the consumer resource is expecting you to acknowledge a message, it
+                    will return a msg-acknowledgement header in the response. If the
+                    consumer resource is expecting you to pull for the next message, the
+                    msg-acknowledge-next header will be in the response. With manual
+                    acknowledgement you are pretty much guaranteed to avoid skipped
+                    messages.
+                </para>
+            </sect2>
+        </sect1>
+
+        <sect1>
+            <title>Blocking Pulls with Accept-Wait</title>
+
+            <para>Unless your queue or topic has a high rate of message flowing
+                though it, if you use the pull protocol, you're going to be receiving a
+                lot of 503 responses as you continuously pull the server for new
+                messages. To alleviate this problem, the HornetQ REST interface provides
+                the Accept-Wait header. This is a generic HTTP request header that is a
+                hint to the server for how long the client is willing to wait for a
+                response from the server. The value of this header is the time in
+                seconds the client is willing to block for. You would send this request
+                header with your pull requests. Here's an example:
+            </para>
 
             <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-2
-Host: example.com
-
---- Response ---
-Http/1.1 503 Service Unavailable
-Retry-After: 5
-msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-2
-</programlisting>
-
-            <para>In this case, there are no messages in the queue, so we get
-            a 503 response back. As per the HTTP 1.1 spec, a 503 response may
-            return a Retry-After head specifying the time in seconds that you
-            should retry a post. Also notice, that another new
-            msg-consume-next URL is present. Although it probabley is the same
-            URL you used last post, get in the habit of using URLs returned in
-            response headers as future versions of HornetQ REST might be
-            redirecting you or adding additional data to the URL after
-            timeouts like this.</para>
-          </listitem>
-
-          <listitem>
-            <para>POST again to get the next message.</para>
-
-            <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-2
-Host: example.com
-
---- Response ---
-HTTP/1.1 200 Ok
-Content-Type: application/xml
-msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-3
-
-&lt;order&gt;...&lt;/order&gt;</programlisting>
-          </listitem>
-        </orderedlist>
-      </sect2>
-
-      <sect2>
-        <title>Recovering From Network Failures</title>
-
-        <para>If you experience a network failure and do not know if your post
-        to a msg-consume-next URL was successful or not, just re-do your POST.
-        A POST to a msg-consume-next URL is idempotent, meaning that it will
-        return the same result if you execute on any one msg-consume-next URL
-        more than once. Behind the scenes, the consumer resource caches the
-        last consumed message so that if there is a message failure and you do
-        a re-post, the cached last message will be returned (along with a new
-        msg-consume-next URL). This is the reason why the protocol always
-        requires you to use the next new msg-consume-next URL returned with
-        each response. Information about what state the client is in is
-        embedded within the actual URL.</para>
-      </sect2>
-
-      <sect2>
-        <title>Recovering From Client or Server Crashes</title>
-
-        <para>If the server crashes and you do a POST to the msg-consume-next
-        URL, the server will return a 412 (Preconditions Failed) response
-        code. This is telling you that the URL you are using is out of sync
-        with the server. The response will contain a new msg-consume-next
-        header to invoke on.</para>
-
-        <para>If the client crashes and you have not saved the last
-        msg-consume-next or the consumer resource URL (returned from Location
-        header on a create, or the msg-consumer header), then you must create
-        a new consumer or topic subscription. If you have remember the last
-        msg-consume-next link, you can just re-POST to it. If you have
-        remembered the consumer resource URL, you can do a GET or HEAD request
-        to obtain a new msg-consume-next URL.</para>
-
-        <para>The problem with the auto-acknowledge protocol is that if the
-        client or server crashes, it is possible for you to skip messages. The
-        scenario would happen if the server crashes after auto-acknowledging a
-        message and before the client receives the message. If you want more
-        reliable messaging, then you must use the acknowledgement
-        protocol.</para>
-      </sect2>
-    </sect1>
-
-    <sect1>
-      <title>Manual Acknowledgement</title>
-
-      <para>The manual acknowledgement protocol is similar to the auto-ack
-      protocol except there is an additional round trip to the server to tell
-      it that you have received the message and that the server can internally
-      ack the message. Here is a list of the respone headers you will be
-      interested in.</para>
-
-      <variablelist>
-        <varlistentry>
-          <term>msg-pull-consumers</term>
-
-          <listitem>
-            <para>The URL of a factory resource for creating queue consumer
-            resources. You will pull from these created resources</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-pull-subscriptions</term>
-
-          <listitem>
-            <para>The URL of a factory resource for creating topic
-            subscription resources. You will pull from the created
-            resources.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-acknowledge-next</term>
-
-          <listitem>
-            <para>URL used to obtain the next message in the queue or topic
-            subscription. It does not acknowledge the message though.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-acknowledgement</term>
-
-          <listitem>
-            <para>URL used to acknowledge a message.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>msg-consumer</term>
-
-          <listitem>
-            <para>This is a URL pointing back to the consumer or subscription
-            resource created for the client.</para>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-
-      <sect2>
-        <title>Creating manually-acknowledged consumers or
-        subscriptions</title>
-
-        <para>Here is an example of creating an auto-acknowledged queue pull
-        consumer.</para>
-
-        <orderedlist>
-          <listitem>
-            <para>Find the pull-consumers URL by doing a HEAD or GET request
-            to the base queue resource.</para>
-
-            <programlisting>HEAD /queues/jms.queue.bar HTTP/1.1
-Host: example.com
-
---- Response ---
-HTTP/1.1 200 Ok
-msg-create: http://example.com/queues/jms.queue.bar/create
-msg-pull-consumers: http://example.com/queues/jms.queue.bar/pull-consumers
-msg-push-consumers: http://example.com/queues/jms.queue.bar/push-consumers
-</programlisting>
-          </listitem>
-
-          <listitem>
-            <para>Next do a POST to the URL returned in the
-            <literal>msg-pull-consumers</literal> header passing in a
-            <literal>false</literal> value to the <literal>autoAck</literal>
-            form parameter .</para>
-
-            <programlisting>POST /queues/jms.queue.bar/pull-consumers HTTP/1.1
-Host: example.com
-Content-Type: application/x-www-form-urlencoded
-
-autoAck=false
-
---- response ---
-HTTP/1.1 201 Created
-Location: http://example.com/queues/jms.queue.bar/pull-consumers/acknowledged/333
-msg-acknowledge-next: http://example.com/queues/jms.queue.bar/pull-consumers/acknowledged/333/acknowledge-next-1
-</programlisting>
-
-            <para>The <literal>Location</literal> header points to the JMS
-            consumer resource that was created on the server. It is good to
-            remember this URL, although, as you'll see later, it is
-            transmitted with each response just to remind you.</para>
-          </listitem>
-        </orderedlist>
-
-        <para>Creating an manually-acknowledged consumer for a topic is pretty
-        much the same. Here's an example of creating a durable
-        manually-acknowledged topic pull subscription.</para>
-
-        <orderedlist>
-          <listitem>
-            <para>Find the <literal>pull-subscriptions</literal> URL by doing
-            a HEAD or GET request to the base topic resource</para>
-
-            <programlisting>HEAD /topics/jms.topic.bar HTTP/1.1
-Host: example.com
-
---- Response ---
-HTTP/1.1 200 Ok
-msg-create: http://example.com/topics/jms.topic.foo/create
-msg-pull-subscriptions: http://example.com/topics/jms.topic.foo/pull-subscriptions
-msg-push-subscriptions: http://example.com/topics/jms.topic.foo/push-subscriptions
-</programlisting>
-          </listitem>
-
-          <listitem>
-            <para>Next do a POST to the URL returned in the
-            <literal>msg-pull-subscriptions</literal> header passing in a
-            <literal>true</literal> value for the <literal>durable</literal>
-            form parameter and a <literal>false</literal> value to the
-            <literal>autoAck</literal> form parameter.</para>
-
-            <programlisting>POST /topics/jms.topic.foo/pull-subscriptions HTTP/1.1
-Host: example.com
-Content-Type: application/x-www-form-urlencoded
-
-durable=true&amp;autoAck=false
-
---- Response ---
-HTTP/1.1 201 Created
-Location: http://example.com/topics/jms.topic.foo/pull-subscriptions/acknowledged/222
-msg-acknowledge-next: http://example.com/topics/jms.topic.foo/pull-subscriptions/acknowledged/222/consume-next-1
-</programlisting>
-
-            <para>The <literal>Location</literal> header points to the JMS
-            subscription resource that was created on the server. It is good
-            to remember this URL, although, as you'll see later, it is
-            transmitted with each response just to remind you.</para>
-          </listitem>
-        </orderedlist>
-      </sect2>
-
-      <sect2>
-        <title>Consuming and Acknowledging a Message</title>
-
-        <para>After you have created a consumer resource, you are ready to
-        start pulling messages from the server. Notice that when you created
-        the consumer for either the queue or topic, the response contained a
-        <literal>msg-acknowledge-next</literal> response header. POST to the
-        URL contained within this header to consume the next message in the
-        queue or topic subscription. If there are no messages in the queue or
-        topic subscription, a 503 (Service Unavailable) HTTP code is returned.
-        A successful POST causes the server to extract a message from the
-        queue or topic subscription and return it to the consuming client. It
-        does not acknowledge the message though. The response will contain the
-        <literal>acknowledgement</literal> header which you will use to
-        acknowledge the message.</para>
-
-        <para>Here's an example of pulling multiple messages from the consumer
-        resource.</para>
-
-        <orderedlist>
-          <listitem>
-            <para>Do a POST on the msg-acknowledge-next URL that was returned
-            with the consumer or subscription resource discussed
-            earlier.</para>
-
-            <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-1
-Host: example.com
-
---- Response ---
-HTTP/1.1 200 Ok
-Content-Type: application/xml
-msg-acknowledgement: http://example.com/queues/jms.queue.bar/pull-consumers/333/acknowledgement/2
-msg-consumer: http://example.com/queues/jms.queue.bar/pull-consumers/333
-
-&lt;order&gt;...&lt;/order&gt;
-</programlisting>
-
-            <para>The POST returns the message consumed from the queue. It
-            also returns a msg-acknowledgement link. You will use this new
-            link to acknowledge the message. Notice also a msg-consumer
-            response header is returned. This is a URL that points back to the
-            consumer or subscription resource. You will need that to clean up
-            your connection after you are finished using the queue or
-            topic.</para>
-          </listitem>
-
-          <listitem>
-            <para>Acknowledge or unacknowledge the message by doing a POST to
-            the URL contained in the msg-acknowledgement header. You must pass
-            an acknowledge form parameter set to true or false depending on
-            whether you want to acknowledge or unacknowledge the message on
-            the server.</para>
-
-            <programlisting>POST /queues/jms.queue.bar/pull-consumers/acknowledgement/2
-Host: example.com
-Content-Type: application/x-www-form-urlencoded
-
-acknowledge=true
-
---- Response ---
-Http/1.1 200 Ok
-msg-acknowledge-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/acknowledge-next-2
-</programlisting>
-
-            <para>Whether you acknowledge or unacknowledge the message, the
-            response will contain a new msg-acknowledge-next header that you
-            must use to obtain the next message.</para>
-          </listitem>
-        </orderedlist>
-      </sect2>
-
-      <sect2>
-        <title>Recovering From Network Failures</title>
-
-        <para>If you experience a network failure and do not know if your post
-        to a msg-acknowledge-next or msg-acknowledgement URL was successful or
-        not, just re-do your POST. A POST to one of these URLs is idempotent,
-        meaning that it will return the same result if you re-post. Behind the
-        scenes, the consumer resource keeps track of its current state. If the
-        last action was a call to msg-acknowledge-next, it will have the last
-        message cached, so that if a re-post is done, it will return the
-        message again. Same goes with re-posting to msg-acknowledgement. The
-        server remembers its last state and will return the same results. If
-        you look at the URLs you'll see that they contain information about
-        the expected current state of the server. This is how the server knows
-        what the client is expecting.</para>
-      </sect2>
-
-      <sect2>
-        <title>Recovering From Client or Server Crashes</title>
-
-        <para>If the server crashes and while you are doing a POST to the
-        msg-acknowledge-next URL, just re-post. Everything should reconnect
-        all right. On the other hand, if the server crashes while you are
-        doing a POST to msg-acknowledgement, the server will return a 412
-        (Preconditions Failed) response code. This is telling you that the URL
-        you are using is out of sync with the server and the message you are
-        acknowledging was probably re-enqueued. The response will contain a
-        new msg-acknowledge-next header to invoke on.</para>
-
-        <para>As long as you have "bookmarked" the consumer resource URL
-        (returned from Location header on a create, or the msg-consumer
-        header), you can recover from client crashes by doing a GET or HEAD
-        request on the consumer resource to obtain what state you are in. If
-        the consumer resource is expecting you to acknowledge a message, it
-        will return a msg-acknowledgement header in the response. If the
-        consumer resource is expecting you to pull for the next message, the
-        msg-acknowledge-next header will be in the response. With manual
-        acknowledgement you are pretty much guaranteed to avoid skipped
-        messages.</para>
-      </sect2>
-    </sect1>
-
-    <sect1>
-      <title>Blocking Pulls with Accept-Wait</title>
-
-      <para>Unless your queue or topic has a high rate of message flowing
-      though it, if you use the pull protocol, you're going to be receiving a
-      lot of 503 responses as you continuously pull the server for new
-      messages. To alleviate this problem, the HornetQ REST interface provides
-      the Accept-Wait header. This is a generic HTTP request header that is a
-      hint to the server for how long the client is willing to wait for a
-      response from the server. The value of this header is the time in
-      seconds the client is willing to block for. You would send this request
-      header with your pull requests. Here's an example:</para>
-
-      <programlisting>POST /queues/jms.queue.bar/pull-consumers/consume-next-2
-Host: example.com
-Accept-Wait: 30
-
---- Response ---
-HTTP/1.1 200 Ok
-Content-Type: application/xml
-msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-3
-
-&lt;order&gt;...&lt;/order&gt;</programlisting>
-
-      <para>In this example, we're posting to a msg-consume-next URL and
-      telling the server that we would be willing to block for 30
-      seconds.</para>
-    </sect1>
-
-    <sect1>
-      <title>Clean Up Your Consumers!</title>
-
-      <para>When the client is done with its consumer or topic subscription it
-      should do an HTTP DELETE call on the consumer URL passed back from the
-      Location header or the msg-consumer response header. The server will
-      time out a consumer with the value configured from Chapter 2.3, so you
-      don't have to clean up if you dont' want to, but if you are a good kid,
-      you will clean up your messes. A consumer timeout for durable
-      subscriptions will not delete the durable connection though, only the
-      server-side consumer resource (and underlying JMS session).</para>
-    </sect1>
-  </chapter>
-
-  <chapter>
-    <title>Pushing Messages</title>
-
-    <para></para>
-
-    <sect1>
-      <title>Creating a Push Subscription</title>
-
-      <para></para>
-    </sect1>
-
-    <sect1>
-      <title>Pushing to Authenticated Servers</title>
-
-      <para></para>
-    </sect1>
-  </chapter>
-
-  <chapter>
-    <title>Securing the HornetQ REST Interface</title>
-
-    <para></para>
-  </chapter>
-
-  <chapter>
-    <title>Mixing JMS and REST</title>
-
-    <para></para>
-
-    <sect1>
-      <title>JMS Producers - REST Consumers</title>
-
-      <para></para>
-    </sect1>
-
-    <sect1>
-      <title>REST Producers - JMS Consumers</title>
-
-      <para></para>
-    </sect1>
-  </chapter>
+                Host: example.com
+                Accept-Wait: 30
+
+                --- Response ---
+                HTTP/1.1 200 Ok
+                Content-Type: application/xml
+                msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/consume-next-3
+
+                &lt;order&gt;...&lt;/order&gt;</programlisting>
+
+            <para>In this example, we're posting to a msg-consume-next URL and
+                telling the server that we would be willing to block for 30
+                seconds.
+            </para>
+        </sect1>
+
+        <sect1>
+            <title>Clean Up Your Consumers!</title>
+
+            <para>When the client is done with its consumer or topic subscription it
+                should do an HTTP DELETE call on the consumer URL passed back from the
+                Location header or the msg-consumer response header. The server will
+                time out a consumer with the value configured from Chapter 2.3, so you
+                don't have to clean up if you dont' want to, but if you are a good kid,
+                you will clean up your messes. A consumer timeout for durable
+                subscriptions will not delete the durable connection though, only the
+                server-side consumer resource (and underlying JMS session).
+            </para>
+        </sect1>
+    </chapter>
+
+    <chapter>
+        <title>Pushing Messages</title>
+
+        <para></para>
+
+        <sect1>
+            <title>Creating a Push Subscription</title>
+
+            <para></para>
+        </sect1>
+
+        <sect1>
+            <title>Pushing to Authenticated Servers</title>
+
+            <para></para>
+        </sect1>
+    </chapter>
+
+    <chapter>
+        <title>Creating Destinations</title>
+
+        <para></para>
+    </chapter>
+
+    <chapter>
+        <title>Securing the HornetQ REST Interface</title>
+
+        <para></para>
+    </chapter>
+
+    <chapter>
+        <title>Mixing JMS and REST</title>
+
+        <para></para>
+
+        <sect1>
+            <title>JMS Producers - REST Consumers</title>
+
+            <para></para>
+        </sect1>
+
+        <sect1>
+            <title>REST Producers - JMS Consumers</title>
+
+            <para></para>
+        </sect1>
+    </chapter>
 </book>
