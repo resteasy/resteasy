@@ -54,7 +54,6 @@ public class RepostingTopicTest extends MessageTestBase
       res = sender.request().body("text/plain", Integer.toString(2)).post();
       Assert.assertEquals(201, res.getStatus());
 
-      Thread.sleep(1000); // sleep to make sure messages get enqueued.
 
       // recreate subscription a second time as named.  Should pick up old one.
 
@@ -65,7 +64,7 @@ public class RepostingTopicTest extends MessageTestBase
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
       consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
-      res = consumeNext.request().post(String.class);
+      res = consumeNext.request().header("Accept-Wait", "2").post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("2", res.getEntity(String.class));
 
@@ -94,7 +93,6 @@ public class RepostingTopicTest extends MessageTestBase
       res = sender.request().body("text/plain", Integer.toString(2)).post();
       Assert.assertEquals(201, res.getStatus());
 
-      Thread.sleep(1000); // sleep to make sure messages get enqueued.
 
       manager.getTopicManager().getDestination().findTopic("testTopic").getSubscriptions().stop();
 
@@ -103,11 +101,11 @@ public class RepostingTopicTest extends MessageTestBase
       response = consumers.request().formParameter("name", "bill").formParameter("durable", "true").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("resource consume-next: " + consumeNext);
-      res = consumeNext.request().post(String.class);
+      res = consumeNext.request().header("Accept-Wait", "2").post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));
       consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consume-next");
-      res = consumeNext.request().post(String.class);
+      res = consumeNext.request().header("Accept-Wait", "2").post(String.class);
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("2", res.getEntity(String.class));
 
@@ -136,8 +134,6 @@ public class RepostingTopicTest extends MessageTestBase
       res = sender.request().body("text/plain", Integer.toString(2)).post();
       Assert.assertEquals(201, res.getStatus());
 
-      Thread.sleep(1000); // sleep to make sure messages get enqueued.
-
       manager.getTopicManager().getDestination().findTopic("testTopic").getSubscriptions().stop();
 
       // recreate subscription a second time as named.  Should pick up old one.
@@ -145,7 +141,7 @@ public class RepostingTopicTest extends MessageTestBase
       response = consumers.request().formParameter("name", "bill").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
       System.out.println("resource consume-next: " + consumeNext);
-      res = consumeNext.request().post(String.class);
+      res = consumeNext.request().header("Accept-Wait", "2").post(String.class);
       Assert.assertEquals(503, res.getStatus());
 
       Link session = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "consumer");

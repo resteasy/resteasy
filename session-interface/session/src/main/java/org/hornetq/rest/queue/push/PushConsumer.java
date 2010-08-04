@@ -1,24 +1,13 @@
 package org.hornetq.rest.queue.push;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.client.ClientConsumer;
 import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.api.core.client.MessageHandler;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
-import org.jboss.resteasy.spi.Link;
-import org.hornetq.rest.queue.push.xml.BasicAuth;
+import org.hornetq.core.logging.Logger;
 import org.hornetq.rest.queue.push.xml.PushRegistration;
-import org.hornetq.rest.queue.push.xml.XmlHttpHeader;
-import org.hornetq.rest.util.HttpMessageHelper;
-
-import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -26,18 +15,14 @@ import javax.ws.rs.core.Response;
  */
 public class PushConsumer implements MessageHandler
 {
+   private static final Logger log = Logger.getLogger(PushConsumer.class);
    private PushRegistration registration;
-   private boolean authenticated;
-   private HttpClient client = new HttpClient();
-   private ApacheHttpClientExecutor executor = new ApacheHttpClientExecutor(client);
-   private Link nextPost;
-   private String method;
-   private String contentType;
    protected ClientSessionFactory factory;
    protected ClientSession session;
    protected ClientConsumer consumer;
    protected String destination;
    protected String id;
+   protected PushStrategy strategy;
 
    public PushConsumer(ClientSessionFactory factory, String destination, String id, PushRegistration registration)
    {
@@ -59,137 +44,80 @@ public class PushConsumer implements MessageHandler
 
    public void start() throws Exception
    {
-      if (registration.getAuthenticationMechanism() != null)
+      if (registration.getTarget().getClassName() != null)
       {
-         if (registration.getAuthenticationMechanism().getType() instanceof BasicAuth)
+         Class clazz = Thread.currentThread().getContextClassLoader().loadClass(registration.getTarget().getClassName());
+         strategy = (PushStrategy) clazz.newInstance();
+      }
+      else if (registration.getTarget().getRelationship() != null)
+      {
+         if (registration.getTarget().getRelationship().equals("destination"))
          {
-            BasicAuth basic = (BasicAuth) registration.getAuthenticationMechanism().getType();
-            client.getState().setCredentials(
-                    //new AuthScope(null, 8080, "Test"),
-                    new AuthScope(AuthScope.ANY),
-                    new UsernamePasswordCredentials(basic.getUsername(), basic.getPassword())
-            );
-            client.getParams().setAuthenticationPreemptive(true);
-            authenticated = true;
+            strategy = new HornetQPushStrategy();
+         }
+         else if (registration.getTarget().getRelationship().equals("template"))
+         {
+            strategy = new UriTemplateStrategy();
          }
       }
-      nextPost = registration.getTarget().getDelegate();
-      if (nextPost == null)
+      if (strategy == null)
       {
-         throw new RuntimeException("registration link cannot be null.  Don't know how to forward messages");
+         strategy = new UriStrategy();
       }
-      method = registration.getTarget().getMethod();
-      if (method == null) method = "POST";
-      contentType = registration.getTarget().getType();
+      strategy.setRegistration(registration);
+      strategy.start();
 
       session = factory.createSession(false, false);
       consumer = session.createConsumer(destination);
       consumer.setMessageHandler(this);
       session.start();
-      System.out.println("Push consumer started for: " + nextPost);
+      log.info("Push consumer started for: " + registration.getTarget());
    }
 
    public void stop()
    {
       try
       {
-         consumer.close();
+         if (consumer != null) consumer.close();
       }
       catch (HornetQException e)
       {
       }
       try
       {
-         session.close();
+         if (session != null) session.close();
       }
       catch (HornetQException e)
       {
 
+      }
+      try
+      {
+         if (strategy != null) strategy.stop();
+      }
+      catch (Exception e)
+      {
       }
    }
 
    @Override
    public void onMessage(ClientMessage clientMessage)
    {
-      //System.out.println("onMessage: " + id);
-      Link next = nextPost;
-      String httpMethod = method;
-
-      try
+      if (strategy.push(clientMessage) == false)
       {
-         push(clientMessage, next, httpMethod);
+         throw new RuntimeException("Failed to push message to " + registration.getTarget());
       }
-      catch (Exception e)
+      else
       {
-         throw new RuntimeException(e);
-      }
-
-   }
-
-   protected void push(ClientMessage clientMessage, Link next, String httpMethod) throws Exception
-   {
-      for (int i = 0; i < 3; i++)
-      {
-         int wait = 0;
-         ClientRequest request = next.request(executor);
-         request.followRedirects(false);
-
-         for (XmlHttpHeader header : registration.getHeaders())
+         try
          {
-            request.header(header.getName(), header.getValue());
-         }
-         //System.out.println("******* building message");
-         HttpMessageHelper.buildMessage(clientMessage, request, contentType);
-
-         ClientResponse response = request.httpMethod(httpMethod);
-         if ((response.getStatus() >= 200 && response.getStatus() < 299) || response.getStatus() == 303 || response.getStatus() == 304)
-         {
-            if (response.getLinkHeader() != null)
-            {
-               Link createNext = response.getLinkHeader().getLinkByTitle("create-next");
-               if (createNext != null)
-               {
-                  nextPost = createNext;
-                  method = "POST";
-               }
-            }
-            else if (response.getHeaders().containsKey("msg-create-next"))
-            {
-               Link createNext = response.getHeaderAsLink("msg-create-next");
-               if (createNext != null)
-               {
-                  nextPost = createNext;
-                  method = "POST";
-               }
-            }
-            // If we crash here we're really f'cked
-            // gotta make an ack send protocol here
+            log.info("Acknowledging: " + clientMessage.getMessageID());
             clientMessage.acknowledge();
-            return;
          }
-         else if (response.getStatus() == 307)
+         catch (HornetQException e)
          {
-            Link location = response.getLocation();
-            if (location == null)
-            {
-               throw new RuntimeException("307 redirect has no location header to redirect");
-            }
-            next = location;
+            throw new RuntimeException(e);
          }
-         else if (response.getStatus() == Response.Status.SERVICE_UNAVAILABLE.getStatusCode())
-         {
-            String retryAfter = (String) response.getHeaders().getFirst("Retry-After");
-            if (retryAfter != null)
-            {
-               wait = Integer.parseInt(retryAfter);
-            }
-         }
-         else
-         {
-            throw new RuntimeException("failed to push message to: " + next + " status code: " + response.getStatus());
-         }
-         if (wait == 0) wait = i + 1;
-         Thread.sleep(wait * 1000);
       }
    }
 }

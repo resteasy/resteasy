@@ -22,6 +22,8 @@ import org.junit.Test;
 import java.util.HashMap;
 
 /**
+ * Play with HornetQ
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

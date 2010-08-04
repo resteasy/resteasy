@@ -16,8 +16,8 @@ public class MessageServiceConfiguration
    private int consumerWindowSize = -1;
    private boolean defaultDurableSend = false;
    private boolean dupsOk = true;
-   private String topicPushStoreDirectory = "./topic-push-store";
-   private String queuePushStoreDirectory = "./queue-push-store";
+   private String topicPushStoreDirectory = "topic-push-store";
+   private String queuePushStoreDirectory = "queue-push-store";
    private String inVmId = "0";
    private boolean useLinkHeaders = false;
 
@@ -65,7 +65,7 @@ public class MessageServiceConfiguration
       this.dupsOk = dupsOk;
    }
 
-   @XmlElement(name = "topic-push-store-file")
+   @XmlElement(name = "topic-push-store-dir")
    public String getTopicPushStoreDirectory()
    {
       return topicPushStoreDirectory;
@@ -76,7 +76,7 @@ public class MessageServiceConfiguration
       this.topicPushStoreDirectory = topicPushStoreDirectory;
    }
 
-   @XmlElement(name = "queue-push-store-file")
+   @XmlElement(name = "queue-push-store-dir")
    public String getQueuePushStoreDirectory()
    {
       return queuePushStoreDirectory;

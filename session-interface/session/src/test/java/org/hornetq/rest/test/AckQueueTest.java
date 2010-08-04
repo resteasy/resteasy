@@ -72,6 +72,7 @@ public class AckQueueTest extends MessageTestBase
          consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), res, "acknowledge-next");
          System.out.println("consumeNext: " + consumeNext);
 
+         // test timeout
          Thread.sleep(2000);
 
          ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();

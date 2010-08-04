@@ -62,7 +62,7 @@ public class PersistentPushQueueConsumerTest
    }
 
    @Test
-   public void testSuccessFirst() throws Exception
+   public void testBridge() throws Exception
    {
       startup();
       deployQueues();
@@ -79,8 +79,6 @@ public class PersistentPushQueueConsumerTest
       request = new ClientRequest(generateURL("/queues/forwardQueue"));
       response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      Link forwardSender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
-      System.out.println("create: " + forwardSender);
       Link consumers = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "pull-consumers");
       System.out.println("pull: " + consumers);
       response = consumers.request().formParameter("autoAck", "true").post();
@@ -89,7 +87,9 @@ public class PersistentPushQueueConsumerTest
 
       PushRegistration reg = new PushRegistration();
       reg.setDurable(true);
-      XmlLink target = new XmlLink(forwardSender);
+      XmlLink target = new XmlLink();
+      target.setHref(generateURL("/queues/forwardQueue"));
+      target.setRelationship("destination");
       reg.setTarget(target);
       response = pushSubscriptions.request().body("application/xml", reg).post();
       Assert.assertEquals(201, response.getStatus());
@@ -101,8 +101,7 @@ public class PersistentPushQueueConsumerTest
       ClientResponse res = sender.request().body("text/plain", Integer.toString(1)).post();
       Assert.assertEquals(201, res.getStatus());
 
-      Thread.sleep(100);
-      res = consumeNext.request().post(String.class);
+      res = consumeNext.request().header("Accept-Wait", "2").post(String.class);
 
       Assert.assertEquals(200, res.getStatus());
       Assert.assertEquals("1", res.getEntity(String.class));

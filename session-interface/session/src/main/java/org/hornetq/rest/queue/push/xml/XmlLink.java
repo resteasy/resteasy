@@ -1,14 +1,9 @@
 package org.hornetq.rest.queue.push.xml;
 
-import org.jboss.resteasy.client.ClientExecutor;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.spi.Link;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 /**
@@ -19,16 +14,21 @@ import java.io.Serializable;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class XmlLink implements Serializable
 {
-   protected Link delegate;
    protected String method;
+   protected String className;
+   protected String rel;
+   protected String type;
+   protected String href;
 
-   public XmlLink(Link delegate)
+   @XmlAttribute(name = "class")
+   public String getClassName()
    {
-      this.delegate = delegate;
+      return className;
    }
 
-   public XmlLink()
+   public void setClassName(String className)
    {
+      this.className = className;
    }
 
    @XmlAttribute
@@ -45,82 +45,45 @@ public class XmlLink implements Serializable
    @XmlAttribute(name = "rel")
    public String getRelationship()
    {
-      return getDelegate().getRelationship();
+      return rel;
    }
 
    public void setRelationship(String relationship)
    {
-      getDelegate().setRelationship(relationship);
+      rel = relationship;
    }
 
    @XmlAttribute
    public String getHref()
    {
-      return getDelegate().getHref();
+      return href;
    }
 
    public void setHref(String href)
    {
-      getDelegate().setHref(href);
+      this.href = href;
    }
 
    @XmlAttribute
    public String getType()
    {
-      return getDelegate().getType();
+      return type;
    }
 
    public void setType(String type)
    {
-      getDelegate().setType(type);
-   }
-
-   @XmlAttribute
-   public String getTitle()
-   {
-      return getDelegate().getTitle();
-   }
-
-   public void setTitle(String title)
-   {
-      getDelegate().setTitle(title);
-   }
-
-   @XmlTransient
-   public ClientExecutor getExecutor()
-   {
-      return getDelegate().getExecutor();
-   }
-
-   public void setExecutor(ClientExecutor executor)
-   {
-      getDelegate().setExecutor(executor);
-   }
-
-   public ClientRequest request()
-   {
-      return getDelegate().request();
-   }
-
-   public ClientRequest request(ClientExecutor executor)
-   {
-      return getDelegate().request(executor);
+      this.type = type;
    }
 
    @Override
    public String toString()
    {
       return "XmlLink{" +
-              "delegate=" + delegate +
+              "className='" + className + '\'' +
+              ", rel='" + rel + '\'' +
+              ", href='" + href + '\'' +
+              ", type='" + type + '\'' +
               ", method='" + method + '\'' +
               '}';
    }
-
-   public Link getDelegate()
-   {
-      if (delegate == null) delegate = new Link();
-      return delegate;
-   }
-
-
 }

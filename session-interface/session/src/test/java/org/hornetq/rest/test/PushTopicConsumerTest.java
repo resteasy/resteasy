@@ -2,8 +2,9 @@ package org.hornetq.rest.test;
 
 import org.hornetq.rest.queue.QueueDeployment;
 import org.hornetq.rest.queue.push.HornetQPushStrategy;
-import org.hornetq.rest.queue.push.xml.PushRegistration;
 import org.hornetq.rest.queue.push.xml.XmlLink;
+import org.hornetq.rest.topic.PushTopicRegistration;
+import org.hornetq.rest.topic.TopicDeployment;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
@@ -20,16 +21,16 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class PushQueueConsumerTest extends MessageTestBase
+public class PushTopicConsumerTest extends MessageTestBase
 {
    @BeforeClass
    public static void setup() throws Exception
    {
-      QueueDeployment deployment = new QueueDeployment();
+      TopicDeployment deployment = new TopicDeployment();
       deployment.setDuplicatesAllowed(true);
       deployment.setDurableSend(false);
-      deployment.setName("testQueue");
-      manager.getQueueManager().deploy(deployment);
+      deployment.setName("testTopic");
+      manager.getTopicManager().deploy(deployment);
       QueueDeployment deployment2 = new QueueDeployment();
       deployment2.setDuplicatesAllowed(true);
       deployment2.setDurableSend(false);
@@ -40,13 +41,13 @@ public class PushQueueConsumerTest extends MessageTestBase
    @Test
    public void testBridge() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
+      ClientRequest request = new ClientRequest(generateURL("/topics/testTopic"));
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-consumers");
+      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
       System.out.println("push subscriptions: " + pushSubscriptions);
 
       request = new ClientRequest(generateURL("/queues/forwardQueue"));
@@ -56,7 +57,7 @@ public class PushQueueConsumerTest extends MessageTestBase
       response = consumers.request().formParameter("autoAck", "true").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
 
-      PushRegistration reg = new PushRegistration();
+      PushTopicRegistration reg = new PushTopicRegistration();
       reg.setDurable(false);
       XmlLink target = new XmlLink();
       target.setHref(generateURL("/queues/forwardQueue"));
@@ -80,13 +81,13 @@ public class PushQueueConsumerTest extends MessageTestBase
    @Test
    public void testClass() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
+      ClientRequest request = new ClientRequest(generateURL("/topics/testTopic"));
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-consumers");
+      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
       System.out.println("push subscriptions: " + pushSubscriptions);
 
       request = new ClientRequest(generateURL("/queues/forwardQueue"));
@@ -96,7 +97,7 @@ public class PushQueueConsumerTest extends MessageTestBase
       response = consumers.request().formParameter("autoAck", "true").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
 
-      PushRegistration reg = new PushRegistration();
+      PushTopicRegistration reg = new PushTopicRegistration();
       reg.setDurable(false);
       XmlLink target = new XmlLink();
       target.setHref(generateURL("/queues/forwardQueue"));
@@ -120,13 +121,13 @@ public class PushQueueConsumerTest extends MessageTestBase
    @Test
    public void testTemplate() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
+      ClientRequest request = new ClientRequest(generateURL("/topics/testTopic"));
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-consumers");
+      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
       System.out.println("push subscriptions: " + pushSubscriptions);
 
       request = new ClientRequest(generateURL("/queues/forwardQueue"));
@@ -137,7 +138,7 @@ public class PushQueueConsumerTest extends MessageTestBase
       response = consumers.request().formParameter("autoAck", "true").post();
       Link consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "consume-next");
 
-      PushRegistration reg = new PushRegistration();
+      PushTopicRegistration reg = new PushTopicRegistration();
       reg.setDurable(false);
       XmlLink target = new XmlLink();
       target.setRelationship("template");
@@ -174,17 +175,17 @@ public class PushQueueConsumerTest extends MessageTestBase
    @Test
    public void testUri() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/queues/testQueue"));
+      ClientRequest request = new ClientRequest(generateURL("/topics/testTopic"));
       server.getJaxrsServer().getDeployment().getRegistry().addPerRequestResource(MyResource.class);
 
       ClientResponse response = request.head();
       Assert.assertEquals(200, response.getStatus());
       Link sender = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "create");
       System.out.println("create: " + sender);
-      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-consumers");
+      Link pushSubscriptions = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), response, "push-subscriptions");
       System.out.println("push subscriptions: " + pushSubscriptions);
 
-      PushRegistration reg = new PushRegistration();
+      PushTopicRegistration reg = new PushTopicRegistration();
       reg.setDurable(false);
       XmlLink target = new XmlLink();
       target.setMethod("put");

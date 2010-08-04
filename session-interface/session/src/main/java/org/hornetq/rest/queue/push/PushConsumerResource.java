@@ -1,8 +1,8 @@
 package org.hornetq.rest.queue.push;
 
 import org.hornetq.api.core.client.ClientSessionFactory;
-import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.hornetq.rest.queue.push.xml.PushRegistration;
+import org.jboss.netty.util.internal.ConcurrentHashMap;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -92,7 +92,7 @@ public class PushConsumerResource
    }
 
    @GET
-   @Path("{consumer-id")
+   @Path("{consumer-id}")
    @Produces("application/xml")
    public PushRegistration getConsumer(@PathParam("consumer-id") String consumerId)
    {
@@ -105,7 +105,7 @@ public class PushConsumerResource
    }
 
    @DELETE
-   @Path("{consumer-id")
+   @Path("{consumer-id}")
    public void deleteConsumer(@PathParam("consumer-id") String consumerId)
    {
       PushConsumer consumer = consumers.remove(consumerId);
