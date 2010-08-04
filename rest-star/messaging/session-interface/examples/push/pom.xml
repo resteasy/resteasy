@@ -10,7 +10,7 @@
     <artifactId>push</artifactId>
     <packaging>war</packaging>
     <name>Push Subscriptions</name>
-     <build>
+    <build>
         <finalName>order-flow</finalName>
         <plugins>
             <plugin>
@@ -33,16 +33,16 @@
                 </executions>
             </plugin>
             <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>exec-maven-plugin</artifactId>
-              <version>1.1</version>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>java</goal>
-                  </goals>
-                </execution>
-              </executions>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
@@ -61,6 +61,12 @@
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>
+                    <userRealms>
+                        <userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
+                            <name>Test</name>
+                            <config>src/main/resources/test-realm.properties</config>
+                        </userRealm>
+                    </userRealms>
                 </configuration>
                 <executions>
                     <execution>

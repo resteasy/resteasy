@@ -52,12 +52,13 @@ public class UriStrategy implements PushStrategy
          if (registration.getAuthenticationMechanism().getType() instanceof BasicAuth)
          {
             BasicAuth basic = (BasicAuth) registration.getAuthenticationMechanism().getType();
+            //log.info("Setting Basic Auth: " + basic.getUsername());
+            client.getParams().setAuthenticationPreemptive(true);
             client.getState().setCredentials(
                     //new AuthScope(null, 8080, "Test"),
                     new AuthScope(AuthScope.ANY),
                     new UsernamePasswordCredentials(basic.getUsername(), basic.getPassword())
             );
-            client.getParams().setAuthenticationPreemptive(true);
          }
       }
    }
@@ -81,11 +82,11 @@ public class UriStrategy implements PushStrategy
          {
             request.header(header.getName(), header.getValue());
          }
-         HttpMessageHelper.buildMessage(message, request, null);
+         HttpMessageHelper.buildMessage(message, request, contentType);
          ClientResponse res = null;
          try
          {
-            log.info(method + " " + uri);
+            log.debug(method + " " + uri);
             res = request.httpMethod(method);
          }
          catch (Exception e)
@@ -106,7 +107,7 @@ public class UriStrategy implements PushStrategy
          }
          else if ((res.getStatus() >= 200 && res.getStatus() < 299) || res.getStatus() == 303 || res.getStatus() == 304)
          {
-            log.info("Success");
+            log.debug("Success");
             return true;
          }
          else

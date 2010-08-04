@@ -39,7 +39,7 @@ public class QueueResource extends DestinationResource
 
       String msg = "<queue>"
               + "<name>" + destination + "</name>"
-              + "</queue/>";
+              + "</queue>";
       Response.ResponseBuilder builder = Response.ok(msg);
       setSenderLink(builder, uriInfo);
       setConsumersLink(builder, uriInfo);

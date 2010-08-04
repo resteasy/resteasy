@@ -1,6 +1,7 @@
 package org.hornetq.rest.queue.push;
 
 import org.hornetq.api.core.client.ClientMessage;
+import org.hornetq.rest.queue.push.xml.XmlHttpHeader;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
@@ -18,16 +19,25 @@ public class HornetQPushStrategy extends UriTemplateStrategy
 
    public void start() throws Exception
    {
-      // empty
+      // initialize();
    }
 
    protected void initialize()
            throws Exception
    {
       super.start();
+      initialized = true;
       initAuthentication();
       ClientRequest request = executor.createRequest(registration.getTarget().getHref());
+      for (XmlHttpHeader header : registration.getHeaders())
+      {
+         request.header(header.getName(), header.getValue());
+      }
       ClientResponse res = request.head();
+      if (res.getStatus() != 200)
+      {
+         throw new RuntimeException("Failed to query HornetQ REST destination for init information.  Status: " + res.getStatus());
+      }
       String url = (String) res.getHeaders().getFirst("msg-create-with-id");
       if (url == null)
       {

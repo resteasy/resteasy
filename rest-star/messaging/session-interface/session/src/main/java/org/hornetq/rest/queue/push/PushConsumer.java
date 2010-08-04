@@ -111,7 +111,7 @@ public class PushConsumer implements MessageHandler
       {
          try
          {
-            log.info("Acknowledging: " + clientMessage.getMessageID());
+            log.debug("Acknowledging: " + clientMessage.getMessageID());
             clientMessage.acknowledge();
          }
          catch (HornetQException e)

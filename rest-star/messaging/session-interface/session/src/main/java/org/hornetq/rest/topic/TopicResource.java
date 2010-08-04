@@ -40,7 +40,7 @@ public class TopicResource extends DestinationResource
 
       String msg = "<topic>"
               + "<name>" + destination + "</name>"
-              + "</topic/>";
+              + "</topic>";
       Response.ResponseBuilder builder = Response.ok(msg);
       setSenderLink(builder, uriInfo);
       setSubscriptionsLink(builder, uriInfo);
