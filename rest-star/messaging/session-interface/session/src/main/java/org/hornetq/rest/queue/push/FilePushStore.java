@@ -28,6 +28,7 @@ public class FilePushStore implements PushStore
       this.ctx = JAXBContext.newInstance(PushRegistration.class, PushTopicRegistration.class);
       if (this.dir.exists())
       {
+         System.out.println("Loading push store from: " + this.dir.getAbsolutePath());
          for (File file : this.dir.listFiles())
          {
             if (!file.isFile()) continue;

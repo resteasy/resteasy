@@ -56,7 +56,7 @@ public class PushSubscriptionsResource
       this.pushStore = pushStore;
    }
 
-   public void createSubscription(String subscriptionName, boolean durable)
+   public ClientSession createSubscription(String subscriptionName, boolean durable)
    {
       ClientSession session = null;
       try
@@ -71,23 +71,11 @@ public class PushSubscriptionsResource
          {
             session.createTemporaryQueue(destination, subscriptionName);
          }
+         return session;
       }
       catch (HornetQException e)
       {
          throw new RuntimeException(e);
-      }
-      finally
-      {
-         if (session != null)
-         {
-            try
-            {
-               session.close();
-            }
-            catch (HornetQException e)
-            {
-            }
-         }
       }
    }
 
@@ -96,9 +84,10 @@ public class PushSubscriptionsResource
       String destination = reg.getDestination();
       ClientSession session = sessionFactory.createSession(false, false, false);
       ClientSession.QueueQuery query = session.queueQuery(new SimpleString(destination));
+      ClientSession createSession = null;
       if (!query.isExists())
       {
-         createSubscription(destination, reg.isDurable());
+         createSession = createSubscription(destination, reg.isDurable());
       }
       PushConsumer consumer = new PushConsumer(sessionFactory, reg.getDestination(), reg.getId(), reg);
       try
@@ -108,11 +97,30 @@ public class PushSubscriptionsResource
       catch (Exception e)
       {
          consumer.stop();
-         throw new Exception("Failed starting push subscriber for " + destination + " of push subscriber: " + reg.getTarget().getDelegate(), e);
+         throw new Exception("Failed starting push subscriber for " + destination + " of push subscriber: " + reg.getTarget(), e);
+      }
+      finally
+      {
+         closeSession(createSession);
+         closeSession(session);
       }
 
       consumers.put(reg.getId(), consumer);
 
+   }
+
+   private void closeSession(ClientSession createSession)
+   {
+      if (createSession != null)
+      {
+         try
+         {
+            createSession.close();
+         }
+         catch (HornetQException e)
+         {
+         }
+      }
    }
 
 
@@ -128,30 +136,37 @@ public class PushSubscriptionsResource
       }
       registration.setId(genId);
       registration.setTopic(destination);
-      createSubscription(genId, registration.isDurable());
-      PushConsumer consumer = new PushConsumer(sessionFactory, genId, genId, registration);
+      ClientSession createSession = createSubscription(genId, registration.isDurable());
       try
       {
-         consumer.start();
-         if (registration.isDurable() && pushStore != null)
+         PushConsumer consumer = new PushConsumer(sessionFactory, genId, genId, registration);
+         try
          {
-            pushStore.add(registration);
+            consumer.start();
+            if (registration.isDurable() && pushStore != null)
+            {
+               pushStore.add(registration);
+            }
          }
-      }
-      catch (Exception e)
-      {
-         consumer.stop();
-         throw new WebApplicationException(e, Response.serverError().entity("Failed to start consumer.").type("text/plain").build());
-      }
+         catch (Exception e)
+         {
+            consumer.stop();
+            throw new WebApplicationException(e, Response.serverError().entity("Failed to start consumer.").type("text/plain").build());
+         }
 
-      consumers.put(genId, consumer);
-      UriBuilder location = uriInfo.getAbsolutePathBuilder();
-      location.path(genId);
-      return Response.created(location.build()).build();
+         consumers.put(genId, consumer);
+         UriBuilder location = uriInfo.getAbsolutePathBuilder();
+         location.path(genId);
+         return Response.created(location.build()).build();
+      }
+      finally
+      {
+         closeSession(createSession);
+      }
    }
 
    @GET
-   @Path("{consumer-id")
+   @Path("{consumer-id}")
    @Produces("application/xml")
    public PushTopicRegistration getConsumer(@PathParam("consumer-id") String consumerId)
    {
@@ -164,7 +179,7 @@ public class PushSubscriptionsResource
    }
 
    @DELETE
-   @Path("{consumer-id")
+   @Path("{consumer-id}")
    public void deleteConsumer(@PathParam("consumer-id") String consumerId)
    {
       PushConsumer consumer = consumers.remove(consumerId);
@@ -216,16 +231,7 @@ public class PushSubscriptionsResource
       }
       finally
       {
-         if (session != null)
-         {
-            try
-            {
-               session.close();
-            }
-            catch (HornetQException e)
-            {
-            }
-         }
+         closeSession(session);
       }
    }
 

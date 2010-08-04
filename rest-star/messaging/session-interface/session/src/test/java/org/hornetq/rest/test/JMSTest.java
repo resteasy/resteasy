@@ -2,12 +2,12 @@ package org.hornetq.rest.test;
 
 import org.hornetq.jms.client.HornetQConnectionFactory;
 import org.hornetq.jms.client.HornetQDestination;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.Link;
 import org.hornetq.rest.HttpHeaderProperty;
 import org.hornetq.rest.Jms;
 import org.hornetq.rest.queue.QueueDeployment;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.Link;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -120,7 +120,6 @@ public class JMSTest extends MessageTestBase
       {
          conn.close();
       }
-      Thread.sleep(10);
    }
 
 
@@ -222,7 +221,7 @@ public class JMSTest extends MessageTestBase
          order.setAmount("$5.00");
          publish(queueName, order, null);
 
-         ClientResponse res = consumeNext.request().accept("application/xml").post(String.class);
+         ClientResponse res = consumeNext.request().header("Accept-Wait", "2").accept("application/xml").post(String.class);
          Assert.assertEquals(200, res.getStatus());
          Assert.assertEquals("application/xml", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);
@@ -238,7 +237,7 @@ public class JMSTest extends MessageTestBase
          order.setAmount("$5.00");
          publish(queueName, order, null);
 
-         ClientResponse res = consumeNext.request().accept("application/json").post(String.class);
+         ClientResponse res = consumeNext.request().header("Accept-Wait", "2").accept("application/json").post(String.class);
          Assert.assertEquals(200, res.getStatus());
          Assert.assertEquals("application/json", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);
@@ -254,7 +253,7 @@ public class JMSTest extends MessageTestBase
          order.setAmount("$15.00");
          publish(queueName, order, "application/xml");
 
-         ClientResponse res = consumeNext.request().post(String.class);
+         ClientResponse res = consumeNext.request().header("Accept-Wait", "2").post(String.class);
          Assert.assertEquals(200, res.getStatus());
          Assert.assertEquals("application/xml", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          Order order2 = (Order) res.getEntity(Order.class);

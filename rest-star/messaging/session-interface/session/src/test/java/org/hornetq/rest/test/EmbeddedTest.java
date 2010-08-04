@@ -1,11 +1,11 @@
 package org.hornetq.rest.test;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.Link;
 import org.hornetq.rest.HttpHeaderProperty;
 import org.hornetq.rest.integration.BindingRegistry;
 import org.hornetq.rest.integration.EmbeddedRestHornetQJMS;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.Link;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -70,8 +70,6 @@ public class EmbeddedTest
       {
          conn.close();
       }
-      Thread.sleep(10);
-
    }
 
 
@@ -99,7 +97,7 @@ public class EmbeddedTest
          publish("/queue/exampleQueue", order, null);
 
 
-         ClientResponse res = consumeNext.request().accept("application/xml").post(String.class);
+         ClientResponse res = consumeNext.request().header("Accept-Wait", "2").accept("application/xml").post(String.class);
          Assert.assertEquals(200, res.getStatus());
          Assert.assertEquals("application/xml", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          TransformTest.Order order2 = (TransformTest.Order) res.getEntity(TransformTest.Order.class);
@@ -115,7 +113,7 @@ public class EmbeddedTest
          order.setAmount("$5.00");
          publish("/queue/exampleQueue", order, null);
 
-         ClientResponse res = consumeNext.request().accept("application/json").post(String.class);
+         ClientResponse res = consumeNext.request().header("Accept-Wait", "2").accept("application/json").post(String.class);
          Assert.assertEquals(200, res.getStatus());
          Assert.assertEquals("application/json", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          TransformTest.Order order2 = (TransformTest.Order) res.getEntity(TransformTest.Order.class);
@@ -131,7 +129,7 @@ public class EmbeddedTest
          order.setAmount("$15.00");
          publish("/queue/exampleQueue", order, "application/xml");
 
-         ClientResponse res = consumeNext.request().post(String.class);
+         ClientResponse res = consumeNext.request().header("Accept-Wait", "2").post(String.class);
          Assert.assertEquals(200, res.getStatus());
          Assert.assertEquals("application/xml", res.getHeaders().getFirst("Content-Type").toString().toLowerCase());
          TransformTest.Order order2 = (TransformTest.Order) res.getEntity(TransformTest.Order.class);

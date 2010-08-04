@@ -4,11 +4,11 @@ import org.hornetq.api.core.client.ClientMessage;
 import org.hornetq.api.core.client.ClientProducer;
 import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.MessageHandler;
+import org.hornetq.rest.Hornetq;
+import org.hornetq.rest.queue.QueueDeployment;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Link;
-import org.hornetq.rest.Hornetq;
-import org.hornetq.rest.queue.QueueDeployment;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -105,7 +105,6 @@ public class TransformTest extends MessageTestBase
       {
          session.close();
       }
-      Thread.sleep(10);
 
    }
 
@@ -211,7 +210,6 @@ public class TransformTest extends MessageTestBase
          session.createConsumer("testQueue2").setMessageHandler(new Listener());
          session.start();
 
-         Thread.sleep(10);
 
          ClientRequest request = new ClientRequest(generateURL("/queues/testQueue2"));
 
