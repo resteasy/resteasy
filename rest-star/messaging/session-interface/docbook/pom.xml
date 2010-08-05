@@ -4,11 +4,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-reference-guide-${translation}</artifactId>
-    <version>2.1-SNAPSHOT</version>
+    <groupId>org.hornetq.rest</groupId>
+    <artifactId>hornetq-rest-reference-guide-${translation}</artifactId>
+    <version>1.0-beta-1</version>
     <packaging>jdocbook</packaging>
-    <name>RESTEasy Reference Guide (${translation})</name>
+    <name>HornetQ REST Interface Reference Guide (${translation})</name>
     <repositories>
         <repository>
             <id>jboss</id>
