@@ -20,16 +20,18 @@
             <id>jboss</id>
             <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>maven2-repository.dev.java.net</id>
-            <url>http://download.java.net/maven/2</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>maven-repository.dev.java.net</id>
-            <name>Java.net Maven 1 Repository (legacy)</name>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
-        </pluginRepository>
+        <!--
+                <pluginRepository>
+                    <id>maven2-repository.dev.java.net</id>
+                    <url>http://download.java.net/maven/2</url>
+                </pluginRepository>
+                <pluginRepository>
+                    <id>maven-repository.dev.java.net</id>
+                    <name>Java.net Maven 1 Repository (legacy)</name>
+                    <url>http://download.java.net/maven/1</url>
+                    <layout>legacy</layout>
+                </pluginRepository>
+        -->
     </pluginRepositories>
 
     <build>
