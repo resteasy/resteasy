@@ -4,6 +4,7 @@ import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.rest.queue.push.xml.PushRegistration;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -62,6 +63,7 @@ public class PushConsumerResource
    }
 
    @POST
+   @Consumes("application/xml")
    public Response create(@Context UriInfo uriInfo, PushRegistration registration)
    {
       //System.out.println("PushRegistration: " + registration);

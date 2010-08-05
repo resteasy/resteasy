@@ -7,6 +7,7 @@ import org.jboss.resteasy.util.GenericType;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.ObjectMessage;
 import java.lang.reflect.Type;
 
 /**
@@ -91,7 +92,7 @@ public class Jms
     * @throws UnknownMediaType
     * @throws UnmarshalException
     */
-   public static <T> T getEntity(Message message, GenericType<T> type, ResteasyProviderFactory factory) throws UnknownMediaType, UnmarshalException
+   public static <T> T getEntity(Message message, GenericType<T> type, ResteasyProviderFactory factory) throws UnknownMediaType
    {
       return getEntity(message, type.getType(), type.getGenericType(), factory);
    }
@@ -114,13 +115,20 @@ public class Jms
     * @throws UnknownMediaType
     * @throws UnmarshalException
     */
-   public static <T> T getEntity(Message message, Class<T> type, Type genericType, ResteasyProviderFactory factory) throws UnknownMediaType, UnmarshalException
+   public static <T> T getEntity(Message message, Class<T> type, Type genericType, ResteasyProviderFactory factory) throws UnknownMediaType
    {
-      ClientMessage msg = ((HornetQMessage) message).getCoreMessage();
-      if (!Hornetq.isHttpMessage(msg))
+      if (!isHttpMessage(message))
       {
-         throw new UnmarshalException("JMS Message was not posted from HTTP engine");
+         try
+         {
+            return (T) ((ObjectMessage) message).getObject();
+         }
+         catch (JMSException e)
+         {
+            throw new RuntimeException(e);
+         }
       }
+      ClientMessage msg = ((HornetQMessage) message).getCoreMessage();
       return Hornetq.getEntity(msg, type, genericType, factory);
    }
 
