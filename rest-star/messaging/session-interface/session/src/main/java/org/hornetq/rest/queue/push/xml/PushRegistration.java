@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -96,7 +95,7 @@ public class PushRegistration implements Serializable
       this.authenticationMechanism = authenticationMechanism;
    }
 
-   @XmlElementWrapper(name = "base-headers")
+   @XmlElementRef
    public List<XmlHttpHeader> getHeaders()
    {
       return headers;
@@ -115,7 +114,7 @@ public class PushRegistration implements Serializable
               ", target=" + target +
               ", authenticationMechanism=" + authenticationMechanism +
               ", headers=" + headers +
-              ", subscription='" + destination + '\'' +
+              ", destination='" + destination + '\'' +
               '}';
    }
 }

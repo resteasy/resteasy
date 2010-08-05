@@ -33,4 +33,13 @@ public class BasicAuth extends AuthenticationType
    {
       this.password = password;
    }
+
+   @Override
+   public String toString()
+   {
+      return "BasicAuth{" +
+              "username='" + username + '\'' +
+              ", password='" + password + '\'' +
+              '}';
+   }
 }

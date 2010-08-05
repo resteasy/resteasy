@@ -29,7 +29,7 @@ public class CreateDestinationTest extends MessageTestBase
       ClientRequest create = new ClientRequest(generateURL("/queues"));
       ClientResponse cRes = create.body("application/hornetq.jms.queue+xml", queueConfig).post();
       Assert.assertEquals(201, cRes.getStatus());
-
+      System.out.println("Location: " + cRes.getLocation());
       ClientRequest request = cRes.getLocation().request();
 
       ClientResponse response = request.head();

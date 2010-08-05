@@ -4,11 +4,9 @@ import org.hornetq.rest.Jms;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 /**
@@ -28,29 +26,13 @@ public class JmsReceive
       {
          Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
          MessageConsumer consumer = session.createConsumer(destination);
-         consumer.setMessageListener(new MessageListener() {
+         consumer.setMessageListener(new MessageListener()
+         {
             @Override
             public void onMessage(Message message)
             {
-               System.out.println("Received Message: " );
-               Order order = null;
-               if (Jms.isHttpMessage(message))
-               {
-//                  String o = Jms.getEntity(message, String.class);
-//                  System.out.println(o);
-                  order = Jms.getEntity(message, Order.class);
-               }
-               else
-               {
-                  try
-                  {
-                     order = (Order)((ObjectMessage)message).getObject();
-                  }
-                  catch (JMSException e)
-                  {
-                     throw new RuntimeException(e);
-                  }
-               }
+               System.out.println("Received Message: ");
+               Order order = Jms.getEntity(message, Order.class);
                System.out.println(order);
             }
          }

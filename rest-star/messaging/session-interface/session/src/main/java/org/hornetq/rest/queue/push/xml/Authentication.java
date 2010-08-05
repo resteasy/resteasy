@@ -26,4 +26,12 @@ public class Authentication implements Serializable
    {
       this.type = type;
    }
+
+   @Override
+   public String toString()
+   {
+      return "Authentication{" +
+              "type=" + type +
+              '}';
+   }
 }
