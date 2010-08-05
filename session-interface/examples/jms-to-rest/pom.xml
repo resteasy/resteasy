@@ -7,10 +7,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.hornetq.rest.examples</groupId>
-    <artifactId>simple-transformations</artifactId>
+    <artifactId>mixed-jms-rest</artifactId>
     <packaging>war</packaging>
-    <name>Simple JMS to REST Transformations</name>
-     <build>
+    <name>Mixed JMS and REST Producers/Consumers</name>
+    <build>
         <finalName>order-flow</finalName>
         <plugins>
             <plugin>
@@ -33,16 +33,16 @@
                 </executions>
             </plugin>
             <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>exec-maven-plugin</artifactId>
-              <version>1.1</version>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>java</goal>
-                  </goals>
-                </execution>
-              </executions>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>

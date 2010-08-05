@@ -6,7 +6,7 @@ import org.jboss.resteasy.spi.Link;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ReceiveOrder
+public class RestReceive
 {
    public static void main(String[] args) throws Exception
    {
@@ -19,7 +19,10 @@ public class ReceiveOrder
       while (true)
       {
          System.out.println("Waiting...");
-         res = consumeNext.request().header("Accept-Wait", "10").post();
+         res = consumeNext.request()
+                 .header("Accept-Wait", "10")
+                 .header("Accept", "application/xml")
+                 .post();
          if (res.getStatus() == 503)
          {
             System.out.println("Timeout...");
