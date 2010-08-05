@@ -85,7 +85,7 @@
                         <format>
                             <formatName>pdf</formatName>
                             <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-                            <finalName>RESTEasy_Reference_Guide.pdf</finalName>
+                            <finalName>HornetQ_REST_Interface_Guide.pdf</finalName>
                             <profilingTypeName>two_pass</profilingTypeName>
                         </format>
 
