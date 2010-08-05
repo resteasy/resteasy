@@ -64,7 +64,7 @@
                     <userRealms>
                         <userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
                             <name>Test</name>
-                            <config>src/main/resources/test-realm.properties</config>
+                            <config>${project.build.outputDirectory}/test-realm.properties</config>
                         </userRealm>
                     </userRealms>
                 </configuration>
