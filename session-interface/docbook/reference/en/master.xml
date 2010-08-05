@@ -1871,7 +1871,7 @@ Location: http://example.com/topics/jms.topic.testTopic</programlisting>
       the message.</para>
 
       <programlisting>ObjectMessage message = session.createObjectMessage();
-message.setStringProperty(org.hornetq.rest.HttpHeaderProperty.CONTENT_TYPE, "application/xml"
+message.setStringProperty(org.hornetq.rest.HttpHeaderProperty.CONTENT_TYPE, "application/xml");
 </programlisting>
 
       <para>If the JMS producer does not set the content-type, then this
@@ -1896,11 +1896,12 @@ message.setStringProperty(org.hornetq.rest.HttpHeaderProperty.CONTENT_TYPE, "app
 }
 </programlisting>
 
-      <para>The way the getEntity() method works is that if the message is an
-      ObjectMessage, it will try to extract the desired type from it like any
-      other JMS message. If a REST producer sent the message, then the method
-      uses RESTEasy to convert the HTTP body to the Java object you want. See
-      the Javadoc of this class for more helper methods.</para>
+      <para>The way the <literal>getEntity()</literal> method works is that if
+      the message is an ObjectMessage, it will try to extract the desired type
+      from it like any other JMS message. If a REST producer sent the message,
+      then the method uses RESTEasy to convert the HTTP body to the Java
+      object you want. See the Javadoc of this class for more helper
+      methods.</para>
     </sect1>
   </chapter>
 </book>
