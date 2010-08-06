@@ -10,6 +10,12 @@
     <artifactId>dup-send</artifactId>
     <packaging>war</packaging>
     <name>Duplicate Send Demo</name>
+    <repositories>
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
      <build>
         <finalName>order-flow</finalName>
         <plugins>

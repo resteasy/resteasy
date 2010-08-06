@@ -10,6 +10,12 @@
     <artifactId>mixed-jms-rest</artifactId>
     <packaging>war</packaging>
     <name>Mixed JMS and REST Producers/Consumers</name>
+    <repositories>
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
     <build>
         <finalName>order-flow</finalName>
         <plugins>

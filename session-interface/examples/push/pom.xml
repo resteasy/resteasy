@@ -10,6 +10,12 @@
     <artifactId>push</artifactId>
     <packaging>war</packaging>
     <name>Push Subscriptions</name>
+    <repositories>
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
     <build>
         <finalName>order-flow</finalName>
         <plugins>

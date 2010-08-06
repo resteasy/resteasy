@@ -149,6 +149,14 @@ Content-Type: application/xml
     &lt;artifactId&gt;myapp&lt;/artifactId&gt;
     &lt;packaging&gt;war&lt;/packaging&gt;
     &lt;name&gt;My App&lt;/name&gt;
+    &lt;repositories&gt;
+        &lt;repository&gt;
+            &lt;id&gt;jboss&lt;/id&gt;
+            &lt;url&gt;http://repository.jboss.org/nexus/content/groups/public/&lt;/url&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
+
+
      &lt;build&gt;
             &lt;plugin&gt;
                 &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
@@ -224,7 +232,13 @@ Content-Type: application/xml
     &lt;artifactId&gt;myapp&lt;/artifactId&gt;
     &lt;packaging&gt;war&lt;/packaging&gt;
     &lt;name&gt;My App&lt;/name&gt;
-     &lt;build&gt;
+    &lt;repositories&gt;
+        &lt;repository&gt;
+            &lt;id&gt;jboss&lt;/id&gt;
+            &lt;url&gt;http://repository.jboss.org/nexus/content/groups/public/&lt;/url&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
+    &lt;build&gt;
             &lt;plugin&gt;
                 &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
                 &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
