@@ -190,6 +190,7 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void handleException(HttpRequest request, HttpResponse response, Exception e)
    {
+      // this is done to see if there is a mapper for ApplicationException, WriterException, ReaderException, etc..
       if (executeExactExceptionMapper(request, response, e)) return;
 
       // ApplicationException needs to come first as it does its own executeExceptionMapper() call
@@ -215,8 +216,15 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else
       {
-         logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
-         throw new UnhandledException(e);
+         if (executeExceptionMapper(request, response, e))
+         {
+            return;
+         }
+         else
+         {
+            logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+            throw new UnhandledException(e);
+         }
       }
    }
 
