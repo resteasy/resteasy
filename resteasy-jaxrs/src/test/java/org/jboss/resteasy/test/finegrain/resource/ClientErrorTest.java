@@ -7,7 +7,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -24,6 +23,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import java.io.IOException;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -90,6 +91,7 @@ public class ClientErrorTest
    @Test
    public void testComplex()
    {
+      // this tests a Accept failure match and that another method can match the accept
       HttpClient client = new HttpClient();
       GetMethod method = createGetMethod("/complex/match");
       method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/xml");
