@@ -1030,7 +1030,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected <T> T getProviderInstance(Class<? extends T> clazz)
    {
-      Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+      Constructor<?>[] constructors = clazz.getConstructors();
+      Constructor<?> constructor = null;
+      // prefer a no-arg constructor
+      for (Constructor con : constructors)
+      {
+         if (con.getParameterTypes() == null || con.getParameterTypes().length == 0)
+         {
+            constructor = con;
+            break;
+         }
+      }
+      // pick the first one if no no-arg constructor, hope that the injector factory can populate params.
+      if (constructor == null)
+      {
+         constructor = constructors[0];
+      }
       ConstructorInjector constructorInjector = injectorFactory.createConstructor(constructor);
 
       T provider = (T) constructorInjector.construct();
