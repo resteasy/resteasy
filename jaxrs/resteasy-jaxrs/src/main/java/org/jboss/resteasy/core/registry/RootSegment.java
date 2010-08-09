@@ -340,7 +340,8 @@ public class RootSegment extends Segment
          }
          catch (Failure e)
          {
-            lastFailure = e;
+            // try and propagate matched path that threw non-404 responses, i.e. MethodNotAllowed, etc.
+            if (lastFailure == null || lastFailure instanceof NotFoundException) lastFailure = e;
          }
       }
       for (PathParamSegment pathParamSegment : sortedLocatorExpressions)
@@ -351,7 +352,8 @@ public class RootSegment extends Segment
          }
          catch (Failure e)
          {
-            lastFailure = e;
+            // try and propagate matched path that threw non-404 responses, i.e. MethodNotAllowed, etc.
+            if (lastFailure == null || lastFailure instanceof NotFoundException) lastFailure = e;
          }
       }
       if (lastFailure != null) throw lastFailure;
