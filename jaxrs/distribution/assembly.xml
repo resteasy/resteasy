@@ -21,42 +21,92 @@
         <fileSet>
             <directory>../examples/spring-hibernate-contacts</directory>
             <outputDirectory>examples/spring-hibernate</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/ejb-integration</directory>
             <outputDirectory>examples/ejb-integration</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/jaxb-json</directory>
             <outputDirectory>examples/jaxb-json</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/guice-hello</directory>
             <outputDirectory>examples/guice-hello</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/jms-facade</directory>
             <outputDirectory>examples/jms-facade</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/simple</directory>
             <outputDirectory>examples/simple</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/async-job-service</directory>
             <outputDirectory>examples/async-job-service</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/resteasy-springMVC</directory>
             <outputDirectory>examples/resteasy-springMVC</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/api-clients</directory>
             <outputDirectory>examples/api-clients</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../examples/oreilly-workbook</directory>
             <outputDirectory>examples/oreilly-workbook</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../docbook/target/docbook/publish/en-US</directory>

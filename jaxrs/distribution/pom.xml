@@ -10,6 +10,10 @@
     <packaging>pom</packaging>
     <name>RESTEasy JAX-RS Distribution</name>
 
+    <modules>
+        <module>src-distribution</module>
+    </modules>
+
     <dependencies>
 
         <dependency>
