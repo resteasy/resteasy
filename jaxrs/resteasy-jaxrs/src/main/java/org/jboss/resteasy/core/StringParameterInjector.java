@@ -15,6 +15,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -142,6 +143,7 @@ public class StringParameterInjector
          try
          {
             constructor = baseType.getConstructor(String.class);
+            if (!Modifier.isPublic(constructor.getModifiers())) constructor = null;
          }
          catch (NoSuchMethodException ignored)
          {
@@ -151,11 +153,32 @@ public class StringParameterInjector
          {
             try
             {
-               valueOf = baseType.getDeclaredMethod("valueOf", String.class);
+               // this is for JAXB generated enums.
+               Method fromValue = baseType.getDeclaredMethod("fromValue", String.class);
+               if (Modifier.isPublic(fromValue.getModifiers()))
+               {
+                  for (Annotation ann : baseType.getAnnotations())
+                  {
+                     if (ann.annotationType().getName().equals("javax.xml.bind.annotation.XmlEnum"))
+                     {
+                        valueOf = fromValue;
+                     }
+                  }
+               }
             }
             catch (NoSuchMethodException e)
             {
-               throw new RuntimeException("Unable to find a constructor that takes a String param or a valueOf() method for " + getParamSignature() + " on " + target + " for basetype: " + baseType.getName());
+            }
+            if (valueOf == null)
+            {
+               try
+               {
+                  valueOf = baseType.getDeclaredMethod("valueOf", String.class);
+               }
+               catch (NoSuchMethodException e)
+               {
+                  throw new RuntimeException("Unable to find a constructor that takes a String param or a valueOf() method for " + getParamSignature() + " on " + target + " for basetype: " + baseType.getName());
+               }
             }
 
          }
