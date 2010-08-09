@@ -1,13 +1,17 @@
 <chapter id="json">
     <title>JSON Support via Jackson</title>
     <para>Besides the Jettision JAXB adapter for JSON, Resteasy also support integration with the Jackson project.
-        Many users find the output from Jackson much much nicer than the Badger format or Mapped format provided by Jettison.
-    Jackson lives at http://jackson.codehaus.org.  It allows you to easily marshal Java objects to and from JSON.
-    It has a Java Bean based model as well as JAXB like APIs.  Resteasy integrates with the JavaBean model as described
-    at this url:  http://jackson.codehaus.org/Tutorial.</para>
-    <para>While Jackson does come with its own JAX-RS integration.  Resteasy expanded it a little.  To include
-        it within your project, just add this maven dependency to your build.</para>
-<programlisting><![CDATA[
+        Many users find the output from Jackson much much nicer than the Badger format or Mapped format provided by
+        Jettison.
+        Jackson lives at http://jackson.codehaus.org. It allows you to easily marshal Java objects to and from JSON.
+        It has a Java Bean based model as well as JAXB like APIs. Resteasy integrates with the JavaBean model as
+        described
+        at this url: http://jackson.codehaus.org/Tutorial.
+    </para>
+    <para>While Jackson does come with its own JAX-RS integration. Resteasy expanded it a little. To include
+        it within your project, just add this maven dependency to your build.
+    </para>
+    <programlisting><![CDATA[
     <repository>
        <id>jboss</id>
        <url>http://repository.jboss.org/maven2</url>
@@ -17,15 +21,16 @@
     <dependency>
        <groupId>org.jboss.resteasy</groupId>
        <artifactId>resteasy-jackson-provider</artifactId>
-       <version>1.2.1.GA</version>
+       <version>2.0.1.GA</version>
     </dependency>
  ]]></programlisting>
     <para>The first extra piece that Resteasy added to the integration was
-    to support "application/*+json".  Jackson would only accept "application/json" and "text/json" as valid
-        media types.  This allows you to create json-based media types and still
-    let Jackson marshal things for you.  For example:</para>
-<programlisting>
-<![CDATA[
+        to support "application/*+json". Jackson would only accept "application/json" and "text/json" as valid
+        media types. This allows you to create json-based media types and still
+        let Jackson marshal things for you. For example:
+    </para>
+    <programlisting>
+        <![CDATA[
 @Path("/customers")
 public class MyService {
 
@@ -34,13 +39,15 @@ public class MyService {
    public Customer[] getCustomers() {}
 }
 ]]>
-</programlisting>
+    </programlisting>
     <para>Another problem that occurs is when you are using the Resteasy JAXB providers alongside Jackson.
-    You may want to use Jettision and JAXB to output your JSON instead of Jackson.  In this case, you must
-    either not install the Jackson provider, or use the annotation @org.jboss.resteasy.annotations.providers.NoJackson
-    on your JAXB annotated classes.  For example:</para>
-<programlisting>
-    <![CDATA[
+        You may want to use Jettision and JAXB to output your JSON instead of Jackson. In this case, you must
+        either not install the Jackson provider, or use the annotation
+        @org.jboss.resteasy.annotations.providers.NoJackson
+        on your JAXB annotated classes. For example:
+    </para>
+    <programlisting>
+        <![CDATA[
 
     @XmlRootElement
     @NoJackson
@@ -54,10 +61,11 @@ public class MyService {
        public Customer[] getCustomers() {}
     }
     ]]>
-</programlisting>
-        <para>
+    </programlisting>
+    <para>
         If you can't annotate the JAXB class with @NoJackson, then you can
-    use the annotation on a method parameter.  For example:</para>
+        use the annotation on a method parameter. For example:
+    </para>
     <programlisting>
         <![CDATA[
 
@@ -81,8 +89,8 @@ public class MyService {
     <sect1 id="Possible_Jackson_Problems">
         <title>Possible Conflict With JAXB Provider</title>
         <para>
-            If your Jackson classes are annotated with JAXB annotations and you  have the resteasy-jaxb-provider in your
-            classpath, you may trigger the Jettision JAXB marshalling code.  To turn off the JAXB json marshaller
+            If your Jackson classes are annotated with JAXB annotations and you have the resteasy-jaxb-provider in your
+            classpath, you may trigger the Jettision JAXB marshalling code. To turn off the JAXB json marshaller
             use the @org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes("application/*+json") on your
             classes.
         </para>

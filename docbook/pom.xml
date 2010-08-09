@@ -14,6 +14,11 @@
             <id>jboss</id>
             <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
+        <!--
+       <repository>
+           <id>repo1.maven.org</id>
+           <url>http://repo1.maven.org/maven2</url>
+       </repository> -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -23,6 +28,10 @@
         <pluginRepository>
             <id>maven2-repository.dev.java.net</id>
             <url>http://download.java.net/maven/2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>plugin repo1.maven.org</id>
+            <url>http://repo1.maven.org/maven2</url>
         </pluginRepository>
         <pluginRepository>
             <id>maven-repository.dev.java.net</id>
