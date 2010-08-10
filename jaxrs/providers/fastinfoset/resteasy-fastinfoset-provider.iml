@@ -11,8 +11,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="resteasy-jaxrs" scope="PROVIDED" />
-    <orderEntry type="module" module-name="jaxrs-api" scope="PROVIDED" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.jboss.resteasy:resteasy-jaxrs:2.1-SNAPSHOT.GA" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.jboss.resteasy:jaxrs-api:2.1-SNAPSHOT.GA" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-api:1.5.8" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-simple:1.5.8" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:jcl-over-slf4j:1.5.8" level="project" />
@@ -25,14 +25,14 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.httpcomponents:httpclient:4.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.httpcomponents:httpcore:4.0.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
-    <orderEntry type="module" module-name="resteasy-jaxb-provider" />
+    <orderEntry type="library" name="Maven: org.jboss.resteasy:resteasy-jaxb-provider:2.1-SNAPSHOT.GA" level="project" />
     <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-impl:2.1.12" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.1" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.stream:stax-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.sun.xml.stream:sjsxp:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.sun.xml.fastinfoset:FastInfoset:1.2.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
-    <orderEntry type="module" module-name="tjws" scope="TEST" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.jboss.resteasy:tjws:2.1-SNAPSHOT.GA" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.1" level="project" />
   </component>
 </module>
