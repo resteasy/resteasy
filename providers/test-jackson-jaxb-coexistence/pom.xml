@@ -44,6 +44,11 @@
             <artifactId>webserver</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>        
+			<scope>provided</scope>
+		</dependency>
     </dependencies>
 
 

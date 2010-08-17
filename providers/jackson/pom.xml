@@ -59,6 +59,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 
 
