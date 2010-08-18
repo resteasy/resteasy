@@ -35,5 +35,6 @@
         <module>oreilly-workbook</module>
         <module>oauth</module>
         <module>oauth-push-messaging</module>
+        <module>oauth-push-messaging-sso</module> 
     </modules>
 </project>
