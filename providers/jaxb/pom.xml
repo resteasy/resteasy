@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>1.2.1.GA_CP-SNAPSHOT</version>
+        <version>1.2.1.GA_CP02_CP-SNAPSHOT</version>
     </parent>
     <artifactId>resteasy-jaxb-provider</artifactId>
     <packaging>jar</packaging>
@@ -24,10 +24,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>

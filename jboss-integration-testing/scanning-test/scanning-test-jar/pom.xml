@@ -4,14 +4,14 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>scanning-test-jar</artifactId>
     <packaging>jar</packaging>
-    <version>1.2.1.GA_CP-SNAPSHOT</version>
+    <version>1.2.1.GA_CP02_CP-SNAPSHOT</version>
     <name>Scanning Test Jar</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.2.1.GA_CP-SNAPSHOT</version>
+            <version>1.2.1.GA_CP02_CP-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>
