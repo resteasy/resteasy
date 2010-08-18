@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Provider Servlet Web Application</display-name>
+	<servlet>
+		<servlet-name>Provider Servlet</servlet-name>
+		<servlet-class>org.jboss.resteasy.examples.openid.ProviderServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Provider Servlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	
+	<security-constraint>
+      <web-resource-collection>
+         <web-resource-name>TrustedRealms</web-resource-name>
+         <url-pattern>/trusted_realms/*</url-pattern>
+      </web-resource-collection>
+       <auth-constraint>
+         <role-name>JBossAdmin</role-name>
+      </auth-constraint>
+    </security-constraint>
+    
+    <login-config>
+      <auth-method>BASIC</auth-method>
+      <realm-name>TrustedRealms</realm-name>
+    </login-config>
+
+    <security-role>
+      <role-name>JBossAdmin</role-name>
+    </security-role>
+</web-app>

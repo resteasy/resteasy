@@ -21,8 +21,8 @@ Default port is 9095.
 Running the project and manually testing it:
 ===========================================
 - Run "mvn jetty:run" in one console. 
-  Alternatively, copy target/example-oauth.war to a web/app container, example :
-  "cp target/example-oauth.war $JBOSS_HOME/server/default/deploy" followed by
+  Alternatively, copy target/example-oauth-push-messaging.war to a web/app container, example :
+  "cp target/example-oauth-push-messaging.war $JBOSS_HOME/server/default/deploy" followed by
   "$JBOSS_HOME/bin/run.sh"   
 - Execute the client :
   mvn exec:java -Dexec.mainClass=org.jboss.resteasy.examples.oauth.Subscriber
