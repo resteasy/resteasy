@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.jboss.resteasy.examples</groupId>
         <artifactId>spring-hibernate-contacts</artifactId>
-        <version>1.2.1.GA_CP03</version>
+        <version>1.2.1.GA</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>spring-hibernate-contacts-services</artifactId>
     <packaging>war</packaging>
     <name/>
-    <version>1.2.1.GA_CP03</version>
+    <version>1.2.1.GA</version>
     <description/>
 
     <build>

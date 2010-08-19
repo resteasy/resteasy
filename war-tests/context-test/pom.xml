@@ -5,7 +5,7 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>context-test</artifactId>
     <packaging>war</packaging>
-    <version>1.2.1.GA_CP03</version>
+    <version>1.2.1.GA</version>
     <name>context-test</name>
     <url>http://maven.apache.org</url> 
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.2.1.GA_CP03</version>
+            <version>1.2.1.GA</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
