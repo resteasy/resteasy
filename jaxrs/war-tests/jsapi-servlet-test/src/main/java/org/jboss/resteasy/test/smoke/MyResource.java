@@ -128,6 +128,14 @@ public class MyResource
       return new Test("foo");
    }
 
+   @Path("json-star-mime")
+   @GET
+   @Produces({"application/*+json"})
+   public Test getJSONStarMIME()
+   {
+      return new Test("foo");
+   }
+
    @Path("xml")
    @GET
    @Produces({"application/xml"})
