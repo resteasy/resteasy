@@ -77,7 +77,7 @@ REST.Request.prototype = {
 					if(!contentTypeSet || REST._isXMLMIME(contentTypeSet))
 						data = this.entity;
 				}else if(this.entity instanceof Object){
-					if(!contentTypeSet || contentTypeSet == "application/json")
+					if(!contentTypeSet || REST._isJSONMIME(contentTypeSet))
 						data = JSON.stringify(this.entity);
 				}
 			}
@@ -149,7 +149,7 @@ REST._complete = function(request, callback){
 			if(contentType != null){
 				if(REST._isXMLMIME(contentType))
 					entity = request.responseXML;
-				else if(contentType == "application/json")
+				else if(REST._isJSONMIME(contentType))
 					entity = JSON.parse(request.responseText);
 				else
 					entity = request.responseText;
@@ -166,6 +166,12 @@ REST._isXMLMIME = function(contentType){
 			|| contentType == "application/xml"
 			|| (contentType.indexOf("application/") == 0
 				&& contentType.lastIndexOf("+xml") == (contentType.length - 4));
+}
+
+REST._isJSONMIME = function(contentType){
+	return contentType == "application/json"
+			|| (contentType.indexOf("application/") == 0
+				&& contentType.lastIndexOf("+json") == (contentType.length - 5));
 }
 
 //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2

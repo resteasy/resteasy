@@ -60,6 +60,11 @@ function testGetJSON() {
 	assertEquals(data['var'], "foo");
 }
 
+function testGetJSONStarMIME() {
+	var data = MyResource.getJSONStarMIME();
+	assertEquals(data['var'], "foo");
+}
+
 function testPutJSON() {
 	var toSend = {'var' : "ok"};
 	var data = MyResource.putJSON({$entity: toSend});
