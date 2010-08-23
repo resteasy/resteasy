@@ -11,7 +11,6 @@ import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.ClientProxy;
 import org.jboss.resteasy.client.core.extractors.DefaultEntityExtractorFactory;
-import org.jboss.resteasy.client.core.extractors.EntityExtractor;
 import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
 import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
@@ -65,15 +64,8 @@ public class ProxyFactory
 
       for (Method method : clazz.getMethods())
       {
-         Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
-         if (httpMethods == null || httpMethods.size() != 1)
-         {
-            throw new RuntimeException("You must use at least one, but no more than one http method annotation on: " + method.toString());
-         }
-         EntityExtractor extractor = extractorFactory.createExtractor(method);
-         ClientInvoker invoker = new ClientInvoker(baseUri, clazz, method, providerFactory, executor, extractor);
-         ClientInvokerInterceptorFactory.applyDefaultInterceptors(invoker, providerFactory, clazz, method);
-         invoker.setHttpMethod(httpMethods.iterator().next());
+         ClientInvoker invoker = createClientInvoker(clazz, method, baseUri, executor,
+               providerFactory, extractorFactory);
          methodMap.put(method, invoker);
       }
 
@@ -86,6 +78,21 @@ public class ProxyFactory
       clientProxy.setClazz(clazz);
 
       return (T) Proxy.newProxyInstance(clazz.getClassLoader(), intfs, clientProxy);
+   }
+
+   public static <T> ClientInvoker createClientInvoker(Class<T> clazz, Method method,
+         URI baseUri, ClientExecutor executor,
+         ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory)
+   {
+      Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
+      if (httpMethods == null || httpMethods.size() != 1)
+      {
+         throw new RuntimeException("You must use at least one, but no more than one http method annotation on: " + method.toString());
+      }
+      ClientInvoker invoker = new ClientInvoker(baseUri, clazz, method, providerFactory, executor, extractorFactory);
+      ClientInvokerInterceptorFactory.applyDefaultInterceptors(invoker, providerFactory, clazz, method);
+      invoker.setHttpMethod(httpMethods.iterator().next());
+      return invoker;
    }
 
 }
