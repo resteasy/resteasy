@@ -6,6 +6,7 @@ package org.jboss.resteasy.client;
  */
 public class ClientResponseFailure extends RuntimeException
 {
+   private static final long serialVersionUID = 7491381058971118249L;
    private ClientResponse response;
 
    public ClientResponseFailure(ClientResponse response)

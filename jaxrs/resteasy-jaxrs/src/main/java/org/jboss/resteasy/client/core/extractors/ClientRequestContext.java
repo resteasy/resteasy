@@ -1,4 +1,7 @@
+
 package org.jboss.resteasy.client.core.extractors;
+
+import java.net.URI;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.core.BaseClientResponse;
@@ -8,13 +11,17 @@ public class ClientRequestContext
    private ClientRequest request;
    private BaseClientResponse<?> clientResponse;
    private ClientErrorHandler errorHandler;
+   private EntityExtractorFactory extractorFactory;
+   private URI baseURI;
 
-   public ClientRequestContext(ClientRequest request, BaseClientResponse<?> clientResponse, ClientErrorHandler errorHandler)
+   public ClientRequestContext(ClientRequest request, BaseClientResponse<?> clientResponse,
+         ClientErrorHandler errorHandler, EntityExtractorFactory extractorFactory, URI baseURI)
    {
-      super();
       this.request = request;
       this.clientResponse = clientResponse;
       this.errorHandler = errorHandler;
+      this.extractorFactory = extractorFactory;
+      this.baseURI = baseURI;
    }
 
    public ClientRequest getRequest()
@@ -22,7 +29,6 @@ public class ClientRequestContext
       return request;
    }
 
-   @SuppressWarnings("unchecked")
    public BaseClientResponse getClientResponse()
    {
       return clientResponse;
@@ -32,5 +38,14 @@ public class ClientRequestContext
    {
       return errorHandler;
    }
-
+   
+   public EntityExtractorFactory getExtractorFactory()
+   {
+      return extractorFactory;
+   }
+   
+   public URI getBaseURI()
+   {
+      return baseURI;
+   }
 }

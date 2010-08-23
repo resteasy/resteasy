@@ -43,7 +43,7 @@ import static org.jboss.resteasy.util.HttpHeaderNames.*;
  */
 
 @SuppressWarnings("unchecked")
-public class ClientRequest extends ClientInterceptorRepositoryImpl
+public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cloneable
 {
    protected ResteasyProviderFactory providerFactory;
    private UriBuilderImpl uri;
@@ -762,4 +762,20 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl
       return finalUri;
    }
 
+   public ClientRequest createSubsequentRequest(URI uri)
+   {
+      try
+      {
+         ClientRequest clone = (ClientRequest) this.clone();
+         clone.clear();
+         clone.uri = new UriBuilderImpl();
+         clone.uri.uri(uri);
+         return clone;
+      }
+      catch (CloneNotSupportedException e)
+      {
+         // this shouldn't happen
+         throw new RuntimeException("ClientRequest doesn't implement Clonable.  Notify the RESTEasy staff right away.");
+      }
+   }
 }

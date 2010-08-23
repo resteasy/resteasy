@@ -14,6 +14,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.extractors.ClientErrorHandler;
 import org.jboss.resteasy.client.core.extractors.ClientRequestContext;
 import org.jboss.resteasy.client.core.extractors.EntityExtractor;
+import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
 import org.jboss.resteasy.client.core.marshallers.ClientMarshallerFactory;
 import org.jboss.resteasy.client.core.marshallers.Marshaller;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
@@ -37,9 +38,11 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
    protected ClientExecutor executor;
    protected boolean followRedirects;
    protected EntityExtractor extractor;
+   protected EntityExtractorFactory extractorFactory;
+   protected URI baseUri;
 
 
-   public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor, EntityExtractor extractor)
+   public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor, EntityExtractorFactory extractorFactory)
    {
       this.declaring = declaring;
       this.method = method;
@@ -49,10 +52,12 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       this.executor = executor;
       accepts = MediaTypeHelper.getProduces(declaring, method);
       this.uri = new UriBuilderImpl();
+      this.baseUri = baseUri;
       uri.uri(baseUri);
       if (declaring.isAnnotationPresent(Path.class)) uri.path(declaring);
       if (method.isAnnotationPresent(Path.class)) uri.path(method);
-      this.extractor = extractor; 
+      this.extractorFactory = extractorFactory;
+      this.extractor = extractorFactory.createExtractor(method); 
    }
 
    public MediaType getAccepts()
@@ -98,7 +103,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
          ClientErrorHandler errorHandler = new ClientErrorHandler(providerFactory.getClientErrorInterceptors());
          clientResponse.setAttributeExceptionsTo(method.toString());
          clientResponse.setAnnotations(method.getAnnotations());
-         ClientRequestContext clientRequestContext = new ClientRequestContext(request, clientResponse, errorHandler);
+         ClientRequestContext clientRequestContext = new ClientRequestContext(request, clientResponse, errorHandler, extractorFactory, baseUri);
          return extractor.extractEntity(clientRequestContext);
       }
       finally
