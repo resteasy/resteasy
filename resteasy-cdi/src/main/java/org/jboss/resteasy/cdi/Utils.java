@@ -3,9 +3,7 @@ package org.jboss.resteasy.cdi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.Stereotype;
-import javax.inject.Scope;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
@@ -89,43 +87,22 @@ public class Utils
     *         annotation or with a stereotype which (transitively) declares a
     *         scope
     */
-   public static boolean isScopeDefined(Class<?> clazz)
+   public static boolean isScopeDefined(Class<?> clazz, BeanManager manager)
    {
       for (Annotation annotation : clazz.getAnnotations())
       {
-         if (isScope(annotation))
+         if (manager.isScope(annotation.annotationType()))
          {
             return true;
          }
-         if (isStereotype(annotation))
+         if (manager.isStereotype(annotation.annotationType()))
          {
-            if (isScopeDefined(annotation.annotationType()))
+            if (isScopeDefined(annotation.annotationType(), manager))
             {
                return true;
             }
          }
       }
       return false;
-   }
-
-   /**
-    * Find out if a given annotation is a scope.
-    * 
-    * @return true if and only if a given annotation is a scope
-    */
-   private static boolean isScope(Annotation annotation)
-   {
-      Class<?> annotationType = annotation.annotationType();
-      return ((annotationType.isAnnotationPresent(NormalScope.class)) || (annotationType.isAnnotationPresent(Scope.class)));
-   }
-
-   /**
-    * Find out if a given annotation is a stereotype.
-    * 
-    * @return true if and only if a given annotation is a stereotype
-    */
-   private static boolean isStereotype(Annotation annotation)
-   {
-      return annotation.annotationType().isAnnotationPresent(Stereotype.class);
    }
 }

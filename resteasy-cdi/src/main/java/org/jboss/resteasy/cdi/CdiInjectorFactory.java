@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * @author Jozef Hartinger
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class CdiInjectorFactory implements InjectorFactory
 {
    private static final Logger log = LoggerFactory.getLogger(CdiInjectorFactory.class);
