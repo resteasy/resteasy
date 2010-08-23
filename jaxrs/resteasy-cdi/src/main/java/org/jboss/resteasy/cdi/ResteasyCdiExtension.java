@@ -10,6 +10,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -34,6 +36,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ResteasyCdiExtension implements Extension
 {
+   private BeanManager beanManager;
+   
    private final Logger log = LoggerFactory.getLogger(ResteasyCdiExtension.class);
    
    // Scope literals
@@ -48,6 +52,14 @@ public class ResteasyCdiExtension implements Extension
    
    private Map<Class<?>, Class<?>> sessionBeanInterface = new HashMap<Class<?>, Class<?>>();
 
+   /**
+    * Obtain BeanManager reference for future use. 
+    */
+   public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery event, BeanManager beanManager)
+   {
+      this.beanManager = beanManager;
+   }
+   
    /**
     * Set a default scope for each CDI bean which is a JAX-RS Resource, 
     * Provider or Application subclass.
@@ -85,7 +97,7 @@ public class ResteasyCdiExtension implements Extension
    
    protected <T> AnnotatedType<T> wrapAnnotatedType(AnnotatedType<T> type, Annotation scope)
    {
-      if (Utils.isScopeDefined(type.getJavaClass()))
+      if (Utils.isScopeDefined(type.getJavaClass(), beanManager))
       {
          log.debug("Bean {} has a scope defined.", type.getJavaClass());
          return type; // leave it as it is
