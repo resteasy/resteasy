@@ -1,8 +1,10 @@
 package org.jboss.resteasy.core;
 
+import java.lang.reflect.Constructor;
+
+import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -13,12 +15,25 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 public class FormInjector implements ValueInjector
 {
    private Class type;
-   private PropertyInjector injector;
+   private ConstructorInjector constructorInjector;
+   private PropertyInjector propertyInjector;
 
    public FormInjector(Class type, ResteasyProviderFactory factory)
    {
       this.type = type;
-      injector = factory.getInjectorFactory().createPropertyInjector(type);
+      Constructor<?> constructor = null;
+
+      try
+      {
+         constructor = type.getConstructor();
+      }
+      catch (NoSuchMethodException e)
+      {
+         throw new RuntimeException("Unable to instantiate @Form class. No no-arg constructor.");
+      }
+      
+      constructorInjector = factory.getInjectorFactory().createConstructor(constructor);
+      propertyInjector = factory.getInjectorFactory().createPropertyInjector(type);
 
    }
 
@@ -29,20 +44,8 @@ public class FormInjector implements ValueInjector
 
    public Object inject(HttpRequest request, HttpResponse response)
    {
-      Object target = null;
-      try
-      {
-         target = type.newInstance();
-      }
-      catch (InstantiationException e)
-      {
-         throw new InternalServerErrorException("Failed to instantiate @Form class", e.getCause());
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new InternalServerErrorException("Failed to instantiate @Form class", e);
-      }
-      injector.inject(request, response, target);
+      Object target = constructorInjector.construct();
+      propertyInjector.inject(request, response, target);
       return target;
    }
 }
