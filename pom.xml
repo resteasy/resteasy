@@ -10,6 +10,8 @@
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
+		<dep.jaxb-impl.version>2.1.12</dep.jaxb-impl.version>
+		<dep.jettison.version>1.1</dep.jettison.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -152,7 +154,7 @@
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
-                <version>2.1.12</version>
+                <version>${dep.jaxb-impl.version}</version>
             </dependency>
 
             <dependency>
@@ -212,8 +214,7 @@
             <dependency>
                 <groupId>org.codehaus.jettison</groupId>
                 <artifactId>jettison</artifactId>
-                <version>1.2</version>
-				<scope>provided</scope>
+                <version>${dep.jettison.version}</version>
                 <exclusions>
                     <!-- This results in duplicate stax-api jars. This is the older
             one. A newer is brought in by com.sun.xml.bind:jaxb-impl -->
