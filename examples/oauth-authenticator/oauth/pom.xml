@@ -11,7 +11,7 @@
     <description/>
 
     <properties>
-        <webapp.port>9095</webapp.port>
+        <webapp.port>8080</webapp.port>
     </properties>
     <repositories>
         <repository>
