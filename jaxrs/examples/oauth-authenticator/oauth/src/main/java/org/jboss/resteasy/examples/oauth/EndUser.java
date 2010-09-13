@@ -2,6 +2,7 @@ package org.jboss.resteasy.examples.oauth;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,7 +20,6 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.jboss.resteasy.auth.oauth.OAuthUtils;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.xml.sax.InputSource;
 
@@ -98,7 +98,7 @@ public class EndUser
       HttpClient client = new HttpClient();
       
       GetMethod method = new GetMethod(ConsumerWebAppURL
-              + "?scope=" + OAuthUtils.encodeForOAuth(EndUserResourceURL));
+              + "?scope=" + URLEncoder.encode(EndUserResourceURL, "UTF-8"));
       method.setFollowRedirects(false);
       int status = client.executeMethod(method);
       if (302 != status) {
