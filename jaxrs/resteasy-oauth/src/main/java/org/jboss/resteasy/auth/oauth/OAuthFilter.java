@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 
@@ -54,68 +52,50 @@ public class OAuthFilter implements Filter {
 	protected void _doFilter(HttpServletRequest request, HttpServletResponse response,
 			FilterChain filterChain) throws IOException, ServletException {
 	    
-	    String requestURI = request.getRequestURL().toString();
-	    
-		logger.debug("Filtering " + request.getMethod() + " " + requestURI);
+	    logger.debug("Filtering " + request.getMethod() + " " + request.getRequestURL().toString());
+
 		OAuthMessage message = OAuthUtils.readMessage(request);
-		try{
+        try{
 
-			message.requireParameters(OAuth.OAUTH_CONSUMER_KEY,
-					OAuth.OAUTH_SIGNATURE_METHOD,
-					OAuth.OAUTH_SIGNATURE,
-					OAuth.OAUTH_TIMESTAMP,
-					OAuth.OAUTH_NONCE);
+            message.requireParameters(OAuth.OAUTH_CONSUMER_KEY,
+                    OAuth.OAUTH_SIGNATURE_METHOD,
+                    OAuth.OAUTH_SIGNATURE,
+                    OAuth.OAUTH_TIMESTAMP,
+                    OAuth.OAUTH_NONCE);
 
-			logger.debug("Parameters present");
-			String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
-			
-			String accessTokenString = message.getParameter(OAuth.OAUTH_TOKEN);
-			if (accessTokenString != null) { 
-			
-    			// build some info for verification
-    			OAuthToken accessToken = provider.getAccessToken(consumerKey, accessTokenString);
-    			OAuthConsumer _consumer = new OAuthConsumer(null, consumerKey, accessToken.getConsumer().getSecret(), null);
-    			OAuthAccessor accessor = new OAuthAccessor(_consumer);
-    			accessor.accessToken = accessTokenString;
-    			accessor.tokenSecret = accessToken.getSecret();
-    			
-    			// validate the message
-    			validator.validateMessage(message, accessor, accessToken);
-    			if (!validateScopes(requestURI, accessToken.getScopes())) {
-    			    OAuthUtils.makeErrorResponse(response, "Wrong scope", HttpURLConnection.HTTP_BAD_REQUEST, provider);
-    			    return;
-    			}
-    			request = createSecurityContext(request, accessToken.getConsumer(), accessToken);
-    		} else {
-			    // verify if it is a valid 2-leg OAuth request
-			    org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = provider.getConsumer(consumerKey);
-	            String[] scopes = consumer.getScopes();
-	            if (scopes == null || !validateScopes(request.getRequestURL().toString(), scopes)) {
-	                OAuthUtils.makeErrorResponse(response, "Wrong scope", HttpURLConnection.HTTP_BAD_REQUEST, provider);
-	                return;
-	            }
-	            // build some info for verification
-                OAuthConsumer _consumer = new OAuthConsumer(null, consumerKey, consumer.getSecret(), null);
-                OAuthAccessor accessor = new OAuthAccessor(_consumer);
-                // validate the message
-                validator.validateMessage(message, accessor, null);
-                request = createSecurityContext(request, consumer, null);
-			}
-			
-			// let the request through with the new credentials
-			logger.debug("doFilter");
-			filterChain.doFilter(request, response);
-		} catch (OAuthException x) {
-			OAuthUtils.makeErrorResponse(response, x.getMessage(), x.getHttpCode(), provider);
-		} catch (OAuthProblemException x) {
-			OAuthUtils.makeErrorResponse(response, x.getProblem(), OAuthUtils.getHttpCode(x), provider);
-		} catch (Exception x) {
-			logger.error("Exception ", x);
-			OAuthUtils.makeErrorResponse(response, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
-		}
-
+            String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
+            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = provider.getConsumer(consumerKey);
+        
+            OAuthToken accessToken = null;
+            String accessTokenString = message.getParameter(OAuth.OAUTH_TOKEN);
+            
+            if (accessTokenString != null) { 
+                accessToken = provider.getAccessToken(consumer.getKey(), accessTokenString);
+                OAuthUtils.validateRequestWithAccessToken(
+                        request, message, accessToken, validator, consumer);
+            } else {
+                OAuthUtils.validateRequestWithoutAccessToken(
+                        request, message, validator, consumer);
+            }
+            
+            request = createSecurityContext(request, consumer, accessToken);
+            
+            // let the request through with the new credentials
+            logger.debug("doFilter");
+            filterChain.doFilter(request, response);
+            
+        } catch (OAuthException x) {
+            OAuthUtils.makeErrorResponse(response, x.getMessage(), x.getHttpCode(), provider);
+        } catch (OAuthProblemException x) {
+            OAuthUtils.makeErrorResponse(response, x.getProblem(), OAuthUtils.getHttpCode(x), provider);
+        } catch (Exception x) {
+            OAuthUtils.makeErrorResponse(response, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
+        }
+		
 	}
 
+	
+	
 	protected HttpServletRequest createSecurityContext(HttpServletRequest request, 
 	                                                   org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
 	                                                   OAuthToken accessToken) 
@@ -123,15 +103,5 @@ public class OAuthFilter implements Filter {
 	    return request;
 	}
 	
-	private boolean validateScopes(String requestURI, String[] scopes) {
-	    if (scopes == null) {
-	        return true;
-	    }
-        for (String scope : scopes) {
-            if (requestURI.startsWith(scope)) {
-                return true;
-            }
-        }
-        return false; 
-	}
+	
 }

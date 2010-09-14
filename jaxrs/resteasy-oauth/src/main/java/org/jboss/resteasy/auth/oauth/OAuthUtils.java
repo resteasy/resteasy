@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.OAuth.Parameter;
@@ -192,4 +194,60 @@ public class OAuthUtils {
 		context.setAttribute(ATTR_OAUTH_VALIDATOR, validator);
 		return validator;
 	}
+	
+	public static void validateRequestWithAccessToken(
+	        HttpServletRequest request,
+            OAuthMessage message,
+            OAuthToken accessToken,
+            OAuthValidator validator,
+            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer) throws Exception {
+	    
+        OAuthConsumer _consumer = new OAuthConsumer(null, consumer.getKey(), accessToken.getConsumer().getSecret(), null);
+        OAuthAccessor accessor = new OAuthAccessor(_consumer);
+        accessor.accessToken = accessToken.getToken();
+        accessor.tokenSecret = accessToken.getSecret();
+        
+        // validate the message
+        validator.validateMessage(message, accessor, accessToken);
+        if (!OAuthUtils.validateUriScopes(request.getRequestURL().toString(), accessToken.getScopes())) {
+            throw new OAuthException(HttpURLConnection.HTTP_BAD_REQUEST, "Wrong URI Scope");
+        }
+	}
+	
+	/**
+	 * Validates if a given request is a valid 2-leg oAuth request
+	 */
+	public static void validateRequestWithoutAccessToken(
+	        HttpServletRequest request,
+	        OAuthMessage message,
+	        OAuthValidator validator,
+	        org.jboss.resteasy.auth.oauth.OAuthConsumer consumer) throws Exception 
+	{
+	    
+	    String[] scopes = consumer.getScopes();
+        if (scopes == null || !validateUriScopes(request.getRequestURL().toString(), scopes)) {
+            throw new OAuthException(HttpURLConnection.HTTP_BAD_REQUEST, "Wrong URI Scope");
+        }
+        // build some info for verification
+        OAuthConsumer _consumer = new OAuthConsumer(null, consumer.getKey(), consumer.getSecret(), null);
+        OAuthAccessor accessor = new OAuthAccessor(_consumer);
+        // validate the message
+        validator.validateMessage(message, accessor, null);
+	}
+	
+	/**
+	 * Validates if a current request URI matches URI provided by the consumer at the
+	 * registration time or during the request token validation request 
+	 */
+	public static boolean validateUriScopes(String requestURI, String[] scopes) {
+        if (scopes == null) {
+            return true;
+        }
+        for (String scope : scopes) {
+            if (requestURI.startsWith(scope)) {
+                return true;
+            }
+        }
+        return false; 
+    }
 }
