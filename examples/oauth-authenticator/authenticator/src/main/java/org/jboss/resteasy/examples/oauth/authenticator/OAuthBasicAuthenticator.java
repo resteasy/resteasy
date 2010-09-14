@@ -18,8 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 
@@ -177,8 +175,6 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
     
     protected void doAuthenticateOAuth(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         
-        String requestURI = request.getRequestURL().toString();
-        
         OAuthMessage message = OAuthUtils.readMessage(request);
         try{
 
@@ -189,41 +185,23 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
                     OAuth.OAUTH_NONCE);
 
             String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
-            
+            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = oauthProvider.getConsumer(consumerKey);
+        
+            OAuthToken accessToken = null;
             String accessTokenString = message.getParameter(OAuth.OAUTH_TOKEN);
-            if (accessTokenString != null) { 
             
-                // build some info for verification
-                OAuthToken accessToken = oauthProvider.getAccessToken(consumerKey, accessTokenString);
-                OAuthConsumer _consumer = new OAuthConsumer(null, consumerKey, accessToken.getConsumer().getSecret(), null);
-                OAuthAccessor accessor = new OAuthAccessor(_consumer);
-                accessor.accessToken = accessTokenString;
-                accessor.tokenSecret = accessToken.getSecret();
-                
-                // validate the message
-                validator.validateMessage(message, accessor, accessToken);
-                if (!validateScopes(requestURI, accessToken.getScopes())) {
-                    OAuthUtils.makeErrorResponse(response, "Wrong scope", HttpURLConnection.HTTP_BAD_REQUEST, oauthProvider);
-                    return;
-                }
-                createPrincipalAndRoles(request, accessToken.getConsumer(), accessToken);
-                getNext().invoke((Request)request, (Response)response);
+            if (accessTokenString != null) { 
+                accessToken = oauthProvider.getAccessToken(consumer.getKey(), accessTokenString);
+                OAuthUtils.validateRequestWithAccessToken(
+                        request, message, accessToken, validator, consumer);
             } else {
-                // verify if it is a valid 2-leg OAuth request
-                org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = oauthProvider.getConsumer(consumerKey);
-                String[] scopes = consumer.getScopes();
-                if (scopes == null || !validateScopes(request.getRequestURL().toString(), scopes)) {
-                    OAuthUtils.makeErrorResponse(response, "Wrong scope", HttpURLConnection.HTTP_BAD_REQUEST, oauthProvider);
-                    return;
-                }
-                // build some info for verification
-                OAuthConsumer _consumer = new OAuthConsumer(null, consumerKey, consumer.getSecret(), null);
-                OAuthAccessor accessor = new OAuthAccessor(_consumer);
-                // validate the message
-                validator.validateMessage(message, accessor, null);
-                createPrincipalAndRoles(request, consumer, null);
-                getNext().invoke((Request)request, (Response)response);
+                OAuthUtils.validateRequestWithoutAccessToken(
+                        request, message, validator, consumer);
             }
+            
+            createPrincipalAndRoles(request, consumer, accessToken);
+            getNext().invoke((Request)request, (Response)response);
+            
         } catch (OAuthException x) {
             OAuthUtils.makeErrorResponse(response, x.getMessage(), x.getHttpCode(), oauthProvider);
         } catch (OAuthProblemException x) {
@@ -231,20 +209,9 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
         } catch (Exception x) {
             OAuthUtils.makeErrorResponse(response, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, oauthProvider);
         }
+        
     }
 
-    private boolean validateScopes(String requestURI, String[] scopes) {
-        if (scopes == null) {
-            return true;
-        }
-        for (String scope : scopes) {
-            if (requestURI.startsWith(scope)) {
-                return true;
-            }
-        }
-        return false; 
-    }
-    
     protected void createPrincipalAndRoles(HttpServletRequest request, 
             org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
             OAuthToken accessToken) 
