@@ -75,9 +75,17 @@
         </dependency>
         <dependency>
           <groupId>org.openid4java</groupId>
-          <artifactId>openid4java</artifactId>
+          <artifactId>openid4java-consumer</artifactId>
           <version>0.9.5</version>
+          <exclusions> 
+             <exclusion>
+                 <groupId>net.sourceforge.nekohtml</groupId>
+                 <artifactId>nekohtml</artifactId>
+             </exclusion>
+          </exclusions>
         </dependency>
+
+        
     </dependencies>
 
     <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this

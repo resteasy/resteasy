@@ -42,8 +42,27 @@
         </dependency>
         <dependency>
           <groupId>org.openid4java</groupId>
-          <artifactId>openid4java</artifactId>
+          <artifactId>openid4java-server</artifactId>
           <version>0.9.5</version>
+          <exclusions> 
+             <exclusion>
+                 <groupId>org.openid4java</groupId>
+                 <artifactId>openid4java-server-JdbcServerAssociationStore</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.openid4java</groupId>
+                 <artifactId>openid4java-server-SampleServer</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.openid4java</groupId>
+                 <artifactId>openid4java-consumer-SampleConsumer</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>net.sourceforge.nekohtml</groupId>
+                 <artifactId>nekohtml</artifactId>
+             </exclusion>
+
+          </exclusions>
         </dependency>
     </dependencies>
 
