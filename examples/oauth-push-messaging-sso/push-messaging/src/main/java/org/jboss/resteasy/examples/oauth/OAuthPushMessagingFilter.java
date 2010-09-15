@@ -13,11 +13,15 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.jboss.resteasy.auth.oauth.OAuthConsumer;
 import org.jboss.resteasy.auth.oauth.OAuthFilter;
+import org.jboss.resteasy.auth.oauth.OAuthPermissions;
 import org.jboss.resteasy.auth.oauth.OAuthToken;
 
 public class OAuthPushMessagingFilter extends OAuthFilter {
 
+    private static final String DEFAULT_CONSUMER_ROLE = "user";
+    
     private static Connection conn;
     
     static {
@@ -46,11 +50,10 @@ public class OAuthPushMessagingFilter extends OAuthFilter {
     }
     
     protected HttpServletRequest createSecurityContext(HttpServletRequest request, 
-            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
-            OAuthToken accessToken) 
+            OAuthConsumer consumer, OAuthToken accessToken) 
     {
         final Principal principal = new SimplePrincipal(consumer.getKey());
-        final Set<String> roles = getRoles(consumer.getKey());
+        final Set<String> roles = getRoles(consumer);
         
         return new HttpServletRequestWrapper(request){
             @Override
@@ -84,31 +87,16 @@ public class OAuthPushMessagingFilter extends OAuthFilter {
     }
     
         
-    private Set<String> getRoles(String consumerKey) {
+    private Set<String> getRoles(OAuthConsumer consumer) {
         Set<String> roles = new HashSet<String>();
         // get the default roles which may've been allocated to a consumer
-        try {
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT roles FROM consumers WHERE"
-                    + " key = '" + consumerKey + "'");
-            if (rs.next()) {
-                String rolesValues = rs.getString("roles");
-                roles.add(rolesValues);
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException("No roles exist for consumer key " + consumerKey);
-        }
+        roles.add(DEFAULT_CONSUMER_ROLE);
         // get the public permissions if any 
-        try {
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT permissions FROM consumers WHERE"
-                    + " key = '" + consumerKey + "'");
-            if (rs.next()) {
-                String permissions = rs.getString("permissions");
-                roles.addAll(convertPermissionsToRoles(permissions));
+        OAuthPermissions permissions = consumer.getPermissions();
+        if (permissions != null) {
+            for (String permission : permissions.getPermissions()) {    
+                roles.addAll(convertPermissionsToRoles(permission));
             }
-        } catch (SQLException ex) {
-            throw new RuntimeException("No roles exist for consumer key " + consumerKey);
         }
         return roles;
     }

@@ -18,6 +18,8 @@ import org.jboss.resteasy.auth.oauth.OAuthToken;
 
 public class OAuthDBFilter extends OAuthFilter {
 
+    private static final String DEFAULT_CONSUMER_ROLE = "user";
+    
     private static Connection conn;
     static {
         Properties props = new Properties();
@@ -51,7 +53,8 @@ public class OAuthDBFilter extends OAuthFilter {
         // Alternatively we can have an alias associated with a given key
         // Example: www.messageing.service : kermit
         final Principal principal = new SimplePrincipal(consumer.getKey());
-        final Set<String> roles = getRoles(consumer.getKey());
+        final Set<String> roles = new HashSet<String>();
+        roles.add(DEFAULT_CONSUMER_ROLE);
         roles.addAll(convertPermissionsToRoles(accessToken.getPermissions()[0]));
         return new HttpServletRequestWrapper(request){
             @Override
@@ -82,23 +85,6 @@ public class OAuthDBFilter extends OAuthFilter {
             return name;
         }
         
-    }
-    
-        
-    private Set<String> getRoles(String consumerKey) {
-        Set<String> roles = new HashSet<String>();    
-        try {
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT roles FROM consumers WHERE"
-                    + " key = '" + consumerKey + "'");
-            if (rs.next()) {
-                String rolesValues = rs.getString("roles");
-                roles.add(rolesValues);
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException("No roles exist for consumer key " + consumerKey);
-        }
-        return roles;
     }
     
     private Set<String> convertPermissionsToRoles(String permissions) {
