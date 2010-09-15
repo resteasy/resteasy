@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,11 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
 
     private static final String INFO =
         "org.jboss.resteasy.examples.oauth.OAuthBasicAuthenticator/1.0";
+
+    private static final Set<String> SUPPORTED_AUTH_METHODS = 
+        new HashSet<String>(Arrays.asList("oauth", "basic", "oauth+basic", "basic+oauth"));
+    
+    private static final String DEFAULT_CONSUMER_ROLE = "user";
     
     private BasicAuthenticator ba = new BasicAuthenticator();
 
@@ -124,6 +130,10 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
     protected boolean authenticate(Request request, HttpServletResponse response, LoginConfig config)
             throws IOException {
         
+        String authMethod = config.getAuthMethod();
+        if (!SUPPORTED_AUTH_METHODS.contains(authMethod.toLowerCase())) {
+            throw new SecurityException("Unsupported auth method : " + authMethod);    
+        }
         
         String authorization = request.getHeader("Authorization");
         if (authorization != null) 
@@ -136,7 +146,7 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
             try {
                 doAuthenticateOAuth(request, response);
             } catch (ServletException ex) {
-                throw new IOException();
+                throw new IOException(ex);
             }
         }
         return false;
@@ -216,7 +226,10 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
             org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
             OAuthToken accessToken) 
     {
-        final List<String> roles = getRoles(consumer.getKey());
+        
+        List<String> roles = new ArrayList<String>();
+        // get the default roles which may've been allocated to a consumer
+        roles.add(DEFAULT_CONSUMER_ROLE);
         roles.addAll(convertPermissionsToRoles(accessToken.getPermissions()[0]));
         Realm realm = new OAuthRealm(consumer.getKey(), roles);
         context.setRealm(realm);
@@ -224,22 +237,6 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
         final Principal principal = new GenericPrincipal(realm, consumer.getKey(), "", roles);
         ((Request)request).setUserPrincipal(principal);
         ((Request)request).setAuthType("OAuth");
-    }
-    
-    private List<String> getRoles(String consumerKey) {
-        List<String> roles = new ArrayList<String>();    
-        try {
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT roles FROM consumers WHERE"
-                    + " key = '" + consumerKey + "'");
-            if (rs.next()) {
-                String rolesValues = rs.getString("roles");
-                roles.add(rolesValues);
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException("No roles exist for consumer key " + consumerKey);
-        }
-        return roles;
     }
     
     private Set<String> convertPermissionsToRoles(String permissions) {

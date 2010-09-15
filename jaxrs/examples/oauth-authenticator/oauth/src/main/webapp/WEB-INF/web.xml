@@ -71,7 +71,7 @@
     </security-constraint>
         
     <login-config>
-      <auth-method>BASIC</auth-method>
+      <auth-method>BASIC+OAUTH</auth-method>
       <realm-name>TokenAuthorization</realm-name>
     </login-config>
 

@@ -22,12 +22,6 @@ import org.jboss.resteasy.auth.oauth.OAuthToken;
  **/
 public class OAuthDBProvider implements OAuthProvider {
 
-    /*
-     * Default role assigned to newly registered consumers.
-     * Roles can also be assigned depending on the URI id of consumers, etc    
-     */
-    
-    private static final String DEFAULT_CONSUMER_ROLE = "user"; 
     
     private static Connection conn;
     static {
@@ -57,7 +51,7 @@ public class OAuthDBProvider implements OAuthProvider {
             update(
                 "CREATE TABLE consumers ( id INTEGER IDENTITY, key VARCHAR(256)" + 
                 ", secret VARCHAR(256), display_name VARCHAR(256), connect_uri VARCHAR(256),"
-                + " roles VARCHAR(256), scopes VARCHAR(256), unique(key))");
+                + " scopes VARCHAR(256), unique(key))");
             
             // request tokens
             update(
@@ -259,11 +253,11 @@ public class OAuthDBProvider implements OAuthProvider {
         String secret = makeRandomString();
         
         try {
-               update("INSERT INTO consumers(key,secret,display_name,connect_uri,roles) "
+               update("INSERT INTO consumers(key,secret,display_name,connect_uri) "
                        + "VALUES('" + consumerKey + "', '" + secret + "'" 
                        + ", " + (displayName == null ? null : "'" + displayName + "'") 
                        + ", " + (connectURI == null ? null : "'" + connectURI + "'")
-                       + ",'" + DEFAULT_CONSUMER_ROLE + "'" + ")");
+                       + ")");
             
         } catch (SQLException ex) {
             throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 

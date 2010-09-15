@@ -22,13 +22,6 @@ import org.jboss.resteasy.auth.oauth.OAuthToken;
  **/
 public class OAuthPushMessagingProvider implements OAuthProvider {
 
-    /*
-     * Default role assigned to newly registered consumers.
-     * Roles can also be assigned depending on the URI id of consumers, etc    
-     */
-    
-    private static final String DEFAULT_CONSUMER_ROLE = "user"; 
-    
     private static Connection conn;
     static {
         Properties props = new Properties();
@@ -66,7 +59,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
             update(
                 "CREATE TABLE consumers ( id INTEGER IDENTITY, key VARCHAR(256)" + 
                 ", secret VARCHAR(256), display_name VARCHAR(256), connect_uri VARCHAR(256), "
-                + "roles VARCHAR(256), scopes VARCHAR(256), permissions VARCHAR(256), perm_type VARCHAR(256), unique(key))");
+                + "scopes VARCHAR(256), permissions VARCHAR(256), perm_type VARCHAR(256), unique(key))");
             
             // request tokens
             update(
@@ -152,7 +145,11 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 String displayName = rs.getString("display_name");
                 String connectURI = rs.getString("connect_uri");
                 String scopes = rs.getString("scopes");
-                OAuthConsumer consumer = new OAuthConsumer(key, secret, displayName, connectURI);
+                
+                String perms = rs.getString("permissions");
+                OAuthConsumer consumer = 
+                    new OAuthConsumer(key, secret, displayName, connectURI, 
+                        perms != null ? new OAuthPermissions("custom", new String[]{perms}) : null);
                 consumer.setScopes(new String[]{scopes});
                 return consumer;
             } else {
@@ -258,11 +255,11 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
         String secret = makeRandomString();
         
         try {
-               update("INSERT INTO consumers(key,secret,display_name,connect_uri,roles) "
+               update("INSERT INTO consumers(key,secret,display_name,connect_uri) "
                        + "VALUES('" + consumerKey + "', '" + secret + "'" 
                        + ", " + (displayName == null ? null : "'" + displayName + "'") 
                        + ", " + (connectURI == null ? null : "'" + connectURI + "'")
-                       + ",'" + DEFAULT_CONSUMER_ROLE + "'" + ")");
+                       + ")");
             
         } catch (SQLException ex) {
             throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 
