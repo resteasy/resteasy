@@ -29,10 +29,9 @@
     <filter>
 		<filter-name>OAuth Filter</filter-name>
 		<!-- Enable this filter when deploying to JBoss only -->
-		<!-- 
+                <!-- 
 		<filter-class>org.jboss.resteasy.examples.oauth.OAuthBasicAuthenticationFilter</filter-class>
-		-->
-		
+                -->
 		<filter-class>org.jboss.resteasy.examples.oauth.OAuthDBFilter</filter-class>
 		
 	</filter>

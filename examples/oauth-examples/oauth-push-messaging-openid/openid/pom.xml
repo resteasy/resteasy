@@ -4,15 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
-    <artifactId>examples-oauth-push-messaging-sso</artifactId>
+    <artifactId>examples-oauth-push-messaging-openid-provider</artifactId>
     <version>2.1-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>Example: OAuth Push Messaging Single SignOn</name>
+    <name>Example: OAuth Push Messaging OpenId Provider</name>
     <description/>
 
     <properties>
-        <webapp.port>9095</webapp.port>
-        <openid.port>9096</openid.port>
+        <webapp.port>9096</webapp.port>
+        <preassembly.dir>${basedir}/target/discovery</preassembly.dir>
     </properties>
     <repositories>
         <repository>
@@ -35,57 +35,35 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-oauth</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>1.8.0.7</version>
-        </dependency>
-        <dependency>
           <groupId>org.openid4java</groupId>
-          <artifactId>openid4java-consumer</artifactId>
+          <artifactId>openid4java-server</artifactId>
           <version>0.9.5</version>
           <exclusions> 
+             <exclusion>
+                 <groupId>org.openid4java</groupId>
+                 <artifactId>openid4java-server-JdbcServerAssociationStore</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.openid4java</groupId>
+                 <artifactId>openid4java-server-SampleServer</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.openid4java</groupId>
+                 <artifactId>openid4java-consumer-SampleConsumer</artifactId>
+             </exclusion>
              <exclusion>
                  <groupId>net.sourceforge.nekohtml</groupId>
                  <artifactId>nekohtml</artifactId>
              </exclusion>
+
           </exclusions>
         </dependency>
-
-        
     </dependencies>
 
     <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
@@ -99,7 +77,7 @@
     </distributionManagement>
 
     <build>
-        <finalName>examples-oauth-push-messaging-sso</finalName>
+        <finalName>provider-servlet</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -114,8 +92,9 @@
                 <version>6.1.15</version>
                 <configuration>
                     <!-- By default the artifactId is taken, override it with something simple -->
-                    <contextPath>/examples-oauth-push-messaging-sso</contextPath>
+                    <contextPath>/provider-servlet</contextPath>
                     <scanIntervalSeconds>2</scanIntervalSeconds>
+                    <webAppSourceDirectory>${basedir}/target/provider-servlet</webAppSourceDirectory>
                     <connectors>
                         <connector
                                 implementation="org.mortbay.jetty.nio.SelectChannelConnector">
@@ -131,8 +110,15 @@
                             </value>
                         </systemProperty>
                     </systemProperties>
+                    <userRealms>
+                        <userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
+                            <name>TrustedRealms</name>
+                            <config>src/test/resources/jetty-realm.properties</config>
+                        </userRealm>
+                    </userRealms>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -141,6 +127,42 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+  	          <groupId>org.apache.maven.plugins</groupId>
+	          <artifactId>maven-war-plugin</artifactId>
+  	          <configuration>
+	            <webResources>
+	              <resource>
+	                <!-- copy resources from this folder into the webapp before packaging -->
+	                <directory>${preassembly.dir}</directory>
+	              </resource>
+	            </webResources>
+	          </configuration>
+	        </plugin>
+	 
+	        <plugin>
+	          <artifactId>maven-antrun-plugin</artifactId>
+	          <executions>
+	            <execution>
+	             <phase>process-resources</phase>
+	             <configuration>
+	              <tasks>
+	                <copy
+	                    file="${basedir}/src/main/resources/discovery/discovery.xml"
+	                    todir="${preassembly.dir}/WEB-INF"/>
+	                <replace
+	                    summary="true"
+	                    file="${preassembly.dir}/WEB-INF/discovery.xml"
+	                    token="${webapp.port.replace}" value="${webapp.port}"/>
+	              </tasks>
+	            </configuration>
+	            <goals>
+	              <goal>run</goal>
+	            </goals>
+	          </execution>
+	        </executions>
+	      </plugin>
         </plugins>
         <resources>
             <resource>
