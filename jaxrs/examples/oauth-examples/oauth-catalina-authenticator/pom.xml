@@ -4,16 +4,13 @@
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>2.1-SNAPSHOT</version>
     </parent>
-    <name>Resteasy Examples</name>
-    <url>http://wiki.jboss.org/wiki/Wiki.jsp?page=RESTeasyJAXRS</url>
+    <name>OAuth With Catalina Authenticator</name>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>testable-examples-pom</artifactId>
+    <artifactId>oauth-examples-authenticator-pom</artifactId>
     <packaging>pom</packaging>
 
-    <!-- this is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
-         pom.xml as a template -->
     <build>
         <plugins>
             <plugin>
@@ -27,12 +24,7 @@
     </build>
 
     <modules>
-        <module>jaxb-json</module>
-        <module>guice-hello</module>
-        <module>async-job-service</module>
-        <module>api-clients</module>
-        <module>resteasy-springMVC</module>
-        <module>oreilly-workbook</module>
-        <module>oauth-examples</module>
+        <module>oauth</module>
+        <module>authenticator</module>
     </modules>
 </project>
