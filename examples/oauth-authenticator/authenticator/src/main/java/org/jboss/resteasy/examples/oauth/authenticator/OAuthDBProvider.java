@@ -6,12 +6,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jboss.resteasy.auth.oauth.OAuthConsumer;
 import org.jboss.resteasy.auth.oauth.OAuthException;
-import org.jboss.resteasy.auth.oauth.OAuthPermissions;
 import org.jboss.resteasy.auth.oauth.OAuthProvider;
 import org.jboss.resteasy.auth.oauth.OAuthRequestToken;
 import org.jboss.resteasy.auth.oauth.OAuthToken;
@@ -22,6 +23,8 @@ import org.jboss.resteasy.auth.oauth.OAuthToken;
  **/
 public class OAuthDBProvider implements OAuthProvider {
 
+    private static final String DEFAULT_CONSUMER_ROLE = "user";
+    
     private static Connection conn;
     static {
         Properties props = new Properties();
@@ -296,9 +299,36 @@ public class OAuthDBProvider implements OAuthProvider {
 
 
     public void registerConsumerPermissions(String consumerKey,
-            OAuthPermissions permissions) throws OAuthException {
+            String[] permissions) throws OAuthException {
         // TODO Auto-generated method stub
         
+    }
+    
+    public Set<String> convertPermissionsToRoles(String[] permissions) {
+        Set<String> roles = new HashSet<String>();
+        roles.add(DEFAULT_CONSUMER_ROLE);
+        if (permissions == null || permissions.length == 0) {
+            return roles;
+        }
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT role FROM permissions WHERE ");
+        for (int i = 0; i < permissions.length; i++) {
+            query.append("permission='" + permissions[i] + "'");
+            if (i + 1 < permissions.length) {
+                query.append(" OR ");
+            }
+        }
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query.toString());
+            if (rs.next()) {
+                String rolesValues = rs.getString("role");
+                roles.add(rolesValues);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("No role exists for permission " + permissions);
+        }
+        return roles;
     }
     
     private static synchronized void update(String expression) throws SQLException {

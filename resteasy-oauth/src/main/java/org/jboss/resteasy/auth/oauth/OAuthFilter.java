@@ -94,6 +94,9 @@ public class OAuthFilter implements Filter {
 		
 	}
 
+	protected OAuthProvider getProvider() {
+	    return provider;
+	}
 	
 	
 	protected HttpServletRequest createSecurityContext(HttpServletRequest request, 

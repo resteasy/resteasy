@@ -1,5 +1,7 @@
 package org.jboss.resteasy.auth.oauth;
 
+import java.util.Set;
+
 /**
  * Used to make sure the OAuthProvider implementer does not return null values.
  * If any null is returned, throws a RuntimeException
@@ -67,8 +69,12 @@ public class OAuthProviderChecker implements OAuthProvider {
         provider.registerConsumerScopes(consumerKey, scopes);
     }
     
-    public void registerConsumerPermissions(String consumerKey, OAuthPermissions permissions)
+    public void registerConsumerPermissions(String consumerKey, String[] permissions)
         throws OAuthException {
         provider.registerConsumerPermissions(consumerKey, permissions);
+    }
+
+    public Set<String> convertPermissionsToRoles(String[] permissions) {
+        return provider.convertPermissionsToRoles(permissions);
     }
 }

@@ -303,9 +303,7 @@ public class OAuthServlet extends HttpServlet {
             
             String[] permissions = req.getParameterValues("xoauth_permission");
             if (permissions != null) {
-                String permissionType = req.getParameter("xoauth_permission_type");
-                permissionType = permissionType == null ? "custom" : "crud";
-                provider.registerConsumerPermissions(consumerKey, new OAuthPermissions(permissionType, permissions));
+                provider.registerConsumerPermissions(consumerKey, permissions);
             }
             
             resp.setStatus(HttpURLConnection.HTTP_OK);

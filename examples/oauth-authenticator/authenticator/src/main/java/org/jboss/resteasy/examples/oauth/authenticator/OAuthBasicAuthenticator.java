@@ -3,15 +3,9 @@ package org.jboss.resteasy.examples.oauth.authenticator;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.security.Principal;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -49,17 +43,28 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
     private static final Set<String> SUPPORTED_AUTH_METHODS = 
         new HashSet<String>(Arrays.asList("oauth", "basic", "oauth+basic", "basic+oauth"));
     
-    private static final String DEFAULT_CONSUMER_ROLE = "user";
-    
     private BasicAuthenticator ba = new BasicAuthenticator();
 
+    /**
+     * These DB connection properties are not used at the moment as a DB-aware 
+     * OAuthProvider expects db.properties be available on the class path;
+     * However, an OAuthProvider constructor accepting either Properties or Map
+     * can be used when instantiating the provider and have these properties injected.
+     *
+     * This option can work given that it is easy to inject the configuration properties
+     * into this Authenticator implementation but it is tricky to do for OAuthProvider
+     * unless it is converted into a Catalina Realm which makes it all very complicated 
+     * when we have Basic and OAuth - given that Basic and OAuth realms 
+     * (i.e, databases of users and their passwords, etc) are unlikely to intersect or work
+     * in the "or" combination.  
+     */
     protected String driver;
     protected String url;
     protected String user;
     protected String password;
+    
     private String oauthProviderName;
     
-    private Connection conn;
     private OAuthProvider oauthProvider;
     private OAuthValidator validator;
     
@@ -159,8 +164,6 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
         super.start();
         
         try {
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, password);
             oauthProvider = (OAuthProvider)Class.forName(oauthProviderName).newInstance();
             validator = new OAuthValidator(oauthProvider);
         } catch (Exception ex) {
@@ -169,20 +172,6 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
     }
 
 
-    @Override
-    public void stop() throws LifecycleException {
-        super.stop();
-        if (conn != null)
-        {
-            try {
-                conn.close();
-            } catch (Exception ex) {
-                // ignore
-            }
-        }
-    }
-    
-    
     protected void doAuthenticateOAuth(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         
         OAuthMessage message = OAuthUtils.readMessage(request);
@@ -227,43 +216,20 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
             OAuthToken accessToken) 
     {
         
-        List<String> roles = new ArrayList<String>();
-        // get the default roles which may've been allocated to a consumer
-        roles.add(DEFAULT_CONSUMER_ROLE);
-        roles.addAll(convertPermissionsToRoles(accessToken.getPermissions()[0]));
-        Realm realm = new OAuthRealm(consumer.getKey(), roles);
+        Set<String> roles = oauthProvider.convertPermissionsToRoles(accessToken.getPermissions());
+        Realm realm = new OAuthRealm(roles);
         context.setRealm(realm);
         
-        final Principal principal = new GenericPrincipal(realm, consumer.getKey(), "", roles);
+        final Principal principal = new GenericPrincipal(realm, consumer.getKey(), "", new ArrayList<String>(roles));
         ((Request)request).setUserPrincipal(principal);
         ((Request)request).setAuthType("OAuth");
     }
     
-    private Set<String> convertPermissionsToRoles(String permissions) {
-        Set<String> roles = new HashSet<String>();
-        // get the default roles which may've been allocated to a consumer
-        try {
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT role FROM permissions WHERE"
-                    + " permission='" + permissions + "'");
-            if (rs.next()) {
-                String rolesValues = rs.getString("role");
-                roles.add(rolesValues);
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException("No role exists for permission " + permissions);
-        }
-        return roles;
-    }
-    
-    
     private static class OAuthRealm extends RealmBase {
 
-        //private String username;
-        private List<String> roles;
+        private Set<String> roles;
         
-        public OAuthRealm(String username, List<String> roles) {
-            //this.username = username;
+        public OAuthRealm(Set<String> roles) {
             this.roles = roles;
         }
         
