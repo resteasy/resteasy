@@ -1,5 +1,7 @@
 package org.jboss.resteasy.auth.oauth;
 
+import java.util.Set;
+
 /**
  * Implement this interface to provide the RESTEasy servlets and filters with the knowledge to
  * load and store OAuth Consumer, Request and Access Tokens.
@@ -86,5 +88,14 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * with the given OAuth Token
 	 */
 	public void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException;
+	
+	/**
+	 * Converts custom permissions which may have been associated with consumers
+	 * or access tokens into domain specific roles, example, 
+	 * given a "printResources" permission this method may return a role name "printerService"
+	 * @param permissions 
+	 * @return roles
+	 */
+	public Set<String> convertPermissionsToRoles(String[] permissions);
 
 }

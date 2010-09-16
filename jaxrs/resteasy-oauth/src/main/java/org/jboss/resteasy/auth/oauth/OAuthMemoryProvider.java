@@ -1,8 +1,6 @@
 package org.jboss.resteasy.auth.oauth;
 
 import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -200,8 +198,13 @@ public class OAuthMemoryProvider implements OAuthProvider {
     }
 
     public void registerConsumerPermissions(String consumerKey,
-            OAuthPermissions permissions) throws OAuthException {
+            String[] permissions) throws OAuthException {
         // TODO Auto-generated method stub
         
+    }
+
+    public Set<String> convertPermissionsToRoles(String[] permissions) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

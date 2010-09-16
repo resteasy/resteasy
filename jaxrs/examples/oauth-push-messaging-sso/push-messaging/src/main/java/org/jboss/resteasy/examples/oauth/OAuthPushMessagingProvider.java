@@ -6,12 +6,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jboss.resteasy.auth.oauth.OAuthConsumer;
 import org.jboss.resteasy.auth.oauth.OAuthException;
-import org.jboss.resteasy.auth.oauth.OAuthPermissions;
 import org.jboss.resteasy.auth.oauth.OAuthProvider;
 import org.jboss.resteasy.auth.oauth.OAuthRequestToken;
 import org.jboss.resteasy.auth.oauth.OAuthToken;
@@ -22,6 +23,8 @@ import org.jboss.resteasy.auth.oauth.OAuthToken;
  **/
 public class OAuthPushMessagingProvider implements OAuthProvider {
 
+    private static final String DEFAULT_CONSUMER_ROLE = "user";
+    
     private static Connection conn;
     static {
         Properties props = new Properties();
@@ -59,7 +62,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
             update(
                 "CREATE TABLE consumers ( id INTEGER IDENTITY, key VARCHAR(256)" + 
                 ", secret VARCHAR(256), display_name VARCHAR(256), connect_uri VARCHAR(256), "
-                + "scopes VARCHAR(256), permissions VARCHAR(256), perm_type VARCHAR(256), unique(key))");
+                + "scopes VARCHAR(256), permissions VARCHAR(256), unique(key))");
             
             // request tokens
             update(
@@ -149,7 +152,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 String perms = rs.getString("permissions");
                 OAuthConsumer consumer = 
                     new OAuthConsumer(key, secret, displayName, connectURI, 
-                        perms != null ? new OAuthPermissions("custom", new String[]{perms}) : null);
+                        perms != null ? new String[]{perms} : null);
                 consumer.setScopes(new String[]{scopes});
                 return consumer;
             } else {
@@ -310,13 +313,12 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
     }
 
     public void registerConsumerPermissions(String consumerKey,
-            OAuthPermissions permissions) throws OAuthException {
+            String[] permissions) throws OAuthException {
         try {
             if (permissions != null)
             {
                 update("UPDATE consumers SET permissions="
-                        + "'" + permissions.getPermissions()[0] + "'"
-                        + ",perm_type='" + permissions.getPermissionType() + "'"
+                        + "'" + permissions[0] + "'"
                         + " WHERE key='" + consumerKey + "'");
             }
         } catch (SQLException ex) {
@@ -324,6 +326,33 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                      "Scopes for the consumer with key " + consumerKey + " can not be registered");
         }
         
+    }
+    
+    public Set<String> convertPermissionsToRoles(String[] permissions) {
+        Set<String> roles = new HashSet<String>();
+        roles.add(DEFAULT_CONSUMER_ROLE);
+        if (permissions == null || permissions.length == 0) {
+            return roles;
+        }
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT role FROM permissions WHERE ");
+        for (int i = 0; i < permissions.length; i++) {
+            query.append("permission='" + permissions[i] + "'");
+            if (i + 1 < permissions.length) {
+                query.append(" OR ");
+            }
+        }
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query.toString());
+            if (rs.next()) {
+                String rolesValues = rs.getString("role");
+                roles.add(rolesValues);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("No role exists for permission " + permissions);
+        }
+        return roles;
     }
     
     private static void registerCustomPermissionsAndRoles() { 

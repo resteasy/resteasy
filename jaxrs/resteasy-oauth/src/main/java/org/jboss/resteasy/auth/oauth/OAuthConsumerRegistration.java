@@ -32,6 +32,6 @@ public interface OAuthConsumerRegistration {
      * @throws OAuthException thrown if permissions can not be registered.
      */
     public void registerConsumerPermissions(String consumerKey, 
-                OAuthPermissions permissions) throws OAuthException;
+                String[] permissions) throws OAuthException;
         
 }
