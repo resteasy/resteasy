@@ -10,9 +10,7 @@ import org.jboss.resteasy.examples.contacts.core.Contacts;
  */
 public interface ContactService
 {
-   public Contact getContactById(String id);
-   
-   public Contact getContactById(Long id, String name);
+   public Contact getContactById(Long id);
 
    public Contacts getAllContacts();
 }
