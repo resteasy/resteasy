@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -26,8 +27,26 @@ public class OAuthDBProvider implements OAuthProvider {
     private static final String DEFAULT_CONSUMER_ROLE = "user";
     
     private static Connection conn;
-    static {
-        Properties props = new Properties();
+    
+    
+	public OAuthDBProvider() {
+	    initConnection();
+	}
+	
+	public OAuthDBProvider(Map<String, String> props) {
+        initConnection(props.get("db.driver"),
+                       props.get("db.url"),
+                       props.get("db.username"),
+                       props.get("db.password"));
+    }
+	
+	private static synchronized void initConnection() {
+	    
+	    if (conn != null) {
+	        return;
+	    }
+	    
+	    Properties props = new Properties();
         try {
             props.load(OAuthDBProvider.class.getResourceAsStream("/db.properties"));
         } catch (Exception ex) {
@@ -38,6 +57,10 @@ public class OAuthDBProvider implements OAuthProvider {
         String user = props.getProperty("db.username");
         String password = props.getProperty("db.password");
         
+        initConnection(driver, url, user, password);
+	}
+	
+	private static void initConnection(String driver, String url, String user, String password) {
         try {
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, password);
@@ -79,11 +102,8 @@ public class OAuthDBProvider implements OAuthProvider {
             
         }
     }
-    
-	public OAuthDBProvider() {
-	    
-        
-    }
+	
+	
 	
     
     public String authoriseRequestToken(String consumerKey, String requestToken)
