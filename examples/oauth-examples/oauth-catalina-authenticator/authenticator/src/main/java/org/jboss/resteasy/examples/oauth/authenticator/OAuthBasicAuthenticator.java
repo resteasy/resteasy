@@ -1,11 +1,14 @@
 package org.jboss.resteasy.examples.oauth.authenticator;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -164,7 +167,14 @@ public class OAuthBasicAuthenticator extends AuthenticatorBase {
         super.start();
         
         try {
-            oauthProvider = (OAuthProvider)Class.forName(oauthProviderName).newInstance();
+            Class<?> providerClass = Class.forName(oauthProviderName);
+            Constructor<?> constructor = providerClass.getConstructor(Map.class);
+            Map<String, String> props = new HashMap<String, String>();
+            props.put("db.driver", driver);
+            props.put("db.url", url);
+            props.put("db.username", user);
+            props.put("db.password", password);
+            oauthProvider = (OAuthProvider)constructor.newInstance(props); 
             validator = new OAuthValidator(oauthProvider);
         } catch (Exception ex) {
             throw new LifecycleException("In memory OAuth DB can not be created " + ex.getMessage());
