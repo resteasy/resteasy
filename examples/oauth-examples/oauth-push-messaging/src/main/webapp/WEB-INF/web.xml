@@ -6,7 +6,7 @@
 
     <context-param>
         <param-name>oauth.provider.provider-class</param-name>
-        <param-value>org.jboss.resteasy.examples.oauth.OAuthPushMessagingProvider</param-value>
+        <param-value>org.jboss.resteasy.examples.oauth.provider.OAuthDBProvider</param-value>
     </context-param>
 
     <context-param>

@@ -62,6 +62,11 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.jboss.resteasy.examples</groupId>
+            <artifactId>examples-oauth-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
