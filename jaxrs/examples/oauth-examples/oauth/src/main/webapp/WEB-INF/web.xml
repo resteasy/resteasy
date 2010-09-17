@@ -6,7 +6,7 @@
 
     <context-param>
         <param-name>oauth.provider.provider-class</param-name>
-        <param-value>org.jboss.resteasy.examples.oauth.OAuthDBProvider</param-value>
+        <param-value>org.jboss.resteasy.examples.oauth.provider.OAuthDBProvider</param-value>
     </context-param>
 
     <context-param>
@@ -29,10 +29,10 @@
     <filter>
 		<filter-name>OAuth Filter</filter-name>
 		<!-- Enable this filter when deploying to JBoss only -->
-                <!-- 
-		<filter-class>org.jboss.resteasy.examples.oauth.OAuthBasicAuthenticationFilter</filter-class>
-                -->
-		<filter-class>org.jboss.resteasy.examples.oauth.OAuthDBFilter</filter-class>
+        <!--
+        <filter-class>org.jboss.resteasy.examples.oauth.OAuthBasicAuthenticationFilter</filter-class>
+        -->
+        <filter-class>org.jboss.resteasy.examples.oauth.OAuthDBFilter</filter-class>
 		
 	</filter>
 	

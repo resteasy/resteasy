@@ -19,6 +19,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.auth.oauth.OAuthConsumerRegistration;
+import org.jboss.resteasy.examples.oauth.provider.OAuthDBProvider;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 
@@ -52,7 +53,7 @@ public class SubscriberReceiver
     
    public SubscriberReceiver() {
        // Will be injected/configured
-       consumerRegistration = new OAuthPushMessagingProvider();
+       consumerRegistration = new OAuthDBProvider();
    }
    
    @GET

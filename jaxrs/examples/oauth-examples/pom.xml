@@ -24,6 +24,7 @@
     </build>
 
     <modules>
+        <module>oauth-provider</module>
         <module>oauth</module>
         <module>oauth-push-messaging</module>
         <module>oauth-push-messaging-openid</module>

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.examples.oauth;
+package org.jboss.resteasy.examples.oauth.provider;
 
 import java.net.HttpURLConnection;
 import java.sql.Connection;
@@ -21,7 +21,7 @@ import org.jboss.resteasy.auth.oauth.OAuthToken;
  * OAuthDBProvider that keeps all data in DB. 
  *
  **/
-public class OAuthPushMessagingProvider implements OAuthProvider {
+public class OAuthDBProvider implements OAuthProvider {
 
     private static final String DEFAULT_CONSUMER_ROLE = "user";
     
@@ -29,7 +29,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
     static {
         Properties props = new Properties();
         try {
-            props.load(OAuthPushMessagingProvider.class.getResourceAsStream("/db.properties"));
+            props.load(OAuthDBProvider.class.getResourceAsStream("/db.properties"));
         } catch (Exception ex) {
             throw new RuntimeException("db.properties resource is not available");
         }
@@ -41,40 +41,29 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
         try {
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, password);
-            initTables();
         } catch (Exception ex) {
             throw new RuntimeException("In memory OAuth DB can not be created " + ex.getMessage());
         }
-    }
-    
-    
-    
-	public OAuthPushMessagingProvider() {
-	    
         
-    }
-	
-	private static void initTables() 
-	{
-	    try {
+        try {
 
-	        // consumers
+            // consumers
             update(
                 "CREATE TABLE consumers ( id INTEGER IDENTITY, key VARCHAR(256)" + 
-                ", secret VARCHAR(256), display_name VARCHAR(256), connect_uri VARCHAR(256), "
-                + "scopes VARCHAR(256), permissions VARCHAR(256), unique(key))");
+                ", secret VARCHAR(256), display_name VARCHAR(256), connect_uri VARCHAR(256),"
+                + " scopes VARCHAR(256), permissions VARCHAR(256), unique(key))");
             
             // request tokens
             update(
                 "CREATE TABLE request_tokens ( id INTEGER IDENTITY, consumer_key VARCHAR(256)" + 
-                ", token VARCHAR(256), secret VARCHAR(256), callback VARCHAR(256), scopes VARCHAR(256),"
-                + "verifier VARCHAR(256), foreign key(consumer_key) references consumers(key))");
+                ", token VARCHAR(256), secret VARCHAR(256), callback VARCHAR(256), scopes VARCHAR(256)"
+                + ", permissions VARCHAR(256), verifier VARCHAR(256), foreign key(consumer_key) references consumers(key))");
             
             // access tokens
             update(
                 "CREATE TABLE access_tokens ( id INTEGER IDENTITY, consumer_key VARCHAR(256)" + 
                 ", token VARCHAR(256), secret VARCHAR(256), scopes VARCHAR(256),"
-                + " foreign key(consumer_key) references consumers(key))");
+                + "permissions VARCHAR(256), foreign key(consumer_key) references consumers(key))");
             
             // custom permissions to roles map
             update(
@@ -89,7 +78,12 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
             throw new RuntimeException("OAuth DB tables can not be created : " + ex.getMessage());
             
         }
-	}
+    }
+    
+	public OAuthDBProvider() {
+	    
+        
+    }
 	
     
     public String authoriseRequestToken(String consumerKey, String requestToken)
@@ -122,6 +116,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 String token = rs.getString("token");
                 String secret = rs.getString("secret");
                 String scopes = rs.getString("scopes");
+                String permissions = rs.getString("permissions");
                 String tokenConsumerKey = rs.getString("consumer_key");
                 
                 if (consumerKey != null && !tokenConsumerKey.equals(consumerKey)) {
@@ -129,7 +124,9 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 }
                 
                 return new OAuthToken(token, secret, 
-                        scopes == null ? null : new String[] {scopes}, null, -1, getConsumer(tokenConsumerKey));
+                        scopes == null ? null : new String[] {scopes},
+                        permissions == null ? null : new String[] {permissions},        
+                        -1, getConsumer(tokenConsumerKey));
             } else {
                 throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such consumer key "+consumerKey);
             }
@@ -177,6 +174,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 String secret = rs.getString("secret");
                 String callback = rs.getString("callback");
                 String scopes = rs.getString("scopes");
+                String permissions = rs.getString("permissions");
                 String verifier = rs.getString("verifier");
                 String tokenConsumerKey = rs.getString("consumer_key");
                 
@@ -185,7 +183,9 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
                 }
                 
                 OAuthRequestToken newToken = new OAuthRequestToken(token, secret, callback, 
-                        scopes == null ? null : new String[] {scopes}, null, -1, getConsumer(tokenConsumerKey));
+                        scopes == null ? null : new String[] {scopes},
+                        permissions == null ? null : new String[] {permissions},        
+                        -1, getConsumer(tokenConsumerKey));
                 newToken.setVerifier(verifier);
                 return newToken;
             } else {
@@ -203,13 +203,16 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
             String token = makeRandomString();
             String secret = makeRandomString();
             String[] scopes = requestToken.getScopes();
-            update("INSERT INTO access_tokens(token,consumer_key,secret,scopes) "
+            String[] permissions = requestToken.getPermissions();
+            update("INSERT INTO access_tokens(token,consumer_key,secret,scopes,permissions) "
                     + "VALUES('" + token + "', '" + consumerKey + "', '"
-                    + secret 
-                    + "', " + (scopes != null ? "'" + scopes[0] + "'" : null) + ")");
+                    + secret + "'" 
+                    + ", " + (scopes != null ? "'" + scopes[0] + "'" : null)
+                    + ", " + (permissions != null ? "'" + permissions[0] + "'" : null)
+                    + ")");
          
             return new OAuthToken(token, secret, 
-                    requestToken.getScopes(), null, -1, requestToken.getConsumer());
+                    requestToken.getScopes(), requestToken.getPermissions(), -1, requestToken.getConsumer());
          } catch (SQLException ex) {
              throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 
                      "Request token for the consumer with key " + consumerKey + " can not be created");
@@ -238,12 +241,15 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
         try {
             String token = makeRandomString();
             String secret = makeRandomString();
-            update("INSERT INTO request_tokens(token,consumer_key,secret,callback,scopes) "
+            update("INSERT INTO request_tokens(token,consumer_key,secret,callback,scopes,permissions) "
                     + "VALUES('" + token + "', '" + consumerKey + "', '"
-                    + secret + "', '" + callback 
-                    + "', " + (scopes != null ? "'" + scopes[0] + "'" : null) + ")");
+                    + secret + "', '" + callback + "'" 
+                    + ", " + (scopes != null ? "'" + scopes[0] + "'" : null)
+                    + ", " + (permissions != null ? "'" + permissions[0] + "'" : null)
+                    + ")");
          
-            return new OAuthRequestToken(token, secret, callback, scopes, null, -1, getConsumer(consumerKey));
+            return new OAuthRequestToken(token, secret, callback, 
+                    scopes, permissions, -1, getConsumer(consumerKey));
          } catch (SQLException ex) {
              throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, 
                      "Request token for the consumer with key " + consumerKey + " can not be created");
@@ -280,23 +286,8 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
         }
     }
     
-    private static synchronized void update(String expression) throws SQLException {
-
-        Statement st = conn.createStatement();    // statements
-
-        int i = st.executeUpdate(expression);    // run the query
-
-        if (i == -1) {
-            System.out.println("db error : " + expression);
-        }
-
-        st.close();
-    }
-
-
     public void registerConsumerScopes(String consumerKey,
             String[] scopes) throws OAuthException {
-        
         try {
             if (scopes != null)
             {
@@ -310,6 +301,7 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
          }
 
     }
+
 
     public void registerConsumerPermissions(String consumerKey,
             String[] permissions) throws OAuthException {
@@ -327,18 +319,6 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
         
     }
     
-    private static void registerCustomPermissionsAndRoles() { 
-        
-        try {
-               update("INSERT INTO permissions(permission,role) "
-                       + "VALUES('" + "sendMessages" + "', '" + "MessagingService" + "'" 
-                       + ")");
-            
-        } catch (SQLException ex) {
-            throw new RuntimeException("Permissions can not be mapped to roles");
-        }
-    }
-
     public Set<String> convertPermissionsToRoles(String[] permissions) {
         Set<String> roles = new HashSet<String>();
         roles.add(DEFAULT_CONSUMER_ROLE);
@@ -366,4 +346,33 @@ public class OAuthPushMessagingProvider implements OAuthProvider {
         return roles;
     }
     
+    private static synchronized void update(String expression) throws SQLException {
+
+        Statement st = conn.createStatement();    // statements
+
+        int i = st.executeUpdate(expression);    // run the query
+
+        if (i == -1) {
+            System.out.println("db error : " + expression);
+        }
+
+        st.close();
+    }
+    
+    private static void registerCustomPermissionsAndRoles() { 
+        
+        try {
+               // for 3-leg OAuth demos involving the end user and a 3rd party printer service
+               update("INSERT INTO permissions(permission,role) "
+                       + "VALUES('" + "printResources" + "', '" + "PrinterService" + "'" 
+                       + ")");
+               // for OAuth push messaging demos
+               update("INSERT INTO permissions(permission,role) "
+                       + "VALUES('" + "sendMessages" + "', '" + "MessagingService" + "'" 
+                       + ")");
+            
+        } catch (SQLException ex) {
+            throw new RuntimeException("Permissions can not be mapped to roles");
+        }
+    }
 }
