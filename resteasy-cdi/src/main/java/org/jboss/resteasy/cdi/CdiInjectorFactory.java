@@ -58,7 +58,7 @@ public class CdiInjectorFactory implements InjectorFactory
       if (sessionBeanInterface.containsKey((constructor.getDeclaringClass())))
       {
          Class<?> intfc = sessionBeanInterface.get(clazz);
-         log.debug("Using interface {} for lookup of Session Bean {}.", intfc, clazz);
+         log.debug("Using {} for lookup of Session Bean {}.", intfc, clazz);
          return new CdiConstructorInjector(intfc, manager);
       }
 

@@ -5,6 +5,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
@@ -71,12 +73,11 @@ public class ResteasyCdiExtension implements Extension
 
       if (!type.getJavaClass().isInterface())
       {
-         /**
-         if (type.isAnnotationPresent(Stateless.class))
+         if (type.isAnnotationPresent(Stateless.class) || type.isAnnotationPresent(Singleton.class))
          {
-            return; // Do not modify the scope of a Stateless Session Bean
+            log.debug("Bean {} is a SLSB or Singleton. Leaving scope unmodified.", type.getJavaClass());
+            return; // Do not modify scopes of SLSBs and Singletons
          }
-         **/
          if (type.isAnnotationPresent(Provider.class))
          {
             log.debug("Discovered CDI bean which is a JAX-RS provider {}.", type.getJavaClass().getCanonicalName());
