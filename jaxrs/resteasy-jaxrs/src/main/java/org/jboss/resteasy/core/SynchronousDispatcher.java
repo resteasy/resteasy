@@ -303,42 +303,32 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void handleApplicationException(HttpRequest request, HttpResponse response, ApplicationException e)
    {
-      if (executeExceptionMapper(request, response, e.getCause()))
-      {
-         return;
-      }
-      if (e.getCause() instanceof WebApplicationException)
-      {
-         handleWebApplicationException(request, response, (WebApplicationException) e.getCause());
-         return;
-      }
-      else
-      {
-         if (unwrappedExceptions.contains(e.getCause().getClass().getName()))
-         {
-            unwrapException(request, response, e.getCause());
-         }
-         else
-         {
-            throw new UnhandledException(e.getCause());
-         }
-      }
+      unwrapException(request, response, e);
    }
 
    protected void unwrapException(HttpRequest request, HttpResponse response, Throwable e)
    {
-      if (executeExceptionMapper(request, response, e.getCause()))
+      Throwable unwrappedException = e.getCause();
+      
+      if (executeExceptionMapper(request, response, unwrappedException))
       {
          return;
       }
-      if (e.getCause() instanceof WebApplicationException)
+      if (unwrappedException instanceof WebApplicationException)
       {
-         handleWebApplicationException(request, response, (WebApplicationException) e.getCause());
+         handleWebApplicationException(request, response, (WebApplicationException) unwrappedException);
          return;
       }
       else
       {
-         throw new UnhandledException(e.getCause());
+         if (unwrappedExceptions.contains(unwrappedException.getClass().getName()) && unwrappedException.getCause() != null)
+         {
+            unwrapException(request, response, unwrappedException);
+         }
+         else
+         {
+            throw new UnhandledException(unwrappedException);
+         }
       }
    }
 
