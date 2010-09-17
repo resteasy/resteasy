@@ -38,6 +38,7 @@ public class ContactServiceImpl implements ContactService
       return contacts;
    }
 
+   @GET
    @Path("/contacts/{id}")
    @Produces("application/xml")
    public Contact getContactById(@PathParam("id") Long id)
