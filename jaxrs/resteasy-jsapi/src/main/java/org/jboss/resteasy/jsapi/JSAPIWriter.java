@@ -171,7 +171,7 @@ public class JSAPIWriter
 			print(metaData, writer, "MatrixParameter");
 			break;
 		case FORM_PARAMETER:
-			// FIXME: handle this;
+			print(metaData, writer, "FormParameter");
 			break;
 		case ENTITY_PARAMETER:
 			// the entity
@@ -202,7 +202,7 @@ public class JSAPIWriter
 						+ replacedCurlyURI.substring(i, matcher.start()) + "';");
 			}
 			String name = matcher.group(1);
-			writer.println(" uri += REST.encodePathSegment(params." + name + ");");
+			writer.println(" uri += REST.Encoding.encodePathSegment(params." + name + ");");
 			i = matcher.end();
 		}
 		if (i < replacedCurlyURI.length())

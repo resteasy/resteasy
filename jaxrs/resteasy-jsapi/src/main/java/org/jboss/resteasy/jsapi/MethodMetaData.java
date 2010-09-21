@@ -22,9 +22,14 @@ import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MethodMetaData
 {
+	private final static Logger logger = LoggerFactory
+    .getLogger(MethodMetaData.class);
+
 	private ResourceMethod resource;
 	private Method method;
 	private Class<?> klass;
@@ -36,6 +41,7 @@ public class MethodMetaData
 	private Collection<String> httpMethods;
 	private ServiceRegistry registry;
 	private String functionPrefix;
+	private boolean wantsForm;
 
 	public MethodMetaData(ServiceRegistry serviceRegistry, ResourceMethod resource)
 	{
@@ -52,7 +58,6 @@ public class MethodMetaData
 		Consumes consumes = method.getAnnotation(Consumes.class);
 		if (consumes == null)
 			consumes = klass.getAnnotation(Consumes.class);
-		this.consumesMIMEType = getConsumes(consumes);
 		this.uri = appendURIFragments(registry, klassPath, methodPath);
 		if(serviceRegistry.isRoot())
 			this.functionPrefix = klass.getSimpleName();
@@ -72,6 +77,13 @@ public class MethodMetaData
 			{
 				processMetaData(parameterTypes[i], allAnnotations[i], true);
 			}
+		}
+		// this must be after we scan the params in case of @Form
+		this.consumesMIMEType = getConsumes(consumes);
+		if(wantsForm && !"application/x-www-form-urlencoded".equals(consumesMIMEType)){
+			if(logger.isWarnEnabled() && consumes != null)
+				logger.warn("Overriding @Consumes annotation in favour of application/x-www-form-urlencoded due to the presence of @FormParam");
+			this.consumesMIMEType = "application/x-www-form-urlencoded";
 		}
 	}
 
@@ -117,6 +129,7 @@ public class MethodMetaData
 		{
 			addParameter(type, annotations, MethodParamType.FORM_PARAMETER,
 					formParam.value());
+			this.wantsForm = true;
 		} else if (FindAnnotation.findAnnotation(annotations, Form.class) != null)
 		{
 			walkForm(type);

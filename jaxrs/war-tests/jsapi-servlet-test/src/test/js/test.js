@@ -128,3 +128,36 @@ function testDoubleSubResourceWithPath() {
 	var data = MyResource.getSubResource2.getSubResource.getWithPath({id: "a"});
 	assertEquals("Hello withPath", data);
 }
+
+function testForm() {
+	var data = MyResource.postForm({a: "aa", b: "bb"});
+	assertEquals("aa/bb", data);
+}
+
+// Encoding
+
+function testUTF8(){
+	assertEquals("%61", REST.Encoding.percentUTF8(0x61));
+	assertEquals("%ce%91", REST.Encoding.percentUTF8(0x0391));
+	assertEquals("%e2%89%a2", REST.Encoding.percentUTF8(0x2262));
+	assertEquals("%f0%a3%8e%b4", REST.Encoding.percentUTF8(0x233B4));
+}
+
+function testPercentByte(){
+	assertEquals("%05", REST.Encoding.percentByte(5));
+	assertEquals("%20", REST.Encoding.percentByte(32));
+}
+
+function testEncoder(){
+	assertEquals("abc", REST.Encoding.encodeFormNameOrValue("abc"));
+	assertEquals("%c3%a9", REST.Encoding.encodeFormNameOrValue("é"));
+	assertEquals("%f0%9f%82%84", REST.Encoding.encodeFormNameOrValue("🂄"));
+}
+
+function testEncoders(){
+	assertEquals("abc%24%2d%5f%2e%2b%21%2a%27%28%29%2c%2f%3f%26%3d%23+%0D%0A", REST.Encoding.encodeFormNameOrValue("abc$-_.+!*'(),/?&=# \n"));
+	assertEquals("azAZ09-._~!$&'()*+,%3b=:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathParamValue("azAZ09-._~!$&'()*+,;=:@é/?#[]"));
+	assertEquals("azAZ09-._~!$&'()*+,%3b=:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathSegment("azAZ09-._~!$&'()*+,;=:@é/?#[]"));
+	assertEquals("azAZ09-._~!$&'()*+,%3b%3d:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathParamName("azAZ09-._~!$&'()*+,;=:@é/?#[]"));
+	assertEquals("azAZ09-._~!$%26'()*%2b,;%3d:@%c3%a9/?%23%5b%5d", REST.Encoding.encodeQueryParamNameOrValue("azAZ09-._~!$&'()*+,;=:@é/?#[]"));
+}
