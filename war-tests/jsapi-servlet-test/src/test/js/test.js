@@ -98,3 +98,33 @@ function testLookup(){
 	var data = MyResource.lookup({id: value});
 	assertEquals(baseURI+"/rest/mine/"+value, data);
 }
+
+function testSubResource() {
+	var data = MyResource.getSubResource.get();
+	assertEquals("Hello", data);
+}
+
+function testSubResourceWithPath() {
+	var data = MyResource.getSubResource.getWithPath();
+	assertEquals("Hello withPath", data);
+}
+
+function testSubResource2() {
+	var data = MyResource.getSubResource2.get({id: "a", foo: "b"});
+	assertEquals("Hello a/b", data);
+}
+
+function testSubResource2WithPath() {
+	var data = MyResource.getSubResource2.getWithPath({id: "a", foo: "b", bar: "c"});
+	assertEquals("Hello withPath a/b/c", data);
+}
+
+function testDoubleSubResource() {
+	var data = MyResource.getSubResource2.getSubResource.get({id: "a"});
+	assertEquals("Hello", data);
+}
+
+function testDoubleSubResourceWithPath() {
+	var data = MyResource.getSubResource2.getSubResource.getWithPath({id: "a"});
+	assertEquals("Hello withPath", data);
+}
