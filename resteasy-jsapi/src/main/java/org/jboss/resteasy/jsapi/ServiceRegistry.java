@@ -11,7 +11,6 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.slf4j.Logger;
@@ -43,6 +42,12 @@ public class ServiceRegistry
 
 	private String functionPrefix;
 
+	public ServiceRegistry(ResourceMethodRegistry registry, 
+			ResteasyProviderFactory providerFactory)
+	{
+		this(null, registry, providerFactory, null);
+	}
+	
 	public ServiceRegistry(ServiceRegistry parent, ResourceMethodRegistry registry, 
 			ResteasyProviderFactory providerFactory, ResourceLocator locator)
 	{
