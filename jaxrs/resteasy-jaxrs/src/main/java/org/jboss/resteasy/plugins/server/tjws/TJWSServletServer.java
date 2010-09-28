@@ -2,8 +2,7 @@ package org.jboss.resteasy.plugins.server.tjws;
 
 import Acme.Serve.SSLAcceptor;
 import Acme.Serve.Serve;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.resteasy.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import java.io.File;
@@ -23,7 +22,7 @@ import java.util.Properties;
  */
 public class TJWSServletServer
 {
-   private final static Logger logger = LoggerFactory.getLogger(TJWSServletServer.class);
+   private final static Logger logger = Logger.getLogger(TJWSServletServer.class);
 
    public static class FileMappingServe extends Serve
    {

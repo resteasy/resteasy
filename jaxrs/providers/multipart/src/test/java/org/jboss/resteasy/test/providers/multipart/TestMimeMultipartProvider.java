@@ -17,6 +17,7 @@ import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelate
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartConstants;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
@@ -26,8 +27,6 @@ import org.jboss.resteasy.test.LocateTestData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.activation.DataHandler;
 import javax.mail.internet.MimeMultipart;
@@ -57,7 +56,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
 public class TestMimeMultipartProvider extends BaseResourceTest
 {
 
-   private static final Logger logger = LoggerFactory
+   private static final Logger logger = Logger
            .getLogger(TestMimeMultipartProvider.class);
 
    private static final String TEST_URI = generateURL("/mime");

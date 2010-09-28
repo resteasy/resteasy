@@ -4,9 +4,8 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
-import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.slf4j.Logger;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -41,7 +40,7 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
    /**
     *
     */
-   private static final Logger logger = LoggerCategories.getProviderLogger();
+   private static final Logger logger = Logger.getLogger(IIOImageProvider.class);
 
    /**
     * @param type

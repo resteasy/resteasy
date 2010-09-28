@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -16,8 +17,6 @@ import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
@@ -50,7 +49,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
    protected Set<String> unwrappedExceptions = new HashSet<String>();
 
-   private final static Logger logger = LoggerFactory.getLogger(SynchronousDispatcher.class);
+   private final static Logger logger = Logger.getLogger(SynchronousDispatcher.class);
 
    public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {

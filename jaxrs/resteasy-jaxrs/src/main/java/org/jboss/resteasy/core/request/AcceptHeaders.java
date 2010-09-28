@@ -8,9 +8,8 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
 
-import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.BadRequestException;
-import org.slf4j.Logger;
 
 
 /**
@@ -18,7 +17,7 @@ import org.slf4j.Logger;
  */
 public class AcceptHeaders {
 
-	private static final Logger logger = LoggerCategories.getCoreLogger();
+	private static final Logger logger = Logger.getLogger(AcceptHeaders.class);
 
 
 	/**

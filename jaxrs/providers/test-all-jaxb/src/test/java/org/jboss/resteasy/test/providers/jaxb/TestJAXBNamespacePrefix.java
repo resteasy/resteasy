@@ -3,14 +3,13 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper;
 import org.jboss.resteasy.test.providers.jaxb.generated.po.Item;
 import org.jboss.resteasy.test.providers.jaxb.generated.po.Items;
 import org.jboss.resteasy.test.providers.jaxb.generated.po.ObjectFactory;
 import org.jboss.resteasy.test.providers.jaxb.generated.po.PurchaseOrderType;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -27,7 +26,7 @@ import java.math.BigDecimal;
 public class TestJAXBNamespacePrefix
 {
 
-   private static final Logger logger = LoggerFactory.getLogger(TestJAXBNamespacePrefix.class);
+   private static final Logger logger = Logger.getLogger(TestJAXBNamespacePrefix.class);
 
    @Test
    public void testNamespacePrefix() throws Exception

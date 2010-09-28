@@ -2,11 +2,10 @@ package org.jboss.resteasy.plugins.guice;
 
 import com.google.inject.Module;
 import com.google.inject.Stage;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -16,7 +15,7 @@ import java.util.List;
 
 public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootstrap implements ServletContextListener
 {
-   private final static Logger logger = LoggerFactory.getLogger(GuiceResteasyBootstrapServletContextListener.class);
+   private final static Logger logger = Logger.getLogger(GuiceResteasyBootstrapServletContextListener.class);
 
    public void contextInitialized(final ServletContextEvent event)
    {

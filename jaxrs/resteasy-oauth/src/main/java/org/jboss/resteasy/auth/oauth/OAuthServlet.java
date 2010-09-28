@@ -19,9 +19,8 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
+import org.jboss.resteasy.logging.Logger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * OAuth Http Servlet that handles Request Token creation and exchange for Access Tokens.
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class OAuthServlet extends HttpServlet {
 	private static final long serialVersionUID = 3083924242786185155L;
 
-	private final static Logger logger = LoggerFactory.getLogger(OAuthServlet.class);
+	private final static Logger logger = Logger.getLogger(OAuthServlet.class);
 
 	/**
      * Servlet context parameter name for the Consumer Registration URL

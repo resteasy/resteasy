@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.PathHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Stéphane Épardaud <stef@epardaud.fr>
@@ -21,8 +20,7 @@ public class JSAPIWriter
 
 	private static final long serialVersionUID = -1985015444704126795L;
 
-	private final static Logger logger = LoggerFactory
-	.getLogger(JSAPIWriter.class);
+	private final static Logger logger = Logger.getLogger(JSAPIWriter.class);
 	private String restPath;
 
 	public JSAPIWriter(String restPath)

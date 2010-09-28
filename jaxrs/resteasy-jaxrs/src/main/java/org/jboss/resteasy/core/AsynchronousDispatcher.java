@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -8,8 +9,6 @@ import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -67,7 +66,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    private Cache cache;
    private String basePath = "/asynch/jobs";
    private AtomicLong counter = new AtomicLong(0);
-   private final static Logger logger = LoggerFactory.getLogger(AsynchronousDispatcher.class);
+   private final static Logger logger = Logger.getLogger(AsynchronousDispatcher.class);
    private long maxWaitMilliSeconds = 300000;
    private int maxCacheSize = 100;
 

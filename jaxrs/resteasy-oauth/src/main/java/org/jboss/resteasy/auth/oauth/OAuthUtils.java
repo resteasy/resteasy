@@ -14,9 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
@@ -24,6 +21,7 @@ import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.OAuth.Parameter;
 import net.oauth.OAuth.Problems;
+import org.jboss.resteasy.logging.Logger;
 
 public class OAuthUtils {
 	
@@ -57,7 +55,7 @@ public class OAuthUtils {
 	 */
 	private static final String ATTR_OAUTH_PROVIDER = OAuthProvider.class.getName();
 
-	private final static Logger logger = LoggerFactory.getLogger(OAuthUtils.class);
+	private final static Logger logger = Logger.getLogger(OAuthUtils.class);
 
 	/**
 	 * Encodes the given value for use in an OAuth parameter

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -13,8 +14,6 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -30,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ResourceLocator implements ResourceInvoker
 {
 
-   final static Logger logger = LoggerFactory.getLogger(ResourceLocator.class);
+   final static Logger logger = Logger.getLogger(ResourceLocator.class);
 
    protected InjectorFactory injector;
    protected MethodInjector methodInjector;

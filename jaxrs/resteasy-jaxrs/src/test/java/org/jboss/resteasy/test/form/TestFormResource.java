@@ -12,6 +12,7 @@ import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
@@ -20,8 +21,6 @@ import org.jboss.resteasy.util.GenericType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -58,7 +57,7 @@ public class TestFormResource extends BaseResourceTest
 
    private static final String TEST_URI = generateURL("/form/42?query=42");
 
-   private static final Logger logger = LoggerFactory.getLogger(TestFormResource.class);
+   private static final Logger logger = Logger.getLogger(TestFormResource.class);
 
    @Path("/form/{id}")
    public interface FormClientProxy

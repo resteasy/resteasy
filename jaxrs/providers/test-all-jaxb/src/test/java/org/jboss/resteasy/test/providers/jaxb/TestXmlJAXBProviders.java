@@ -7,6 +7,7 @@ import junit.framework.Assert;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -14,8 +15,6 @@ import org.jboss.resteasy.test.providers.jaxb.data.Order;
 import org.jboss.resteasy.test.providers.jaxb.generated.order.Ordertype;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -29,7 +28,7 @@ import java.io.InputStream;
  */
 public class TestXmlJAXBProviders extends BaseResourceTest
 {
-   private static final Logger logger = LoggerFactory.getLogger(TestXmlJAXBProviders.class);
+   private static final Logger logger = Logger.getLogger(TestXmlJAXBProviders.class);
 
    private static final String URL = generateURL("/jaxb/orders");
 

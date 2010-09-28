@@ -1,8 +1,7 @@
 package org.jboss.resteasy.springmvc;
 
+import org.jboss.resteasy.logging.Logger;
 import org.mortbay.jetty.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -14,7 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 public class JettyLifecycleManager implements InitializingBean, DisposableBean
 {
-   private final static Logger logger = LoggerFactory
+   private final static Logger logger = Logger
          .getLogger(JettyLifecycleManager.class);
 
    private Server servletContainer;

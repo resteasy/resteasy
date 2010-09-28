@@ -2,11 +2,10 @@ package org.jboss.resteasy.springmvc;
 
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -21,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ResteasyHandlerMapping implements HandlerMapping, Ordered, InitializingBean
 {
-   private static Logger logger = LoggerFactory
+   private static Logger logger = Logger
            .getLogger(ResteasyHandlerMapping.class);
 
    private int order = Integer.MAX_VALUE;
