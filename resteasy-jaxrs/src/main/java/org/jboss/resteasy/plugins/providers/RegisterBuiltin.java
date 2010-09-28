@@ -1,8 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.core.LoggerCategories;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.slf4j.Logger;
 
 import javax.ws.rs.ext.Providers;
 import java.io.BufferedReader;
@@ -19,7 +18,7 @@ import java.util.LinkedHashSet;
 public class RegisterBuiltin
 {
 
-   private final static Logger logger = LoggerCategories.getProviderLogger();
+   private final static Logger logger = Logger.getLogger(RegisterBuiltin.class);
 
 
    public static void register(ResteasyProviderFactory factory)

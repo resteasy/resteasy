@@ -5,11 +5,10 @@ import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.util.GetRestful;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
@@ -58,7 +57,7 @@ public class ResteasyDeployment
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
    protected String paramMapping;
-   private final static Logger logger = LoggerFactory.getLogger(ResteasyDeployment.class);
+   private final static Logger logger = Logger.getLogger(ResteasyDeployment.class);
 
    public void start()
    {

@@ -4,8 +4,7 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
 import org.jboss.resteasy.core.ExceptionAdapter;
-import org.jboss.resteasy.core.LoggerCategories;
-import org.slf4j.Logger;
+import org.jboss.resteasy.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class JAXBCache
 {
 
-   private static final Logger logger = LoggerCategories.getProviderLogger();
+   private static final Logger logger = Logger.getLogger(JAXBCache.class);
 
    /**
     *

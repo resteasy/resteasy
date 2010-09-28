@@ -2,10 +2,9 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.ho.yaml.Yaml;
 import org.ho.yaml.exception.YamlException;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -39,7 +38,7 @@ public class YamlProvider extends AbstractEntityProvider<Object>
 {
 
 
-   final static Logger logger = LoggerFactory.getLogger(YamlProvider.class);
+   final static Logger logger = Logger.getLogger(YamlProvider.class);
 
    // MessageBodyReader
 

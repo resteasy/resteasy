@@ -23,9 +23,8 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.GetRestful;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This Extension handles default scopes for discovered JAX-RS components. It also observes ProcessInjectionTarget
@@ -40,7 +39,7 @@ public class ResteasyCdiExtension implements Extension
 {
    private BeanManager beanManager;
    
-   private final Logger log = LoggerFactory.getLogger(ResteasyCdiExtension.class);
+   private final Logger log = Logger.getLogger(ResteasyCdiExtension.class);
    
    // Scope literals
    public static final Annotation requestScopedLiteral = new AnnotationLiteral<RequestScoped>()

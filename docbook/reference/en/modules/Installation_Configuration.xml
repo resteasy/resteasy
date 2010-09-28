@@ -440,16 +440,24 @@
 
         <para>
 
-            RESTEasy logs various events using slf4j.
+            RESTEasy supports logging via java.util.logging, Log4j, or Slf4j.  How it picks which framework to delegate to is
+	    expressed in the following algorithm:
         </para>
+	<itemizedlist>
+	  <listitem>
+	    <para>If log4j is in the application's classpath, log4j will be used</para>
+	  </listitem>
+	  <listitem>
+	    <para>If slf4j is in the application's classpath, slf4j will be used</para>
+	  </listitem>
+	  <listitem>
+	    <para>java.util.logging is the default if neither log4j or slf4j is in the classpath</para>
+	  </listitem>
+	  <listitem>
+	    <para>If the servlet context param resteasy.logger.type is set to JUL, LOG4J, or SLF4J will override this default behavior</para>
+	  </listitem>
+	</itemizedlist>
         <para>
-
-            The slf4j API is intended to serve as a simple facade for various logging APIs allowing to plug in the
-            desired implementation at deployment time. By default, RESTEasy is configured to use Apache log4j, but you
-            may opt to choose any logging provider supported by slf4j.
-        </para>
-        <para>
-
             The logging categories are still a work in progress, but the initial set should make it easier to
             trouleshoot issues. Currently, the framework has defined the following log categories:
         </para>
@@ -511,15 +519,6 @@
                     </tbody>
                 </tgroup>
             </table>
-
-        </para>
-        <para>
-
-            If you're developing RESTEasy code, the LoggerCategories class provide easy access to category names and
-            provides easy access to the various loggers.
-        </para>
-        <para>
-
 
         </para>
     </sect1>

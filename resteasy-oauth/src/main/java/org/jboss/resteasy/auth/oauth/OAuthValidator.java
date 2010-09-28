@@ -3,22 +3,20 @@ package org.jboss.resteasy.auth.oauth;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.SimpleOAuthValidator;
+import org.jboss.resteasy.logging.Logger;
 
 /**
  * OAuth Validator implementation to check OAuth Messages
  * @author Stéphane Épardaud <stef@epardaud.fr>
  */
 public class OAuthValidator extends SimpleOAuthValidator {
-	private final static Logger logger = LoggerFactory.getLogger(OAuthValidator.class);
+	private final static Logger logger = Logger.getLogger(OAuthValidator.class);
 
 	private OAuthProvider provider;
 

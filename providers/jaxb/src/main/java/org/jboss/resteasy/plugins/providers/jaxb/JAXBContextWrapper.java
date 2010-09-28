@@ -4,8 +4,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
-import org.jboss.resteasy.core.LoggerCategories;
-import org.slf4j.Logger;
+import org.jboss.resteasy.logging.Logger;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -37,7 +36,7 @@ import java.util.Map;
 public class JAXBContextWrapper extends JAXBContext
 {
 
-   private static final Logger logger = LoggerCategories.getProviderLogger();
+   private static final Logger logger = Logger.getLogger(JAXBContextWrapper.class);
 
    private static final String NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
 

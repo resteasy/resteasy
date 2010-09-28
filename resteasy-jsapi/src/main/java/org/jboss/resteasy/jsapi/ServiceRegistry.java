@@ -11,17 +11,17 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Stéphane Épardaud <stef@epardaud.fr>
  */
 public class ServiceRegistry
 {
-	private final static Logger logger = LoggerFactory
+	private final static Logger logger = Logger
        .getLogger(ServiceRegistry.class);
 
 	private static final long serialVersionUID = -1985015444704126795L;
@@ -42,12 +42,6 @@ public class ServiceRegistry
 
 	private String functionPrefix;
 
-	public ServiceRegistry(ResourceMethodRegistry registry, 
-			ResteasyProviderFactory providerFactory)
-	{
-		this(null, registry, providerFactory, null);
-	}
-	
 	public ServiceRegistry(ServiceRegistry parent, ResourceMethodRegistry registry, 
 			ResteasyProviderFactory providerFactory, ResourceLocator locator)
 	{

@@ -5,8 +5,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.UUID;
 
-import org.jboss.resteasy.core.LoggerCategories;
-import org.slf4j.Logger;
+import org.jboss.resteasy.logging.Logger;
 
 /**
  * Utility class to help generate, convert RFC compliant Content-ID and cid.
@@ -15,7 +14,7 @@ import org.slf4j.Logger;
  *
  */
 public class ContentIDUtils {
-	private static final Logger LOGGER = LoggerCategories.getProviderLogger();
+	private static final Logger LOGGER = Logger.getLogger(ContentIDUtils.class);
 	public static final String CID_URL_SCHEME = "cid:";
 
 	/**

@@ -6,14 +6,13 @@ package org.jboss.resteasy.test.providers.multipart;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartConstants;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedInput;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.activation.DataHandler;
 import javax.mail.MessagingException;
@@ -134,7 +133,7 @@ public class SimpleMimeMultipartResource
       public byte[] file;
    }
 
-   private static final Logger logger = LoggerFactory
+   private static final Logger logger = Logger
            .getLogger(SimpleMimeMultipartResource.class);
 
    @POST

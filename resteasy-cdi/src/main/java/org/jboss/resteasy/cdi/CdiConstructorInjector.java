@@ -9,13 +9,12 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.WebApplicationException;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This ConstructorInjector implementation uses CDI's BeanManager to obtain
@@ -28,7 +27,7 @@ public class CdiConstructorInjector implements ConstructorInjector
 {
    private BeanManager manager;
    private Class<?> clazz;
-   private static final Logger log = LoggerFactory.getLogger(CdiConstructorInjector.class);
+   private static final Logger log = Logger.getLogger(CdiConstructorInjector.class);
 
    public CdiConstructorInjector(Class<?> clazz, BeanManager manager)
    {

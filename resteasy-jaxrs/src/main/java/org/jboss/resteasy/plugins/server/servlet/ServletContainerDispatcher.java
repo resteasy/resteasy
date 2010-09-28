@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -11,8 +12,6 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -36,7 +35,7 @@ public class ServletContainerDispatcher
 {
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
-   private final static Logger logger = LoggerFactory.getLogger(ServletContainerDispatcher.class);
+   private final static Logger logger = Logger.getLogger(ServletContainerDispatcher.class);
    private String servletMappingPrefix = "";
    protected ResteasyDeployment deployment = null;
    protected HttpRequestFactory requestFactory;

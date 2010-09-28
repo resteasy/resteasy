@@ -1,13 +1,12 @@
 package org.jboss.resteasy.cdi;
 
 import org.jboss.resteasy.core.ValueInjector;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -29,7 +28,7 @@ import java.util.Set;
 @SuppressWarnings("rawtypes")
 public class CdiInjectorFactory implements InjectorFactory
 {
-   private static final Logger log = LoggerFactory.getLogger(CdiInjectorFactory.class);
+   private static final Logger log = Logger.getLogger(CdiInjectorFactory.class);
    private PropertyInjector noopPropertyInjector = new NoopPropertyInjector();
    private InjectorFactory delegate;
    private BeanManager manager;

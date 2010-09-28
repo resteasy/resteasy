@@ -4,13 +4,12 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -31,7 +30,7 @@ public class TestJAXBXmlRootElementProvider extends BaseResourceTest
 
    private static final String XML_PARENT = "XML Parent";
 
-   private static final Logger logger = LoggerFactory
+   private static final Logger logger = Logger
            .getLogger(TestJAXBXmlRootElementProvider.class);
 
    private JAXBXmlRootElementClient client;

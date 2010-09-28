@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.spring;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.resteasy.logging.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -16,7 +15,7 @@ import org.springframework.beans.factory.FactoryBean;
 
 public class OptionalValueBeanFactory implements FactoryBean, BeanFactoryAware
 {
-   private final static Logger logger = LoggerFactory
+   private final static Logger logger = Logger
          .getLogger(OptionalValueBeanFactory.class);
 
    private String beanName;

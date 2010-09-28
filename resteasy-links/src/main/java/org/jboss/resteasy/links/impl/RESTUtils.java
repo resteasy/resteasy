@@ -34,15 +34,14 @@ import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.ResourceFacade;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RESTUtils {
 
-	private final static Logger logger = LoggerFactory
+	private final static Logger logger = Logger
 	.getLogger(RESTUtils.class);
 
 	public static <T> T addDiscovery(T entity, UriInfo uriInfo, ResourceMethodRegistry registry) {
@@ -63,7 +62,6 @@ public class RESTUtils {
 		try {
 			injectionField.set(entity, ret);
 		} catch (Exception e) {
-			if(logger.isErrorEnabled())
 				logger.error("Failed to inject links in "+entity, e);
 		}
 		injectionField.setAccessible(false);
@@ -296,7 +294,6 @@ public class RESTUtils {
 		try{
 			return elProviderClass.newInstance();
 		}catch(Exception x){
-			if(logger.isErrorEnabled())
 				logger.error("Could not instantiate ELProvider class "+elProviderClass.getName(), x);
 			throw new ServiceDiscoveryException(m, "Failed to instantiate ELProvider: "+elProviderClass.getName(), x);
 		}

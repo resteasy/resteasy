@@ -4,8 +4,7 @@
 package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.core.ExceptionAdapter;
-import org.jboss.resteasy.core.LoggerCategories;
-import org.slf4j.Logger;
+import org.jboss.resteasy.logging.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -24,7 +23,7 @@ public final class TypeConverter
 {
    private static final String VALUE_OF_METHOD = "valueOf";
 
-   private static final Logger logger = LoggerCategories.getCoreLogger();
+   private static final Logger logger = Logger.getLogger(TypeConverter.class);
 
    /**
     * A map of primitive to objects.

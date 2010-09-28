@@ -1,5 +1,14 @@
 <chapter id="Migration_from_older_versions">
     <title>Migration from older versions</title>
+    <sect1 id="20_21">
+      <title>Migrating from 2.0.x to 2.1</title>
+      <itemizedlist>
+	<listitem>
+	  Slf4j is no longer the default logging mechanism for resteasy.  Resteasy also no logger ships with SLF4J libraries.  Please read the logging
+	  section in the Installation and Configuration chapter for more details.
+	</listitem>
+      </itemizedlist>
+    </sect1>
     <sect1 id="Migrating_to_Resteasy_12_20">
         <title>Migrating from 1.2.x to 2.0</title>
 

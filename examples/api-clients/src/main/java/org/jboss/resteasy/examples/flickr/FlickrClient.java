@@ -30,15 +30,14 @@ import javax.swing.UIManager;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.jboss.resteasy.examples.resteasy.ImageIconMessageBodyReader;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FlickrClient
 {
 
-    private final static Logger logger = LoggerFactory
+    private final static Logger logger = Logger
             .getLogger(FlickrClient.class);
 
     public static void main(String args[]) throws Exception

@@ -1,11 +1,10 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.scannotation.AnnotationDB;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
@@ -25,7 +24,7 @@ import java.util.Set;
  */
 abstract public class ConfigurationBootstrap
 {
-   private final static Logger logger = LoggerFactory.getLogger(ConfigurationBootstrap.class);
+   private static Logger logger = null;
    private ResteasyDeployment deployment = new ResteasyDeployment();
 
    /**
@@ -49,6 +48,14 @@ abstract public class ConfigurationBootstrap
 
    public ResteasyDeployment createDeployment()
    {
+      String loggerTypeString = getParameter("resteasy.logger.type");
+      if (loggerTypeString != null)
+      {
+         Logger.LoggerType loggerType = Logger.LoggerType.valueOf(loggerTypeString);
+         Logger.setLoggerType(loggerType);
+         
+      }
+      logger = Logger.getLogger(ResteasyDeployment.class);
       String deploymentSensitive = getParameter("resteasy.use.deployment.sensitive.factory");
       if (deploymentSensitive != null)
          deployment.setDeploymentSensitiveFactoryEnabled(Boolean.valueOf(deploymentSensitive.trim()));

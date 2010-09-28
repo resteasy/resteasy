@@ -5,19 +5,18 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Type;
 
 public class ModuleProcessor
 {
-   private final static Logger logger = LoggerFactory.getLogger(ModuleProcessor.class);
+   private final static Logger logger = Logger.getLogger(ModuleProcessor.class);
 
    private final Registry registry;
    private final ResteasyProviderFactory providerFactory;

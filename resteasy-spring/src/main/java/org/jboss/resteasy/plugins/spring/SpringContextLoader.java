@@ -3,10 +3,9 @@ package org.jboss.resteasy.plugins.spring;
 import javax.servlet.ServletContext;
 
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -20,7 +19,7 @@ import org.springframework.web.context.ContextLoader;
  */
 public class SpringContextLoader extends ContextLoader
 {
-	private final static Logger logger = LoggerFactory
+	private final static Logger logger = Logger
 			.getLogger(SpringContextLoader.class);
 
    protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext)

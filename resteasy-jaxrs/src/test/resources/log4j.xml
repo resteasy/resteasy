@@ -26,6 +26,17 @@
 		<appender-ref ref="unit-tests" />
 	</logger>
 
+    <logger name="org.apache.http" additivity="false">
+        <level value="info" />
+        <appender-ref ref="console" />
+        <appender-ref ref="unit-tests" />
+    </logger>
+
+    <logger name="org.jboss.resteasy" additivity="false">
+        <level value="info" />
+        <appender-ref ref="console" />
+        <appender-ref ref="unit-tests" />
+    </logger>
 	<logger name="httpclient.wire" additivity="false">
 		<level value="info" />
 		<appender-ref ref="console" />

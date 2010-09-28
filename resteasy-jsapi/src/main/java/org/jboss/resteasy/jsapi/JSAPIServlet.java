@@ -11,10 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Stéphane Épardaud <stef@epardaud.fr>
@@ -24,8 +23,7 @@ public class JSAPIServlet extends HttpServlet
 
 	private static final long serialVersionUID = -1985015444704126795L;
 
-	private final static Logger logger = LoggerFactory
-	.getLogger(JSAPIServlet.class);
+	private final static Logger logger = Logger.getLogger(JSAPIServlet.class);
 	private ServiceRegistry service;
 
 	private JSAPIWriter apiWriter;

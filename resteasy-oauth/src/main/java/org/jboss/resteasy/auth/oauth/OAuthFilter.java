@@ -16,9 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.oauth.OAuth;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.resteasy.logging.Logger;
 
 /**
  * OAuth Servlet Filter that interprets OAuth Authentication messages to set the Principal and roles
@@ -29,7 +27,7 @@ public class OAuthFilter implements Filter {
 
 	public static final String OAUTH_AUTH_METHOD = "OAuth";
 
-	private final static Logger logger = LoggerFactory.getLogger(OAuthFilter.class);
+	private final static Logger logger = Logger.getLogger(OAuthFilter.class);
 
 	private OAuthProvider provider;
 	private OAuthValidator validator;
