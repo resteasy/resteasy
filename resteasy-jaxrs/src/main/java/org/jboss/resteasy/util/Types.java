@@ -345,4 +345,34 @@ public class Types
       }
       return null;
    }
+   
+   /**
+    * Given a class and an interfaces, go through the class hierarchy to find the interface and return its type arguments. 
+    * @param classToSearch
+    * @param interfaceToFind
+    * @return type arguments of the interface
+    */
+   public static Type[] getActualTypeArgumentsOfAnInterface(Class<?> classToSearch, Class<?> interfaceToFind)
+   {
+      Class<?> clazz = classToSearch;
+      while (clazz != null)
+      {
+         for (Type genericInterface : clazz.getGenericInterfaces())
+         {
+            if (getRawType(genericInterface).equals(interfaceToFind))
+            {
+               if (genericInterface instanceof ParameterizedType)
+               {
+                  return ((ParameterizedType) genericInterface).getActualTypeArguments();
+               }
+               else
+               {
+                  return new Type[] {};
+               }
+            }
+         }
+         clazz = clazz.getSuperclass();
+      }
+      throw new RuntimeException("Unable to find type arguments of " + interfaceToFind);
+   }
 }

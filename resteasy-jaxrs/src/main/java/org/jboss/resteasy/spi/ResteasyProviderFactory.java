@@ -536,33 +536,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return null;
    }
 
-   public void addExceptionMapper(Class<? extends ExceptionMapper> provider)
+   public void addExceptionMapper(Class<? extends ExceptionMapper> providerClass)
    {
-      ExceptionMapper writer = getProviderInstance(provider);
-      addExceptionMapper(writer);
+      ExceptionMapper provider = getProviderInstance(providerClass);
+      addExceptionMapper(provider);
    }
 
    public void addExceptionMapper(ExceptionMapper provider)
    {
-      providers.put(provider.getClass(), provider);
-      injectProperties(provider);
-      Type[] intfs = provider.getClass().getGenericInterfaces();
-      for (Type type : intfs)
-      {
-         if (type instanceof ParameterizedType)
-         {
-            ParameterizedType pt = (ParameterizedType) type;
-            if (pt.getRawType().equals(ExceptionMapper.class))
-            {
-               addExceptionMapper(provider, pt.getActualTypeArguments()[0]);
-            }
-         }
-      }
-
+      Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(provider.getClass(), ExceptionMapper.class)[0];
+      addExceptionMapper(provider, exceptionType);
    }
 
    public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
    {
+      providers.put(provider.getClass(), provider);
+      injectProperties(provider);
+      
       Class<?> exceptionClass = Types.getRawType(exceptionType);
       if (!Throwable.class.isAssignableFrom(exceptionClass))
       {
@@ -610,20 +600,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addContextResolver(ContextResolver provider, boolean builtin)
    {
-      providers.put(provider.getClass(), provider);
-      injectProperties(provider);
-      Type[] intfs = provider.getClass().getGenericInterfaces();
-      for (Type type : intfs)
-      {
-         if (type instanceof ParameterizedType)
-         {
-            ParameterizedType pt = (ParameterizedType) type;
-            if (pt.getRawType().equals(ContextResolver.class))
-            {
-               addContextResolver(provider, pt.getActualTypeArguments()[0], builtin);
-            }
-         }
-      }
+      Type parameter = Types.getActualTypeArgumentsOfAnInterface(provider.getClass(), ContextResolver.class)[0];
+      addContextResolver(provider, parameter, builtin);
    }
 
    public void addContextResolver(ContextResolver provider, Type typeParameter)
@@ -633,6 +611,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addContextResolver(ContextResolver provider, Type typeParameter, boolean builtin)
    {
+      providers.put(provider.getClass(), provider);
+      injectProperties(provider);
       Class<?> parameterClass = Types.getRawType(typeParameter);
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(parameterClass);
       if (resolvers == null)
@@ -669,24 +649,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addStringConverter(StringConverter provider)
    {
-      providers.put(provider.getClass(), provider);
-      injectProperties(provider);
-      Type[] intfs = provider.getClass().getGenericInterfaces();
-      for (Type type : intfs)
-      {
-         if (type instanceof ParameterizedType)
-         {
-            ParameterizedType pt = (ParameterizedType) type;
-            if (pt.getRawType().equals(StringConverter.class))
-            {
-               addStringConverter(provider, pt.getActualTypeArguments()[0]);
-            }
-         }
-      }
+      Type parameter = Types.getActualTypeArgumentsOfAnInterface(provider.getClass(), StringConverter.class)[0];
+      addStringConverter(provider, parameter);
    }
 
    public void addStringConverter(StringConverter provider, Type typeParameter)
    {
+      providers.put(provider.getClass(), provider);
+      injectProperties(provider);
       Class<?> parameterClass = Types.getRawType(typeParameter);
       stringConverters.put(parameterClass, provider);
    }
