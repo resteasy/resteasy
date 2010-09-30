@@ -365,10 +365,6 @@ public class Types
                {
                   return ((ParameterizedType) genericInterface).getActualTypeArguments();
                }
-               else
-               {
-                  return new Type[] {};
-               }
             }
          }
          clazz = clazz.getSuperclass();
