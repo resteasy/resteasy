@@ -33,7 +33,7 @@ public class CdiInjectorFactory implements InjectorFactory
    private InjectorFactory delegate;
    private BeanManager manager;
    private ResteasyCdiExtension extension;
-   private Map<Class<?>, Class<?>> sessionBeanInterface;
+   private Map<Class<?>, Type> sessionBeanInterface;
 
    public CdiInjectorFactory()
    {
@@ -56,7 +56,7 @@ public class CdiInjectorFactory implements InjectorFactory
 
       if (sessionBeanInterface.containsKey((constructor.getDeclaringClass())))
       {
-         Class<?> intfc = sessionBeanInterface.get(clazz);
+         Type intfc = sessionBeanInterface.get(clazz);
          log.debug("Using {} for lookup of Session Bean {}.", intfc, clazz);
          return new CdiConstructorInjector(intfc, manager);
       }
@@ -72,9 +72,19 @@ public class CdiInjectorFactory implements InjectorFactory
 
    public PropertyInjector createPropertyInjector(Class resourceClass)
    {
-      // JAX-RS property injection is performed twice. Firstly by the JaxrsInjectionTarget
-      // wrapper and then again by RESTEasy. To eliminate this, we return a noop PropertyInjector.
-      return noopPropertyInjector;
+         /*
+          JAX-RS property injection is performed twice on CDI Beans. Firstly by the JaxrsInjectionTarget
+          wrapper and then again by RESTEasy (which operates on Weld proxies instead of the underlying instances).
+          To eliminate this, we return NoopPropertyInjector for CDI Beans.
+         */
+         if (!manager.getBeans(resourceClass).isEmpty() || sessionBeanInterface.containsKey(resourceClass))
+         {
+            return noopPropertyInjector;
+         }
+         else
+         {
+            return delegate.createPropertyInjector(resourceClass);
+         }
    }
 
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)

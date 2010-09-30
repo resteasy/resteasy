@@ -31,6 +31,10 @@ public class Utils
       {
          return true;
       }
+      if (clazz.isAnnotationPresent(Provider.class))
+      {
+         return true;
+      }
       for (Method method : clazz.getMethods())
       {
          if (method.isAnnotationPresent(Path.class))

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.cdi;
 
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -26,18 +27,18 @@ import org.jboss.resteasy.spi.HttpResponse;
 public class CdiConstructorInjector implements ConstructorInjector
 {
    private BeanManager manager;
-   private Class<?> clazz;
+   private Type type;
    private static final Logger log = Logger.getLogger(CdiConstructorInjector.class);
 
-   public CdiConstructorInjector(Class<?> clazz, BeanManager manager)
+   public CdiConstructorInjector(Type type, BeanManager manager)
    {
-      this.clazz = clazz;
+      this.type = type;
       this.manager = manager;
    }
 
    public Object construct()
    {
-      Set<Bean<?>> beans = manager.getBeans(clazz);
+      Set<Bean<?>> beans = manager.getBeans(type);
       
       if (beans.size() > 1)
       {
@@ -48,7 +49,7 @@ public class CdiConstructorInjector implements ConstructorInjector
          for (Iterator<Bean<?>> iterator = modifiableBeans.iterator(); iterator.hasNext();)
          {
             Bean<?> bean = iterator.next();
-            if (!bean.getBeanClass().equals(clazz) && !bean.isAlternative())
+            if (!bean.getBeanClass().equals(type) && !bean.isAlternative())
             {
                // remove Beans that have clazz in their type closure but not as a base class
                iterator.remove(); 
@@ -57,11 +58,11 @@ public class CdiConstructorInjector implements ConstructorInjector
          beans = modifiableBeans;
       }
       
-      log.debug("Beans found for class {} : {}", clazz.getCanonicalName(), beans);
+      log.debug("Beans found for {} : {}", type, beans);
       
       Bean<?> bean = manager.resolve(beans);
       CreationalContext<?> context = manager.createCreationalContext(bean);
-      return manager.getReference(bean, clazz, context);
+      return manager.getReference(bean, type, context);
    }
 
    public Object construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException
