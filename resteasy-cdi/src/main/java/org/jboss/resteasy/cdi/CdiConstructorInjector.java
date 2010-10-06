@@ -58,7 +58,7 @@ public class CdiConstructorInjector implements ConstructorInjector
          beans = modifiableBeans;
       }
       
-      log.debug("Beans found for {} : {}", type, beans);
+      log.debug("Beans found for {0} : {1}", type, beans);
       
       Bean<?> bean = manager.resolve(beans);
       CreationalContext<?> context = manager.createCreationalContext(bean);
