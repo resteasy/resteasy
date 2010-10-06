@@ -50,18 +50,18 @@ public class CdiInjectorFactory implements InjectorFactory
 
       if (!manager.getBeans(constructor.getDeclaringClass()).isEmpty())
       {
-         log.debug("Using CdiConstructorInjector for class {}.", clazz);
+         log.debug("Using CdiConstructorInjector for class {0}.", clazz);
          return new CdiConstructorInjector(clazz, manager);
       }
 
       if (sessionBeanInterface.containsKey((constructor.getDeclaringClass())))
       {
          Type intfc = sessionBeanInterface.get(clazz);
-         log.debug("Using {} for lookup of Session Bean {}.", intfc, clazz);
+         log.debug("Using {0} for lookup of Session Bean {1}.", intfc, clazz);
          return new CdiConstructorInjector(intfc, manager);
       }
 
-      log.debug("No CDI beans found for {}. Using default ConstructorInjector.", clazz);
+      log.debug("No CDI beans found for {0}. Using default ConstructorInjector.", clazz);
       return delegate.createConstructor(constructor);
    }
 
@@ -140,12 +140,12 @@ public class CdiInjectorFactory implements InjectorFactory
       try
       {
          InitialContext ctx = new InitialContext();
-         log.debug("Doing a lookup for BeanManager in {}", name);
+         log.debug("Doing a lookup for BeanManager in {0}", name);
          return (BeanManager) ctx.lookup(name);
       }
       catch (NamingException e)
       {
-         log.debug("Unable to obtain BeanManager from {}", name);
+         log.debug("Unable to obtain BeanManager from {0}", name);
          return null;
       }
       catch (NoClassDefFoundError ncdfe)

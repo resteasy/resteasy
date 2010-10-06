@@ -76,22 +76,22 @@ public class ResteasyCdiExtension implements Extension
       {
          if (type.isAnnotationPresent(Stateless.class) || type.isAnnotationPresent(Singleton.class))
          {
-            log.debug("Bean {} is a SLSB or Singleton. Leaving scope unmodified.", type.getJavaClass());
+            log.debug("Bean {0} is a SLSB or Singleton. Leaving scope unmodified.", type.getJavaClass());
             return; // Do not modify scopes of SLSBs and Singletons
          }
          if (type.isAnnotationPresent(Provider.class))
          {
-            log.debug("Discovered CDI bean which is a JAX-RS provider {}.", type.getJavaClass().getCanonicalName());
+            log.debug("Discovered CDI bean which is a JAX-RS provider {0}.", type.getJavaClass().getCanonicalName());
             event.setAnnotatedType(wrapAnnotatedType(type, applicationScopedLiteral));
          }
          else if (GetRestful.isRootResource(type.getJavaClass()))
          {
-            log.debug("Discovered CDI bean which is a JAX-RS resource {}.", type.getJavaClass().getCanonicalName());
+            log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", type.getJavaClass().getCanonicalName());
             event.setAnnotatedType(wrapAnnotatedType(type, requestScopedLiteral));
          }
          else if (Application.class.isAssignableFrom(type.getJavaClass()))
          {
-            log.debug("Discovered CDI bean which is javax.ws.rs.core.Application subclass {}.", type.getJavaClass().getCanonicalName());
+            log.debug("Discovered CDI bean which is javax.ws.rs.core.Application subclass {0}.", type.getJavaClass().getCanonicalName());
             event.setAnnotatedType(wrapAnnotatedType(type, applicationScopedLiteral));
          }
       }
@@ -101,12 +101,12 @@ public class ResteasyCdiExtension implements Extension
    {
       if (Utils.isScopeDefined(type.getJavaClass(), beanManager))
       {
-         log.debug("Bean {} has a scope defined.", type.getJavaClass());
+         log.debug("Bean {0} has a scope defined.", type.getJavaClass());
          return type; // leave it as it is
       }
       else
       {
-         log.debug("Bean {} does not have the scope defined. Binding to {}.", type.getJavaClass(), scope);
+         log.debug("Bean {0} does not have the scope defined. Binding to {1}.", type.getJavaClass(), scope);
          return new JaxrsAnnotatedType<T>(type, scope);
       }
    }
@@ -160,12 +160,12 @@ public class ResteasyCdiExtension implements Extension
             if (Utils.isJaxrsAnnotatedClass(clazz))
             {
                sessionBeanInterface.put(bean.getBeanClass(), type);
-               log.debug("{} will be used for {} lookup", type, bean.getBeanClass());
+               log.debug("{0} will be used for {1} lookup", type, bean.getBeanClass());
                return;
             }
          }
       }
-      log.debug("No lookup interface found for {}", bean.getBeanClass());
+      log.debug("No lookup interface found for {0}", bean.getBeanClass());
    }
 
    public Map<Class<?>, Type> getSessionBeanInterface()
