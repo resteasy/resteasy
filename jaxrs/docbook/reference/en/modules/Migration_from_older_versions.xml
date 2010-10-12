@@ -4,7 +4,7 @@
       <title>Migrating from 2.0.x to 2.1</title>
       <itemizedlist>
 	<listitem>
-	  Slf4j is no longer the default logging mechanism for resteasy.  Resteasy also no logger ships with SLF4J libraries.  Please read the logging
+	  Slf4j is no longer the default logging mechanism for resteasy.  Resteasy also no longer ships with SLF4J libraries.  Please read the logging
 	  section in the Installation and Configuration chapter for more details.
 	</listitem>
       </itemizedlist>
