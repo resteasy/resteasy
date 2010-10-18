@@ -26,7 +26,7 @@
       <dependency>
          <groupId>org.jboss.resteasy</groupId>
          <artifactId>resteasy-jaxrs</artifactId>
-         <version>1.2.1.GA_CP-SNAPSHOT</version>
+         <version>1.2.1.GA_CP01</version>
       </dependency>
       <dependency>
          <groupId>tjws</groupId>

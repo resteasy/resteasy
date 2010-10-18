@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>ejb-integration-example</artifactId>
-        <version>1.2.1.GA_CP-SNAPSHOT</version>
+        <version>1.2.1.GA_CP01</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ejb-integration-war</artifactId>
