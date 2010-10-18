@@ -23,3 +23,10 @@ Open a browser at the following URL:
 
 List all available contacts:
 http://localhost:8080/contacts
+
+*NOTE*
+=========
+This example won't run directly in JBossAS directly. Because Springframework 2.5.x does not support JBoss VFS properly. To deploy this example under
+JBossAS, you should use JBoss Snowdrop(http://www.jboss.org/snowdrop) to 
+support Springframework in JBossAS. For detail information, please see:
+https://jira.jboss.org/browse/JBPAPP-5051
