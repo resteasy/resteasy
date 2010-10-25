@@ -870,6 +870,17 @@ Content-Type: application/xml
           the server. Only usable on topics.</para>
         </listitem>
       </varlistentry>
+
+      <varlistentry>
+        <term>selector</term>
+
+        <listitem>
+          <para>This is an optional JMS selector string. The HornetQ REST
+          interface adds HTTP headers to the JMS message for REST produced
+          messages. HTTP headers are prefixed with "http_" and every '-'
+          charactor is converted to a '$'.</para>
+        </listitem>
+      </varlistentry>
     </variablelist>
 
     <sect1>
@@ -1480,6 +1491,10 @@ msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/con
 
       <programlisting>&lt;push-registration&gt;
    &lt;durable&gt;false&lt;/durable&gt;
+   &lt;selector&gt;&lt;![CDATA[ 
+         SomeAttribute &gt; 1 
+       ]]&gt;
+   &lt;/selector&gt;
    &lt;link rel="push" href="http://somewhere.com" type="application/json" method="PUT"/&gt;
 &lt;/push-registration&gt;
 </programlisting>
@@ -1492,6 +1507,10 @@ msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/con
       created within the directory specified by the
       <literal>queue-push-store-dir</literal> config variable defined in
       Chapter 2. (<literal>topic-push-store-dir</literal> for topics).</para>
+
+      <para>The <literal>selector</literal> element is optional and defines a
+      JMS message selector. You should enclose it within CDATA blocks as some
+      of the selector characters are illegal XML.</para>
 
       <para>The <literal>link</literal> element specifies the basis of the
       interaction. The <literal>href</literal> attribute contains the URL you
@@ -1562,11 +1581,16 @@ msg-consume-next: http://example.com/queues/jms.queue.bar/pull-consumers/333/con
       <title>The Topic Push Subscription XML</title>
 
       <para>The push XML for a topic is the same except the root element is
-      push-topic-registration. The rest of the document is the same. Here's an
+      push-topic-registration. (Also remember the <literal>selector</literal>
+      element is optional). The rest of the document is the same. Here's an
       example of a template registration:</para>
 
       <programlisting>&lt;push-topic-registration&gt;
    &lt;durable&gt;true&lt;/durable&gt;
+   &lt;selector&gt;&lt;![CDATA[ 
+         SomeAttribute &gt; 1 
+       ]]&gt;
+   &lt;/selector&gt;
    &lt;link rel="template" href="http://somewhere.com/resources/{id}/messages" method="POST"/&gt;
 &lt;/push-topic registration&gt;</programlisting>
     </sect1>

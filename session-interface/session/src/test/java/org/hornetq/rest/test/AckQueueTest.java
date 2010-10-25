@@ -76,6 +76,10 @@ public class AckQueueTest extends MessageTestBase
          Thread.sleep(2000);
 
          ClientResponse ackRes = ack.request().formParameter("acknowledge", "true").post();
+         if (ackRes.getStatus() != 412)
+         {
+            System.out.println(ackRes.getEntity(String.class));
+         }
          Assert.assertEquals(412, ackRes.getStatus());
          System.out.println("**** Successfully failed ack");
          consumeNext = MessageTestBase.getLinkByTitle(manager.getQueueManager().getLinkStrategy(), ackRes, "acknowledge-next");

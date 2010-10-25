@@ -36,6 +36,9 @@ public class ConsumersResource implements TimeoutTask.Callback
    protected int consumerTimeoutSeconds;
    protected DestinationServiceManager serviceManager;
 
+   protected static final int ACKNOWLEDGED = 0x01;
+   protected static final int SELECTOR_SET = 0x02;
+
    public DestinationServiceManager getServiceManager()
    {
       return serviceManager;
@@ -108,32 +111,41 @@ public class ConsumersResource implements TimeoutTask.Callback
 
    @POST
    public Response createSubscription(@FormParam("autoAck") @DefaultValue("true") boolean autoAck,
+                                      @FormParam("selector") String selector,
                                       @Context UriInfo uriInfo)
    {
       try
       {
          QueueConsumer consumer = null;
+         int attributes = 0;
+         if (selector != null)
+         {
+            attributes = attributes | SELECTOR_SET;
+         }
+         
          if (autoAck)
          {
-            consumer = createConsumer();
+            consumer = createConsumer(selector);
          }
          else
          {
-            consumer = createAcknowledgedConsumer();
+            attributes |= ACKNOWLEDGED;
+            consumer = createAcknowledgedConsumer(selector);
          }
 
+         String attributesSegment = "attributes-" + attributes;
          UriBuilder location = uriInfo.getAbsolutePathBuilder();
-         if (autoAck) location.path("auto-ack");
-         else location.path("acknowledged");
+         location.path(attributesSegment);
          location.path(consumer.getId());
          Response.ResponseBuilder builder = Response.created(location.build());
+
          if (autoAck)
          {
-            QueueConsumer.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/auto-ack/" + consumer.getId(), "-1");
+            QueueConsumer.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/" + attributesSegment +"/" + consumer.getId(), "-1");
          }
          else
          {
-            AcknowledgedQueueConsumer.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), "-1");
+            AcknowledgedQueueConsumer.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/" + attributesSegment +"/" + consumer.getId(), "-1");
 
          }
          return builder.build();
@@ -148,11 +160,11 @@ public class ConsumersResource implements TimeoutTask.Callback
       }
    }
 
-   public QueueConsumer createConsumer()
+   public QueueConsumer createConsumer(String selector)
            throws HornetQException
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
-      QueueConsumer consumer = new QueueConsumer(sessionFactory, destination, genId, serviceManager);
+      QueueConsumer consumer = new QueueConsumer(sessionFactory, destination, genId, serviceManager, selector);
       synchronized (timeoutLock)
       {
          queueConsumers.put(genId, consumer);
@@ -161,11 +173,11 @@ public class ConsumersResource implements TimeoutTask.Callback
       return consumer;
    }
 
-   public QueueConsumer createAcknowledgedConsumer()
+   public QueueConsumer createAcknowledgedConsumer(String selector)
            throws HornetQException
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
-      QueueConsumer consumer = new AcknowledgedQueueConsumer(sessionFactory, destination, genId, serviceManager);
+      QueueConsumer consumer = new AcknowledgedQueueConsumer(sessionFactory, destination, genId, serviceManager, selector);
       synchronized (timeoutLock)
       {
          queueConsumers.put(genId, consumer);
@@ -174,84 +186,80 @@ public class ConsumersResource implements TimeoutTask.Callback
       return consumer;
    }
 
-   @Path("auto-ack/{consumer-id}")
+   @Path("attributes-{attributes}/{consumer-id}")
    @GET
-   public Response getConsumer(@PathParam("consumer-id") String consumerId,
+   public Response getConsumer(@PathParam("attributes") int attributes,
+                               @PathParam("consumer-id") String consumerId,
                                @Context UriInfo uriInfo) throws Exception
    {
-      return headConsumer(consumerId, uriInfo);
+      return headConsumer(attributes, consumerId, uriInfo);
    }
 
-   @Path("auto-ack/{consumer-id}")
+   @Path("attributes-{attributes}/{consumer-id}")
    @HEAD
-   public Response headConsumer(@PathParam("consumer-id") String consumerId,
+   public Response headConsumer(@PathParam("attributes") int attributes,
+                                @PathParam("consumer-id") String consumerId,
                                 @Context UriInfo uriInfo) throws Exception
    {
-      QueueConsumer consumer = findConsumer(consumerId);
+      QueueConsumer consumer = findConsumer(attributes, consumerId, uriInfo);
       Response.ResponseBuilder builder = Response.noContent();
       // we synchronize just in case a failed request is still processing
       synchronized (consumer)
       {
-         QueueConsumer.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
-      }
-      return builder.build();
-   }
-
-   @Path("auto-ack/{consumer-id}")
-   public QueueConsumer findConsumer(
-           @PathParam("consumer-id") String consumerId) throws Exception
-   {
-      QueueConsumer consumer = queueConsumers.get(consumerId);
-      if (consumer == null)
-      {
-         QueueConsumer tmp = new QueueConsumer(sessionFactory, destination, consumerId, serviceManager);
-         consumer = addConsumerToMap(consumerId, tmp);
-      }
-      return consumer;
-   }
-
-   @Path("acknowledged/{consumer-id}")
-   @GET
-   public Response getAcknowledgedConsumer(@PathParam("consumer-id") String consumerId,
-                                           @Context UriInfo uriInfo) throws Exception
-   {
-      return headAcknowledgedConsumer(consumerId, uriInfo);
-   }
-
-   @Path("acknowledged/{consumer-id}")
-   @HEAD
-   public Response headAcknowledgedConsumer(@PathParam("consumer-id") String consumerId,
-                                            @Context UriInfo uriInfo) throws Exception
-   {
-      AcknowledgedQueueConsumer consumer = (AcknowledgedQueueConsumer) findAcknowledgedConsumer(consumerId);
-      Response.ResponseBuilder builder = Response.ok();
-      // we synchronize just in case a failed request is still processing
-      synchronized (consumer)
-      {
-         Acknowledgement ack = consumer.getAck();
-         if (ack == null || ack.wasSet())
+         if ( (attributes & ACKNOWLEDGED) > 0)
          {
-            AcknowledgedQueueConsumer.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
+            AcknowledgedQueueConsumer ackedConsumer = (AcknowledgedQueueConsumer)consumer;
+            Acknowledgement ack = ackedConsumer.getAck();
+            if (ack == null || ack.wasSet())
+            {
+               AcknowledgedQueueConsumer.setAcknowledgeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/attributes-" + attributes + "/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
+            }
+            else
+            {
+               ackedConsumer.setAcknowledgementLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/attributes-" + attributes + "/" + consumer.getId());
+            }
+
          }
          else
          {
-            consumer.setAcknowledgementLink(builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/acknowledged/" + consumer.getId());
+            QueueConsumer.setConsumeNextLink(serviceManager.getLinkStrategy(), builder, uriInfo, uriInfo.getMatchedURIs().get(1) + "/attributes-" + attributes + "/" + consumer.getId(), Long.toString(consumer.getConsumeIndex()));
          }
       }
       return builder.build();
    }
 
-
-   @Path("acknowledged/{consumer-id}")
-   public QueueConsumer findAcknowledgedConsumer(
-           @PathParam("consumer-id") String consumerId) throws Exception
+   @Path("attributes-{attributes}/{consumer-id}")
+   public QueueConsumer findConsumer(
+           @PathParam("attributes") int attributes,
+           @PathParam("consumer-id") String consumerId,
+           @Context UriInfo uriInfo) throws Exception
    {
       QueueConsumer consumer = queueConsumers.get(consumerId);
       if (consumer == null)
       {
-         QueueConsumer tmp = new AcknowledgedQueueConsumer(sessionFactory, destination, consumerId, serviceManager);
-         ;
-         consumer = addConsumerToMap(consumerId, tmp);
+         if ( (attributes & SELECTOR_SET) > 0)
+         {
+
+            Response.ResponseBuilder builder = Response.status(Response.Status.GONE)
+                    .entity("Cannot reconnect to selector-based consumer.  You must recreate the consumer session.")
+                    .type("text/plain");
+            UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+            uriBuilder.path(uriInfo.getMatchedURIs().get(1));
+            serviceManager.getLinkStrategy().setLinkHeader(builder, "pull-consumers", "pull-consumers", uriBuilder.build().toString(), null);
+            throw new WebApplicationException(builder.build());
+            
+         }
+         if ( (attributes & ACKNOWLEDGED) > 0)
+         {
+            QueueConsumer tmp = new AcknowledgedQueueConsumer(sessionFactory, destination, consumerId, serviceManager, null);
+            consumer = addConsumerToMap(consumerId, tmp);
+
+         }
+         else
+         {
+            QueueConsumer tmp = new QueueConsumer(sessionFactory, destination, consumerId, serviceManager, null);
+            consumer = addConsumerToMap(consumerId, tmp);
+         }
       }
       return consumer;
    }
@@ -276,15 +284,7 @@ public class ConsumersResource implements TimeoutTask.Callback
    }
 
 
-   @Path("acknowledged/{consumer-id}")
-   @DELETE
-   public void closeAcknowledgedSession(
-           @PathParam("consumer-id") String consumerId)
-   {
-      closeSession(consumerId);
-   }
-
-   @Path("auto-ack/{consumer-id}")
+   @Path("attributes-{attributes}/{consumer-id}")
    @DELETE
    public void closeSession(
            @PathParam("consumer-id") String consumerId)

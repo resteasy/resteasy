@@ -13,10 +13,10 @@ public class SubscriptionResource extends QueueConsumer implements Subscription
 {
    boolean durable;
 
-   public SubscriptionResource(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager)
+   public SubscriptionResource(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager, String selector)
            throws HornetQException
    {
-      super(factory, destination, id, serviceManager);
+      super(factory, destination, id, serviceManager, selector);
    }
 
    public boolean isDurable()

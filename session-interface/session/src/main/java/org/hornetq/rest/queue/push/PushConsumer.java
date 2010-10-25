@@ -7,6 +7,7 @@ import org.hornetq.api.core.client.ClientSession;
 import org.hornetq.api.core.client.ClientSessionFactory;
 import org.hornetq.api.core.client.MessageHandler;
 import org.hornetq.core.logging.Logger;
+import org.hornetq.jms.client.SelectorTranslator;
 import org.hornetq.rest.queue.push.xml.PushRegistration;
 
 /**
@@ -68,7 +69,14 @@ public class PushConsumer implements MessageHandler
       strategy.start();
 
       session = factory.createSession(false, false);
-      consumer = session.createConsumer(destination);
+      if (registration.getSelector() != null)
+      {
+         consumer = session.createConsumer(destination, SelectorTranslator.convertToHornetQFilterString(registration.getSelector()));
+      }
+      else
+      {
+         consumer = session.createConsumer(destination);
+      }
       consumer.setMessageHandler(this);
       session.start();
       log.info("Push consumer started for: " + registration.getTarget());

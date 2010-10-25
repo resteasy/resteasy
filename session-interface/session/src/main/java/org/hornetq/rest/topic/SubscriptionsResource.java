@@ -128,6 +128,7 @@ public class SubscriptionsResource implements TimeoutTask.Callback
    public Response createSubscription(@FormParam("durable") @DefaultValue("false") boolean durable,
                                       @FormParam("autoAck") @DefaultValue("true") boolean autoAck,
                                       @FormParam("name") String subscriptionName,
+                                      @FormParam("selector") String selector,
                                       @Context UriInfo uriInfo)
    {
       if (subscriptionName != null)
@@ -186,7 +187,7 @@ public class SubscriptionsResource implements TimeoutTask.Callback
                session.createTemporaryQueue(destination, subscriptionName);
             }
          }
-         QueueConsumer consumer = createConsumer(durable, autoAck, subscriptionName);
+         QueueConsumer consumer = createConsumer(durable, autoAck, subscriptionName, selector);
          queueConsumers.put(consumer.getId(), consumer);
          serviceManager.getTimeoutTask().add(this, consumer.getId());
 
@@ -226,19 +227,19 @@ public class SubscriptionsResource implements TimeoutTask.Callback
       }
    }
 
-   protected QueueConsumer createConsumer(boolean durable, boolean autoAck, String subscriptionName)
+   protected QueueConsumer createConsumer(boolean durable, boolean autoAck, String subscriptionName, String selector)
            throws HornetQException
    {
       QueueConsumer consumer;
       if (autoAck)
       {
-         SubscriptionResource subscription = new SubscriptionResource(sessionFactory, subscriptionName, subscriptionName, serviceManager);
+         SubscriptionResource subscription = new SubscriptionResource(sessionFactory, subscriptionName, subscriptionName, serviceManager, selector);
          subscription.setDurable(durable);
          consumer = subscription;
       }
       else
       {
-         AcknowledgedSubscriptionResource subscription = new AcknowledgedSubscriptionResource(sessionFactory, subscriptionName, subscriptionName, serviceManager);
+         AcknowledgedSubscriptionResource subscription = new AcknowledgedSubscriptionResource(sessionFactory, subscriptionName, subscriptionName, serviceManager, selector);
          subscription.setDurable(durable);
          consumer = subscription;
       }
@@ -376,7 +377,7 @@ public class SubscriptionsResource implements TimeoutTask.Callback
             QueueConsumer tmp = null;
             try
             {
-               tmp = createConsumer(true, autoAck, subscriptionId);
+               tmp = createConsumer(true, autoAck, subscriptionId, null);
             }
             catch (HornetQException e)
             {
