@@ -18,7 +18,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "push-registration")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = {"destination", "durable", "target", "authenticationMechanism", "headers"})
+@XmlType(propOrder = {"destination", "durable", "selector", "target", "authenticationMechanism", "headers"})
 public class PushRegistration implements Serializable
 {
    private String id;
@@ -28,6 +28,7 @@ public class PushRegistration implements Serializable
    private List<XmlHttpHeader> headers = new ArrayList<XmlHttpHeader>();
    private String destination;
    private Object loadedFrom;
+   private String selector;
 
    @XmlTransient
    public Object getLoadedFrom()
@@ -71,6 +72,16 @@ public class PushRegistration implements Serializable
    public void setDurable(boolean durable)
    {
       this.durable = durable;
+   }
+
+   public String getSelector()
+   {
+      return selector;
+   }
+
+   public void setSelector(String selector)
+   {
+      this.selector = selector;
    }
 
    @XmlElementRef

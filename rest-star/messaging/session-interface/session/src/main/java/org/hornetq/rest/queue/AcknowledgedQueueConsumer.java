@@ -31,10 +31,10 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
    protected String startup = Long.toString(System.currentTimeMillis());
    protected volatile Acknowledgement ack;
 
-   public AcknowledgedQueueConsumer(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager)
+   public AcknowledgedQueueConsumer(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager, String selector)
            throws HornetQException
    {
-      super(factory, destination, id, serviceManager);
+      super(factory, destination, id, serviceManager, selector);
       autoAck = false;
    }
 
@@ -187,9 +187,7 @@ public class AcknowledgedQueueConsumer extends QueueConsumer
 
       try
       {
-         session = factory.createSession();
-         consumer = session.createConsumer(destination);
-         session.start();
+         createSession();
       }
       catch (Exception e)
       {

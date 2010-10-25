@@ -13,10 +13,10 @@ public class AcknowledgedSubscriptionResource extends AcknowledgedQueueConsumer 
 {
    private boolean durable;
 
-   public AcknowledgedSubscriptionResource(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager)
+   public AcknowledgedSubscriptionResource(ClientSessionFactory factory, String destination, String id, DestinationServiceManager serviceManager, String selector)
            throws HornetQException
    {
-      super(factory, destination, id, serviceManager);
+      super(factory, destination, id, serviceManager, selector);
    }
 
    public boolean isDurable()
