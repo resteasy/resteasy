@@ -12,8 +12,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
@@ -48,6 +50,11 @@ public class ApplicationConfigWithInterceptorTest
          throw new WebApplicationException(Response.status(Status.CONFLICT).entity("conflicted").build());
       }
 
+      @DELETE
+      @Path("{id}")
+      public void remove(@PathParam("id") String id) {
+         return;
+      }
    }
 
    @Provider
@@ -104,11 +111,23 @@ public class ApplicationConfigWithInterceptorTest
       doTest("/my/bad", 409);
    }
 
+   @Test
+   public void testNoContentResponse() throws Exception
+   {
+      doTest("/my/123", 204, false);
+   }
+
    @SuppressWarnings("unchecked")
    private void doTest(String path, int expectedStatus) throws Exception
    {
+      doTest(path, expectedStatus, true);
+   }
+
+   @SuppressWarnings("unchecked")
+   private void doTest(String path, int expectedStatus, boolean get) throws Exception
+   {
       ClientRequest request = new ClientRequest(generateURL(path));
-      ClientResponse response = request.get();
+      ClientResponse response = get ? request.get() : request.delete();
       Assert.assertEquals(expectedStatus, response.getStatus());
       Assert.assertNotNull(response.getHeaders().getFirst("custom-header"));
 
