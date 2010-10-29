@@ -266,7 +266,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
       if (rtn == null || method.getReturnType().equals(void.class))
       {
-         return (ServerResponse) Response.noContent().build();
+         return prepareResponse((ServerResponse) Response.noContent().build());
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
