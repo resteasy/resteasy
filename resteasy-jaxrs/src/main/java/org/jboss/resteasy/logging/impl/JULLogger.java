@@ -133,4 +133,10 @@ public class JULLogger extends Logger
       if (!delegate.isLoggable(java.util.logging.Level.SEVERE)) return;
       delegate.logp(java.util.logging.Level.SEVERE, classname, "", message, error);
    }
+
+   @Override
+   public boolean isWarnEnabled()
+   {
+      return delegate.isLoggable(java.util.logging.Level.WARNING);
+   }
 }

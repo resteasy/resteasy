@@ -39,13 +39,11 @@ public class Segment
       for (MediaType accept : oldaccepts) accepts.add(WeightedMediaType.parse(accept));
 
       List<ResourceMethod> list = new ArrayList<ResourceMethod>();
-      IdentityHashMap<WeightedMediaType, ResourceMethod> consumesMap = new IdentityHashMap<WeightedMediaType, ResourceMethod>();
 
       boolean methodMatch = false;
       boolean consumeMatch = false;
 
       // make a list of all compatible ResourceMethods
-      // Populate the consumes identity map with media types from each ResourceMethod
       for (ResourceMethod invoker : methods)
       {
 
@@ -58,18 +56,6 @@ public class Segment
                if (invoker.doesProduce(accepts))
                {
                   list.add(invoker);
-                  if (invoker.getConsumes() == null)
-                  {
-                     WeightedMediaType defaultConsumes = WeightedMediaType.valueOf("*/*;q=0.0");
-                     consumesMap.put(defaultConsumes, invoker);
-                  }
-                  else
-                  {
-                     for (WeightedMediaType consume : invoker.getPreferredConsumes())
-                     {
-                        consumesMap.put(consume, invoker);
-                     }
-                  }
                }
             }
 
@@ -118,6 +104,26 @@ public class Segment
          throw new NotAcceptableException("No match for accept header");
       }
       if (list.size() == 1) return list.get(0);
+
+      // Populate the consumes identity map with media types from each ResourceMethod
+      // so that we can easily pick invokers after media types are sorted
+      IdentityHashMap<WeightedMediaType, ResourceMethod> consumesMap = new IdentityHashMap<WeightedMediaType, ResourceMethod>();
+      for (ResourceMethod invoker : list)
+      {
+         if (invoker.getConsumes() == null)
+         {
+            WeightedMediaType defaultConsumes = WeightedMediaType.valueOf("*/*;q=0.0");
+            consumesMap.put(defaultConsumes, invoker);
+         }
+         else
+         {
+            for (WeightedMediaType consume : invoker.getPreferredConsumes())
+            {
+               consumesMap.put(consume, invoker);
+            }
+         }
+
+      }
 
       list = new ArrayList<ResourceMethod>();
       ArrayList<WeightedMediaType> consumes = new ArrayList<WeightedMediaType>();

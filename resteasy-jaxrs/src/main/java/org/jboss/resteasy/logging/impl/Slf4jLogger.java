@@ -142,4 +142,11 @@ public class Slf4jLogger extends org.jboss.resteasy.logging.Logger
       if (!delegate.isErrorEnabled()) return;
       delegate.error(message, error);
    }
+
+   @Override
+   public boolean isWarnEnabled()
+   {
+      return delegate.isWarnEnabled();
+   }
+
 }

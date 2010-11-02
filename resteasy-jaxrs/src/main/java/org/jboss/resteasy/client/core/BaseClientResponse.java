@@ -9,12 +9,14 @@ import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -66,6 +68,67 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       this.streamFactory = streamFactory;
    }
+
+   /**
+    * Store entity within a byte array input stream.  Copy status and headers, but ignore
+    * all type information stored in the ClientResponse.
+    *
+    * @param copy
+    * @return
+    */
+   public static ClientResponse copyFromError(ClientResponse copy)
+   {
+      InputStream is = null;
+      if (copy.getHeaders().containsKey("Content-Type"))
+      {
+         GenericType<byte[]> gt = new GenericType<byte[]>()
+         {
+         };
+         try
+         {
+            byte[] bytes = (byte[]) copy.getEntity(gt);
+            is = new ByteArrayInputStream(bytes);
+         }
+         catch (Exception ignore)
+         {
+            // ignore the exception because we're already throwing an error anyways.
+         }
+      }
+      final InputStream theIs = is;
+      BaseClientResponse tmp = new BaseClientResponse(new BaseClientResponse.BaseClientResponseStreamFactory()
+      {
+         InputStream stream;
+
+         public InputStream getInputStream() throws IOException
+         {
+            return theIs;
+         }
+
+         public void performReleaseConnection()
+         {
+         }
+      });
+      if (copy instanceof BaseClientResponse)
+      {
+         BaseClientResponse base = (BaseClientResponse) copy;
+         tmp.executor = base.executor;
+         tmp.status = base.status;
+         tmp.providerFactory = base.providerFactory;
+         tmp.headers = new CaseInsensitiveMap<String>();
+         tmp.headers.putAll(base.headers);
+         tmp.headers.remove("Content-Encoding"); // remove encoding because we will have already extracted byte array
+      }
+      else
+      {
+         tmp.status = copy.getStatus();
+         tmp.providerFactory = ResteasyProviderFactory.getInstance();
+         tmp.headers = new CaseInsensitiveMap<String>();
+         tmp.headers.putAll(copy.getHeaders());
+         tmp.headers.remove("Content-Encoding"); // remove encoding because we will have already extracted byte array
+      }
+      return tmp;
+   }
+
 
    public void setMessageBodyReaderInterceptors(MessageBodyReaderInterceptor[] messageBodyReaderInterceptors)
    {
