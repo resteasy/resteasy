@@ -5,8 +5,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ejb.Singleton;
-import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
@@ -40,6 +38,8 @@ import org.jboss.resteasy.util.GetRestful;
 public class ResteasyCdiExtension implements Extension
 {
    private BeanManager beanManager;
+   private static final String JAVAX_EJB_STATELESS = "javax.ejb.Stateless";
+   private static final String JAVAX_EJB_SINGLETON = "javax.ejb.Singleton";
 
    private final Logger log = Logger.getLogger(ResteasyCdiExtension.class);
 
@@ -74,10 +74,14 @@ public class ResteasyCdiExtension implements Extension
 
       if (!type.getJavaClass().isInterface())
       {
-         if (type.isAnnotationPresent(Stateless.class) || type.isAnnotationPresent(Singleton.class))
+         for (Annotation annotation : type.getAnnotations())
          {
-            log.debug("Bean {0} is a SLSB or Singleton. Leaving scope unmodified.", type.getJavaClass());
-            return; // Do not modify scopes of SLSBs and Singletons
+            Class<?> annotationType = annotation.annotationType();
+            if (annotationType.getName().equals(JAVAX_EJB_STATELESS) || annotationType.getName().equals(JAVAX_EJB_SINGLETON))
+            {
+               log.debug("Bean {0} is a SLSB or Singleton. Leaving scope unmodified.", type.getJavaClass());
+               return; // Do not modify scopes of SLSBs and Singletons
+            }
          }
          if (type.isAnnotationPresent(Provider.class))
          {
