@@ -20,9 +20,9 @@ public abstract class Logger
 
    /**
     * Set this variable to set what logger you want.  The default is java.util.logging
-    *
     */
    private static Constructor loggerConstructor = null;
+
    public static void setLoggerType(LoggerType loggerType)
    {
       try
@@ -40,7 +40,8 @@ public abstract class Logger
          {
             loggerClass = Thread.currentThread().getContextClassLoader().loadClass("org.jboss.resteasy.logging.impl.Slf4jLogger");
          }
-         if (loggerClass == null) throw new RuntimeException("Could not match up an implementation for LoggerType: " + loggerType);
+         if (loggerClass == null)
+            throw new RuntimeException("Could not match up an implementation for LoggerType: " + loggerType);
          loggerConstructor = loggerClass.getDeclaredConstructor(String.class);
       }
       catch (ClassNotFoundException e)
@@ -84,13 +85,11 @@ public abstract class Logger
    }
 
 
-
-
    public static Logger getLogger(Class<?> clazz)
    {
       try
       {
-         return (Logger)loggerConstructor.newInstance(clazz.getName());
+         return (Logger) loggerConstructor.newInstance(clazz.getName());
       }
       catch (InstantiationException e)
       {
@@ -107,26 +106,39 @@ public abstract class Logger
    }
 
 
-
    public abstract boolean isTraceEnabled();
+
    public abstract void trace(String message);
+
    public abstract void trace(String message, Object... params);
+
    public abstract void trace(String message, Throwable error);
 
    public abstract boolean isDebugEnabled();
+
    public abstract void debug(String message);
+
    public abstract void debug(String message, Object... params);
+
    public abstract void debug(String message, Throwable error);
 
    public abstract void info(String message);
+
    public abstract void info(String message, Object... params);
+
    public abstract void info(String message, Throwable error);
 
+   public abstract boolean isWarnEnabled();
+
    public abstract void warn(String message);
+
    public abstract void warn(String message, Object... params);
+
    public abstract void warn(String message, Throwable error);
 
    public abstract void error(String message);
+
    public abstract void error(String message, Object... params);
+
    public abstract void error(String message, Throwable error);
 }

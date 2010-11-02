@@ -1,5 +1,9 @@
 package org.jboss.resteasy.test.client;
 
+//import org.apache.commons.httpclient.HttpClient;
+
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -13,6 +17,7 @@ import org.apache.http.params.HttpParams;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
@@ -109,4 +114,85 @@ public class ClientResponseFailureTest extends BaseResourceTest
       final ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
       return executor;
    }
+
+   @Test
+   public void test31ConnectionCleanupOnError() throws Exception
+   {
+      HttpClientParams params = new HttpClientParams();
+      params.setSoTimeout(5000);
+      params.setConnectionManagerTimeout(5000);
+
+
+      MultiThreadedHttpConnectionManager cm = new
+              MultiThreadedHttpConnectionManager();
+      cm.setMaxConnectionsPerHost(10);
+      cm.setMaxTotalConnections(100);
+
+      org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient();
+      client.setParams(params);
+      client.setHttpConnectionManager(cm);
+
+      final MyResource proxy = ProxyFactory.create(
+              MyResource.class, "http://localhost:8081", new
+                      ApacheHttpClientExecutor(client));
+
+      Background[] threads = new Background[31];
+      for (int i = 0; i < 31; i++)
+      {
+         threads[i] = new Background(proxy);
+      }
+      for (int i = 0; i < 31; i++)
+      {
+         threads[i].start();
+      }
+      for (int i = 0; i < 31; i++)
+      {
+         threads[i].join();
+      }
+
+      for (int i = 0; i < 31; i++)
+      {
+         Assert.assertTrue("Deveria finalizar", threads[i].finished);
+      }
+   }
+
+   public static class Background extends Thread
+   {
+
+      private MyResource proxy;
+
+      boolean finished = false;
+
+      public Background(MyResource proxy)
+      {
+         this.proxy = proxy;
+      }
+
+      public void run()
+      {
+         boolean failed = true;
+         try
+         {
+            String str = proxy.error();
+            failed = false;
+         }
+         catch (ClientResponseFailure e)
+         {
+            Assert.assertEquals(e.getResponse()
+                    .getStatus(), 404);
+            String str = (String) e.getResponse().getEntity(String.class);
+            Assert.assertEquals("there was an error", str);
+
+//                Assert.assertEquals( e.getResponse()
+//                    .getEntity( String.class ), "there was an error" );
+            //e.getResponse().releaseConnection();
+            //e.printStackTrace();
+         }
+
+         Assert.assertTrue(failed);
+         finished = true;
+      }
+   }
+
+
 }

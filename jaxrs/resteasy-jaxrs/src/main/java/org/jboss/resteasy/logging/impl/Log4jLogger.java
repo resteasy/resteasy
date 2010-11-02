@@ -1,7 +1,6 @@
 package org.jboss.resteasy.logging.impl;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 
 import java.text.MessageFormat;
 
@@ -135,4 +134,11 @@ public class Log4jLogger extends org.jboss.resteasy.logging.Logger
    {
       delegate.warn(message, error);
    }
+
+   @Override
+   public boolean isWarnEnabled()
+   {
+      return true;
+   }
+
 }

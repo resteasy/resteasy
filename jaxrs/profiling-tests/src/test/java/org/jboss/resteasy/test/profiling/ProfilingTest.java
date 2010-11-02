@@ -72,7 +72,7 @@ public class ProfilingTest
       InMemoryClientExecutor executor = new InMemoryClientExecutor();
       executor.getDispatcher().getRegistry().addPerRequestResource(JsonTest.class);
 
-      final int ITERATIONS = 10;
+      final int ITERATIONS = 1000;
 
       long start = System.currentTimeMillis();
       for (int i = 0; i < ITERATIONS; i++)
