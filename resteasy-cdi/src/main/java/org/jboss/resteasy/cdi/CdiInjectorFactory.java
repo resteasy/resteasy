@@ -29,6 +29,7 @@ import java.util.Set;
 public class CdiInjectorFactory implements InjectorFactory
 {
    private static final Logger log = Logger.getLogger(CdiInjectorFactory.class);
+   public static final String BEAN_MANAGER_ATTRIBUTE_PREFIX = "org.jboss.weld.environment.servlet.";
    private PropertyInjector noopPropertyInjector = new NoopPropertyInjector();
    private InjectorFactory delegate;
    private BeanManager manager;
@@ -125,13 +126,21 @@ public class CdiInjectorFactory implements InjectorFactory
 
       // Look for BeanManager in ServletContext
       ServletContext servletContext = ResteasyProviderFactory.getContextData(ServletContext.class);
-      beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
+      beanManager = (BeanManager) servletContext.getAttribute(BEAN_MANAGER_ATTRIBUTE_PREFIX + BeanManager.class.getName());
       if (beanManager != null)
       {
-         log.info("Found BeanManager in ServletContext");
+         log.debug("Found BeanManager in ServletContext");
          return beanManager;
       }
 
+      // Look for BeanManager in ServletContext (the old attribute name for backwards compatibility)
+      beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
+      if (beanManager != null)
+      {
+         log.debug("Found BeanManager in ServletContext");
+         return beanManager;
+      }
+      
       throw new RuntimeException("Unable to lookup BeanManager.");
    }
 
