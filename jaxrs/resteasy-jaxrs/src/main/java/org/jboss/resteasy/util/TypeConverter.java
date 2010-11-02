@@ -80,7 +80,7 @@ public final class TypeConverter
       }
       catch (NoSuchMethodException e)
       {
-         logger.warn("No valueOf() method available for {}, trying constructor...", targetType
+         logger.warn("No valueOf() method available for {0}, trying constructor...", targetType
                  .getSimpleName());
          result = getTypeViaStringConstructor(source, targetType);
       }

@@ -173,7 +173,7 @@ public class ResourceLocator implements ResourceInvoker
 
             if (annotations.length != 0)
             {
-               logger.warn("Field '{}' of subresource '{}' will not be injected " +
+               logger.warn("Field {0} of subresource {1} will not be injected " +
                        "according to spec", field.getName(), obj.getClass().getName());
             }
 

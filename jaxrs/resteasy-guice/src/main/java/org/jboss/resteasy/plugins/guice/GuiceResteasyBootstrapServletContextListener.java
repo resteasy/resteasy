@@ -65,7 +65,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
          {
             try
             {
-               logger.info("found module: {}", moduleString);
+               logger.info("found module: {0}", moduleString);
                final Class clazz = Thread.currentThread().getContextClassLoader().loadClass(moduleString.trim());
                final Module module = (Module) clazz.newInstance();
                result.add(module);

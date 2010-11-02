@@ -60,12 +60,12 @@ public class YamlProvider extends AbstractEntityProvider<Object>
       }
       catch (YamlException ye)
       {
-         logger.debug("Failed to decode Yaml: {}", ye.getMessage());
+         logger.debug("Failed to decode Yaml: {0}", ye.getMessage());
          throw new ReaderException("Failed to decode Yaml", ye);
       }
       catch (Exception e)
       {
-         logger.debug("Failed to decode Yaml: {}", e.getMessage());
+         logger.debug("Failed to decode Yaml: {0}", e.getMessage());
          throw new ReaderException("Failed to decode Yaml", e);
       }
 
@@ -112,7 +112,7 @@ public class YamlProvider extends AbstractEntityProvider<Object>
       catch (Exception e)
       {
 
-         logger.debug("Failed to encode yaml for object: {}", t.toString());
+         logger.debug("Failed to encode yaml for object: {0}", t.toString());
          throw new WriterException(e);
 
       }
