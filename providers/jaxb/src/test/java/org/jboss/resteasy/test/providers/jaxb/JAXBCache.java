@@ -70,7 +70,7 @@ public final class JAXBCache
          }
          contextCache.putIfAbsent(classes, context);
       }
-      logger.debug("Locating JAXBContext for package: {}", classes);
+      logger.debug("Locating JAXBContext for package: {0}", classes);
       return context;
    }
 
@@ -83,7 +83,7 @@ public final class JAXBCache
    public JAXBContext getJAXBContext(String... packageNames)
    {
       String contextPath = buildContextPath(packageNames);
-      logger.debug("Locating JAXBContext for packages: {}", contextPath);
+      logger.debug("Locating JAXBContext for packages: {0}", contextPath);
       // FIXME This was the original call causing an infinitive recursive loop.
       // However I don't know how to fix it, but this method is not used currently
       // so instead of fixing it modified it to return a null and not going into

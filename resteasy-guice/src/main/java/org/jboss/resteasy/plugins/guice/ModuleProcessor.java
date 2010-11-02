@@ -62,12 +62,12 @@ public class ModuleProcessor
             if (GetRestful.isRootResource(beanClass))
             {
                final ResourceFactory resourceFactory = new GuiceResourceFactory(binding.getProvider(), beanClass);
-               logger.info("registering factory for {}", beanClass);
+               logger.info("registering factory for {0}", beanClass.getName());
                registry.addResourceFactory(resourceFactory);
             }
             if (beanClass.isAnnotationPresent(Provider.class))
             {
-               logger.info("registering provider instance for {}", beanClass);
+               logger.info("registering provider instance for {0}", beanClass.getName());
                providerFactory.registerProviderInstance(binding.getProvider().get());
             }
          }

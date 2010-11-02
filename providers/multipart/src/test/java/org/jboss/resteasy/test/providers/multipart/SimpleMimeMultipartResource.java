@@ -166,7 +166,7 @@ public class SimpleMimeMultipartResource
             {
                logger.debug(multipart.getBodyPart(i).getContent()
                        .toString());
-               logger.debug("bytes available {}", multipart.getBodyPart(i)
+               logger.debug("bytes available {0}", multipart.getBodyPart(i)
                        .getInputStream().available());
             }
             catch (IOException e)
