@@ -160,6 +160,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
    protected static int maxForwards = 20;
+   protected static volatile ResteasyProviderFactory instance;
+   
    public static boolean registerBuiltinByDefault = true;
 
    protected InterceptorRegistry<MessageBodyReaderInterceptor> serverMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
@@ -313,16 +315,32 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       contextualData.pop();
    }
 
+   /**
+    * Will not initialize singleton if not set
+    *
+    * @return
+    */
+   public static ResteasyProviderFactory peekInstance()
+   {
+      return instance;
+   }
+
    public static void setInstance(ResteasyProviderFactory factory)
    {
+      instance = factory;
       RuntimeDelegate.setInstance(factory);
    }
 
+   /**
+    * Initializes ResteasyProviderFactory singleton if not set
+    *
+    * @return
+    */
    public static ResteasyProviderFactory getInstance()
    {
-      ResteasyProviderFactory factory = (ResteasyProviderFactory) RuntimeDelegate.getInstance();
-      if (registerBuiltinByDefault) RegisterBuiltin.register(factory);
-      return factory;
+      instance = (ResteasyProviderFactory) RuntimeDelegate.getInstance();
+      if (registerBuiltinByDefault) RegisterBuiltin.register(instance);
+      return instance;
    }
 
    public static void setRegisterBuiltinByDefault(boolean registerBuiltinByDefault)
