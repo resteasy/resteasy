@@ -30,7 +30,6 @@
         <module>jaxb-json</module>
         <module>guice-hello</module>
         <module>async-job-service</module>
-        <module>api-clients</module>
         <module>resteasy-springMVC</module>
         <module>oreilly-workbook</module>
         <module>oauth-examples</module>
