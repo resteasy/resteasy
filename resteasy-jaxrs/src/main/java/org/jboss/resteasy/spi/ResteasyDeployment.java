@@ -73,7 +73,8 @@ public class ResteasyDeployment
          // and still be able to call ResteasyProviderFactory.getInstance()
          if (!(providerFactory instanceof ThreadLocalResteasyProviderFactory))
          {
-            ResteasyProviderFactory.setInstance(new ThreadLocalResteasyProviderFactory(providerFactory));
+            if (ResteasyProviderFactory.peekInstance() == null || !(ResteasyProviderFactory.peekInstance() instanceof ThreadLocalResteasyProviderFactory))
+               ResteasyProviderFactory.setInstance(new ThreadLocalResteasyProviderFactory(providerFactory));
          }
       }
       else
