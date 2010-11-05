@@ -672,27 +672,25 @@ public class UriBuilderImpl extends UriBuilder
 
       String replacedName = Encode.encodeQueryParam(name);
 
+
       for (String param : params)
       {
-         if (param.indexOf('=') >= 0)
+         int pos = param.indexOf('=');
+         if (pos >= 0)
          {
-            String[] nv = param.split("=");
-            String paramName = nv[0];
+            String paramName = param.substring(0, pos);
             if (paramName.equals(replacedName)) continue;
-
-            if (query == null) query = "";
-            else query += "&";
-            query += nv[0] + "=" + nv[1];
          }
          else
          {
             if (param.equals(replacedName)) continue;
-
-            if (query == null) query = "";
-            else query += "&";
-            query += param;
          }
+         if (query == null) query = "";
+         else query += "&";
+         query += param;
       }
+      // don't set values if values is null
+      if (values == null) return this;
       // don't set values if values is null
       if (values == null) return this;
       return queryParam(name, values);
