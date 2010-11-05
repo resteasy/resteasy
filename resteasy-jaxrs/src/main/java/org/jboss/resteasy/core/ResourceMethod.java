@@ -389,7 +389,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
          return MediaType.WILDCARD_TYPE;
       }
       Class clazz = entity.getClass();
-      Type type = null;
+      Type type = this.genericReturnType;
       if (entity instanceof GenericEntity)
       {
          GenericEntity gen = (GenericEntity) entity;
