@@ -27,6 +27,15 @@ public class UriBuilderTest
    }
 
    @Test
+   public void test443() throws Exception
+   {
+      // test for RESTEASY-443
+
+      UriBuilderImpl.fromUri("?param=").replaceQueryParam("otherParam", "otherValue");
+      
+   }
+
+   @Test
    public void testEmoji()
    {
       UriBuilder builder = UriBuilder.fromPath("/my/url");
