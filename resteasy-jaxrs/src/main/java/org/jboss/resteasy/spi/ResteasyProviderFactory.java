@@ -325,7 +325,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return instance;
    }
 
-   public static void setInstance(ResteasyProviderFactory factory)
+   public synchronized static void clearInstanceIfEqual(ResteasyProviderFactory factory)
+   {
+      if (instance == factory)
+      {
+         instance = null;
+         RuntimeDelegate.setInstance(null);
+      }
+   }
+
+   public synchronized static void setInstance(ResteasyProviderFactory factory)
    {
       instance = factory;
       RuntimeDelegate.setInstance(factory);

@@ -18,21 +18,19 @@ public class JndiComponentResourceFactory implements ResourceFactory
 {
    private String jndiName;
    private InitialContext ctx;
-   private Object reference;
+   private volatile Object reference;
    private Class scannable;
+   private boolean cache;
 
 
    public JndiComponentResourceFactory(String jndiName, Class scannable, boolean cacheReference)
    {
       this.jndiName = jndiName;
       this.scannable = scannable;
+      this.cache = cacheReference;
       try
       {
-         this.ctx = new InitialContext();
-         if (cacheReference)
-         {
-            reference = ctx.lookup(jndiName);
-         }
+         ctx = new InitialContext();
       }
       catch (NamingException e)
       {
@@ -47,14 +45,26 @@ public class JndiComponentResourceFactory implements ResourceFactory
    public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
    {
       if (reference != null) return reference;
-      try
+      Object ref = reference;
+      if (ref == null)
       {
-         return ctx.lookup(jndiName);
+         try
+         {
+            ref = ctx.lookup(jndiName);
+         }
+         catch (NamingException e)
+         {
+            throw new RuntimeException(e);
+         }
+         if (cache)
+         {
+            synchronized (this)
+            {
+               reference = ref;
+            }
+         }
       }
-      catch (NamingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      return ref;
    }
 
    public void unregistered()

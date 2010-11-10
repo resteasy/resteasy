@@ -8,6 +8,8 @@ import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.core.Application;
@@ -37,6 +39,10 @@ public class ResteasyDeployment
    protected String injectorFactoryClass;
    protected Application application;
    protected boolean registerBuiltin = true;
+   protected List<String> scannedResourceClasses = new ArrayList<String>();
+   protected List<String> scannedProviderClasses = new ArrayList<String>();
+   protected List<String> scannedJndiComponentResources = new ArrayList<String>();
+   protected List<String> jndiComponentResources = new ArrayList<String>();
    protected List<String> providerClasses = new ArrayList<String>();
    protected List<Class> actualProviderClasses = new ArrayList<Class>();
    protected List<Object> providers = new ArrayList<Object>();
@@ -56,6 +62,7 @@ public class ResteasyDeployment
    protected Registry registry;
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
+   protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    protected String paramMapping;
    private final static Logger logger = Logger.getLogger(ResteasyDeployment.class);
 
@@ -74,7 +81,11 @@ public class ResteasyDeployment
          if (!(providerFactory instanceof ThreadLocalResteasyProviderFactory))
          {
             if (ResteasyProviderFactory.peekInstance() == null || !(ResteasyProviderFactory.peekInstance() instanceof ThreadLocalResteasyProviderFactory))
-               ResteasyProviderFactory.setInstance(new ThreadLocalResteasyProviderFactory(providerFactory));
+            {
+
+               threadLocalProviderFactory = new ThreadLocalResteasyProviderFactory(providerFactory);
+               ResteasyProviderFactory.setInstance(threadLocalProviderFactory);
+            }
          }
       }
       else
@@ -234,12 +245,27 @@ public class ResteasyDeployment
       return application;
    }
 
+
+
    public void registration()
    {
+      boolean useScanning = true;
       if (application != null)
       {
          dispatcher.getDefaultContextObjects().put(Application.class, application);
-         processApplication(application);
+         if (processApplication(application))
+         {
+            // Application class registered something so don't use scanning data.  See JAX-RS spec for more detail.
+            useScanning = false;
+         }
+      }
+
+      if (useScanning && scannedProviderClasses != null)
+      {
+         for (String provider : scannedProviderClasses)
+         {
+            registerProvider(provider);
+         }
       }
 
       if (providerClasses != null)
@@ -265,11 +291,42 @@ public class ResteasyDeployment
       // All providers should be registered before resources because of interceptors.
       // interceptors must exist as they are applied only once when the resource is registered.
 
+      if (useScanning && scannedJndiComponentResources != null)
+      {
+         for (String resource : scannedJndiComponentResources)
+         {
+            registerJndiComponentResource(resource);
+         }
+      }
+      if (jndiComponentResources != null)
+      {
+         for (String resource : jndiComponentResources)
+         {
+            registerJndiComponentResource(resource);
+         }
+      }
       if (jndiResources != null)
       {
          for (String resource : jndiResources)
          {
             registry.addJndiResource(resource.trim());
+         }
+      }
+
+      if (useScanning && scannedResourceClasses != null)
+      {
+         for (String resource : scannedResourceClasses)
+         {
+            Class clazz = null;
+            try
+            {
+               clazz = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
+            }
+            catch (ClassNotFoundException e)
+            {
+               throw new RuntimeException(e);
+            }
+            registry.addPerRequestResource(clazz);
          }
       }
       if (resourceClasses != null)
@@ -308,14 +365,44 @@ public class ResteasyDeployment
       }
    }
 
-   public void stop()
+   protected void registerJndiComponentResource(String resource)
    {
+      String[] config = resource.trim().split(";");
+      if (config.length < 3)
+      {
+         throw new RuntimeException("JNDI Component Resource variable is not set correctly: jndi;class;true|false comma delimited");
+      }
+      String jndiName = config[0];
+      Class clazz = null;
+      try
+      {
+         clazz = Thread.currentThread().getContextClassLoader().loadClass(config[1]);
+      }
+      catch (ClassNotFoundException e)
+      {
+         throw new RuntimeException("Could not find class " + config[1] + " provided to JNDI Component Resource", e);
+      }
+      boolean cacheRefrence = Boolean.valueOf(config[2].trim());
+      JndiComponentResourceFactory factory = new JndiComponentResourceFactory(jndiName, clazz, cacheRefrence);
+      getResourceFactories().add(factory);
 
    }
 
-   protected void processApplication(Application config)
+   public void stop()
+   {
+      ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
+      ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
+   }
+
+   /**
+    *
+    * @param config
+    * @return whether application class registered anything. i.e. whether scanning metadata should be used or not
+    */
+   protected boolean processApplication(Application config)
    {
       logger.info("Deploying " + Application.class.getName() + ": " + config.getClass());
+      boolean registered = false;
       if (config.getClasses() != null)
       {
          for (Class clazz : config.getClasses())
@@ -323,10 +410,12 @@ public class ResteasyDeployment
             if (GetRestful.isRootResource(clazz))
             {
                actualResourceClasses.add(clazz);
+               registered = true;
             }
             else if (clazz.isAnnotationPresent(Provider.class))
             {
                actualProviderClasses.add(clazz);
+               registered = true;
             }
             else
             {
@@ -343,10 +432,12 @@ public class ResteasyDeployment
             {
                logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + Application.class.getName());
                resources.add(obj);
+               registered = true;
             }
             else if (obj.getClass().isAnnotationPresent(Provider.class))
             {
                providers.add(obj);
+               registered = true;
             }
             else
             {
@@ -355,6 +446,7 @@ public class ResteasyDeployment
             }
          }
       }
+      return registered;
    }
 
    protected void registerProvider(String clazz)
@@ -369,6 +461,16 @@ public class ResteasyDeployment
          throw new RuntimeException(e);
       }
       providerFactory.registerProvider(provider);
+   }
+
+   public List<String> getJndiComponentResources()
+   {
+      return jndiComponentResources;
+   }
+
+   public void setJndiComponentResources(List<String> jndiComponentResources)
+   {
+      this.jndiComponentResources = jndiComponentResources;
    }
 
    public String getApplicationClass()
@@ -664,5 +766,35 @@ public class ResteasyDeployment
    public void setDefaultContextObjects(Map<Class, Object> defaultContextObjects)
    {
       this.defaultContextObjects = defaultContextObjects;
+   }
+
+   public List<String> getScannedResourceClasses()
+   {
+      return scannedResourceClasses;
+   }
+
+   public void setScannedResourceClasses(List<String> scannedResourceClasses)
+   {
+      this.scannedResourceClasses = scannedResourceClasses;
+   }
+
+   public List<String> getScannedProviderClasses()
+   {
+      return scannedProviderClasses;
+   }
+
+   public void setScannedProviderClasses(List<String> scannedProviderClasses)
+   {
+      this.scannedProviderClasses = scannedProviderClasses;
+   }
+
+   public List<String> getScannedJndiComponentResources()
+   {
+      return scannedJndiComponentResources;
+   }
+
+   public void setScannedJndiComponentResources(List<String> scannedJndiComponentResources)
+   {
+      this.scannedJndiComponentResources = scannedJndiComponentResources;
    }
 }

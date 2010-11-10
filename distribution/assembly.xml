@@ -55,15 +55,6 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>../examples/jms-facade</directory>
-            <outputDirectory>examples/jms-facade</outputDirectory>
-            <excludes>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/target/**</exclude>
-                <exclude>**/*.iml</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
             <directory>../examples/simple</directory>
             <outputDirectory>examples/simple</outputDirectory>
             <excludes>

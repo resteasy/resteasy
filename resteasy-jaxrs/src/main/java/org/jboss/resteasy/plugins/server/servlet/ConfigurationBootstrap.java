@@ -109,6 +109,7 @@ abstract public class ConfigurationBootstrap
          for (String pr : p) deployment.getProviderClasses().add(pr.trim());
       }
 
+
       String resourceMethodInterceptors = getParameter(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS);
 
       if (resourceMethodInterceptors != null)
@@ -147,7 +148,7 @@ abstract public class ConfigurationBootstrap
       String sScannedByDeployer = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_BY_DEPLOYER);
       if (sScannedByDeployer != null)
       {
-         boolean tmp = Boolean.valueOf(sResources.trim());
+         boolean tmp = Boolean.valueOf(sScannedByDeployer);
          if (tmp)
          {
             scanProviders = false;
@@ -158,8 +159,6 @@ abstract public class ConfigurationBootstrap
       if (scanProviders || scanResources)
       {
          logger.debug("Scanning...");
-         if (applicationConfig != null)
-            throw new RuntimeException("You cannot deploy a javax.ws.rs.core.Application and have scanning on as this may create errors");
 
          URL[] urls = getScanningUrls();
          for (URL u : urls)
@@ -194,9 +193,34 @@ abstract public class ConfigurationBootstrap
             throw new RuntimeException("Unable to scan WEB-INF for JAX-RS annotations, you must manually register your classes/resources", e);
          }
 
-         if (scanProviders) processProviders(db);
-         if (scanResources) processResources(db);
+         if (scanProviders) processScannedProviders(db);
+         if (scanResources) processScannedResources(db);
       }
+
+
+      String scannedProviders = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_PROVIDERS);
+
+      if (scannedProviders != null)
+      {
+         String[] p = scannedProviders.split(",");
+         for (String pr : p) deployment.getScannedProviderClasses().add(pr.trim());
+      }
+      
+      String scannedResources = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCES);
+
+      if (scannedResources != null)
+      {
+         String[] p = scannedResources.split(",");
+         for (String pr : p) deployment.getScannedResourceClasses().add(pr.trim());
+      }
+
+      String scannedJndi = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_JNDI_RESOURCES);
+
+      if (scannedJndi != null)
+      {
+         processScannedJndiComponentResources(scannedJndi);
+      }
+
 
       String jndiResources = getParameter(ResteasyContextParameters.RESTEASY_JNDI_RESOURCES);
       if (jndiResources != null)
@@ -309,27 +333,18 @@ abstract public class ConfigurationBootstrap
       String[] resources = jndiResources.trim().split(",");
       for (String resource : resources)
       {
-         String[] config = resource.trim().split(";");
-         if (config.length < 3)
-         {
-            throw new RuntimeException(ResteasyContextParameters.RESTEASY_JNDI_COMPONENT_RESOURCES + " variable is not set correctly: jndi;class;true|false comma delimited");
-         }
-         String jndiName = config[0];
-         Class clazz = null;
-         try
-         {
-            clazz = Thread.currentThread().getContextClassLoader().loadClass(config[1]);
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException("Could not find class provided to " + ResteasyContextParameters.RESTEASY_JNDI_COMPONENT_RESOURCES, e);
-         }
-         boolean cacheRefrence = Boolean.valueOf(config[2].trim());
-         JndiComponentResourceFactory factory = new JndiComponentResourceFactory(jndiName, clazz, cacheRefrence);
-         deployment.getResourceFactories().add(factory);
+         deployment.getJndiComponentResources().add(resource);
       }
    }
 
+   protected void processScannedJndiComponentResources(String jndiResources)
+   {
+      String[] resources = jndiResources.trim().split(",");
+      for (String resource : resources)
+      {
+         deployment.getScannedJndiComponentResources().add(resource);
+      }
+   }
    protected void processResources(String list)
    {
       String[] resources = list.trim().split(",");
@@ -348,18 +363,18 @@ abstract public class ConfigurationBootstrap
       }
    }
 
-   protected void processProviders(AnnotationDB db)
+   protected void processScannedProviders(AnnotationDB db)
    {
       Set<String> classes = db.getAnnotationIndex().get(Provider.class.getName());
       if (classes == null) return;
       for (String clazz : classes)
       {
          logger.info("Adding scanned @Provider: " + clazz);
-         deployment.getProviderClasses().add(clazz);
+         deployment.getScannedProviderClasses().add(clazz);
       }
    }
 
-   protected void processResources(AnnotationDB db)
+   protected void processScannedResources(AnnotationDB db)
    {
       Set<String> classes = new HashSet<String>();
       Set<String> paths = db.getAnnotationIndex().get(Path.class.getName());
@@ -382,7 +397,7 @@ abstract public class ConfigurationBootstrap
          }
 
          logger.info("Adding scanned resource: " + clazz);
-         deployment.getResourceClasses().add(clazz);
+         deployment.getScannedResourceClasses().add(clazz);
       }
    }
 }

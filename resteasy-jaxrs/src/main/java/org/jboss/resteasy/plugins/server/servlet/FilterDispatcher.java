@@ -66,6 +66,7 @@ public class FilterDispatcher implements Filter,  HttpRequestFactory, HttpRespon
 
    public void destroy()
    {
+      servletContainerDispatcher.destroy();
    }
 
 
