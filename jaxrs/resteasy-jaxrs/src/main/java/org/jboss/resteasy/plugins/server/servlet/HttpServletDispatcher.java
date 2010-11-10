@@ -38,6 +38,13 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
 
    }
 
+   @Override
+   public void destroy()
+   {
+      super.destroy();
+      servletContainerDispatcher.destroy();
+   }
+
    protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException
    {
       service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);

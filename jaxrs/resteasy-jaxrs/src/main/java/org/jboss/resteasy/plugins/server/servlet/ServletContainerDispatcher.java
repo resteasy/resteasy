@@ -102,6 +102,14 @@ public class ServletContainerDispatcher
 
    }
 
+   public void destroy()
+   {
+      if (deployment != null)
+      {
+         deployment.stop();
+      }
+   }
+
    protected void processApplication(Application config)
    {
       logger.info("Deploying " + Application.class.getName() + ": " + config.getClass());
