@@ -12,6 +12,11 @@
 	  Slf4j is no longer the default logging mechanism for resteasy.  Resteasy also no longer ships with SLF4J libraries.  Please read the logging
 	  section in the Installation and Configuration chapter for more details.
 	</listitem>
+          <listitem>
+              The constructor used to instantiate resource and provider classes is now picked based on the requirements of the JAX-RS specification.
+              Specifically, the public constructor with the most arguments is picked.  This behavior varies from previous versions where a no-arg
+              constructor is preferred.
+          </listitem>
       </itemizedlist>
     </sect1>
     <sect1 id="Migrating_to_Resteasy_12_20">
