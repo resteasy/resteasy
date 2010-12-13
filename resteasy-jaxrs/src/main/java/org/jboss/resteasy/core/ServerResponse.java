@@ -16,6 +16,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,8 @@ public class ServerResponse extends Response
    protected Type genericType;
    protected PostProcessInterceptor[] postProcessInterceptors;
    protected MessageBodyWriterInterceptor[] messageBodyWriterInterceptors;
+   protected Method resourceMethod;
+   protected Class resourceClass;
 
    public ServerResponse(Object entity, int status, Headers<Object> metadata)
    {
@@ -56,6 +59,39 @@ public class ServerResponse extends Response
          serverResponse.metadata.putAll(response.getMetadata());
       }
       return serverResponse;
+   }
+
+   /**
+    * JAX-RS method invoked on.  FYI, this method may return null, specifically within the context of an async HTTP
+    * request as contextual
+    * information is not available to the container.
+    *
+    * @return
+    */
+   public Method getResourceMethod()
+   {
+      return resourceMethod;
+   }
+
+   public void setResourceMethod(Method resourceMethod)
+   {
+      this.resourceMethod = resourceMethod;
+   }
+
+   /**
+    * Resource class. FYI, this method may return null, specifically within the context of an async HTTP request as contextual
+    * information is not available to the container
+    *
+    * @return
+    */
+   public Class getResourceClass()
+   {
+      return resourceClass;
+   }
+
+   public void setResourceClass(Class resourceClass)
+   {
+      this.resourceClass = resourceClass;
    }
 
    public MessageBodyWriterInterceptor[] getMessageBodyWriterInterceptors()

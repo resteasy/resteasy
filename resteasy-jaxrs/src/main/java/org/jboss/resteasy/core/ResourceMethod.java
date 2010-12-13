@@ -247,10 +247,12 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
 
       Object rtn = null;
-      try 
+      try
       {
          rtn = methodInjector.invoke(request, response, target);
-      } catch (WebApplicationException wae) {
+      }
+      catch (WebApplicationException wae)
+      {
          prepareResponse(ServerResponse.copyIfNotServerResponse(wae.getResponse()));
          throw wae;
       }
@@ -285,6 +287,8 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       serverResponse.setAnnotations(method.getAnnotations());
       serverResponse.setMessageBodyWriterInterceptors(writerInterceptors);
       serverResponse.setPostProcessInterceptors(postProcessInterceptors);
+      serverResponse.setResourceMethod(method);
+      serverResponse.setResourceClass(resourceClass);
       return serverResponse;
    }
 
