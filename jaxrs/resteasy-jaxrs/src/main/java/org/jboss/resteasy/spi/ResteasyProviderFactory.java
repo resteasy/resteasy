@@ -28,6 +28,7 @@ import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
@@ -161,7 +162,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
    protected static int maxForwards = 20;
    protected static volatile ResteasyProviderFactory instance;
-   
+
    public static boolean registerBuiltinByDefault = true;
 
    protected InterceptorRegistry<MessageBodyReaderInterceptor> serverMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
@@ -579,7 +580,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       providers.put(provider.getClass(), provider);
       injectProperties(provider);
-      
+
       Class<?> exceptionClass = Types.getRawType(exceptionType);
       if (!Throwable.class.isAssignableFrom(exceptionClass))
       {
@@ -1027,21 +1028,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected <T> T getProviderInstance(Class<? extends T> clazz)
    {
-      Constructor<?>[] constructors = clazz.getConstructors();
-      Constructor<?> constructor = null;
-      // prefer a no-arg constructor
-      for (Constructor con : constructors)
-      {
-         if (con.getParameterTypes() == null || con.getParameterTypes().length == 0)
-         {
-            constructor = con;
-            break;
-         }
-      }
-      // pick the first one if no no-arg constructor, hope that the injector factory can populate params.
+      Constructor<?> constructor = PickConstructor.pickConstructor(clazz);
       if (constructor == null)
       {
-         constructor = constructors[0];
+         throw new RuntimeException("Unable to find a public constructor for provider class " + clazz.getName());
       }
       ConstructorInjector constructorInjector = injectorFactory.createConstructor(constructor);
 

@@ -9,13 +9,14 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.util.GetRestful;
+import org.jboss.resteasy.util.PickConstructor;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -237,14 +238,18 @@ public class ResteasyDeployment
          throw new RuntimeException(e);
       }
 
-      ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(clazz.getConstructors()[0]);
+      Constructor<?> constructor = PickConstructor.pickConstructor(clazz);
+      if (constructor == null)
+      {
+         throw new RuntimeException("Unable to find a public constructor for Application class " + clazz.getName());
+      }
+      ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(constructor);
       PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz);
 
       Application application = (Application) constructorInjector.construct();
       propertyInjector.inject(application);
       return application;
    }
-
 
 
    public void registration()
@@ -395,7 +400,6 @@ public class ResteasyDeployment
    }
 
    /**
-    *
     * @param config
     * @return whether application class registered anything. i.e. whether scanning metadata should be used or not
     */
