@@ -21,7 +21,7 @@
     <dependency>
        <groupId>org.jboss.resteasy</groupId>
        <artifactId>resteasy-jackson-provider</artifactId>
-       <version>2.1-beta-1</version>
+       <version>2.1.0.GA</version>
     </dependency>
  ]]></programlisting>
     <para>The first extra piece that Resteasy added to the integration was

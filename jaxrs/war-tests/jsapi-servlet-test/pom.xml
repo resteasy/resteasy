@@ -5,7 +5,7 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>test-jsapi-servlet-war</artifactId>
     <packaging>war</packaging>
-    <version>2.1-beta-1-SNAPSHOT</version>
+    <version>2.1.0.GA-SNAPSHOT</version>
     <name>jsapi-servlet-test</name>
     <url>http://maven.apache.org</url>
     <repositories>
@@ -31,22 +31,22 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.1-beta-1</version>
+            <version>2.1.0.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson-provider</artifactId>
-            <version>2.1-beta-1</version>
+            <version>2.1.0.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>2.1-beta-1</version>
+            <version>2.1.0.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jsapi</artifactId>
-            <version>2.1-beta-1</version>
+            <version>2.1.0.GA</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
