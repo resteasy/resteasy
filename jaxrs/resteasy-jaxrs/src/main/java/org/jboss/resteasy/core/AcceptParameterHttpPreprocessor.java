@@ -8,7 +8,6 @@ package org.jboss.resteasy.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
