@@ -5,13 +5,13 @@
     <name>HornetQ REST Interface Parent POM</name>
     <groupId>org.hornetq.rest</groupId>
     <artifactId>hornetq-rest-all</artifactId>
-    <version>1.0-beta-2</version>
+    <version>1.0-beta-3</version>
     <packaging>pom</packaging>
     <description>HornetQ REST Interface</description>
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
-        <resteasy.version>2.0.1.GA</resteasy.version>
+        <resteasy.version>2.1.0.GA</resteasy.version>
     </properties>
 
     <url>http://rest-easy.org</url>
