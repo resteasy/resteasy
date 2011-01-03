@@ -605,7 +605,7 @@ msg-create-with-id: http://example.com/queues/jms.queue.bar/create/{id}
         <literal>msg-create</literal> header.</para>
 
         <para><programlisting>POST /queues/jms.queue.bar/create
-Host: example.xom
+Host: example.com
 Content-Type: application/xml
 
 &lt;order&gt;
@@ -687,7 +687,7 @@ msg-create-with-id: http://example.com/queues/jms.queue.bar/create/{id}
           <literal>msg-create</literal> header.</para>
 
           <para><programlisting>POST /queues/jms.queue.bar/create
-Host: example.xom
+Host: example.com
 Content-Type: application/xml
 
 &lt;order&gt;
@@ -799,7 +799,7 @@ msg-create-next: http://example.com/queues/jms.queue.bar/create/003</programlist
       that.</para>
 
       <programlisting>POST /queues/jms.queue.bar/create?durable=true
-Host: example.xom
+Host: example.com
 Content-Type: application/xml
 
 &lt;order&gt;
@@ -809,6 +809,20 @@ Content-Type: application/xml
 &lt;/order&gt;
 </programlisting>
     </sect1>
+   <sect1>
+     <title>Expiration and Priority</title>
+     <para>You can set he expiration and the priority of the message in the queue or topic by setting an additional query parameter.  The <literal>expiration</literal> query parameter is an integer expressing the time in milliseconds until the message should be expired.  The <literal>priority</literal> is another query parameter with an integer value between 0 and 9 expressing the priority of the message. i.e.:</para>
+      <programlisting>POST /queues/jms.queue.bar/create?expiration=30000&amp;priority=3
+Host: example.com
+Content-Type: application/xml
+
+&lt;order&gt;
+   &lt;name&gt;Bill&lt;/name&gt;
+   &lt;item&gt;iPhone4&lt;/item&gt;
+   &lt;cost&gt;$199.99&lt;/cost&gt;
+&lt;/order&gt;
+</programlisting>
+   </sect1>
   </chapter>
 
   <chapter>
