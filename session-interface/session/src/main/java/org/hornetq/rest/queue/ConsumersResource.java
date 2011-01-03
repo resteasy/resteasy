@@ -79,24 +79,19 @@ public class ConsumersResource implements TimeoutTask.Callback
       this.consumerTimeoutSeconds = consumerTimeoutSeconds;
    }
 
-   private Object timeoutLock = new Object();
-
    @Override
    public void testTimeout(String target)
    {
-      synchronized (timeoutLock)
+      QueueConsumer consumer = queueConsumers.get(target);
+      if (consumer == null) return;
+      synchronized (consumer)
       {
-         QueueConsumer consumer = queueConsumers.get(target);
-         if (consumer == null) return;
-         synchronized (consumer)
+         if (System.currentTimeMillis() - consumer.getLastPingTime() > consumerTimeoutSeconds * 1000)
          {
-            if (System.currentTimeMillis() - consumer.getLastPingTime() > consumerTimeoutSeconds * 1000)
-            {
-               log.warn("shutdown REST consumer because of timeout for: " + consumer.getId());
-               consumer.shutdown();
-               queueConsumers.remove(consumer.getId());
-               serviceManager.getTimeoutTask().remove(consumer.getId());
-            }
+            log.warn("shutdown REST consumer because of timeout for: " + consumer.getId());
+            consumer.shutdown();
+            queueConsumers.remove(consumer.getId());
+            serviceManager.getTimeoutTask().remove(consumer.getId());
          }
       }
    }
@@ -160,16 +155,18 @@ public class ConsumersResource implements TimeoutTask.Callback
       }
    }
 
+   protected void addConsumer(QueueConsumer consumer)
+   {
+      queueConsumers.put(consumer.getId(), consumer);
+      serviceManager.getTimeoutTask().add(this, consumer.getId());
+   }
+
    public QueueConsumer createConsumer(String selector)
            throws HornetQException
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
       QueueConsumer consumer = new QueueConsumer(sessionFactory, destination, genId, serviceManager, selector);
-      synchronized (timeoutLock)
-      {
-         queueConsumers.put(genId, consumer);
-         serviceManager.getTimeoutTask().add(this, consumer.getId());
-      }
+      addConsumer(consumer);
       return consumer;
    }
 
@@ -178,11 +175,7 @@ public class ConsumersResource implements TimeoutTask.Callback
    {
       String genId = sessionCounter.getAndIncrement() + "-queue-" + destination + "-" + startup;
       QueueConsumer consumer = new AcknowledgedQueueConsumer(sessionFactory, destination, genId, serviceManager, selector);
-      synchronized (timeoutLock)
-      {
-         queueConsumers.put(genId, consumer);
-         serviceManager.getTimeoutTask().add(this, consumer.getId());
-      }
+      addConsumer(consumer);
       return consumer;
    }
 
@@ -266,21 +259,17 @@ public class ConsumersResource implements TimeoutTask.Callback
 
    private QueueConsumer addConsumerToMap(String consumerId, QueueConsumer tmp)
    {
-      synchronized (timeoutLock)
+      QueueConsumer consumer = queueConsumers.putIfAbsent(consumerId, tmp);
+      if (consumer != null)
       {
-         QueueConsumer consumer;
-         consumer = queueConsumers.putIfAbsent(consumerId, tmp);
-         if (consumer != null)
-         {
-            tmp.shutdown();
-         }
-         else
-         {
-            consumer = tmp;
-            serviceManager.getTimeoutTask().add(this, consumer.getId());
-         }
-         return consumer;
+         tmp.shutdown();
       }
+      else
+      {
+         consumer = tmp;
+         serviceManager.getTimeoutTask().add(this, consumer.getId());
+      }
+      return consumer;
    }
 
 

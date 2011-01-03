@@ -41,13 +41,16 @@ public class PostMessage
       return startupTime + Long.toString(counter.incrementAndGet());
    }
 
-   public void publish(HttpHeaders headers, byte[] body, String dup, boolean durable) throws Exception
+   public void publish(HttpHeaders headers, byte[] body, String dup,
+                       boolean durable,
+                       Long expiration,
+                       Integer priority) throws Exception
    {
       Pooled pooled = getPooled();
       try
       {
          ClientProducer producer = pooled.producer;
-         ClientMessage message = createHornetQMessage(headers, body, durable, pooled.session);
+         ClientMessage message = createHornetQMessage(headers, body, durable, expiration, priority, pooled.session);
          message.putStringProperty(ClientMessage.HDR_DUPLICATE_DETECTION_ID.toString(), dup);
          producer.send(message);
          pool.add(pooled);
@@ -68,14 +71,20 @@ public class PostMessage
 
    @PUT
    @Path("{id}")
-   public Response putWithId(@PathParam("id") String dupId, @QueryParam("durable") Boolean durable, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
+   public Response putWithId(@PathParam("id") String dupId, @QueryParam("durable") Boolean durable,
+                             @QueryParam("expiration") Long expiration,
+                             @QueryParam("priority") Integer priority,
+                             @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
    {
-      return postWithId(dupId, durable, headers, uriInfo, body);
+      return postWithId(dupId, durable, expiration, priority, headers, uriInfo, body);
    }
 
    @POST
    @Path("{id}")
-   public Response postWithId(@PathParam("id") String dupId, @QueryParam("durable") Boolean durable, @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
+   public Response postWithId(@PathParam("id") String dupId, @QueryParam("durable") Boolean durable,
+                              @QueryParam("expiration") Long expiration,
+                              @QueryParam("priority") Integer priority,
+                              @Context HttpHeaders headers, @Context UriInfo uriInfo, byte[] body)
    {
       String matched = uriInfo.getMatchedURIs().get(1);
       UriBuilder nextBuilder = uriInfo.getBaseUriBuilder();
@@ -90,7 +99,7 @@ public class PostMessage
       }
       try
       {
-         publish(headers, body, dupId, isDurable);
+         publish(headers, body, dupId, isDurable, expiration, priority);
       }
       catch (Exception e)
       {
@@ -216,9 +225,25 @@ public class PostMessage
    }
 
 
-   protected ClientMessage createHornetQMessage(HttpHeaders headers, byte[] body, boolean durable, ClientSession session) throws Exception
+   protected ClientMessage createHornetQMessage(HttpHeaders headers, byte[] body,
+                                                boolean durable,
+                                                Long expiration,
+                                                Integer priority,
+                                                ClientSession session) throws Exception
    {
       ClientMessage message = session.createMessage(durable);
+      if (expiration != null)
+      {
+         message.setExpiration(expiration.longValue());
+      }
+      if (priority != null)
+      {
+         byte p = priority.byteValue();
+         if (p >= 0 && p <=9)
+         {
+            message.setPriority(p);
+         }
+      }
       HttpMessageHelper.writeHttpMessage(headers, body, message);
       return message;
    }

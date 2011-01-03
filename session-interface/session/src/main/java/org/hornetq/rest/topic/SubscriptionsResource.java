@@ -82,24 +82,19 @@ public class SubscriptionsResource implements TimeoutTask.Callback
       this.destination = destination;
    }
 
-   private Object timeoutLock = new Object();
-
    @Override
    public void testTimeout(String target)
    {
-      synchronized (timeoutLock)
+      QueueConsumer consumer = queueConsumers.get(target);
+      if (consumer == null) return;
+      synchronized (consumer)
       {
-         QueueConsumer consumer = queueConsumers.get(target);
-         if (consumer == null) return;
-         synchronized (consumer)
+         if (System.currentTimeMillis() - consumer.getLastPingTime() > consumerTimeoutSeconds * 1000)
          {
-            if (System.currentTimeMillis() - consumer.getLastPingTime() > consumerTimeoutSeconds * 1000)
-            {
-               log.warn("shutdown REST consumer because of session timeout for: " + consumer.getId());
-               consumer.shutdown();
-               queueConsumers.remove(consumer.getId());
-               serviceManager.getTimeoutTask().remove(consumer.getId());
-            }
+            log.warn("shutdown REST consumer because of session timeout for: " + consumer.getId());
+            consumer.shutdown();
+            queueConsumers.remove(consumer.getId());
+            serviceManager.getTimeoutTask().remove(consumer.getId());
          }
       }
    }
@@ -372,27 +367,24 @@ public class SubscriptionsResource implements TimeoutTask.Callback
       QueueConsumer consumer;
       if (subscriptionExists(subscriptionId))
       {
-         synchronized (timeoutLock)
+         QueueConsumer tmp = null;
+         try
          {
-            QueueConsumer tmp = null;
-            try
-            {
-               tmp = createConsumer(true, autoAck, subscriptionId, null);
-            }
-            catch (HornetQException e)
-            {
-               throw new RuntimeException(e);
-            }
-            consumer = queueConsumers.putIfAbsent(subscriptionId, tmp);
-            if (consumer == null)
-            {
-               consumer = tmp;
-               serviceManager.getTimeoutTask().add(this, subscriptionId);
-            }
-            else
-            {
-               tmp.shutdown();
-            }
+            tmp = createConsumer(true, autoAck, subscriptionId, null);
+         }
+         catch (HornetQException e)
+         {
+            throw new RuntimeException(e);
+         }
+         consumer = queueConsumers.putIfAbsent(subscriptionId, tmp);
+         if (consumer == null)
+         {
+            consumer = tmp;
+            serviceManager.getTimeoutTask().add(this, subscriptionId);
+         }
+         else
+         {
+            tmp.shutdown();
          }
       }
       else
