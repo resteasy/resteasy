@@ -30,7 +30,6 @@ public class CdiInjectorFactory implements InjectorFactory
 {
    private static final Logger log = Logger.getLogger(CdiInjectorFactory.class);
    public static final String BEAN_MANAGER_ATTRIBUTE_PREFIX = "org.jboss.weld.environment.servlet.";
-   private PropertyInjector noopPropertyInjector = new NoopPropertyInjector();
    private InjectorFactory delegate;
    private BeanManager manager;
    private ResteasyCdiExtension extension;
@@ -49,13 +48,13 @@ public class CdiInjectorFactory implements InjectorFactory
    {
       Class<?> clazz = constructor.getDeclaringClass();
 
-      if (!manager.getBeans(constructor.getDeclaringClass()).isEmpty())
+      if (!manager.getBeans(clazz).isEmpty())
       {
          log.debug("Using CdiConstructorInjector for class {0}.", clazz);
          return new CdiConstructorInjector(clazz, manager);
       }
 
-      if (sessionBeanInterface.containsKey((constructor.getDeclaringClass())))
+      if (sessionBeanInterface.containsKey(clazz))
       {
          Type intfc = sessionBeanInterface.get(clazz);
          log.debug("Using {0} for lookup of Session Bean {1}.", intfc, clazz);
@@ -73,19 +72,7 @@ public class CdiInjectorFactory implements InjectorFactory
 
    public PropertyInjector createPropertyInjector(Class resourceClass)
    {
-         /*
-          JAX-RS property injection is performed twice on CDI Beans. Firstly by the JaxrsInjectionTarget
-          wrapper and then again by RESTEasy (which operates on Weld proxies instead of the underlying instances).
-          To eliminate this, we return NoopPropertyInjector for CDI Beans.
-         */
-         if (!manager.getBeans(resourceClass).isEmpty() || sessionBeanInterface.containsKey(resourceClass))
-         {
-            return noopPropertyInjector;
-         }
-         else
-         {
-            return delegate.createPropertyInjector(resourceClass);
-         }
+      return new CdiPropertyInjector(delegate.createPropertyInjector(resourceClass), resourceClass, sessionBeanInterface, manager);
    }
 
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
