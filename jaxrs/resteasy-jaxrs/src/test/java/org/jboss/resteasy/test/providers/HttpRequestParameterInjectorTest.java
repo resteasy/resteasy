@@ -11,10 +11,13 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ValueInjector;
@@ -42,9 +45,11 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
       @GET
       @POST
       @Produces("text/plain")
-      public String get(@ClassicParam("param") String param)
+      public String get(@ClassicParam("param") String param,
+            @QueryParam("param") @DefaultValue("") String query,
+            @FormParam("param") @DefaultValue("") String form)
       {
-         return param;
+         return String.format("%s, %s, %s", param, query, form);
       }
    }
 
@@ -60,11 +65,11 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
    {
       String getResult = createClientRequest("/foo").queryParameter("param", "getValue").accept(
             "text/plain").get(String.class).getEntity();
-      Assert.assertEquals("getValue", getResult);
+      Assert.assertEquals("getValue, getValue, ", getResult);
 
-      String postResult = createClientRequest("/foo").queryParameter("param", "postValue").accept(
+      String postResult = createClientRequest("/foo").formParameter("param", "postValue").accept(
             "text/plain").post(String.class).getEntity();
-      Assert.assertEquals("postValue", postResult);
+      Assert.assertEquals("postValue, , postValue", postResult);
    }
 
    public static class ParamInjectorFactoryImpl extends InjectorFactoryImpl
