@@ -1,9 +1,12 @@
 package org.jboss.resteasy.spring;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
@@ -11,10 +14,6 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 
 public class SpringPoweredWebappTest extends Assert {
