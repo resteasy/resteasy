@@ -32,7 +32,6 @@ public class MyTestJaxbController
       return "xmlView";
    }
 
-   @SuppressWarnings("unchecked")
    private void updateModel(ModelMap model)
    {
       model.put("jaxbObject",
