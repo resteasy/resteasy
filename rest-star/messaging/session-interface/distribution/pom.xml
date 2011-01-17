@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.hornetq.rest</groupId>
         <artifactId>hornetq-rest-all</artifactId>
-        <version>1.0-beta-3</version>
+        <version>1.0-beta-4</version>
     </parent>
 
     <artifactId>hornetq-rest-dist</artifactId>

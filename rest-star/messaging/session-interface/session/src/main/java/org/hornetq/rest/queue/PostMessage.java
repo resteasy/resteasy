@@ -51,9 +51,9 @@ public class PostMessage
       {
          ClientProducer producer = pooled.producer;
          ClientMessage message = createHornetQMessage(headers, body, durable, expiration, priority, pooled.session);
-         message.putStringProperty(ClientMessage.HDR_DUPLICATE_DETECTION_ID.toString(), dup);
+         if (dup != null) message.putStringProperty(ClientMessage.HDR_DUPLICATE_DETECTION_ID.toString(), dup);
          producer.send(message);
-         pool.add(pooled);
+         returnPooled(pooled);
       }
       catch (Exception ex)
       {
@@ -189,22 +189,39 @@ public class PostMessage
       }
    }
 
+   protected void returnPooled(Pooled pooled)
+   {
+      pool.add(pooled);
+   }
+
    protected void addPooled()
+           throws HornetQException
+   {
+      Pooled pooled = createPooled();
+      pool.add(pooled);
+   }
+
+   protected Pooled createPooled()
            throws HornetQException
    {
       ClientSession session = sessionFactory.createSession();
       ClientProducer producer = session.createProducer(destination);
       session.start();
-      pool.add(new Pooled(session, producer));
+      Pooled pooled = new Pooled(session, producer);
+      return pooled;
    }
 
    protected Pooled getPooled()
-           throws InterruptedException
+           throws InterruptedException, HornetQException
    {
       Pooled pooled = pool.poll(1, TimeUnit.SECONDS);
       if (pooled == null)
       {
          throw new WebApplicationException(Response.status(503).entity("Timed out waiting for available producer.").type("text/plain").build());
+      }
+      if (pooled.producer.isClosed())
+      {
+         return createPooled();
       }
       return pooled;
    }
