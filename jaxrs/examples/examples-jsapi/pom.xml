@@ -4,25 +4,25 @@
 	<parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>testable-examples-pom</artifactId>
-        <version>2.1.0.GA</version>
+        <version>2.1.1-SNAPSHOT</version>
     </parent>
     
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>examples-jsapi</artifactId>
 	<packaging>war</packaging>
-	<version>2.1.0.GA</version>
+	<version>2.1.1-SNAPSHOT</version>
 	<name>Example: JS-API</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
-			<version>2.1.0.GA</version>
+			<version>2.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jsapi</artifactId>
-			<version>2.1.0.GA</version>
+			<version>2.1.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
