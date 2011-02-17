@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.interception;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.resteasy.annotations.interception.Precedence;
+import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
+import org.jboss.resteasy.util.PickConstructor;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -96,28 +99,22 @@ public class InterceptorRegistry<T>
 
    protected class PerMethodInterceptorFactory extends AbstractInterceptorFactory
    {
-      private Class clazz;
+      private ConstructorInjector constructorInjector;
 
       public PerMethodInterceptorFactory(Class clazz)
       {
-         this.clazz = clazz;
+         Constructor<?> constructor = PickConstructor.pickConstructor(clazz);
+         if (constructor == null)
+         {
+            throw new RuntimeException("Unable to find a public constructor for interceptor class " + clazz.getName());
+         }
+         constructorInjector = providerFactory.getInjectorFactory().createConstructor(constructor);
          setPrecedence(clazz);
       }
 
       public Object createInterceptor()
       {
-         try
-         {
-            return clazz.newInstance();
-         }
-         catch (InstantiationException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
+         return constructorInjector.construct();
       }
    }
 
