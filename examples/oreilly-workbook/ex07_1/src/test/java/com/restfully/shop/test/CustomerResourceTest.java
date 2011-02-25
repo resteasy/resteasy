@@ -24,9 +24,11 @@ public class CustomerResourceTest
       try
       {
          int code = connection.getResponseCode();
+         System.out.println(code + connection.getResponseMessage());
       }
       catch (FileNotFoundException e)
       {
+         // Some JDKs will throw a FileNotFoundException
          System.out.println("Customer not found.");
       }
       connection.disconnect();
