@@ -77,12 +77,30 @@ public class CustomerResource
       Customer current = customerDB.get(id);
       if (current == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 
-      current.setFirstName(update.getFirstName());
-      current.setLastName(update.getLastName());
-      current.setStreet(update.getStreet());
-      current.setState(update.getState());
-      current.setZip(update.getZip());
-      current.setCountry(update.getCountry());
+      if (update.getFirstName() != null)
+      {
+         current.setFirstName(update.getFirstName());
+      }
+      if (update.getLastName() != null)
+      {
+         current.setLastName(update.getLastName());
+      }
+      if (update.getStreet() != null)
+      {
+         current.setStreet(update.getStreet());
+      }
+      if (update.getState() != null)
+      {
+         current.setState(update.getState());
+      }
+      if (update.getZip() != null)
+      {
+         current.setZip(update.getZip());
+      }
+      if (update.getCountry() != null)
+      {
+         current.setCountry(update.getCountry());
+      }
    }
 
 
@@ -93,6 +111,7 @@ public class CustomerResource
    {
       updateCustomer(id, is);
    }
+
 
    protected void outputCustomer(OutputStream os, Customer cust) throws IOException
    {
