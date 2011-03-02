@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
+import org.jboss.resteasy.core.interception.ServerMessageBodyWriterContext;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.WriterException;
@@ -168,7 +169,7 @@ public class ServerResponse extends Response
       this.genericType = genericType;
    }
 
-   public void writeTo(HttpResponse response, ResteasyProviderFactory providerFactory) throws WriterException
+   public void writeTo(HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory) throws WriterException
    {
       if (postProcessInterceptors != null)
       {
@@ -213,12 +214,12 @@ public class ServerResponse extends Response
          {
             writer.writeTo(ent, type, generic, annotations,
                     contentType, response.getOutputHeaders(), response
-                            .getOutputStream());
+                    .getOutputStream());
          }
          else
          {
-            MessageBodyWriterContextImpl ctx = new MessageBodyWriterContextImpl(messageBodyWriterInterceptors, writer, ent, type, generic,
-                    annotations, contentType, response.getOutputHeaders(), response.getOutputStream());
+            ServerMessageBodyWriterContext ctx = new ServerMessageBodyWriterContext(messageBodyWriterInterceptors, writer, ent, type, generic,
+                    annotations, contentType, response.getOutputHeaders(), response.getOutputStream(), request);
             ctx.proceed();
          }
       }

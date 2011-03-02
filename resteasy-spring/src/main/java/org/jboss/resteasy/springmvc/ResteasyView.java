@@ -93,7 +93,7 @@ public class ResteasyView implements View
                   ServerResponse responseInvoker = getResponse(model, resolvedContentType);
                   if (responseInvoker != null)
                   {
-                     responseInvoker.writeTo(response, dispatcher.getProviderFactory());
+                     responseInvoker.writeTo(httpRequest, response, dispatcher.getProviderFactory());
                   }
                }
                catch (Exception e)

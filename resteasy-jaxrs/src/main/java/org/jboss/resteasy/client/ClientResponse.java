@@ -8,6 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * Response extension for the RESTEasy client framework. Use this, or Response
@@ -81,8 +82,8 @@ public abstract class ClientResponse<T> extends Response
     * For example:
     * <pre>
     * List<String> list = response.getEntity(new GenericType<List<String>() {});
-    * <p/>
-    * <p/>
+    *
+    *
     * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
     * cache the result and return the cached result.
     *
@@ -129,4 +130,11 @@ public abstract class ClientResponse<T> extends Response
    public abstract Link getHeaderAsLink(String headerName);
 
    public abstract void releaseConnection();
+
+   /**
+    * Used to pass information to and between interceptors.
+    *
+    * @return
+    */
+   public abstract Map<String, Object> getAttributes();
 }

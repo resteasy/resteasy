@@ -14,7 +14,7 @@
         <dependency>
             <groupId>jboss.web</groupId>
             <artifactId>jbossweb</artifactId>
-            <version>2.1.1.GA</version>
+            <version>2.1.7.GA</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

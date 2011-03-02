@@ -16,6 +16,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStrea
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -98,12 +99,14 @@ public class ApacheHttpClientExecutor implements ClientExecutor
             {
                httpMethod.releaseConnection();
             }
-            catch (Exception ignored) {}
+            catch (Exception ignored)
+            {}
             try
             {
                stream.close();
             }
-            catch (Exception ignored) {}
+            catch (Exception ignored)
+            {}
          }
       }, this);
       response.setStatus(status);
@@ -143,22 +146,12 @@ public class ApacheHttpClientExecutor implements ClientExecutor
    private static class ClientRequestEntity implements RequestEntity
    {
       private byte[] bytes;
-      private ClientRequest request;
+      private String contentType;
 
-      public ClientRequestEntity(HttpClientHeaderWrapper wrapper, ClientRequest request)
+      private ClientRequestEntity(String contentType, byte[] bytes)
       {
-         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-         this.request = request;
-         try
-         {
-            request.writeRequestBody(wrapper, baos);
-            bytes = baos.toByteArray();
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-
+         this.contentType = contentType;
+         this.bytes = bytes;
       }
 
       public boolean isRepeatable()
@@ -181,8 +174,7 @@ public class ApacheHttpClientExecutor implements ClientExecutor
 
       public String getContentType()
       {
-//         System.out.println(String.format("setting ContentType = %s", request.getBodyContentType().toString()));
-         return request.getBodyContentType().toString();
+         return contentType;
       }
    }
 
@@ -191,23 +183,12 @@ public class ApacheHttpClientExecutor implements ClientExecutor
       if (httpMethod instanceof GetMethod && request.followRedirects()) httpMethod.setFollowRedirects(true);
       else httpMethod.setFollowRedirects(false);
 
-      if (request.getHeaders() != null)
-      {
-         for (Map.Entry<String, List<String>> header : request.getHeaders().entrySet())
-         {
-            List<String> values = header.getValue();
-            for (String value : values)
-            {
-//               System.out.println(String.format("setting %s = %s", header.getKey(), value));
-               httpMethod.addRequestHeader(header.getKey(), value);
-            }
-         }
-      }
       if (request.getBody() != null && !request.getFormParameters().isEmpty())
          throw new RuntimeException("You cannot send both form parameters and an entity body");
 
       if (!request.getFormParameters().isEmpty())
       {
+         commitHeaders(request, httpMethod);
          PostMethod post = (PostMethod) httpMethod;
 
          for (Map.Entry<String, List<String>> formParam : request.getFormParameters().entrySet())
@@ -219,14 +200,36 @@ public class ApacheHttpClientExecutor implements ClientExecutor
             }
          }
       }
-      if (request.getBody() != null)
+      else if (request.getBody() != null)
       {
          if (!(httpMethod instanceof EntityEnclosingMethod))
             throw new RuntimeException("A GET request cannot have a body.");
-         ClientRequestEntity requestEntity = new ClientRequestEntity(new HttpClientHeaderWrapper(httpMethod, request.getProviderFactory()), request);
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         request.writeRequestBody(request.getHeadersAsObjects(), baos);
+         commitHeaders(request, httpMethod);
+         ClientRequestEntity requestEntity = new ClientRequestEntity(request.getBodyContentType().toString(), baos.toByteArray());
          EntityEnclosingMethod post = (EntityEnclosingMethod) httpMethod;
          post.setRequestEntity(requestEntity);
       }
+      else
+      {
+         commitHeaders(request, httpMethod);
+      }
    }
+
+   public void commitHeaders(ClientRequest request, HttpMethodBase httpMethod)
+   {
+      MultivaluedMap<String, String> headers = request.getHeaders();
+      for (Map.Entry<String, List<String>> header : headers.entrySet())
+      {
+         List<String> values = header.getValue();
+         for (String value : values)
+         {
+//               System.out.println(String.format("setting %s = %s", header.getKey(), value));
+            httpMethod.addRequestHeader(header.getKey(), value);
+         }
+      }
+   }
+
 
 }

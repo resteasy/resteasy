@@ -2,8 +2,8 @@ package org.jboss.resteasy.client;
 
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
+import org.jboss.resteasy.client.core.ClientMessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
-import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.Link;
@@ -26,6 +26,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,23 +47,24 @@ import static org.jboss.resteasy.util.HttpHeaderNames.*;
 public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cloneable
 {
    protected ResteasyProviderFactory providerFactory;
-   private UriBuilderImpl uri;
-   private ClientExecutor executor;
-   private MultivaluedMap<String, String> headers;
-   private MultivaluedMap<String, String> queryParameters;
-   private MultivaluedMap<String, String> formParameters;
-   private MultivaluedMap<String, String> pathParameters;
-   private MultivaluedMap<String, String> matrixParameters;
-   private Object body;
-   private Class bodyType;
-   private Type bodyGenericType;
-   private Annotation[] bodyAnnotations;
-   private MediaType bodyContentType;
-   private boolean followRedirects;
-   private String httpMethod;
-   private String finalUri;
-   private List<String> pathParameterList;
-   private LinkHeader linkHeader;
+   protected UriBuilderImpl uri;
+   protected ClientExecutor executor;
+   protected MultivaluedMap<String, Object> headers;
+   protected MultivaluedMap<String, String> queryParameters;
+   protected MultivaluedMap<String, String> formParameters;
+   protected MultivaluedMap<String, String> pathParameters;
+   protected MultivaluedMap<String, String> matrixParameters;
+   protected Object body;
+   protected Class bodyType;
+   protected Type bodyGenericType;
+   protected Annotation[] bodyAnnotations;
+   protected MediaType bodyContentType;
+   protected boolean followRedirects;
+   protected String httpMethod;
+   protected String finalUri;
+   protected List<String> pathParameterList;
+   protected LinkHeader linkHeader;
+   protected Map<String, Object> attributes = new HashMap<String, Object>();
 
    private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor";
    //private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor";
@@ -184,6 +186,11 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       return followRedirects;
    }
 
+   public Map<String, Object> getAttributes()
+   {
+      return attributes;
+   }
+
    public ClientRequest followRedirects(boolean followRedirects)
    {
       this.followRedirects = followRedirects;
@@ -197,12 +204,12 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
    public ClientRequest accept(String accept)
    {
-      String curr = getHeaders().getFirst(ACCEPT);
+      String curr = (String) getHeadersAsObjects().getFirst(ACCEPT);
       if (curr != null)
          curr += "," + accept;
       else
          curr = accept;
-      getHeaders().putSingle(ACCEPT, curr);
+      getHeadersAsObjects().putSingle(ACCEPT, curr);
       return this;
    }
 
@@ -271,7 +278,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
    public ClientRequest header(String headerName, Object value)
    {
-      getHeaders().add(headerName, toHeaderString(value));
+      getHeadersAsObjects().add(headerName, value);
       return this;
    }
 
@@ -282,7 +289,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
    public ClientRequest cookie(Cookie cookie)
    {
-      return header(HttpHeaders.COOKIE, cookie.toString());
+      return header(HttpHeaders.COOKIE, cookie);
    }
 
    public ClientRequest pathParameter(String parameterName, Object value)
@@ -345,10 +352,27 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       return executor;
    }
 
+   /**
+    * @return a copy of all header objects converted to a string
+    */
    public MultivaluedMap<String, String> getHeaders()
    {
+      MultivaluedMap<String, String> rtn = new MultivaluedMapImpl<String, String>();
+      if (headers == null) return rtn;
+      for (Map.Entry<String, List<Object>> entry : headers.entrySet())
+      {
+         for (Object obj : entry.getValue())
+         {
+            rtn.add(entry.getKey(), toHeaderString(obj));
+         }
+      }
+      return rtn;
+   }
+
+   public MultivaluedMap<String, Object> getHeadersAsObjects()
+   {
       if (headers == null)
-         headers = new MultivaluedMapImpl<String, String>();
+         headers = new MultivaluedMapImpl<String, Object>();
       return headers;
    }
 
@@ -429,7 +453,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       if (getReaderInterceptorList().isEmpty())
          setReaderInterceptors(providerFactory
                  .getClientMessageBodyReaderInterceptorRegistry().bindForList(
-                 null, null));
+                         null, null));
 
       if (getExecutionInterceptorList().isEmpty())
       {
@@ -448,6 +472,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
                  getExecutionInterceptorList(), executor, this);
          response = (BaseClientResponse) ctx.proceed();
       }
+      response.setAttributes(attributes);
       response.setMessageBodyReaderInterceptors(getReaderInterceptors());
       return response;
    }
@@ -464,7 +489,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       {
          setWriterInterceptors(providerFactory
                  .getClientMessageBodyWriterInterceptorRegistry().bindForList(
-                 null, null));
+                         null, null));
       }
       MessageBodyWriter writer = providerFactory
               .getMessageBodyWriter(bodyType, bodyGenericType,
@@ -474,9 +499,9 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          throw new RuntimeException("could not find writer for content-type "
                  + bodyContentType + " type: " + bodyType.getName());
       }
-      new MessageBodyWriterContextImpl(getWriterInterceptors(), writer, body,
+      new ClientMessageBodyWriterContext(getWriterInterceptors(), writer, body,
               bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
-              headers, outputStream).proceed();
+              headers, outputStream, attributes).proceed();
    }
 
    public ClientResponse get() throws Exception

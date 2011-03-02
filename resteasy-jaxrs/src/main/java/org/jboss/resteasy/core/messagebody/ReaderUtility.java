@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility for accessing RESTEasy's MessageBodyReader setup
@@ -108,8 +110,29 @@ public abstract class ReaderUtility
 
       try
       {
-         return (T) new MessageBodyReaderContextImpl(interceptors, reader, type,
+         final Map<String, Object> attributes = new HashMap<String, Object>();
+         MessageBodyReaderContextImpl messageBodyReaderContext = new MessageBodyReaderContextImpl(interceptors, reader, type,
                  genericType, annotations, mediaType, requestHeaders, inputStream)
+         {
+            @Override
+            public Object getAttribute(String attribute)
+            {
+               return attributes.get(attribute);
+            }
+
+            @Override
+            public void setAttribute(String name, Object value)
+            {
+               attributes.put(name, value);
+            }
+
+            @Override
+            public void removeAttribute(String name)
+            {
+               attributes.remove(name);
+            }
+         };
+         return (T) messageBodyReaderContext
                  .proceed();
       }
       catch (Exception e)

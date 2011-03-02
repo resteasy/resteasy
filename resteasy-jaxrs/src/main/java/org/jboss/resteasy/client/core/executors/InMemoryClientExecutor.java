@@ -73,7 +73,6 @@ public class InMemoryClientExecutor implements ClientExecutor
       MockHttpRequest mockHttpRequest = MockHttpRequest.create(request.getHttpMethod(), new URI(request.getUri()),
               baseUri);
       loadHttpMethod(request, mockHttpRequest);
-      setBody(request, mockHttpRequest);
 
       final MockHttpResponse mockResponse = new MockHttpResponse();
       dispatcher.invoke(mockHttpRequest, mockResponse);
@@ -133,19 +132,44 @@ public class InMemoryClientExecutor implements ClientExecutor
       // httpMethod.setFollowRedirects(true);
       // else httpMethod.setFollowRedirects(false);
 
-      MultivaluedMap headers = mockHttpRequest.getHttpHeaders().getRequestHeaders();
-      headers.putAll(request.getHeaders());
       if (request.getBody() != null && !request.getFormParameters().isEmpty())
          throw new RuntimeException("You cannot send both form parameters and an entity body");
 
-      for (Map.Entry<String, List<String>> formParam : request.getFormParameters().entrySet())
+      if (!request.getFormParameters().isEmpty())
       {
-         String key = formParam.getKey();
-         for (String value : formParam.getValue())
+         commitHeaders(request, mockHttpRequest);
+         for (Map.Entry<String, List<String>> formParam : request.getFormParameters().entrySet())
          {
-            mockHttpRequest.getFormParameters().add(key, value);
+            String key = formParam.getKey();
+            for (String value : formParam.getValue())
+            {
+               mockHttpRequest.getFormParameters().add(key, value);
+            }
          }
       }
+      else if (request.getBody() != null)
+      {
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+         MediaType bodyContentType = request.getBodyContentType();
+         request.getHeadersAsObjects().add(HttpHeaders.CONTENT_TYPE, bodyContentType.toString());
+
+         request.writeRequestBody(request.getHeadersAsObjects(), baos);
+         // commit headers after byte array is complete.
+         commitHeaders(request, mockHttpRequest);
+         mockHttpRequest.content(baos.toByteArray());
+         mockHttpRequest.contentType(bodyContentType);
+      }
+      else
+      {
+         commitHeaders(request, mockHttpRequest);
+      }
+   }
+
+   public void commitHeaders(ClientRequest request, MockHttpRequest mockHttpRequest)
+   {
+      MultivaluedMap headers = mockHttpRequest.getHttpHeaders().getRequestHeaders();
+      headers.putAll(request.getHeaders());
    }
 
    private void setBody(ClientRequest request, MockHttpRequest mockHttpRequest) throws IOException
@@ -153,15 +177,6 @@ public class InMemoryClientExecutor implements ClientExecutor
       if (request.getBody() == null)
          return;
 
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-      MediaType bodyContentType = request.getBodyContentType();
-      request.getHeaders().add(HttpHeaders.CONTENT_TYPE, bodyContentType.toString());
-      MultivaluedMap mockHeaders = (MultivaluedMap) mockHttpRequest.getHttpHeaders().getRequestHeaders();
-      request.writeRequestBody(mockHeaders, baos);
-
-      mockHttpRequest.content(baos.toByteArray());
-      mockHttpRequest.contentType(bodyContentType);
    }
 
    public Registry getRegistry()
