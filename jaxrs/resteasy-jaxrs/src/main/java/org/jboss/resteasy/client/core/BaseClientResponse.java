@@ -3,10 +3,10 @@ package org.jboss.resteasy.client.core;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.core.messagebody.ReaderUtility;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -16,12 +16,14 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.*;
 
@@ -57,6 +59,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected LinkHeader linkHeader;
    protected Link location;
    protected ClientExecutor executor;
+   protected Map<String, Object> attributes;
 
    public BaseClientResponse(BaseClientResponseStreamFactory streamFactory, ClientExecutor executor)
    {
@@ -129,6 +132,16 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return tmp;
    }
 
+   @Override
+   public Map<String, Object> getAttributes()
+   {
+      return attributes;
+   }
+
+   public void setAttributes(Map<String, Object> attributes)
+   {
+      this.attributes = attributes;
+   }
 
    public void setMessageBodyReaderInterceptors(MessageBodyReaderInterceptor[] messageBodyReaderInterceptors)
    {
@@ -337,28 +350,33 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected <T2> Object readFrom(Class<T2> type, Type genericType,
                                   MediaType media, Annotation[] annotations)
    {
+      Type genericType1 = genericType == null ? type : genericType;
+      MessageBodyReader reader1 = providerFactory.getMessageBodyReader(type,
+              genericType1, this.annotations, media);
+      if (reader1 == null)
+      {
+         throw createResponseFailure(format(
+                 "Unable to find a MessageBodyReader of content-type %s and type %s",
+                 media, genericType));
+      }
+
       try
       {
-         ReaderUtility reader = new ReaderUtility(providerFactory,
-                 messageBodyReaderInterceptors)
-         {
-            @Override
-            public RuntimeException createReaderNotFound(Type genericType,
-                                                         MediaType mediaType)
-            {
-               return createResponseFailure(format(
-                       "Unable to find a MessageBodyReader of content-type %s and type %s",
-                       mediaType, genericType));
-            }
-         };
-         return reader.doRead(type, genericType == null ? type : genericType,
-                 media, this.annotations, getHeaders(), streamFactory
-                         .getInputStream());
+         return (T2) new ClientMessageBodyReaderContext(messageBodyReaderInterceptors, reader1, type,
+                 genericType1, this.annotations, media, getHeaders(), streamFactory
+                 .getInputStream(), attributes)
+                 .proceed();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-         String msg = "Failure reading from MessageBodyReader for conten-type: %s and type %s";
-         throw createResponseFailure(format(msg, media.toString(), type.getName()), e);
+         if (e instanceof ReaderException)
+         {
+            throw (ReaderException) e;
+         }
+         else
+         {
+            throw new ReaderException(e);
+         }
       }
    }
 

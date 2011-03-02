@@ -23,6 +23,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStrea
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -170,23 +171,12 @@ public class ApacheHttpClient4Executor implements ClientExecutor
          HttpClientParams.setRedirecting(httpMethod.getParams(), false);
       }
 
-      if (request.getHeaders() != null)
-      {
-         for (Map.Entry<String, List<String>> header : request.getHeaders().entrySet())
-         {
-            List<String> values = header.getValue();
-            for (String value : values)
-            {
-//               System.out.println(String.format("setting %s = %s", header.getKey(), value));
-               httpMethod.addHeader(header.getKey(), value);
-            }
-         }
-      }
       if (request.getBody() != null && !request.getFormParameters().isEmpty())
          throw new RuntimeException("You cannot send both form parameters and an entity body");
 
       if (!request.getFormParameters().isEmpty())
       {
+         commitHeaders(request, httpMethod);
          HttpPost post = (HttpPost) httpMethod;
 
          List<NameValuePair> formparams = new ArrayList<NameValuePair>();
@@ -203,14 +193,14 @@ public class ApacheHttpClient4Executor implements ClientExecutor
          UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
          post.setEntity(entity);
       }
-      if (request.getBody() != null)
+      else if (request.getBody() != null)
       {
          if (httpMethod instanceof HttpGet) throw new RuntimeException("A GET request cannot have a body.");
 
          ByteArrayOutputStream baos = new ByteArrayOutputStream();
          try
          {
-            request.writeRequestBody(new HttpClient4HeaderWrapper(httpMethod, request.getProviderFactory()), baos);
+            request.writeRequestBody(request.getHeadersAsObjects(), baos);
             ByteArrayEntity entity = new ByteArrayEntity(baos.toByteArray())
             {
                @Override
@@ -220,11 +210,30 @@ public class ApacheHttpClient4Executor implements ClientExecutor
                }
             };
             HttpPost post = (HttpPost) httpMethod;
+            commitHeaders(request, httpMethod);
             post.setEntity(entity);
          }
          catch (IOException e)
          {
             throw new RuntimeException(e);
+         }
+      }
+      else // no body
+      {
+         commitHeaders(request, httpMethod);
+      }
+   }
+
+   public void commitHeaders(ClientRequest request, HttpRequestBase httpMethod)
+   {
+      MultivaluedMap<String, String> headers = request.getHeaders();
+      for (Map.Entry<String, List<String>> header : headers.entrySet())
+      {
+         List<String> values = header.getValue();
+         for (String value : values)
+         {
+//               System.out.println(String.format("setting %s = %s", header.getKey(), value));
+            httpMethod.addHeader(header.getKey(), value);
          }
       }
    }

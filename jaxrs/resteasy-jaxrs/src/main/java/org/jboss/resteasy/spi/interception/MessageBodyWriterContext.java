@@ -40,5 +40,18 @@ public interface MessageBodyWriterContext
 
    public void setOutputStream(OutputStream os);
 
+   /**
+    * Allows you to pass values back and forth between interceptors
+    * On the server side, this is the HttpRequest attributes, on the client side, this is the ClientRequest/ClientResponse
+    * attributes.
+    *
+    * @return
+    */
+   Object getAttribute(String attribute);
+
+   void setAttribute(String name, Object value);
+
+   void removeAttribute(String name);
+
    void proceed() throws IOException, WebApplicationException;
 }

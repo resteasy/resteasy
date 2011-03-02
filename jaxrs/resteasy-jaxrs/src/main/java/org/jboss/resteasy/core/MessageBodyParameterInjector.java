@@ -2,10 +2,11 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
-import org.jboss.resteasy.core.messagebody.ReaderUtility;
+import org.jboss.resteasy.core.interception.ServerMessageBodyReaderContext;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -14,7 +15,7 @@ import org.jboss.resteasy.util.ThreadLocalStack;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.IOException;
+import javax.ws.rs.ext.MessageBodyReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
@@ -57,26 +58,10 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
    private Class type;
    private Type genericType;
    private Annotation[] annotations;
-   private ReaderUtility readerUtility;
    private ResteasyProviderFactory factory;
    private Class declaringClass;
    private AccessibleObject target;
-
-   private class ReaderUtilityImpl extends ReaderUtility
-   {
-      private ReaderUtilityImpl(ResteasyProviderFactory factory, MessageBodyReaderInterceptor[] interceptors)
-      {
-         super(factory, interceptors);
-      }
-
-
-      public RuntimeException createReaderNotFound(Type genericType, MediaType mediaType)
-      {
-         return new BadRequestException(
-                 "Could not find message body reader for type: "
-                         + genericType + " of content type: " + mediaType);
-      }
-   }
+   private MessageBodyReaderInterceptor[] interceptors;
 
    public MessageBodyParameterInjector(Class declaringClass, AccessibleObject target, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
@@ -86,10 +71,9 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
       this.type = type;
       this.genericType = genericType;
       this.annotations = annotations;
-      MessageBodyReaderInterceptor[] interceptors = factory
+      this.interceptors = factory
               .getServerMessageBodyReaderInterceptorRegistry().bind(
                       declaringClass, target);
-      this.readerUtility = new ReaderUtilityImpl(factory, interceptors);
 
       // this is for when an interceptor is added after the creation of the injector
       factory.getServerMessageBodyReaderInterceptorRegistry().getListeners().add(this);
@@ -97,10 +81,9 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
 
    public void registryUpdated(InterceptorRegistry registry)
    {
-      MessageBodyReaderInterceptor[] interceptors = factory
+      this.interceptors = factory
               .getServerMessageBodyReaderInterceptorRegistry().bind(
                       declaringClass, target);
-      this.readerUtility = new ReaderUtilityImpl(factory, interceptors);
    }
 
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -118,37 +101,56 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
 
    public Object inject(HttpRequest request, HttpResponse response)
    {
-      try
+      Object o = getBody();
+      if (o != null)
       {
-         Object o = getBody();
-         if (o != null)
+         return o;
+      }
+      final MediaType mediaType = request.getHttpHeaders().getMediaType();
+      if (mediaType == null)
+      {
+         throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
+      }
+
+      // We have to do this isFormData() hack because of servlets and servlet filters
+      // A filter that does getParameter() will screw up the input stream which will screw up the
+      // provider.  We do it here rather than hack the provider as the provider is reused for client side
+      // and also, the server may be using the client framework to make another remote call.
+      if (isFormData(type, genericType, annotations, mediaType))
+      {
+         boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
+         if (encoded) return request.getFormParameters();
+         else return request.getDecodedFormParameters();
+      }
+      else
+      {
+         MessageBodyReader reader = factory.getMessageBodyReader(type,
+                 genericType, annotations, mediaType);
+         if (reader == null)
          {
-            return o;
-         }
-         final MediaType mediaType = request.getHttpHeaders().getMediaType();
-         if (mediaType == null)
-         {
-            throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
+            return new BadRequestException(
+                    "Could not find message body reader for type: "
+                            + genericType + " of content type: " + mediaType);
          }
 
-         // We have to do this hack because of servlets and servlet filters
-         // A filter that does getParameter() will screw up the input stream which will screw up the
-         // provider.  We do it here rather than hack the provider as the provider is reused for client side
-         // and also, the server may be using the client framework to make another remote call.
-         if (isFormData(type, genericType, annotations, mediaType))
+         try
          {
-            boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
-            if (encoded) return request.getFormParameters();
-            else return request.getDecodedFormParameters();
+            ServerMessageBodyReaderContext messageBodyReaderContext = new ServerMessageBodyReaderContext(interceptors, reader, type,
+                    genericType, annotations, mediaType, request
+                    .getHttpHeaders().getRequestHeaders(), request.getInputStream(), request);
+            return messageBodyReaderContext.proceed();
          }
-         else
+         catch (Exception e)
          {
-            return readerUtility.doRead(request, type, genericType, annotations, mediaType);
+            if (e instanceof ReaderException)
+            {
+               throw (ReaderException) e;
+            }
+            else
+            {
+               throw new ReaderException(e);
+            }
          }
-      }
-      catch (IOException e)
-      {
-         throw new BadRequestException("Failure extracting body into " + this.target, e);
       }
    }
 

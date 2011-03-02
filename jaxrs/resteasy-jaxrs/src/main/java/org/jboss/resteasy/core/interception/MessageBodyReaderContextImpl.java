@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class MessageBodyReaderContextImpl implements MessageBodyReaderContext
+public abstract class MessageBodyReaderContextImpl implements MessageBodyReaderContext
 {
    protected MessageBodyReaderInterceptor[] interceptors;
    protected MessageBodyReader reader;

@@ -44,8 +44,6 @@ public class URLConnectionClientExecutor implements ClientExecutor
       connection.setDoOutput(request.getBody() != null
               || !request.getFormParameters().isEmpty());
 
-      setHeaders(request, connection);
-
       if (request.getBody() != null && !request.getFormParameters().isEmpty())
          throw new RuntimeException(
                  "You cannot send both form parameters and an entity body");
@@ -57,7 +55,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
       }
    }
 
-   private void setHeaders(ClientRequest request, HttpURLConnection connection)
+   private void commitHeaders(ClientRequest request, HttpURLConnection connection)
    {
       for (Entry<String, List<String>> entry : request.getHeaders().entrySet())
       {
@@ -92,7 +90,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
 
    private ClientResponse execute(ClientRequest request, final HttpURLConnection connection) throws IOException
    {
-      MultivaluedMap<String, String> outputHeaders = outputBody(request, connection);
+      outputBody(request, connection);
       final int status = connection.getResponseCode();
       BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory()
       {
@@ -115,15 +113,14 @@ public class URLConnectionClientExecutor implements ClientExecutor
       }, this);
       response.setProviderFactory(request.getProviderFactory());
       response.setStatus(status);
-      response.setHeaders(getHeaders(connection, outputHeaders));
+      response.setHeaders(getHeaders(connection));
       return response;
    }
 
    private MultivaluedMap<String, String> getHeaders(
-           final HttpURLConnection connection,
-           MultivaluedMap<String, String> outputHeaders)
+           final HttpURLConnection connection)
    {
-      MultivaluedMap<String, String> headers = outputHeaders == null ? new CaseInsensitiveMap<String>() : outputHeaders;
+      MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
 
       for (Entry<String, List<String>> header : connection.getHeaderFields()
               .entrySet())
@@ -135,7 +132,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
       return headers;
    }
 
-   private MultivaluedMap<String, String> outputBody(ClientRequest request, HttpURLConnection connection)
+   private void outputBody(final ClientRequest request, final HttpURLConnection connection)
    {
       if (request.getBody() != null)
       {
@@ -145,12 +142,19 @@ public class URLConnectionClientExecutor implements ClientExecutor
             String type = request.getBodyContentType().toString();
             connection.addRequestProperty(CONTENT_TYPE, type);
          }
-         MultivaluedMap headers = new URLConnectionHeaderWrapper(
-                 connection, request.getProviderFactory());
          try
          {
             OutputStream os = connection.getOutputStream();
-            request.writeRequestBody(headers, os);
+            CommitHeaderOutputStream commit = new CommitHeaderOutputStream(os,
+                    new CommitHeaderOutputStream.Headers()
+                    {
+                       @Override
+                       public void commit()
+                       {
+                          commitHeaders(request, connection);
+                       }
+                    });
+            request.writeRequestBody(request.getHeadersAsObjects(), commit);
             os.flush();
             os.close();
          }
@@ -158,11 +162,10 @@ public class URLConnectionClientExecutor implements ClientExecutor
          {
             throw new RuntimeException(e);
          }
-         return headers;
       }
       else
       {
-         return null;
+         commitHeaders(request, connection);
       }
    }
 }

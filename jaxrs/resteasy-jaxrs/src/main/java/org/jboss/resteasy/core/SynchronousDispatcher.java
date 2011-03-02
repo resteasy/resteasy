@@ -308,7 +308,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected void unwrapException(HttpRequest request, HttpResponse response, Throwable e)
    {
       Throwable unwrappedException = e.getCause();
-      
+
       if (executeExceptionMapper(request, response, unwrappedException))
       {
          return;
@@ -560,7 +560,7 @@ public class SynchronousDispatcher implements Dispatcher
          }
       }
 
-      serverResponse.writeTo(response, providerFactory);
+      serverResponse.writeTo(request, response, providerFactory);
    }
 
    protected MediaType resolveContentTypeByAccept(List<MediaType> accepts, Object entity)

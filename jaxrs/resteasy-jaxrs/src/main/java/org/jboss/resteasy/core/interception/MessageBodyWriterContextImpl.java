@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MessageBodyWriterContextImpl implements MessageBodyWriterContext
+public abstract class MessageBodyWriterContextImpl implements MessageBodyWriterContext
 {
    protected MessageBodyWriterInterceptor[] interceptors;
    protected MessageBodyWriter writer;
