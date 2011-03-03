@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -69,24 +70,24 @@ public class CustomOverrideTest extends BaseResourceTest
    }
 
    @Path("/test")
+   @Produces("application/xml")
    public static class VCardResource
    {
       @GET
-      @Produces("application/xml")
-      public Foo getFooXml()
+      public Response getFooXml()
       {
          Foo foo = new Foo();
          foo.setName("bill");
-         return foo;
+         return Response.ok(foo).build();
       }
 
       @GET
       @Produces("text/x-vcard")
-      public Foo getFooVcard()
+      public Response getFooVcard()
       {
          Foo foo = new Foo();
          foo.setName("bill");
-         return foo;
+         return Response.ok(foo).build();
       }
    }
 
