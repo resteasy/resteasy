@@ -50,11 +50,9 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected Annotation[] annotations = {};
    protected int status;
    protected boolean wasReleased = false;
-   protected boolean streamWasRead = false;
    protected Object unmarshaledEntity;
    protected MessageBodyReaderInterceptor[] messageBodyReaderInterceptors;
    protected Exception exception;// These can only be set by an interceptor
-   protected boolean cacheInputStream;
    protected BaseClientResponseStreamFactory streamFactory;
    protected LinkHeader linkHeader;
    protected Link location;
