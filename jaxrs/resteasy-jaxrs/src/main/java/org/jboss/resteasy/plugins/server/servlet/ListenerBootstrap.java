@@ -4,7 +4,10 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.scannotation.WarUrlFinder;
 
 import javax.servlet.ServletContext;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -28,9 +31,32 @@ public class ListenerBootstrap extends ConfigurationBootstrap
       return deployment;
    }
 
+   public static URL[] findWebInfLibClasspaths(ServletContext servletContext)
+   {
+      ArrayList<URL> list = new ArrayList<URL>();
+      Set libJars = servletContext.getResourcePaths("/WEB-INF/lib");
+      if (libJars == null)
+      {
+         URL[] empty = {};
+         return empty;
+      }
+      for (Object jar : libJars)
+      {
+         try
+         {
+            list.add(servletContext.getResource((String) jar));
+         }
+         catch (MalformedURLException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      return list.toArray(new URL[list.size()]);
+   }
+
    public URL[] getScanningUrls()
    {
-      URL[] urls = WarUrlFinder.findWebInfLibClasspaths(servletContext);
+      URL[] urls = findWebInfLibClasspaths(servletContext);
       URL url = WarUrlFinder.findWebInfClassesPath(servletContext);
       if (url == null) return urls;
       URL[] all = new URL[urls.length + 1];
