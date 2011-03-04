@@ -1,11 +1,5 @@
 package org.jboss.resteasy.client.core.extractors;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.annotations.ClientResponseType;
 import org.jboss.resteasy.annotations.ResponseObject;
 import org.jboss.resteasy.client.ClientResponse;
@@ -13,10 +7,13 @@ import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.core.Response;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 /**
- * 
  * @author Solomon.Duskis
- * 
  */
 @SuppressWarnings("unchecked")
 public class DefaultEntityExtractorFactory implements EntityExtractorFactory
@@ -49,6 +46,7 @@ public class DefaultEntityExtractorFactory implements EntityExtractorFactory
       {
          public Object extractEntity(ClientRequestContext context, Object... args)
          {
+            context.getClientResponse().checkFailureStatus();
             if (release)
                context.getClientResponse().releaseConnection();
             return null;
@@ -99,18 +97,18 @@ public class DefaultEntityExtractorFactory implements EntityExtractorFactory
                   catch (InstantiationException e)
                   {
                      throw (context.getClientResponse())
-                           .createResponseFailure("Could not create a default entity type factory of type "
-                                 + entityTypeFactory.getClass().getName());
+                             .createResponseFailure("Could not create a default entity type factory of type "
+                                     + entityTypeFactory.getClass().getName());
                   }
                   catch (IllegalAccessException e)
                   {
                      throw ((BaseClientResponse<?>) context.getClientResponse())
-                           .createResponseFailure("Could not create a default entity type factory of type "
-                                 + entityTypeFactory.getClass().getName() + ". " + e.getMessage());
+                             .createResponseFailure("Could not create a default entity type factory of type "
+                                     + entityTypeFactory.getClass().getName() + ". " + e.getMessage());
                   }
                   context.getClientResponse().setReturnType(
-                        factory.getEntityType(((BaseClientResponse<?>) context.getClientResponse()).getStatus(),
-                              ((BaseClientResponse<?>) context.getClientResponse()).getMetadata()));
+                          factory.getEntityType(((BaseClientResponse<?>) context.getClientResponse()).getStatus(),
+                                  ((BaseClientResponse<?>) context.getClientResponse()).getMetadata()));
                   return context.getClientResponse();
                }
             };
