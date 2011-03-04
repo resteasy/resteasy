@@ -171,13 +171,40 @@ public class StringParameterInjector
             }
             if (valueOf == null)
             {
+               Method fromString = null;
+
+               try
+               {
+                  fromString = baseType.getDeclaredMethod("fromString", String.class);
+                  if (Modifier.isStatic(fromString.getModifiers()) == false) fromString = null;
+               }
+               catch (NoSuchMethodException ignored)
+               {
+               }
                try
                {
                   valueOf = baseType.getDeclaredMethod("valueOf", String.class);
+                  if (Modifier.isStatic(valueOf.getModifiers()) == false) valueOf = null;
                }
-               catch (NoSuchMethodException e)
+               catch (NoSuchMethodException ignored)
                {
-                  throw new RuntimeException("Unable to find a constructor that takes a String param or a valueOf() method for " + getParamSignature() + " on " + target + " for basetype: " + baseType.getName());
+               }
+               // If enum use fromString if it exists: as defined in JAX-RS spec
+               if (baseType.isEnum())
+               {
+                  if (fromString != null)
+                  {
+                     valueOf = fromString;
+                  }
+               }
+               else if (valueOf == null)
+               {
+                  valueOf = fromString;
+               }
+               if (valueOf == null)
+               {
+                  throw new RuntimeException("Unable to find a constructor that takes a String param or a valueOf() or fromString() method for " + getParamSignature() + " on " + target + " for basetype: " + baseType.getName());
+
                }
             }
 
