@@ -280,6 +280,19 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
+   public void resetStream()
+   {
+      try
+      {
+         this.streamFactory.getInputStream().reset();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Override
    public T getEntity()
    {
       if (returnType == null)
