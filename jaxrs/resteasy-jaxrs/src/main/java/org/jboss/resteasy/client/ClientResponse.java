@@ -129,6 +129,11 @@ public abstract class ClientResponse<T> extends Response
     */
    public abstract Link getHeaderAsLink(String headerName);
 
+   /**
+    * Attempts to reset the InputStream of the response.  Useful for refetching an entity after a marshalling failure
+    */
+   public abstract void resetStream();
+
    public abstract void releaseConnection();
 
    /**

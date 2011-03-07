@@ -10,8 +10,8 @@
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
-		<dep.jaxb-impl.version>2.1.12</dep.jaxb-impl.version>
-		<dep.jettison.version>1.1</dep.jettison.version>
+        <dep.jaxb-impl.version>2.1.12</dep.jaxb-impl.version>
+        <dep.jettison.version>1.1</dep.jettison.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -120,9 +120,9 @@
                 <version>1.5.8</version>
             </dependency>
             <dependency>
-              <groupId>log4j</groupId>
-              <artifactId>log4j</artifactId>
-              <version>1.2.14</version>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.14</version>
             </dependency>
 
             <dependency>
@@ -141,7 +141,7 @@
             <dependency>
                 <groupId>org.scannotation</groupId>
                 <artifactId>scannotation</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.3</version>
             </dependency>
 
             <dependency>
