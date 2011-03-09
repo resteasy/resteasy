@@ -1,16 +1,21 @@
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -197,34 +202,41 @@ public class Encode
    //private static final Pattern nonCodes = Pattern.compile("%([^a-fA-F0-9]|$)");
    private static final Pattern nonCodes = Pattern.compile("%([^a-fA-F0-9]|[a-fA-F0-9]$|$|[a-fA-F0-9][^a-fA-F0-9])");
    private static final Pattern encodedChars = Pattern.compile("%([a-fA-F0-9][a-fA-F0-9])");
+   private static final Pattern encodedCharsMulti = Pattern.compile("((%[a-fA-F0-9][a-fA-F0-9])+)");
 
    public static String decodePath(String path)
    {
-      Matcher matcher = encodedChars.matcher(path);
+      Matcher matcher = encodedCharsMulti.matcher(path);
       StringBuffer buf = new StringBuffer();
+      CharsetDecoder decoder = Charset.forName(UTF_8).newDecoder();
       while (matcher.find())
       {
-         String enc = matcher.group(1);
-         int c = Integer.parseInt(enc, 16);
-         StringBuffer cBuf = new StringBuffer();
-         char chr = (char) c;
-         // if we don't do this switch logic then it will screw up regex appendReplacement
-         switch (chr)
-         {
-            case '\\':
-               cBuf.append("\\\\");
-               break;
-            case '$':
-               cBuf.append("\\$");
-               break;
-            default:
-               cBuf.append(chr);
-
-         }
-         matcher.appendReplacement(buf, cBuf.toString());
+         decoder.reset();
+         String decoded = decodeBytes(matcher.group(1), decoder);
+         decoded = decoded.replace("\\", "\\\\");
+         decoded = decoded.replace("$", "\\$");
+         matcher.appendReplacement(buf, decoded);
       }
       matcher.appendTail(buf);
       return buf.toString();
+   }
+   
+   private static String decodeBytes(String enc, CharsetDecoder decoder)
+   {
+      Matcher matcher = encodedChars.matcher(enc);
+      StringBuffer buf = new StringBuffer();
+      ByteBuffer bytes = ByteBuffer.allocate(enc.length() / 3);
+      while (matcher.find())
+      {
+         int b = Integer.parseInt(matcher.group(1), 16);
+         bytes.put((byte)b);
+      }
+      bytes.flip();
+      try {
+          return decoder.decode(bytes).toString();
+      } catch (CharacterCodingException e) {
+          throw new RuntimeException(e);
+      }
    }
 
    /**

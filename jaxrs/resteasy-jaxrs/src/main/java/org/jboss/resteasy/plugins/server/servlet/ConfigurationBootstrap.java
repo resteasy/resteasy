@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.scannotation.AnnotationDB;
@@ -119,6 +118,15 @@ abstract public class ConfigurationBootstrap
 
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
       if (resteasySecurity != null) deployment.setSecurityEnabled(Boolean.valueOf(resteasySecurity.trim()));
+
+      String keyStoreFile = getParameter(ResteasyContextParameters.RESTEASY_KEY_STORE_FILE_NAME);
+      if (keyStoreFile != null) deployment.setKeyStoreFileName(keyStoreFile);
+
+      String keyStorePath = getParameter(ResteasyContextParameters.RESTEASY_KEY_STORE_CLASSPATH);
+      if (keyStorePath != null) deployment.setKeyStoreClassPath(keyStorePath);
+
+      String keyStorePassword = getParameter(ResteasyContextParameters.RESTEASY_KEY_STORE_PASSWORD);
+      if (keyStorePassword != null) deployment.setKeyStorePassword(keyStorePassword);
 
       String builtin = getParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
       if (builtin != null) deployment.setRegisterBuiltin(Boolean.valueOf(builtin.trim()));

@@ -1,45 +1,30 @@
-package org.jboss.resteasy.test.security.signing;
+package org.jboss.resteasy.tests.signature;
 
-import org.jboss.resteasy.annotations.security.signature.After;
-import org.jboss.resteasy.annotations.security.signature.Signed;
-import org.jboss.resteasy.annotations.security.signature.Verify;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.security.keys.KeyRepository;
 import org.jboss.resteasy.security.keys.KeyStoreKeyRepository;
 import org.jboss.resteasy.security.signing.ContentSignature;
 import org.jboss.resteasy.security.signing.ContentSignatures;
-import org.jboss.resteasy.security.signing.DigitalSigningHeaderDecorator;
-import org.jboss.resteasy.security.signing.DigitalSigningInterceptor;
-import org.jboss.resteasy.security.signing.DigitalVerificationHeaderDecorator;
-import org.jboss.resteasy.security.signing.DigitalVerificationInterceptor;
 import org.jboss.resteasy.security.signing.UnauthorizedSignatureException;
 import org.jboss.resteasy.security.signing.Verification;
 import org.jboss.resteasy.security.signing.Verifier;
 import org.jboss.resteasy.spi.ReaderException;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import java.io.InputStream;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
-import java.util.HashMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SigningTest extends BaseResourceTest
+public class SigningTest
 {
    public static KeyPair keys;
    public static KeyRepository repository;
@@ -55,113 +40,12 @@ public class SigningTest extends BaseResourceTest
       else System.out.println("PrivateKey was not null!!");
       PublicKey publicKey = repository.getPublicKey("test");
       keys = new KeyPair(publicKey, privateKey);
-
-      dispatcher.getDefaultContextObjects().put(KeyRepository.class, repository);
-      /*
-      deployment.getProviderFactory().registerProvider(DigitalSigningInterceptor.class);
-      deployment.getProviderFactory().registerProvider(DigitalSigningHeaderDecorator.class);
-      deployment.getProviderFactory().registerProvider(DigitalVerificationInterceptor.class);
-      deployment.getProviderFactory().registerProvider(DigitalVerificationHeaderDecorator.class);
-      */
-      addPerRequestResource(SignedResource.class);
-   }
-
-   @Path("/signed")
-   public static class SignedResource
-   {
-      @GET
-      @Signed(useKey = "test")
-      @Produces("text/plain")
-      public String hello()
-      {
-         return "hello world";
-      }
-
-      @GET
-      @Signed(signer = "test")
-      @Produces("text/plain")
-      @Path("with-signer")
-      public String withSigner()
-      {
-         return "hello world";
-      }
-
-      @POST
-      @Consumes("text/plain")
-      @Verify(useKey = "test")
-      public void post(String input)
-      {
-         Assert.assertEquals(input, "hello world");
-      }
-
-      @GET
-      @Signed(signer = "test", timestamped = true)
-      @Produces("text/plain")
-      @Path("stamped")
-      public String getStamp()
-      {
-         return "hello world";
-      }
-
-      @GET
-      @Signed(signer = "test", expires = @After(seconds = 1))
-      @Produces("text/plain")
-      @Path("expires-short")
-      public String getExpiresShort()
-      {
-         return "hello world";
-      }
-
-      @GET
-      @Signed(signer = "test", expires = @After(minutes = 1))
-      @Produces("text/plain")
-      @Path("expires-minute")
-      public String getExpiresMinute()
-      {
-         return "hello world";
-      }
-
-      @GET
-      @Signed(signer = "test", expires = @After(hours = 1))
-      @Produces("text/plain")
-      @Path("expires-hour")
-      public String getExpiresHour()
-      {
-         return "hello world";
-      }
-
-      @GET
-      @Signed(signer = "test", expires = @After(days = 1))
-      @Produces("text/plain")
-      @Path("expires-day")
-      public String getExpiresDay()
-      {
-         return "hello world";
-      }
-
-      @GET
-      @Signed(signer = "test", expires = @After(months = 1))
-      @Produces("text/plain")
-      @Path("expires-month")
-      public String getExpiresMonth()
-      {
-         return "hello world";
-      }
-
-      @GET
-      @Signed(signer = "test", expires = @After(years = 1))
-      @Produces("text/plain")
-      @Path("expires-year")
-      public String getExpiresYear()
-      {
-         return "hello world";
-      }
    }
 
    @Test
    public void testSigningUseKey() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed");
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       String signatureHeader = response.getHeaders().getFirst(ContentSignature.CONTENT_SIGNATURE);
@@ -178,7 +62,7 @@ public class SigningTest extends BaseResourceTest
    @Test
    public void testSigningWithSigner() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/with-signer"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed/with-signer");
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       String signatureHeader = response.getHeaders().getFirst(ContentSignature.CONTENT_SIGNATURE);
@@ -196,7 +80,7 @@ public class SigningTest extends BaseResourceTest
    @Test
    public void testBasicVerification() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed");
       ContentSignatures signatures = new ContentSignatures();
       ContentSignature contentSignature = signatures.addNew();
       contentSignature.setPrivateKey(keys.getPrivate());
@@ -211,23 +95,11 @@ public class SigningTest extends BaseResourceTest
    @Test
    public void testBasicVerificationBadSignature() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed");
       request.header("Content-Signature", "signature=0f");
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(401, response.getStatus());
-   }
-
-   @Test
-   public void testTimestampSignature() throws Exception
-   {
-      ContentSignature signature = new ContentSignature();
-      signature.setTimestamp();
-      signature.sign(new HashMap(), "hello world".getBytes(), null, keys.getPrivate());
-      String sig = signature.toString();
-      System.out.println("Content-Signature: " + sig);
-      signature = new ContentSignature(sig);
-
    }
 
    @Test
@@ -240,7 +112,7 @@ public class SigningTest extends BaseResourceTest
       verification.setStaleSeconds(100);
       verification.setKeyAlias("test");
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/stamped"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed/stamped");
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst("Content-Signature"));
@@ -260,7 +132,7 @@ public class SigningTest extends BaseResourceTest
       verification.setStaleSeconds(1);
       verification.setKeyAlias("test");
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/stamped"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed/stamped");
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst("Content-Signature"));
@@ -287,7 +159,7 @@ public class SigningTest extends BaseResourceTest
       verification.setRepository(repository);
       verification.setKeyAlias("test");
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-hour"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed/expires-hour");
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst("Content-Signature"));
@@ -303,7 +175,7 @@ public class SigningTest extends BaseResourceTest
       verification.setRepository(repository);
       verification.setKeyAlias("test");
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-minute"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed/expires-minute");
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst("Content-Signature"));
@@ -319,7 +191,7 @@ public class SigningTest extends BaseResourceTest
       verification.setRepository(repository);
       verification.setKeyAlias("test");
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-day"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed/expires-day");
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst("Content-Signature"));
@@ -327,37 +199,6 @@ public class SigningTest extends BaseResourceTest
       String output = response.getEntity();
    }
 
-   @Test
-   public void testExpiresMonths() throws Exception
-   {
-      Verifier verifier = new Verifier();
-      Verification verification = verifier.addNew();
-      verification.setRepository(repository);
-      verification.setKeyAlias("test");
-
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-month"));
-      ClientResponse<String> response = request.get(String.class);
-      response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst("Content-Signature"));
-      Assert.assertEquals(200, response.getStatus());
-      String output = response.getEntity();
-   }
-
-   @Test
-   public void testExpiresYears() throws Exception
-   {
-      Verifier verifier = new Verifier();
-      Verification verification = verifier.addNew();
-      verification.setRepository(repository);
-      verification.setKeyAlias("test");
-
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-year"));
-      ClientResponse<String> response = request.get(String.class);
-      response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst("Content-Signature"));
-      Assert.assertEquals(200, response.getStatus());
-      String output = response.getEntity();
-   }
 
    @Test
    public void testExpiresFail() throws Exception
@@ -367,7 +208,7 @@ public class SigningTest extends BaseResourceTest
       verification.setRepository(repository);
       verification.setKeyAlias("test");
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-short"));
+      ClientRequest request = new ClientRequest("http://localhost:9095/signed/expires-short");
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst("Content-Signature"));

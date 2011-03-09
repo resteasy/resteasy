@@ -1,5 +1,13 @@
 package org.jboss.resteasy.test.encoding;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.nio.charset.CharacterCodingException;
+
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
@@ -9,14 +17,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.nio.charset.CharacterCodingException;
 
 public class EncodingTest
 {
@@ -124,6 +124,16 @@ public class EncodingTest
       }
 
    }
+
+   /*
+   @Test
+   public void decodeChineseInPath() throws Exception
+   {
+      String path = Encode.decodePath("/%E5%B9%B4%E5%81%87%E6%9C%9F/%E5%B9%B4%E5%81%87%E6%9C%9F");
+      System.out.println(path);
+      Assert.assertEquals("/年假期/年假期", path);
+   }
+   */
 
    public void viaDirectURI(Character toTest) throws Exception
    {
