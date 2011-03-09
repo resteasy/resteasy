@@ -9,6 +9,8 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
+import org.jboss.resteasy.security.keys.KeyRepository;
+import org.jboss.resteasy.security.keys.KeyStoreKeyRepository;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.PickConstructor;
 
@@ -16,6 +18,8 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,6 +68,9 @@ public class ResteasyDeployment
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
+   protected String keyStoreFileName;
+   protected String keyStoreClassPath;
+   protected String keyStorePassword;
    protected String paramMapping;
    private final static Logger logger = Logger.getLogger(ResteasyDeployment.class);
 
@@ -113,6 +120,31 @@ public class ResteasyDeployment
          dispatcher = dis;
       }
       registry = dispatcher.getRegistry();
+
+      if (keyStoreClassPath != null)
+      {
+         InputStream keyStoreStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(keyStoreClassPath);
+         if (keyStoreStream == null)
+         {
+            throw new RuntimeException("Cannot find KeyStore to load from class path: " + keyStoreClassPath);
+         }
+         KeyStoreKeyRepository keyStore = new KeyStoreKeyRepository(keyStoreStream, keyStorePassword);
+         dispatcher.getDefaultContextObjects().put(KeyRepository.class, keyStore);
+      }
+      else if (keyStoreFileName != null)
+      {
+         KeyStoreKeyRepository keyStore = null;
+         try
+         {
+            keyStore = new KeyStoreKeyRepository(keyStoreFileName, keyStorePassword);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException("Unable to load keystore from file: " + keyStoreFileName, e);
+         }
+         dispatcher.getDefaultContextObjects().put(KeyRepository.class, keyStore);
+
+      }
 
       dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
       dispatcher.getDefaultContextObjects().put(Providers.class, providerFactory);
@@ -465,6 +497,36 @@ public class ResteasyDeployment
          throw new RuntimeException(e);
       }
       providerFactory.registerProvider(provider);
+   }
+
+   public String getKeyStorePassword()
+   {
+      return keyStorePassword;
+   }
+
+   public void setKeyStorePassword(String keyStorePassword)
+   {
+      this.keyStorePassword = keyStorePassword;
+   }
+
+   public String getKeyStoreFileName()
+   {
+      return keyStoreFileName;
+   }
+
+   public void setKeyStoreFileName(String keyStoreFileName)
+   {
+      this.keyStoreFileName = keyStoreFileName;
+   }
+
+   public String getKeyStoreClassPath()
+   {
+      return keyStoreClassPath;
+   }
+
+   public void setKeyStoreClassPath(String keyStoreClassPath)
+   {
+      this.keyStoreClassPath = keyStoreClassPath;
    }
 
    public List<String> getJndiComponentResources()
