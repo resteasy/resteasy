@@ -56,6 +56,9 @@ public class StringTextStar implements MessageBodyReader<String>, MessageBodyWri
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException
    {
-      entityStream.write(o.getBytes());
+      String charset = mediaType.getParameters().get("charset");
+      if (charset == null) entityStream.write(o.getBytes());
+      else entityStream.write(o.getBytes(charset));
+
    }
 }
