@@ -4,6 +4,7 @@ import org.jboss.resteasy.security.keys.KeyRepository;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,62 +39,83 @@ public class Verifier
       return verifications;
    }
 
-   public boolean verify(ContentSignatures signatures, Map headers, byte[] body)
+   public VerificationResults verify(ContentSignatures signatures, Map headers, byte[] body)
    {
+      VerificationResults results = new VerificationResults();
+      results.setVerified(true);
       for (Verification verification : verifications)
       {
-         ContentSignature signature = null;
-         if (verification.getId() != null && verification.getId().trim() != "")
+         VerificationResultSet resultSet = new VerificationResultSet();
+         results.getResults().add(resultSet);
+         resultSet.setVerification(verification);
+
+         String id = verification.getId();
+         String signer = verification.getSigner();
+
+         List<ContentSignature> matched = new ArrayList<ContentSignature>();
+         matched.addAll(signatures.getSignatures());
+         Iterator<ContentSignature> iterator = matched.iterator();
+         while (iterator.hasNext())
          {
-            signature = signatures.getBy(ContentSignature.ID, verification.getId());
-            if (signature == null)
+            ContentSignature sig = iterator.next();
+            if (id != null && !id.equals(sig.getId()))
             {
-               verification.setFailureReason("Could not find signature with id: " + verification.getId());
-               return false;
+               iterator.remove();
+               continue;
+            }
+            if (signer != null && !signer.equals(sig.getSigner()))
+            {
+               iterator.remove();
+               continue;
             }
          }
-         else if (verification.getSigner() != null && verification.getSigner().trim() != "")
+
+         // could not find a signature to match verification
+         if (matched.isEmpty())
          {
-            signature = signatures.getBy(ContentSignature.SIGNER, verification.getSigner());
-            if (signature == null)
-            {
-               verification.setFailureReason("Could not find signature with signer: " + verification.getSigner());
-               return false;
-            }
+            results.setVerified(false);
+            continue;
          }
-         else
+
+         resultSet.setVerified(true);
+         for (ContentSignature signature : matched)
          {
-            if (signatures.getSignatures().size() > 1)
+            VerificationResult result = verifySignature(signatures, headers, body, verification, signature);
+            resultSet.getResults().add(result);
+            if(result.isVerified() == false)
             {
-               verification.setFailureReason("Id and Signer are both null for Verification and there are more than one signatures in header");
-               return false;
+               resultSet.setVerified(false);
+               results.setVerified(false);
             }
-            signature = signatures.getSignatures().get(0);
-         }
-         boolean success = verifySignature(signatures, headers, body, verification, signature);
-         if (success == false)
-         {
-            return false;
          }
 
       }
-      return true;
+      return results;
    }
 
 
-   public boolean verifySignature(ContentSignatures signatures, Map headers, byte[] body, Verification verification, ContentSignature signature)
+   public VerificationResult verifySignature(ContentSignatures signatures, Map headers, byte[] body, Verification verification, ContentSignature signature)
    {
-      verification.getSignatures().add(signature);
+      VerificationResult result = new VerificationResult();
+      result.setSignature(signature);
 
 
       PublicKey key = verification.getKey();
 
       if (key == null)
       {
-         String keyAlias = ContentSignature.DEFAULT_SIGNER;
+         String keyAlias = null;
          if (verification.getKeyAlias() != null) keyAlias = verification.getKeyAlias();
-         else if (verification.getSigner() != null) keyAlias = verification.getSigner();
-         else if (verification.getId() != null) keyAlias = verification.getId();
+         else if (verification.getAttributeAlias() != null)
+         {
+            keyAlias = signature.getAttributes().get(verification.getAttributeAlias());
+         }
+
+         if (keyAlias == null)
+         {
+            result.setFailureReason("Could not find a key alias");
+            return result;
+         }
 
          if (verification.getRepository() != null)
          {
@@ -105,8 +127,8 @@ public class Verifier
          }
          if (key == null)
          {
-            verification.setFailureReason("Could not find PublicKey for keyAlias " + keyAlias);
-            return false;
+            result.setFailureReason("Could not find PublicKey for keyAlias " + keyAlias);
+            return result;
          }
       }
 
@@ -117,20 +139,20 @@ public class Verifier
       }
       catch (Exception e)
       {
-         verification.setFailureException(e);
-         return false;
+         result.setFailureException(e);
+         return result;
       }
       if (verified == false)
       {
-         verification.setFailureReason("Signature verification failed");
-         return false;
+         result.setFailureReason("Signature verification failed");
+         return result;
       }
       if (verification.isIgnoreExpiration() == false)
       {
          if (signature.isExpired())
          {
-            verification.setFailureReason("Signature expired");
-            return false;
+            result.setFailureReason("Signature expired");
+            return result;
          }
       }
       if (verification.isStaleCheck())
@@ -142,12 +164,12 @@ public class Verifier
                  verification.getStaleMonths(),
                  verification.getStaleYears()))
          {
-            verification.setFailureReason("Signature is stale");
-            return false;
+            result.setFailureReason("Signature is stale");
+            return result;
          }
       }
-      verification.setVerified(true);
-      return true;
+      result.setVerified(true);
+      return result;
    }
 
 }

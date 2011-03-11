@@ -25,28 +25,49 @@ public @interface Verify
    String algorithm() default "";
 
    /**
-    * Verify a signature in a Content-Signature header that is signed by this attribute
+    * Verify a signature that has this id attribute set.
     *
     * @return
     */
    String id() default "";
 
    /**
-    * Verify a signature in a Content-Signature header that is signed by this attribute
+    * Verify a signature that has this signer attribute set.
     *
     * @return
     */
    String signer() default "";
 
    /**
-    * Use this key alias to find public key to verify with. The default is to use the signer() attribute
+    * Use this key alias to find public key to verify with.
     *
     * @return
     */
-   String useKey() default "";
+   String keyAlias() default "";
 
+   /**
+    * If keyAlias() is not set, the attributeKeyAlias() will be used to determine the key alias.
+    * So, if this annotation attribute's value is, let's say, "signer", then the key alias will be the value of
+    * the signer attribute embedded in the transmitted Content-Signature header value.
+    *
+    * The default value of this attribute is "signer".
+    *
+    * @return
+    */
+   String attributeKeyAlias() default "signer";
+
+   /**
+    * Expiration check based on expiration attribute will be done unless this flag is set to false.
+    *
+    * @return
+    */
    boolean ignoreExpiration() default false;
 
+   /**
+    * Do a stale check if a timestamp attribute is preset.
+    *
+    * @return
+    */
    After stale() default @After;
 
 }

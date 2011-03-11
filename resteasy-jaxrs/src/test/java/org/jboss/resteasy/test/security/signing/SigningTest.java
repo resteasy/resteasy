@@ -9,27 +9,31 @@ import org.jboss.resteasy.security.keys.KeyRepository;
 import org.jboss.resteasy.security.keys.KeyStoreKeyRepository;
 import org.jboss.resteasy.security.signing.ContentSignature;
 import org.jboss.resteasy.security.signing.ContentSignatures;
-import org.jboss.resteasy.security.signing.DigitalSigningHeaderDecorator;
-import org.jboss.resteasy.security.signing.DigitalSigningInterceptor;
-import org.jboss.resteasy.security.signing.DigitalVerificationHeaderDecorator;
-import org.jboss.resteasy.security.signing.DigitalVerificationInterceptor;
 import org.jboss.resteasy.security.signing.UnauthorizedSignatureException;
 import org.jboss.resteasy.security.signing.Verification;
 import org.jboss.resteasy.security.signing.Verifier;
+import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.UnauthorizedException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
+import org.jboss.resteasy.util.GenericType;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -44,6 +48,7 @@ public class SigningTest extends BaseResourceTest
    public static KeyPair keys;
    public static KeyRepository repository;
 
+
    @BeforeClass
    public static void setup() throws Exception
    {
@@ -55,6 +60,7 @@ public class SigningTest extends BaseResourceTest
       else System.out.println("PrivateKey was not null!!");
       PublicKey publicKey = repository.getPublicKey("test");
       keys = new KeyPair(publicKey, privateKey);
+
 
       dispatcher.getDefaultContextObjects().put(KeyRepository.class, repository);
       /*
@@ -70,7 +76,19 @@ public class SigningTest extends BaseResourceTest
    public static class SignedResource
    {
       @GET
-      @Signed(useKey = "test")
+      @Produces("text/plain")
+      @Path("manual")
+      public Response getManual()
+      {
+         ContentSignature signature = new ContentSignature();
+         signature.setKeyAlias("test");
+         Response.ResponseBuilder builder = Response.ok("hello");
+         builder.header("Content-Signature", signature);
+         return builder.build();
+      }
+
+      @GET
+      @Signed(keyAlias = "test")
       @Produces("text/plain")
       public String hello()
       {
@@ -88,10 +106,34 @@ public class SigningTest extends BaseResourceTest
 
       @POST
       @Consumes("text/plain")
-      @Verify(useKey = "test")
-      public void post(String input)
+      @Verify(keyAlias = "test")
+      public void post(@HeaderParam("Content-Signature") ContentSignatures signatures, String input)
       {
+         Assert.assertNotNull(signatures);
+         Assert.assertEquals(1, signatures.getSignatures().size());
          Assert.assertEquals(input, "hello world");
+      }
+
+      @POST
+      @Consumes("text/plain")
+      @Path("by-signer")
+      @Verify
+      public void postBySigner(@HeaderParam("Content-Signature") ContentSignatures signatures, String input)
+      {
+         Assert.assertNotNull(signatures);
+         Assert.assertEquals(1, signatures.getSignatures().size());
+         Assert.assertEquals(input, "hello world");
+      }
+
+      @POST
+      @Consumes("text/plain")
+      @Path("verify-manual")
+      public void verifyManual(@HeaderParam("Content-Signature") ContentSignature signature, @Context HttpHeaders headers, MarshalledEntity<String> input) throws Exception
+      {
+         Assert.assertNotNull(signature);
+         Assert.assertEquals(input.getEntity(), "hello world");
+
+         Assert.assertTrue(signature.verify(headers.getRequestHeaders(), input.getMarshalledBytes(), keys.getPublic()));
       }
 
       @GET
@@ -176,6 +218,23 @@ public class SigningTest extends BaseResourceTest
    }
 
    @Test
+   public void testSigningManual() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientResponse<MarshalledEntity<String>> response = request.get(new GenericType<MarshalledEntity<String>>() {});
+      Assert.assertEquals(200, response.getStatus());
+      MarshalledEntity<String> marshalledEntity = response.getEntity();
+      Assert.assertEquals("hello world", marshalledEntity.getEntity());
+      String signatureHeader = response.getHeaders().getFirst(ContentSignature.CONTENT_SIGNATURE);
+      System.out.println("Content-Signature:  " + signatureHeader);
+      Assert.assertNotNull(signatureHeader);
+
+      ContentSignature contentSignature = new ContentSignature(signatureHeader);
+      boolean verified = contentSignature.verify(response.getHeaders(), marshalledEntity.getMarshalledBytes(), keys.getPublic());
+      Assert.assertTrue(verified);
+   }
+
+   @Test
    public void testSigningWithSigner() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/with-signer"));
@@ -200,6 +259,54 @@ public class SigningTest extends BaseResourceTest
       ContentSignatures signatures = new ContentSignatures();
       ContentSignature contentSignature = signatures.addNew();
       contentSignature.setPrivateKey(keys.getPrivate());
+      request.header("Content-Signature", signatures);
+      request.body("text/plain", "hello world");
+      ClientResponse response = request.post();
+      Assert.assertEquals(204, response.getStatus());
+
+
+   }
+
+   @Test
+   public void testBySignerVerification() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/by-signer"));
+      ContentSignatures signatures = new ContentSignatures();
+      ContentSignature contentSignature = signatures.addNew();
+      contentSignature.setSigner("test", true, true);
+      contentSignature.setPrivateKey(keys.getPrivate());
+      request.header("Content-Signature", signatures);
+      request.body("text/plain", "hello world");
+      ClientResponse response = request.post();
+      Assert.assertEquals(204, response.getStatus());
+
+
+   }
+
+   @Test
+   public void testManualVerification() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/verify-manual"));
+      ContentSignatures signatures = new ContentSignatures();
+      ContentSignature contentSignature = signatures.addNew();
+      contentSignature.setAttribute("code", "hello", true, true);
+      contentSignature.setPrivateKey(keys.getPrivate());
+      request.header("Content-Signature", signatures);
+      request.body("text/plain", "hello world");
+      ClientResponse response = request.post();
+      Assert.assertEquals(204, response.getStatus());
+
+
+   }
+   @Test
+   public void testBasicVerificationRepository() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ContentSignatures signatures = new ContentSignatures();
+      ContentSignature contentSignature = signatures.addNew();
+      contentSignature.setKeyAlias("test");
+      request.getAttributes().put(KeyRepository.class.getName(), repository);
+
       request.header("Content-Signature", signatures);
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
@@ -273,7 +380,8 @@ public class SigningTest extends BaseResourceTest
       catch (ReaderException e)
       {
          Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         Assert.assertEquals("Signature is stale", verification.getFailureReason());
+         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException)e.getCause();
+         Assert.assertEquals("Signature is stale", signatureException.getResults().getFirstResult(verification).getFailureReason());
       }
 
 
@@ -380,9 +488,60 @@ public class SigningTest extends BaseResourceTest
       catch (ReaderException e)
       {
          Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         Assert.assertEquals("Signature expired", verification.getFailureReason());
+         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException)e.getCause();
+         Assert.assertEquals("Signature expired", signatureException.getResults().getFirstResult(verification).getFailureReason());
       }
 
 
    }
+
+   @Test
+   public void testManualFail() throws Exception
+   {
+      KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+      kpg.initialize(1024);
+      KeyPair keyPair = kpg.genKeyPair();
+
+      Verifier verifier = new Verifier();
+      Verification verification = verifier.addNew();
+      verification.setKey(keyPair.getPublic());
+
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/manual"));
+      ClientResponse<String> response = request.get(String.class);
+      response.getAttributes().put(Verifier.class.getName(), verifier);
+      System.out.println(response.getHeaders().getFirst("Content-Signature"));
+      Assert.assertNotNull(response.getHeaders().getFirst("Content-Signature"));
+      Assert.assertEquals(200, response.getStatus());
+      try
+      {
+         String output = response.getEntity();
+      }
+      catch (ReaderException e)
+      {
+         Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
+         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException)e.getCause();
+         Assert.assertEquals("Signature verification failed", signatureException.getResults().getFirstResult(verification).getFailureReason());
+      }
+
+
+   }
+
+   @Test
+   public void testManual() throws Exception
+   {
+      Verifier verifier = new Verifier();
+      Verification verification = verifier.addNew();
+      verification.setRepository(repository);
+      verification.setKeyAlias("test");
+
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/manual"));
+      ClientResponse<String> response = request.get(String.class);
+      response.getAttributes().put(Verifier.class.getName(), verifier);
+      System.out.println(response.getHeaders().getFirst("Content-Signature"));
+      Assert.assertNotNull(response.getHeaders().getFirst("Content-Signature"));
+      Assert.assertEquals(200, response.getStatus());
+      String output = response.getEntity();
+      Assert.assertEquals("hello", output);
+   }
+
 }

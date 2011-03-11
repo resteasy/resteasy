@@ -68,7 +68,19 @@ public class ContentSignatures
       return signatures;
    }
 
-   public ContentSignature getBy(String attribute, String value)
+   public List<ContentSignature> getBy(String attribute, String value)
+   {
+      ArrayList<ContentSignature> result = new ArrayList<ContentSignature>();
+      for (ContentSignature signature : signatures)
+      {
+         String val = signature.getAttributes().get(attribute);
+         if (val == null) continue;
+         if (val.equals(value)) result.add(signature);
+      }
+      return result;
+   }
+
+   public ContentSignature getFirstBy(String attribute, String value)
    {
       for (ContentSignature signature : signatures)
       {

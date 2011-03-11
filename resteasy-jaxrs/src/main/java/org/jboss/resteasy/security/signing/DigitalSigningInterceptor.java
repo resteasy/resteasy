@@ -42,30 +42,27 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
 
 
       List<Object> signatures = headers.get("Content-Signature");
-      if (signatures == null || signatures.size() == 0)
+      if (signatures == null || signatures.isEmpty())
       {
          context.proceed();
          return;
       }
 
-      ContentSignatures contentSignatures = null;
+      ContentSignatures contentSignatures = new ContentSignatures();
       for (Object obj : signatures)
       {
          if (obj instanceof ContentSignature)
          {
-            throw new IllegalArgumentException("It is illegal to use ContentSignature as a header value");
+            contentSignatures.getSignatures().add((ContentSignature)obj);
          }
          else if (obj instanceof ContentSignatures)
          {
-            if (contentSignatures != null)
-            {
-               throw new IllegalArgumentException("It is illegal to have more than one ContentSignatures object as a header value");
-            }
-            contentSignatures = (ContentSignatures) obj;
+            ContentSignatures tmp = (ContentSignatures)obj;
+            contentSignatures.getSignatures().addAll(tmp.getSignatures());
          }
       }
 
-      if (contentSignatures == null)
+      if (contentSignatures == null || contentSignatures.getSignatures().isEmpty())
       {
          context.proceed();
          return;

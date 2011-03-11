@@ -63,10 +63,10 @@ public class DigitalVerificationInterceptor implements MessageBodyReaderIntercep
             verifier.setRepository(repository);
          }
 
-         boolean verify = verifier.verify(contentSignatures, headers, body);
-         if (!verify)
+         VerificationResults results = verifier.verify(contentSignatures, headers, body);
+         if (results.isVerified() == false)
          {
-            throw new UnauthorizedSignatureException(verifier);
+            throw new UnauthorizedSignatureException(results);
          }
          return rtn;
       }

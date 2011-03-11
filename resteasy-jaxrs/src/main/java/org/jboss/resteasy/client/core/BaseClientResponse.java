@@ -6,6 +6,7 @@ import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
@@ -13,6 +14,8 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -21,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -361,9 +365,20 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected <T2> Object readFrom(Class<T2> type, Type genericType,
                                   MediaType media, Annotation[] annotations)
    {
-      Type genericType1 = genericType == null ? type : genericType;
-      MessageBodyReader reader1 = providerFactory.getMessageBodyReader(type,
-              genericType1, this.annotations, media);
+      Type useGeneric = genericType == null ? type : genericType;
+      Class<?> useType = type;
+      boolean isMarshalledEntity = false;
+      if (type.equals(MarshalledEntity.class))
+      {
+         isMarshalledEntity = true;
+         ParameterizedType param = (ParameterizedType) useGeneric;
+         useGeneric = param.getActualTypeArguments()[0];
+         useType = Types.getRawType(useGeneric);
+      }
+
+
+      MessageBodyReader reader1 = providerFactory.getMessageBodyReader(useType,
+              useGeneric, this.annotations, media);
       if (reader1 == null)
       {
          throw createResponseFailure(format(
@@ -373,10 +388,40 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
       try
       {
-         return (T2) new ClientMessageBodyReaderContext(messageBodyReaderInterceptors, reader1, type,
-                 genericType1, this.annotations, media, getHeaders(), streamFactory
-                 .getInputStream(), attributes)
+         InputStream is = streamFactory.getInputStream();
+         if (isMarshalledEntity)
+         {
+            is = new InputStreamToByteArray(is);
+
+         }
+
+         final Object obj = new ClientMessageBodyReaderContext(messageBodyReaderInterceptors, reader1, useType,
+                 useGeneric, this.annotations, media, getHeaders(), is, attributes)
                  .proceed();
+         if (isMarshalledEntity)
+         {
+            InputStreamToByteArray isba = (InputStreamToByteArray)is;
+            final byte[] bytes = isba.toByteArray();
+            return new MarshalledEntity()
+            {
+               @Override
+               public byte[] getMarshalledBytes()
+               {
+                  return bytes;
+               }
+
+               @Override
+               public Object getEntity()
+               {
+                  return obj;
+               }
+            };
+         }
+         else
+         {
+            return (T2)obj;
+         }
+
       }
       catch (Exception e)
       {
