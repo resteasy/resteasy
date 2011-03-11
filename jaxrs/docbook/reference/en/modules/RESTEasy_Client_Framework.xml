@@ -55,7 +55,7 @@ public interface SimpleClient
     <para>
 
         <programlisting>
-            import org.jboss.resteasy.plugins.client.httpclient.ProxyFactory;
+            import org.jboss.resteasy.client.ProxyFactory;
             ...
             // this initialization only needs to be done once per VM
             RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
