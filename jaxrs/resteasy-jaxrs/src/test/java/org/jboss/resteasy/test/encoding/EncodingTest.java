@@ -1,13 +1,5 @@
 package org.jboss.resteasy.test.encoding;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.nio.charset.CharacterCodingException;
-
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
@@ -17,6 +9,14 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.nio.charset.CharacterCodingException;
 
 public class EncodingTest
 {
@@ -125,15 +125,21 @@ public class EncodingTest
 
    }
 
-   /*
    @Test
    public void decodeChineseInPath() throws Exception
    {
       String path = Encode.decodePath("/%E5%B9%B4%E5%81%87%E6%9C%9F/%E5%B9%B4%E5%81%87%E6%9C%9F");
       System.out.println(path);
-      Assert.assertEquals("/年假期/年假期", path);
+      Assert.assertEquals("/\u5E74\u5047\u671F/\u5E74\u5047\u671F", path);
    }
-   */
+
+   @Test
+   public void decodeWesternEuropeanCharsInPath() throws Exception
+   {
+      Assert.assertEquals("Gr\u00FC\u00DF Gott", Encode.decodePath("Gr%C3%BC%C3%9F%20Gott"));
+      Assert.assertEquals("D\u00E6lenenga Gr\u00FCnerl\u00F8kka", Encode.decodePath("D%C3%A6lenenga%20Gr%C3%BCnerl%C3%B8kka"));
+      Assert.assertEquals("\u00C4lv\u00E5s V\u00E4stra G\u00F6taland", Encode.decodePath("%C3%84lv%C3%A5s%20V%C3%A4stra%20G%C3%B6taland"));
+   }
 
    public void viaDirectURI(Character toTest) throws Exception
    {
