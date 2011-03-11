@@ -63,7 +63,9 @@ public class DigitalVerificationHeaderDecorator implements MessageBodyReaderInte
       if (v.algorithm() != null && !v.algorithm().trim().equals("")) verification.setAlgorithm(v.algorithm());
       if (v.signer() != null && !v.signer().trim().equals("")) verification.setSigner(v.signer());
       if (v.id() != null && !v.id().trim().equals("")) verification.setId(v.id());
-      if (v.useKey() != null && !v.useKey().trim().equals("")) verification.setKeyAlias(v.useKey());
+      if (v.keyAlias() != null && !v.keyAlias().trim().equals("")) verification.setKeyAlias(v.keyAlias());
+      if (verification.getKeyAlias() == null) verification.setAttributeAlias(v.attributeKeyAlias());
+
       verification.setIgnoreExpiration(v.ignoreExpiration());
       After staleAfter = v.stale();
       if (staleAfter.seconds() > 0

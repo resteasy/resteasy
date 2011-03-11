@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
 public class SignedResource
 {
    @GET
-   @Signed(useKey = "test")
+   @Signed(keyAlias = "test")
    @Produces("text/plain")
    public String hello()
    {
@@ -37,7 +37,7 @@ public class SignedResource
 
    @POST
    @Consumes("text/plain")
-   @Verify(useKey = "test")
+   @Verify(keyAlias = "test")
    public void post(String input)
    {
       Assert.assertEquals(input, "hello world");

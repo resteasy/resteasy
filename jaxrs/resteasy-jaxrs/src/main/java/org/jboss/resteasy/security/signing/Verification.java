@@ -20,6 +20,7 @@ public class Verification
    protected Map<String, String> attributes = new HashMap<String, String>();
    protected String signer;
    protected String keyAlias;
+   protected String attributeAlias;
    protected String id;
    protected boolean staleCheck;
    protected boolean ignoreExpiration;
@@ -29,10 +30,6 @@ public class Verification
    protected int staleDays;
    protected int staleMonths;
    protected int staleYears;
-   protected boolean verified;
-   protected String failureReason;
-   protected Exception failureException;
-   protected List<ContentSignature> signatures = new ArrayList<ContentSignature>();
 
 
    public Verification()
@@ -49,6 +46,8 @@ public class Verification
       this.repository = repository;
    }
 
+
+
    public String getKeyAlias()
    {
       return keyAlias;
@@ -59,39 +58,14 @@ public class Verification
       this.keyAlias = keyAlias;
    }
 
-   public List<ContentSignature> getSignatures()
+   public String getAttributeAlias()
    {
-      return signatures;
+      return attributeAlias;
    }
 
-   public boolean isVerified()
+   public void setAttributeAlias(String attributeAlias)
    {
-      return verified;
-   }
-
-   public void setVerified(boolean verified)
-   {
-      this.verified = verified;
-   }
-
-   public String getFailureReason()
-   {
-      return failureReason;
-   }
-
-   public void setFailureReason(String failureReason)
-   {
-      this.failureReason = failureReason;
-   }
-
-   public Exception getFailureException()
-   {
-      return failureException;
-   }
-
-   public void setFailureException(Exception failureException)
-   {
-      this.failureException = failureException;
+      this.attributeAlias = attributeAlias;
    }
 
    public String getId()

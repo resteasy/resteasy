@@ -145,7 +145,6 @@ public class SigningTest
       catch (ReaderException e)
       {
          Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         Assert.assertEquals("Signature is stale", verification.getFailureReason());
       }
 
 
@@ -221,7 +220,6 @@ public class SigningTest
       catch (ReaderException e)
       {
          Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         Assert.assertEquals("Signature expired", verification.getFailureReason());
       }
 
 

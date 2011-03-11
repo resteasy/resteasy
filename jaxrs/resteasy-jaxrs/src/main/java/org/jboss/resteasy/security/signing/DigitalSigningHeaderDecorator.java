@@ -57,14 +57,22 @@ public class DigitalSigningHeaderDecorator implements MessageBodyWriterIntercept
          context.getHeaders().putSingle("Content-Signature", signatures);
       }
       ContentSignature header = signatures.addNew();
-      if (signed.useKey() != null && !signed.useKey().equals(""))
+      if (signed.keyAlias() != null && !signed.keyAlias().equals(""))
       {
-         header.setKeyAlias(signed.useKey());
+         header.setKeyAlias(signed.keyAlias());
       }
-      if (signed.signer() != null && !signed.signer().equals("")) header.setSigner(signed.signer(), true, true);
+      if (signed.signer() != null && !signed.signer().equals(""))
+      {
+         header.setSigner(signed.signer(), true, true);
+      }
       if (signed.algorithm() != null && !signed.algorithm().equals(""))
+      {
          header.setAlgorithm(signed.algorithm(), true, true);
-      if (signed.id() != null && !signed.id().equals("")) header.setAlgorithm(signed.id(), true, true);
+      }
+      if (signed.id() != null && !signed.id().equals(""))
+      {
+         header.setId(signed.id(), true);
+      }
       if (signed.timestamped())
       {
          header.setTimestamp();

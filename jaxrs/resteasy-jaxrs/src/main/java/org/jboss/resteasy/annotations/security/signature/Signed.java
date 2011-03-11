@@ -46,11 +46,11 @@ public @interface Signed
    String signer() default "";
 
    /**
-    * Key alias to use to sign the message.
+    * Key alias to use to lookup a key in the KeyRepository.  This does not add any metadata to the Content-Signature header.
     *
     * @return
     */
-   String useKey() default "";
+   String keyAlias() default "";
 
    /**
     * Will calculate and add a timestamp

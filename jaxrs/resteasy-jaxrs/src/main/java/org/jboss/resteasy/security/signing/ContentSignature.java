@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * One single signature within a Content-Signature header
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -95,6 +97,11 @@ public class ContentSignature
       if (sig != null) signature = Hex.decodeHex(sig);
    }
 
+   /**
+    * Generates the Content-Signature value.
+    *
+    * @return
+    */
    public String toString()
    {
       StringBuffer buf = new StringBuffer();
@@ -158,6 +165,11 @@ public class ContentSignature
       return buf.toString();
    }
 
+   /**
+    * alias to use when looking for a key within a KeyRepository
+    *
+    * @return
+    */
    public String getKeyAlias()
    {
       return keyAlias;
@@ -169,14 +181,15 @@ public class ContentSignature
    }
 
    /**
-    * Add a signature reference to the signature.
+    * Add a signature reference to the signature.  This corresponds to the signature-ref attribute defined by the
+    * Content-Signature protocol.
     *
     * @param signatures
     * @param id         must exist in signatures paramemter
     */
    public void addSignatureRef(ContentSignatures signatures, String id)
    {
-      ContentSignature sig = signatures.getBy(ID, id);
+      ContentSignature sig = signatures.getFirstBy(ID, id);
       if (sig == null)
       {
          throw new RuntimeException("ContentSignatures does not contain id, " + id);
@@ -194,6 +207,13 @@ public class ContentSignature
       headers.add(headerName);
    }
 
+   /**
+    *
+    * @param name
+    * @param value
+    * @param includeSignature true if you want attribute to be included within the signature calculation
+    * @param display true if you want attribute shown in the Content-Signature
+    */
    public void setAttribute(String name, String value, boolean includeSignature, boolean display)
    {
       attributes.put(name, value);
@@ -201,6 +221,13 @@ public class ContentSignature
       if (display) displayedAttributes.add(name);
    }
 
+   /**
+    * Default value is SHA256withRSA, see Javadoc on java.security.Signature for other supported values.
+    *
+    * @param value
+    * @param includeSignature true if you want attribute to be included within the signature calculation
+    * @param display true if you want attribute shown in the Content-Signature
+    */
    public void setAlgorithm(String value, boolean includeSignature, boolean display)
    {
       setAttribute(ALGORITHM, value, includeSignature, display);
@@ -217,11 +244,22 @@ public class ContentSignature
    }
 
 
+   /**
+    * @param value
+    * @param includeSignature true if you want attribute to be included within the signature calculation
+    * @param display true if you want attribute shown in the Content-Signature
+    */
    public void setSigner(String signer, boolean includeSignature, boolean display)
    {
       setAttribute(SIGNER, signer, includeSignature, display);
    }
 
+   /**
+    * Default value is SHA256withRSA, see Javadoc on java.security.Signature for other supported values.
+    *
+    * @param value
+    * @param includeSignature true if you want attribute to be included within the signature calculation
+    */
    public void setId(String id, boolean includeSignature)
    {
       setAttribute(ID, id, includeSignature, true);
@@ -232,6 +270,17 @@ public class ContentSignature
       setAttribute(EXPIRATION, DateUtil.formatDate(expire), true, true);
    }
 
+   /**
+    * Calculates an expiration date based on the current time plus the additional time units specified in the
+    * method parameters.
+    *
+    * @param seconds
+    * @param minutes
+    * @param hours
+    * @param days
+    * @param months
+    * @param years
+    */
    public void setExpiration(int seconds, int minutes, int hours, int days, int months, int years)
    {
       Calendar now = Calendar.getInstance();
@@ -280,6 +329,11 @@ public class ContentSignature
       return (new Date()).getTime() > expires.getTime().getTime();
    }
 
+   /**
+    * id attribute of the Content-Signature
+    *
+    * @return
+    */
    public String getId()
    {
       return attributes.get(ID);
@@ -388,7 +442,7 @@ public class ContentSignature
          {
             throw new SignatureException("ContentSignatures was null so could not look up signature-ref: " + id);
          }
-         ContentSignature ref = parent.getBy(ID, id);
+         ContentSignature ref = parent.getFirstBy(ID, id);
          if (ref == null)
          {
             throw new SignatureException("Could not find ContentSignature with id " + id + " to add as signature-ref");
@@ -427,6 +481,12 @@ public class ContentSignature
       {
          signature.update(h.toString().getBytes());
       }
+   }
+
+
+   public boolean verify(Map headers, byte[] body, PublicKey key) throws SignatureException
+   {
+      return verify(headers, body, null, key, null, null);
    }
 
    /**
@@ -483,7 +543,7 @@ public class ContentSignature
          {
             throw new SignatureException("ContentSignatures was null so could not look up signature-ref: " + id);
          }
-         ContentSignature ref = parent.getBy(ID, id);
+         ContentSignature ref = parent.getFirstBy(ID, id);
          if (ref == null)
          {
             throw new SignatureException("Could not find ContentSignature with id " + id + " to add as signature-ref");

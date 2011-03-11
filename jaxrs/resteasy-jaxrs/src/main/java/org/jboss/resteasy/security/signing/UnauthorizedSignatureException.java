@@ -7,44 +7,38 @@ import org.jboss.resteasy.spi.LoggableFailure;
  */
 public class UnauthorizedSignatureException extends LoggableFailure
 {
-   protected Verifier verifier;
+   protected VerificationResults results;
 
-   public UnauthorizedSignatureException(Verifier verifier)
+   public UnauthorizedSignatureException(VerificationResults results)
    {
-      super(failedVerifierMessage(verifier), 401);
-      this.verifier = verifier;
+      super(failedVerifierMessage(results), 401);
+      this.results = results;
    }
 
-   public static String failedVerifierMessage(Verifier verifier)
+   public static String failedVerifierMessage(VerificationResults results)
    {
       StringBuffer msg = new StringBuffer("Failed to verify signatures:");
-      for (Verification verification : verifier.getVerifications())
+      for (VerificationResultSet set : results.getResults())
       {
-         if (verification.isVerified() == false)
+         for (VerificationResult result : set.getResults())
          {
-            fillMessage(msg, verification);
+            msg.append("\r\n");
+            if (result.getFailureReason() != null)
+            {
+               msg.append(result.getFailureReason());
+            }
+            if (result.getFailureException() != null)
+            {
+               msg.append(" ");
+               msg.append(result.getFailureException().getMessage());
+            }
          }
-
       }
       return msg.toString();
    }
 
-   private static void fillMessage(StringBuffer msg, Verification verification)
+   public VerificationResults getResults()
    {
-      if (verification.getFailureReason() != null)
-      {
-         msg.append(" ");
-         msg.append(verification.getFailureReason());
-      }
-      if (verification.getFailureException() != null)
-      {
-         msg.append(" ");
-         msg.append(verification.getFailureException().getMessage());
-      }
-   }
-
-   public Verifier getVerifier()
-   {
-      return verifier;
+      return results;
    }
 }

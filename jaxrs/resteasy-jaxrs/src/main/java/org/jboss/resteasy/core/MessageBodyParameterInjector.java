@@ -6,16 +6,20 @@ import org.jboss.resteasy.core.interception.ServerMessageBodyReaderContext;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ThreadLocalStack;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
@@ -62,18 +66,34 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
    private Class declaringClass;
    private AccessibleObject target;
    private MessageBodyReaderInterceptor[] interceptors;
+   private boolean isMarshalledEntity;
 
    public MessageBodyParameterInjector(Class declaringClass, AccessibleObject target, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       this.factory = factory;
-      this.declaringClass = declaringClass;
       this.target = target;
-      this.type = type;
-      this.genericType = genericType;
+      this.declaringClass = declaringClass;
+
+      if (type.equals(MarshalledEntity.class))
+      {
+         if (genericType == null || !(genericType instanceof ParameterizedType))
+         {
+            throw new RuntimeException("MarshalledEntity must have type information.");
+         }
+         isMarshalledEntity = true;
+         ParameterizedType param = (ParameterizedType) genericType;
+         this.genericType = param.getActualTypeArguments()[0];
+         this.type = Types.getRawType(this.genericType);
+      }
+      else
+      {
+         this.type = type;
+         this.genericType = genericType;
+      }
       this.annotations = annotations;
       this.interceptors = factory
               .getServerMessageBodyReaderInterceptorRegistry().bind(
-                      declaringClass, target);
+                      this.declaringClass, this.target);
 
       // this is for when an interceptor is added after the creation of the injector
       factory.getServerMessageBodyReaderInterceptorRegistry().getListeners().add(this);
@@ -135,10 +155,39 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
 
          try
          {
+            InputStream is = request.getInputStream();
+            if (isMarshalledEntity)
+            {
+               is = new InputStreamToByteArray(is);
+
+            }
             ServerMessageBodyReaderContext messageBodyReaderContext = new ServerMessageBodyReaderContext(interceptors, reader, type,
                     genericType, annotations, mediaType, request
-                    .getHttpHeaders().getRequestHeaders(), request.getInputStream(), request);
-            return messageBodyReaderContext.proceed();
+                    .getHttpHeaders().getRequestHeaders(), is, request);
+            final Object obj = messageBodyReaderContext.proceed();
+            if (isMarshalledEntity)
+            {
+               InputStreamToByteArray isba = (InputStreamToByteArray)is;
+               final byte[] bytes = isba.toByteArray();
+               return new MarshalledEntity()
+               {
+                  @Override
+                  public byte[] getMarshalledBytes()
+                  {
+                     return bytes;
+                  }
+
+                  @Override
+                  public Object getEntity()
+                  {
+                     return obj;
+                  }
+               };
+            }
+            else
+            {
+               return obj;
+            }
          }
          catch (Exception e)
          {
