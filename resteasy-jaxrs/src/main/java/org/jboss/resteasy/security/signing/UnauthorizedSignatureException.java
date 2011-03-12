@@ -9,6 +9,11 @@ public class UnauthorizedSignatureException extends LoggableFailure
 {
    protected VerificationResults results;
 
+   public UnauthorizedSignatureException(String reason)
+   {
+      super(reason, 401);
+   }
+
    public UnauthorizedSignatureException(VerificationResults results)
    {
       super(failedVerifierMessage(results), 401);

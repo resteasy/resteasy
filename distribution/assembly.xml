@@ -28,6 +28,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/content-signature</directory>
+            <outputDirectory>examples/content-signature</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../examples/ejb-integration</directory>
             <outputDirectory>examples/ejb-integration</outputDirectory>
             <excludes>
