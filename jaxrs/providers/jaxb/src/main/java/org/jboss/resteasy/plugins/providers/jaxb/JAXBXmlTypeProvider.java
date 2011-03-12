@@ -96,7 +96,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       }
       catch (JAXBException e)
       {
-         throw new JAXBMarshalException(e);
+         throw new JAXBUnmarshalException(e);
       }
    }
 

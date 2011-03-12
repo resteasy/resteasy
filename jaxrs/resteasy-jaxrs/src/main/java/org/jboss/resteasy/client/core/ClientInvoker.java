@@ -2,6 +2,8 @@ package org.jboss.resteasy.client.core;
 
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
@@ -40,6 +42,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
    protected EntityExtractor extractor;
    protected EntityExtractorFactory extractorFactory;
    protected URI baseUri;
+   protected Map<String, Object> attributes = new HashMap<String, Object>();
 
 
    public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor, EntityExtractorFactory extractorFactory)
@@ -58,6 +61,11 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       if (method.isAnnotationPresent(Path.class)) uri.path(method);
       this.extractorFactory = extractorFactory;
       this.extractor = extractorFactory.createExtractor(method); 
+   }
+
+   public Map<String, Object> getAttributes()
+   {
+      return attributes;
    }
 
    public MediaType getAccepts()
@@ -115,6 +123,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
    protected ClientRequest createRequest(Object[] args)
    {
       ClientRequest request = new ClientRequest(uri, executor, providerFactory);
+      request.getAttributes().putAll(attributes);
       if (accepts != null) request.header(HttpHeaders.ACCEPT, accepts.toString());
       this.copyClientInterceptorsTo(request);
 

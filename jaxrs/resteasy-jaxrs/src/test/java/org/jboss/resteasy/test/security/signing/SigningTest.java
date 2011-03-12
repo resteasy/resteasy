@@ -326,6 +326,15 @@ public class SigningTest extends BaseResourceTest
    }
 
    @Test
+   public void testBasicVerificationNoSignature() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      request.body("text/plain", "hello world");
+      ClientResponse response = request.post();
+      Assert.assertEquals(401, response.getStatus());
+   }
+
+   @Test
    public void testTimestampSignature() throws Exception
    {
       ContentSignature signature = new ContentSignature();

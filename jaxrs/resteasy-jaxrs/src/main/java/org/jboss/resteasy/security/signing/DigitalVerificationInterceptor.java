@@ -40,9 +40,20 @@ public class DigitalVerificationInterceptor implements MessageBodyReaderIntercep
       MultivaluedMap<String, String> headers = context.getHeaders();
       ContentSignatures contentSignatures = new ContentSignatures();
       List<String> strings = headers.get(ContentSignature.CONTENT_SIGNATURE);
+      if (strings == null)
+      {
+         throw new UnauthorizedSignatureException("There was no Content-Signature header");
+      }
       for (String headerVal : strings)
       {
-         contentSignatures.addSignature(headerVal);
+         try
+         {
+            contentSignatures.addSignature(headerVal);
+         }
+         catch (Exception e)
+         {
+            throw new UnauthorizedSignatureException("Malformed Content-Signature header");
+         }
       }
 
       InputStream old = context.getInputStream();

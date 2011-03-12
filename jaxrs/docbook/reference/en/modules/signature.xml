@@ -1,11 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<chapter version="5.0" xmlns="http://docbook.org/ns/docbook"
-         xmlns:xlink="http://www.w3.org/1999/xlink"
-         xmlns:xi="http://www.w3.org/2001/XInclude"
-         xmlns:svg="http://www.w3.org/2000/svg"
-         xmlns:m="http://www.w3.org/1998/Math/MathML"
-         xmlns:html="http://www.w3.org/1999/xhtml"
-         xmlns:db="http://docbook.org/ns/docbook">
+<chapter id="signature">
   <title>Digital Signature Framework</title>
 
   <para>Digital signatures allow you to protect the integrity of a message.
@@ -33,10 +26,11 @@
                    expiration="Sunday, 06-Nov-11 08:49:37 GMT";
                    signature=0f341265ffa32211333f6ab2d1
 
-</programlisting>A complete description of the protocol is available on Bill
+</programlisting>A <ulink url="http://bill.burkecentral.com/2011/02/10/proposed-http-digital-signature-protocol-and-api/">complete description of the protocol</ulink> is available on Bill
   Burke's Blog. We are also submitting this protocol as an Internet-Draft at
-  IETF to hopefully get it standardized in some way or form. There's also a
-  blog about various uses you might find for the protocol.</para>
+  IETF to hopefully get it standardized in some way or form. There's also <ulink url="http://bill.burkecentral.com/2011/02/21/multiple-uses-for-content-signature/">another
+  blog about various uses</ulink> you might find for the protocol. The resteasy
+  distribution also has an example you can check out.</para>
 
   <section>
     <title>Signing API</title>
@@ -101,7 +95,7 @@ ClientResponse response = request.put();
       manage keys for you through a org.jboss.resteasy.security.KeyRepository.
       Currently, only Java KeyStores are supported, but you can implement and
       plug in your own implementation of this interface if you need a
-      different mechanism to manage keys. </para>
+      different mechanism to manage keys.</para>
 
       <para>If you're going to use the built in Java KeyStore support, use
       Java keytool to generate a private and public key, for example:</para>
@@ -193,7 +187,7 @@ signature.setSigner("myKey", true, true);
 ClientRequest request = new ClientRequest("http://...");
 request.getAttributes().put(KeyRepository.class.getName(), repository);
 request.header("Content-Signature", signatures);
-</programlisting> </para>
+</programlisting></para>
     </section>
 
     <section>
@@ -224,7 +218,8 @@ request.header("Content-Signature", signatures);
                    expiration="Thur, 10 Mar 2011 23:04:25 GMT";
                    values=id:signer:timestamp:expiration;
                    signature=0FAB0CEF0050
-</programlisting></para>
+</programlisting><parameter>This annotation also works with the client proxy
+      framework.</parameter></para>
     </section>
 
     <section>
