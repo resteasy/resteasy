@@ -1,5 +1,6 @@
 package org.jboss.resteasy.security.signing;
 
+import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.annotations.security.signature.After;
@@ -20,6 +21,7 @@ import java.lang.reflect.Method;
  */
 @Provider
 @ServerInterceptor
+@ClientInterceptor
 @HeaderDecoratorPrecedence
 public class DigitalVerificationHeaderDecorator implements MessageBodyReaderInterceptor, AcceptedByMethod
 {

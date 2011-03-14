@@ -5,6 +5,7 @@ import org.jboss.resteasy.annotations.security.signature.Signed;
 import org.jboss.resteasy.annotations.security.signature.Verify;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.security.keys.KeyRepository;
 import org.jboss.resteasy.security.keys.KeyStoreKeyRepository;
 import org.jboss.resteasy.security.signing.ContentSignature;
@@ -14,7 +15,6 @@ import org.jboss.resteasy.security.signing.Verification;
 import org.jboss.resteasy.security.signing.Verifier;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
-import org.jboss.resteasy.spi.UnauthorizedException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.GenericType;
@@ -38,6 +38,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -73,8 +74,39 @@ public class SigningTest extends BaseResourceTest
    }
 
    @Path("/signed")
+   public static interface SigningProxy
+   {
+      @GET
+      @Verify(keyAlias = "test")
+      @Produces("text/plain")
+      @Path("bad-signature")
+      public String bad();
+
+      @GET
+      @Verify(keyAlias = "test")
+      @Produces("text/plain")
+      public String hello();
+
+      @POST
+      @Consumes("text/plain")
+      @Signed(keyAlias = "test")
+      public void postSimple(String input);
+   }
+
+
+   @Path("/signed")
    public static class SignedResource
    {
+      @GET
+      @Produces("text/plain")
+      @Path("bad-signature")
+      public Response badSignature()
+      {
+         ContentSignature signature = new ContentSignature();
+         signature.setHexSignature("0f03");
+         return Response.ok("hello world").header("Content-Signature", signature).build();
+      }
+
       @GET
       @Produces("text/plain")
       @Path("manual")
@@ -221,7 +253,9 @@ public class SigningTest extends BaseResourceTest
    public void testSigningManual() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
-      ClientResponse<MarshalledEntity<String>> response = request.get(new GenericType<MarshalledEntity<String>>() {});
+      ClientResponse<MarshalledEntity<String>> response = request.get(new GenericType<MarshalledEntity<String>>()
+      {
+      });
       Assert.assertEquals(200, response.getStatus());
       MarshalledEntity<String> marshalledEntity = response.getEntity();
       Assert.assertEquals("hello world", marshalledEntity.getEntity());
@@ -298,6 +332,7 @@ public class SigningTest extends BaseResourceTest
 
 
    }
+
    @Test
    public void testBasicVerificationRepository() throws Exception
    {
@@ -389,7 +424,7 @@ public class SigningTest extends BaseResourceTest
       catch (ReaderException e)
       {
          Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException)e.getCause();
+         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException) e.getCause();
          Assert.assertEquals("Signature is stale", signatureException.getResults().getFirstResult(verification).getFailureReason());
       }
 
@@ -497,7 +532,7 @@ public class SigningTest extends BaseResourceTest
       catch (ReaderException e)
       {
          Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException)e.getCause();
+         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException) e.getCause();
          Assert.assertEquals("Signature expired", signatureException.getResults().getFirstResult(verification).getFailureReason());
       }
 
@@ -528,7 +563,7 @@ public class SigningTest extends BaseResourceTest
       catch (ReaderException e)
       {
          Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException)e.getCause();
+         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException) e.getCause();
          Assert.assertEquals("Signature verification failed", signatureException.getResults().getFirstResult(verification).getFailureReason());
       }
 
@@ -551,6 +586,52 @@ public class SigningTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
       Assert.assertEquals("hello", output);
+   }
+
+   @Test
+   public void testBadSignature() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/bad-signature"));
+      ClientResponse<?> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String signatureHeader = response.getHeaders().getFirst(ContentSignature.CONTENT_SIGNATURE);
+      Assert.assertNotNull(signatureHeader);
+      System.out.println("Content-Signature:  " + signatureHeader);
+
+      ContentSignature contentSignature = new ContentSignature(signatureHeader);
+
+      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
+      {
+      });
+      boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
+      Assert.assertFalse(verified);
+   }
+
+   @Test
+   public void testProxy() throws Exception
+   {
+      Map<String, Object> attributes = new HashMap<String, Object>();
+      attributes.put(KeyRepository.class.getName(), repository);
+      SigningProxy proxy = ProxyFactory.create(SigningProxy.class, TestPortProvider.generateURL(""), attributes);
+      String output = proxy.hello();
+      proxy.postSimple("hello world");
+   }
+
+
+   @Test
+   public void testBadSignatureProxy() throws Exception
+   {
+      Map<String, Object> attributes = new HashMap<String, Object>();
+      attributes.put(KeyRepository.class.getName(), repository);
+      SigningProxy proxy = ProxyFactory.create(SigningProxy.class, TestPortProvider.generateURL(""), attributes);
+      try
+      {
+         String output = proxy.bad();
+      }
+      catch (ReaderException e)
+      {
+         Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
+      }
    }
 
 }
