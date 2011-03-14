@@ -8,13 +8,7 @@ import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.security.keys.KeyRepository;
 import org.jboss.resteasy.security.keys.KeyStoreKeyRepository;
 import org.jboss.resteasy.security.signing.ContentSignature;
-import org.jboss.resteasy.security.signing.ContentSignatures;
-import org.jboss.resteasy.security.signing.UnauthorizedSignatureException;
-import org.jboss.resteasy.security.signing.Verification;
-import org.jboss.resteasy.security.signing.Verifier;
 import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.ReaderException;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.GenericType;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -22,7 +16,6 @@ import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -30,7 +23,6 @@ import java.io.InputStream;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,7 +85,9 @@ public class SigningTest
 
       ContentSignature contentSignature = new ContentSignature(signatureHeader);
 
-      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>(){});
+      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
+      {
+      });
       System.out.println("Response entity: " + entity.getEntity());
 
       boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
@@ -122,7 +116,9 @@ public class SigningTest
 
       ContentSignature contentSignature = new ContentSignature(signatureHeader);
 
-      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>(){});
+      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
+      {
+      });
       boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
       Assert.assertTrue(verified);
    }
@@ -141,7 +137,9 @@ public class SigningTest
 
       ContentSignature contentSignature = new ContentSignature(signatureHeader);
 
-      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>(){});
+      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
+      {
+      });
       boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
       Assert.assertTrue(verified);
 
@@ -165,7 +163,9 @@ public class SigningTest
 
       ContentSignature contentSignature = new ContentSignature(signatureHeader);
 
-      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>(){});
+      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
+      {
+      });
       boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
       Assert.assertTrue(verified);
 
@@ -190,7 +190,9 @@ public class SigningTest
 
       ContentSignature contentSignature = new ContentSignature(signatureHeader);
 
-      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>(){});
+      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
+      {
+      });
       boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
       Assert.assertTrue(verified);
 
@@ -214,7 +216,9 @@ public class SigningTest
 
       ContentSignature contentSignature = new ContentSignature(signatureHeader);
 
-      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>(){});
+      MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
+      {
+      });
       boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
       Assert.assertTrue(verified);
 
@@ -259,9 +263,9 @@ public class SigningTest
    {
       Map<String, Object> attributes = new HashMap<String, Object>();
       attributes.put(KeyRepository.class.getName(), repository);
-      SigningProxy proxy = ProxyFactory.create(SigningProxy.class, "http://localhost:8080", attributes);
+      SigningProxy proxy = ProxyFactory.create(SigningProxy.class, "http://localhost:9095", attributes);
       String output = proxy.hello();
-      proxy.postSimple("hello");
+      proxy.postSimple("hello world");
    }
 
 }
