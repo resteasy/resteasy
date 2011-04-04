@@ -427,6 +427,11 @@ public class ResteasyDeployment
 
    public void stop()
    {
+      if (asyncJobServiceEnabled)
+      {
+         ((AsynchronousDispatcher) dispatcher).stop();
+      }
+
       ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
       ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
    }
