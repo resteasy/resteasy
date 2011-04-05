@@ -65,14 +65,32 @@ public class InternalDispatcher
       return getResponse(createRequest(uri, "DELETE"));
    }
 
+   public Response putEntity(String uri, String contentType, Object entity)
+   {
+      return executeEntity("PUT", uri, contentType, entity);
+
+   }
+
    public Response putEntity(String uri, Object entity)
    {
-      return getResponse(createRequest(uri, "PUT"), entity);
+      return putEntity(uri, "*/*", entity);
+   }
+
+   public Response executeEntity(String method, String uri, String contentType, Object entity)
+   {
+      MockHttpRequest post = createRequest(uri, method);
+      post.contentType(contentType);
+      return getResponse(post, entity);
+   }
+
+   public Response postEntity(String uri, String contentType, Object entity)
+   {
+      return executeEntity("POST", uri, contentType, entity);
    }
 
    public Response postEntity(String uri, Object entity)
    {
-      return getResponse(createRequest(uri, "POST"), entity);
+      return postEntity(uri, "*/*", entity);
    }
 
    public Response getResponse(String uri)

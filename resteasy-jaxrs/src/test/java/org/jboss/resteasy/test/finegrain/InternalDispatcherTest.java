@@ -146,7 +146,6 @@ public class InternalDispatcherTest
       }
 
       @DELETE
-      @Consumes("text/plain")
       @Path("/forward/basic")
       public void deleteForwardBasic(@Context InternalDispatcher dispatcher)
       {
