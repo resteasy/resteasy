@@ -41,6 +41,8 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
 
    protected MediaType[] produces;
    protected MediaType[] consumes;
+   protected Consumes methodConsumes;
+
    protected List<WeightedMediaType> preferredProduces = new ArrayList<WeightedMediaType>();
    protected List<WeightedMediaType> preferredConsumes = new ArrayList<WeightedMediaType>();
    protected Set<String> httpMethods;
@@ -69,7 +71,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
 
       Produces p = method.getAnnotation(Produces.class);
       if (p == null) p = clazz.getAnnotation(Produces.class);
-      Consumes c = method.getAnnotation(Consumes.class);
+      Consumes c = methodConsumes = method.getAnnotation(Consumes.class);
       if (c == null) c = clazz.getAnnotation(Consumes.class);
 
       if (p != null)
@@ -323,7 +325,18 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       boolean matches = false;
       if (contentType == null)
       {
-         matches = true;
+         // If there is no @Consumes annotation directly on method (i.e. a @GET or @DELETE) return true
+         if (methodConsumes == null) return true;
+
+         // Otherwise only accept if consumes is a wildcard type
+         for (MediaType type : preferredConsumes)
+         {
+            if (type.equals(MediaType.WILDCARD_TYPE))
+            {
+               return true;
+            }
+         }
+         return false;
       }
       else
       {

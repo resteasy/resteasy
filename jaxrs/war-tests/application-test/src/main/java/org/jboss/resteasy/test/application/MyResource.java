@@ -1,8 +1,13 @@
 package org.jboss.resteasy.test.application;
 
+import org.junit.Assert;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -11,6 +16,23 @@ import javax.ws.rs.Produces;
 @Path("my")
 public class MyResource
 {
+    @XmlRootElement
+   public static class Foo
+   {
+      private String name;
+
+      public String getName()
+      {
+         return name;
+      }
+
+      public void setName(String name)
+      {
+         this.name = name;
+      }
+
+   }
+
    public static int num_instatiations = 0;
 
    @Path("count")
@@ -35,5 +57,13 @@ public class MyResource
    public String getException()
    {
       throw new FooException();
+   }
+
+   @Path("null")
+   @POST
+   @Consumes("application/xml")
+   public void nullFoo(Foo foo)
+   {
+      Assert.assertNull(foo);
    }
 }

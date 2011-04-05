@@ -76,6 +76,22 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
+         // return null if Content-Length is 0
+         String contentLength = httpHeaders.getFirst("Content-Length");
+         if (contentLength != null)
+         {
+            try
+            {
+               long length = Long.valueOf(contentLength);
+               if (length == 0)
+               {
+                  return null;
+               }
+            }
+            catch (NumberFormatException ignored)
+            {
+            }
+         }
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
