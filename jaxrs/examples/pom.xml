@@ -34,6 +34,6 @@
         <module>oreilly-workbook</module>
         <module>oauth-examples</module>
         <module>examples-jsapi</module>
-        <module>content-signature</module>
+<!--        <module>content-signature</module> -->
     </modules>
 </project>
