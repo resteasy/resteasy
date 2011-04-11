@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
+import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
@@ -16,6 +17,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -37,6 +39,7 @@ public class ServerResponse extends Response
    protected MessageBodyWriterInterceptor[] messageBodyWriterInterceptors;
    protected Method resourceMethod;
    protected Class resourceClass;
+   protected boolean headersCommitted;
 
    public ServerResponse(Object entity, int status, Headers<Object> metadata)
    {
@@ -169,6 +172,15 @@ public class ServerResponse extends Response
       this.genericType = genericType;
    }
 
+   /**
+    * If there is an entity, headers are not converted to a string and set on the HttpResponse until the output stream is written to.  If there is an exception
+    * thrown then the headers are never written to the response.  We do this so that on error conditions there is a clean response.
+    *
+    * @param request
+    * @param response
+    * @param providerFactory
+    * @throws WriterException
+    */
    public void writeTo(HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory) throws WriterException
    {
       if (postProcessInterceptors != null)
@@ -180,7 +192,8 @@ public class ServerResponse extends Response
       }
       if (entity == null)
       {
-         outputHeaders(response);
+         response.setStatus(getStatus());
+         commitHeaders(response);
          return;
       }
 
@@ -205,7 +218,22 @@ public class ServerResponse extends Response
 
       try
       {
-         outputHeaders(response);
+         response.setStatus(getStatus());
+         final HttpResponse theResponse = response;
+         CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
+         {
+            private boolean committed;
+
+            @Override
+            public void commit()
+            {
+               if (committed) return;
+               committed = true;
+               commitHeaders(theResponse);
+            }
+         };
+         OutputStream os = new CommitHeaderOutputStream(response.getOutputStream(), callback);
+
          long size = writer.getSize(ent, type, generic, annotations, contentType);
          if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
 
@@ -213,15 +241,15 @@ public class ServerResponse extends Response
          if (messageBodyWriterInterceptors == null || messageBodyWriterInterceptors.length == 0)
          {
             writer.writeTo(ent, type, generic, annotations,
-                    contentType, response.getOutputHeaders(), response
-                    .getOutputStream());
+                    contentType, getMetadata(), os);
          }
          else
          {
             ServerMessageBodyWriterContext ctx = new ServerMessageBodyWriterContext(messageBodyWriterInterceptors, writer, ent, type, generic,
-                    annotations, contentType, response.getOutputHeaders(), response.getOutputStream(), request);
+                    annotations, contentType, getMetadata(), os, request);
             ctx.proceed();
          }
+         callback.commit(); // just in case the output stream is never used
       }
       catch (Exception ex)
       {
@@ -255,10 +283,8 @@ public class ServerResponse extends Response
       return responseContentType;
    }
 
-   public void outputHeaders(HttpResponse response)
+   public void commitHeaders(HttpResponse response)
    {
-      // Let servlet container set cookies
-      response.setStatus(getStatus());
       if (getMetadata() != null)
       {
          List<Object> cookies = getMetadata().get(

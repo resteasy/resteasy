@@ -14,9 +14,5 @@ org.jboss.resteasy.plugins.interceptors.encoding.ClientContentEncodingHeaderInte
 org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor
 org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor
 org.jboss.resteasy.plugins.interceptors.encoding.ServerContentEncodingHeaderInterceptor
-org.jboss.resteasy.security.signing.DigitalSigningHeaderDecorator
-org.jboss.resteasy.security.signing.DigitalSigningInterceptor
-org.jboss.resteasy.security.signing.DigitalVerificationHeaderDecorator
-org.jboss.resteasy.security.signing.DigitalVerificationInterceptor
 
 

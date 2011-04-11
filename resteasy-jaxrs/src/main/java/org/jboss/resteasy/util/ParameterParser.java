@@ -306,4 +306,68 @@ public class ParameterParser
       }
       return params;
    }
+
+   /**
+    * Takes string as-is and only changes the value of a specific attribute.
+    *
+    * @param chars     the array of characters that contains a sequence of
+    *                  name/value pairs
+    * @param offset    - the initial offset.
+    * @param length    - the length.
+    * @param separator the name/value pairs separator
+    * @return
+    */
+   public String setAttribute(
+           final char[] chars,
+           int offset,
+           int length,
+           char separator,
+           String name,
+           String value)
+   {
+
+      this.chars = chars;
+      this.pos = offset;
+      this.len = length;
+
+      String paramName = null;
+      String paramValue = null;
+
+      int start = offset;
+
+      StringBuffer newChars = new StringBuffer();
+
+      while (hasChar())
+      {
+         paramName = parseToken(new char[]{
+                 '=', separator});
+         paramValue = null;
+         int index = -1;
+         if (paramName.equals(name))
+         {
+            newChars.append(new String(chars, start, pos - start));
+         }
+         if (hasChar() && (chars[pos] == '='))
+         {
+            pos++; // skip '='
+            paramValue = parseQuotedToken(new char[]{
+                    separator});
+         }
+         if (paramName.equals(name))
+         {
+            newChars.append("=").append(value);
+            start = pos;
+         }
+         else
+         {
+            newChars.append(new String(chars, start, pos - start));
+            start = pos;
+         }
+         if (hasChar() && (chars[pos] == separator))
+         {
+            pos++; // skip separator
+         }
+      }
+      return newChars.toString();
+   }
 }

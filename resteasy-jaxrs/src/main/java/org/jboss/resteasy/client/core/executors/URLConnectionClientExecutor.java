@@ -6,6 +6,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -146,7 +147,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
          {
             OutputStream os = connection.getOutputStream();
             CommitHeaderOutputStream commit = new CommitHeaderOutputStream(os,
-                    new CommitHeaderOutputStream.Headers()
+                    new CommitHeaderOutputStream.CommitCallback()
                     {
                        @Override
                        public void commit()

@@ -5,7 +5,6 @@ import org.jboss.resteasy.annotations.security.signature.Signed;
 import org.jboss.resteasy.annotations.security.signature.Verify;
 import org.jboss.resteasy.security.keys.KeyRepository;
 import org.jboss.resteasy.security.signing.ContentSignature;
-import org.jboss.resteasy.security.signing.ContentSignatures;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.junit.Assert;
 
