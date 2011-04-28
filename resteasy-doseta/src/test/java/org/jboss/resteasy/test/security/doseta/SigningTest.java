@@ -6,12 +6,14 @@ import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.DosetaSignature;
+import org.jboss.resteasy.security.doseta.KeyRepository;
+import org.jboss.resteasy.security.doseta.KeyStoreKeyRepository;
 import org.jboss.resteasy.security.doseta.UnauthorizedSignatureException;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.security.doseta.Verifier;
-import org.jboss.resteasy.security.keys.KeyRepository;
-import org.jboss.resteasy.security.keys.KeyStoreKeyRepository;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -33,6 +35,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -47,20 +50,29 @@ import java.util.Map;
 public class SigningTest extends BaseResourceTest
 {
    public static KeyPair keys;
-   public static KeyRepository repository;
+   public static DosetaKeyRepository repository;
    public static PrivateKey badKey;
 
+   @Test
+   public void testMe() throws Exception
+   {
+      URL url = Thread.currentThread().getContextClassLoader().getResource("dns/zones");
+      System.out.println(url.getFile());
+   }
 
    @BeforeClass
    public static void setup() throws Exception
    {
-      InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.jks");
-      if (is != null) System.out.println("input is not null");
-      repository = new KeyStoreKeyRepository(is, "password");
-      PrivateKey privateKey = repository.getPrivateKey("test");
+      Logger.setLoggerType(Logger.LoggerType.JUL);
+      repository = new DosetaKeyRepository();
+      repository.setKeyStorePath("test.jks");
+      repository.setKeyStorePassword("password");
+      repository.setUseDns(false);
+      repository.start();
+
+      PrivateKey privateKey = repository.getKeyStore().getPrivateKey("test._domainKey.samplezone.org");
       if (privateKey == null) throw new Exception("Private Key is null!!!");
-      else System.out.println("PrivateKey was not null!!");
-      PublicKey publicKey = repository.getPublicKey("test");
+      PublicKey publicKey = repository.getKeyStore().getPublicKey("test._domainKey.samplezone.org");
       keys = new KeyPair(publicKey, privateKey);
 
       KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
@@ -81,19 +93,19 @@ public class SigningTest extends BaseResourceTest
    public static interface SigningProxy
    {
       @GET
-      @Verify(keyAlias = "test")
+      @Verify
       @Produces("text/plain")
       @Path("bad-signature")
       public String bad();
 
       @GET
-      @Verify(keyAlias = "test")
+      @Verify
       @Produces("text/plain")
       public String hello();
 
       @POST
       @Consumes("text/plain")
-      @Signed(keyAlias = "test")
+      @Signed(selector = "test", domain="samplezone.org")
       public void postSimple(String input);
    }
 
@@ -107,6 +119,8 @@ public class SigningTest extends BaseResourceTest
       public Response badSignature() throws Exception
       {
          DosetaSignature signature = new DosetaSignature();
+         signature.setDomain("samplezone.org");
+         signature.setSelector("test");
          signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
 
          byte[] sig = {0x0f, 0x03};
@@ -126,6 +140,8 @@ public class SigningTest extends BaseResourceTest
       public Response badHash() throws Exception
       {
          DosetaSignature signature = new DosetaSignature();
+         signature.setDomain("samplezone.org");
+         signature.setSelector("test");
          signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
 
          return Response.ok("hello").header(DosetaSignature.DOSETA_SIGNATURE, signature.toString()).build();
@@ -137,43 +153,25 @@ public class SigningTest extends BaseResourceTest
       public Response getManual()
       {
          DosetaSignature signature = new DosetaSignature();
-         signature.setKeyAlias("test");
+         signature.setSelector("test");
+         signature.setDomain("samplezone.org");
          Response.ResponseBuilder builder = Response.ok("hello");
          builder.header(DosetaSignature.DOSETA_SIGNATURE, signature);
          return builder.build();
       }
 
       @GET
-      @Signed(keyAlias = "test")
+      @Signed(selector = "test", domain="samplezone.org")
       @Produces("text/plain")
       public String hello()
       {
          return "hello world";
       }
 
-      @GET
-      @Signed(domain = "test")
-      @Produces("text/plain")
-      @Path("with-signer")
-      public String withSigner()
-      {
-         return "hello world";
-      }
-
       @POST
       @Consumes("text/plain")
-      @Verify(keyAlias = "test")
-      public void post(@HeaderParam("Doseta-Signature") DosetaSignature signature, String input)
-      {
-         Assert.assertNotNull(signature);
-         Assert.assertEquals(input, "hello world");
-      }
-
-      @POST
-      @Consumes("text/plain")
-      @Path("by-domain")
       @Verify
-      public void postByDomain(@HeaderParam("Doseta-Signature") DosetaSignature signature, String input)
+      public void post(@HeaderParam("Doseta-Signature") DosetaSignature signature, String input)
       {
          Assert.assertNotNull(signature);
          Assert.assertEquals(input, "hello world");
@@ -191,7 +189,8 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(domain = "test", timestamped = true)
+      @Signed(selector="test", domain = "samplezone.org",
+              timestamped = true)
       @Produces("text/plain")
       @Path("stamped")
       public String getStamp()
@@ -200,7 +199,8 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(domain = "test", expires = @After(seconds = 1))
+      @Signed(selector="test", domain = "samplezone.org",
+              expires = @After(seconds = 1))
       @Produces("text/plain")
       @Path("expires-short")
       public String getExpiresShort()
@@ -209,7 +209,8 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(domain = "test", expires = @After(minutes = 1))
+      @Signed(selector="test", domain = "samplezone.org",
+              expires = @After(minutes = 1))
       @Produces("text/plain")
       @Path("expires-minute")
       public String getExpiresMinute()
@@ -218,7 +219,8 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(domain = "test", expires = @After(hours = 1))
+      @Signed(selector="test", domain = "samplezone.org",
+              expires = @After(hours = 1))
       @Produces("text/plain")
       @Path("expires-hour")
       public String getExpiresHour()
@@ -227,7 +229,8 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(domain = "test", expires = @After(days = 1))
+      @Signed(selector="test", domain = "samplezone.org",
+              expires = @After(days = 1))
       @Produces("text/plain")
       @Path("expires-day")
       public String getExpiresDay()
@@ -236,7 +239,8 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(domain = "test", expires = @After(months = 1))
+      @Signed(selector="test", domain = "samplezone.org",
+              expires = @After(months = 1))
       @Produces("text/plain")
       @Path("expires-month")
       public String getExpiresMonth()
@@ -245,7 +249,8 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(domain = "test", expires = @After(years = 1))
+      @Signed(selector="test", domain = "samplezone.org",
+              expires = @After(years = 1))
       @Produces("text/plain")
       @Path("expires-year")
       public String getExpiresYear()
@@ -283,21 +288,8 @@ public class SigningTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
       DosetaSignature contentSignature = new DosetaSignature();
-      contentSignature.setPrivateKey(keys.getPrivate());
-      request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
-      request.body("text/plain", "hello world");
-      ClientResponse response = request.post();
-      Assert.assertEquals(204, response.getStatus());
-
-
-   }
-
-   @Test
-   public void testByDomainVerification() throws Exception
-   {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/by-domain"));
-      DosetaSignature contentSignature = new DosetaSignature();
-      contentSignature.setDomainIdentity("test");
+      contentSignature.setDomain("samplezone.org");
+      contentSignature.setSelector("test");
       contentSignature.setPrivateKey(keys.getPrivate());
       request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
       request.body("text/plain", "hello world");
@@ -312,6 +304,8 @@ public class SigningTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/verify-manual"));
       DosetaSignature contentSignature = new DosetaSignature();
+      contentSignature.setDomain("samplezone.org");
+      contentSignature.setSelector("test");
       contentSignature.setAttribute("code", "hello");
       contentSignature.setPrivateKey(keys.getPrivate());
       request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
@@ -327,7 +321,8 @@ public class SigningTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
       DosetaSignature contentSignature = new DosetaSignature();
-      contentSignature.setKeyAlias("test");
+      contentSignature.setSelector("test");
+      contentSignature.setDomain("samplezone.org");
       request.getAttributes().put(KeyRepository.class.getName(), repository);
 
       request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
@@ -343,6 +338,8 @@ public class SigningTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
       DosetaSignature contentSignature = new DosetaSignature();
+      contentSignature.setSelector("test");
+      contentSignature.setDomain("samplezone.org");
       contentSignature.setPrivateKey(badKey);
       request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
       request.body("text/plain", "hello world");
@@ -364,6 +361,8 @@ public class SigningTest extends BaseResourceTest
    {
       DosetaSignature signature = new DosetaSignature();
       signature.setTimestamp();
+      signature.setSelector("test");
+      signature.setDomain("samplezone.org");
       signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
       String sig = signature.toString();
       System.out.println("Doseta-Signature: " + sig);
@@ -379,7 +378,6 @@ public class SigningTest extends BaseResourceTest
       verification.setRepository(repository);
       verification.setStaleCheck(true);
       verification.setStaleSeconds(100);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/stamped"));
       ClientResponse<String> response = request.get(String.class);
@@ -399,7 +397,6 @@ public class SigningTest extends BaseResourceTest
       verification.setRepository(repository);
       verification.setStaleCheck(true);
       verification.setStaleSeconds(1);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/stamped"));
       ClientResponse<String> response = request.get(String.class);
@@ -428,7 +425,6 @@ public class SigningTest extends BaseResourceTest
       Verifier verifier = new Verifier();
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-hour"));
       ClientResponse<String> response = request.get(String.class);
@@ -444,7 +440,6 @@ public class SigningTest extends BaseResourceTest
       Verifier verifier = new Verifier();
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-minute"));
       ClientResponse<String> response = request.get(String.class);
@@ -460,7 +455,6 @@ public class SigningTest extends BaseResourceTest
       Verifier verifier = new Verifier();
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-day"));
       ClientResponse<String> response = request.get(String.class);
@@ -476,7 +470,6 @@ public class SigningTest extends BaseResourceTest
       Verifier verifier = new Verifier();
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-month"));
       ClientResponse<String> response = request.get(String.class);
@@ -492,7 +485,6 @@ public class SigningTest extends BaseResourceTest
       Verifier verifier = new Verifier();
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-year"));
       ClientResponse<String> response = request.get(String.class);
@@ -508,7 +500,6 @@ public class SigningTest extends BaseResourceTest
       Verifier verifier = new Verifier();
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-short"));
       ClientResponse<String> response = request.get(String.class);
@@ -569,7 +560,6 @@ public class SigningTest extends BaseResourceTest
       Verifier verifier = new Verifier();
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
-      verification.setKeyAlias("test");
 
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/manual"));
       ClientResponse<String> response = request.get(String.class);

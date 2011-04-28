@@ -3,7 +3,6 @@ package org.jboss.resteasy.security.doseta;
 import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-import org.jboss.resteasy.security.keys.KeyRepository;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderContext;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;

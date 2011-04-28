@@ -3,7 +3,6 @@ package org.jboss.resteasy.security.doseta;
 import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-import org.jboss.resteasy.security.keys.KeyRepository;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
@@ -108,22 +107,14 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
 
          if (repository == null)
          {
-            throw new RuntimeException("Unable to locate a public key to sign message.");
+            throw new RuntimeException("Unable to locate a private key to sign message, repository is null.");
 
          }
 
-         String keyAlias = null;
-         keyAlias = dosetaSignature.getKeyAlias();
-         if (keyAlias == null) keyAlias = dosetaSignature.getDomainIdentity();
-         if (keyAlias == null)
-         {
-            throw new RuntimeException("Unable to locate a public key to sign message.");
-         }
-
-         privateKey = repository.getPrivateKey(keyAlias);
+         privateKey = repository.findPrivateKey(dosetaSignature);
          if (privateKey == null)
          {
-            throw new RuntimeException("Unable to find key to sign message for key alias: " + keyAlias);
+            throw new RuntimeException("Unable to find key to sign message. Repository returned null. ");
          }
       }
       dosetaSignature.sign(headers, body, privateKey);

@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <!-- this is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
-         pom.xml as a template -->
+         pom.xml as a template    -->
     <build>
         <plugins>
             <plugin>

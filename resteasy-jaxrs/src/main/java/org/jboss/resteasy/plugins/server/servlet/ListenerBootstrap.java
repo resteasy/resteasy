@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.scannotation.WarUrlFinder;
 
@@ -7,6 +8,8 @@ import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -28,6 +31,7 @@ public class ListenerBootstrap extends ConfigurationBootstrap
       ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
       if (deployment == null) deployment = super.createDeployment();
       deployment.getDefaultContextObjects().put(ServletContext.class, servletContext);
+      deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);
       return deployment;
    }
 
@@ -67,6 +71,21 @@ public class ListenerBootstrap extends ConfigurationBootstrap
       }
       all[i] = url;
       return all;
+   }
+
+   @Override
+   public Set<String> getParameterNames()
+   {
+      Enumeration<String> en = servletContext.getInitParameterNames();
+      HashSet<String> set = new HashSet<String>();
+      while (en.hasMoreElements()) set.add(en.nextElement());
+      return set;
+   }
+
+   @Override
+   public Set<String> getInitParameterNames()
+   {
+      return getParameterNames();
    }
 
    public String getParameter(String name)

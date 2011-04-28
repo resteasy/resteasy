@@ -1,7 +1,5 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.security.keys.KeyRepository;
-
 import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +14,6 @@ public class Verification
    protected KeyRepository repository;
    protected String algorithm = DosetaSignature.DEFAULT_ALGORITHM;
    protected Map<String, String> attributes = new HashMap<String, String>();
-   protected String keyAlias;
-   protected String attributeAlias;
    protected String identifierName;
    protected String identifierValue;
    protected boolean staleCheck;
@@ -62,26 +58,6 @@ public class Verification
    public void setIdentifierValue(String identifierValue)
    {
       this.identifierValue = identifierValue;
-   }
-
-   public String getKeyAlias()
-   {
-      return keyAlias;
-   }
-
-   public void setKeyAlias(String keyAlias)
-   {
-      this.keyAlias = keyAlias;
-   }
-
-   public String getAttributeAlias()
-   {
-      return attributeAlias;
-   }
-
-   public void setAttributeAlias(String attributeAlias)
-   {
-      this.attributeAlias = attributeAlias;
    }
 
    public boolean isIgnoreExpiration()

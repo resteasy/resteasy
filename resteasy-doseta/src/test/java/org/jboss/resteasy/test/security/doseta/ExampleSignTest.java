@@ -5,28 +5,91 @@ package org.jboss.resteasy.test.security.doseta;
  * @version $Revision: 1 $
  */
 
-import org.jboss.resteasy.util.Hex;
+import org.jboss.resteasy.util.Base64;
 import org.junit.Assert;
 import org.junit.Test;
-//import sun.security.rsa.RSASignature;
-//import sun.security.x509.AlgorithmId;
 
-//import javax.crypto.Cipher;
 import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyFactory;
-//import java.security.KeyPair;
-//import java.security.KeyPairGenerator;
-//import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+
+//import sun.security.rsa.RSASignature;
+//import sun.security.x509.AlgorithmId;
+//import javax.crypto.Cipher;
+//import java.security.KeyPair;
+//import java.security.KeyPairGenerator;
+//import java.security.MessageDigest;
 
 public class ExampleSignTest
 {
+
+   public static PrivateKey getPrivate(InputStream is)
+           throws Exception
+   {
+
+      DataInputStream dis = new DataInputStream(is);
+      byte[] keyBytes = new byte[dis.available()];
+      dis.readFully(keyBytes);
+      dis.close();
+
+      PKCS8EncodedKeySpec spec =
+              new PKCS8EncodedKeySpec(keyBytes);
+      KeyFactory kf = KeyFactory.getInstance("RSA");
+      return kf.generatePrivate(spec);
+   }
+
+
+   public PublicKey getPublic(InputStream is) throws Exception
+   {
+      DataInputStream dis = new DataInputStream(is);
+      byte[] pemFile = new byte[dis.available()];
+      dis.readFully(pemFile);
+      String pem = new String(pemFile);
+      pem = pem.replace("-----BEGIN PUBLIC KEY-----", "");
+      pem = pem.replace("-----END PUBLIC KEY-----", "");
+      pem = pem.trim();
+      //System.out.println(pem);
+
+      byte[] der = Base64.decode(pem);
+
+
+      X509EncodedKeySpec spec =
+              new X509EncodedKeySpec(der);
+      KeyFactory kf = KeyFactory.getInstance("RSA");
+      return kf.generatePublic(spec);
+   }
+
+   @Test
+   public void testPemFiles() throws Exception
+   {
+      InputStream publicIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("public_dkim_key.pem");
+      InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("private_dkim_key.der");
+
+      PublicKey publicKey = getPublic(publicIs);
+      PrivateKey privateKey = getPrivate(privateIs);
+
+      Signature instance = Signature.getInstance("SHA256withRSA");
+      instance.initSign(privateKey);
+      instance.update("from-java".getBytes());
+      byte[] signatureBytes = instance.sign();
+
+
+      Signature verify = Signature.getInstance("SHA256withRSA");
+      verify.initVerify(publicKey);
+      verify.update("from-java".getBytes());
+      Assert.assertTrue(verify.verify(signatureBytes));
+
+   }
+
+
+
    /*
    @Test
    public void testDerFile() throws Exception

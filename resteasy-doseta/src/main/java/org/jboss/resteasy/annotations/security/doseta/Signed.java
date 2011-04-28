@@ -11,11 +11,13 @@ import java.lang.annotation.Target;
  * <p/>
  * By default simple canonicalization will be used for both header and body.
  * <p/>
- * The private key used to sign is discovered using a KeyRepository.  The name used to lookup the public key is as follows
+ * Private keys are never discovered via DNS.
+ *
+ * The private key used to sign is discovered in the KeyRepository via an alias of
+ * (selector + ".")? + "_domainKey." + domain - Same as the doseta specification
+ *
  * <p/>
- * - keyAlias() if it is set
- * - domain() if it is set
- * <p/>
+ *
  * <p/>
  * If you want more fine-grain control over the signature header
  * then you must create your own DosetaSignature instances and pass it with the request or response
@@ -29,22 +31,23 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Signed
 {
+   String algorithm() default "";
+
    /**
-    * Algorithm to use when signing.  For verification, Resteasy will look inside signature header first
-    * before using the value of this annotation.
+    * If there is no domain, then abort.
+    *
+    * If not set, the runtime may set a default domain.  See documentation for details.
     *
     * @return
     */
-   String algorithm() default "";
-
    String domain() default "";
 
    /**
-    * Key alias to use to lookup a key in the KeyRepository.  This does not add any metadata to the signature header.
+    * A default may be used if not set.  See documentation for more details.
     *
     * @return
     */
-   String keyAlias() default "";
+   String selector() default "";
 
    /**
     * Will calculate and add a timestamp
