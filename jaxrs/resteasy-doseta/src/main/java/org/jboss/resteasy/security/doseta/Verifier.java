@@ -1,7 +1,5 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.security.keys.KeyRepository;
-
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -102,30 +100,17 @@ public class Verifier
 
       if (key == null)
       {
-         String keyAlias = null;
-         if (verification.getKeyAlias() != null) keyAlias = verification.getKeyAlias();
-         else if (verification.getAttributeAlias() != null)
-         {
-            keyAlias = signature.getAttributes().get(verification.getAttributeAlias());
-         }
-
-         if (keyAlias == null)
-         {
-            result.setFailureReason("Could not find a key alias");
-            return result;
-         }
-
          if (verification.getRepository() != null)
          {
-            key = verification.getRepository().getPublicKey(keyAlias);
+            key = verification.getRepository().findPublicKey(signature);
          }
          else if (repository != null)
          {
-            key = repository.getPublicKey(keyAlias);
+            key = repository.findPublicKey(signature);
          }
          if (key == null)
          {
-            result.setFailureReason("Could not find PublicKey for keyAlias " + keyAlias);
+            result.setFailureReason("Could not find PublicKey for DKIMSignature " + signature);
             return result;
          }
       }

@@ -4,6 +4,9 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -41,4 +44,23 @@ public class ServletBootstrap extends ListenerBootstrap
    {
       return config.getInitParameter(name);
    }
+
+   @Override
+   public Set<String> getParameterNames()
+   {
+      Set<String> set = super.getInitParameterNames();
+      Enumeration<String> en = config.getInitParameterNames();
+      while (en.hasMoreElements()) set.add(en.nextElement());
+      return set;
+   }
+
+   @Override
+   public Set<String> getInitParameterNames()
+   {
+      Set<String> set = new HashSet<String>();
+      Enumeration<String> en = config.getInitParameterNames();
+      while (en.hasMoreElements()) set.add(en.nextElement());
+      return set;
+   }
+
 }

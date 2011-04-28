@@ -30,24 +30,6 @@ public @interface Verify
    String identifierValue() default "";
 
    /**
-    * Use this key alias to find public key to verify with.
-    *
-    * @return
-    */
-   String keyAlias() default "";
-
-   /**
-    * If keyAlias() is not set, the attributeKeyAlias() will be used to determine the key alias.
-    * So, if this annotation attribute's value is, let's say, "signer", then the key alias will be the value of
-    * the signer attribute embedded in the transmitted Content-Signature header value.
-    * <p/>
-    * The default value of this attribute is "d", the domain identifier.
-    *
-    * @return
-    */
-   String attributeKeyAlias() default "d";
-
-   /**
     * Expiration check based on expiration attribute will be done unless this flag is set to false.
     *
     * @return

@@ -99,7 +99,7 @@ public class ResteasyHandlerAdapter extends
             Object entity = jaxrsResponse.getEntity();
             if (entity instanceof ModelAndView)
             {
-               jaxrsResponse.outputHeaders(response);
+               jaxrsResponse.commitHeaders(response);
                return (ModelAndView) entity;
             }
             return createModelAndView(jaxrsResponse);

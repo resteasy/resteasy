@@ -9,8 +9,6 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
-import org.jboss.resteasy.security.keys.KeyRepository;
-import org.jboss.resteasy.security.keys.KeyStoreKeyRepository;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.PickConstructor;
 
@@ -18,8 +16,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,13 +60,11 @@ public class ResteasyDeployment
    protected Map<String, String> interceptorBeforePrecedences = new HashMap<String, String>();
    protected Map<String, String> interceptorAfterPrecedences = new HashMap<String, String>();
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
+   protected Map<String, String> constructedDefaultContextObjects = new HashMap<String, String>();
    protected Registry registry;
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
-   protected String keyStoreFileName;
-   protected String keyStoreClassPath;
-   protected String keyStorePassword;
    protected String paramMapping;
    private final static Logger logger = Logger.getLogger(ResteasyDeployment.class);
 
@@ -121,30 +115,6 @@ public class ResteasyDeployment
       }
       registry = dispatcher.getRegistry();
 
-      if (keyStoreClassPath != null)
-      {
-         InputStream keyStoreStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(keyStoreClassPath);
-         if (keyStoreStream == null)
-         {
-            throw new RuntimeException("Cannot find KeyStore to load from class path: " + keyStoreClassPath);
-         }
-         KeyStoreKeyRepository keyStore = new KeyStoreKeyRepository(keyStoreStream, keyStorePassword);
-         dispatcher.getDefaultContextObjects().put(KeyRepository.class, keyStore);
-      }
-      else if (keyStoreFileName != null)
-      {
-         KeyStoreKeyRepository keyStore = null;
-         try
-         {
-            keyStore = new KeyStoreKeyRepository(keyStoreFileName, keyStorePassword);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException("Unable to load keystore from file: " + keyStoreFileName, e);
-         }
-         dispatcher.getDefaultContextObjects().put(KeyRepository.class, keyStore);
-
-      }
 
       dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
       dispatcher.getDefaultContextObjects().put(Providers.class, providerFactory);
@@ -154,9 +124,51 @@ public class ResteasyDeployment
 
       try
       {
+         if (injectorFactoryClass != null)
+         {
+            InjectorFactory injectorFactory;
+            try
+            {
+               Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
+               injectorFactory = (InjectorFactory) clazz.newInstance();
+            }
+            catch (ClassNotFoundException cnfe)
+            {
+               throw new RuntimeException("Unable to find InjectorFactory implementation.", cnfe);
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
+            }
+
+            providerFactory.setInjectorFactory(injectorFactory);
+         }
+
+
          // push context data so we can inject it
          Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
          contextDataMap.putAll(dispatcher.getDefaultContextObjects());
+
+         if (constructedDefaultContextObjects != null && constructedDefaultContextObjects.size() > 0)
+         {
+            for (Map.Entry<String, String> entry : constructedDefaultContextObjects.entrySet())
+            {
+               Class<?> key = null;
+               try
+               {
+                  key = Thread.currentThread().getContextClassLoader().loadClass(entry.getKey());
+               }
+               catch (ClassNotFoundException e)
+               {
+                  throw new RuntimeException("Unable to instantiate context object " + entry.getKey(), e);
+               }
+               Object obj = createFromInjectorFactory(entry.getValue(), providerFactory);
+               defaultContextObjects.put(key, obj);
+               dispatcher.getDefaultContextObjects().put(key, obj);
+               contextDataMap.put(key, obj);
+
+            }
+         }
 
          // Interceptor preferences should come before provider registration or builtin.
 
@@ -189,25 +201,6 @@ public class ResteasyDeployment
             providerFactory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
          }
 
-         if (injectorFactoryClass != null)
-         {
-            InjectorFactory injectorFactory;
-            try
-            {
-               Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
-               injectorFactory = (InjectorFactory) clazz.newInstance();
-            }
-            catch (ClassNotFoundException cnfe)
-            {
-               throw new RuntimeException("Unable to find InjectorFactory implementation.", cnfe);
-            }
-            catch (Exception e)
-            {
-               throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
-            }
-
-            providerFactory.setInjectorFactory(injectorFactory);
-         }
 
          if (registerBuiltin)
          {
@@ -260,10 +253,15 @@ public class ResteasyDeployment
 
    public static Application createApplication(String applicationClass, ResteasyProviderFactory providerFactory)
    {
+      return (Application)createFromInjectorFactory(applicationClass, providerFactory);
+   }
+
+   public static Object createFromInjectorFactory(String classname, ResteasyProviderFactory providerFactory)
+   {
       Class<?> clazz = null;
       try
       {
-         clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass);
+         clazz = Thread.currentThread().getContextClassLoader().loadClass(classname);
       }
       catch (ClassNotFoundException e)
       {
@@ -273,16 +271,15 @@ public class ResteasyDeployment
       Constructor<?> constructor = PickConstructor.pickConstructor(clazz);
       if (constructor == null)
       {
-         throw new RuntimeException("Unable to find a public constructor for Application class " + clazz.getName());
+         throw new RuntimeException("Unable to find a public constructor for class " + clazz.getName());
       }
       ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(constructor);
       PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz);
 
-      Application application = (Application) constructorInjector.construct();
-      propertyInjector.inject(application);
-      return application;
+      Object obj = constructorInjector.construct();
+      propertyInjector.inject(obj);
+      return obj;
    }
-
 
    public void registration()
    {
@@ -290,6 +287,7 @@ public class ResteasyDeployment
       if (application != null)
       {
          dispatcher.getDefaultContextObjects().put(Application.class, application);
+         ResteasyProviderFactory.getContextDataMap().put(Application.class, application);
          if (processApplication(application))
          {
             // Application class registered something so don't use scanning data.  See JAX-RS spec for more detail.
@@ -502,36 +500,6 @@ public class ResteasyDeployment
          throw new RuntimeException(e);
       }
       providerFactory.registerProvider(provider);
-   }
-
-   public String getKeyStorePassword()
-   {
-      return keyStorePassword;
-   }
-
-   public void setKeyStorePassword(String keyStorePassword)
-   {
-      this.keyStorePassword = keyStorePassword;
-   }
-
-   public String getKeyStoreFileName()
-   {
-      return keyStoreFileName;
-   }
-
-   public void setKeyStoreFileName(String keyStoreFileName)
-   {
-      this.keyStoreFileName = keyStoreFileName;
-   }
-
-   public String getKeyStoreClassPath()
-   {
-      return keyStoreClassPath;
-   }
-
-   public void setKeyStoreClassPath(String keyStoreClassPath)
-   {
-      this.keyStoreClassPath = keyStoreClassPath;
    }
 
    public List<String> getJndiComponentResources()
@@ -827,6 +795,16 @@ public class ResteasyDeployment
    public void setUnwrappedExceptions(List<String> unwrappedExceptions)
    {
       this.unwrappedExceptions = unwrappedExceptions;
+   }
+
+   public Map<String, String> getConstructedDefaultContextObjects()
+   {
+      return constructedDefaultContextObjects;
+   }
+
+   public void setConstructedDefaultContextObjects(Map<String, String> constructedDefaultContextObjects)
+   {
+      this.constructedDefaultContextObjects = constructedDefaultContextObjects;
    }
 
    public Map<Class, Object> getDefaultContextObjects()

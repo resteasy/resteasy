@@ -5,6 +5,7 @@ import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
@@ -39,17 +40,40 @@ public class DigitalSigningHeaderDecorator implements MessageBodyWriterIntercept
    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
    {
       DosetaSignature header = new DosetaSignature();
-      if (signed.keyAlias() != null && !signed.keyAlias().equals(""))
+
+      KeyRepository repository = (KeyRepository) context.getAttribute(KeyRepository.class.getName());
+      if (repository == null)
       {
-         header.setKeyAlias(signed.keyAlias());
+         repository = ResteasyProviderFactory.getContextData(KeyRepository.class);
       }
+
+
       if (signed.domain() != null && !signed.domain().equals(""))
       {
-         header.setDomainIdentity(signed.domain());
+         header.setDomain(signed.domain());
+      }
+      else
+      {
+         if (repository != null)
+         {
+            header.setDomain(repository.getDefaultPrivateDomain());
+         }
       }
       if (signed.algorithm() != null && !signed.algorithm().equals(""))
       {
          header.setAlgorithm(signed.algorithm());
+      }
+      if (signed.selector() != null && !signed.selector().equals(""))
+      {
+         header.setSelector(signed.selector());
+      }
+      else
+      {
+         if (repository != null)
+         {
+            header.setSelector(repository.getDefaultPrivateSelector());
+         }
+
       }
       if (signed.timestamped())
       {

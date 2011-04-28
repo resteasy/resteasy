@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.scannotation.AnnotationDB;
@@ -21,28 +22,13 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-abstract public class ConfigurationBootstrap
+abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 {
    private static Logger logger = null;
    private ResteasyDeployment deployment = new ResteasyDeployment();
 
-   /**
-    * i.e. Servlet init-param first is searched, then servlet context
-    *
-    * @param name
-    * @return
-    */
-   public abstract String getParameter(String name);
-
-   /**
-    * Only provide parameter from a servlet or filter init param
-    *
-    * @param name
-    * @return
-    */
-   public abstract String getInitParameter(String name);
-
    public abstract URL[] getScanningUrls();
+
 
 
    public ResteasyDeployment createDeployment()
@@ -118,15 +104,6 @@ abstract public class ConfigurationBootstrap
 
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
       if (resteasySecurity != null) deployment.setSecurityEnabled(Boolean.valueOf(resteasySecurity.trim()));
-
-      String keyStoreFile = getParameter(ResteasyContextParameters.RESTEASY_KEY_STORE_FILE_NAME);
-      if (keyStoreFile != null) deployment.setKeyStoreFileName(keyStoreFile);
-
-      String keyStorePath = getParameter(ResteasyContextParameters.RESTEASY_KEY_STORE_CLASSPATH);
-      if (keyStorePath != null) deployment.setKeyStoreClassPath(keyStorePath);
-
-      String keyStorePassword = getParameter(ResteasyContextParameters.RESTEASY_KEY_STORE_PASSWORD);
-      if (keyStorePassword != null) deployment.setKeyStorePassword(keyStorePassword);
 
       String builtin = getParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
       if (builtin != null) deployment.setRegisterBuiltin(Boolean.valueOf(builtin.trim()));
@@ -269,6 +246,13 @@ abstract public class ConfigurationBootstrap
          }
       }
 
+      String contextObjects = getParameter(ResteasyContextParameters.RESTEASY_CONTEXT_OBJECTS);
+      if (contextObjects != null)
+      {
+         Map<String, String> map = parseMap(contextObjects);
+         deployment.setConstructedDefaultContextObjects(map);
+      }
+
       String mimeExtentions = getParameter(ResteasyContextParameters.RESTEASY_MEDIA_TYPE_MAPPINGS);
       if (mimeExtentions != null)
       {
@@ -311,6 +295,7 @@ abstract public class ConfigurationBootstrap
       }
 
       if (applicationConfig != null) deployment.setApplicationClass(applicationConfig);
+      deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);
       return deployment;
    }
 

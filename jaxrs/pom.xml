@@ -78,7 +78,7 @@
 
     <modules>
 
-        <!-- Should probably be removed and be treated as external dependency -->
+        <!-- Should probably be removed and be treated as external dependency   -->
         <module>tjws</module>
         <module>jaxrs-api</module>
         <module>resteasy-test-data</module>
@@ -88,6 +88,7 @@
         <module>resteasy-bom</module>
         <module>resteasy-cache</module>
         <module>resteasy-guice</module>
+        <module>eagledns</module>
         <module>resteasy-doseta</module>
         <module>resteasy-oauth</module>
         <module>resteasy-links</module>

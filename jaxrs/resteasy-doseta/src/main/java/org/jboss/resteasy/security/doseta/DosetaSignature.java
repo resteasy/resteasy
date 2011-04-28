@@ -27,7 +27,7 @@ public class DosetaSignature
 {
    public static final String DOSETA_SIGNATURE = "Doseta-Signature";
    public static final String TIMESTAMP = "t";
-   public static final String SDID = "d";
+   public static final String DOMAIN = "d";
    public static final String EXPIRATION = "x";
    public static final String ALGORITHM = "a";
    public static final String SIGNATURE = "b";
@@ -57,7 +57,6 @@ public class DosetaSignature
    protected List<String> headers = new ArrayList<String>();
    protected byte[] signature;
    protected String headerValue;
-   protected String keyAlias;
 
 
    public DosetaSignature()
@@ -106,16 +105,6 @@ public class DosetaSignature
       return headerValue;
    }
 
-   public String getKeyAlias()
-   {
-      return keyAlias;
-   }
-
-   public void setKeyAlias(String keyAlias)
-   {
-      this.keyAlias = keyAlias;
-   }
-
    /**
     * Add a reference to a header within the signature calculation
     *
@@ -128,12 +117,16 @@ public class DosetaSignature
 
    /**
     * @param name
-    * @param value
+    * @param value if null, remove attribute
     * @param includeSignature true if you want attribute to be included within the signature calculation
     * @param display          true if you want attribute shown in the Content-Signature
     */
    public void setAttribute(String name, String value)
    {
+      if (value == null)
+      {
+         attributes.remove(name);
+      }
       attributes.put(name, value);
    }
 
@@ -159,14 +152,34 @@ public class DosetaSignature
       setAttribute(TIMESTAMP, ((new Date()).getTime() / 1000) + "");
    }
 
-   public void setDomainIdentity(String domain)
+   public void setSelector(String selector)
    {
-      setAttribute(SDID, domain);
+      setAttribute(SELECTOR, selector);
    }
 
-   public String getDomainIdentity()
+   public String getSelector()
    {
-      return attributes.get(SDID);
+      return attributes.get(SELECTOR);
+   }
+
+   public String getQuery()
+   {
+      return attributes.get(QUERY);
+   }
+
+   public void setQuery(String query)
+   {
+      setAttribute(QUERY, query);
+   }
+
+   public void setDomain(String domain)
+   {
+      setAttribute(DOMAIN, domain);
+   }
+
+   public String getDomain()
+   {
+      return attributes.get(DOMAIN);
    }
 
    /**
@@ -318,6 +331,11 @@ public class DosetaSignature
       attributes.put(CANONICALIZATION, "simple/simple");
       String algorithm = SigningAlgorithm.SHA256withRSA.getJavaSecNotation();
       String hashAlgorithm = SigningAlgorithm.SHA256withRSA.getJavaHashNotation();
+
+      if (getDomain() == null)
+      {
+         throw new SignatureException("You must have the domain attribute set on your signature header");
+      }
 
       Signature signature = null;
       try

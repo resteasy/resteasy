@@ -36,7 +36,5 @@ public interface ResteasyContextParameters
    String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";
    String RESTEASY_SCANNED_PROVIDERS = "resteasy.scanned.providers";
    String RESTEASY_SCANNED_JNDI_RESOURCES = "resteasy.scanned.jndi.resources";
-   String RESTEASY_KEY_STORE_FILE_NAME = "resteasy.keystore.filename";
-   String RESTEASY_KEY_STORE_CLASSPATH = "resteasy.keystore.classpath";
-   String RESTEASY_KEY_STORE_PASSWORD = "resteasy.keystore.password";
+   String RESTEASY_CONTEXT_OBJECTS = "resteasy.context.objects";
 }
