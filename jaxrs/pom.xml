@@ -10,8 +10,8 @@
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
-        <dep.jaxb-impl.version>2.1.12</dep.jaxb-impl.version>
-        <dep.jettison.version>1.1</dep.jettison.version>
+		<dep.jaxb-impl.version>2.1.12</dep.jaxb-impl.version>
+		<dep.jettison.version>1.2</dep.jettison.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -26,8 +26,7 @@
 
     <scm>
         <connection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs</connection>
-        <developerConnection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs
-        </developerConnection>
+        <developerConnection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs</developerConnection>
         <url>http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs</url>
     </scm>
 

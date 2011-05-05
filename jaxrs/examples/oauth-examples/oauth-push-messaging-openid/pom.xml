@@ -3,6 +3,7 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>2.2-RC-1-SNAPSHOT</version>
+	    <relativePath>../../../pom.xml</relativePath>
     </parent>
     <name>Example: OAuth Push Messaging OpenId Modules</name>
     <modelVersion>4.0.0</modelVersion>
