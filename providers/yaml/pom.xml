@@ -5,6 +5,7 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>2.2-RC-1-SNAPSHOT</version>
+	    <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-yaml-provider</artifactId>
     <packaging>jar</packaging>
