@@ -12,7 +12,7 @@
 </div>
 
 <p>Save a contact, save the world:</p> 
-<form action="/contacts" method="post">
+<form action="contacts" method="post">
  First Name: <input type="text" name="firstName" /><br>
  Last Name: <input type="text" name="lastName" /><br>
  <input type="submit" value="submit"/>
