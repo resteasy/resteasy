@@ -33,7 +33,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: javax.xml.stream:stax-api:1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.sun.xml.stream:sjsxp:1.0.1" level="project" />
     <orderEntry type="module" module-name="resteasy-jettison-provider" scope="TEST" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jettison:jettison:1.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jettison:jettison:1.2" level="project" />
     <orderEntry type="module" module-name="resteasy-fastinfoset-provider" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: com.sun.xml.fastinfoset:FastInfoset:1.2.7" level="project" />
     <orderEntry type="module" module-name="resteasy-multipart-provider" scope="TEST" />

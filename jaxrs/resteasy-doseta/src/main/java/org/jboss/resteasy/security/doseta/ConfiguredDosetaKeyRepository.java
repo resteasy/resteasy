@@ -79,12 +79,12 @@ public class ConfiguredDosetaKeyRepository implements KeyRepository
 
    }
 
-   public PrivateKey findPrivateKey(DosetaSignature header)
+   public PrivateKey findPrivateKey(DKIMSignature header)
    {
       return keyRepository.findPrivateKey(header);
    }
 
-   public PublicKey findPublicKey(DosetaSignature header)
+   public PublicKey findPublicKey(DKIMSignature header)
    {
       return keyRepository.findPublicKey(header);
    }

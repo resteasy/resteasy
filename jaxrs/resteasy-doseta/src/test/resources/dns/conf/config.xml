@@ -10,7 +10,7 @@
         <ZoneProviders>
                 <ZoneProvider>
                         <Name>Default file zone provider</Name>
-                        <Class>org.jboss.resteasy.test.security.doseta.PathZoneProvider</Class>
+                        <Class>se.unlogic.eagledns.zoneproviders.file.PathZoneProvider</Class>
                         <Properties>
                                 <Property name="zoneFilePath">dns/zones</Property>
                                 <Property name="autoReloadZones">false</Property>

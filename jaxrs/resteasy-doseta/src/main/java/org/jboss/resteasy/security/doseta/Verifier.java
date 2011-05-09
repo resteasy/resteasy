@@ -37,7 +37,7 @@ public class Verifier
       return verifications;
    }
 
-   public VerificationResults verify(List<DosetaSignature> signatures, Map headers, byte[] body)
+   public VerificationResults verify(List<DKIMSignature> signatures, Map headers, byte[] body)
    {
       VerificationResults results = new VerificationResults();
       results.setVerified(true);
@@ -47,14 +47,14 @@ public class Verifier
          results.getResults().add(resultSet);
          resultSet.setVerification(verification);
 
-         List<DosetaSignature> matched = new ArrayList<DosetaSignature>();
+         List<DKIMSignature> matched = new ArrayList<DKIMSignature>();
          matched.addAll(signatures);
-         Iterator<DosetaSignature> iterator = matched.iterator();
+         Iterator<DKIMSignature> iterator = matched.iterator();
 
 
          while (iterator.hasNext())
          {
-            DosetaSignature sig = iterator.next();
+            DKIMSignature sig = iterator.next();
             if (verification.getIdentifierName() != null)
             {
                String value = sig.getAttributes().get(verification.getIdentifierName());
@@ -74,7 +74,7 @@ public class Verifier
          }
 
          resultSet.setVerified(true);
-         for (DosetaSignature signature : matched)
+         for (DKIMSignature signature : matched)
          {
             VerificationResult result = verifySignature(headers, body, verification, signature);
             resultSet.getResults().add(result);
@@ -90,7 +90,7 @@ public class Verifier
    }
 
 
-   public VerificationResult verifySignature(Map headers, byte[] body, Verification verification, DosetaSignature signature)
+   public VerificationResult verifySignature(Map headers, byte[] body, Verification verification, DKIMSignature signature)
    {
       VerificationResult result = new VerificationResult();
       result.setSignature(signature);
@@ -115,19 +115,13 @@ public class Verifier
          }
       }
 
-      boolean verified = false;
       try
       {
-         verified = signature.verify(headers, body, key);
+         signature.verify(headers, body, key);
       }
       catch (Exception e)
       {
          result.setFailureException(e);
-         return result;
-      }
-      if (verified == false)
-      {
-         result.setFailureReason("Signature verification failed");
          return result;
       }
       if (verification.isIgnoreExpiration() == false)

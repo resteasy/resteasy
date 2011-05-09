@@ -7,10 +7,9 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
-import org.jboss.resteasy.security.doseta.DosetaSignature;
 import org.jboss.resteasy.security.doseta.KeyRepository;
-import org.jboss.resteasy.security.doseta.KeyStoreKeyRepository;
 import org.jboss.resteasy.security.doseta.UnauthorizedSignatureException;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.security.doseta.Verifier;
@@ -34,12 +33,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.io.InputStream;
 import java.net.URL;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,7 +117,7 @@ public class SigningTest extends BaseResourceTest
       @Path("bad-signature")
       public Response badSignature() throws Exception
       {
-         DosetaSignature signature = new DosetaSignature();
+         DKIMSignature signature = new DKIMSignature();
          signature.setDomain("samplezone.org");
          signature.setSelector("test");
          signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
@@ -131,7 +130,7 @@ public class SigningTest extends BaseResourceTest
          String header = parser.setAttribute(s.toCharArray(), 0, s.length(), ';', "b", encodedBadSig);
 
          signature.setSignature(sig);
-         return Response.ok("hello world").header(DosetaSignature.DOSETA_SIGNATURE, header).build();
+         return Response.ok("hello world").header(DKIMSignature.DKIM_SIGNATURE, header).build();
       }
 
       @GET
@@ -139,12 +138,12 @@ public class SigningTest extends BaseResourceTest
       @Path("bad-hash")
       public Response badHash() throws Exception
       {
-         DosetaSignature signature = new DosetaSignature();
+         DKIMSignature signature = new DKIMSignature();
          signature.setDomain("samplezone.org");
          signature.setSelector("test");
          signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
 
-         return Response.ok("hello").header(DosetaSignature.DOSETA_SIGNATURE, signature.toString()).build();
+         return Response.ok("hello").header(DKIMSignature.DKIM_SIGNATURE, signature.toString()).build();
       }
 
       @GET
@@ -152,11 +151,26 @@ public class SigningTest extends BaseResourceTest
       @Path("manual")
       public Response getManual()
       {
-         DosetaSignature signature = new DosetaSignature();
+         DKIMSignature signature = new DKIMSignature();
          signature.setSelector("test");
          signature.setDomain("samplezone.org");
          Response.ResponseBuilder builder = Response.ok("hello");
-         builder.header(DosetaSignature.DOSETA_SIGNATURE, signature);
+         builder.header(DKIMSignature.DKIM_SIGNATURE, signature);
+         return builder.build();
+      }
+
+      @GET
+      @Path("header")
+      @Produces("text/plain")
+      public Response withHeader()
+      {
+         Response.ResponseBuilder builder = Response.ok("hello world");
+         builder.header("custom", "value");
+         DKIMSignature signature = new DKIMSignature();
+         signature.setSelector("test");
+         signature.setDomain("samplezone.org");
+         signature.addHeader("custom");
+         builder.header(DKIMSignature.DKIM_SIGNATURE, signature);
          return builder.build();
       }
 
@@ -171,7 +185,7 @@ public class SigningTest extends BaseResourceTest
       @POST
       @Consumes("text/plain")
       @Verify
-      public void post(@HeaderParam("Doseta-Signature") DosetaSignature signature, String input)
+      public void post(@HeaderParam(DKIMSignature.DKIM_SIGNATURE) DKIMSignature signature, String input)
       {
          Assert.assertNotNull(signature);
          Assert.assertEquals(input, "hello world");
@@ -180,12 +194,12 @@ public class SigningTest extends BaseResourceTest
       @POST
       @Consumes("text/plain")
       @Path("verify-manual")
-      public void verifyManual(@HeaderParam("Doseta-Signature") DosetaSignature signature, @Context HttpHeaders headers, MarshalledEntity<String> input) throws Exception
+      public void verifyManual(@HeaderParam(DKIMSignature.DKIM_SIGNATURE) DKIMSignature signature, @Context HttpHeaders headers, MarshalledEntity<String> input) throws Exception
       {
          Assert.assertNotNull(signature);
          Assert.assertEquals(input.getEntity(), "hello world");
 
-         Assert.assertTrue(signature.verify(headers.getRequestHeaders(), input.getMarshalledBytes(), keys.getPublic()));
+         signature.verify(headers.getRequestHeaders(), input.getMarshalledBytes(), keys.getPublic());
       }
 
       @GET
@@ -269,8 +283,8 @@ public class SigningTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       MarshalledEntity<String> marshalledEntity = response.getEntity();
       Assert.assertEquals("hello world", marshalledEntity.getEntity());
-      String signatureHeader = response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE);
-      System.out.println("Doseta-Signature:  " + signatureHeader);
+      String signatureHeader = response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE);
+      System.out.println(DKIMSignature.DKIM_SIGNATURE + ":  " + signatureHeader);
 
       for (String name : response.getHeaders().keySet())
       {
@@ -278,20 +292,19 @@ public class SigningTest extends BaseResourceTest
       }
       Assert.assertNotNull(signatureHeader);
 
-      DosetaSignature contentSignature = new DosetaSignature(signatureHeader);
-      boolean verified = contentSignature.verify(response.getHeaders(), marshalledEntity.getMarshalledBytes(), keys.getPublic());
-      Assert.assertTrue(verified);
+      DKIMSignature contentSignature = new DKIMSignature(signatureHeader);
+      contentSignature.verify(response.getHeaders(), marshalledEntity.getMarshalledBytes(), keys.getPublic());
    }
 
    @Test
    public void testBasicVerification() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
-      DosetaSignature contentSignature = new DosetaSignature();
+      DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setDomain("samplezone.org");
       contentSignature.setSelector("test");
       contentSignature.setPrivateKey(keys.getPrivate());
-      request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
+      request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(204, response.getStatus());
@@ -303,12 +316,12 @@ public class SigningTest extends BaseResourceTest
    public void testManualVerification() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/verify-manual"));
-      DosetaSignature contentSignature = new DosetaSignature();
+      DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setDomain("samplezone.org");
       contentSignature.setSelector("test");
       contentSignature.setAttribute("code", "hello");
       contentSignature.setPrivateKey(keys.getPrivate());
-      request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
+      request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(204, response.getStatus());
@@ -320,12 +333,12 @@ public class SigningTest extends BaseResourceTest
    public void testBasicVerificationRepository() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
-      DosetaSignature contentSignature = new DosetaSignature();
+      DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("test");
       contentSignature.setDomain("samplezone.org");
       request.getAttributes().put(KeyRepository.class.getName(), repository);
 
-      request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
+      request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(204, response.getStatus());
@@ -337,11 +350,11 @@ public class SigningTest extends BaseResourceTest
    public void testBasicVerificationBadSignature() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
-      DosetaSignature contentSignature = new DosetaSignature();
+      DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("test");
       contentSignature.setDomain("samplezone.org");
       contentSignature.setPrivateKey(badKey);
-      request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
+      request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(401, response.getStatus());
@@ -359,14 +372,14 @@ public class SigningTest extends BaseResourceTest
    @Test
    public void testTimestampSignature() throws Exception
    {
-      DosetaSignature signature = new DosetaSignature();
+      DKIMSignature signature = new DKIMSignature();
       signature.setTimestamp();
       signature.setSelector("test");
       signature.setDomain("samplezone.org");
       signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
       String sig = signature.toString();
-      System.out.println("Doseta-Signature: " + sig);
-      signature = new DosetaSignature(sig);
+      System.out.println(DKIMSignature.DKIM_SIGNATURE + ": " + sig);
+      signature = new DKIMSignature(sig);
 
    }
 
@@ -382,7 +395,7 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/stamped"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
 
@@ -401,7 +414,7 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/stamped"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       Thread.sleep(1500);
       try
@@ -429,7 +442,7 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-hour"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
    }
@@ -444,7 +457,7 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-minute"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
    }
@@ -459,7 +472,7 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-day"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
    }
@@ -474,7 +487,7 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-month"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
    }
@@ -489,7 +502,7 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-year"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
    }
@@ -504,7 +517,7 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-short"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       Thread.sleep(1500);
       try
@@ -536,8 +549,8 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/manual"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
-      Assert.assertNotNull(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      Assert.assertNotNull(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       try
       {
@@ -548,7 +561,8 @@ public class SigningTest extends BaseResourceTest
       {
          Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
          UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException) e.getCause();
-         Assert.assertEquals("Signature verification failed", signatureException.getResults().getFirstResult(verification).getFailureReason());
+         Assert.assertEquals("Failed to verify signatures:\r\n Failed to verify signature.", signatureException.getMessage());
+//         Assert.assertEquals("Failed to verify signature.", signatureException.getResults().getFirstResult(verification).getFailureReason());
       }
 
 
@@ -564,12 +578,30 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/manual"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
-      Assert.assertNotNull(response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE));
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      Assert.assertNotNull(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
       Assert.assertEquals("hello", output);
    }
+
+   @Test
+   public void testManualWithHeader() throws Exception
+   {
+      Verifier verifier = new Verifier();
+      Verification verification = verifier.addNew();
+      verification.setRepository(repository);
+
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/header"));
+      ClientResponse<String> response = request.get(String.class);
+      response.getAttributes().put(Verifier.class.getName(), verifier);
+      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      Assert.assertNotNull(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      Assert.assertEquals(200, response.getStatus());
+      String output = response.getEntity();
+      Assert.assertEquals("hello world", output);
+   }
+
 
    @Test
    public void testBadSignature() throws Exception
@@ -577,17 +609,26 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/bad-signature"));
       ClientResponse<?> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
-      String signatureHeader = response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE);
+      String signatureHeader = response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE);
       Assert.assertNotNull(signatureHeader);
-      System.out.println("Doseta-Signature:  " + signatureHeader);
+      System.out.println(DKIMSignature.DKIM_SIGNATURE + ":  " + signatureHeader);
 
-      DosetaSignature contentSignature = new DosetaSignature(signatureHeader);
+      DKIMSignature contentSignature = new DKIMSignature(signatureHeader);
 
       MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
       {
       });
-      boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
-      Assert.assertFalse(verified);
+      boolean failedVerification = false;
+
+      try
+      {
+         contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
+      }
+      catch (SignatureException e)
+      {
+         failedVerification = true;
+      }
+      Assert.assertTrue(failedVerification);
    }
 
    @Test
@@ -596,17 +637,26 @@ public class SigningTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/bad-hash"));
       ClientResponse<?> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
-      String signatureHeader = response.getHeaders().getFirst(DosetaSignature.DOSETA_SIGNATURE);
+      String signatureHeader = response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE);
       Assert.assertNotNull(signatureHeader);
-      System.out.println("Doseta-Signature:  " + signatureHeader);
+      System.out.println(DKIMSignature.DKIM_SIGNATURE + ":  " + signatureHeader);
 
-      DosetaSignature contentSignature = new DosetaSignature(signatureHeader);
+      DKIMSignature contentSignature = new DKIMSignature(signatureHeader);
 
       MarshalledEntity<String> entity = response.getEntity(new GenericType<MarshalledEntity<String>>()
       {
       });
-      boolean verified = contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
-      Assert.assertFalse(verified);
+
+      boolean failedVerification = false;
+      try
+      {
+         contentSignature.verify(response.getHeaders(), entity.getMarshalledBytes(), keys.getPublic());
+      }
+      catch (SignatureException e)
+      {
+         failedVerification = true;
+      }
+      Assert.assertTrue(failedVerification);
    }
 
    @Test

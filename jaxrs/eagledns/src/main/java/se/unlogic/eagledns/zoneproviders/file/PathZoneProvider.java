@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.security.doseta;
+package se.unlogic.eagledns.zoneproviders.file;
 
 import se.unlogic.eagledns.zoneproviders.file.FileZoneProvider;
 

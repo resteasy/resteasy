@@ -218,7 +218,7 @@ public class DosetaKeyRepository implements KeyRepository
       return entry.key;
    }
 
-   public String getAlias(DosetaSignature header)
+   public String getAlias(DKIMSignature header)
    {
       StringBuffer buf = new StringBuffer();
       String selector = header.getSelector();
@@ -233,7 +233,7 @@ public class DosetaKeyRepository implements KeyRepository
       return buf.toString();
    }
 
-   public PrivateKey findPrivateKey(DosetaSignature header)
+   public PrivateKey findPrivateKey(DKIMSignature header)
    {
       String alias = getAlias(header);
       if (alias == null) return null;
@@ -249,7 +249,7 @@ public class DosetaKeyRepository implements KeyRepository
       return key;
    }
 
-   public PublicKey findPublicKey(DosetaSignature header)
+   public PublicKey findPublicKey(DKIMSignature header)
    {
       String alias = getAlias(header); // never use principal to find a public key
       if (alias == null) return null;

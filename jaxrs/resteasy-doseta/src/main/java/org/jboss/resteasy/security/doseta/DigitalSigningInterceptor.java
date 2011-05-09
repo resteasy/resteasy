@@ -34,27 +34,27 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
    {
       MultivaluedMap<String, Object> headers = context.getHeaders();
-      if (!headers.containsKey(DosetaSignature.DOSETA_SIGNATURE))
+      if (!headers.containsKey(DKIMSignature.DKIM_SIGNATURE))
       {
          context.proceed();
          return;
       }
 
 
-      List<Object> signatures = headers.get(DosetaSignature.DOSETA_SIGNATURE);
+      List<Object> signatures = headers.get(DKIMSignature.DKIM_SIGNATURE);
       if (signatures == null || signatures.isEmpty())
       {
          context.proceed();
          return;
       }
 
-      List<DosetaSignature> list = new ArrayList<DosetaSignature>();
+      List<DKIMSignature> list = new ArrayList<DKIMSignature>();
 
       for (Object obj : signatures)
       {
-         if (obj instanceof DosetaSignature)
+         if (obj instanceof DKIMSignature)
          {
-            list.add((DosetaSignature) obj);
+            list.add((DKIMSignature) obj);
          }
       }
 
@@ -74,7 +74,7 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
          context.proceed();
          byte[] body = baos.toByteArray();
 
-         for (DosetaSignature dosetaSignature : list)
+         for (DKIMSignature dosetaSignature : list)
          {
             sign(context, headers, body, dosetaSignature);
          }
@@ -91,7 +91,7 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
       }
    }
 
-   protected void sign(MessageBodyWriterContext context, MultivaluedMap<String, Object> headers, byte[] body, DosetaSignature dosetaSignature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, UnsupportedEncodingException
+   protected void sign(MessageBodyWriterContext context, MultivaluedMap<String, Object> headers, byte[] body, DKIMSignature dosetaSignature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, UnsupportedEncodingException
    {
       // if its already signed, don't bother
       if (dosetaSignature.getBased64Signature() != null) return;

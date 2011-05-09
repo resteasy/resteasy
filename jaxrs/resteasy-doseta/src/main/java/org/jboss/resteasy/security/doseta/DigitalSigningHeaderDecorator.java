@@ -39,7 +39,7 @@ public class DigitalSigningHeaderDecorator implements MessageBodyWriterIntercept
 
    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
    {
-      DosetaSignature header = new DosetaSignature();
+      DKIMSignature header = new DKIMSignature();
 
       KeyRepository repository = (KeyRepository) context.getAttribute(KeyRepository.class.getName());
       if (repository == null)
@@ -91,7 +91,7 @@ public class DigitalSigningHeaderDecorator implements MessageBodyWriterIntercept
          header.setExpiration(after.seconds(), after.minutes(), after.hours(), after.days(), after.months(), after.years());
       }
 
-      context.getHeaders().add(DosetaSignature.DOSETA_SIGNATURE, header);
+      context.getHeaders().add(DKIMSignature.DKIM_SIGNATURE, header);
       context.proceed();
       return;
    }

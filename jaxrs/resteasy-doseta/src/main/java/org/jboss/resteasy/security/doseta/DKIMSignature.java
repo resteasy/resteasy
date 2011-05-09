@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,9 +24,9 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class DosetaSignature
+public class DKIMSignature
 {
-   public static final String DOSETA_SIGNATURE = "Doseta-Signature";
+   public static final String DKIM_SIGNATURE = "DKIM-Signature";
    public static final String TIMESTAMP = "t";
    public static final String DOMAIN = "d";
    public static final String EXPIRATION = "x";
@@ -53,23 +54,23 @@ public class DosetaSignature
    public static String DEFAULT_ALGORITHM = SHA256WITH_RSA;
 
    protected PrivateKey privateKey;
-   protected Map<String, String> attributes = new HashMap<String, String>();
+   protected Map<String, String> attributes = new LinkedHashMap<String, String>();
    protected List<String> headers = new ArrayList<String>();
    protected byte[] signature;
    protected String headerValue;
 
 
-   public DosetaSignature()
+   public DKIMSignature()
    {
    }
 
-   public DosetaSignature(Map<String, String> attrs)
+   public DKIMSignature(Map<String, String> attrs)
    {
       attributes = attrs;
       extractAttributes();
    }
 
-   public DosetaSignature(String headerValue)
+   public DKIMSignature(String headerValue)
    {
       this.headerValue = headerValue;
       ParameterParser parser = new ParameterParser();
@@ -348,10 +349,6 @@ public class DosetaSignature
          throw new SignatureException(e);
       }
 
-      String encodedBodyHash = calculateEncodedHash(body, hashAlgorithm);
-
-      attributes.put(BODY_HASH, encodedBodyHash);
-
       if (headers.size() > 0)
       {
          StringBuffer headerCat = new StringBuffer();
@@ -366,7 +363,9 @@ public class DosetaSignature
          updateSignatureWithHeader(headers, signature);
       }
 
-      // Now calculate the Doseta-Signature minus bh.
+      String encodedBodyHash = calculateEncodedHash(body, hashAlgorithm);
+
+      attributes.put(BODY_HASH, encodedBodyHash);
 
       StringBuffer dosetaBuffer = new StringBuffer();
 
@@ -387,6 +386,7 @@ public class DosetaSignature
       setSignature(signed);
       String base64Signature = Base64.encodeBytes(signed);
       dosetaHeader += base64Signature;
+//      System.out.println("***: " + dosetaHeader);
       this.headerValue = dosetaHeader;
 
    }
@@ -474,7 +474,7 @@ public class DosetaSignature
     * @throws java.security.SignatureException
     *
     */
-   public boolean verify(Map headers, byte[] body, PublicKey key) throws SignatureException
+   public void verify(Map headers, byte[] body, PublicKey key) throws SignatureException
    {
       String algorithm = getAlgorithm();
       if (algorithm == null || !SigningAlgorithm.SHA256withRSA.getRfcNotation().toLowerCase().equals(algorithm.toLowerCase()))
@@ -513,12 +513,15 @@ public class DosetaSignature
 
       if (Arrays.equals(bh, enclosedBh) == false)
       {
-         return false;
+         throw new SignatureException("Body hashes do not match.");
       }
       updateSignatureWithHeader(headers, verifier);
       ParameterParser parser = new ParameterParser();
       String strippedHeader = parser.setAttribute(headerValue.toCharArray(), 0, headerValue.length(), ';', "b", "");
       verifier.update(strippedHeader.getBytes());
-      return verifier.verify(getSignature());
+      if (verifier.verify(getSignature()) == false)
+      {
+         throw new SignatureException("Failed to verify signature.");
+      }
    }
 }
