@@ -9,9 +9,9 @@ import java.security.PublicKey;
  */
 public interface KeyRepository
 {
-   public PrivateKey findPrivateKey(DosetaSignature header);
+   public PrivateKey findPrivateKey(DKIMSignature header);
 
-   public PublicKey findPublicKey(DosetaSignature header);
+   public PublicKey findPublicKey(DKIMSignature header);
 
    /**
     * What should be the default domain to use when creating signature header

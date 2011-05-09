@@ -12,7 +12,7 @@ public class Verification
 {
    protected PublicKey key;
    protected KeyRepository repository;
-   protected String algorithm = DosetaSignature.DEFAULT_ALGORITHM;
+   protected String algorithm = DKIMSignature.DEFAULT_ALGORITHM;
    protected Map<String, String> attributes = new HashMap<String, String>();
    protected String identifierName;
    protected String identifierValue;

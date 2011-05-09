@@ -38,21 +38,21 @@ public class DigitalVerificationInterceptor implements MessageBodyReaderIntercep
       //System.out.println("TRACE: found verifier");
 
       MultivaluedMap<String, String> headers = context.getHeaders();
-      List<String> strings = headers.get(DosetaSignature.DOSETA_SIGNATURE);
+      List<String> strings = headers.get(DKIMSignature.DKIM_SIGNATURE);
       if (strings == null)
       {
-         throw new UnauthorizedSignatureException("There was no " + DosetaSignature.DOSETA_SIGNATURE + " header");
+         throw new UnauthorizedSignatureException("There was no " + DKIMSignature.DKIM_SIGNATURE + " header");
       }
-      List<DosetaSignature> signatures = new ArrayList<DosetaSignature>();
+      List<DKIMSignature> signatures = new ArrayList<DKIMSignature>();
       for (String headerVal : strings)
       {
          try
          {
-            signatures.add(new DosetaSignature(headerVal));
+            signatures.add(new DKIMSignature(headerVal));
          }
          catch (Exception e)
          {
-            throw new UnauthorizedSignatureException("Malformed " + DosetaSignature.DOSETA_SIGNATURE + " header");
+            throw new UnauthorizedSignatureException("Malformed " + DKIMSignature.DKIM_SIGNATURE + " header");
          }
       }
 

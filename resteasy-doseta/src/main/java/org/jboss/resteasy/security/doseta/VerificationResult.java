@@ -9,7 +9,7 @@ public class VerificationResult
    protected boolean verified;
    protected String failureReason;
    protected Exception failureException;
-   protected DosetaSignature signature;
+   protected DKIMSignature signature;
 
    public boolean isVerified()
    {
@@ -41,12 +41,12 @@ public class VerificationResult
       this.failureException = failureException;
    }
 
-   public DosetaSignature getSignature()
+   public DKIMSignature getSignature()
    {
       return signature;
    }
 
-   public void setSignature(DosetaSignature signature)
+   public void setSignature(DKIMSignature signature)
    {
       this.signature = signature;
    }

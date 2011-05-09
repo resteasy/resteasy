@@ -1,25 +1,14 @@
 package org.jboss.resteasy.test.security.doseta;
 
-import org.apache.log4j.Logger;
-import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
-import org.jboss.resteasy.security.doseta.DosetaSignature;
 import org.jboss.resteasy.security.doseta.KeyRepository;
-import org.jboss.resteasy.security.doseta.UnauthorizedSignatureException;
-import org.jboss.resteasy.security.doseta.Verification;
-import org.jboss.resteasy.security.doseta.Verifier;
-import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.jboss.resteasy.util.Base64;
-import org.jboss.resteasy.util.GenericType;
-import org.jboss.resteasy.util.ParameterParser;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -32,16 +21,10 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.net.URL;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -111,12 +94,12 @@ public class SigningDnsTest extends BaseResourceTest
       @Path("bad-signature")
       public Response badSignature() throws Exception
       {
-         DosetaSignature signature = new DosetaSignature();
+         DKIMSignature signature = new DKIMSignature();
          signature.setDomain("samplezone.org");
          signature.setSelector("test2");
          signature.setPrivateKey(badKey);
 
-         return Response.ok("hello world").header(DosetaSignature.DOSETA_SIGNATURE, signature).build();
+         return Response.ok("hello world").header(DKIMSignature.DKIM_SIGNATURE, signature).build();
       }
 
       @GET
@@ -130,7 +113,7 @@ public class SigningDnsTest extends BaseResourceTest
       @POST
       @Consumes("text/plain")
       @Verify
-      public void post(@HeaderParam("Doseta-Signature") DosetaSignature signature, String input)
+      public void post(@HeaderParam(DKIMSignature.DKIM_SIGNATURE) DKIMSignature signature, String input)
       {
          Assert.assertNotNull(signature);
          Assert.assertEquals(input, "hello world");
@@ -143,12 +126,12 @@ public class SigningDnsTest extends BaseResourceTest
    public void testBasicVerificationRepository() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
-      DosetaSignature contentSignature = new DosetaSignature();
+      DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("test1");
       contentSignature.setDomain("samplezone.org");
       request.getAttributes().put(KeyRepository.class.getName(), clientRepository);
 
-      request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
+      request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(204, response.getStatus());
@@ -160,11 +143,11 @@ public class SigningDnsTest extends BaseResourceTest
    public void testBasicVerificationBadSignature() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
-      DosetaSignature contentSignature = new DosetaSignature();
+      DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("test1");
       contentSignature.setDomain("samplezone.org");
       contentSignature.setPrivateKey(badKey);
-      request.header(DosetaSignature.DOSETA_SIGNATURE, contentSignature);
+      request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(401, response.getStatus());
