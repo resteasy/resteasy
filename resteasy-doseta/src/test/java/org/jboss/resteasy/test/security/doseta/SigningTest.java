@@ -422,11 +422,9 @@ public class SigningTest extends BaseResourceTest
          String output = response.getEntity();
          throw new Exception("unreachable!");
       }
-      catch (ReaderException e)
+      catch (UnauthorizedSignatureException e)
       {
-         Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException) e.getCause();
-         Assert.assertEquals("Signature is stale", signatureException.getResults().getFirstResult(verification).getFailureReason());
+         Assert.assertEquals("Signature is stale", e.getResults().getFirstResult(verification).getFailureReason());
       }
 
 
@@ -525,11 +523,9 @@ public class SigningTest extends BaseResourceTest
          String output = response.getEntity();
          throw new Exception("unreachable!");
       }
-      catch (ReaderException e)
+      catch (UnauthorizedSignatureException e)
       {
-         Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException) e.getCause();
-         Assert.assertEquals("Signature expired", signatureException.getResults().getFirstResult(verification).getFailureReason());
+         Assert.assertEquals("Signature expired", e.getResults().getFirstResult(verification).getFailureReason());
       }
 
 
@@ -557,12 +553,9 @@ public class SigningTest extends BaseResourceTest
          String output = response.getEntity();
          throw new Exception("unreachable!");
       }
-      catch (ReaderException e)
+      catch (UnauthorizedSignatureException e)
       {
-         Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
-         UnauthorizedSignatureException signatureException = (UnauthorizedSignatureException) e.getCause();
-         Assert.assertEquals("Failed to verify signatures:\r\n Failed to verify signature.", signatureException.getMessage());
-//         Assert.assertEquals("Failed to verify signature.", signatureException.getResults().getFirstResult(verification).getFailureReason());
+         Assert.assertEquals("Failed to verify signatures:\r\n Failed to verify signature.", e.getMessage());
       }
 
 
@@ -680,9 +673,8 @@ public class SigningTest extends BaseResourceTest
       {
          String output = proxy.bad();
       }
-      catch (ReaderException e)
+      catch (UnauthorizedSignatureException e)
       {
-         Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
       }
    }
 

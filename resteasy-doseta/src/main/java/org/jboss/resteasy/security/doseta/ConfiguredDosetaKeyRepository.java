@@ -11,18 +11,74 @@ import java.security.PublicKey;
  *
  * For WAR files, it will look in context parameters and servlet/filter init params for doseta variables.
  *
+ * Private keys are stored in a java keystore.  Public keys may be stored in either a java keystore or discovered via
+ * DNS.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class ConfiguredDosetaKeyRepository implements KeyRepository
 {
+   /**
+    * Context parameter.
+    *
+    * Hardcoded file path to your keystore
+    *
+    */
    public static String RESTEASY_KEY_STORE_FILE_NAME = "resteasy.doseta.keystore.filename";
+
+   /**
+    * Context parameter.
+    *
+    * Find the java keystore by searching the classpath.  This points to a file on the classpath
+    *
+    */
    public static String RESTEASY_KEY_STORE_CLASSPATH = "resteasy.doseta.keystore.classpath";
+
+   /**
+    * Context parameter.
+    *
+    * Password of the java keystore.
+    *
+    */
    public static String RESTEASY_KEY_STORE_PASSWORD = "resteasy.doseta.keystore.password";
+
+   /**
+    * Context parameter.
+    *
+    * true|false.  Whether or not to use DNS to discover public keys.  By default looks in keystore
+    *
+    */
    public static String RESTEASY_DOSETA_USE_DNS = "resteasy.doseta.use.dns";
+
+   /**
+    * Context parameter.
+    *
+    * If you need to retrieve from a specific DNS server specify the url
+    *
+    * dns://hostname:port
+    *
+    */
    public static String RESTEASY_DOSETA_DNS_URI = "resteasy.doseta.dns.uri";
+
+   /**
+    * Context parameter.
+    *
+    * When signing, if no domain is specified, use this domain.
+    *
+    */
    public static String RESTEASY_DOSETA_DEFAULT_PRIVATE_DOMAIN = "resteasy.doseta.default.private.domain";
+
+   /**
+    *  Public keys are cached.  Specify a timeout for these keys.
+    *
+    */
    public static String RESTEASY_DOSETA_CACHE_TIMEOUT = "resteasy.doseta.cache.timeout";
+
+   /**
+    * true|false.  When signing, if no selector is specified, use the user principal as the selector value.
+    *
+    */
    public static String RESTEASY_DOSETA_PRINCIPAL_FOR_PRIVATE = "resteasy.doseta.principal.for.private";
 
    protected DosetaKeyRepository keyRepository = new DosetaKeyRepository();
