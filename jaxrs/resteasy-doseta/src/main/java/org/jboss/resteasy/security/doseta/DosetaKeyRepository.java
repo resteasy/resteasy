@@ -46,8 +46,8 @@ public class DosetaKeyRepository implements KeyRepository
    protected ConcurrentHashMap<String, CacheEntry<PublicKey>> publicCache = new ConcurrentHashMap<String, CacheEntry<PublicKey>>();
    protected KeyStoreKeyRepository keyStore;
    protected String defaultPrivateDomain;
-   protected boolean useDns = true;
-   protected boolean userPrincipalAsPrivateSelector;
+   protected boolean useDns = false;
+   protected boolean userPrincipalAsPrivateSelector = false;
    protected String dnsUri;
    protected long cacheTimeout = 3600000l; // 1 hour
    protected String keyStorePath;

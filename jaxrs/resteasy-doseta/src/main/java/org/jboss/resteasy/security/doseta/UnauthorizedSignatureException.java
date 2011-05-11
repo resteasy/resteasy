@@ -1,11 +1,12 @@
 package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.ReaderException;
 
 /**
  * Thrown by RESTEasy when HTTP Unauthorized (401) is encountered
  */
-public class UnauthorizedSignatureException extends LoggableFailure
+public class UnauthorizedSignatureException extends ReaderException
 {
    protected VerificationResults results;
 

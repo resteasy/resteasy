@@ -163,6 +163,7 @@ public class ResteasyDeployment
                   throw new RuntimeException("Unable to instantiate context object " + entry.getKey(), e);
                }
                Object obj = createFromInjectorFactory(entry.getValue(), providerFactory);
+               logger.debug("Creating context object <" + entry.getKey() + " : " + entry.getValue() + ">");
                defaultContextObjects.put(key, obj);
                dispatcher.getDefaultContextObjects().put(key, obj);
                contextDataMap.put(key, obj);
