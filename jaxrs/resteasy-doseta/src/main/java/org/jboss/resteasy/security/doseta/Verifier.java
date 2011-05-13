@@ -1,6 +1,7 @@
 package org.jboss.resteasy.security.doseta;
 
 import java.security.PublicKey;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,14 @@ public class Verifier
       return verifications;
    }
 
+   /**
+    * Try to verify a set of signatures and store the results
+    *
+    * @param signatures
+    * @param headers
+    * @param body
+    * @return
+    */
    public VerificationResults verify(List<DKIMSignature> signatures, Map headers, byte[] body)
    {
       VerificationResults results = new VerificationResults();
@@ -76,7 +85,7 @@ public class Verifier
          resultSet.setVerified(true);
          for (DKIMSignature signature : matched)
          {
-            VerificationResult result = verifySignature(headers, body, verification, signature);
+            VerificationResult result = verify(headers, body, verification, signature);
             resultSet.getResults().add(result);
             if (result.isVerified() == false)
             {
@@ -89,13 +98,34 @@ public class Verifier
       return results;
    }
 
-
-   public VerificationResult verifySignature(Map headers, byte[] body, Verification verification, DKIMSignature signature)
+   /**
+    * Verify one signature and store the results
+    *
+    * @param headers
+    * @param body
+    * @param verification
+    * @param signature
+    * @return
+    */
+   public VerificationResult verify(Map headers, byte[] body, Verification verification, DKIMSignature signature)
    {
       VerificationResult result = new VerificationResult();
       result.setSignature(signature);
+      try
+      {
+         verifySignature(headers, body, verification, signature);
+      }
+      catch (Exception e)
+      {
+         result.setFailureException(e);
+         return result;
+      }
+      result.setVerified(true);
+      return result;
+   }
 
-
+   public void verifySignature(Map headers, byte[] body, Verification verification, DKIMSignature signature) throws SignatureException
+   {
       PublicKey key = verification.getKey();
 
       if (key == null)
@@ -110,26 +140,16 @@ public class Verifier
          }
          if (key == null)
          {
-            result.setFailureReason("Could not find PublicKey for DKIMSignature " + signature);
-            return result;
+            throw new SignatureException("Could not find PublicKey for DKIMSignature " + signature);
          }
       }
 
-      try
-      {
-         signature.verify(headers, body, key);
-      }
-      catch (Exception e)
-      {
-         result.setFailureException(e);
-         return result;
-      }
+      signature.verify(headers, body, key);
       if (verification.isIgnoreExpiration() == false)
       {
          if (signature.isExpired())
          {
-            result.setFailureReason("Signature expired");
-            return result;
+            throw new SignatureException("Signature expired");
          }
       }
       if (verification.isStaleCheck())
@@ -141,12 +161,10 @@ public class Verifier
                  verification.getStaleMonths(),
                  verification.getStaleYears()))
          {
-            result.setFailureReason("Signature is stale");
-            return result;
+            throw new SignatureException("Signature is stale");
          }
       }
-      result.setVerified(true);
-      return result;
    }
+
 
 }

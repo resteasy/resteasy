@@ -424,7 +424,7 @@ public class SigningTest extends BaseResourceTest
       }
       catch (UnauthorizedSignatureException e)
       {
-         Assert.assertEquals("Signature is stale", e.getResults().getFirstResult(verification).getFailureReason());
+         Assert.assertEquals("Failed to verify signatures:\r\n Signature is stale", e.getMessage());
       }
 
 
@@ -525,7 +525,7 @@ public class SigningTest extends BaseResourceTest
       }
       catch (UnauthorizedSignatureException e)
       {
-         Assert.assertEquals("Signature expired", e.getResults().getFirstResult(verification).getFailureReason());
+         Assert.assertEquals("Failed to verify signatures:\r\n Signature expired", e.getMessage());
       }
 
 
