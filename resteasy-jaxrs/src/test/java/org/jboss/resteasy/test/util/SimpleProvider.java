@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.util;
 
+import org.jboss.resteasy.spi.StringConverter;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-
-import org.jboss.resteasy.spi.StringConverter;
 
 public class SimpleProvider implements ExceptionMapper<NullPointerException>, StringConverter<Integer>
 {

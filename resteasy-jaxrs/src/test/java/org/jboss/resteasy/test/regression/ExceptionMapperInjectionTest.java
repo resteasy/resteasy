@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.regression;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +17,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.ExceptionMapper;
 import java.util.ArrayList;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * RESTEASY-300

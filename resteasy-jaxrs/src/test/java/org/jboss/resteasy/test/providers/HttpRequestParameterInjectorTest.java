@@ -1,24 +1,5 @@
 package org.jboss.resteasy.test.providers;
 
-import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
-
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Type;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -29,6 +10,24 @@ import org.jboss.resteasy.util.FindAnnotation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 public class HttpRequestParameterInjectorTest extends BaseResourceTest
 {
@@ -46,8 +45,8 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
       @POST
       @Produces("text/plain")
       public String get(@ClassicParam("param") String param,
-            @QueryParam("param") @DefaultValue("") String query,
-            @FormParam("param") @DefaultValue("") String form)
+                        @QueryParam("param") @DefaultValue("") String query,
+                        @FormParam("param") @DefaultValue("") String form)
       {
          return String.format("%s, %s, %s", param, query, form);
       }
@@ -64,11 +63,11 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
    public void testCustomInjectorFactory() throws Exception
    {
       String getResult = createClientRequest("/foo").queryParameter("param", "getValue").accept(
-            "text/plain").get(String.class).getEntity();
+              "text/plain").get(String.class).getEntity();
       Assert.assertEquals("getValue, getValue, ", getResult);
 
       String postResult = createClientRequest("/foo").formParameter("param", "postValue").accept(
-            "text/plain").post(String.class).getEntity();
+              "text/plain").post(String.class).getEntity();
       Assert.assertEquals("postValue, , postValue", postResult);
    }
 
@@ -82,13 +81,13 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
       @SuppressWarnings("unchecked")
       @Override
       public ValueInjector createParameterExtractor(Class injectTargetClass,
-            AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
+                                                    AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
       {
          final ClassicParam param = FindAnnotation.findAnnotation(annotations, ClassicParam.class);
          if (param == null)
          {
             return super.createParameterExtractor(injectTargetClass, injectTarget, type,
-                  genericType, annotations);
+                    genericType, annotations);
          }
          else
          {
@@ -97,7 +96,7 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
                public Object inject(HttpRequest request, HttpResponse response)
                {
                   return ResteasyProviderFactory.getContextData(HttpServletRequest.class)
-                        .getParameter(param.value());
+                          .getParameter(param.value());
                }
 
                public Object inject()
@@ -108,5 +107,7 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
             };
          }
       }
-   };
+   }
+
+   ;
 }

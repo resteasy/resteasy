@@ -118,7 +118,7 @@ public class DKIMSignature
 
    /**
     * @param name
-    * @param value if null, remove attribute
+    * @param value            if null, remove attribute
     * @param includeSignature true if you want attribute to be included within the signature calculation
     * @param display          true if you want attribute shown in the Content-Signature
     */

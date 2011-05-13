@@ -9,7 +9,6 @@ import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.test.smoke.SimpleResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -32,6 +31,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * Simple smoke test

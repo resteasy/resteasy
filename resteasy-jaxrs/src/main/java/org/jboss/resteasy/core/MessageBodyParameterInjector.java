@@ -167,7 +167,7 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
             final Object obj = messageBodyReaderContext.proceed();
             if (isMarshalledEntity)
             {
-               InputStreamToByteArray isba = (InputStreamToByteArray)is;
+               InputStreamToByteArray isba = (InputStreamToByteArray) is;
                final byte[] bytes = isba.toByteArray();
                return new MarshalledEntity()
                {

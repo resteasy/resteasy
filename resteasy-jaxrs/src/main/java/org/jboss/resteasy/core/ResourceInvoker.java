@@ -10,5 +10,6 @@ import org.jboss.resteasy.spi.HttpResponse;
 public interface ResourceInvoker
 {
    ServerResponse invoke(HttpRequest request, HttpResponse response);
+
    ServerResponse invoke(HttpRequest request, HttpResponse response, Object target);
 }

@@ -16,7 +16,7 @@ public class LocatingResource
       return new SimpleResource();
    }
 
-   
+
    @Path("subresource")
    public SimpleSubresource getSubresource()
    {
@@ -24,12 +24,12 @@ public class LocatingResource
       return new SimpleSubresource();
    }
 
-   
+
    @Path("notlocating")
    public SimpleResource getNotLocating()
    {
       System.out.println("NOT LOCATING... i.e. returning null");
       return null;
    }
-   
+
 }

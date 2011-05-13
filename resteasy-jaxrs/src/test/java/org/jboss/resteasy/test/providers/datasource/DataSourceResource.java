@@ -34,8 +34,9 @@ public class DataSourceResource
 
    @POST
    @Path("/echo")
-   public DataSource echo(DataSource datasource) {
-	   return datasource;
+   public DataSource echo(DataSource datasource)
+   {
+      return datasource;
    }
 
    @GET

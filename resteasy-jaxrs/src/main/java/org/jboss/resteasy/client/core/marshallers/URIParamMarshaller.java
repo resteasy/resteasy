@@ -1,10 +1,10 @@
 package org.jboss.resteasy.client.core.marshallers;
 
+import org.jboss.resteasy.client.ClientRequest;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-
-import org.jboss.resteasy.client.ClientRequest;
 
 /**
  * allows a user to specify the url.

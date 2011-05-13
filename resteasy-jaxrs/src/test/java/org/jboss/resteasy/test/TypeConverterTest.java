@@ -6,18 +6,16 @@
  */
 package org.jboss.resteasy.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Date;
-
 import org.jboss.resteasy.util.TypeConverter;
 import org.junit.Test;
 
+import java.util.Date;
+
+import static org.junit.Assert.*;
+
 /**
  * A TypeConverterTest.
- * 
+ *
  * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
  * @version $Revision: $
  */
@@ -51,7 +49,6 @@ public class TypeConverterTest
 
    /**
     * FIXME Comment this
-    *
     */
    @Test
    public void testIntegerTypes()
@@ -59,10 +56,9 @@ public class TypeConverterTest
       assertEquals(11, TypeConverter.getType(int.class, "11"));
       assertEquals(11, TypeConverter.getType(Integer.class, "11"));
    }
-   
+
    /**
     * FIXME Comment this
-    *
     */
    @Test
    public void testDoubleTypes()
@@ -70,10 +66,9 @@ public class TypeConverterTest
       assertEquals(20.15d, TypeConverter.getType(double.class, "20.15"));
       assertEquals(20.15d, TypeConverter.getType(Double.class, "20.15"));
    }
-   
+
    /**
     * FIXME Comment this
-    *
     */
    @Test
    public void testFloatTypes()
@@ -81,10 +76,9 @@ public class TypeConverterTest
       assertEquals(23.44f, TypeConverter.getType(float.class, "23.44"));
       assertEquals(23.44f, TypeConverter.getType(Float.class, "23.44"));
    }
-   
+
    /**
     * FIXME Comment this
-    *
     */
    @Test
    public void testLongTypes()
@@ -92,14 +86,14 @@ public class TypeConverterTest
       assertEquals(23L, TypeConverter.getType(long.class, "23"));
       assertEquals(23L, TypeConverter.getType(Long.class, "23"));
    }
-   
+
    /**
     * FIXME Comment this
-    * 
+    *
     * @throws Exception
     */
    @Test(expected = IllegalArgumentException.class)
-   public void testDate() 
+   public void testDate()
    {
       TypeConverter.getType(Date.class, "07/04/2008");
    }

@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DosetaKeyRepository implements KeyRepository
 {
    private static final Logger log = Logger.getLogger(DosetaKeyRepository.class);
+
    protected class CacheEntry<T>
    {
       public long time = System.currentTimeMillis();
@@ -294,7 +295,8 @@ public class DosetaKeyRepository implements KeyRepository
          parser.setLowerCaseNames(true);
          Map<String, String> keyEntry = parser.parse(record, ';');
          String type = keyEntry.get("k");
-         if (type != null && !type.toLowerCase().equals("rsa")) throw new RuntimeException("Unsupported key type: " + type);
+         if (type != null && !type.toLowerCase().equals("rsa"))
+            throw new RuntimeException("Unsupported key type: " + type);
          String pem = keyEntry.get("p");
          if (pem == null)
          {

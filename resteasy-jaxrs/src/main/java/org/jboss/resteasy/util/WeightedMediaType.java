@@ -71,8 +71,7 @@ public class WeightedMediaType extends MediaType implements Comparable<WeightedM
          result = false;
       if (getType().equals(MEDIA_TYPE_WILDCARD) || other.getType().equals(MEDIA_TYPE_WILDCARD))
          result = true;
-      else
-      if (getType().equalsIgnoreCase(other.getType()) && (getSubtype().equals(MEDIA_TYPE_WILDCARD) || other.getSubtype().equals(MEDIA_TYPE_WILDCARD)))
+      else if (getType().equalsIgnoreCase(other.getType()) && (getSubtype().equals(MEDIA_TYPE_WILDCARD) || other.getSubtype().equals(MEDIA_TYPE_WILDCARD)))
          result = true;
       else
       {
@@ -153,7 +152,8 @@ public class WeightedMediaType extends MediaType implements Comparable<WeightedM
    }
 
    @Override
-   public boolean equals(Object obj) {
+   public boolean equals(Object obj)
+   {
       return super.equals(obj);
    }
 

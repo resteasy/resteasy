@@ -12,12 +12,12 @@ import java.lang.annotation.Target;
  * By default simple canonicalization will be used for both header and body.
  * <p/>
  * Private keys are never discovered via DNS.
- *
+ * <p/>
  * The private key used to sign is discovered in the KeyRepository via an alias of
  * (selector + ".")? + "_domainKey." + domain - Same as the doseta specification
- *
  * <p/>
- *
+ * <p/>
+ * <p/>
  * <p/>
  * If you want more fine-grain control over the signature header
  * then you must create your own DosetaSignature instances and pass it with the request or response
@@ -35,7 +35,7 @@ public @interface Signed
 
    /**
     * If there is no domain, then abort.
-    *
+    * <p/>
     * If not set, the runtime may set a default domain.  See documentation for details.
     *
     * @return

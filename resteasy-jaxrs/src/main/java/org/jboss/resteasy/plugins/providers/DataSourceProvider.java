@@ -31,44 +31,50 @@ import java.lang.reflect.Type;
 public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 {
 
-	protected static class SequencedDataSource implements DataSource {
-		private byte[] byteBuffer;
-		private int byteBufferOffset;
-		private int byteBufferLength;
-		private File tempFile;
-		private String type;
+   protected static class SequencedDataSource implements DataSource
+   {
+      private byte[] byteBuffer;
+      private int byteBufferOffset;
+      private int byteBufferLength;
+      private File tempFile;
+      private String type;
 
-		public SequencedDataSource(byte[] byteBuffer, int byteBufferOffset,
-				int byteBufferLength, File tempFile, String type) {
-			super();
-			this.byteBuffer = byteBuffer;
-			this.byteBufferOffset = byteBufferOffset;
-			this.byteBufferLength = byteBufferLength;
-			this.tempFile = tempFile;
-			this.type = type;
-		}
+      public SequencedDataSource(byte[] byteBuffer, int byteBufferOffset,
+                                 int byteBufferLength, File tempFile, String type)
+      {
+         super();
+         this.byteBuffer = byteBuffer;
+         this.byteBufferOffset = byteBufferOffset;
+         this.byteBufferLength = byteBufferLength;
+         this.tempFile = tempFile;
+         this.type = type;
+      }
 
-		public String getContentType() {
-			return type;
-		}
+      public String getContentType()
+      {
+         return type;
+      }
 
-		public InputStream getInputStream() throws IOException {
-			InputStream bis = new ByteArrayInputStream(byteBuffer, byteBufferOffset, byteBufferLength);
-			if (tempFile == null)
-				return bis;
-			InputStream fis = new FileInputStream(tempFile);
-			return new SequenceInputStream(bis, fis);
-		}
+      public InputStream getInputStream() throws IOException
+      {
+         InputStream bis = new ByteArrayInputStream(byteBuffer, byteBufferOffset, byteBufferLength);
+         if (tempFile == null)
+            return bis;
+         InputStream fis = new FileInputStream(tempFile);
+         return new SequenceInputStream(bis, fis);
+      }
 
-		public String getName() {
-			return "";
-		}
+      public String getName()
+      {
+         return "";
+      }
 
-		public OutputStream getOutputStream() throws IOException {
-			throw new IOException("No output stream allowed");
-		}
-		
-	}
+      public OutputStream getOutputStream() throws IOException
+      {
+         throw new IOException("No output stream allowed");
+      }
+
+   }
 
 
    /**
@@ -83,18 +89,22 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       int readCount = in.read(memoryBuffer, 0, memoryBuffer.length);
 
       File tempFile = null;
-      if (in.available() > 0) {
-    	  tempFile = File.createTempFile("resteasy-provider-datasource", null);
-    	  FileOutputStream fos = new FileOutputStream(tempFile);
-    	  try {
-    		  ProviderHelper.writeTo(in, fos);
-    	  } finally {
-    		  fos.close();
-    	  }
+      if (in.available() > 0)
+      {
+         tempFile = File.createTempFile("resteasy-provider-datasource", null);
+         FileOutputStream fos = new FileOutputStream(tempFile);
+         try
+         {
+            ProviderHelper.writeTo(in, fos);
+         }
+         finally
+         {
+            fos.close();
+         }
       }
 
       if (readCount == -1)
-    	  readCount = 0;
+         readCount = 0;
 
       return new SequencedDataSource(memoryBuffer, 0, readCount, tempFile, mediaType.toString());
    }

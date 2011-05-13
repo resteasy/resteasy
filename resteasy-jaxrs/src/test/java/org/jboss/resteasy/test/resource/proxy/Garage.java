@@ -15,22 +15,23 @@ public class Garage
    {
       return lookupSeamComponent();
    }
-   
+
    /**
     * This method simulates obtaining a bean from Seam and returning it. - Components.getInstance(Car.class)
     * Seam is not used in this test. Car instance is wrapped with a javassist proxy.
+    *
     * @return Proxied Car instance
     */
    private Car lookupSeamComponent()
    {
       Car car = new Car("MT-123AB");
       CarProxy interceptor = new CarProxy(car);
-      
+
       ProxyFactory factory = new ProxyFactory();
       factory.setSuperclass(Car.class);
-      
+
       ProxyObject component = null;
-      try 
+      try
       {
          component = (ProxyObject) factory.createClass().newInstance();
       }
@@ -38,9 +39,9 @@ public class Garage
       {
          throw new RuntimeException(e);
       }
-      
+
       component.setHandler(interceptor);
-      
+
       return (Car) component;
    }
 }

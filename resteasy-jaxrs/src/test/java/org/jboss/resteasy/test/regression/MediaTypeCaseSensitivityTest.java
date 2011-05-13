@@ -5,7 +5,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * RESTEASY-207 MediaType case sensistivity when matching MessageBodyReader
@@ -84,7 +85,7 @@ public class MediaTypeCaseSensitivityTest extends BaseResourceTest
    public void testIt() throws Exception
    {
       MessageBodyReader<Stuff> messageBodyReader = getProviderFactory().getMessageBodyReader(Stuff.class, Stuff.class,
-            null, new MediaType("ApplIcAtion", "STufF"));
+              null, new MediaType("ApplIcAtion", "STufF"));
       Assert.assertNotNull(messageBodyReader);
       Assert.assertNotNull(messageBodyReader.getClass());
       Assert.assertEquals(StuffProvider.class, messageBodyReader.getClass());

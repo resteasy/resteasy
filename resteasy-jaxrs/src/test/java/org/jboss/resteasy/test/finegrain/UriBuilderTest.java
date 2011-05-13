@@ -32,7 +32,7 @@ public class UriBuilderTest
       // test for RESTEASY-443
 
       UriBuilderImpl.fromUri("?param=").replaceQueryParam("otherParam", "otherValue");
-      
+
    }
 
    @Test

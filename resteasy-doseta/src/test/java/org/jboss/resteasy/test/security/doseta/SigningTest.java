@@ -14,7 +14,6 @@ import org.jboss.resteasy.security.doseta.UnauthorizedSignatureException;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.security.doseta.Verifier;
 import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.Base64;
@@ -104,7 +103,7 @@ public class SigningTest extends BaseResourceTest
 
       @POST
       @Consumes("text/plain")
-      @Signed(selector = "test", domain="samplezone.org")
+      @Signed(selector = "test", domain = "samplezone.org")
       public void postSimple(String input);
    }
 
@@ -175,7 +174,7 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector = "test", domain="samplezone.org")
+      @Signed(selector = "test", domain = "samplezone.org")
       @Produces("text/plain")
       public String hello()
       {
@@ -203,7 +202,7 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector="test", domain = "samplezone.org",
+      @Signed(selector = "test", domain = "samplezone.org",
               timestamped = true)
       @Produces("text/plain")
       @Path("stamped")
@@ -213,7 +212,7 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector="test", domain = "samplezone.org",
+      @Signed(selector = "test", domain = "samplezone.org",
               expires = @After(seconds = 1))
       @Produces("text/plain")
       @Path("expires-short")
@@ -223,7 +222,7 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector="test", domain = "samplezone.org",
+      @Signed(selector = "test", domain = "samplezone.org",
               expires = @After(minutes = 1))
       @Produces("text/plain")
       @Path("expires-minute")
@@ -233,7 +232,7 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector="test", domain = "samplezone.org",
+      @Signed(selector = "test", domain = "samplezone.org",
               expires = @After(hours = 1))
       @Produces("text/plain")
       @Path("expires-hour")
@@ -243,7 +242,7 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector="test", domain = "samplezone.org",
+      @Signed(selector = "test", domain = "samplezone.org",
               expires = @After(days = 1))
       @Produces("text/plain")
       @Path("expires-day")
@@ -253,7 +252,7 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector="test", domain = "samplezone.org",
+      @Signed(selector = "test", domain = "samplezone.org",
               expires = @After(months = 1))
       @Produces("text/plain")
       @Path("expires-month")
@@ -263,7 +262,7 @@ public class SigningTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector="test", domain = "samplezone.org",
+      @Signed(selector = "test", domain = "samplezone.org",
               expires = @After(years = 1))
       @Produces("text/plain")
       @Path("expires-year")

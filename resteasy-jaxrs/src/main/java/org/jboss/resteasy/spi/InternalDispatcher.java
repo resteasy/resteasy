@@ -1,15 +1,14 @@
 package org.jboss.resteasy.spi;
 
-import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
-
-import java.net.URISyntaxException;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import java.net.URISyntaxException;
+
+import static org.jboss.resteasy.spi.ResteasyProviderFactory.*;
 
 /**
  * <p>
@@ -17,8 +16,8 @@ import org.jboss.resteasy.mock.MockHttpResponse;
  * internal GET/POST/DELETE/PUT using IntenalDispatch using Java Object. For
  * example:
  * </p>
- * 
- * 
+ * <p/>
+ * <p/>
  * <pre>
  * &#064;GET
  * &#064;Produces(&quot;text/plain&quot;)
@@ -28,13 +27,13 @@ import org.jboss.resteasy.mock.MockHttpResponse;
  *    return (SomeObject) dispatcher.getEntity(&quot;/some-object&quot;);
  * }
  * </pre>
- * 
+ * <p/>
  * <p>
  * That previous snippet performs an internal request to /some-object and
  * returns the Object representation of the Resource that lives at
  * "/some-object".
  * </p>
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
@@ -54,7 +53,7 @@ public class InternalDispatcher
    {
       InternalDispatcher.instance = instance;
    }
-   
+
    public Object getEntity(String uri)
    {
       return getResponse(uri).getEntity();
@@ -144,7 +143,7 @@ public class InternalDispatcher
       catch (URISyntaxException e)
       {
          throw new RuntimeException(
-               "could not create uri for internal dispatching", e);
+                 "could not create uri for internal dispatching", e);
       }
    }
 }

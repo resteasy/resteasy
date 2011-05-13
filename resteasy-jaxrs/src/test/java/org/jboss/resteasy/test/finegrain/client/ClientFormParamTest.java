@@ -3,13 +3,14 @@ package org.jboss.resteasy.test.finegrain.client;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 public class ClientFormParamTest
 {

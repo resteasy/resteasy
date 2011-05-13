@@ -1,15 +1,5 @@
 package org.jboss.resteasy.client.core;
 
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
-
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -22,6 +12,15 @@ import org.jboss.resteasy.client.core.marshallers.Marshaller;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Providers;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -60,7 +59,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl
       if (declaring.isAnnotationPresent(Path.class)) uri.path(declaring);
       if (method.isAnnotationPresent(Path.class)) uri.path(method);
       this.extractorFactory = extractorFactory;
-      this.extractor = extractorFactory.createExtractor(method); 
+      this.extractor = extractorFactory.createExtractor(method);
    }
 
    public Map<String, Object> getAttributes()

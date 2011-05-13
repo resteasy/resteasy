@@ -70,10 +70,11 @@ public class HttpHeadersImpl implements HttpHeaders
 
    public void setAcceptableLanguages(List<String> acceptableLanguages)
    {
-      if (acceptableLanguages == null) {
+      if (acceptableLanguages == null)
+      {
          this.acceptableLanguages = null;
       }
-      else 
+      else
       {
          this.acceptableLanguages = new ArrayList<Locale>(acceptableLanguages.size());
          for (String lang : acceptableLanguages) this.acceptableLanguages.add(LocaleHelper.extractLocale(lang));

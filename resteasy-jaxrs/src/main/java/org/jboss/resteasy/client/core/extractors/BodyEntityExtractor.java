@@ -1,22 +1,20 @@
 /**
- * 
+ *
  */
 package org.jboss.resteasy.client.core.extractors;
 
-import java.io.InputStream;
-import java.lang.reflect.Method;
+import org.jboss.resteasy.client.core.BaseClientResponse;
 
 import javax.ws.rs.ext.MessageBodyReader;
-
-import org.jboss.resteasy.client.core.BaseClientResponse;
+import java.io.InputStream;
+import java.lang.reflect.Method;
 
 /**
  * BodyEntityExtractor extract body objects from responses. This ends up calling
  * the appropriate MessageBodyReader through a series of calls
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
- * 
  * @see EntityExtractorFactory
  * @see MessageBodyReader
  */

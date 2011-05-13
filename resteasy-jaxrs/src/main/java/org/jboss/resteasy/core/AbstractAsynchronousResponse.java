@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.spi.AsynchronousResponse;
 
 import java.lang.annotation.Annotation;
 

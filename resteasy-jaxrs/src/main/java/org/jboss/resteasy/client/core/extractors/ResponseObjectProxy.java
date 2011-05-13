@@ -8,10 +8,9 @@ import java.util.HashMap;
  * This class represents the proxying functionality for creating a
  * "rich response object" that has the @ResponseObject annotation. The method
  * implementations ware created in ResponseObjectEntityExtractorFactory
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
- * 
  * @see EntityExtractor, ResponseObjectEntityExtractorFactory
  */
 
@@ -33,7 +32,7 @@ public class ResponseObjectProxy<T> implements EntityExtractor
 
    public Object extractEntity(ClientRequestContext context, Object... args)
    {
-      Class<?>[] intfs = { returnType };
+      Class<?>[] intfs = {returnType};
       ClientResponseProxy clientProxy = new ClientResponseProxy(context, methodHandlers, returnType);
       return Proxy.newProxyInstance(returnType.getClassLoader(), intfs, clientProxy);
    }

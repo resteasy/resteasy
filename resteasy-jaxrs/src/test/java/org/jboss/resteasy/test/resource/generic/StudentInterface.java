@@ -9,8 +9,8 @@ import javax.ws.rs.Produces;
 
 /**
  * This interface is used on the client side only.
- * @author Jozef Hartinger
  *
+ * @author Jozef Hartinger
  */
 
 @Path("/student/{id}")
@@ -20,6 +20,7 @@ public interface StudentInterface
 {
    @GET
    Student get(@PathParam("id") Integer id);
+
    @PUT
    void put(@PathParam("id") Integer id, Student entity);
 }

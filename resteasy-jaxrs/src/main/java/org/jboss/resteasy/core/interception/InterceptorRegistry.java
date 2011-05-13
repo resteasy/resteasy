@@ -1,5 +1,11 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.annotations.interception.Precedence;
+import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.AcceptedByMethod;
+import org.jboss.resteasy.util.PickConstructor;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -11,12 +17,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jboss.resteasy.annotations.interception.Precedence;
-import org.jboss.resteasy.spi.ConstructorInjector;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.AcceptedByMethod;
-import org.jboss.resteasy.util.PickConstructor;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

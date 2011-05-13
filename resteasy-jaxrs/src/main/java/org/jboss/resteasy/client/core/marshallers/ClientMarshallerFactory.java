@@ -1,9 +1,10 @@
 package org.jboss.resteasy.client.core.marshallers;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.client.ClientURI;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.Encoded;
@@ -15,12 +16,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
-
-import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.client.ClientURI;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.MediaTypeHelper;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 public class ClientMarshallerFactory
 {

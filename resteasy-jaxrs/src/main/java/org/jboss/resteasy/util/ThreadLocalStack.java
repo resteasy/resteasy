@@ -45,11 +45,11 @@ public class ThreadLocalStack<T>
    public void setLast(T obj)
    {
       ArrayList<T> stack = getStack(true);
-      if(stack.isEmpty())
+      if (stack.isEmpty())
       {
          stack.add(obj);
-      } 
-      else 
+      }
+      else
       {
          stack.set(stack.size() - 1, obj);
       }
@@ -66,7 +66,7 @@ public class ThreadLocalStack<T>
       ArrayList<T> stack = getStack(false);
       return stack == null ? 0 : stack.size();
    }
-   
+
    public void clear()
    {
       local.set(null);

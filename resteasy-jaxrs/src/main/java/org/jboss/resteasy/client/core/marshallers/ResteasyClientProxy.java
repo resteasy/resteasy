@@ -1,9 +1,9 @@
 package org.jboss.resteasy.client.core.marshallers;
 
-import java.util.Collection;
-
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerModifier;
+
+import java.util.Collection;
 
 /**
  * implemented by every generated proxy
@@ -14,5 +14,6 @@ import org.jboss.resteasy.client.core.ClientInvokerModifier;
 public interface ResteasyClientProxy
 {
    Collection<ClientInvoker> getResteasyClientInvokers();
+
    void applyClientInvokerModifier(ClientInvokerModifier modifier);
 }

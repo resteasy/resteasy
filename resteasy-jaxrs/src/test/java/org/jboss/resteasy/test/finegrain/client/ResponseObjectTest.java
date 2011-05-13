@@ -1,17 +1,6 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import java.net.URI;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.LinkHeaderParam;
 import org.jboss.resteasy.annotations.ResponseObject;
@@ -23,6 +12,15 @@ import org.jboss.resteasy.spi.Link;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+
 public class ResponseObjectTest
 {
    @Path("test")
@@ -30,7 +28,7 @@ public class ResponseObjectTest
    {
       @GET
       BasicObject get();
-      
+
       @GET
       @Path("link-header")
       HateoasObject performGetBasedOnHeader();
@@ -44,9 +42,9 @@ public class ResponseObjectTest
 
       @Body
       String body();
-      
+
       ClientResponse response();
-      
+
       @HeaderParam("Content-Type")
       String contentType();
    }
@@ -57,14 +55,14 @@ public class ResponseObjectTest
       @Status
       int status();
 
-      @LinkHeaderParam(rel="nextLink")
+      @LinkHeaderParam(rel = "nextLink")
       URI nextLink();
-      
+
       @GET
-      @LinkHeaderParam(rel="nextLink")
+      @LinkHeaderParam(rel = "nextLink")
       String followNextLink();
    }
-   
+
    @Path("test")
    public static class ResponseObjectResource
    {
@@ -75,21 +73,23 @@ public class ResponseObjectTest
       {
          return "ABC";
       }
-      
+
       @GET
       @Path("/link-header")
-      public Response getWithHeader(@Context UriInfo uri){
+      public Response getWithHeader(@Context UriInfo uri)
+      {
          URI subUri = uri.getAbsolutePathBuilder().path("next-link").build();
          Link link = new Link();
          link.setHref(subUri.toASCIIString());
          link.setRelationship("nextLink");
          return Response.noContent().header("Link", link.toString()).build();
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("/link-header/next-link")
-      public String getHeaderForward(){
+      public String getHeaderForward()
+      {
          return "forwarded";
       }
    }
@@ -104,7 +104,7 @@ public class ResponseObjectTest
       executor.getRegistry().addPerRequestResource(ResponseObjectResource.class);
       client = ProxyFactory.create(ResponseObjectClient.class, "", executor);
    }
-   
+
    @Test
    @SuppressWarnings("unchecked")
    public void testSimple()

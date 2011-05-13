@@ -11,34 +11,35 @@ import java.io.StringWriter;
 
 /**
  * A ExceptionAdapter.
- * 
+ *
  * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
  * @version $Revision: $
  */
 public class ExceptionAdapter extends RuntimeException
 {
 
-   /** The serialVersionUID */
+   /**
+    * The serialVersionUID
+    */
    private static final long serialVersionUID = 6628087350457915908L;
 
    private final String stackTrace;
 
    /**
-    * 
+    *
     */
    private Exception originalException;
 
    /**
-    * 
     * Create a new ExceptionAdapter.
-    * 
+    *
     * @param e
     */
    public ExceptionAdapter(Exception e)
    {
       this(e.getMessage(), e);
    }
-   
+
    public ExceptionAdapter(String message, Exception e)
    {
       super(new StringBuilder(message == null ? "" : message).append(" : ").append(e.getMessage()).toString());
@@ -50,7 +51,7 @@ public class ExceptionAdapter extends RuntimeException
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @see @see java.lang.Throwable#printStackTrace()
     */
    public void printStackTrace()
@@ -60,7 +61,7 @@ public class ExceptionAdapter extends RuntimeException
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param s
     * @see @see java.lang.Throwable#printStackTrace(java.io.PrintStream)
     */
@@ -75,7 +76,7 @@ public class ExceptionAdapter extends RuntimeException
 
    /**
     * FIXME Comment this
-    * 
+    *
     * @param s
     * @see @see java.lang.Throwable#printStackTrace(java.io.PrintWriter)
     */
@@ -91,10 +92,10 @@ public class ExceptionAdapter extends RuntimeException
 
    /**
     * Rethrows the original exception class.
-    * 
+    *
     * @throws Exception
     */
-   public void rethrow() throws Exception 
+   public void rethrow() throws Exception
    {
       throw this.originalException;
    }

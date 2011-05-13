@@ -12,9 +12,9 @@ import java.lang.reflect.Type;
 /**
  * A AbstractEntityProvider.
  *
+ * @param <T>
  * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
  * @version $Revision: $
- * @param <T>
  */
 public abstract class AbstractEntityProvider<T>
         implements MessageBodyReader<T>, MessageBodyWriter<T>

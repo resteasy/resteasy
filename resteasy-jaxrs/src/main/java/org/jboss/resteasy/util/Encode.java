@@ -1,5 +1,8 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -12,10 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -220,7 +219,7 @@ public class Encode
       matcher.appendTail(buf);
       return buf.toString();
    }
-   
+
    private static String decodeBytes(String enc, CharsetDecoder decoder)
    {
       Matcher matcher = encodedChars.matcher(enc);
@@ -229,13 +228,16 @@ public class Encode
       while (matcher.find())
       {
          int b = Integer.parseInt(matcher.group(1), 16);
-         bytes.put((byte)b);
+         bytes.put((byte) b);
       }
       bytes.flip();
-      try {
-          return decoder.decode(bytes).toString();
-      } catch (CharacterCodingException e) {
-          throw new RuntimeException(e);
+      try
+      {
+         return decoder.decode(bytes).toString();
+      }
+      catch (CharacterCodingException e)
+      {
+         throw new RuntimeException(e);
       }
    }
 

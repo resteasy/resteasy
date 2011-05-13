@@ -1,11 +1,11 @@
 package org.jboss.resteasy.spi.touri;
 
-import java.lang.annotation.Annotation;
-
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 
+import java.lang.annotation.Annotation;
+
 public class MappedByAnnotationResolver extends
-      AbstractURITemplateAnnotationResolver
+        AbstractURITemplateAnnotationResolver
 {
    protected Class<? extends Annotation> getAnnotationType()
    {

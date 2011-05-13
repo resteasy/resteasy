@@ -3,8 +3,6 @@ package org.jboss.resteasy.client;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * 
- * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

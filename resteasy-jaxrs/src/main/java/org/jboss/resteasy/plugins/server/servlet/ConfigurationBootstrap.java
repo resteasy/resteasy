@@ -30,7 +30,6 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
    public abstract URL[] getScanningUrls();
 
 
-
    public ResteasyDeployment createDeployment()
    {
       String loggerTypeString = getParameter("resteasy.logger.type");
@@ -38,7 +37,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       {
          Logger.LoggerType loggerType = Logger.LoggerType.valueOf(loggerTypeString);
          Logger.setLoggerType(loggerType);
-         
+
       }
       logger = Logger.getLogger(ResteasyDeployment.class);
       String deploymentSensitive = getParameter("resteasy.use.deployment.sensitive.factory");
@@ -190,7 +189,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          String[] p = scannedProviders.split(",");
          for (String pr : p) deployment.getScannedProviderClasses().add(pr.trim());
       }
-      
+
       String scannedResources = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCES);
 
       if (scannedResources != null)
@@ -338,6 +337,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          deployment.getScannedJndiComponentResources().add(resource);
       }
    }
+
    protected void processResources(String list)
    {
       String[] resources = list.trim().split(",");

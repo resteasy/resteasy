@@ -103,7 +103,7 @@ public class SigningDnsTest extends BaseResourceTest
       }
 
       @GET
-      @Signed(selector = "test2", domain="samplezone.org")
+      @Signed(selector = "test2", domain = "samplezone.org")
       @Produces("text/plain")
       public String hello()
       {

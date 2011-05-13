@@ -37,7 +37,7 @@ public class SimpleResource
    @GET
    @Path("queryParam")
    @Produces("text/plain")
-   public String getQueryParam(@QueryParam("param")String param)
+   public String getQueryParam(@QueryParam("param") String param)
    {
       System.out.println("query param: " + param);
       return param;
@@ -46,7 +46,7 @@ public class SimpleResource
    @GET
    @Path("matrixParam")
    @Produces("text/plain")
-   public String getMatrixParam(@MatrixParam("param")String param)
+   public String getMatrixParam(@MatrixParam("param") String param)
    {
       return param;
    }
@@ -54,7 +54,7 @@ public class SimpleResource
    @GET
    @Path("uriParam/{param}")
    @Produces("text/plain")
-   public int getUriParam(@PathParam("param")int param)
+   public int getUriParam(@PathParam("param") int param)
    {
       return param;
    }

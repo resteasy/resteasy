@@ -1,15 +1,14 @@
 package org.jboss.resteasy.core;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.PathSegment;
-
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.util.LocaleHelper;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
+import java.util.List;
+import java.util.Map;
 
 public class ExtensionHttpPreprocessor implements HttpRequestPreprocessor
 {
@@ -96,7 +95,7 @@ public class ExtensionHttpPreprocessor implements HttpRequestPreprocessor
             if (match != null)
             {
                in.getHttpHeaders().getAcceptableLanguages().add(
-                     LocaleHelper.extractLocale(match));
+                       LocaleHelper.extractLocale(match));
                preprocessed = true;
                continue;
             }

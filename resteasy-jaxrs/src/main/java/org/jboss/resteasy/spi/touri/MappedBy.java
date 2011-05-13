@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * transformation between URI template and bean properties. For example, take
  * the following bean:
  * </p>
- * 
+ * <p/>
  * <pre>
  * MappedBy(Resource=FooResource.class, method="getFoo")
  * public class Foo
@@ -20,30 +20,28 @@ import java.lang.annotation.Target;
  * 	private int id;
  * 	// getters and setters
  * }
- * 
- * @Path("/foo")
- * public class FooResource {
- *   @GET
- *   @Path("{id}")
- *   @Produces(...)
- *   public Foo getFoo(@PathParam("id") Integer id){
- *     ...
- *   }
+ *
+ * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
+ * @version $Revision: 1 $
+ * @Path("/foo") public class FooResource {
+ * @GET
+ * @Path("{id}")
+ * @Produces(...) public Foo getFoo(@PathParam("id") Integer id){
+ * ...
+ * }
  * }
  * </pre>
- * 
+ * <p/>
  * <p>
  * for a Foo f with id = 123, ObjectToURI.getInstance(f) = "/foo/123"
  * </p>
- * 
- * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
- * @version $Revision: 1 $
  */
 
-@Target( { ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MappedBy
 {
-	Class<?> resource();
-	String method() default "";
+   Class<?> resource();
+
+   String method() default "";
 }

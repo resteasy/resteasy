@@ -1,23 +1,14 @@
 package org.jboss.resteasy.test.security.doseta;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Assert;
 import org.junit.Test;
 import se.unlogic.eagledns.EagleDNS;
 
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-import java.io.PrintStream;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Hashtable;
 
 /**
@@ -56,7 +47,7 @@ public class EagleDnsTest
       DirContext dnsContext = new InitialDirContext(env);
 
       log.info("Check domain: " + domain);
-      Attributes attrs1 = dnsContext.getAttributes(domain, new String[] {"TXT"});
+      Attributes attrs1 = dnsContext.getAttributes(domain, new String[]{"TXT"});
       log.info("Attributes size: " + attrs1.size());
       Assert.assertTrue(attrs1 != null);
       Assert.assertTrue(attrs1.size() > 0);

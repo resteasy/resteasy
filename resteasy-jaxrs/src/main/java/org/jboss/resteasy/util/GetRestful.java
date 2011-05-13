@@ -31,16 +31,16 @@ public class GetRestful
    public static Class getSubResourceClass(Class clazz)
    {
       // check class & superclasses for JAX-RS annotations
-      for(Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
+      for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
       {
-         if( hasJAXRSAnnotations(actualClass)) 
+         if (hasJAXRSAnnotations(actualClass))
             return actualClass;
       }
 
       // ok, no @Path or @HttpMethods so look in interfaces.
       for (Class intf : clazz.getInterfaces())
       {
-         if( hasJAXRSAnnotations(intf))
+         if (hasJAXRSAnnotations(intf))
             return intf;
       }
       return null;
@@ -51,7 +51,8 @@ public class GetRestful
       return actualClass != null && actualClass != Object.class;
    }
 
-   private static boolean hasJAXRSAnnotations(Class<?> c){
+   private static boolean hasJAXRSAnnotations(Class<?> c)
+   {
       if (c.isAnnotationPresent(Path.class))
       {
          return true;
@@ -64,7 +65,7 @@ public class GetRestful
          }
          for (Annotation ann : method.getAnnotations())
          {
-            if (ann.annotationType().isAnnotationPresent(HttpMethod.class)) 
+            if (ann.annotationType().isAnnotationPresent(HttpMethod.class))
             {
                return true;
             }
@@ -72,7 +73,7 @@ public class GetRestful
       }
       return false;
    }
-   
+
    public static boolean isRootResource(Class clazz)
    {
       return getRootResourceClass(clazz) != null;
