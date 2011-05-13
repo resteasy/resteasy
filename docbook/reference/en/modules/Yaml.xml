@@ -3,8 +3,8 @@
 
    <para>
 
-      Since Beta 6, resteasy comes with built in support for YAML using the Jyaml library. To enable YAML support,
-      you need to drop in the jyaml-1.3.jar in RestEASY's classpath.
+      Since 2.2-RC-1  release, resteasy comes with built in support for YAML using the SnakeYAML library. To enable YAML support,
+      you need to drop in the SnakeYaml 1.8 jar in RestEASY's classpath.
    </para>
    <para>
 
@@ -12,21 +12,21 @@
    </para>
    <para>
 
-      Jyaml jar file can either be downloaded from sourceforge:
-      https://sourceforge.net/project/showfiles.php?group_id=153924
+      SnakeYaml jar file can either be downloaded from Google code at
+       http://code.google.com/p/snakeyaml/downloads/list
    </para>
    <para>
 
-      Or if you use maven, the jyaml jar is available through the main repositories and included using this
+      Or if you use maven, the SnakeYaml jar is available through SonaType public repositories and included using this
       dependency:
    </para>
    <para>
 
  <programlisting>
  &lt;dependency&gt;
-&lt;groupId&gt;org.jyaml&lt;/groupId&gt;
-&lt;artifactId&gt;jyaml&lt;/artifactId&gt;
-&lt;version&gt;1.3&lt;/version&gt;
+&lt;groupId&gt;org.yaml&lt;/groupId&gt;
+&lt;artifactId&gt;snakeyaml&lt;/artifactId&gt;
+&lt;version&gt;1.8&lt;/version&gt;
  &lt;/dependency&gt;
       </programlisting>
    </para>
