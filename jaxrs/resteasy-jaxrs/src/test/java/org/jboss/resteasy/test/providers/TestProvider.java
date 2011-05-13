@@ -6,7 +6,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +19,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 public class TestProvider extends BaseResourceTest
 {

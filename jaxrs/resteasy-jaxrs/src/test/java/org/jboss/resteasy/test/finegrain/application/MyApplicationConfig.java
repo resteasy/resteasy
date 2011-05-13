@@ -1,11 +1,10 @@
 package org.jboss.resteasy.test.finegrain.application;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MyApplicationConfig extends Application
 {
@@ -49,7 +48,7 @@ public class MyApplicationConfig extends Application
    {
       return setter != null;
    }
-   
+
    public boolean isConstructorInjected()
    {
       return constructor != null;

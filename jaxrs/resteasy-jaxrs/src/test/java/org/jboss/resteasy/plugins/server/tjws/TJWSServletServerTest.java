@@ -1,21 +1,19 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 public class TJWSServletServerTest
 {
@@ -28,9 +26,10 @@ public class TJWSServletServerTest
       server = new TJWSServletServer();
       server.setPort(TestPortProvider.getPort());
    }
-   
+
    @After
-   public void finish(){
+   public void finish()
+   {
       server.stop();
    }
 

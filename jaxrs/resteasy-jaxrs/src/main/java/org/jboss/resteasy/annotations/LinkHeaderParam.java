@@ -14,5 +14,6 @@ import java.lang.annotation.Target;
 public @interface LinkHeaderParam
 {
    String rel() default "";
+
    String title() default "";
 }

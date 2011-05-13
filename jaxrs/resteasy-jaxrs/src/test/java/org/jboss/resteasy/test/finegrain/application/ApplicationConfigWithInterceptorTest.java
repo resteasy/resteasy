@@ -6,7 +6,6 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -25,6 +24,8 @@ import javax.ws.rs.ext.Provider;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -41,7 +42,7 @@ public class ApplicationConfigWithInterceptorTest
       {
          return "hello";
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("/bad")
@@ -52,7 +53,8 @@ public class ApplicationConfigWithInterceptorTest
 
       @DELETE
       @Path("{id}")
-      public void remove(@PathParam("id") String id) {
+      public void remove(@PathParam("id") String id)
+      {
          return;
       }
    }

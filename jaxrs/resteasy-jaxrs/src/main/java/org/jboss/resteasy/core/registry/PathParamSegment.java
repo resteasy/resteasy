@@ -178,7 +178,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
    }
 
    public ResourceInvoker matchPattern(HttpRequest
-           request, String
+                                               request, String
            path, int start)
    {
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
@@ -219,7 +219,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
 
    public static int pathSegmentIndex
            (String
-                   string, int start,
+                    string, int start,
             int stop)
    {
       if (start >= string.length()) return 0;

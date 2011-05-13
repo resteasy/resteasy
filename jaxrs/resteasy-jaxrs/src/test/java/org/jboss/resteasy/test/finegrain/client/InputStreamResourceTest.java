@@ -5,7 +5,6 @@ import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -22,6 +21,8 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * Simple smoke test

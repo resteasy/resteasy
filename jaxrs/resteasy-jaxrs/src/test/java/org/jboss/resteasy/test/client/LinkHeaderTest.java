@@ -6,7 +6,6 @@ import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,6 +18,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -168,7 +169,8 @@ public class LinkHeaderTest extends BaseResourceTest
    }
 
    @Test
-   public void testAdd() {
+   public void testAdd()
+   {
       final LinkHeader linkHeader = new LinkHeader();
       Assert.assertEquals(linkHeader.getLinks().size(), 0);
       linkHeader.addLink(new Link("one", "resl-1", "href-1", null, null));

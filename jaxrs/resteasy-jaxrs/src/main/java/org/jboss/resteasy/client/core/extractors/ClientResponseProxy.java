@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Implement a client proxy for ProxyFactory. This class implements each method
  * using an EntityExtractor
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  * @see ProxyFactory

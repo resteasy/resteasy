@@ -1,15 +1,5 @@
 package org.jboss.resteasy.client.core.extractors;
 
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Set;
-
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.LinkHeaderParam;
 import org.jboss.resteasy.annotations.Status;
@@ -21,14 +11,22 @@ import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.core.Response;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Set;
+
 /**
  * This class represents the method level creation of a "rich response object"
  * that has the @ResponseObject annotation. These EntityExtractors will be used
  * to implment methods of ResponseObject via ResponseObjectEntityExtractor
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
- * 
  * @see EntityExtractor, ResponseObjectEntityExtractor
  */
 public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractorFactory
@@ -79,7 +77,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
       {
          return processLinkHeader(method, returnType, link);
       }
-      
+
       if (returnType == ClientRequest.class)
       {
          return new EntityExtractor()
@@ -111,21 +109,21 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
    }
 
    private EntityExtractor processLinkHeader(final Method method, final Class<?> returnType,
-         final LinkHeaderParam link)
+                                             final LinkHeaderParam link)
    {
       if ("".equals(link.rel()) && "".equals(link.title()))
       {
          throw new RuntimeException(String.format(
-               "You must set either LinkHeaderParam.rel() or LinkHeaderParam.title() for on %s.%s",
-               method.getClass().getName(), method.getName()));
+                 "You must set either LinkHeaderParam.rel() or LinkHeaderParam.title() for on %s.%s",
+                 method.getClass().getName(), method.getName()));
       }
       if (!"".equals(link.rel()) && !"".equals(link.title()))
       {
          throw new RuntimeException(
-               String
-                     .format(
-                           "You can only set one of  LinkHeaderParam.rel() and LinkHeaderParam.title() for on %s.%s",
-                           method.getClass().getName(), method.getName()));
+                 String
+                         .format(
+                                 "You can only set one of  LinkHeaderParam.rel() and LinkHeaderParam.title() for on %s.%s",
+                                 method.getClass().getName(), method.getName()));
       }
 
       if (returnType == Link.class)
@@ -138,7 +136,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
             }
          };
       }
-      
+
       if (isInvokerMethod(method))
       {
          return new EntityExtractor()
@@ -154,7 +152,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
                ResteasyProviderFactory provider = request.getProviderFactory();
                ClientExecutor executor = request.getExecutor();
                return ProxyFactory.createClientInvoker(method.getClass(), method, uri,
-                     executor, provider, extractor).invoke(args);
+                       executor, provider, extractor).invoke(args);
             }
          };
       }
@@ -235,7 +233,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
       catch (URISyntaxException e)
       {
          throw new RuntimeException(String.format("Could not create a URI for %s in %s.%s", link
-               .getHref(), method.getClass().getName(), method.getName()), e);
+                 .getHref(), method.getClass().getName(), method.getName()), e);
       }
    }
 
@@ -254,7 +252,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
       catch (MalformedURLException e)
       {
          throw new RuntimeException(String.format("Could not create a URL for %s in %s.%s", uri
-               .toASCIIString(), method.getClass().getName(), method.getName()), e);
+                 .toASCIIString(), method.getClass().getName(), method.getName()), e);
       }
    }
 }

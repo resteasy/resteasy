@@ -1,5 +1,8 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -7,10 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -421,14 +420,17 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
 
    public final void putAll(Map otherMap)
    {
-      if(otherMap instanceof CaseInsensitiveMap){
-         CaseInsensitiveMap otherCaseInsensitiveMap = ((CaseInsensitiveMap)otherMap);
+      if (otherMap instanceof CaseInsensitiveMap)
+      {
+         CaseInsensitiveMap otherCaseInsensitiveMap = ((CaseInsensitiveMap) otherMap);
          Set<Map.Entry<CaseInsensitiveKey, List<V>>> es = otherCaseInsensitiveMap.map.entrySet();
          for (Entry<CaseInsensitiveKey, List<V>> entry : es)
          {
             map.addMultiple(entry.getKey(), entry.getValue());
          }
-      } else {
+      }
+      else
+      {
          for (Map.Entry<String, List<V>> entry : (Set<Entry<String, List<V>>>) otherMap.entrySet())
          {
             this.map.addMultiple(new CaseInsensitiveKey(entry.getKey()), entry.getValue());

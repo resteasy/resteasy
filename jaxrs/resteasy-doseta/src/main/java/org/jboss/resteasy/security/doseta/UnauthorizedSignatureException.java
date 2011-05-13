@@ -1,6 +1,5 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ReaderException;
 
 /**

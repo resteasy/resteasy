@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.smoke;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
@@ -14,9 +12,11 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Simple smoke test
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -43,7 +43,7 @@ public class TestWireInMemorySmoke
       }
       {
          ClientResponse<String> response = new ClientRequest("/queryParam", executor).queryParameter("param",
-               "hello world").get(String.class);
+                 "hello world").get(String.class);
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("hello world", response.getEntity());
       }
@@ -84,13 +84,13 @@ public class TestWireInMemorySmoke
       }
       {
          ClientResponse<String> response = new ClientRequest("/locating/queryParam", executor).queryParameter("param",
-               "hello world").get(String.class);
+                 "hello world").get(String.class);
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("hello world", response.getEntity());
       }
       {
          ClientResponse<String> response = new ClientRequest("/locating/uriParam/1234", executor).body("text/plain",
-               "basic").get(String.class);
+                 "basic").get(String.class);
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("1234", response.getEntity());
       }

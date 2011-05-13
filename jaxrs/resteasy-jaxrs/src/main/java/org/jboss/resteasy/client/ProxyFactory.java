@@ -1,13 +1,5 @@
 package org.jboss.resteasy.client;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.ClientProxy;
@@ -17,6 +9,14 @@ import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -64,14 +64,14 @@ public class ProxyFactory
 
    @SuppressWarnings("unchecked")
    public static <T> T create(Class<T> clazz, URI baseUri, ClientExecutor executor,
-         ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory)
+                              ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory)
    {
       return create(clazz, baseUri, executor, providerFactory, extractorFactory, new HashMap<String, Object>());
    }
 
    @SuppressWarnings("unchecked")
    public static <T> T create(Class<T> clazz, URI baseUri, ClientExecutor executor,
-         ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory, Map<String, Object> requestAttributes)
+                              ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory, Map<String, Object> requestAttributes)
    {
       HashMap<Method, ClientInvoker> methodMap = new HashMap<Method, ClientInvoker>();
 
@@ -83,7 +83,7 @@ public class ProxyFactory
       for (Method method : clazz.getMethods())
       {
          ClientInvoker invoker = createClientInvoker(clazz, method, baseUri, executor,
-               providerFactory, extractorFactory, requestAttributes);
+                 providerFactory, extractorFactory, requestAttributes);
          methodMap.put(method, invoker);
       }
 
@@ -99,15 +99,15 @@ public class ProxyFactory
    }
 
    public static <T> ClientInvoker createClientInvoker(Class<T> clazz, Method method,
-         URI baseUri, ClientExecutor executor,
-         ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory)
+                                                       URI baseUri, ClientExecutor executor,
+                                                       ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory)
    {
       return createClientInvoker(clazz, method, baseUri, executor, providerFactory, extractorFactory, new HashMap<String, Object>());
    }
 
    public static <T> ClientInvoker createClientInvoker(Class<T> clazz, Method method,
-         URI baseUri, ClientExecutor executor,
-         ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory, Map<String, Object> requestAttributes)
+                                                       URI baseUri, ClientExecutor executor,
+                                                       ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory, Map<String, Object> requestAttributes)
    {
       Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
       if (httpMethods == null || httpMethods.size() != 1)

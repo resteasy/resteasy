@@ -1,25 +1,22 @@
 package org.jboss.resteasy.test.core.injection;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
+import static junit.framework.Assert.*;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 /**
  * This test verifies that Providers instance can be injected into a Provider
  * using constructor or field injection.
- * 
+ *
  * @author Jozef Hartinger
- * 
  */
 public class ProviderInjectionTest extends BaseResourceTest
 {

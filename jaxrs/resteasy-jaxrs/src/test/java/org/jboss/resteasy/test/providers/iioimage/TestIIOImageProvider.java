@@ -3,18 +3,6 @@
  */
 package org.jboss.resteasy.test.providers.iioimage;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.FileRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -23,6 +11,17 @@ import org.jboss.resteasy.test.LocateTestData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a> Jun 23,

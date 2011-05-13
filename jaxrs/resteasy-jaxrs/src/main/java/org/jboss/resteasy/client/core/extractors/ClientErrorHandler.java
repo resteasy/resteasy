@@ -1,17 +1,16 @@
 package org.jboss.resteasy.client.core.extractors;
 
+import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.jboss.resteasy.client.core.BaseClientResponse;
-import org.jboss.resteasy.client.core.ClientErrorInterceptor;
-
 /**
- * This class handles client errors (of course...).  
- *  
- * @author Solomon.Duskis
+ * This class handles client errors (of course...).
  *
+ * @author Solomon.Duskis
  */
 
 // TODO: expand this class for more robust, complicated error handling

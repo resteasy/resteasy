@@ -1,14 +1,13 @@
 package org.jboss.resteasy.client.cache;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.jboss.resteasy.client.cache.BrowserCache.Entry;
+import org.jboss.resteasy.client.cache.BrowserCache.Header;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-
-import org.jboss.resteasy.client.cache.BrowserCache.Entry;
-import org.jboss.resteasy.client.cache.BrowserCache.Header;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheEntry implements Entry, Serializable
 {
@@ -81,7 +80,7 @@ public class CacheEntry implements Entry, Serializable
    {
       return MediaType.valueOf(mediaType);
    }
-   
+
    public void addExtendedProperty(Serializable key, Serializable value)
    {
       extendedProperties.put(key, value);

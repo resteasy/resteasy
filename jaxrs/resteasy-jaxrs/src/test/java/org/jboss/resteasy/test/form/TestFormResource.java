@@ -15,8 +15,6 @@ import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import org.jboss.resteasy.util.GenericType;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,6 +32,8 @@ import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * A TestFormResource.

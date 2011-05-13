@@ -345,9 +345,10 @@ public class Types
       }
       return null;
    }
-   
+
    /**
-    * Given a class and an interfaces, go through the class hierarchy to find the interface and return its type arguments. 
+    * Given a class and an interfaces, go through the class hierarchy to find the interface and return its type arguments.
+    *
     * @param classToSearch
     * @param interfaceToFind
     * @return type arguments of the interface

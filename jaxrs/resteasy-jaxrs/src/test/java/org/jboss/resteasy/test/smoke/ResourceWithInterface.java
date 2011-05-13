@@ -26,17 +26,17 @@ public class ResourceWithInterface implements SimpleClient
       System.out.println(body);
    }
 
-   public String getQueryParam(@QueryParam("param")String param)
+   public String getQueryParam(@QueryParam("param") String param)
    {
       return param;
    }
 
-   public String getMatrixParam(@MatrixParam("param")String param)
+   public String getMatrixParam(@MatrixParam("param") String param)
    {
       return param;
    }
 
-   public int getUriParam(@PathParam("param")int param)
+   public int getUriParam(@PathParam("param") int param)
    {
       return param;
    }

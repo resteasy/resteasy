@@ -5,7 +5,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -17,6 +16,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import java.io.IOException;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

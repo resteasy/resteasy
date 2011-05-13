@@ -275,27 +275,27 @@ public class ResourceLocatorTest
 
       dispatcher.getRegistry().addPerRequestResource(CollectionResource.class);
       {
-          MockHttpRequest request = MockHttpRequest.get("/collection/annotation_free_subresource");
-          MockHttpResponse response = new MockHttpResponse();
+         MockHttpRequest request = MockHttpRequest.get("/collection/annotation_free_subresource");
+         MockHttpResponse response = new MockHttpResponse();
 
-          dispatcher.invoke(request, response);
+         dispatcher.invoke(request, response);
 
-          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-          Assert.assertEquals("got", response.getContentAsString());
-          Assert.assertNotNull(response.getOutputHeaders().get("Content-Type"));
-          Assert.assertTrue(response.getOutputHeaders().get("Content-Type").size() > 0);
-          Assert.assertEquals(MediaType.TEXT_PLAIN_TYPE, response.getOutputHeaders().get("Content-Type").get(0));
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("got", response.getContentAsString());
+         Assert.assertNotNull(response.getOutputHeaders().get("Content-Type"));
+         Assert.assertTrue(response.getOutputHeaders().get("Content-Type").size() > 0);
+         Assert.assertEquals(MediaType.TEXT_PLAIN_TYPE, response.getOutputHeaders().get("Content-Type").get(0));
       }
 
       {
-          MockHttpRequest request = MockHttpRequest.post("/collection/annotation_free_subresource");
-          request.content("hello!".getBytes()).contentType(MediaType.TEXT_PLAIN);
-          MockHttpResponse response = new MockHttpResponse();
+         MockHttpRequest request = MockHttpRequest.post("/collection/annotation_free_subresource");
+         request.content("hello!".getBytes()).contentType(MediaType.TEXT_PLAIN);
+         MockHttpResponse response = new MockHttpResponse();
 
-          dispatcher.invoke(request, response);
+         dispatcher.invoke(request, response);
 
-          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-          Assert.assertEquals("posted: hello!", response.getContentAsString());
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("posted: hello!", response.getContentAsString());
       }
    }
 }

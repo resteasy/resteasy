@@ -26,7 +26,7 @@ public class MultipleMatrixSegmentsTest
    {
       @GET
       @Path("/{parent:.*}/children/{child:.*}")
-      public String get(@PathParam("parent")PathSegment parent, @PathParam("child")PathSegment child)
+      public String get(@PathParam("parent") PathSegment parent, @PathParam("child") PathSegment child)
       {
          Assert.assertEquals("bill", parent.getMatrixParameters().getFirst("name"));
          Assert.assertEquals("111", parent.getMatrixParameters().getFirst("ssn"));
@@ -37,7 +37,7 @@ public class MultipleMatrixSegmentsTest
 
       @GET
       @Path("/stuff/{segments:.*}/first")
-      public String getFirst(@PathParam("segments")PathSegment[] segments)
+      public String getFirst(@PathParam("segments") PathSegment[] segments)
       {
          Assert.assertNotNull(segments);
          Assert.assertEquals(segments.length, 2);

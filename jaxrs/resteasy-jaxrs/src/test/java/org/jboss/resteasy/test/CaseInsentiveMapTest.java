@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test;
 
-import org.junit.Test;
-import org.junit.Assert;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

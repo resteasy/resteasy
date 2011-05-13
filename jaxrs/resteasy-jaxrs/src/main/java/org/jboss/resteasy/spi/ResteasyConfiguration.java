@@ -3,11 +3,10 @@ package org.jboss.resteasy.spi;
 import java.util.Set;
 
 /**
- * @Context injectable interface that allows you to get at configuration information.  If resteasy is deployed
- * within a WAR this will allow you to reference servlet context, filter, and servlet parameters.
- *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @Context injectable interface that allows you to get at configuration information.  If resteasy is deployed
+ * within a WAR this will allow you to reference servlet context, filter, and servlet parameters.
  */
 public interface ResteasyConfiguration
 {

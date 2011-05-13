@@ -1,5 +1,8 @@
 package org.jboss.resteasy.spi.touri;
 
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.util.AnnotationResolver;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -12,11 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.util.AnnotationResolver;
-
 public abstract class AbstractURITemplateAnnotationResolver implements
-      URIResolver
+        URIResolver
 {
 
    @SuppressWarnings("unchecked")
@@ -29,11 +29,11 @@ public abstract class AbstractURITemplateAnnotationResolver implements
    public String resolveURI(Object object)
    {
       Class<? extends Object> clazz = AnnotationResolver
-            .getClassWithAnnotation(object.getClass(), getAnnotationType());
+              .getClassWithAnnotation(object.getClass(), getAnnotationType());
       UriBuilderImpl uriBuilderImpl = getUriBuilder(clazz);
       Map<String, PropertyDescriptor> descriptors = getPropertyDescriptors(clazz);
       List<Object> values = getValues(object, descriptors, uriBuilderImpl
-            .getPathParamNamesInDeclarationOrder());
+              .getPathParamNamesInDeclarationOrder());
       return uriBuilderImpl.build(values.toArray()).toString();
    }
 
@@ -42,7 +42,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
    protected abstract UriBuilderImpl getUriBuilder(Class<? extends Object> clazz);
 
    private List<Object> getValues(Object object,
-         Map<String, PropertyDescriptor> descriptors, List<String> params)
+                                  Map<String, PropertyDescriptor> descriptors, List<String> params)
    {
       List<Object> values = new ArrayList<Object>();
       for (String param : params)
@@ -51,8 +51,8 @@ public abstract class AbstractURITemplateAnnotationResolver implements
          if (propertyDescriptor == null)
          {
             throw new RuntimeException(
-                  "URITemplateAnnotationResolver could not find a getter for param "
-                        + param);
+                    "URITemplateAnnotationResolver could not find a getter for param "
+                            + param);
          }
 
          Method readMethod = propertyDescriptor.getReadMethod();
@@ -64,35 +64,37 @@ public abstract class AbstractURITemplateAnnotationResolver implements
          try
          {
             values.add(readMethod.invoke(object, new Object[0]));
-         } catch (Exception e)
+         }
+         catch (Exception e)
          {
             throw new RuntimeException(
-                  "URITemplateAnnotationResolver could not get a value for "
-                        + param, e);
+                    "URITemplateAnnotationResolver could not get a value for "
+                            + param, e);
          }
       }
       return values;
    }
 
    private Map<String, PropertyDescriptor> getPropertyDescriptors(
-         Class<? extends Object> clazz)
+           Class<? extends Object> clazz)
    {
       try
       {
          BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
          HashMap<String, PropertyDescriptor> results = new HashMap<String, PropertyDescriptor>();
          PropertyDescriptor[] propertyDescriptors = beanInfo
-               .getPropertyDescriptors();
+                 .getPropertyDescriptors();
          for (PropertyDescriptor propertyDescriptor : propertyDescriptors)
          {
             results.put(propertyDescriptor.getName(), propertyDescriptor);
          }
          return results;
-      } catch (IntrospectionException e)
+      }
+      catch (IntrospectionException e)
       {
          throw new RuntimeException(
-               "URITemplateAnnotationResolver could not introspect class "
-                     + clazz.getName(), e);
+                 "URITemplateAnnotationResolver could not introspect class "
+                         + clazz.getName(), e);
       }
    }
 }

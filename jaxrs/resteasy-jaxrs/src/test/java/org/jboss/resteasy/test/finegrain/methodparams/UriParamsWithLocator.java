@@ -25,7 +25,7 @@ public class UriParamsWithLocator
    {
       @GET
       @Path("/{id}")
-      public String get(@PathParam("id")String id)
+      public String get(@PathParam("id") String id)
       {
          Assert.assertEquals("2", id);
          return id;
@@ -36,7 +36,7 @@ public class UriParamsWithLocator
    public static class Locator
    {
       @Path("/{id}")
-      public Resource get(@PathParam("id")String id)
+      public Resource get(@PathParam("id") String id)
       {
          Assert.assertEquals("1", id);
          return new Resource();
@@ -48,7 +48,7 @@ public class UriParamsWithLocator
    {
       @GET
       @Path("/{id}")
-      public String get(@PathParam("id")PathSegment id)
+      public String get(@PathParam("id") PathSegment id)
       {
          Assert.assertEquals("2", id.getPath());
          return id.getPath();
@@ -59,7 +59,7 @@ public class UriParamsWithLocator
    public static class Locator2
    {
       @Path("/{id}")
-      public Resource2 get(@PathParam("id")PathSegment id)
+      public Resource2 get(@PathParam("id") PathSegment id)
       {
          Assert.assertEquals("1", id.getPath());
          return new Resource2();

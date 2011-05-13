@@ -1,17 +1,16 @@
 package org.jboss.resteasy.test.finegrain;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.spi.touri.MappedBy;
 import org.jboss.resteasy.spi.touri.ObjectToURI;
 import org.jboss.resteasy.spi.touri.URIResolver;
 import org.jboss.resteasy.spi.touri.URITemplate;
 import org.jboss.resteasy.spi.touri.URIable;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 public class ToURITest
 {
@@ -79,10 +78,10 @@ public class ToURITest
    {
       ObjectToURI instance = ObjectToURI.getInstance();
       Assert.assertEquals("/foo/123", instance
-            .resolveURI(new URITemplateObject(123)));
+              .resolveURI(new URITemplateObject(123)));
       Assert.assertEquals("/my-url", instance.resolveURI(new URIableObject()));
       Assert.assertEquals("/foo/123", instance.resolveURI(new MappedByObject(
-            123)));
+              123)));
    }
 
    @Test
@@ -91,7 +90,7 @@ public class ToURITest
       ObjectToURI instance = ObjectToURI.getInstance();
       CustomURIableObject custom = new CustomURIableObject();
       Assert.assertEquals("/my-url", instance.resolveURI(custom));
-      
+
       instance.registerURIResolver(new URIResolver()
       {
          public boolean handles(Class<?> type)

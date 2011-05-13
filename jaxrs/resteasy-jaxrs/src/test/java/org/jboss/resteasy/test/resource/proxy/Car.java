@@ -4,8 +4,8 @@ import javax.ws.rs.GET;
 
 /**
  * Objects of this class are used as subresources.
- * @author Jozef Hartinger
  *
+ * @author Jozef Hartinger
  */
 public class Car
 {
@@ -20,7 +20,7 @@ public class Car
    {
       this.id = id;
    }
-   
+
    @GET
    public String getId()
    {

@@ -1,11 +1,10 @@
 package org.jboss.resteasy.client.cache;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 public class MapCache implements BrowserCache
 {
@@ -13,9 +12,9 @@ public class MapCache implements BrowserCache
 
    public MapCache()
    {
-      this(new ConcurrentHashMap<String, Map<String,Entry>>());
+      this(new ConcurrentHashMap<String, Map<String, Entry>>());
    }
-   
+
    public MapCache(Map<String, Map<String, Entry>> cache)
    {
       this.cache = cache;
@@ -23,7 +22,7 @@ public class MapCache implements BrowserCache
 
    protected Map<String, Map<String, Entry>> createCache()
    {
-      return new ConcurrentHashMap<String, Map<String,Entry>>();
+      return new ConcurrentHashMap<String, Map<String, Entry>>();
    }
 
    public Entry get(String key, MediaType accept)
@@ -54,11 +53,11 @@ public class MapCache implements BrowserCache
       Map<String, Entry> data = cache.get(key);
       if (data == null) return null;
       Entry removed = data.remove(type);
-      if(data.isEmpty())
+      if (data.isEmpty())
       {
          cache.remove(key);
-      } 
-      else 
+      }
+      else
       {
          cache.put(key, data);
       }
@@ -69,7 +68,7 @@ public class MapCache implements BrowserCache
    {
       cache.clear();
    }
-   
+
    public Entry put(CacheEntry cacheEntry)
    {
       Map<String, Entry> map = cache.get(cacheEntry.getKey());
@@ -83,8 +82,8 @@ public class MapCache implements BrowserCache
    }
 
    public Entry put(String key, MediaType mediaType,
-         MultivaluedMap<String, String> headers, byte[] cached, int expires,
-         String etag, String lastModified)
+                    MultivaluedMap<String, String> headers, byte[] cached, int expires,
+                    String etag, String lastModified)
    {
       return put(new CacheEntry(key, headers, cached, expires, etag, lastModified, mediaType));
    }

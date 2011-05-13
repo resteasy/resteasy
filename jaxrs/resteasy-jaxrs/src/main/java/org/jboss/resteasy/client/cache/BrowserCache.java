@@ -1,9 +1,8 @@
 package org.jboss.resteasy.client.cache;
 
-import java.io.Serializable;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.Serializable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -42,7 +41,7 @@ public interface BrowserCache
       boolean expired();
 
       Header[] getValidationHeaders();
-      
+
       byte[] getCached();
 
       MediaType getMediaType();
@@ -57,5 +56,5 @@ public interface BrowserCache
    Entry remove(String key, MediaType type);
 
    void clear();
-   
+
 }

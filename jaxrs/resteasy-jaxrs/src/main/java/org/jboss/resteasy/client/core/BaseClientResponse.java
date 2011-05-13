@@ -400,7 +400,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
                  .proceed();
          if (isMarshalledEntity)
          {
-            InputStreamToByteArray isba = (InputStreamToByteArray)is;
+            InputStreamToByteArray isba = (InputStreamToByteArray) is;
             final byte[] bytes = isba.toByteArray();
             return new MarshalledEntity()
             {
@@ -419,7 +419,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          }
          else
          {
-            return (T2)obj;
+            return (T2) obj;
          }
 
       }

@@ -1,13 +1,11 @@
 package org.jboss.resteasy.specimpl;
 
-import java.io.Serializable;
+import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -47,7 +45,7 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
          put(key, list = new ArrayList<V>());
       return list;
    }
-   
+
    public void addAll(MultivaluedMapImpl<K, V> other)
    {
       for (Map.Entry<K, List<V>> entry : other.entrySet())

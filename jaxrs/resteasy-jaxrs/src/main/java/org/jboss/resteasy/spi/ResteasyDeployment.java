@@ -254,7 +254,7 @@ public class ResteasyDeployment
 
    public static Application createApplication(String applicationClass, ResteasyProviderFactory providerFactory)
    {
-      return (Application)createFromInjectorFactory(applicationClass, providerFactory);
+      return (Application) createFromInjectorFactory(applicationClass, providerFactory);
    }
 
    public static Object createFromInjectorFactory(String classname, ResteasyProviderFactory providerFactory)

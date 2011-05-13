@@ -5,7 +5,6 @@ import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.cache.CacheFactory;
 import org.jboss.resteasy.client.cache.LightweightBrowserCache;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +18,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

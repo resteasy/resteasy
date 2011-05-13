@@ -1,20 +1,5 @@
 package org.jboss.resteasy.client.cache;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse;
@@ -25,6 +10,20 @@ import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.WeightedMediaType;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -38,6 +37,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
    static class CachedStreamFactory implements BaseClientResponseStreamFactory
    {
       BrowserCache.Entry entry;
+
       public CachedStreamFactory(BrowserCache.Entry entry)
       {
          this.entry = entry;
@@ -52,7 +52,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
       {
       }
    }
-   
+
    public CacheInterceptor(BrowserCache cache)
    {
       this.cache = cache;
@@ -88,12 +88,12 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
          }
          return handleExpired(ctx, request, entry);
       }
-      
+
       return createClientResponse(request, entry);
    }
 
    protected ClientResponse handleExpired(ClientExecutionContext ctx,
-         ClientRequest request, BrowserCache.Entry entry) throws Exception
+                                          ClientRequest request, BrowserCache.Entry entry) throws Exception
    {
       ClientResponse response = ctx.proceed();
       if (response.getStatus() == Response.Status.NOT_MODIFIED.getStatusCode())
@@ -104,7 +104,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
    }
 
    private ClientResponse cache(ClientRequest request, ClientResponse response)
-         throws Exception
+           throws Exception
    {
       if (response.getStatus() != 200) return response;
       return cacheIfPossible(request, (BaseClientResponse) response);
@@ -203,10 +203,10 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
 
       MediaType mediaType = MediaType.valueOf(contentType);
       final BrowserCache.Entry entry = cache.put(request.getUri(), mediaType,
-            response.getHeaders(), cached, expires, etag, lastModified);
+              response.getHeaders(), cached, expires, etag, lastModified);
 
       response.setStreamFactory(new CachedStreamFactory(entry));
-      
+
       return response;
    }
 

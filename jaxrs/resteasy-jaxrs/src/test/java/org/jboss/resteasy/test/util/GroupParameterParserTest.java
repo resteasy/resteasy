@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.util;
 
-import com.sun.xml.internal.rngom.binary.GroupPattern;
 import org.jboss.resteasy.util.GroupParameterParser;
 import org.jboss.resteasy.util.ParameterParser;
 import org.junit.Assert;

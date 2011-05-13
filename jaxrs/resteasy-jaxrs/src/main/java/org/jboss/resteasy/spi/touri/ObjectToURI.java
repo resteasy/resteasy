@@ -13,7 +13,7 @@ import java.util.List;
  * <li>having an object extend URIable and have the object perform custom logic
  * <li>registering a custom URIResolver
  * </ol>
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.regression;
 
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.TJWSServletContainer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -2,9 +2,9 @@ package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.EncoderPrecedence;
+import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;

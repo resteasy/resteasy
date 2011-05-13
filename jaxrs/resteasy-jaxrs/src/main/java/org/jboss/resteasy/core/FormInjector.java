@@ -1,12 +1,12 @@
 package org.jboss.resteasy.core;
 
-import java.lang.reflect.Constructor;
-
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import java.lang.reflect.Constructor;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -31,7 +31,7 @@ public class FormInjector implements ValueInjector
       {
          throw new RuntimeException("Unable to instantiate @Form class. No no-arg constructor.");
       }
-      
+
       constructorInjector = factory.getInjectorFactory().createConstructor(constructor);
       propertyInjector = factory.getInjectorFactory().createPropertyInjector(type);
 

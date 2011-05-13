@@ -1,17 +1,5 @@
 package org.jboss.resteasy.test.providers;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Type;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
@@ -24,6 +12,17 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.junit.Assert;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
 
 @SuppressWarnings("unchecked")
 public class CustomValueInjectorTest
@@ -61,7 +60,7 @@ public class CustomValueInjectorTest
    {
       ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
       providerFactory.registerProvider(StringTextStar.class);
-      
+
       // use @Provider annotation to register a custom ValueInjector!!!
       providerFactory.registerProvider(MyInjectorFactoryImpl.class);
 
@@ -77,7 +76,7 @@ public class CustomValueInjectorTest
 
       @Override
       public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
-            Type genericType, Annotation[] annotations)
+                                                    Type genericType, Annotation[] annotations)
       {
          final Hello hello = FindAnnotation.findAnnotation(annotations, Hello.class);
          if (hello == null)
@@ -100,6 +99,8 @@ public class CustomValueInjectorTest
             };
          }
       }
-   };
+   }
+
+   ;
 
 }

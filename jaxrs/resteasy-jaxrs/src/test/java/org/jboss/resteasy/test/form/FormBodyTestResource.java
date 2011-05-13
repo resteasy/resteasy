@@ -1,18 +1,17 @@
 package org.jboss.resteasy.test.form;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 public class FormBodyTestResource extends BaseResourceTest
 {
@@ -49,7 +48,7 @@ public class FormBodyTestResource extends BaseResourceTest
    {
       addPerRequestResource(MyResource.class);
    }
-   
+
    @Test
    public void test()
    {

@@ -5,7 +5,6 @@ import org.jboss.resteasy.spi.LoggableFailure;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
 import java.io.Serializable;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
@@ -180,7 +179,7 @@ public class MediaTypeHelper
       sortByWeight(provided);
       boolean emptyDesired = desired == null || desired.size() == 0;
       boolean emptyProvided = provided == null || provided.size() == 0;
-      
+
       if (emptyDesired && emptyProvided) return null;
       if (emptyDesired && !emptyProvided) return provided.get(0);
       if (emptyProvided && !emptyDesired) return desired.get(0);

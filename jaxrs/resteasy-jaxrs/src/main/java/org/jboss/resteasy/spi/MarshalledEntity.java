@@ -1,7 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import javax.ws.rs.core.MediaType;
-
 /**
  * Allows you to access the entity's raw bytes as well as the marshalled object.
  *
@@ -11,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 public interface MarshalledEntity<T>
 {
    byte[] getMarshalledBytes();
+
    T getEntity();
 
 }

@@ -10,8 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -87,7 +85,6 @@ public class ExampleSignTest
       Assert.assertTrue(verify.verify(signatureBytes));
 
    }
-
 
 
    /*

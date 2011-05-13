@@ -29,15 +29,15 @@ public interface SimpleClient
    @GET
    @Path("queryParam")
    @Produces("text/plain")
-   String getQueryParam(@QueryParam("param")String param);
+   String getQueryParam(@QueryParam("param") String param);
 
    @GET
    @Path("matrixParam")
    @Produces("text/plain")
-   String getMatrixParam(@MatrixParam("param")String param);
+   String getMatrixParam(@MatrixParam("param") String param);
 
    @GET
    @Path("uriParam/{param}")
    @Produces("text/plain")
-   int getUriParam(@PathParam("param")int param);
+   int getUriParam(@PathParam("param") int param);
 }

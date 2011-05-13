@@ -1,7 +1,5 @@
 package org.jboss.resteasy.client;
 
-import java.net.URI;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.client.core.ClientInvoker;
@@ -11,6 +9,8 @@ import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import java.net.URI;
 
 /**
  * Helper class that allows you to pre-initialize an Executor, preset some ClientRequest attributes (like follow redirects)
@@ -45,25 +45,25 @@ public class ClientRequestFactory
    }
 
    public ClientRequestFactory(ClientExecutor executor,
-         ResteasyProviderFactory providerFactory)
+                               ResteasyProviderFactory providerFactory)
    {
       init(executor, providerFactory, null);
    }
 
    public ClientRequestFactory(ClientExecutor executor,
-         ResteasyProviderFactory providerFactory, URI base)
+                               ResteasyProviderFactory providerFactory, URI base)
    {
       init(executor, providerFactory, base);
    }
 
    private void init(ClientExecutor executor,
-         ResteasyProviderFactory providerFactory, URI base)
+                     ResteasyProviderFactory providerFactory, URI base)
    {
-      if(providerFactory == null)
+      if (providerFactory == null)
          this.providerFactory = ResteasyProviderFactory.getInstance();
       else
          this.providerFactory = providerFactory;
-      if( executor == null )
+      if (executor == null)
          this.executor = new ApacheHttpClientExecutor(new HttpClient());
       else
          this.executor = executor;
@@ -78,9 +78,9 @@ public class ClientRequestFactory
       this.applyDefaultInterceptors = other.applyDefaultInterceptors;
       this.followRedirects = other.followRedirects;
       other.prefixInterceptors
-            .copyClientInterceptorsTo(this.prefixInterceptors);
+              .copyClientInterceptorsTo(this.prefixInterceptors);
       other.suffixInterceptors
-            .copyClientInterceptorsTo(this.suffixInterceptors);
+              .copyClientInterceptorsTo(this.suffixInterceptors);
    }
 
    public URI getBase()
@@ -123,7 +123,7 @@ public class ClientRequestFactory
       prefixInterceptors.prefixClientInterceptorsTo(repository);
       suffixInterceptors.copyClientInterceptorsTo(repository);
    }
-   
+
    public ClientRequestFactory clone()
    {
       return new ClientRequestFactory(this);
@@ -137,11 +137,11 @@ public class ClientRequestFactory
    public ClientRequest createRequest(String uriTemplate)
    {
       ClientRequest clientRequest = new ClientRequest(new UriBuilderImpl()
-            .uriTemplate(uriTemplate), executor, providerFactory);
+              .uriTemplate(uriTemplate), executor, providerFactory);
       if (applyDefaultInterceptors)
       {
          ClientInvokerInterceptorFactory.applyDefaultInterceptors(
-               clientRequest, providerFactory);
+                 clientRequest, providerFactory);
       }
       if (followRedirects)
       {
@@ -152,16 +152,16 @@ public class ClientRequestFactory
    }
 
    public <T> T getRelative(String uriTemplate, Class<T> type, Object... params)
-   throws Exception
+           throws Exception
    {
       return get(base.toString() + uriTemplate, type, params);
    }
 
    public <T> T get(String uriTemplate, Class<T> type, Object... params)
-         throws Exception
+           throws Exception
    {
       return createRequest(uriTemplate).followRedirects(true).pathParameters(
-            params).get(type).getEntity();
+              params).get(type).getEntity();
    }
 
    public <T> T createProxy(Class<T> clazz)

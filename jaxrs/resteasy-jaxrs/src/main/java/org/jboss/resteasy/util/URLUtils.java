@@ -388,5 +388,5 @@ public class URLUtils
          }
       }
       return encoded.toString();
-	}
+   }
 }

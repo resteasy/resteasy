@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,6 +25,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * Test for InternalDispatcher
