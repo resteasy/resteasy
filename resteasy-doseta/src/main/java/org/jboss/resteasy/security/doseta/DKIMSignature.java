@@ -349,7 +349,7 @@ public class DKIMSignature
          throw new SignatureException(e);
       }
 
-      if (headers.size() > 0)
+      if (this.headers.size() > 0)
       {
          StringBuffer headerCat = new StringBuffer();
          int count = 0;

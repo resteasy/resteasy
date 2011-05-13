@@ -7,7 +7,6 @@ package org.jboss.resteasy.security.doseta;
 public class VerificationResult
 {
    protected boolean verified;
-   protected String failureReason;
    protected Exception failureException;
    protected DKIMSignature signature;
 
@@ -19,16 +18,6 @@ public class VerificationResult
    public void setVerified(boolean verified)
    {
       this.verified = verified;
-   }
-
-   public String getFailureReason()
-   {
-      return failureReason;
-   }
-
-   public void setFailureReason(String failureReason)
-   {
-      this.failureReason = failureReason;
    }
 
    public Exception getFailureException()

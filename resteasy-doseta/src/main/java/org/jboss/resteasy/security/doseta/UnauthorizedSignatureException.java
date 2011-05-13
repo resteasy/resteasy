@@ -29,10 +29,6 @@ public class UnauthorizedSignatureException extends ReaderException
          for (VerificationResult result : set.getResults())
          {
             msg.append("\r\n");
-            if (result.getFailureReason() != null)
-            {
-               msg.append(result.getFailureReason());
-            }
             if (result.getFailureException() != null)
             {
                msg.append(" ");
