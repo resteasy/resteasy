@@ -7,10 +7,10 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.ho.yaml.Yaml;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
+import org.yaml.snakeyaml.Yaml;
 
 public class TestYamlProvider extends BaseResourceTest {
 
@@ -34,7 +34,7 @@ public class TestYamlProvider extends BaseResourceTest {
 
         MyObject o1 = YamlResource.createMyObject();
 
-        String s1 = Yaml.dump(o1);
+        String s1 = new Yaml().dump(o1);
 
         client.executeMethod(get);
 
@@ -55,7 +55,7 @@ public class TestYamlProvider extends BaseResourceTest {
 
         MyObject o1 = YamlResource.createMyObject();
 
-        String s1 = Yaml.dump(o1);
+        String s1 = new Yaml().dump(o1);
 
         post.setRequestEntity(new StringRequestEntity(s1, "text/x-yaml", "utf-8"));
 
@@ -78,7 +78,7 @@ public class TestYamlProvider extends BaseResourceTest {
 
         client.executeMethod(post);
 
-        Assert.assertEquals(400, post.getStatusCode());
+        Assert.assertEquals(500, post.getStatusCode());
 
     }
 

@@ -1,10 +1,11 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.ho.yaml.Yaml;
-import org.ho.yaml.exception.YamlException;
+
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -55,10 +56,10 @@ public class YamlProvider extends AbstractEntityProvider<Object>
       try
       {
 
-         return Yaml.load(entityStream);
+         return new Yaml().load(entityStream);
 
       }
-      catch (YamlException ye)
+      catch (YAMLException ye)
       {
          logger.debug("Failed to decode Yaml: {0}", ye.getMessage());
          throw new ReaderException("Failed to decode Yaml", ye);
@@ -106,7 +107,7 @@ public class YamlProvider extends AbstractEntityProvider<Object>
       try
       {
 
-         Yaml.dump(t, entityStream);
+         entityStream.write(new Yaml().dump(t).getBytes());
 
       }
       catch (Exception e)
