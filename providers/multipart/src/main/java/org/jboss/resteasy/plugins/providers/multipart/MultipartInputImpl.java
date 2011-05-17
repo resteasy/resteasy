@@ -142,6 +142,10 @@ public class MultipartInputImpl implements MultipartInput
       {
          MessageBodyReader<T> reader = workers.getMessageBodyReader(type,
                  genericType, empty, contentType);
+         if (reader == null)
+         {
+            throw new RuntimeException("Unable to find a MessageBodyReader for media type: " + contentType + " and class type " + type.getName());
+         }
          return reader.readFrom(type, genericType, empty, contentType,
                  headers, getBody());
       }
