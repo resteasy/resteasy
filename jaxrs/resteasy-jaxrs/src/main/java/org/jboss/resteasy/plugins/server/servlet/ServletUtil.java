@@ -68,7 +68,8 @@ public class ServletUtil
          if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
          baseURI = UriBuilder.fromUri(absolutePath).replacePath(tmpContextPath).build();
       }
-
+      //System.out.println("path: " + path);
+      //System.out.println("query string: " + request.getQueryString());
       UriInfoImpl uriInfo = new UriInfoImpl(absolutePath, baseURI, path, request.getQueryString(), pathSegments);
       return uriInfo;
    }
