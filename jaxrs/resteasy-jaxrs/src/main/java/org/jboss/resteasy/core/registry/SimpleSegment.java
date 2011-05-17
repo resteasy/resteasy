@@ -30,7 +30,7 @@ public class SimpleSegment extends RootSegment
       UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
       if (start + segment.length() == path.length()) // we've reached end of string
       {
-         ResourceInvoker invoker = match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
+         ResourceInvoker invoker = match(request.getHttpMethod(), request);
          if (invoker == null)
             throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
 

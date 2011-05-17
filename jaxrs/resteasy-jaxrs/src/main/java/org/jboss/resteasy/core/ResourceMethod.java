@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
+import org.jboss.resteasy.core.registry.Segment;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -359,25 +360,16 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       return matches;
    }
 
-   protected MediaType resolveContentType(HttpRequest in, Object entity)
+   public MediaType resolveContentType(HttpRequest in, Object entity)
    {
-      MediaType responseContentType = matchByType(in.getHttpHeaders().getAcceptableMediaTypes(), entity);
-      if (responseContentType == null)
+      MediaType chosen = (MediaType)in.getAttribute(Segment.RESTEASY_CHOSEN_ACCEPT);
+      if (chosen != null  && !chosen.equals(MediaType.WILDCARD_TYPE))
       {
-         responseContentType = MediaType.WILDCARD_TYPE;
+         return chosen;
       }
-      //NOTE: This should be the real behavior, but the stupid spec says it should default to */*
-      /*
-      if (responseContentType == null || responseContentType.isWildcardType())
-      {
-         throw new LoggableFailure("There is no Content-Type set.  Annotate your method with @Produces or set the content type in the Response object for method: " + method, 500);
-      }
-      */
-      return responseContentType;
-   }
 
-   public MediaType matchByType(List<MediaType> accepts, Object entity)
-   {
+      List<MediaType> accepts = in.getHttpHeaders().getAcceptableMediaTypes();
+
       if (accepts == null || accepts.size() == 0)
       {
          if (produces == null) return MediaType.WILDCARD_TYPE;
