@@ -2,6 +2,8 @@ package org.jboss.resteasy.test.regression;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -12,6 +14,8 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -68,6 +72,46 @@ public class MatchedResourceTest
          return "complex2";
       }
 
+      @Path("match")
+      @Produces("*/*;q=0.0")
+      @GET
+      public String getObj()
+      {
+         return "*/*";
+      }
+
+      @Path("match")
+      @Produces("application/xml")
+      @GET
+      public String getObjXml()
+      {
+         return "<xml/>";
+      }
+
+      @Path("match")
+      @Produces("application/json")
+      @GET
+      public String getObjJson()
+      {
+         return "{ \"name\" : \"bill\" }";
+      }
+
+   }
+
+   /**
+    * RESTEASY-537
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testMatch() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/match"));
+      request.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+      ClientResponse<String> rtn = request.get(String.class);
+      Assert.assertEquals("text/html", rtn.getHeaders().getFirst("Content-Type"));
+      String res = rtn.getEntity();
+      Assert.assertEquals("*/*", res);
    }
 
    public void _test(String uri, String value)

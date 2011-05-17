@@ -42,7 +42,7 @@ public class ServerCacheHitInterceptor implements PreProcessInterceptor
       if (!request.getHttpMethod().equalsIgnoreCase("GET")) return null;
 
       String key = request.getUri().getRequestUri().toString();
-      MediaType chosenType = method.matchByType(request.getHttpHeaders().getAcceptableMediaTypes(), null);
+      MediaType chosenType = method.resolveContentType(request, null);
       ServerCache.Entry entry = cache.get(key, chosenType);
       if (entry != null)
       {

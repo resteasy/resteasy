@@ -188,7 +188,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
       if (matcher.matches())
       {
          // we consumed entire path string
-         ResourceInvoker invoker = match(request.getHttpMethod(), request.getHttpHeaders().getMediaType(), request.getHttpHeaders().getAcceptableMediaTypes());
+         ResourceInvoker invoker = match(request.getHttpMethod(), request);
          if (invoker == null)
             throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
          uriInfo.pushMatchedURI(path, Encode.decode(path));

@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.MethodNotAllowedException;
 import org.jboss.resteasy.spi.NotAcceptableException;
 import org.jboss.resteasy.spi.UnsupportedMediaTypeException;
@@ -25,6 +26,7 @@ import java.util.List;
  */
 public class Segment
 {
+   public static final String RESTEASY_CHOSEN_ACCEPT = "RESTEASY_CHOSEN_ACCEPT";
    protected List<ResourceMethod> methods = new ArrayList<ResourceMethod>();
    protected ResourceLocator locator;
 
@@ -33,8 +35,16 @@ public class Segment
       return methods.size() == 0 && locator == null;
    }
 
-   protected ResourceInvoker match(String httpMethod, MediaType contentType, List<MediaType> oldaccepts)
+   /**
+    * @param httpMethod this is so we can find a GET match when HEAD is called (and there is no head)
+    * @param request
+    * @return
+    */
+   protected ResourceInvoker match(String httpMethod, HttpRequest request)
    {
+      MediaType contentType = request.getHttpHeaders().getMediaType();
+
+      List<MediaType> oldaccepts = request.getHttpHeaders().getAcceptableMediaTypes();
       List<WeightedMediaType> accepts = new ArrayList<WeightedMediaType>();
       for (MediaType accept : oldaccepts) accepts.add(WeightedMediaType.parse(accept));
 
@@ -72,7 +82,7 @@ public class Segment
 
             if (httpMethod.equalsIgnoreCase("HEAD") && allowed.contains("GET"))
             {
-               return match("GET", contentType, oldaccepts);
+               return match("GET", request);
             }
 
             if (allowed.contains("GET")) allowed.add("HEAD");
@@ -183,14 +193,67 @@ public class Segment
       Collections.sort(produces);
       Collections.sort(accepts);
 
+
       for (WeightedMediaType accept : accepts)
       {
          for (WeightedMediaType produce : produces)
          {
-            if (accept.isCompatible(produce)) return producesMap.get(produce);
+            if (accept.isCompatible(produce))
+            {
+               System.out.println("SEGMENT: " + accept + " accepts: " + accepts);
+               request.setAttribute(RESTEASY_CHOSEN_ACCEPT, accept);
+               return producesMap.get(produce);
+            }
          }
 
       }
+
+
+      /*
+      I'm keeping this code around as its a different way to match.  It takes producer preference
+      over picking accept type listed first.
+
+
+      // make a list of lists for each level of preferences
+
+      List<List<WeightedMediaType>> acceptsLevels = new ArrayList<List<WeightedMediaType>>();
+
+      WeightedMediaType last = null;
+      List<WeightedMediaType> level = null;
+      for (WeightedMediaType accept : accepts)
+      {
+         if (last == null || accept.getWeight() < last.getWeight())
+         {
+            level = new ArrayList<WeightedMediaType>();
+            acceptsLevels.add(level);
+            level.add(accept);
+
+         }
+         else
+         {
+            level.add(accept);
+         }
+         last = accept;
+      }
+
+      // preferred produces are matched first with preferred accepts.
+      for (List<WeightedMediaType> acceptLevel : acceptsLevels)
+      {
+         for (WeightedMediaType produce : produces)
+         {
+            for (WeightedMediaType accept : acceptLevel)
+            {
+               if (accept.isCompatible(produce))
+               {
+                  // this is a big hack to propagate chosen accept type to ServerResponse
+                  request.setAttribute(RESTEASY_CHOSEN_ACCEPT, accept);
+                  return producesMap.get(produce);
+               }
+            }
+         }
+      }
+       */
+
       return null;
    }
 
