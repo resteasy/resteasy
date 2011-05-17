@@ -46,7 +46,14 @@ public class DefaultEntityExtractorFactory implements EntityExtractorFactory
       {
          public Object extractEntity(ClientRequestContext context, Object... args)
          {
-            context.getClientResponse().checkFailureStatus();
+            try
+            {
+               context.getClientResponse().checkFailureStatus();
+            }
+            catch (RuntimeException e)
+            {
+               context.getErrorHandler().clientErrorHandling(context.getClientResponse(), e);
+            }
             if (release)
                context.getClientResponse().releaseConnection();
             return null;
