@@ -200,7 +200,7 @@ public class Segment
          {
             if (accept.isCompatible(produce))
             {
-               System.out.println("SEGMENT: " + accept + " accepts: " + accepts);
+               //System.out.println("SEGMENT: " + accept + " accepts: " + accepts);
                request.setAttribute(RESTEASY_CHOSEN_ACCEPT, accept);
                return producesMap.get(produce);
             }

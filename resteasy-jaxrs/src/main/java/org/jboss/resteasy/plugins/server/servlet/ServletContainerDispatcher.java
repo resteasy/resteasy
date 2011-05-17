@@ -191,6 +191,7 @@ public class ServletContainerDispatcher
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             // made it warn so that people can filter this.
             logger.warn("Failed to parse request.", e);
+            return;
          }
 
          HttpResponse theResponse = responseFactory.createResteasyHttpResponse(response);

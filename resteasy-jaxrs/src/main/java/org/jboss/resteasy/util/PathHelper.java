@@ -76,11 +76,4 @@ public class PathHelper
       return str.replace(openCurlyReplacement, '{').replace(closeCurlyReplacement, '}');
    }
 
-   public static void main(String[] args) throws Exception
-   {
-      String str = replaceEnclosedCurlyBraces("{hello{world}}  {foo : {bar}{{blah}}}");
-      System.out.println(str);
-      System.out.println(recoverEnclosedCurlyBraces(str));
-   }
-
 }
