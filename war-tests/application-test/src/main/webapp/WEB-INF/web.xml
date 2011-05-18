@@ -6,16 +6,20 @@
     <context-param>
         <param-name>javax.ws.rs.Application</param-name>
         <param-value>org.jboss.resteasy.test.application.MyApplication</param-value>
-        <description>defines rest application</description>
     </context-param>
 
-    <listener>
-        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-    </listener>
+    <context-param>
+        <param-name>context.greeting</param-name>
+        <param-value>context hello</param-value>
+    </context-param>
 
     <servlet>
         <servlet-name>Resteasy</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+        <init-param>
+            <param-name>servlet.greeting</param-name>
+            <param-value>servlet hello</param-value>
+        </init-param>
     </servlet>
 
     <servlet-mapping>

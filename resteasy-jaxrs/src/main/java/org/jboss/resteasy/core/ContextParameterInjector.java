@@ -50,7 +50,7 @@ public class ContextParameterInjector implements ValueInjector
          {
             Object delegate = ResteasyProviderFactory.getContextData(type);
             if (delegate == null)
-               throw new LoggableFailure("Unable to inject contextual data of type: " + type.getName());
+               throw new LoggableFailure("Unable to find contextual data of type: " + type.getName());
             return method.invoke(delegate, objects);
          }
          catch (IllegalAccessException e)
@@ -71,6 +71,8 @@ public class ContextParameterInjector implements ValueInjector
    public Object inject()
    {
       if (type.equals(Providers.class)) return factory;
+      Object delegate = ResteasyProviderFactory.getContextData(type);
+      if (delegate != null) return delegate;
 
       if (!type.isInterface()) throw new RuntimeException("Illegal to inject a non-interface type into a singleton");
 
