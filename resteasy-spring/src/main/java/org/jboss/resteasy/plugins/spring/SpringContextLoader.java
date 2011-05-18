@@ -22,37 +22,11 @@ public class SpringContextLoader extends ContextLoader
 	private final static Logger logger = Logger
 			.getLogger(SpringContextLoader.class);
 
+   private SpringContextLoaderSupport springContextLoaderSupport = new SpringContextLoaderSupport();
+
    protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext)
    {
       super.customizeContext(servletContext, configurableWebApplicationContext);
-
-      final ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) servletContext.getAttribute(ResteasyProviderFactory.class.getName());
-      if (providerFactory == null)
-         throw new RuntimeException("RESTeasy Provider Factory is null, do you have the ResteasyBootstrap listener configured?");
-
-
-      final Registry registry = (Registry) servletContext.getAttribute(Registry.class.getName());
-      if (registry == null)
-         throw new RuntimeException("RESTeasy Registry is null, do ou have the ResteasyBootstrap listener configured?");
-
-      final Dispatcher dispatcher = (Dispatcher) servletContext.getAttribute(Dispatcher.class.getName());
-      if (dispatcher == null)
-         throw new RuntimeException("RESTeasy Dispatcher is null, do ou have the ResteasyBootstrap listener configured?");
-
-      ApplicationListener listener = new ApplicationListener()
-      {
-         public void onApplicationEvent(ApplicationEvent event)
-         {
-            if (event instanceof ContextRefreshedEvent)
-            {
-               ContextRefreshedEvent cre = (ContextRefreshedEvent) event;
-               ConfigurableListableBeanFactory autowireCapableBeanFactory = (ConfigurableListableBeanFactory) cre
-                     .getApplicationContext().getAutowireCapableBeanFactory();
-               new SpringBeanProcessor(dispatcher, registry, providerFactory)
-                     .postProcessBeanFactory(autowireCapableBeanFactory);
-            }
-         }
-      };
-      configurableWebApplicationContext.addApplicationListener(listener);
+      this.springContextLoaderSupport.customizeContext(servletContext,configurableWebApplicationContext);
    }
 }
