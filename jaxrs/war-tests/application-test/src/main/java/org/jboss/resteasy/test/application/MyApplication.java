@@ -15,24 +15,30 @@ public class MyApplication extends Application
    public static int num_instantiations = 0;
 
    protected Set<Object> singletons = new HashSet<Object>();
+   protected Set<Class<?>> clazzes = new HashSet<Class<?>>();
 
    public MyApplication()
    {
       num_instantiations++;
       singletons.add(new MyResource());
-      singletons.add(new FooExceptionMapper());
+      clazzes.add(FooExceptionMapper.class);
 
    }
 
    @Override
    public Set<Class<?>> getClasses()
    {
-      return super.getClasses();
+      return clazzes;
    }
 
    @Override
    public Set<Object> getSingletons()
    {
       return singletons;
+   }
+
+   public String getHello()
+   {
+      return "hello";
    }
 }
