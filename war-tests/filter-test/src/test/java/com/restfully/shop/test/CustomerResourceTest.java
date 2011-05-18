@@ -1,6 +1,7 @@
 package com.restfully.shop.test;
 
 import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,6 +18,31 @@ import java.net.URL;
  */
 public class CustomerResourceTest
 {
+   /**
+    * RESTEASY-541
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testMethodNotFound() throws Exception
+   {
+      ClientRequest request = new ClientRequest("http://localhost:9095/customers");
+
+      String newCustomer = "<customer>"
+              + "<first-name>Bill</first-name>"
+              + "<last-name>Burke</last-name>"
+              + "<street>256 Clarendon Street</street>"
+              + "<city>Boston</city>"
+              + "<state>MA</state>"
+              + "<zip>02115</zip>"
+              + "<country>USA</country>"
+              + "</customer>";
+      request.body("application/xml", newCustomer);
+      ClientResponse response = request.put();
+      Assert.assertEquals(405, response.getStatus());
+
+   }
+
    @Test
    public void testStaticResource() throws Exception
    {
