@@ -176,7 +176,6 @@ public class AcceptTest
       registry.addPerRequestResource(XmlResource.class);
 
       MediaType contentType = MediaType.valueOf("application/xml;schema=bar");
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
@@ -222,7 +221,6 @@ public class AcceptTest
       registry.addPerRequestResource(XmlResource2.class);
 
       MediaType contentType = MediaType.valueOf("application/xml;schema=bar");
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
@@ -241,7 +239,6 @@ public class AcceptTest
       registry.addPerRequestResource(XmlResource2.class);
 
       MediaType contentType = MediaType.valueOf("application/xml;schema=blah");
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/xml");
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
@@ -260,7 +257,6 @@ public class AcceptTest
       registry.addPerRequestResource(WebResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
 
       {
          ArrayList<MediaType> accepts = new ArrayList<MediaType>();
@@ -292,7 +288,6 @@ public class AcceptTest
       registry.addPerRequestResource(MultipleResource.class);
 
       MediaType contentType = new MediaType("text", "plain");
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
 
       MediaType foo = MediaType.valueOf("application/foo");
       MediaType bar = MediaType.valueOf("application/bar");
@@ -366,7 +361,6 @@ public class AcceptTest
       Registry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
       registry.addPerRequestResource(ConsumeResource.class);
 
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments("/");
       ArrayList<MediaType> accepts = new ArrayList<MediaType>();
 
       {

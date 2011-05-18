@@ -1,5 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
+import org.jboss.resteasy.util.Encode;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import java.util.ArrayList;
@@ -16,18 +18,19 @@ public class PathSegmentImpl implements PathSegment
    private MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
 
    /**
-    * @param path decode path segment
+    * @param segment encoded path segment
+    * @param decode whether or not to decode values
     */
-   public PathSegmentImpl(String path)
+   public PathSegmentImpl(String segment, boolean decode)
    {
-      this.original = path;
-      this.path = path;
-      int semicolon = path.indexOf(';');
+      this.original = segment;
+      this.path = segment;
+      int semicolon = segment.indexOf(';');
       if (semicolon >= 0)
       {
-         if (semicolon > 0) this.path = path.substring(0, semicolon);
+         if (semicolon > 0) this.path = segment.substring(0, semicolon);
          else this.path = "";
-         String matrixParams = path.substring(semicolon + 1);
+         String matrixParams = segment.substring(semicolon + 1);
          String[] params = matrixParams.split(";");
          for (String param : params)
          {
@@ -35,26 +38,23 @@ public class PathSegmentImpl implements PathSegment
             if (namevalue != null && namevalue.length > 0)
             {
                String name = namevalue[0];
+               if (decode) name = Encode.decodePath(name);
                String value = "";
                if (namevalue.length > 1)
                {
                   value = namevalue[1];
                }
+               if (decode) value = Encode.decodePath(value);
                matrixParameters.add(name, value);
             }
          }
       }
+      if (decode) this.path = Encode.decodePath(this.path);
    }
 
    public String getOriginal()
    {
       return original;
-   }
-
-   public PathSegmentImpl(String path, MultivaluedMap<String, String> matrixParameters)
-   {
-      this.path = path;
-      this.matrixParameters = matrixParameters;
    }
 
    public String getPath()
@@ -84,7 +84,13 @@ public class PathSegmentImpl implements PathSegment
       return buf.toString();
    }
 
-   public static List<PathSegment> parseSegments(String path)
+   /**
+    *
+    * @param path encoded full path
+    * @param decode whether or not to decode each segment
+    * @return
+    */
+   public static List<PathSegment> parseSegments(String path, boolean decode)
    {
       List<PathSegment> pathSegments = new ArrayList<PathSegment>();
 
@@ -92,7 +98,7 @@ public class PathSegmentImpl implements PathSegment
       String[] paths = path.split("/");
       for (String p : paths)
       {
-         pathSegments.add(new PathSegmentImpl(p));
+         pathSegments.add(new PathSegmentImpl(p, decode));
       }
       return pathSegments;
    }

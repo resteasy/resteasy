@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -20,6 +21,7 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -181,6 +183,35 @@ public class UriInfoTest
          Assert.assertEquals("a%20b", encoded.get(0).getPath());
          Assert.assertEquals("x%20y", encoded.get(1).getPath());
          return "content";
+      }
+   }
+
+   @Path("/queryEscapedMatrParam")
+   public static class EscapedMatrParamResource
+   {
+      @GET
+      public String doGet(@MatrixParam("a") String a, @MatrixParam("b") String b, @MatrixParam("c") String c, @MatrixParam("d") String d)
+      {
+         Assert.assertEquals("a;b", a);
+         Assert.assertEquals("x/y", b);
+         Assert.assertEquals("m\\n", c);
+         Assert.assertEquals("k=l", d);
+         return "content";
+      }
+   }
+
+   @Test
+   public void testEscapedMatrParam() throws Exception
+   {
+      dispatcher = EmbeddedContainer.start().getDispatcher();
+      try
+      {
+         dispatcher.getRegistry().addPerRequestResource(EscapedMatrParamResource.class);
+         _test(new HttpClient(), "/queryEscapedMatrParam;a=a%3Bb;b=x%2Fy;c=m%5Cn;d=k%3Dl");
+      }
+      finally
+      {
+         EmbeddedContainer.stop();
       }
    }
 
