@@ -18,6 +18,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -65,7 +66,8 @@ public class MockHttpRequest implements HttpRequest
       request.httpHeaders.setCookies(new HashMap<String, Cookie>());
       request.httpHeaders.setRequestHeaders(new Headers<String>());
       //request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
-      request.uri = new UriInfoImpl(absoluteUri, baseUri, absoluteUri.getRawPath(), absoluteUri.getRawQuery(), PathSegmentImpl.parseSegments(absoluteUri.getRawPath()));
+      List<PathSegment> encodedPathSegments = PathSegmentImpl.parseSegments(absoluteUri.getRawPath(), false);
+      request.uri = new UriInfoImpl(absoluteUri, baseUri, absoluteUri.getRawPath(), absoluteUri.getRawQuery(), encodedPathSegments);
       request.preprocessedPath = request.uri.getPath(false);
       return request;
    }

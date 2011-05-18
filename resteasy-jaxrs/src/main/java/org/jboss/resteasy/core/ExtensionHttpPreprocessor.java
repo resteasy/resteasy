@@ -104,7 +104,7 @@ public class ExtensionHttpPreprocessor implements HttpRequestPreprocessor
       }
       if (preprocessed)
       {
-         segments = PathSegmentImpl.parseSegments(rebuilt.toString());
+         segments = PathSegmentImpl.parseSegments(rebuilt.toString(), false);
       }
       return segments;
    }
