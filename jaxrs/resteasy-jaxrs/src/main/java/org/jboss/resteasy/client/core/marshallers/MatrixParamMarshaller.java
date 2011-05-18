@@ -17,6 +17,7 @@ public class MatrixParamMarshaller implements Marshaller
 
    public void build(ClientRequest request, Object object)
    {
+      if (object == null) return; // Don't add a null matrix parameter
       request.matrixParameter(paramName, object);
    }
 
