@@ -24,6 +24,7 @@ public class CookieParamMarshaller implements Marshaller
 
    public void build(ClientRequest request, Object object)
    {
+      if (object == null) return;  // don't set a null value
       if (object instanceof Cookie)
       {
          Cookie cookie = (Cookie) object;
