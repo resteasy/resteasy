@@ -133,7 +133,23 @@ public class SynchronousDispatcher implements Dispatcher
     */
    public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException
    {
-      ResourceInvoker invoker = getInvoker(request);
+      ResourceInvoker invoker = null;
+      try
+      {
+         invoker = getInvoker(request);
+      }
+      catch (Exception failure)
+      {
+         if (failure instanceof NotFoundException)
+         {
+            throw ((NotFoundException)failure);
+         }
+         else
+         {
+            handleException(request, response, failure);
+            return;
+         }
+      }
       try
       {
          invoke(request, response, invoker);
