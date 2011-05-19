@@ -9,6 +9,7 @@
     <artifactId>async-http-servlet-3.0-test</artifactId>
     <packaging>war</packaging>
     <name>Async http tomcat 6 test</name>
+    <description/>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

@@ -10,6 +10,7 @@
     <artifactId>test-all-jaxb</artifactId>
     <packaging>jar</packaging>
     <name>Test All JAXB providers</name>
+    <description/>
 
     <dependencies>
         <dependency>

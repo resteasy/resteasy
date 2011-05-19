@@ -10,6 +10,7 @@
     <artifactId>resteasy-jettison-provider</artifactId>
     <packaging>jar</packaging>
     <name>Resteasy Jettison Provider</name>
+    <description/>
 
     <dependencies>
         <dependency>

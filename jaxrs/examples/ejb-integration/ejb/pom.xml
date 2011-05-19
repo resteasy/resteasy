@@ -9,6 +9,7 @@
     <artifactId>ejb-integration</artifactId>
     <packaging>jar</packaging>
     <name>EJB test - EJB</name>
+    <description/>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>

@@ -11,6 +11,7 @@
     <artifactId>doseta-no-dns-example</artifactId>
     <packaging>war</packaging>
     <name>doseta-no-dns-example</name>
+    <description/>
     <url>http://maven.apache.org</url>
 
     <dependencies>

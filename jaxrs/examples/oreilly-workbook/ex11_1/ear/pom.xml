@@ -10,6 +10,7 @@
     <artifactId>ex11_1-ear</artifactId>
     <packaging>jar</packaging>
     <name>ex11_1 EAR</name>
+    <description/>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>

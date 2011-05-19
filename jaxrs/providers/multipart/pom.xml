@@ -10,6 +10,7 @@
     <artifactId>resteasy-multipart-provider</artifactId>
     <packaging>jar</packaging>
     <name>Resteasy Multipart Provider</name>
+    <description/>
 
     <dependencies>
         <dependency>

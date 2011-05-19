@@ -10,6 +10,7 @@
     <artifactId>resteasy-atom-provider</artifactId>
     <packaging>jar</packaging>
     <name>Resteasy Atom Provider</name>
+    <description/>
 
     <dependencies>
         <dependency>

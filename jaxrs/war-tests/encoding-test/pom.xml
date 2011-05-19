@@ -12,6 +12,7 @@
     <artifactId>test-encoding-war</artifactId>
     <packaging>war</packaging>
     <name>encoding-test</name>
+    <description/>
     <url>http://maven.apache.org</url>
 
     <dependencies>

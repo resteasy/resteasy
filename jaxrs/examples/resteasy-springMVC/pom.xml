@@ -8,6 +8,7 @@
     <packaging>war</packaging>
     <version>2.2-RC-1</version>
     <name>Spring MVC RestContact Maven Webapp</name>
+    <description/>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>

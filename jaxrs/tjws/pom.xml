@@ -11,6 +11,7 @@
     <artifactId>tjws</artifactId>
     <packaging>jar</packaging>
     <name>Embedded Servlet Container</name>
+    <description/>
 
     <dependencies>
         <dependency>

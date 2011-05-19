@@ -10,6 +10,7 @@
     <artifactId>resteasy-jackson-provider</artifactId>
     <packaging>jar</packaging>
     <name>Resteasy Jackson Provider</name>
+    <description/>
 
     <dependencies>
         <dependency>

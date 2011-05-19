@@ -9,6 +9,7 @@
     <artifactId>ejb-integration-ear</artifactId>
     <packaging>jar</packaging>
     <name>Basic Integration Test</name>
+    <description/>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>

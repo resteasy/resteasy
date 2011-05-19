@@ -11,6 +11,7 @@
     <artifactId>jaxrs-api</artifactId>
     <packaging>jar</packaging>
     <name>JAX-RS Core API</name>
+    <description/>
 
     <build>
         <plugins>

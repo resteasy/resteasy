@@ -5,6 +5,7 @@
         <version>2.2-RC-1</version>
     </parent>
     <name>Resteasy Examples</name>
+    <description/>
     <url>http://wiki.jboss.org/wiki/Wiki.jsp?page=RESTeasyJAXRS</url>
     <modelVersion>4.0.0</modelVersion>
 

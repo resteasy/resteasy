@@ -9,6 +9,7 @@
     <artifactId>async-http-jbossweb-test</artifactId>
     <packaging>war</packaging>
     <name>Async HTTP JBoss Web Test</name>
+    <description/>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
