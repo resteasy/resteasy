@@ -23,6 +23,7 @@
     </dependencies>
     <build>
         <plugins>
+<!--
             <plugin> <!-- skip adding to maven repository -->
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-deploy-plugin</artifactId>
@@ -30,6 +31,7 @@
                      <skip>true</skip>
                  </configuration>
              </plugin>
+-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
