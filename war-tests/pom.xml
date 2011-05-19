@@ -30,8 +30,6 @@
         <module>encoding-test</module>
         <module>context-test</module>
         <module>oauth-servlet-test</module>
-        <!--- <module>keystore-classpath-test</module>
-        <module>keystore-fromapp-test</module> -->
         <!-- <module>jsapi-servlet-test</module> -->
         <module>application-test</module>
     </modules>
