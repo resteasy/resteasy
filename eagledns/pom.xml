@@ -24,7 +24,7 @@
     <build>
         <plugins>
 <!--
-            <plugin> <!-- skip adding to maven repository -->
+            <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-deploy-plugin</artifactId>
                  <configuration>
