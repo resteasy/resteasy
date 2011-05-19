@@ -10,6 +10,7 @@
     <artifactId>async-http-tomcat6</artifactId>
     <packaging>jar</packaging>
     <name>Async Http Tomcat 6</name>
+    <description/>
 
     <dependencies>
         <dependency>

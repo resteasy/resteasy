@@ -9,6 +9,7 @@
 
     <artifactId>resteasy-doseta</artifactId>
     <name>RESTEasy DOSETA</name>
+    <description/>
 
     <dependencies>
         <dependency>

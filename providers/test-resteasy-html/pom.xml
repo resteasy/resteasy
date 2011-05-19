@@ -10,6 +10,7 @@
     <artifactId>test-resteasy-html</artifactId>
     <packaging>jar</packaging>
     <name>Resteasy HTML test</name>
+    <description/>
 
     <dependencies>
         <dependency>

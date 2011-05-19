@@ -11,6 +11,7 @@
 	<groupId>org.jboss.resteasy.examples</groupId>
 	<artifactId>examples-api-clients</artifactId>
 	<version>2.2-RC-1</version>
+    <description/>
 
 	<repositories>
 		<repository>

@@ -6,6 +6,7 @@
     <version>2.2-RC-1</version>
     <artifactId>ejb-integration-example</artifactId>
     <packaging>pom</packaging>
+    <description/>
     <properties>
         <jbossHome>/Users/billburke/jboss/jboss-4.2.2.GA</jbossHome>
     </properties>

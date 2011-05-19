@@ -9,6 +9,7 @@
 
     <artifactId>resteasy-oauth</artifactId>
     <name>RESTEasy JAX-RS OAuth</name>
+    <description/>
 
     <dependencies>
         <dependency>

@@ -9,6 +9,8 @@
         <version>2.2-RC-1</version>
     </parent>
     <artifactId>resteasy-guice</artifactId>
+    <name>Resteasy Guice</name>
+    <description/>
 
     <dependencies>
         <dependency>

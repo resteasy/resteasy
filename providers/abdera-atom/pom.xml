@@ -10,6 +10,7 @@
     <artifactId>abdera-atom-provider</artifactId>
     <packaging>jar</packaging>
     <name>Abdera Atom Provider</name>
+    <description/>
 
     <repositories>
         <repository>

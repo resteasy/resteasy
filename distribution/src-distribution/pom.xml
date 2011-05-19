@@ -9,6 +9,7 @@
     <artifactId>resteasy-jaxrs-src-dist</artifactId>
     <packaging>pom</packaging>
     <name>RESTEasy JAX-RS Source Distribution</name>
+    <description/>
 
     <build>
         <plugins>

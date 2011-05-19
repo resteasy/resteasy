@@ -10,6 +10,7 @@
     <artifactId>async-http-servlet-3.0</artifactId>
     <packaging>jar</packaging>
     <name>Async Http Servlet 3.0</name>
+    <description/>
 
     <dependencies>
         <dependency>

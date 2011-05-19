@@ -7,6 +7,7 @@
     <packaging>war</packaging>
     <version>2.2-RC-1-SNAPSHOT</version>
     <name>jsapi-servlet-test</name>
+    <description/>
     <url>http://maven.apache.org</url>
     <repositories>
         <repository>

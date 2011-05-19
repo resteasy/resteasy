@@ -12,6 +12,7 @@
     <version>1.0</version>
     <packaging>war</packaging>
     <name>ex11_2</name>
+    <description/>
     <repositories>
         <repository>
             <id>java.net</id>

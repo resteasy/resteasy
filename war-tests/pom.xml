@@ -5,6 +5,7 @@
         <version>2.2-RC-1</version>
     </parent>
     <name>Resteasy WAR Tests</name>
+    <description/>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.resteasy.test</groupId>

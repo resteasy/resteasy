@@ -10,6 +10,7 @@
     <artifactId>test-jackson-jaxb-coexistence</artifactId>
     <packaging>jar</packaging>
     <name>Test Jackson and JAXB Coexistence</name>
+    <description/>
 
     <dependencies>
         <dependency>

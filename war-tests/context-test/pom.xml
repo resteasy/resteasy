@@ -12,6 +12,7 @@
     <artifactId>test-context-war</artifactId>
     <packaging>war</packaging>
     <name>tests-context-war</name>
+    <description/>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>

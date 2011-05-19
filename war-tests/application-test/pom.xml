@@ -12,6 +12,7 @@
     <artifactId>test-application-war</artifactId>
     <packaging>war</packaging>
     <name>test-application-war</name>
+    <description/>
     <url>http://maven.apache.org</url>
     <properties>
         <skip.deploy>true</skip.deploy>

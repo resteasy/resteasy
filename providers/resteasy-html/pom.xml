@@ -10,6 +10,7 @@
     <artifactId>resteasy-html</artifactId>
     <packaging>jar</packaging>
     <name>Resteasy HTML Provider</name>
+    <description/>
 
     <dependencies>
         <dependency>

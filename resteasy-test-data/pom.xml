@@ -9,6 +9,7 @@
     </parent>
     <artifactId>resteasy-test-data</artifactId>
     <name>RESTEasy JAX-RS Test Data</name>
+    <description/>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>

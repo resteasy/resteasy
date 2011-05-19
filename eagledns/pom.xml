@@ -9,6 +9,7 @@
 
     <artifactId>eagledns-fork</artifactId>
     <name>RESTEasy EagleDNS Fork For Testing Purposes</name>
+    <description/>
 
     <dependencies>
         <dependency>

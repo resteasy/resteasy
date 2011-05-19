@@ -10,6 +10,7 @@
     <artifactId>async-http-jbossweb</artifactId>
     <packaging>jar</packaging>
     <name>Async Http JBoss Web</name>
+    <description/>
 
     <dependencies>
         <dependency>

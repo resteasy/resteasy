@@ -1,6 +1,7 @@
 <!-- This file is used to build and run all the examples -->
 <project>
     <name>OReilly Workbook Examples</name>
+    <description/>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.oreilly.rest.workbook</groupId>

@@ -10,6 +10,7 @@
     <artifactId>resteasy-yaml-provider</artifactId>
     <packaging>jar</packaging>
     <name>Resteasy YAML Provider</name>
+    <description/>
 
     <!-- SnakeYAML is not in central repo yet -->
     <repositories>
