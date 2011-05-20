@@ -44,7 +44,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
             if (c == '<')
             {
                if (href != null)
-                  throw new IllegalArgumentException("Uanble to parse Link header.  Too many links in declaration: " + value);
+                  throw new IllegalArgumentException("Unable to parse Link header. Too many links in declaration: " + value);
                href = parseLink();
             }
             else if (c == ';' || c == ' ')
