@@ -12,7 +12,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -95,6 +97,42 @@ public class MatchedResourceTest
       {
          return "{ \"name\" : \"bill\" }";
       }
+
+      @Path("start")
+      @POST
+      @Produces("text/plain")
+      public String start()
+      {
+         return "started";
+      }
+
+      @Path("start")
+      @Consumes("application/xml")
+      @POST
+      @Produces("text/plain")
+      public String start(String xml)
+      {
+         return xml;
+      }
+
+   }
+
+   /**
+    * RESTEASY-549
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testEmpty() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/start"));
+      String rtn = request.postTarget(String.class);
+      Assert.assertEquals("started", rtn);
+
+      request = new ClientRequest(generateURL("/start"));
+      request.body("application/xml", "<xml/>");
+      rtn = request.postTarget(String.class);
+      Assert.assertEquals("<xml/>", rtn);
 
    }
 
