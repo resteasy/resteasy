@@ -3,7 +3,9 @@
                          "http://www.docbook.org/xml/4.4/docbookx.dtd">-->
 <chapter id="Authentication">
     <title>Authentication</title>
-    <para>RESTEasy has preliminary support for OAuth.</para>
+    <para>Since Resteasy runs within a servlet container you can use most (all?) mechanism available in your servlet container for authentication.  Basic and Digest
+    authentication are probably the easiest to set up and fit nicely into REST's stateless principle.  Form security can be used, but requires passing
+    the session's cookie value with each request.  We have done some preliminary work on OAuth and also plan to work on OpenID and SAML integration in the future.</para>
     <section>
     	<title>OAuth core 1.0a</title>
     	<para>

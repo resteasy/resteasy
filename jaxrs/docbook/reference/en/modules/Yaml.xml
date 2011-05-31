@@ -3,7 +3,7 @@
 
    <para>
 
-      Since 2.2-RC-1  release, resteasy comes with built in support for YAML using the SnakeYAML library. To enable YAML support,
+      Since 2.2.0.GA  release, resteasy comes with built in support for YAML using the SnakeYAML library. To enable YAML support,
       you need to drop in the SnakeYaml 1.8 jar in RestEASY's classpath.
    </para>
    <para>
