@@ -7,7 +7,7 @@
 <h2>Hello Contacts!</h2>
 <div id="contact-data" class="contacts">
  <c:forEach var="contact" items="${contacts.contacts}">
-  <span class="contact">Hello <a href="/contacts/data/${contact.lastName}">${contact.firstName} ${contact.lastName}</a></span>
+  <span class="contact">Hello <a href="contacts/data/${contact.lastName}">${contact.firstName} ${contact.lastName}</a></span>
  </c:forEach>
 </div>
 
