@@ -21,4 +21,5 @@ public interface ContactDao
     public Collection<Contact> findAllContacts();
     public void addUpdateContact(Contact contact);
     public void deleteContact(Contact contact);
+	public Collection<Contact> findContactsOfContact(long id);
 }

@@ -22,108 +22,93 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-
 /**
- * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a>
- * Jun 28, 2008
+ * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a> Jun 28, 2008
  * 
  */
 @XmlRootElement(name = "contact")
 @Entity
 @Table(name = "Contact")
 @Path("/")
-public class Contact
-{
-    private Long id;
-    private String name;
-    private String email;
-    private String telephone;
-    @XmlTransient
-    private Set<Contact> contactChildren;
+public class Contact {
+	private Long id;
+	private String name;
+	private String email;
+	private String telephone;
+	@XmlTransient
+	private Set<Contact> contactChildren;
 
-    public Contact() {
+	public Contact() {
 
-	this.contactChildren = new LinkedHashSet<Contact>();
-    }
+		this.contactChildren = new LinkedHashSet<Contact>();
+	}
 
-    @GET
-    @Produces("application/xml")
-    @Transient
-    public Contact get()
-    {
-	return this;
-    }
-    
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @XmlAttribute(name = "contactId")
-    public Long getId()
-    {
-	return id;
-    }
+	@GET
+	@Produces("application/xml")
+	@Transient
+	public Contact get() {
+		return this;
+	}
 
-    public void setId(Long id)
-    {
-	this.id = id;
-    }
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@XmlAttribute(name = "contactId")
+	public Long getId() {
+		return id;
+	}
 
-    @Column(name = "name")
-    public String getName()
-    {
-	return name;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setName(String name)
-    {
-	this.name = name;
-    }
+	@Column(name = "name")
+	public String getName() {
+		return name;
+	}
 
-    @Column(name = "phone")
-    public String getTelephone()
-    {
-	return telephone;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setTelephone(String telephone)
-    {
-	this.telephone = telephone;
-    }
+	@Column(name = "phone")
+	public String getTelephone() {
+		return telephone;
+	}
 
-    @Column(name = "email")
-    public String getEmail()
-    {
-	return email;
-    }
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
 
-    public void setEmail(String email)
-    {
-	this.email = email;
-    }
+	@Column(name = "email")
+	public String getEmail() {
+		return email;
+	}
 
-    @ManyToMany(cascade = { CascadeType.ALL },fetch=FetchType.EAGER)
-    @JoinTable(name = "ContactToContactJoinTable", joinColumns = @JoinColumn(name = "parentContactId"), inverseJoinColumns = @JoinColumn(name = "childContactId"))
-    @XmlTransient
-    public Set<Contact> getContactChildren()
-    {
-	return contactChildren;
-    }
-    
-    public void setContactChildren(Set<Contact> contactChildren)
-    {
-	this.contactChildren = contactChildren;
-    }
-    
-    @GET
-    @Path("/contacts")
-    @Produces("application/xml")
-    @XmlTransient
-    @Transient
-    public Contacts getContacts()
-    {
-	Contacts contacts = new Contacts();
-	contacts.setContacts(getContactChildren());
-	return contacts;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	@JoinTable(name = "ContactToContactJoinTable", joinColumns = @JoinColumn(name = "parentContactId"), inverseJoinColumns = @JoinColumn(name = "childContactId"))
+	@XmlTransient
+	public Set<Contact> getContactChildren() {
+		return contactChildren;
+	}
+
+	public void setContactChildren(Set<Contact> contactChildren) {
+		this.contactChildren = contactChildren;
+	}
+
+	@GET
+	@Path("/contacts")
+	@Produces("application/xml")
+	@XmlTransient
+	@Transient
+	public Contacts getContacts() {
+		Contacts contacts = new Contacts();
+		contacts.setContacts(getContactChildren());
+		return contacts;
+	}
 
 }

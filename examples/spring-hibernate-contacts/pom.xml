@@ -113,6 +113,5 @@
         <module>core</module>
         <module>services</module>
         <module>persistence</module>
-        <module>client</module>
     </modules>
 </project>

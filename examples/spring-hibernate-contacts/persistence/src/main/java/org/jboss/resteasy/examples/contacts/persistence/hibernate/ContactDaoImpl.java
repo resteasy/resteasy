@@ -9,67 +9,65 @@ import org.jboss.resteasy.examples.contacts.persistence.ContactDao;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.util.CollectionUtils;
 
-
 /**
- * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a>
- * Jun 28, 2008
+ * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a> Jun 28, 2008
  * 
  */
 @SuppressWarnings("unchecked")
-public class ContactDaoImpl extends HibernateDaoSupport implements ContactDao
-{
+public class ContactDaoImpl extends HibernateDaoSupport implements ContactDao {
 
-    public ContactDaoImpl()
-    {
-	// TODO Auto-generated constructor stub
-    }
+	public ContactDaoImpl() {
+		// TODO Auto-generated constructor stub
+	}
 
-    public void addUpdateContact(Contact contact)
-    {
-	getHibernateTemplate().merge(contact);
-    }
+	public void addUpdateContact(Contact contact) {
+		getHibernateTemplate().merge(contact);
+	}
 
-    public void deleteContact(Contact contact)
-    {
-	getHibernateTemplate().delete(contact);
-    }
+	public void deleteContact(Contact contact) {
+		getHibernateTemplate().delete(contact);
+	}
 
-    public Collection<Contact> findAllContacts()
-    {
-       return getHibernateTemplate().find("from Contact c");
-//     return getHibernateTemplate().loadAll(Contact.class);
-    }
+	public Collection<Contact> findAllContacts() {
+		return getHibernateTemplate().find("from Contact c");
+		// return getHibernateTemplate().loadAll(Contact.class);
+	}
 
-    public Contact findContactByName(final String contactName)
-    {
-       return findSingle("FROM Contact c WHERE c.name =:name", "name", contactName);
-    }
+	public Collection<Contact> findContactsOfContact(long pid) {
+		Contact parentContact = findSingle(
+				"from Contact c where c.id=:pid", "pid", pid);
+		return parentContact.getContactChildren();
+	}
 
-   public Contact findContactById(final long id)
-   {
-      return (Contact) getHibernateTemplate().get(Contact.class, id);
-   }
+	public Contact findContactByName(final String contactName) {
+		return findSingle("FROM Contact c WHERE c.name =:name", "name",
+				contactName);
+	}
 
-     public Contact findContactByAttribute(final ContactAttrs attribute, final Object value)
-    {
-        return findSingle("FROM Contact c WHERE c." + attribute + " =:"
-            + attribute, attribute.toString(), value);
-    }
+	public Contact findContactById(final long id) {
+		return (Contact) getHibernateTemplate().get(Contact.class, id);
+	}
 
-    public Contact findContactByEmail(final String email)
-    {
-       return findSingle("FROM Contact c WHERE c.email =:email", "email", email);
-    }
+	public Contact findContactByAttribute(final ContactAttrs attribute,
+			final Object value) {
+		return findSingle("FROM Contact c WHERE c." + attribute + " =:"
+				+ attribute, attribute.toString(), value);
+	}
 
-    public Contact findContactByPhone(final String phone)
-    {
-       return findSingle("FROM Contact c WHERE c.telephone=:phone", "phone", phone);	
-    }
+	public Contact findContactByEmail(final String email) {
+		return findSingle("FROM Contact c WHERE c.email =:email", "email",
+				email);
+	}
 
-    private Contact findSingle(String hql, String paramName, Object value)
-    {
-       List<Contact> results = getHibernateTemplate().findByNamedParam(
-              hql, paramName, value);
-       return CollectionUtils.hasUniqueObject(results) ? results.get(0) : null;
-    }
+	public Contact findContactByPhone(final String phone) {
+		return findSingle("FROM Contact c WHERE c.telephone=:phone", "phone",
+				phone);
+	}
+
+	private Contact findSingle(String hql, String paramName, Object value) {
+		List<Contact> results = getHibernateTemplate().findByNamedParam(hql,
+				paramName, value);
+		return CollectionUtils.hasUniqueObject(results) ? results.get(0) : null;
+	}
+
 }
