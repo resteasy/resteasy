@@ -42,6 +42,15 @@ public class ContactServiceImpl implements ContactService {
 		return contact;
 	}
 
+	@GET
+	@Path("contacts/{id}/contacts")
+	@Produces("application/xml")
+	public Contacts getContactsOfContact(@PathParam("id") Long id) {
+		Contacts contacts = new Contacts();
+		contacts.setContacts(contactDao.findContactsOfContact(id));
+		return contacts;
+	}
+
 	public ContactDao getContactDao() {
 		return contactDao;
 	}

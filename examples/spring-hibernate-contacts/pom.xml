@@ -131,6 +131,5 @@
         <module>core</module>
         <module>persistence</module>
         <module>services</module>
-        <module>client</module>
     </modules>
 </project>
