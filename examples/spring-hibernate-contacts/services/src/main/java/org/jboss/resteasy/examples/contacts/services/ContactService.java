@@ -12,5 +12,7 @@ public interface ContactService
 {
    public Contact getContactById(Long id);
 
-   public Contacts getAllContacts();
+	public Contacts getAllContacts();
+
+	public Contacts getContactsOfContact(Long id);
 }

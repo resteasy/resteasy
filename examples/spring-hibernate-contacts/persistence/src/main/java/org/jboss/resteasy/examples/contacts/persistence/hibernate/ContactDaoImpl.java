@@ -72,4 +72,10 @@ public class ContactDaoImpl extends HibernateDaoSupport implements ContactDao
               hql, paramName, value);
        return CollectionUtils.hasUniqueObject(results) ? results.get(0) : null;
     }
+    
+    	public Collection<Contact> findContactsOfContact(long pid) {
+		Contact parentContact = findSingle(
+				"from Contact c where c.id=:pid", "pid", pid);
+		return parentContact.getContactChildren();
+	}
 }
