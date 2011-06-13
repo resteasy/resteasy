@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>jaxb-json</artifactId>
-    <version>1.2.1.GA_CP-SNAPSHOT</version>
+    <version>1.2.1.GA_CP02</version>
     <packaging>war</packaging>
     <name/>
     <description/>   
@@ -14,7 +14,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>1.2.1.GA_CP-SNAPSHOT</version>
+            <version>1.2.1.GA_CP02</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jettison-provider</artifactId>
-            <version>1.2.1.GA_CP-SNAPSHOT</version>
+            <version>1.2.1.GA_CP02</version>
         </dependency>
     </dependencies>
 
