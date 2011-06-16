@@ -3,7 +3,8 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>2.1.0.GA</version>
+        <version>2.1.0.GA_CP01</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>test-oauth-servlet-war</artifactId>

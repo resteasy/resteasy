@@ -4,7 +4,8 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>2.1.0.GA</version>
+        <version>2.1.0.GA_CP01</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-atom-provider</artifactId>
     <packaging>jar</packaging>
