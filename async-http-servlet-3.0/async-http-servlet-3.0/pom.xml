@@ -5,6 +5,7 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>2.1.0.GA</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>async-http-servlet-3.0</artifactId>
     <packaging>jar</packaging>
