@@ -9,6 +9,7 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.PickConstructor;
 
@@ -122,6 +123,10 @@ public class ResteasyDeployment
       dispatcher.getDefaultContextObjects().put(Dispatcher.class, dispatcher);
       dispatcher.getDefaultContextObjects().put(InternalDispatcher.class, InternalDispatcher.getInstance());
 
+      // push context data so we can inject it
+      Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      contextDataMap.putAll(dispatcher.getDefaultContextObjects());
+      
       try
       {
          if (injectorFactoryClass != null)
@@ -144,11 +149,8 @@ public class ResteasyDeployment
             providerFactory.setInjectorFactory(injectorFactory);
          }
 
-
-         // push context data so we can inject it
-         Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
-         contextDataMap.putAll(dispatcher.getDefaultContextObjects());
-
+         // feed context data map with constructed objects 
+         // see ResteasyContextParameters.RESTEASY_CONTEXT_OBJECTS
          if (constructedDefaultContextObjects != null && constructedDefaultContextObjects.size() > 0)
          {
             for (Map.Entry<String, String> entry : constructedDefaultContextObjects.entrySet())
