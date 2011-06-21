@@ -127,7 +127,8 @@ public class MockHttpRequest implements HttpRequest
       mock.uri = request.getUri();
       mock.httpHeaders = (HttpHeadersImpl) request.getHttpHeaders();
       mock.httpMethod = request.getHttpMethod();
-      mock.inputStream = new ByteArrayInputStream(ReadFromStream.readFromStream(1024, request.getInputStream()));
+      byte[] bytes = ReadFromStream.readFromStream(1024, request.getInputStream());
+      mock.inputStream = new ByteArrayInputStream(bytes);
       mock.preprocessedPath = request.getPreprocessedPath();
       return mock;
    }

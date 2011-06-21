@@ -14,14 +14,14 @@
     <programlisting><![CDATA[
     <repository>
        <id>jboss</id>
-       <url>http://repository.jboss.org/maven2</url>
+       <url>>http://repository.jboss.org/nexus/content/groups/public/</url>
     </repository>
 
        ...
     <dependency>
        <groupId>org.jboss.resteasy</groupId>
        <artifactId>resteasy-jackson-provider</artifactId>
-       <version>2.2.0.GA</version>
+       <version>2.2.1.GA</version>
     </dependency>
  ]]></programlisting>
     <para>The first extra piece that Resteasy added to the integration was

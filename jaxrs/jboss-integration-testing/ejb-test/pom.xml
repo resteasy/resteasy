@@ -2,13 +2,13 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-jboss-integration-testing</artifactId>
-        <version>2.2.0.GA</version>
+        <version>2.2.1.GA</version>
     </parent>
     <name>Resteasy JAX-RS EJB Test</name>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.resteasy</groupId>
-    <version>2.2.0.GA</version>
+    <version>2.2.1.GA</version>
     <artifactId>ejb-integration-test</artifactId>
     <packaging>pom</packaging>
 

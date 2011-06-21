@@ -3,7 +3,6 @@
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
-    <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
@@ -25,8 +24,8 @@
     <orderEntry type="library" scope="TEST" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
     <orderEntry type="module" module-name="resteasy-jettison-provider" scope="TEST" />
     <orderEntry type="module" module-name="resteasy-jaxb-provider" scope="TEST" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.sun.xml.bind:jaxb-impl:2.1.12" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: javax.xml.bind:jaxb-api:2.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.sun.xml.bind:jaxb-impl:2.2.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: javax.xml.bind:jaxb-api:2.2.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: javax.xml.stream:stax-api:1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.sun.xml.stream:sjsxp:1.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jettison:jettison:1.2" level="project" />

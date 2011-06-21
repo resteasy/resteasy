@@ -8,12 +8,12 @@
     </description>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>2.2.0.GA</version>
+    <version>2.2.1.GA</version>
     <packaging>pom</packaging>
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
-		<dep.jaxb-impl.version>2.1.12</dep.jaxb-impl.version>
+		<dep.jaxb-impl.version>2.2.4</dep.jaxb-impl.version>
 		<dep.jettison.version>1.2</dep.jettison.version>
     </properties>
 
