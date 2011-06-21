@@ -2,7 +2,7 @@
    <title>Maven and RESTEasy</title>
    <para>
 JBoss's Maven Repository is at:
-      http://repository.jboss.org/maven2
+      http://repository.jboss.org/nexus/content/groups/public/
    </para>
    <para>
 
@@ -13,7 +13,7 @@ JBoss's Maven Repository is at:
 <repositories>
    <repository>
       <id>jboss</id>
-      <url>http://repository.jboss.org/maven2</url>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
    </repository>
 </repositories>
 <dependencies>

@@ -167,7 +167,7 @@ public static class AtomServer
    <programlisting><![CDATA[
    <repository>
       <id>jboss</id>
-      <url>http://repository.jboss.org/maven2</url>
+      <url>>http://repository.jboss.org/nexus/content/groups/public/</url>
    </repository>
 
       ...
