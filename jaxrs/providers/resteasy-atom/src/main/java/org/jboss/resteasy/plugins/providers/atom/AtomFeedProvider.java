@@ -102,7 +102,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       }
       try
       {
-         JAXBContext ctx = finder.createContext(annotations, set.toArray(new Class[set.size()]));
+         JAXBContext ctx = finder.findCacheContext(mediaType, annotations, set.toArray(new Class[set.size()]));
          Marshaller marshaller = ctx.createMarshaller();
          NamespacePrefixMapper mapper = new NamespacePrefixMapper()
          {
