@@ -39,7 +39,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          Logger.setLoggerType(loggerType);
 
       }
-      logger = Logger.getLogger(ResteasyDeployment.class);
+      logger = Logger.getLogger(ConfigurationBootstrap.class);
       String deploymentSensitive = getParameter("resteasy.use.deployment.sensitive.factory");
       if (deploymentSensitive != null)
          deployment.setDeploymentSensitiveFactoryEnabled(Boolean.valueOf(deploymentSensitive.trim()));
