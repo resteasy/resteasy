@@ -126,10 +126,11 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
       {
          return o;
       }
-      final MediaType mediaType = request.getHttpHeaders().getMediaType();
+      MediaType mediaType = request.getHttpHeaders().getMediaType();
       if (mediaType == null)
       {
-         throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
+         mediaType = MediaType.WILDCARD_TYPE;
+         //throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
       }
 
       // We have to do this isFormData() hack because of servlets and servlet filters
