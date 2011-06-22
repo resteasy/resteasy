@@ -23,6 +23,19 @@ import java.util.zip.GZIPInputStream;
 @DecoderPrecedence
 public class GZIPDecodingInterceptor implements MessageBodyReaderInterceptor
 {
+      private static class FinishableGZIPInputStream extends GZIPInputStream
+   {
+      public FinishableGZIPInputStream(final InputStream is) throws IOException
+      {
+         super(is);
+      }
+
+      void finish()
+      {
+         inf.end(); // make sure on finish the inflater's end() is called to release the native code pointer
+      }
+   }
+
    public Object read(MessageBodyReaderContext context) throws IOException, WebApplicationException
    {
 
@@ -31,13 +44,15 @@ public class GZIPDecodingInterceptor implements MessageBodyReaderInterceptor
       if (encoding != null && encoding.toString().equalsIgnoreCase("gzip"))
       {
          InputStream old = context.getInputStream();
-         context.setInputStream(new GZIPInputStream(old));
+         FinishableGZIPInputStream is = new FinishableGZIPInputStream(old);
+         context.setInputStream(is);
          try
          {
             return context.proceed();
          }
          finally
          {
+            is.finish();
             context.setInputStream(old);
          }
       }
