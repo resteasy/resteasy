@@ -23,6 +23,21 @@ import java.util.zip.GZIPOutputStream;
 @EncoderPrecedence
 public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
 {
+   private static class EndableGZIPOutputStream extends GZIPOutputStream
+   {
+      public EndableGZIPOutputStream(OutputStream os) throws IOException
+      {
+         super(os);
+      }
+
+      @Override
+      public void finish() throws IOException
+      {
+         super.finish();
+         def.end(); // make sure on finish the deflater's end() is called to release the native code pointer
+      }
+   }
+
    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
    {
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
@@ -30,7 +45,7 @@ public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
       if (encoding != null && encoding.toString().equalsIgnoreCase("gzip"))
       {
          OutputStream old = context.getOutputStream();
-         GZIPOutputStream gzipOutputStream = new GZIPOutputStream(old);
+         GZIPOutputStream gzipOutputStream = new EndableGZIPOutputStream(old);
          context.setOutputStream(gzipOutputStream);
          try
          {
