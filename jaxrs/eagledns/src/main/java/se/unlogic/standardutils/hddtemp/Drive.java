@@ -59,7 +59,7 @@ public class Drive implements Elementable{
 	@Override
 	public String toString() {
 
-		return device + " " + temp + "°" + "(" + type + ")";
+		return device + " " + temp + "-" + "(" + type + ")";
 	}
 
 	public Element toXML(Document doc) {
