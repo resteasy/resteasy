@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>eagledns-fork</artifactId>
-            <version>${project.version}</version>
+            <version>2.2.0.GA</version>
             <scope>test</scope>
         </dependency>
 
