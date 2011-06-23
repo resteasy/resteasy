@@ -8,6 +8,14 @@
 
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
+<sect1 id="22_221">
+    <title>Migrating from 2.2.0 to 2.2.1</title>
+    <itemizedlist>
+        <listitem>
+	  Had to upgrade JAXB libs from 2.1.x to 2.2.4 as there was a concurrency bug in JAXB impl.
+        </listitem>
+    </itemizedlist>
+</sect1>
 <sect1 id="21_22">
     <title>Migrating from 2.1.x to 2.2</title>
     <itemizedlist>
