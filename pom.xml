@@ -374,11 +374,10 @@
     <build>
         <pluginManagement>
             <plugins>
-                <!--
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>2.6.1</version>
                     <configuration>
                         <minmemory>128m</minmemory>
                         <maxmemory>512m</maxmemory>
@@ -394,7 +393,6 @@
                         </execution>
                     </executions>
                 </plugin>
-                -->
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
