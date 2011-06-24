@@ -172,7 +172,7 @@
     <para><programlisting>        &lt;dependency&gt;
             &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
             &lt;artifactId&gt;resteasy-doseta&lt;/artifactId&gt;
-            &lt;version&gt;2.2.1.GA&lt;/version&gt;
+            &lt;version&gt;2.3-beta-1&lt;/version&gt;
         &lt;/dependency&gt;
 
 </programlisting></para>

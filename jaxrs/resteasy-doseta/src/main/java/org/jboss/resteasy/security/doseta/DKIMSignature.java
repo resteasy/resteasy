@@ -1,8 +1,10 @@
 package org.jboss.resteasy.security.doseta;
 
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.ParameterParser;
 
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
@@ -312,10 +314,9 @@ public class DKIMSignature
     * Headers can be a Map<String, Object> or a Map<String, List<Object>>.  This gives some compatibility with
     * JAX-RS's MultivaluedMap.   If a map of lists, every value of each header duplicate will be added.
     * <p/>
-    * setPrivateKey() must be set before calling this method
     *
     * @param headers
-    * @param body
+    * @param body if null, bh field will not be set or provided
     * @param defaultKey will be used if privateKey is null
     * @throws java.security.GeneralSecurityException
     *
@@ -332,11 +333,6 @@ public class DKIMSignature
       attributes.put(CANONICALIZATION, "simple/simple");
       String algorithm = SigningAlgorithm.SHA256withRSA.getJavaSecNotation();
       String hashAlgorithm = SigningAlgorithm.SHA256withRSA.getJavaHashNotation();
-
-      if (getDomain() == null)
-      {
-         throw new SignatureException("You must have the domain attribute set on your signature header");
-      }
 
       Signature signature = null;
       try
@@ -363,9 +359,12 @@ public class DKIMSignature
          updateSignatureWithHeader(headers, signature);
       }
 
-      String encodedBodyHash = calculateEncodedHash(body, hashAlgorithm);
+      if (body != null)
+      {
+         String encodedBodyHash = calculateEncodedHash(body, hashAlgorithm);
 
-      attributes.put(BODY_HASH, encodedBodyHash);
+         attributes.put(BODY_HASH, encodedBodyHash);
+      }
 
       StringBuffer dosetaBuffer = new StringBuffer();
 
@@ -423,8 +422,9 @@ public class DKIMSignature
       return bodyHash;
    }
 
-   private void updateSignatureWithHeader(Map transmittedHeaders, Signature signature) throws SignatureException
+   private MultivaluedMap<String, String> updateSignatureWithHeader(Map transmittedHeaders, Signature signature) throws SignatureException
    {
+      MultivaluedMap<String, String> verifiedHeaders = new MultivaluedMapImpl<String, String>();
       List<String> list = this.headers;
       Map<String, Integer> count = new HashMap<String, Integer>();
       for (String name : list)
@@ -459,7 +459,9 @@ public class DKIMSignature
          }
          String entry = name + ":" + v.toString() + "\r\n";
          signature.update(entry.getBytes());
+         verifiedHeaders.add(name, v.toString());
       }
+      return verifiedHeaders;
    }
 
 
@@ -476,6 +478,25 @@ public class DKIMSignature
     */
    public void verify(Map headers, byte[] body, PublicKey key) throws SignatureException
    {
+      Verification verification = new Verification();
+      verification.setBodyHashRequired(true);
+      verify(headers, body, key, verification);
+   }
+
+   /**
+    * Headers can be a Map<String, Object> or a Map<String, List<Object>>.  This gives some compatibility with
+    * JAX-RS's MultivaluedMap.   If a map of lists, every value of each header duplicate will be added.
+    *
+    * @param headers
+    * @param body
+    * @param key
+    * @param verification
+    * @return map of verified headers and their values
+    * @throws SignatureException
+    */
+   public MultivaluedMap<String, String> verify(Map headers, byte[] body, PublicKey key, Verification verification) throws SignatureException
+   {
+
       String algorithm = getAlgorithm();
       if (algorithm == null || !SigningAlgorithm.SHA256withRSA.getRfcNotation().toLowerCase().equals(algorithm.toLowerCase()))
       {
@@ -497,25 +518,28 @@ public class DKIMSignature
       String encodedBh = attributes.get("bh");
       if (encodedBh == null)
       {
-         throw new SignatureException("There was no body hash (bh) in header");
+         if (verification.isBodyHashRequired()) throw new SignatureException("There was no body hash (bh) in header");
       }
+      else
+      {
 
-      byte[] bh = hash(body, SigningAlgorithm.SHA256withRSA.getJavaHashNotation());
-      byte[] enclosedBh = null;
-      try
-      {
-         enclosedBh = Base64.decode(encodedBh);
-      }
-      catch (IOException e)
-      {
-         throw new SignatureException("Failed to parse body hash (bh)", e);
-      }
+         byte[] bh = hash(body, SigningAlgorithm.SHA256withRSA.getJavaHashNotation());
+         byte[] enclosedBh = null;
+         try
+         {
+            enclosedBh = Base64.decode(encodedBh);
+         }
+         catch (IOException e)
+         {
+            throw new SignatureException("Failed to parse body hash (bh)", e);
+         }
 
-      if (Arrays.equals(bh, enclosedBh) == false)
-      {
-         throw new SignatureException("Body hashes do not match.");
+         if (Arrays.equals(bh, enclosedBh) == false)
+         {
+            throw new SignatureException("Body hashes do not match.");
+         }
       }
-      updateSignatureWithHeader(headers, verifier);
+      MultivaluedMap<String, String> verifiedHeaders = updateSignatureWithHeader(headers, verifier);
       ParameterParser parser = new ParameterParser();
       String strippedHeader = parser.setAttribute(headerValue.toCharArray(), 0, headerValue.length(), ';', "b", "");
       verifier.update(strippedHeader.getBytes());
@@ -523,5 +547,35 @@ public class DKIMSignature
       {
          throw new SignatureException("Failed to verify signature.");
       }
+
+      if (verification.isIgnoreExpiration() == false)
+      {
+         if (isExpired())
+         {
+            throw new SignatureException("Signature expired");
+         }
+      }
+      if (verification.isStaleCheck())
+      {
+         if (isStale(verification.getStaleSeconds(),
+                 verification.getStaleMinutes(),
+                 verification.getStaleHours(),
+                 verification.getStaleDays(),
+                 verification.getStaleMonths(),
+                 verification.getStaleYears()))
+         {
+            throw new SignatureException("Signature is stale");
+         }
+      }
+
+      for (Map.Entry<String, String> required : verification.getRequiredAttributes().entrySet())
+      {
+         String value = getAttributes().get(required.getKey());
+         if (!value.equals(required.getValue()))
+         {
+            throw new SignatureException("Expected " + required.getValue() + " got " + value + " for attribute " + required.getKey());
+         }
+      }
+      return verifiedHeaders;
    }
 }
