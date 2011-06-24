@@ -144,26 +144,7 @@ public class Verifier
          }
       }
 
-      signature.verify(headers, body, key);
-      if (verification.isIgnoreExpiration() == false)
-      {
-         if (signature.isExpired())
-         {
-            throw new SignatureException("Signature expired");
-         }
-      }
-      if (verification.isStaleCheck())
-      {
-         if (signature.isStale(verification.getStaleSeconds(),
-                 verification.getStaleMinutes(),
-                 verification.getStaleHours(),
-                 verification.getStaleDays(),
-                 verification.getStaleMonths(),
-                 verification.getStaleYears()))
-         {
-            throw new SignatureException("Signature is stale");
-         }
-      }
+      signature.verify(headers, body, key, verification);
    }
 
 

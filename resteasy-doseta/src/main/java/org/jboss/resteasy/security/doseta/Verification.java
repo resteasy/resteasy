@@ -13,11 +13,12 @@ public class Verification
    protected PublicKey key;
    protected KeyRepository repository;
    protected String algorithm = DKIMSignature.DEFAULT_ALGORITHM;
-   protected Map<String, String> attributes = new HashMap<String, String>();
+   protected Map<String, String> requiredAttributes = new HashMap<String, String>();
    protected String identifierName;
    protected String identifierValue;
    protected boolean staleCheck;
    protected boolean ignoreExpiration;
+   protected boolean bodyHashRequired = true;
    protected int staleSeconds;
    protected int staleMinutes;
    protected int staleHours;
@@ -80,14 +81,24 @@ public class Verification
       this.staleCheck = staleCheck;
    }
 
-   public Map<String, String> getAttributes()
+   public Map<String, String> getRequiredAttributes()
    {
-      return attributes;
+      return requiredAttributes;
    }
 
    public String getAlgorithm()
    {
       return algorithm;
+   }
+
+   public boolean isBodyHashRequired()
+   {
+      return bodyHashRequired;
+   }
+
+   public void setBodyHashRequired(boolean bodyHashRequired)
+   {
+      this.bodyHashRequired = bodyHashRequired;
    }
 
    public void setAlgorithm(String algorithm)
