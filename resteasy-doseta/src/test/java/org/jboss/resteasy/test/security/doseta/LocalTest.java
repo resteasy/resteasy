@@ -70,10 +70,9 @@ public class LocalTest
       requiredAttributes.put("path", "/hello/world");
 
       Verification verification = new Verification();
-      verification.setBodyHashRequired(false);
       verification.getRequiredAttributes().put("path", "/hello/world");
 
-      MultivaluedMap<String, String> verifiedHeaders = verified.verify(headers, null, keys.getPublic(), verification);
+      MultivaluedMap<String, String> verifiedHeaders = verification.verify(verified, headers, null, keys.getPublic());
       Assert.assertEquals(verifiedHeaders.size(), 1);
       List<String> visas = verifiedHeaders.get("Visa");
       Assert.assertNotNull(visas);
@@ -107,13 +106,12 @@ public class LocalTest
       requiredAttributes.put("path", "/hello/world");
 
       Verification verification = new Verification();
-      verification.setBodyHashRequired(false);
       verification.getRequiredAttributes().put("path", "/hello");
 
       MultivaluedMap<String, String> verifiedHeaders = null;
       try
       {
-         verifiedHeaders = verified.verify(headers, null, keys.getPublic(), verification);
+         verifiedHeaders = verification.verify(verified, headers, null, keys.getPublic());
          Assert.fail("should fail");
       }
       catch (SignatureException e)

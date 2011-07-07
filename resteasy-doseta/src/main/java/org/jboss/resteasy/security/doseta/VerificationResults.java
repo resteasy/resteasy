@@ -47,4 +47,13 @@ public class VerificationResults
    {
       this.results = results;
    }
+
+   @Override
+   public String toString()
+   {
+      return "VerificationResults{" +
+              "verified=" + verified +
+              ", results=" + results +
+              '}';
+   }
 }
