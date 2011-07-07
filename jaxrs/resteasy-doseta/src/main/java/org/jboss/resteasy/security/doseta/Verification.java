@@ -1,6 +1,8 @@
 package org.jboss.resteasy.security.doseta;
 
+import javax.ws.rs.core.MultivaluedMap;
 import java.security.PublicKey;
+import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +20,6 @@ public class Verification
    protected String identifierValue;
    protected boolean staleCheck;
    protected boolean ignoreExpiration;
-   protected boolean bodyHashRequired = true;
    protected int staleSeconds;
    protected int staleMinutes;
    protected int staleHours;
@@ -89,16 +90,6 @@ public class Verification
    public String getAlgorithm()
    {
       return algorithm;
-   }
-
-   public boolean isBodyHashRequired()
-   {
-      return bodyHashRequired;
-   }
-
-   public void setBodyHashRequired(boolean bodyHashRequired)
-   {
-      this.bodyHashRequired = bodyHashRequired;
    }
 
    public void setAlgorithm(String algorithm)
@@ -184,5 +175,57 @@ public class Verification
    public void setStaleYears(int staleYears)
    {
       this.staleYears = staleYears;
+   }
+
+   /**
+    * Headers can be a Map<String, Object> or a Map<String, List<Object>>.  This gives some compatibility with
+    * JAX-RS's MultivaluedMap.   If a map of lists, every value of each header duplicate will be added.
+
+    *
+    * @param signature
+    * @param headers
+    * @param body
+    * @param publicKey
+    * @return map of validated headers and their values
+    * @throws SignatureException if verification fails
+    */
+   public MultivaluedMap<String, String> verify(DKIMSignature signature, Map headers, byte[] body, PublicKey publicKey) throws SignatureException
+   {
+      if (publicKey == null) publicKey = key;
+      if (publicKey == null) throw new SignatureException("Public key is null.");
+
+      MultivaluedMap<String, String> verifiedHeaders = signature.verify(headers, body, publicKey);
+
+      if (isIgnoreExpiration() == false)
+      {
+         if (signature.isExpired())
+         {
+            throw new SignatureException("Signature expired");
+         }
+      }
+      if (isStaleCheck())
+      {
+         if (signature.isStale(getStaleSeconds(),
+                 getStaleMinutes(),
+                 getStaleHours(),
+                 getStaleDays(),
+                 getStaleMonths(),
+                 getStaleYears()))
+         {
+            throw new SignatureException("Signature is stale");
+         }
+      }
+
+      for (Map.Entry<String, String> required : getRequiredAttributes().entrySet())
+      {
+         String value = signature.getAttributes().get(required.getKey());
+         if (!value.equals(required.getValue()))
+         {
+            throw new SignatureException("Expected " + required.getValue() + " got " + value + " for attribute " + required.getKey());
+         }
+      }
+
+      return verifiedHeaders;
+
    }
 }

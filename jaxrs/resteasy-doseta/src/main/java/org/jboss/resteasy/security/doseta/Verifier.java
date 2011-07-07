@@ -1,5 +1,6 @@
 package org.jboss.resteasy.security.doseta;
 
+import javax.ws.rs.core.MultivaluedMap;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -113,7 +114,8 @@ public class Verifier
       result.setSignature(signature);
       try
       {
-         verifySignature(headers, body, verification, signature);
+         MultivaluedMap<String, String> verifiedHeaders = verifySignature(headers, body, verification, signature);
+         result.setVerifiedHeaders(verifiedHeaders);
       }
       catch (Exception e)
       {
@@ -124,7 +126,7 @@ public class Verifier
       return result;
    }
 
-   public void verifySignature(Map headers, byte[] body, Verification verification, DKIMSignature signature) throws SignatureException
+   public MultivaluedMap<String, String> verifySignature(Map headers, byte[] body, Verification verification, DKIMSignature signature) throws SignatureException
    {
       PublicKey key = verification.getKey();
 
@@ -144,7 +146,7 @@ public class Verifier
          }
       }
 
-      signature.verify(headers, body, key, verification);
+      return verification.verify(signature, headers, body, key);
    }
 
 

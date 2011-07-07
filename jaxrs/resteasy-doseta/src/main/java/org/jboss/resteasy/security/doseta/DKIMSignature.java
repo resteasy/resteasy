@@ -98,6 +98,11 @@ public class DKIMSignature
       }
    }
 
+   public List<String> getHeaderList()
+   {
+      return headers;
+   }
+
    /**
     * Generates the Content-Signature value.
     *
@@ -223,7 +228,7 @@ public class DKIMSignature
 
 
    /**
-    * Tests whether expiration attribute exists.  If not, return false, if available, check against current time.
+    * Return false if true current time.  If expiration isn't set, then just return false. Returns false otherwise.
     *
     * @return
     */
@@ -237,13 +242,13 @@ public class DKIMSignature
    }
 
    /**
-    * Tests whether the timestamp attribute exists.  If not, return false, if available check if the current time is
+    * Returns false if timestamp does not exist or if the current time is
     * greater than timestamp + variables
     */
    public boolean isStale(int seconds, int minutes, int hours, int days, int months, int years)
    {
       String time = attributes.get(TIMESTAMP);
-      if (time == null) return false;
+      if (time == null) return true;
 
       long timeL = Long.parseLong(time);
       Date timestamp = new Date(timeL * 1000L);
@@ -472,30 +477,13 @@ public class DKIMSignature
     * @param headers
     * @param body
     * @param key
-    * @return
-    * @throws java.security.SignatureException
-    *
-    */
-   public void verify(Map headers, byte[] body, PublicKey key) throws SignatureException
-   {
-      Verification verification = new Verification();
-      verification.setBodyHashRequired(true);
-      verify(headers, body, key, verification);
-   }
-
-   /**
-    * Headers can be a Map<String, Object> or a Map<String, List<Object>>.  This gives some compatibility with
-    * JAX-RS's MultivaluedMap.   If a map of lists, every value of each header duplicate will be added.
-    *
-    * @param headers
-    * @param body
-    * @param key
     * @param verification
     * @return map of verified headers and their values
     * @throws SignatureException
     */
-   public MultivaluedMap<String, String> verify(Map headers, byte[] body, PublicKey key, Verification verification) throws SignatureException
+   public MultivaluedMap<String, String> verify(Map headers, byte[] body, PublicKey key) throws SignatureException
    {
+      if (key == null) throw new SignatureException("No key to verify with.");
 
       String algorithm = getAlgorithm();
       if (algorithm == null || !SigningAlgorithm.SHA256withRSA.getRfcNotation().toLowerCase().equals(algorithm.toLowerCase()))
@@ -518,7 +506,7 @@ public class DKIMSignature
       String encodedBh = attributes.get("bh");
       if (encodedBh == null)
       {
-         if (verification.isBodyHashRequired()) throw new SignatureException("There was no body hash (bh) in header");
+         if (body != null) throw new SignatureException("There was no body hash (bh) in header");
       }
       else
       {
@@ -548,34 +536,6 @@ public class DKIMSignature
          throw new SignatureException("Failed to verify signature.");
       }
 
-      if (verification.isIgnoreExpiration() == false)
-      {
-         if (isExpired())
-         {
-            throw new SignatureException("Signature expired");
-         }
-      }
-      if (verification.isStaleCheck())
-      {
-         if (isStale(verification.getStaleSeconds(),
-                 verification.getStaleMinutes(),
-                 verification.getStaleHours(),
-                 verification.getStaleDays(),
-                 verification.getStaleMonths(),
-                 verification.getStaleYears()))
-         {
-            throw new SignatureException("Signature is stale");
-         }
-      }
-
-      for (Map.Entry<String, String> required : verification.getRequiredAttributes().entrySet())
-      {
-         String value = getAttributes().get(required.getKey());
-         if (!value.equals(required.getValue()))
-         {
-            throw new SignatureException("Expected " + required.getValue() + " got " + value + " for attribute " + required.getKey());
-         }
-      }
       return verifiedHeaders;
    }
 }
