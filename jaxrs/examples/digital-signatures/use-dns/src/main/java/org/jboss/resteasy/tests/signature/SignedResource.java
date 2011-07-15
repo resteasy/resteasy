@@ -1,10 +1,8 @@
 package org.jboss.resteasy.tests.signature;
 
-import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
-import org.jboss.resteasy.spi.MarshalledEntity;
 import org.junit.Assert;
 
 import javax.ws.rs.Consumes;
@@ -13,10 +11,6 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import java.security.PublicKey;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

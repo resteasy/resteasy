@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-doseta</artifactId>
+            <artifactId>resteasy-crypto</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

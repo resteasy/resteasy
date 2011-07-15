@@ -4,8 +4,6 @@ import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
-import org.jboss.resteasy.util.Base64;
-import org.jboss.resteasy.util.ParameterParser;
 import org.junit.Assert;
 
 import javax.ws.rs.Consumes;
@@ -18,7 +16,6 @@ import javax.ws.rs.core.Response;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
-import java.util.HashMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
