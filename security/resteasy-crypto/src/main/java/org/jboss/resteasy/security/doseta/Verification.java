@@ -221,7 +221,7 @@ public class Verification
          String value = signature.getAttributes().get(required.getKey());
          if (!value.equals(required.getValue()))
          {
-            throw new SignatureException("Expected " + required.getValue() + " got " + value + " for attribute " + required.getKey());
+            throw new SignatureException("Expected value '" + required.getValue() + "' got '" + value + "' for attribute '" + required.getKey() + "'");
          }
       }
 

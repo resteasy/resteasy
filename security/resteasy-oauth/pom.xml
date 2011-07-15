@@ -5,6 +5,7 @@
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
         <version>2.3-beta-1</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>resteasy-oauth</artifactId>

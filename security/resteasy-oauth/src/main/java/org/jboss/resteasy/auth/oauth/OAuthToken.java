@@ -1,8 +1,5 @@
 package org.jboss.resteasy.auth.oauth;
 
-import java.security.Principal;
-import java.util.Set;
-
 /**
  * Represents either an OAuth Access or Request Token.
  * @author Stéphane Épardaud <stef@epardaud.fr>
