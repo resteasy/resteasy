@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.MethodNotAllowedException;
 import org.jboss.resteasy.spi.NotAcceptableException;
+import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.UnsupportedMediaTypeException;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -75,6 +76,10 @@ public class Segment
       if (list.size() == 0)
       {
          if (locator != null) return locator;
+         if (methods == null || methods.size() == 0)
+         {
+            throw new NotFoundException("Could not find resource for full path: " + request.getUri().getRequestUri());
+         }
          if (!methodMatch)
          {
             HashSet<String> allowed = new HashSet<String>();

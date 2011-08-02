@@ -4,6 +4,9 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -21,6 +24,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 
+import java.util.List;
+
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
@@ -32,8 +37,35 @@ public class BasicAuthTest
    private static Dispatcher dispatcher;
 
    @Path("/secured")
+   public static interface BaseProxy
+   {
+      @GET
+      String get();
+
+      @GET
+      @Path("/authorized")
+      String getAuthorized();
+
+      @GET
+      @Path("/deny")
+      String deny();
+
+      @GET
+      @Path("/failure")
+      List<String> getFailure();
+   }
+
+   @Path("/secured")
    public static class BaseResource
    {
+      @GET
+      @Path("/failure")
+      @RolesAllowed("admin")
+      public List<String> getFailure()
+      {
+         return null;
+      }
+
       @GET
       public String get(@Context SecurityContext ctx)
       {
@@ -63,6 +95,30 @@ public class BasicAuthTest
       }
    }
 
+   @Path("/secured2")
+   public static class BaseResource2
+   {
+      public String get(@Context SecurityContext ctx)
+      {
+         System.out.println("********* IN SECURE CLIENT");
+         if (!ctx.isUserInRole("admin"))
+         {
+            System.out.println("NOT IN ROLE!!!!");
+            throw new WebApplicationException(401);
+         }
+         return "hello";
+      }
+
+      @GET
+      @Path("/authorized")
+      @RolesAllowed("admin")
+      public String getAuthorized()
+      {
+         return "authorized";
+      }
+
+   }
+
    @BeforeClass
    public static void before() throws Exception
    {
@@ -75,12 +131,47 @@ public class BasicAuthTest
       domain.addUser("mo", "password", basic);
       dispatcher = EmbeddedContainer.start("", domain).getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(BaseResource.class);
+      dispatcher.getRegistry().addPerRequestResource(BaseResource2.class);
    }
 
    @AfterClass
    public static void after() throws Exception
    {
       EmbeddedContainer.stop();
+   }
+
+   @Test
+   public void testProxy() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      client.getParams().setAuthenticationPreemptive(true);
+
+      client.getState().setCredentials(
+              //new AuthScope(null, 8080, "Test"),
+              new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
+      ApacheHttpClientExecutor executor = new ApacheHttpClientExecutor(client);
+
+      BaseProxy proxy = ProxyFactory.create(BaseProxy.class, generateURL(""), executor);
+      String val = proxy.get();
+      Assert.assertEquals(val, "hello");
+      val = proxy.getAuthorized();
+      Assert.assertEquals(val, "authorized");
+
+
+   }
+
+   @Test
+   public void testProxyFailure() throws Exception
+   {
+      BaseProxy proxy = ProxyFactory.create(BaseProxy.class, generateURL(""));
+      try
+      {
+         proxy.getFailure();
+      }
+      catch (ClientResponseFailure e)
+      {
+         Assert.assertEquals(e.getResponse().getStatus(), 401);
+      }
    }
 
    @Test
@@ -119,6 +210,32 @@ public class BasicAuthTest
 
    }
 
+
+   /**
+    * RESTEASY-579
+    *
+    * Found 579 bug when doing 575 so the test is here out of laziness
+    *
+    * @throws Exception
+    */
+   @Test
+   public void test579() throws Exception
+   {
+      HttpClient client = new HttpClient();
+      client.getParams().setAuthenticationPreemptive(true);
+
+      client.getState().setCredentials(
+              //new AuthScope(null, 8080, "Test"),
+              new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
+
+      {
+         GetMethod method = createGetMethod("/secured2");
+         int status = client.executeMethod(method);
+         Assert.assertEquals(404, status);
+         method.releaseConnection();
+      }
+   }
+
    @Test
    public void testSecurityFailure() throws Exception
    {
@@ -145,4 +262,5 @@ public class BasicAuthTest
       }
       client.getHttpConnectionManager().closeIdleConnections(0);
    }
+
 }
