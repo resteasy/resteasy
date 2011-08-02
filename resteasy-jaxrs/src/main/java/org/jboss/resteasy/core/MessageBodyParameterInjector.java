@@ -108,7 +108,8 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
 
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      if (!mediaType.equals(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) return false;
+      if (mediaType.isWildcardType() || mediaType.isWildcardSubtype() ||
+         		  !mediaType.isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) return false;
       if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
       if (genericType == null) return true;
 
