@@ -83,8 +83,10 @@ public class CacheControlAnnotationTest extends BaseResourceTest
       {
          int status = client.executeMethod(method);
          Assert.assertEquals(status, HttpServletResponse.SC_OK);
-         System.out.println("Cache-Control: " + method.getResponseHeader("cache-control").getValue());
-         CacheControl cc = CacheControl.valueOf(method.getResponseHeader("cache-control").getValue());
+         String value = method.getResponseHeader("cache-control").getValue();
+         Assert.assertEquals("no-cache", value);
+         System.out.println("Cache-Control: " + value);
+         CacheControl cc = CacheControl.valueOf(value);
          Assert.assertTrue(cc.isNoCache());
       }
       catch (IOException e)

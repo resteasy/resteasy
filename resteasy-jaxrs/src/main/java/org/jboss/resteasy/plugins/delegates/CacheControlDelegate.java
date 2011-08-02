@@ -98,17 +98,14 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
    public String toString(CacheControl value)
    {
       StringBuffer buffer = new StringBuffer();
-      if (!value.isPrivate()) buffer.append("public");
-      if (value.isMustRevalidate()) addDirective("must-revalidate", buffer);
-      if (value.isNoTransform()) addDirective("no-transform", buffer);
-      if (value.isNoStore()) addDirective("no-store", buffer);
-      if (value.isProxyRevalidate()) addDirective("proxy-revalidate", buffer);
-      if (value.getSMaxAge() > -1) addDirective("s-maxage", buffer).append("=").append(value.getSMaxAge());
-      if (value.getMaxAge() > -1) addDirective("max-age", buffer).append("=").append(value.getMaxAge());
       if (value.isNoCache())
       {
          List<String> fields = value.getNoCacheFields();
-         if (fields.size() < 1) addDirective("no-cache", buffer);
+         if (fields.size() < 1)
+         {
+            addDirective("no-cache", buffer);
+            return buffer.toString();
+         }
          else
          {
             for (String field : value.getNoCacheFields())
@@ -117,6 +114,13 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
             }
          }
       }
+      if (!value.isPrivate()) buffer.append("public");
+      if (value.isMustRevalidate()) addDirective("must-revalidate", buffer);
+      if (value.isNoTransform()) addDirective("no-transform", buffer);
+      if (value.isNoStore()) addDirective("no-store", buffer);
+      if (value.isProxyRevalidate()) addDirective("proxy-revalidate", buffer);
+      if (value.getSMaxAge() > -1) addDirective("s-maxage", buffer).append("=").append(value.getSMaxAge());
+      if (value.getMaxAge() > -1) addDirective("max-age", buffer).append("=").append(value.getMaxAge());
       if (value.isPrivate())
       {
          List<String> fields = value.getPrivateFields();

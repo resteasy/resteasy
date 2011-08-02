@@ -51,7 +51,7 @@ public class CacheControlTest
 
       {
          CacheControl cc = new CacheControl();
-         cc.setNoCache(true);
+         cc.setNoCache(false);
          cc.setNoTransform(true);
          cc.setPrivate(true);
          cc.setMustRevalidate(true);
