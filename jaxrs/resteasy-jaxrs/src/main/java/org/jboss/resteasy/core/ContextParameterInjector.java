@@ -71,10 +71,13 @@ public class ContextParameterInjector implements ValueInjector
    public Object inject()
    {
       if (type.equals(Providers.class)) return factory;
-      Object delegate = ResteasyProviderFactory.getContextData(type);
-      if (delegate != null) return delegate;
+      if (!type.isInterface())
+      {
+         Object delegate = ResteasyProviderFactory.getContextData(type);
+         if (delegate != null) return delegate;
+         throw new RuntimeException("Illegal to inject a non-interface type into a singleton");
+      }
 
-      if (!type.isInterface()) throw new RuntimeException("Illegal to inject a non-interface type into a singleton");
 
       Class[] intfs = {type};
 
