@@ -43,12 +43,12 @@ public class ApplicationTest
     *
     * @throws Exception
     */
-   //@Test
+   @Test
    public void testBadMediaType() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:9095/my/application/count");
       request.accept("text");
       final ClientResponse response = request.get();
-      Assert.assertEquals(400, response.getEntity());
+      Assert.assertEquals(400, response.getStatus());
    }
 }
