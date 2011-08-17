@@ -146,7 +146,7 @@ public class WeightedMediaType extends MediaType implements Comparable<WeightedM
       }
       catch (NumberFormatException e)
       {
-         throw new RuntimeException("MediaType q parameter must be a float: " + type, e);
+         throw new LoggableFailure("MediaType q parameter must be a float: " + type, HttpResponseCodes.SC_BAD_REQUEST);
       }
       return 1.0f;
    }
