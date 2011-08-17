@@ -44,10 +44,25 @@ public class ApplicationTest
     * @throws Exception
     */
    @Test
-   public void testBadMediaType() throws Exception
+   public void testBadMediaTypeNoSubtype() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:9095/my/application/count");
       request.accept("text");
+      final ClientResponse response = request.get();
+      Assert.assertEquals(400, response.getStatus());
+   }
+
+   /**
+    *
+    * RESTEASY-582
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testBadMediaTypeNonNumericQualityValue() throws Exception
+   {
+      ClientRequest request = new ClientRequest("http://localhost:9095/my/application/count");
+      request.accept("text/plain; q=bad");
       final ClientResponse response = request.get();
       Assert.assertEquals(400, response.getStatus());
    }
