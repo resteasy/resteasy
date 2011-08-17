@@ -223,4 +223,62 @@ public class ClientErrorTest
 
    }
 
+   @Test
+   public void testBadAcceptMediaTypeNoSubType()
+   {
+      HttpClient client = new HttpClient();
+      GetMethod method = createGetMethod("/complex/match");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "text");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpServletResponse.SC_BAD_REQUEST);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally {
+         method.releaseConnection();
+      }
+   }
+
+   @Test
+   public void testBadAcceptMediaTypeNonNumericQualityValue()
+   {
+      HttpClient client = new HttpClient();
+      GetMethod method = createGetMethod("/complex/match");
+      method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/plain; q=bad");
+      try
+      {
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpServletResponse.SC_BAD_REQUEST);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally {
+         method.releaseConnection();
+      }
+   }
+
+   @Test
+   public void testBadContentType()
+   {
+      HttpClient client = new HttpClient();
+      PostMethod method = createPostMethod("/");
+      try
+      {
+         method.setRequestEntity(new StringRequestEntity("content", "text", null));
+         int status = client.executeMethod(method);
+         Assert.assertEquals(status, HttpResponseCodes.SC_BAD_REQUEST);
+      }
+      catch (IOException e)
+      {
+         method.releaseConnection();
+         throw new RuntimeException(e);
+      }
+      method.releaseConnection();
+   }
 }
