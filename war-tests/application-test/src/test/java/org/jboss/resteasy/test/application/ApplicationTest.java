@@ -36,4 +36,19 @@ public class ApplicationTest
       ClientResponse res = request.post();
       Assert.assertEquals(204, res.getStatus());
    }
+
+   /**
+    *
+    * RESTEASY-582
+    *
+    * @throws Exception
+    */
+   //@Test
+   public void testBadMediaType() throws Exception
+   {
+      ClientRequest request = new ClientRequest("http://localhost:9095/my/application/count");
+      request.accept("text");
+      final ClientResponse response = request.get();
+      Assert.assertEquals(400, response.getEntity());
+   }
 }
