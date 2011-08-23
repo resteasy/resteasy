@@ -1,4 +1,4 @@
-from M2Crypto import EVP, RSA, X509
+    from M2Crypto import EVP, RSA, X509
 import binascii
 
 key = EVP.load_key("mycert-private.pem")

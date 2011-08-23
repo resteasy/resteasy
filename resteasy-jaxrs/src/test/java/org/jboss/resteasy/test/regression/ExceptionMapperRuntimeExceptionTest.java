@@ -31,7 +31,7 @@ public class ExceptionMapperRuntimeExceptionTest extends BaseResourceTest
    {
       public Response toResponse(MyException exception)
       {
-         return Response.status(Response.Status.PRECONDITION_FAILED).build();
+         return Response.status(Response.Status.PRECONDITION_FAILED).header("custom", "header").build();
       }
    }
 
@@ -69,6 +69,7 @@ public class ExceptionMapperRuntimeExceptionTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(generateBaseUrl() + "/test");
       ClientResponse response = request.get();
       Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
+      Assert.assertEquals(response.getHeaders().getFirst("custom"), "header");
    }
 
 
