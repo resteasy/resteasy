@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/test-annotations" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target/classes" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
       <excludeFolder url="file://$MODULE_DIR$/target/surefire-reports" />
       <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
@@ -40,7 +41,7 @@
     <orderEntry type="module" module-name="resteasy-fastinfoset-provider" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: com.sun.xml.fastinfoset:FastInfoset:1.2.7" level="project" />
     <orderEntry type="module" module-name="resteasy-multipart-provider" scope="TEST" />
-    <orderEntry type="library" scope="TEST" name="Maven: javax.mail:mail:1.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: javax.mail:mail:1.4.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.james:apache-mime4j:0.6" level="project" />
     <orderEntry type="module" module-name="resteasy-atom-provider" scope="TEST" />
     <orderEntry type="module" module-name="resteasy-yaml-provider" scope="TEST" />

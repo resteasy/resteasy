@@ -13,8 +13,8 @@
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
-		<dep.jaxb-impl.version>2.2.4</dep.jaxb-impl.version>
-		<dep.jettison.version>1.2</dep.jettison.version>
+        <dep.jaxb-impl.version>2.2.4</dep.jaxb-impl.version>
+        <dep.jettison.version>1.2</dep.jettison.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -29,7 +29,8 @@
 
     <scm>
         <connection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs</connection>
-        <developerConnection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs</developerConnection>
+        <developerConnection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs
+        </developerConnection>
         <url>http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs</url>
     </scm>
 
@@ -242,7 +243,7 @@
             <dependency>
                 <groupId>javax.mail</groupId>
                 <artifactId>mail</artifactId>
-                <version>1.4</version>
+                <version>1.4.4</version>
             </dependency>
 
             <!--
@@ -311,6 +312,16 @@
                 <groupId>org.jboss.cache</groupId>
                 <artifactId>jbosscache-core</artifactId>
                 <version>3.2.5.GA</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk16</artifactId>
+                <version>1.46</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcmail-jdk16</artifactId>
+                <version>1.46</version>
             </dependency>
             <dependency>
                 <groupId>net.oauth.core</groupId>

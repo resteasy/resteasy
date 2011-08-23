@@ -1,0 +1,226 @@
+package org.jboss.resteasy.test.security.smime;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.security.PemUtils;
+import org.jboss.resteasy.security.smime.EnvelopedInput;
+import org.jboss.resteasy.security.smime.EnvelopedOutput;
+import org.jboss.resteasy.security.smime.SignedInput;
+import org.jboss.resteasy.security.smime.SignedOutput;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.security.PrivateKey;
+import java.security.Security;
+import java.security.cert.X509Certificate;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+/**
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @version $Revision: 1 $
+ */
+public class IntegrationTest extends BaseResourceTest
+{
+   @Path("/smime/encrypted")
+   public static class EncryptedResource
+   {
+      @GET
+      public EnvelopedOutput get()
+      {
+         EnvelopedOutput output = new EnvelopedOutput("hello world", "text/plain");
+         output.setCertificate(cert);
+         return output;
+      }
+
+      @POST
+      public void post(EnvelopedInput<String> input)
+      {
+         String str = input.getEntity(privateKey, cert);
+         Assert.assertEquals("input", str);
+      }
+   }
+
+   @Path("/smime/signed")
+   public static class SignedResource
+   {
+      @GET
+      public SignedOutput get()
+      {
+         SignedOutput output = new SignedOutput("hello world", "text/plain");
+         output.setCertificate(cert);
+         output.setPrivateKey(privateKey);
+         return output;
+      }
+
+      @POST
+      public void post(SignedInput<String> input) throws Exception
+      {
+         String str = input.getEntity();
+         Assert.assertEquals("input", str);
+         Assert.assertTrue(input.verify(cert));
+      }
+   }
+
+   @Path("/smime/encrypted/signed")
+   public static class EncryptedSignedResource
+   {
+      @GET
+      public EnvelopedOutput get()
+      {
+         SignedOutput signed = new SignedOutput("hello world", "text/plain");
+         signed.setCertificate(cert);
+         signed.setPrivateKey(privateKey);
+
+         EnvelopedOutput output = new EnvelopedOutput(signed, "multipart/signed");
+         output.setCertificate(cert);
+         return output;
+      }
+
+      @POST
+      public void post(EnvelopedInput<SignedInput<String>> input) throws Exception
+      {
+         SignedInput<String> str = input.getEntity(privateKey, cert);
+         Assert.assertEquals("input", str.getEntity());
+         Assert.assertTrue(str.verify(cert));
+      }
+   }
+
+   private static X509Certificate cert;
+   private static PrivateKey privateKey;
+
+   @BeforeClass
+   public static void setup() throws Exception
+   {
+      Security.addProvider(new BouncyCastleProvider());
+      InputStream certIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert.der");
+      cert = PemUtils.getCertificateFromDer(certIs);
+
+      InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert-private.der");
+      privateKey = PemUtils.getPrivateFromDer(privateIs);
+
+      dispatcher.getRegistry().addPerRequestResource(EncryptedResource.class);
+      dispatcher.getRegistry().addPerRequestResource(SignedResource.class);
+      dispatcher.getRegistry().addPerRequestResource(EncryptedSignedResource.class);
+
+   }
+
+   @Test
+   public void testSignedOutput() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/signed"));
+      ClientResponse<String> res = request.get(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      System.out.println(res.getEntity());
+      MediaType contentType = MediaType.valueOf(res.getHeaders().getFirst("Content-Type"));
+      System.out.println(contentType);
+   }
+
+   @Test
+   public void testSignedOutput2() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/signed"));
+      SignedInput signed = request.getTarget(SignedInput.class);
+      String output = (String)signed.getEntity(String.class);
+      System.out.println(output);
+      Assert.assertEquals("hello world", output);
+      Assert.assertTrue(signed.verify(cert));
+   }
+
+   @Test
+   public void testEncryptedOutput() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted"));
+      ClientResponse<String> res = request.get(String.class);
+      Assert.assertEquals(200, res.getStatus());
+      System.out.println(res.getEntity());
+      MediaType contentType = MediaType.valueOf(res.getHeaders().getFirst("Content-Type"));
+      System.out.println(contentType);
+   }
+
+   @Test
+   public void testEncryptedOutput2() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted"));
+      EnvelopedInput enveloped = request.getTarget(EnvelopedInput.class);
+      String output = (String)enveloped.getEntity(String.class, privateKey, cert);
+      System.out.println(output);
+      Assert.assertEquals("hello world", output);
+   }
+
+   @Test
+   public void testEncryptedSignedOutputToFile() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted/signed"));
+      ClientResponse<String> res = request.get(String.class);
+      MediaType contentType = MediaType.valueOf(res.getHeaders().getFirst("Content-Type"));
+      System.out.println(contentType);
+      System.out.println();
+      System.out.println(res.getEntity());
+
+      FileOutputStream os = new FileOutputStream("python_encrypted_signed.txt");
+      os.write("Content-Type: ".getBytes());
+      os.write(contentType.toString().getBytes());
+      os.write("\r\n".getBytes());
+      os.write(res.getEntity().getBytes());
+      os.close();
+   }
+
+   @Test
+   public void testEncryptedSignedOutput() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted/signed"));
+      EnvelopedInput enveloped = request.getTarget(EnvelopedInput.class);
+      SignedInput signed = (SignedInput)enveloped.getEntity(SignedInput.class, privateKey, cert);
+      String output = (String)signed.getEntity(String.class);
+      System.out.println(output);
+      Assert.assertEquals("hello world", output);
+      Assert.assertTrue(signed.verify(cert));
+      Assert.assertEquals("hello world", output);
+   }
+
+   @Test
+   public void testEncryptedInput() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted"));
+      EnvelopedOutput output = new EnvelopedOutput("input", "text/plain");
+      output.setCertificate(cert);
+      ClientResponse res = request.body("*/*", output).post();
+      Assert.assertEquals(204, res.getStatus());
+   }
+
+   @Test
+   public void testEncryptedSignedInput() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted/signed"));
+      SignedOutput signed = new SignedOutput("input", "text/plain");
+      signed.setPrivateKey(privateKey);
+      signed.setCertificate(cert);
+      EnvelopedOutput output = new EnvelopedOutput(signed, "multipart/signed");
+      output.setCertificate(cert);
+      ClientResponse res = request.body("*/*", output).post();
+      Assert.assertEquals(204, res.getStatus());
+   }
+
+   @Test
+   public void testSignedInput() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/signed"));
+      SignedOutput output = new SignedOutput("input", "text/plain");
+      output.setCertificate(cert);
+      output.setPrivateKey(privateKey);
+      ClientResponse res = request.body("*/*", output).post();
+      Assert.assertEquals(204, res.getStatus());
+   }
+}

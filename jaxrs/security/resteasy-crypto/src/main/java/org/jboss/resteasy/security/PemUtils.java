@@ -1,10 +1,14 @@
-package org.jboss.resteasy.security.doseta;
+package org.jboss.resteasy.security;
 
 import org.jboss.resteasy.util.Base64;
 
+import java.io.DataInputStream;
+import java.io.InputStream;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Map;
@@ -15,6 +19,28 @@ import java.util.Map;
  */
 public class PemUtils
 {
+   public static X509Certificate getCertificateFromDer(InputStream is) throws Exception
+   {
+      CertificateFactory cf = CertificateFactory.getInstance("X.509");
+      X509Certificate cert = (X509Certificate)cf.generateCertificate(is);
+      is.close();
+      return cert;
+   }
+   public static PrivateKey getPrivateFromDer(InputStream is)
+           throws Exception
+   {
+
+      DataInputStream dis = new DataInputStream(is);
+      byte[] keyBytes = new byte[dis.available()];
+      dis.readFully(keyBytes);
+      dis.close();
+
+      PKCS8EncodedKeySpec spec =
+              new PKCS8EncodedKeySpec(keyBytes);
+      KeyFactory kf = KeyFactory.getInstance("RSA");
+      return kf.generatePrivate(spec);
+   }
+
    /**
     * Extract a public key from a PEM string
     *
