@@ -35,7 +35,7 @@
         <module>oreilly-workbook</module>
         <module>oauth-examples</module>
         <module>examples-jsapi</module>
+        <module>smime</module>
         <module>digital-signatures</module>
-<!--        <module>content-signature</module> -->
     </modules>
 </project>

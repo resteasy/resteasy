@@ -2,43 +2,31 @@ package org.jboss.resteasy.security;
 
 import org.jboss.resteasy.util.Base64;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Map;
 
 /**
+ * Utility classes to extract PublicKey, PrivateKey, and X509Certificate from openssl generated PEM files
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class PemUtils
 {
-   public static X509Certificate getCertificateFromDer(InputStream is) throws Exception
+   static
    {
-      CertificateFactory cf = CertificateFactory.getInstance("X.509");
-      X509Certificate cert = (X509Certificate)cf.generateCertificate(is);
-      is.close();
-      return cert;
+      BouncyIntegration.init();
    }
-   public static PrivateKey getPrivateFromDer(InputStream is)
-           throws Exception
+   public static X509Certificate decodeCertificate(InputStream is) throws Exception
    {
-
-      DataInputStream dis = new DataInputStream(is);
-      byte[] keyBytes = new byte[dis.available()];
-      dis.readFully(keyBytes);
-      dis.close();
-
-      PKCS8EncodedKeySpec spec =
-              new PKCS8EncodedKeySpec(keyBytes);
-      KeyFactory kf = KeyFactory.getInstance("RSA");
-      return kf.generatePrivate(spec);
+      byte[] der = pemToDer(is);
+      ByteArrayInputStream bis = new ByteArrayInputStream(der);
+      return DerUtils.decodeCertificate(bis);
    }
 
    /**
@@ -48,17 +36,10 @@ public class PemUtils
     * @return
     * @throws Exception
     */
-   public static PublicKey extractPublicKey(String pem) throws Exception
+   public static PublicKey decodePublicKey(String pem) throws Exception
    {
-      pem = pem.replace("-----BEGIN PUBLIC KEY-----", "");
-      pem = pem.replace("-----END PUBLIC KEY-----", "");
-      byte[] der = Base64.decode(pem);
-
-
-      X509EncodedKeySpec spec =
-              new X509EncodedKeySpec(der);
-      KeyFactory kf = KeyFactory.getInstance("RSA");
-      return kf.generatePublic(spec);
+      byte[] der = pemToDer(pem);
+      return DerUtils.decodePublicKey(der);
    }
 
    /**
@@ -68,16 +49,59 @@ public class PemUtils
     * @return
     * @throws Exception
     */
-   public static PrivateKey extractPrivateKey(String pem) throws Exception
+   public static PrivateKey decodePrivateKey(String pem) throws Exception
    {
-      pem = pem.replace("-----BEGIN PRIVATE KEY-----", "");
-      pem = pem.replace("-----END PRIVATE KEY-----", "");
-      byte[] der = Base64.decode(pem);
+      byte[] der = pemToDer(pem);
+      return DerUtils.decodePrivateKey(der);
+   }
+
+   public static PrivateKey decodePrivateKey(InputStream is) throws Exception
+   {
+      String pem = pemFromStream(is);
+      return decodePrivateKey(pem);
+   }
+
+   /**
+    * Decode a PEM file to DER format
+    *
+    * @param is
+    * @return
+    * @throws IOException
+    */
+   public static byte[] pemToDer(InputStream is) throws IOException
+   {
+      String pem = pemFromStream(is);
+      byte[] der = pemToDer(pem);
+      return der;
+   }
+
+   /**
+    * Decode a PEM string to DER format
+    *
+    * @param pem
+    * @return
+    * @throws java.io.IOException
+    */
+   public static byte[] pemToDer(String pem) throws java.io.IOException
+   {
+      pem = removeBeginEnd(pem);
+      return Base64.decode(pem);
+   }
+
+   private static String removeBeginEnd(String pem)
+   {
+      pem = pem.replaceAll("-----BEGIN (.*)-----\n", "");
+      pem = pem.replaceAll("-----END (.*)----\n", "");
+      return pem;
+   }
 
 
-      PKCS8EncodedKeySpec spec =
-              new PKCS8EncodedKeySpec(der);
-      KeyFactory kf = KeyFactory.getInstance("RSA");
-      return kf.generatePrivate(spec);
+   public static String pemFromStream(InputStream is) throws IOException
+   {
+      DataInputStream dis = new DataInputStream(is);
+      byte[] keyBytes = new byte[dis.available()];
+      dis.readFully(keyBytes);
+      dis.close();
+      return new String(keyBytes, "utf-8");
    }
 }

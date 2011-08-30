@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.security.smime;
 
-import org.apache.james.mime4j.message.Message;
-import org.apache.james.mime4j.message.Multipart;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
@@ -9,24 +7,22 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.mail.smime.SMIMESigned;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
+import org.jboss.resteasy.security.DerUtils;
 import org.jboss.resteasy.security.PemUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
-import javax.ws.rs.core.HttpHeaders;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -46,14 +42,14 @@ public class SignedTest
    public static void setup() throws Exception
    {
       Security.addProvider(new BouncyCastleProvider());
-      InputStream certIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert.der");
-      cert = PemUtils.getCertificateFromDer(certIs);
+      InputStream certIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert.pem");
+      cert = PemUtils.decodeCertificate(certIs);
 
-      InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert-private.der");
-      privateKey = PemUtils.getPrivateFromDer(privateIs);
+      InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert-private.pem");
+      privateKey = PemUtils.decodePrivateKey(privateIs);
 
       InputStream badIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("private_dkim_key.der");
-      badKey = PemUtils.getPrivateFromDer(badIs);
+      badKey = DerUtils.decodePrivateKey(badIs);
    }
 
    private MimeBodyPart createMsg() throws MessagingException
