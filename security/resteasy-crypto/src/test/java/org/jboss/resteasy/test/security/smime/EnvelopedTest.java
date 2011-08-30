@@ -13,10 +13,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
-import org.bouncycastle.mail.smime.SMIMEStreamingProcessor;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.operator.OutputEncryptor;
-import org.bouncycastle.util.Strings;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.util.Base64;
 import org.junit.Assert;
@@ -25,12 +23,9 @@ import org.junit.Test;
 
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
-import javax.mail.Header;
 import javax.mail.MessagingException;
-import javax.mail.Session;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -43,7 +38,6 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -67,27 +61,20 @@ public class EnvelopedTest
    public static void setup() throws Exception
    {
       Security.addProvider(new BouncyCastleProvider());
+      /*
       InputStream certIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert.der");
       cert = PemUtils.getCertificateFromDer(certIs);
+      */
 
+      InputStream certIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert.pem");
+      cert = PemUtils.decodeCertificate(certIs);
+      /*
       InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert-private.der");
       privateKey = PemUtils.getPrivateFromDer(privateIs);
-
+      */
+      InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert-private.pem");
+      privateKey = PemUtils.decodePrivateKey(privateIs);
    }
-
-   private static MailcapCommandMap addCommands(CommandMap cm)
-   {
-      MailcapCommandMap mc = (MailcapCommandMap) cm;
-
-      mc.addMailcap("application/pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.pkcs7_signature");
-      mc.addMailcap("application/pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.pkcs7_mime");
-      mc.addMailcap("application/x-pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_signature");
-      mc.addMailcap("application/x-pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_mime");
-      mc.addMailcap("multipart/signed;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.multipart_signed");
-
-      return mc;
-   }
-
 
    @Test
    public void testBody() throws Exception

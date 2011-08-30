@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.security.smime;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.security.DerUtils;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.security.smime.EnvelopedInput;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;
@@ -24,8 +25,6 @@ import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-
-import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -104,11 +103,11 @@ public class IntegrationTest extends BaseResourceTest
    public static void setup() throws Exception
    {
       Security.addProvider(new BouncyCastleProvider());
-      InputStream certIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert.der");
-      cert = PemUtils.getCertificateFromDer(certIs);
+      InputStream certIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert.pem");
+      cert = PemUtils.decodeCertificate(certIs);
 
-      InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert-private.der");
-      privateKey = PemUtils.getPrivateFromDer(privateIs);
+      InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert-private.pem");
+      privateKey = PemUtils.decodePrivateKey(privateIs);
 
       dispatcher.getRegistry().addPerRequestResource(EncryptedResource.class);
       dispatcher.getRegistry().addPerRequestResource(SignedResource.class);

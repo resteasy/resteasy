@@ -22,11 +22,8 @@ a sign of our times""")
 
 # Output p7 in mail-friendly format.
 out = BIO.MemoryBuffer()
-out.write('From: sender@example.dom\n')
-out.write('To: recipient@example.dom\n')
-out.write('Subject: M2Crypto S/MIME testing\n')
 s.write(out, p7, buf)
-
+#p7.write(out)
 print out.read()
 
 # Save the PRNG's state.
