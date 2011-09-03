@@ -10,10 +10,10 @@ import java.util.Map;
  */
 public class ClientProxy implements InvocationHandler
 {
-   private Map<Method, ClientInvoker> methodMap;
+   private Map<Method, MethodInvoker> methodMap;
    private Class<?> clazz;
 
-   public ClientProxy(Map<Method, ClientInvoker> methodMap)
+   public ClientProxy(Map<Method, MethodInvoker> methodMap)
    {
       this.methodMap = methodMap;
    }
@@ -36,7 +36,7 @@ public class ClientProxy implements InvocationHandler
       // transactional Resources to a Collection, and it calls equals and
       // hashCode.
 
-      ClientInvoker clientInvoker = methodMap.get(method);
+      MethodInvoker clientInvoker = methodMap.get(method);
       if (clientInvoker == null)
       {
          if (method.getName().equals("equals"))
@@ -58,8 +58,11 @@ public class ClientProxy implements InvocationHandler
          else if (method.getName().equals("applyClientInvokerModifier"))
          {
             ClientInvokerModifier modifier = (ClientInvokerModifier) args[0];
-            for (ClientInvoker invoker : methodMap.values())
-               modifier.modify(invoker);
+            for (MethodInvoker invoker : methodMap.values())
+            {
+            	if(invoker instanceof ClientInvoker)
+               		modifier.modify((ClientInvoker)invoker);
+            }
 
             return null;
          }

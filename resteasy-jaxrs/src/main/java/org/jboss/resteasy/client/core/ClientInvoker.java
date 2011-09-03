@@ -27,7 +27,7 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class ClientInvoker extends ClientInterceptorRepositoryImpl
+public class ClientInvoker extends ClientInterceptorRepositoryImpl implements MethodInvoker
 {
    protected ResteasyProviderFactory providerFactory;
    protected String httpMethod;
