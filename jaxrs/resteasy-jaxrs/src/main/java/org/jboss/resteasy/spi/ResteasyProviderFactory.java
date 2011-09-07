@@ -692,7 +692,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> provider)
    {
-      Type[] intfs = provider.getClass().getGenericInterfaces();
+      Type[] intfs = provider.getGenericInterfaces();
       for (Type type : intfs)
       {
          if (type instanceof ParameterizedType)
