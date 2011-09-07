@@ -96,8 +96,8 @@ public interface SimpleClient
         ResteasyProviderFactory.getInstance().addMessageBodyReader(MyReader.class);
     </programlisting>
     <para>
-
-
+     The framework also supports the JAX-RS locator pattern, but on the client side.  So, if you have a method annotated only with @Path, that proxy method
+     will return a new proxy of the interface returned by that method.
     </para>
     <sect1 id="Custom_client-side_responses">
         <title>Abstract Responses</title>
