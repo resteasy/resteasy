@@ -23,9 +23,9 @@ public class MyResource {
    public static void main(String[] args) throws Exception 
    {
       TJWSEmbeddedJaxrsServer tjws = new TJWSEmbeddedJaxrsServer();
-      tjws.setPort(8081);
-      tjws.getDeployment().getActualResourceClasses().add(MyResource.class);
+      tjws.setPort(8080);
       tjws.start();
+      tjws.getRegistry().addPerRequestResource(RestEasy485Resource.class);
    }
 }
 
