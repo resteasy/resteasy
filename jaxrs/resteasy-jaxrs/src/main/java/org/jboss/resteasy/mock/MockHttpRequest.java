@@ -19,6 +19,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,15 +51,19 @@ public class MockHttpRequest implements HttpRequest
    {
    }
 
+   protected static final URI EMPTY_URI = URI.create("");
+
    protected static MockHttpRequest initWithUri(String uri) throws URISyntaxException
    {
       URI absoluteUri = new URI(uri);
-      URI baseUri = absoluteUri;
+      //URI baseUri = absoluteUri;
+      URI baseUri = EMPTY_URI;
       return initWithUri(absoluteUri, baseUri);
    }
 
    private static MockHttpRequest initWithUri(URI absoluteUri, URI baseUri)
    {
+      if (baseUri == null) baseUri = EMPTY_URI;
       MockHttpRequest request = new MockHttpRequest();
       request.httpHeaders = new HttpHeadersImpl();
       request.httpHeaders.setAcceptableLanguages(new ArrayList<String>());
@@ -66,8 +71,14 @@ public class MockHttpRequest implements HttpRequest
       request.httpHeaders.setCookies(new HashMap<String, Cookie>());
       request.httpHeaders.setRequestHeaders(new Headers<String>());
       //request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
-      List<PathSegment> encodedPathSegments = PathSegmentImpl.parseSegments(absoluteUri.getRawPath(), false);
-      request.uri = new UriInfoImpl(absoluteUri, baseUri, absoluteUri.getRawPath(), absoluteUri.getRawQuery(), encodedPathSegments);
+      
+      // remove query part
+      URI absolutePath = UriBuilder.fromUri(absoluteUri).replaceQuery(null).build();
+      // path must be relative to the application's base uri
+	   URI relativeUri = baseUri.relativize(absoluteUri);
+		
+      List<PathSegment> encodedPathSegments = PathSegmentImpl.parseSegments(relativeUri.getRawPath(), false);
+      request.uri = new UriInfoImpl(absolutePath, baseUri, "/" + relativeUri.getRawPath(), absoluteUri.getRawQuery(), encodedPathSegments);
       request.preprocessedPath = request.uri.getPath(false);
       return request;
    }

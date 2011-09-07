@@ -10,6 +10,7 @@ import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -25,6 +26,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import java.util.Stack;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -39,6 +43,7 @@ public class InternalDispatcherTest
 {
 
    private static Dispatcher dispatcher;
+   private static ForwardingResource forwardingResource;
 
    @Path("/")
    public interface Client
@@ -94,13 +99,17 @@ public class InternalDispatcherTest
    @Path("/")
    public static class ForwardingResource
    {
+      public Stack<String> uriStack = new Stack<String>();
       String basic = "basic";
+      @Context
+      UriInfo uriInfo;
 
       @GET
       @Produces("text/plain")
       @Path("/basic")
       public String getBasic()
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          return basic;
       }
 
@@ -109,6 +118,7 @@ public class InternalDispatcherTest
       @Path("/forward/basic")
       public String forwardBasic(@Context InternalDispatcher dispatcher)
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          return (String) dispatcher.getEntity("/basic");
       }
 
@@ -118,6 +128,7 @@ public class InternalDispatcherTest
       @Path("/basic")
       public void putBasic(String basic)
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          this.basic = basic;
       }
 
@@ -125,6 +136,7 @@ public class InternalDispatcherTest
       @Path("/basic")
       public void deleteBasic()
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          this.basic = "basic";
       }
 
@@ -134,6 +146,7 @@ public class InternalDispatcherTest
       public void putForwardBasic(String basic,
                                   @Context InternalDispatcher dispatcher)
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          dispatcher.putEntity("/basic", basic);
       }
 
@@ -143,6 +156,7 @@ public class InternalDispatcherTest
       public void postForwardBasic(String basic,
                                    @Context InternalDispatcher dispatcher)
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          dispatcher.postEntity("/basic", basic);
       }
 
@@ -150,6 +164,7 @@ public class InternalDispatcherTest
       @Path("/forward/basic")
       public void deleteForwardBasic(@Context InternalDispatcher dispatcher)
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          dispatcher.delete("/basic");
       }
 
@@ -158,6 +173,7 @@ public class InternalDispatcherTest
       @Path("/object/{id}")
       public Response getObject(@PathParam("id") Integer id)
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          if (id == 0)
             return Response.noContent().build();
          else
@@ -169,6 +185,7 @@ public class InternalDispatcherTest
       public Response forwardObject(@PathParam("id") Integer id,
                                     @Context InternalDispatcher dispatcher)
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          return dispatcher.getResponse("/object/" + id);
       }
 
@@ -177,6 +194,7 @@ public class InternalDispatcherTest
       public int infinitFoward(@Context InternalDispatcher dispatcher,
                                @QueryParam("count") @DefaultValue("0") int count)
       {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
          try
          {
             dispatcher.getEntity("/infinite-forward?count=" + (count + 1));
@@ -203,7 +221,13 @@ public class InternalDispatcherTest
    public static void before() throws Exception
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
-      dispatcher.getRegistry().addSingletonResource(new ForwardingResource());
+            forwardingResource = new ForwardingResource();
+            dispatcher.getRegistry().addSingletonResource(forwardingResource);
+   }
+
+@Before
+   public void setup() {
+       forwardingResource.uriStack.clear();
    }
 
    @AfterClass
@@ -243,6 +267,28 @@ public class InternalDispatcherTest
       // This should not spin forever, since RESTEasy stops the recursive loop
       // after 20 internal dispatches
       Assert.assertEquals(1, client.infiniteForward());
+   }
+
+      @Test
+   public void testUriInfoBasic() {
+       String baseUrl = generateBaseUrl();
+       Client client = ProxyFactory.create(Client.class, baseUrl);
+
+       client.getBasic();
+       Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
+       Assert.assertTrue(forwardingResource.uriStack.isEmpty());
+
+   }
+
+   @Test
+   public void testUriInfoForwardBasic() {
+      String baseUrl = generateBaseUrl();
+       Client client = ProxyFactory.create(Client.class, baseUrl);
+
+       client.getForwardBasic();
+       Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
+       Assert.assertEquals(baseUrl + "/forward/basic", forwardingResource.uriStack.pop());
+       Assert.assertTrue(forwardingResource.uriStack.isEmpty());
    }
 
 }

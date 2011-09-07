@@ -6,6 +6,8 @@ import org.jboss.resteasy.mock.MockHttpResponse;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.jboss.resteasy.spi.ResteasyProviderFactory.*;
@@ -134,16 +136,12 @@ public class InternalDispatcher
       return request.getHttpHeaders().getRequestHeaders();
    }
 
-   public static MockHttpRequest createRequest(String uri, String verb)
+   public static MockHttpRequest createRequest(String relativeUri, String verb)
    {
-      try
-      {
-         return MockHttpRequest.create(verb, uri);
-      }
-      catch (URISyntaxException e)
-      {
-         throw new RuntimeException(
-                 "could not create uri for internal dispatching", e);
-      }
+      UriInfo uriInfo = ResteasyProviderFactory.getContextData(UriInfo.class);
+
+      URI baseUri = uriInfo.getBaseUri();
+      URI absoluteUri = baseUri.resolve(relativeUri);
+      return MockHttpRequest.create(verb, absoluteUri, baseUri);
    }
 }
