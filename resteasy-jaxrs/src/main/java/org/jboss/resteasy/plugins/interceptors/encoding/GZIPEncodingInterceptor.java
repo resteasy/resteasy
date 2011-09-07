@@ -5,6 +5,7 @@ import org.jboss.resteasy.annotations.interception.EncoderPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
@@ -38,6 +39,39 @@ public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
       }
    }
 
+   private static class CommittedGZIPOutputStream extends CommitHeaderOutputStream
+   {
+      protected CommittedGZIPOutputStream(OutputStream delegate, CommitCallback headers)
+      {
+         super(delegate, headers);
+      }
+
+      protected GZIPOutputStream gzip;
+
+      public GZIPOutputStream getGzip()
+      {
+         return gzip;
+      }
+
+      @Override
+      public void commit()
+      {
+         if (isHeadersCommitted) return;
+         isHeadersCommitted = true;
+         try
+         {
+            // GZIPOutputStream constructor writes to underlying OS causing headers to be written.
+            // so we swap gzip OS in when we are ready to write.
+            gzip  = new EndableGZIPOutputStream(delegate);
+            delegate = gzip;
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+   }
+
    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
    {
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
@@ -45,7 +79,8 @@ public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
       if (encoding != null && encoding.toString().equalsIgnoreCase("gzip"))
       {
          OutputStream old = context.getOutputStream();
-         GZIPOutputStream gzipOutputStream = new EndableGZIPOutputStream(old);
+         // GZIPOutputStream constructor writes to underlying OS causing headers to be written.
+         CommittedGZIPOutputStream gzipOutputStream = new CommittedGZIPOutputStream(old, null);
          context.setOutputStream(gzipOutputStream);
          try
          {
@@ -53,7 +88,7 @@ public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
          }
          finally
          {
-            gzipOutputStream.finish();
+            gzipOutputStream.getGzip().finish();
             context.setOutputStream(old);
          }
          return;
