@@ -9,6 +9,17 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1 id="22_221">
+    <title>Migrating from 2.2.x to 2.3</title>
+    <itemizedlist>
+        <listitem>
+          resteasy-doseta module no longer exists.  It is now renamed to the resteasy-crypto module and also includes other things beyond doseta.
+        </listitem>
+        <listitem>
+          Doseta work has be refactored a bit and may have broken backward compatibility.
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1 id="22_221">
     <title>Migrating from 2.2.0 to 2.2.1</title>
     <itemizedlist>
         <listitem>
