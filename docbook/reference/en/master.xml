@@ -49,6 +49,7 @@
                 <!ENTITY Authentication SYSTEM "modules/Authentication.xml">
                 <!ENTITY CDI SYSTEM "modules/CDI.xml">
                 <!ENTITY Signature SYSTEM "modules/signature.xml">
+                <!ENTITY SMIME SYSTEM "modules/smime.xml">
                 ]>
 
 <book>
@@ -126,6 +127,7 @@
    &Securing_JAX-RS_and_RESTeasy;
    &Authentication;
    &Signature;
+   &SMIME;
    &RESTEasy_EJB_Integration;
    &RESTEasy_Spring_Integration;
    &CDI;

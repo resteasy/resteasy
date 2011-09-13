@@ -1,5 +1,5 @@
 <chapter id="signature">
-  <title>Digital Signature Framework</title>
+  <title>Doseta Digital Signature Framework</title>
 
   <para>Digital signatures allow you to protect the integrity of a message.
   They are used to verify that a message sent was sent by the actual user that
@@ -166,12 +166,12 @@
   <section>
     <title>Maven settings</title>
 
-    <para>You must include the resteasy-doseta project to use the digital
+    <para>You must include the resteasy-crypto project to use the digital
     signature framework.</para>
 
     <para><programlisting>        &lt;dependency&gt;
             &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-            &lt;artifactId&gt;resteasy-doseta&lt;/artifactId&gt;
+            &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
             &lt;version&gt;2.3-beta-1&lt;/version&gt;
         &lt;/dependency&gt;
 
