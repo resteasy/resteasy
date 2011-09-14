@@ -125,61 +125,103 @@ public class ResourceMethodRegistry implements Registry
       }
    }
 
-   protected void processMethod(ResourceFactory ref, String base, Class<?> clazz, Method method)
-   {
-      Path path = method.getAnnotation(Path.class);
-      Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
-      if (path == null && httpMethods == null)
-      {
-         if (clazz.isInterface()) return;
+	private Method findAnnotatedInterfaceMethod(Class<?> iface, Method implementation)
+	{
+		try
+		{
+			Method method = iface.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
+			if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
+				return method;
+		}
+		catch (NoSuchMethodException e)
+		{
+			// ignore
+		}
+		for (Class<?> extended : iface.getInterfaces())
+		{
+			Method m = findAnnotatedInterfaceMethod(extended, implementation);
+			if(m != null)
+				return m;
+		}
+		return null;
+	}
 
-         Method intfMethod = null;
-         for (Class intf : clazz.getInterfaces())
-         {
-            try
-            {
-               Method tmp = intf.getMethod(method.getName(), method.getParameterTypes());
-               if (intfMethod != null)
-                  throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + method);
-               path = tmp.getAnnotation(Path.class);
-               httpMethods = IsHttpMethod.getHttpMethods(tmp);
-               if (path != null || httpMethods != null) intfMethod = tmp;
-            }
-            catch (NoSuchMethodException ignored)
-            {
-            }
-         }
-         if (intfMethod == null) return;
-         processMethod(ref, base, clazz, intfMethod);
-         return;
-      }
+	private Method findAnnotatedMethod(Class<?> root, Method implementation)
+	{
+		// Per http://download.oracle.com/auth/otn-pub/jcp/jaxrs-1.0-fr-oth-JSpec/jaxrs-1.0-final-spec.pdf
+		// Section 3.2 Annotation Inheritance
 
-      UriBuilderImpl builder = new UriBuilderImpl();
-      if (base != null) builder.path(base);
-      if (clazz.isAnnotationPresent(Path.class))
-      {
-         builder.path(clazz);
-      }
-      if (path != null)
-      {
-         builder.path(method);
-      }
-      String pathExpression = builder.getPath();
-      if (pathExpression == null) pathExpression = "";
+		// First check local declaration and possible superclass declarations
+		for (Class<?> clazz = implementation.getDeclaringClass(); clazz != null; clazz = clazz.getSuperclass())
+		{
+			try
+			{
+				Method method = clazz.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
+				if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
+					return method;
+			}
+			catch (NoSuchMethodException e)
+			{
+				// ignore
+			}
+		}
 
-      InjectorFactory injectorFactory = providerFactory.getInjectorFactory();
-      if (httpMethods == null)
-      {
-         ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, clazz, method);
-         rootSegment.addPath(pathExpression, locator);
-      }
-      else
-      {
-         ResourceMethod invoker = new ResourceMethod(clazz, method, injectorFactory, ref, providerFactory, httpMethods);
-         rootSegment.addPath(pathExpression, invoker);
-      }
-      size++;
-   }
+		// Not found yet, so next check ALL interfaces from the root, 
+		// but ensure no redefinition by peer interfaces (ambiguous) to preserve logic found in 
+		// original implementation
+		for (Class<?> clazz = root; clazz != null; clazz = clazz.getSuperclass())
+		{
+			Method method = null;
+			for (Class<?> iface : clazz.getInterfaces())
+			{
+				Method m = findAnnotatedInterfaceMethod(iface, implementation);
+				if (m != null && method != null && !m.equals(method))
+					throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + implementation);
+				method = m;
+			}
+			if (method != null)
+				return method;
+		}
+		return null;
+	}
+
+	protected void processMethod(ResourceFactory ref, String base, Class<?> clazz, Method implementation)
+	{
+		Method method = findAnnotatedMethod(clazz, implementation);
+		if (method != null)
+		{
+			Path path = method.getAnnotation(Path.class);
+			Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
+
+			UriBuilderImpl builder = new UriBuilderImpl();
+			if (base != null)
+				builder.path(base);
+			if (clazz.isAnnotationPresent(Path.class))
+			{
+				builder.path(clazz);
+			}
+			if (path != null)
+			{
+				builder.path(method);
+			}
+			String pathExpression = builder.getPath();
+			if (pathExpression == null)
+				pathExpression = "";
+
+			InjectorFactory injectorFactory = providerFactory.getInjectorFactory();
+			if (httpMethods == null)
+			{
+				ResourceLocator locator = new ResourceLocator(ref, injectorFactory, providerFactory, clazz, method);
+				rootSegment.addPath(pathExpression, locator);
+			}
+			else
+			{
+				ResourceMethod invoker = new ResourceMethod(clazz, method, injectorFactory, ref, providerFactory, httpMethods);
+				rootSegment.addPath(pathExpression, invoker);
+			}
+			size++;
+		}
+	}
 
    /**
     * Find all endpoints reachable by clazz and unregister them
