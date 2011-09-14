@@ -93,7 +93,7 @@ public class ProxyBuilder<T>
 			Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
 			if ((httpMethods == null || httpMethods.size() == 0) && method.isAnnotationPresent(Path.class) && method.getReturnType().isInterface())
 			{
-				invoker = new SubResourceInvoker(baseUri, method, providerFactory, executor, extractorFactory);
+				invoker = new SubResourceInvoker(baseUri, method, providerFactory, executor, extractorFactory, loader);
 			}
 			else
 			{
