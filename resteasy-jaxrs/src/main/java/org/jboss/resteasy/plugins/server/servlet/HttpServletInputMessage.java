@@ -107,26 +107,26 @@ public class HttpServletInputMessage implements HttpRequest
 
    public MultivaluedMap<String, String> getFormParameters()
    {
+      if (formParameters != null) return formParameters;
       // Tomcat does not set getParameters() if it is a PUT request
       // so pull it out manually
-      if (request.getMethod().equals("PUT"))
+      if (request.getMethod().equals("PUT") && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
       {
          return getPutFormParameters();
       }
-      if (formParameters != null) return formParameters;
       formParameters = Encode.encode(getDecodedFormParameters());
       return formParameters;
    }
 
    public MultivaluedMap<String, String> getDecodedFormParameters()
    {
+      if (decodedFormParameters != null) return decodedFormParameters;
       // Tomcat does not set getParameters() if it is a PUT request
       // so pull it out manually
-      if (request.getMethod().equals("PUT"))
+      if (request.getMethod().equals("PUT") && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
       {
          return getPutDecodedFormParameters();
       }
-      if (decodedFormParameters != null) return decodedFormParameters;
       decodedFormParameters = new MultivaluedMapImpl<String, String>();
       Map<String, String[]> params = request.getParameterMap();
       for (Map.Entry<String, String[]> entry : params.entrySet())

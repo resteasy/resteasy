@@ -109,6 +109,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/smime</directory>
+            <outputDirectory>examples/smime</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../examples/oreilly-workbook</directory>
             <outputDirectory>examples/oreilly-workbook</outputDirectory>
             <excludes>
