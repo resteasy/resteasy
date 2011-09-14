@@ -17,6 +17,13 @@
         <listitem>
           Doseta work has be refactored a bit and may have broken backward compatibility.
         </listitem>
+        <listitem>
+          Jackson has been upgraded from 1.6.3 to 1.8.5.  Let me know if there are any issues.
+        </listitem>
+        <listitem>
+          Form parameter processing behavior was modified because of RESTEASY-574.  If you are having problems with form paramater processing on Tomcat after
+          this fix, please log a JIRA or contact the resteasy-developers email list.
+        </listitem>
     </itemizedlist>
 </sect1>
 <sect1 id="22_221">
