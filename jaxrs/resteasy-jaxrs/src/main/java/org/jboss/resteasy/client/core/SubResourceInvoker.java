@@ -21,8 +21,9 @@ public class SubResourceInvoker implements MethodInvoker
 	final Class<?> iface;
 	final String base;
 	final String format;
-
-	public SubResourceInvoker(URI uri, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor, EntityExtractorFactory extractorFactory)
+	final ClassLoader loader;
+	
+	public SubResourceInvoker(URI uri, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor, EntityExtractorFactory extractorFactory, ClassLoader loader)
 	{
 		String base = uri.toString();
 		if (!base.endsWith("/"))
@@ -32,6 +33,7 @@ public class SubResourceInvoker implements MethodInvoker
 		this.providerFactory = providerFactory;
 		this.executor = executor;
 		this.extractorFactory = extractorFactory;
+		this.loader = loader;
 		String path = method.getAnnotation(Path.class).value();
 		if (path.startsWith("/"))
 			path = path.substring(1);
@@ -57,6 +59,6 @@ public class SubResourceInvoker implements MethodInvoker
 	public Object invoke(Object[] args)
 	{
 		String path = String.format(format, args);
-		return ProxyBuilder.build(iface, ProxyFactory.createUri(base + path)).executor(executor).providerFactory(providerFactory).extractorFactory(extractorFactory).classloader(getClass().getClassLoader()).now();
+		return ProxyBuilder.build(iface, ProxyFactory.createUri(base + path)).executor(executor).providerFactory(providerFactory).extractorFactory(extractorFactory).classloader(loader).now();
 	}
 }
