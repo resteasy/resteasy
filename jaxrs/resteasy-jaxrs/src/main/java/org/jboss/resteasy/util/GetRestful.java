@@ -28,22 +28,22 @@ public class GetRestful
     * @param clazz
     * @return list of class and interfaces that have jax-rs annotations
     */
-   public static Class getSubResourceClass(Class clazz)
+   public static boolean isSubResourceClass(Class clazz)
    {
       // check class & superclasses for JAX-RS annotations
       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
       {
          if (hasJAXRSAnnotations(actualClass))
-            return actualClass;
+            return true;
+         // ok, no @Path or @HttpMethods so look in interfaces.
+         for (Class intf : actualClass.getInterfaces())
+         {
+            if (hasJAXRSAnnotations(intf))
+               return true;
+         }
       }
 
-      // ok, no @Path or @HttpMethods so look in interfaces.
-      for (Class intf : clazz.getInterfaces())
-      {
-         if (hasJAXRSAnnotations(intf))
-            return intf;
-      }
-      return null;
+      return false;
    }
 
    private static boolean isTopObject(Class<?> actualClass)

@@ -72,8 +72,10 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
 
       Produces p = method.getAnnotation(Produces.class);
       if (p == null) p = clazz.getAnnotation(Produces.class);
+      if (p == null) p = method.getDeclaringClass().getAnnotation(Produces.class);
       Consumes c = methodConsumes = method.getAnnotation(Consumes.class);
       if (c == null) c = clazz.getAnnotation(Consumes.class);
+      if(c == null) c = method.getDeclaringClass().getAnnotation(Consumes.class);
 
       if (p != null)
       {
