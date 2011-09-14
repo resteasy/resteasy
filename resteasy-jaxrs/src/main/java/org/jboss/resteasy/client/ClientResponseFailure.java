@@ -23,6 +23,7 @@ public class ClientResponseFailure extends RuntimeException
    {
       super(s);
       this.response = BaseClientResponse.copyFromError(response);
+      // release the connection because we don't trust users to catch and clean up
       response.releaseConnection();
    }
 
@@ -30,6 +31,7 @@ public class ClientResponseFailure extends RuntimeException
    {
       super(s, throwable);
       this.response = BaseClientResponse.copyFromError(response);
+      // release the connection because we don't trust users to catch and clean up
       response.releaseConnection();
    }
 
@@ -37,6 +39,8 @@ public class ClientResponseFailure extends RuntimeException
    {
       super(throwable);
       this.response = BaseClientResponse.copyFromError(response);
+      // release the connection because we don't trust users to catch and clean up
+      response.releaseConnection();
    }
 
    public ClientResponse getResponse()

@@ -15,6 +15,7 @@ import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.MediaType;
@@ -75,7 +76,8 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    /**
-    * Store entity within a byte array input stream.  Copy status and headers, but ignore
+    * Store entity within a byte array input stream because we want to release the connection
+    * if a ClientResponseFailure is thrown.  Copy status and headers, but ignore
     * all type information stored in the ClientResponse.
     *
     * @param copy
@@ -83,55 +85,83 @@ public class BaseClientResponse<T> extends ClientResponse<T>
     */
    public static ClientResponse copyFromError(ClientResponse copy)
    {
-      InputStream is = null;
-      if (copy.getHeaders().containsKey("Content-Type"))
-      {
-         GenericType<byte[]> gt = new GenericType<byte[]>()
-         {
-         };
-         try
-         {
-            byte[] bytes = (byte[]) copy.getEntity(gt);
-            is = new ByteArrayInputStream(bytes);
-         }
-         catch (Exception ignore)
-         {
-            // ignore the exception because we're already throwing an error anyways.
-         }
-      }
-      final InputStream theIs = is;
-      BaseClientResponse tmp = new BaseClientResponse(new BaseClientResponse.BaseClientResponseStreamFactory()
-      {
-         InputStream stream;
-
-         public InputStream getInputStream() throws IOException
-         {
-            return theIs;
-         }
-
-         public void performReleaseConnection()
-         {
-         }
-      });
       if (copy instanceof BaseClientResponse)
       {
          BaseClientResponse base = (BaseClientResponse) copy;
+         InputStream is = null;
+         if (copy.getHeaders().containsKey("Content-Type"))
+         {
+            try
+            {
+               is = base.streamFactory.getInputStream();
+               byte[] bytes = ReadFromStream.readFromStream(1024, is);
+               is = new ByteArrayInputStream(bytes);
+            }
+            catch (IOException e)
+            {
+               // ignored
+            }
+         }
+         final InputStream theIs = is;
+         BaseClientResponse tmp = new BaseClientResponse(new BaseClientResponse.BaseClientResponseStreamFactory()
+         {
+            InputStream stream;
+
+            public InputStream getInputStream() throws IOException
+            {
+               return theIs;
+            }
+
+            public void performReleaseConnection()
+            {
+            }
+         });
          tmp.executor = base.executor;
          tmp.status = base.status;
          tmp.providerFactory = base.providerFactory;
          tmp.headers = new CaseInsensitiveMap<String>();
          tmp.headers.putAll(base.headers);
          tmp.headers.remove("Content-Encoding"); // remove encoding because we will have already extracted byte array
+         return tmp;
       }
       else
       {
+         InputStream is = null;
+         if (copy.getHeaders().containsKey("Content-Type"))
+         {
+            GenericType<byte[]> gt = new GenericType<byte[]>()
+            {
+            };
+            try
+            {
+               byte[] bytes = (byte[]) copy.getEntity(gt);
+               is = new ByteArrayInputStream(bytes);
+            }
+            catch (Exception ignore)
+            {
+            }
+         }
+         final InputStream theIs = is;
+         BaseClientResponse tmp = new BaseClientResponse(new BaseClientResponse.BaseClientResponseStreamFactory()
+         {
+            InputStream stream;
+
+            public InputStream getInputStream() throws IOException
+            {
+               return theIs;
+            }
+
+            public void performReleaseConnection()
+            {
+            }
+         });
          tmp.status = copy.getStatus();
          tmp.providerFactory = ResteasyProviderFactory.getInstance();
          tmp.headers = new CaseInsensitiveMap<String>();
          tmp.headers.putAll(copy.getHeaders());
          tmp.headers.remove("Content-Encoding"); // remove encoding because we will have already extracted byte array
+         return tmp;
       }
-      return tmp;
    }
 
    @Override
@@ -389,6 +419,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       try
       {
          InputStream is = streamFactory.getInputStream();
+         if (is == null)
+         {
+            throw new ClientResponseFailure("Input stream was empty, there is no entity", this);
+         }
          if (isMarshalledEntity)
          {
             is = new InputStreamToByteArray(is);
