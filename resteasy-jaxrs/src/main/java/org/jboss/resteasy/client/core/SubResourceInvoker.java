@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.jboss.resteasy.client.ClientExecutor;
+import org.jboss.resteasy.client.ProxyBuilder;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -56,6 +57,6 @@ public class SubResourceInvoker implements MethodInvoker
 	public Object invoke(Object[] args)
 	{
 		String path = String.format(format, args);
-		return ProxyFactory.create(iface, ProxyFactory.createUri(base + path), executor, providerFactory, extractorFactory);
+		return ProxyBuilder.build(iface, ProxyFactory.createUri(base + path)).executor(executor).providerFactory(providerFactory).extractorFactory(extractorFactory).classloader(getClass().getClassLoader()).now();
 	}
 }
