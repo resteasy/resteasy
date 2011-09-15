@@ -206,4 +206,76 @@ public class EncodingTest
       Assert.assertEquals(expected, encodedQueryParam);
    }
 
+   public void testPathParamWithDoublePercent() {
+       String paramWithDoublePercent = "start%%end";
+       System.out.println("*** " + paramWithDoublePercent);
+       ClientResponse<String> returned = testClient.getPathParam(paramWithDoublePercent);
+       Assert.assertNotNull(returned);
+       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
+       Assert.assertEquals(paramWithDoublePercent, returned.getEntity());
+   }
+
+   @Test
+   public void testPathParamWithBraces() {
+       String paramWithBraces = "start{param}end";
+       System.out.println("*** " + paramWithBraces);
+       ClientResponse<String> returned = testClient.getPathParam(paramWithBraces);
+       Assert.assertNotNull(returned);
+       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
+       Assert.assertEquals(paramWithBraces, returned.getEntity());
+   }
+
+   @Test
+   public void testPathParamWithLifePercentDeath() {
+       String paramWithLifePercentDeath = "life%death";
+       System.out.println("*** " + paramWithLifePercentDeath);
+       ClientResponse<String> returned = testClient.getPathParam(paramWithLifePercentDeath);
+       Assert.assertNotNull(returned);
+       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
+       Assert.assertEquals(paramWithLifePercentDeath, returned.getEntity());
+   }
+
+   @Test
+   public void testQueryParamWithDoublePercent() {
+      String paramWithDoublePercent = "start%%end";
+       System.out.println("*** " + paramWithDoublePercent);
+       ClientResponse<String> returned = testClient.getQueryParam(paramWithDoublePercent);
+       Assert.assertNotNull(returned);
+       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
+       Assert.assertEquals(paramWithDoublePercent, returned.getEntity());
+   }
+
+   @Test
+   public void testQueryParamWithBraces() {
+       String paramWithBraces = "start{param}end";
+       System.out.println("*** " + paramWithBraces);
+       ClientResponse<String> returned = testClient.getQueryParam(paramWithBraces);
+       Assert.assertNotNull(returned);
+       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
+       Assert.assertEquals(paramWithBraces, returned.getEntity());
+   }
+
+   @Test
+   public void testQueryParamWithLifePercentDeath() {
+       String paramWithLifePercentDeath = "life%death";
+       System.out.println("*** " + paramWithLifePercentDeath);
+       ClientResponse<String> returned = testClient.getQueryParam(paramWithLifePercentDeath);
+       Assert.assertNotNull(returned);
+       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
+       Assert.assertEquals(paramWithLifePercentDeath, returned.getEntity());
+   }
+
+   @Test
+   public void testEncodeNonCodes() {
+       Assert.assertEquals("", Encode.encodeNonCodes(""));
+       Assert.assertEquals("a simple string", Encode.encodeNonCodes("a simple string"));
+       Assert.assertEquals("%25", Encode.encodeNonCodes("%"));
+       Assert.assertEquals("%25%25%25%25", Encode.encodeNonCodes("%%%%"));
+       Assert.assertEquals("%25%25", Encode.encodeNonCodes("%%25"));
+       Assert.assertEquals("%25a%25", Encode.encodeNonCodes("%a%25"));
+       Assert.assertEquals("a%25b", Encode.encodeNonCodes("a%b"));
+       Assert.assertEquals("a%25b", Encode.encodeNonCodes("a%25b"));
+       Assert.assertEquals("a%25%25%25%25b%25%25%25%25c", Encode.encodeNonCodes("a%%%%b%%25%%c"));
+   }
+
 }

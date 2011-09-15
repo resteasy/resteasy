@@ -11,6 +11,7 @@ import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.GenericType;
 
 import javax.ws.rs.core.Cookie;
@@ -766,7 +767,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          {
             List<String> values = entry.getValue();
             for (String value : values)
-               builder.queryParam(entry.getKey(), value);
+               builder.clientQueryParam(entry.getKey(), value);
          }
       }
       if (pathParameterList != null && !pathParameterList.isEmpty())
@@ -779,7 +780,10 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          {
             List<String> values = entry.getValue();
             for (String value : values)
-               builder.substitutePathParam(entry.getKey(), value, false);
+            {
+               value = Encode.encodePathAsIs(value);
+               builder.substitutePathParam(entry.getKey(), value, true);
+            }
          }
       }
       if (finalUri == null)
