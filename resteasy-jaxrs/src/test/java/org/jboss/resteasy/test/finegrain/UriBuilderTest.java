@@ -27,6 +27,12 @@ public class UriBuilderTest
    }
 
    @Test
+   public void test587() throws Exception
+   {
+      System.out.println(UriBuilder.fromPath("/{p}").build("$a"));
+   }
+
+   @Test
    public void test443() throws Exception
    {
       // test for RESTEASY-443

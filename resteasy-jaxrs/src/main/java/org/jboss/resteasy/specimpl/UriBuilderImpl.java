@@ -460,7 +460,7 @@ public class UriBuilderImpl extends UriBuilder
             {
                value = Encode.encodePathSaveEncodings(value);
             }
-            matcher.appendReplacement(buffer, value);
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(value));
          }
          else
          {
