@@ -8,7 +8,7 @@
 
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
-<sect1 id="22_221">
+<sect1>
     <title>Migrating from 2.2.x to 2.3</title>
     <itemizedlist>
         <listitem>
