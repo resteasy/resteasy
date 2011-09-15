@@ -251,11 +251,22 @@ public class Encode
    {
       Matcher matcher = nonCodes.matcher(string);
       StringBuffer buf = new StringBuffer();
-      while (matcher.find())
+
+
+      // FYI: we do not use the no-arg matcher.find()
+      //      coupled with matcher.appendReplacement()
+      //      because the matched text may contain
+      //      a second % and we must make sure we
+      //      encode it (if necessary).
+      int idx = 0;
+      while (matcher.find(idx))
       {
-         matcher.appendReplacement(buf, "%25$1");
+         int start = matcher.start();
+         buf.append(string.substring(idx, start));
+         buf.append("%25");
+         idx = start + 1;
       }
-      matcher.appendTail(buf);
+      buf.append(string.substring(idx));
       return buf.toString();
    }
 
