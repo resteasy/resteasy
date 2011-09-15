@@ -1,17 +1,16 @@
 package org.jboss.resteasy.spi;
 
 /**
- * This exception should only be used by Resteasy integrators.  Application code should use WebApplicationException
- * An exception thrown by the application.
- * <p/>
- * We don't reuse WebApplicationException as it provides a Response object.  This exception means that the Resteasy
- * runtime must handle the exception.  i.e. Find an ExceptionMapper to map it to a Response, or let some interceptor
- * handle it in a special way.
+ * This exception is thrown internally by Resteasy runtime.  Any exception thrown by jaxrs resource method code will be caught
+ * and wrapped by this exception.  If you want to catch all exceptions thrown by jaxrs resource methods, write an exception
+ * mapper for ApplicationException.
+ *
+ * This exception should only be used by Resteasy integrators.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ApplicationException extends RuntimeException
+public final class ApplicationException extends RuntimeException
 {
    public ApplicationException(String s, Throwable throwable)
    {
