@@ -142,7 +142,7 @@ public class SynchronousDispatcher implements Dispatcher
       {
          if (failure instanceof NotFoundException)
          {
-            throw ((NotFoundException)failure);
+            throw ((NotFoundException) failure);
          }
          else
          {
@@ -205,22 +205,32 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void handleException(HttpRequest request, HttpResponse response, Exception e)
    {
-      // this is done to see if there is a mapper for ApplicationException, WriterException, ReaderException, etc..
+      // See if there is an ExceptionMapper for the exact class of the exception instance being thrown
       if (executeExactExceptionMapper(request, response, e)) return;
 
-      // ApplicationException needs to come first as it does its own executeExceptionMapper() call
+      // These are wrapper exceptions so they need to be processed first as they map e.getCause()
       if (e instanceof ApplicationException)
       {
          handleApplicationException(request, response, (ApplicationException) e);
+         return;
       }
       else if (e instanceof WriterException)
       {
          handleWriterException(request, response, (WriterException) e);
+         return;
       }
       else if (e instanceof ReaderException)
       {
          handleReaderException(request, response, (ReaderException) e);
+         return;
       }
+
+      // First try and handle it with a mapper
+      if (executeExceptionMapper(request, response, e))
+      {
+         return;
+      }
+      // Otherwise do specific things
       else if (e instanceof WebApplicationException)
       {
          handleWebApplicationException(request, response, (WebApplicationException) e);
@@ -231,15 +241,8 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else
       {
-         if (executeExceptionMapper(request, response, e))
-         {
-            return;
-         }
-         else
-         {
-            logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
-            throw new UnhandledException(e);
-         }
+         logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+         throw new UnhandledException(e);
       }
    }
 
@@ -290,6 +293,14 @@ public class SynchronousDispatcher implements Dispatcher
       return true;
    }
 
+
+   public boolean executeExceptionMapperForClass(HttpRequest request, HttpResponse response, Throwable exception, Class clazz)
+   {
+      ExceptionMapper mapper = providerFactory.getExceptionMapper(clazz);
+      if (mapper == null) return false;
+      writeFailure(request, response, mapper.toResponse(exception));
+      return true;
+   }
    /**
     * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found
     *
@@ -318,31 +329,45 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void handleApplicationException(HttpRequest request, HttpResponse response, ApplicationException e)
    {
-      unwrapException(request, response, e);
+      // See if there is a mapper for ApplicationException
+      if (executeExceptionMapperForClass(request, response, e, ApplicationException.class))
+      {
+         return;
+      }
+      Throwable unhandled = unwrapException(request, response, e);
+      if (unhandled != null)
+      {
+         throw new UnhandledException(unhandled);
+      }
    }
 
-   protected void unwrapException(HttpRequest request, HttpResponse response, Throwable e)
+   protected Throwable unwrapException(HttpRequest request, HttpResponse response, Throwable e)
    {
       Throwable unwrappedException = e.getCause();
 
       if (executeExceptionMapper(request, response, unwrappedException))
       {
-         return;
+         return null;
       }
       if (unwrappedException instanceof WebApplicationException)
       {
          handleWebApplicationException(request, response, (WebApplicationException) unwrappedException);
-         return;
+         return null;
+      }
+      else if (unwrappedException instanceof Failure)
+      {
+         handleFailure(request, response, (Failure) unwrappedException);
+         return null;
       }
       else
       {
          if (unwrappedExceptions.contains(unwrappedException.getClass().getName()) && unwrappedException.getCause() != null)
          {
-            unwrapException(request, response, unwrappedException);
+            return unwrapException(request, response, unwrappedException);
          }
          else
          {
-            throw new UnhandledException(unwrappedException);
+            return unwrappedException;
          }
       }
    }
@@ -350,6 +375,11 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void handleWriterException(HttpRequest request, HttpResponse response, WriterException e)
    {
+      // See if there is a general mapper for WriterException
+      if (executeExceptionMapperForClass(request, response, e, WriterException.class))
+      {
+         return;
+      }
       if (e.getResponse() != null || e.getErrorCode() > -1)
       {
          handleFailure(request, response, e);
@@ -357,23 +387,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else if (e.getCause() != null)
       {
-         if (executeExceptionMapper(request, response, e.getCause()))
-         {
-            return;
-         }
-         if (e.getCause() instanceof WebApplicationException)
-         {
-            handleWebApplicationException(request, response, (WebApplicationException) e.getCause());
-            return;
-         }
-         if (e.getCause() instanceof Failure)
-         {
-            handleFailure(request, response, (Failure) e.getCause());
-            return;
-         }
-         else
-         {
-         }
+         if (unwrapException(request, response, e) == null) return;
       }
       e.setErrorCode(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
       handleFailure(request, response, e);
@@ -381,6 +395,11 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void handleReaderException(HttpRequest request, HttpResponse response, ReaderException e)
    {
+      // See if there is a general mapper for ReaderException
+      if (executeExceptionMapperForClass(request, response, e, ReaderException.class))
+      {
+         return;
+      }
       // If a response or error code set, use that, otherwise look at cause.
       if (e.getResponse() != null || e.getErrorCode() > -1)
       {
@@ -389,20 +408,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else if (e.getCause() != null)
       {
-         if (executeExceptionMapper(request, response, e.getCause()))
-         {
-            return;
-         }
-         if (e.getCause() instanceof WebApplicationException)
-         {
-            handleWebApplicationException(request, response, (WebApplicationException) e.getCause());
-            return;
-         }
-         if (e.getCause() instanceof Failure)
-         {
-            handleFailure(request, response, (Failure) e.getCause());
-            return;
-         }
+         if (unwrapException(request, response, e) == null) return;
       }
       e.setErrorCode(HttpResponseCodes.SC_BAD_REQUEST);
       handleFailure(request, response, e);
