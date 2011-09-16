@@ -22,6 +22,7 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 
+@SuppressWarnings("rawtypes")
 public class ResteasyView implements View
 {
 
@@ -73,7 +74,6 @@ public class ResteasyView implements View
       }
    }
 
-   @SuppressWarnings("unchecked")
    public void render(final Map model, final HttpServletRequest servletRequest,
                       final HttpServletResponse servletResponse) throws Exception
    {
@@ -144,7 +144,6 @@ public class ResteasyView implements View
       return isAcceptable;
    }
 
-   @SuppressWarnings("unchecked")
    protected ServerResponse getResponse(Map model, MediaType mt)
    {
       Collection modelValues = model.values();

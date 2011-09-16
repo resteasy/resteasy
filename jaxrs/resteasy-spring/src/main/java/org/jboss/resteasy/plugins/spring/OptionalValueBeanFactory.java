@@ -13,7 +13,7 @@ import org.springframework.beans.factory.FactoryBean;
  * @version $Revision: 1 $
  */
 
-public class OptionalValueBeanFactory implements FactoryBean, BeanFactoryAware
+public class OptionalValueBeanFactory implements FactoryBean<Object>, BeanFactoryAware
 {
    private final static Logger logger = Logger
          .getLogger(OptionalValueBeanFactory.class);

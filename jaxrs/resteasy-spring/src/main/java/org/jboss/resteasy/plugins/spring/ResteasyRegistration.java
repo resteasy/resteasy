@@ -13,6 +13,16 @@ public class ResteasyRegistration
    private String context = "";
    private String beanName;
 
+   public ResteasyRegistration()
+   {
+   }
+
+   public ResteasyRegistration(String context, String beanName)
+   {
+      this.context = context;
+      this.beanName = beanName;
+   }
+
    @Required
    public String getContext()
    {

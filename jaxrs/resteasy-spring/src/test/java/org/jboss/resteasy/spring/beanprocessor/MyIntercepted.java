@@ -1,4 +1,5 @@
-package org.jboss.resteasy.spring;
+package org.jboss.resteasy.spring.beanprocessor;
+
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -6,5 +7,5 @@ package org.jboss.resteasy.spring;
  */
 public interface MyIntercepted
 {
-   TestSpringBeanProcessor.Customer callGet();
+   Customer callGet();
 }

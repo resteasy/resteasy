@@ -15,7 +15,7 @@ public class MyCustomView implements View {
 		return "application/custom";
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void render(Map model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		response.setContentType(getContentType());

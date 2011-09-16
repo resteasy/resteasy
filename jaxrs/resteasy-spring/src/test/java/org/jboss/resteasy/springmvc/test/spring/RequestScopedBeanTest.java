@@ -42,7 +42,7 @@ public class RequestScopedBeanTest
          super(factory);
       }
 
-      @SuppressWarnings("unchecked")
+      @SuppressWarnings("rawtypes")
       @Override
       public ValueInjector createParameterExtractor(Class injectTargetClass,
             AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
@@ -119,7 +119,7 @@ public class RequestScopedBeanTest
    {
       String result = createClientRequest("/").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class)
             .getEntity();
-     Assert.assertEquals("configuredValue", result);
+      Assert.assertEquals("configuredValue", result);
    }
 
 }

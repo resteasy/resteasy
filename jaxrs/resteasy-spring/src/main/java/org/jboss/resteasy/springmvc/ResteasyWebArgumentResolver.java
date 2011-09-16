@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("rawtypes")
 public class ResteasyWebArgumentResolver implements WebArgumentResolver
 {
 

@@ -10,9 +10,8 @@ import org.springframework.beans.factory.InitializingBean;
 * 
 */
 
-
 public class TJWSEmbeddedSpringMVCServerBean implements InitializingBean,
-      DisposableBean, FactoryBean
+      DisposableBean, FactoryBean<TJWSEmbeddedSpringMVCServer>
 {
    private String applicationContextConfiguration;
    private int port;
@@ -74,13 +73,12 @@ public class TJWSEmbeddedSpringMVCServerBean implements InitializingBean,
       server = null;
    }
 
-   public Object getObject() throws Exception
+   public TJWSEmbeddedSpringMVCServer getObject() throws Exception
    {
       return server;
    }
 
-   @SuppressWarnings("unchecked")
-   public Class getObjectType()
+   public Class<TJWSEmbeddedSpringMVCServer> getObjectType()
    {
       return TJWSEmbeddedSpringMVCServer.class;
    }
