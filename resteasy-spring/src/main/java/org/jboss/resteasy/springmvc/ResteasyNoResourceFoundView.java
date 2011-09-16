@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+@SuppressWarnings("rawtypes")
 public class ResteasyNoResourceFoundView implements View
 {
    private SynchronousDispatcher dispatcher;
@@ -28,7 +29,6 @@ public class ResteasyNoResourceFoundView implements View
       return null;
    }
 
-   @SuppressWarnings("unchecked")
    public void render(Map model, HttpServletRequest request,
                       HttpServletResponse response) throws Exception
    {
@@ -45,7 +45,6 @@ public class ResteasyNoResourceFoundView implements View
       }.handle(new ResteasyRequestWrapper(request), response);
    }
 
-   @SuppressWarnings("unchecked")
    private Failure getFailure(Map model)
    {
       for (Object value : model.values())

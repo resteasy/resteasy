@@ -21,6 +21,7 @@ public class SpringResourceFactory implements ResourceFactory
    protected String beanName;
    protected Class<?> scannableClass;
    protected PropertyInjector propertyInjector;
+   protected String context = null;
 
    public SpringResourceFactory(String beanName, BeanFactory beanFactory, Class<?> scannable)
    {
@@ -57,5 +58,20 @@ public class SpringResourceFactory implements ResourceFactory
 
    public void unregistered()
    {
+   }
+   
+   public String getBeanName()
+   {
+      return beanName;
+   }
+   
+   public void setContext(String context)
+   {
+      this.context = context;
+   }
+   
+   public String getContext()
+   {
+      return context;
    }
 }

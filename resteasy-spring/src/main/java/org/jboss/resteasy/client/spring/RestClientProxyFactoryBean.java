@@ -30,7 +30,7 @@ import java.net.URI;
  * @param <T>
  * The type representing the client interface.
  */
-public class RestClientProxyFactoryBean<T> implements FactoryBean,
+public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
         InitializingBean
 {
    private Class<T> serviceInterface;
