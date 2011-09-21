@@ -52,7 +52,7 @@ public class DerUtils
 
    public static X509Certificate decodeCertificate(InputStream is) throws Exception
    {
-      CertificateFactory cf = CertificateFactory.getInstance("X.509");
+      CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
       X509Certificate cert = (X509Certificate) cf.generateCertificate(is);
       is.close();
       return cert;
