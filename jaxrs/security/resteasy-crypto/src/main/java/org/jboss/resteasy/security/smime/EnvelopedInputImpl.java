@@ -154,7 +154,7 @@ public class EnvelopedInputImpl implements EnvelopedInput
       {
          MimeBodyPart encryptedBodyPart = body;
          SMIMEEnveloped m = new SMIMEEnveloped(encryptedBodyPart);
-         RecipientId recId = new JceKeyTransRecipientId(cert);
+         JceKeyTransRecipientId recId = new JceKeyTransRecipientId(cert);
 
          RecipientInformationStore recipients = m.getRecipientInfos();
          RecipientInformation recipient = recipients.get(recId);

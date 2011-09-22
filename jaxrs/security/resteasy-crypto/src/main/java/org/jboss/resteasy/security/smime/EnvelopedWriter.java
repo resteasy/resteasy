@@ -79,6 +79,7 @@ public class EnvelopedWriter implements MessageBodyWriter<EnvelopedOutput>
                  .build();
          if (out.getCertificate() == null) throw new NullPointerException("The certificate object was not set.");
          JceKeyTransRecipientInfoGenerator infoGenerator = new JceKeyTransRecipientInfoGenerator(out.getCertificate());
+         infoGenerator.setProvider("BC");
          CMSEnvelopedDataStreamGenerator generator = new CMSEnvelopedDataStreamGenerator();
          generator.addRecipientInfoGenerator(infoGenerator);
 
