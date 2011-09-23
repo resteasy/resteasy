@@ -3,8 +3,7 @@ package org.jboss.resteasy.test.security.smime;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.security.DerUtils;
-import org.jboss.resteasy.security.PemUtils;
+import org.jboss.resteasy.security.KeyTools;
 import org.jboss.resteasy.security.smime.EnvelopedInput;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;
 import org.jboss.resteasy.security.smime.SignedInput;
@@ -19,9 +18,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
-
 import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -103,11 +102,19 @@ public class IntegrationTest extends BaseResourceTest
    public static void setup() throws Exception
    {
       Security.addProvider(new BouncyCastleProvider());
+
+      /*
       InputStream certIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert.pem");
       cert = PemUtils.decodeCertificate(certIs);
 
       InputStream privateIs = Thread.currentThread().getContextClassLoader().getResourceAsStream("mycert-private.pem");
       privateKey = PemUtils.decodePrivateKey(privateIs);
+      */
+
+      KeyPair keyPair = KeyPairGenerator.getInstance("RSA", "BC").generateKeyPair();
+      privateKey = keyPair.getPrivate();
+      cert = KeyTools.generateTestCertificate(keyPair);
+
 
       dispatcher.getRegistry().addPerRequestResource(EncryptedResource.class);
       dispatcher.getRegistry().addPerRequestResource(SignedResource.class);
@@ -131,7 +138,7 @@ public class IntegrationTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/signed"));
       SignedInput signed = request.getTarget(SignedInput.class);
-      String output = (String)signed.getEntity(String.class);
+      String output = (String) signed.getEntity(String.class);
       System.out.println(output);
       Assert.assertEquals("hello world", output);
       Assert.assertTrue(signed.verify(cert));
@@ -153,7 +160,7 @@ public class IntegrationTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted"));
       EnvelopedInput enveloped = request.getTarget(EnvelopedInput.class);
-      String output = (String)enveloped.getEntity(String.class, privateKey, cert);
+      String output = (String) enveloped.getEntity(String.class, privateKey, cert);
       System.out.println(output);
       Assert.assertEquals("hello world", output);
    }
@@ -181,8 +188,8 @@ public class IntegrationTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted/signed"));
       EnvelopedInput enveloped = request.getTarget(EnvelopedInput.class);
-      SignedInput signed = (SignedInput)enveloped.getEntity(SignedInput.class, privateKey, cert);
-      String output = (String)signed.getEntity(String.class);
+      SignedInput signed = (SignedInput) enveloped.getEntity(SignedInput.class, privateKey, cert);
+      String output = (String) signed.getEntity(String.class);
       System.out.println(output);
       Assert.assertEquals("hello world", output);
       Assert.assertTrue(signed.verify(cert));
