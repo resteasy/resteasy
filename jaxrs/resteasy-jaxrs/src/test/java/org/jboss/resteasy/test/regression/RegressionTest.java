@@ -162,6 +162,7 @@ public class RegressionTest
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getProviderFactory().addMessageBodyWriter(CustomerWriter.class);
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+      try
       {
          HttpClient client = new HttpClient();
          GetMethod method = createGetMethod("/implicit");
@@ -184,7 +185,10 @@ public class RegressionTest
          method.releaseConnection();
          client.getHttpConnectionManager().closeIdleConnections(0);
       }
-      EmbeddedContainer.stop();
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
    }
 
    /**
@@ -197,6 +201,7 @@ public class RegressionTest
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+      try
       {
          HttpClient client = new HttpClient();
          GetMethod method = createGetMethod("/simple");
@@ -209,7 +214,10 @@ public class RegressionTest
          method.releaseConnection();
          client.getHttpConnectionManager().closeIdleConnections(0);
       }
-      EmbeddedContainer.stop();
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
    }
 
    /**
@@ -222,13 +230,17 @@ public class RegressionTest
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+      try
       {
          URL url = createURL("/simple");
          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
          @SuppressWarnings("unused")
          Object obj = conn.getContent();
       }
-      EmbeddedContainer.stop();
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
    }
 
    /**
@@ -239,6 +251,7 @@ public class RegressionTest
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+      try
       {
          HttpClient client = new HttpClient();
          GetMethod method = createGetMethod("/complex");
@@ -251,7 +264,10 @@ public class RegressionTest
          method.releaseConnection();
          client.getHttpConnectionManager().closeIdleConnections(0);
       }
-      EmbeddedContainer.stop();
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
 
    }
 
@@ -312,6 +328,7 @@ public class RegressionTest
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(Spaces.class);
+      try
       {
          HttpClient client = new HttpClient();
          GetMethod method = createGetMethod("/spaces/with%20spaces/without");
@@ -320,7 +337,10 @@ public class RegressionTest
          method.releaseConnection();
          client.getHttpConnectionManager().closeIdleConnections(0);
       }
-      EmbeddedContainer.stop();
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
 
    }
 
@@ -344,6 +364,7 @@ public class RegressionTest
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(CurlyBraces.class);
+      try
       {
          HttpClient client = new HttpClient();
          GetMethod method = createGetMethod("/curly/abcd");
@@ -352,7 +373,10 @@ public class RegressionTest
          method.releaseConnection();
          client.getHttpConnectionManager().closeIdleConnections(0);
       }
-      EmbeddedContainer.stop();
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
 
    }
 }
