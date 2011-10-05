@@ -32,8 +32,9 @@ public class TestSubResourceLocator extends BaseResourceTest
 		{
 			return "Gulliver's Travels";
 		}
-
-		public Chapter getChapter(@PathParam("number") int number)
+		
+		@Override
+		public Chapter getChapter(int number)
 		{
 			return new ChapterImpl(number);
 		}
@@ -81,7 +82,9 @@ public class TestSubResourceLocator extends BaseResourceTest
 	@Test
 	public void testSubresourceProxy() throws Exception
 	{
-		Book book = ProxyFactory.create(Book.class, TestPortProvider.generateURL("/gulliverstravels"));
+		String url = TestPortProvider.generateURL("/gulliverstravels");
+		System.out.println("url: " + url);
+		Book book = ProxyFactory.create(Book.class, url);
 		
 		Assert.assertEquals("Gulliver's Travels", book.getTitle());
 		
