@@ -175,9 +175,12 @@ public class ResourceMethodRegistry implements Registry
 			for (Class<?> iface : clazz.getInterfaces())
 			{
 				Method m = findAnnotatedInterfaceMethod(iface, implementation);
-				if (m != null && method != null && !m.equals(method))
-					throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + implementation);
-				method = m;
+				if (m != null)
+				{
+					if(method != null && !m.equals(method))
+						throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + implementation);
+					method = m;
+				}
 			}
 			if (method != null)
 				return method;
