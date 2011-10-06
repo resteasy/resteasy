@@ -3,6 +3,7 @@ package org.jboss.resteasy.client;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,12 +27,12 @@ public class ProxyBuilder<T>
 	{
 		return new ProxyBuilder<T>(iface, base);
 	}
-	
+
 	public static <T> ProxyBuilder<T> build(Class<T> iface, String base)
 	{
 		return new ProxyBuilder<T>(iface, ProxyFactory.createUri(base));
 	}
-	
+
 	private final Class<T> iface;
 	private final URI baseUri;
 	private ClassLoader loader;
@@ -39,44 +40,49 @@ public class ProxyBuilder<T>
 	private ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
 	private EntityExtractorFactory extractorFactory = new DefaultEntityExtractorFactory();
 	private Map<String, Object> requestAttributes = Collections.emptyMap();
-	
+
 	private ProxyBuilder(Class<T> iface, URI base)
 	{
 		this.iface = iface;
 		this.baseUri = base;
 		this.loader = iface.getClassLoader();
 	}
-	
+
 	public ProxyBuilder<T> classloader(ClassLoader cl)
 	{
 		this.loader = cl;
 		return this;
 	}
-	
+
 	public ProxyBuilder<T> executor(ClientExecutor exec)
 	{
 		this.executor = exec;
 		return this;
 	}
-	
+
 	public ProxyBuilder<T> providerFactory(ResteasyProviderFactory fact)
 	{
 		this.providerFactory = fact;
 		return this;
 	}
-	
+
 	public ProxyBuilder<T> extractorFactory(EntityExtractorFactory fact)
 	{
 		this.extractorFactory = fact;
 		return this;
 	}
-	
+
 	public ProxyBuilder<T> requestAttributes(Map<String, Object> attrs)
 	{
 		this.requestAttributes = attrs;
 		return this;
 	}
-	
+
+	private static final Class<?>[] cClassArgArray =
+	{
+		Class.class
+	};
+
 	@SuppressWarnings("unchecked")
 	public T now()
 	{
@@ -89,17 +95,21 @@ public class ProxyBuilder<T>
 
 		for (Method method : iface.getMethods())
 		{
-			MethodInvoker invoker;
-			Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
-			if ((httpMethods == null || httpMethods.size() == 0) && method.isAnnotationPresent(Path.class) && method.getReturnType().isInterface())
+			// ignore the as method to allow declaration in client interfaces
+			if (!("as".equals(method.getName()) && Arrays.equals(method.getParameterTypes(), cClassArgArray)))
 			{
-				invoker = new SubResourceInvoker(baseUri, method, providerFactory, executor, extractorFactory, loader);
+				MethodInvoker invoker;
+				Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
+				if ((httpMethods == null || httpMethods.size() == 0) && method.isAnnotationPresent(Path.class) && method.getReturnType().isInterface())
+				{
+					invoker = new SubResourceInvoker(baseUri, method, providerFactory, executor, extractorFactory, loader);
+				}
+				else
+				{
+					invoker = ProxyFactory.createClientInvoker(iface, method, baseUri, executor, providerFactory, extractorFactory, requestAttributes);
+				}
+				methodMap.put(method, invoker);
 			}
-			else
-			{
-				invoker = ProxyFactory.createClientInvoker(iface, method, baseUri, executor, providerFactory, extractorFactory, requestAttributes);
-			}
-			methodMap.put(method, invoker);
 		}
 
 		Class<?>[] intfs =
@@ -107,7 +117,7 @@ public class ProxyBuilder<T>
 				iface, ResteasyClientProxy.class
 		};
 
-		ClientProxy clientProxy = new ClientProxy(methodMap);
+		ClientProxy clientProxy = new ClientProxy(methodMap, baseUri, loader, executor, providerFactory, extractorFactory);
 		// this is done so that equals and hashCode work ok. Adding the proxy to a
 		// Collection will cause equals and hashCode to be invoked. The Spring
 		// infrastructure had some problems without this.

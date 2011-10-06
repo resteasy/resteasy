@@ -2,7 +2,15 @@ package org.jboss.resteasy.client.core;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Map;
+
+import org.jboss.resteasy.client.ClientExecutor;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ProxyBuilder;
+import org.jboss.resteasy.client.core.extractors.DefaultEntityExtractorFactory;
+import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -10,25 +18,36 @@ import java.util.Map;
  */
 public class ClientProxy implements InvocationHandler
 {
-   private Map<Method, MethodInvoker> methodMap;
-   private Class<?> clazz;
+	private Map<Method, MethodInvoker> methodMap;
+	private Class<?> clazz;
+	private final URI base;
+	private ClassLoader loader;
+	private ClientExecutor executor = ClientRequest.getDefaultExecutor();
+	private ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+	private EntityExtractorFactory extractorFactory = new DefaultEntityExtractorFactory();
 
-   public ClientProxy(Map<Method, MethodInvoker> methodMap)
-   {
-      this.methodMap = methodMap;
-   }
+	public ClientProxy(Map<Method, MethodInvoker> methodMap, URI base, ClassLoader loader, ClientExecutor executor, ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory)
+	{
+		super();
+		this.methodMap = methodMap;
+		this.base = base;
+		this.loader = loader;
+		this.executor = executor;
+		this.providerFactory = providerFactory;
+		this.extractorFactory = extractorFactory;
+	}
 
-   public Class<?> getClazz()
-   {
-      return clazz;
-   }
+	public Class<?> getClazz()
+	{
+		return clazz;
+	}
 
-   public void setClazz(Class<?> clazz)
-   {
-      this.clazz = clazz;
-   }
+	public void setClazz(Class<?> clazz)
+	{
+		this.clazz = clazz;
+	}
 
-   public Object invoke(Object o, Method method, Object[] args)
+	public Object invoke(Object o, Method method, Object[] args)
            throws Throwable
    {
       // equals and hashCode were added for cases where the proxy is added to
@@ -66,6 +85,10 @@ public class ClientProxy implements InvocationHandler
 
             return null;
          }
+         else if(method.getName().equals("as") && args.length == 1 && args[0] instanceof Class)
+         {
+        	 return ProxyBuilder.build((Class<?>)args[0], base).classloader(loader).executor(executor).extractorFactory(extractorFactory).providerFactory(providerFactory).now();
+         }
       }
 
       if (clientInvoker == null)
@@ -75,27 +98,27 @@ public class ClientProxy implements InvocationHandler
       return clientInvoker.invoke(args);
    }
 
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == null || !(obj instanceof ClientProxy))
-         return false;
-      ClientProxy other = (ClientProxy) obj;
-      if (other == this)
-         return true;
-      if (other.clazz != this.clazz)
-         return false;
-      return super.equals(obj);
-   }
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null || !(obj instanceof ClientProxy))
+			return false;
+		ClientProxy other = (ClientProxy) obj;
+		if (other == this)
+			return true;
+		if (other.clazz != this.clazz)
+			return false;
+		return super.equals(obj);
+	}
 
-   @Override
-   public int hashCode()
-   {
-      return clazz.hashCode();
-   }
+	@Override
+	public int hashCode()
+	{
+		return clazz.hashCode();
+	}
 
-   public String toString()
-   {
-      return "Client Proxy for :" + clazz.getName();
-   }
+	public String toString()
+	{
+		return "Client Proxy for :" + clazz.getName();
+	}
 }
