@@ -120,7 +120,8 @@ public class ResourceMethodRegistry implements Registry
       if (ref != null) ref.registered(providerFactory.getInjectorFactory());
       for (Method method : clazz.getMethods())
       {
-         processMethod(ref, base, clazz, method);
+    	  if(!method.isSynthetic())
+    		  processMethod(ref, base, clazz, method);
 
       }
    }
