@@ -75,14 +75,19 @@ public class ProxyFactory
 
 	public static <T> ClientInvoker createClientInvoker(Class<T> clazz, Method method, URI baseUri, ClientExecutor executor, ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory, Map<String, Object> requestAttributes)
 	{
+		return createClientInvoker(clazz, method, baseUri, new ProxyConfig(null, executor, providerFactory, extractorFactory, requestAttributes, null, null));
+	}
+	
+	public static <T> ClientInvoker createClientInvoker(Class<T> clazz, Method method, URI baseUri, ProxyConfig config)
+	{
 		Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
 		if (httpMethods == null || httpMethods.size() != 1)
 		{
 			throw new RuntimeException("You must use at least one, but no more than one http method annotation on: " + method.toString());
 		}
-		ClientInvoker invoker = new ClientInvoker(baseUri, clazz, method, providerFactory, executor, extractorFactory);
-		invoker.getAttributes().putAll(requestAttributes);
-		ClientInvokerInterceptorFactory.applyDefaultInterceptors(invoker, providerFactory, clazz, method);
+		ClientInvoker invoker = new ClientInvoker(baseUri, clazz, method, config);
+		invoker.getAttributes().putAll(config.getRequestAttributes());
+		ClientInvokerInterceptorFactory.applyDefaultInterceptors(invoker, config.getProviderFactory(), clazz, method);
 		invoker.setHttpMethod(httpMethods.iterator().next());
 		return invoker;
 	}

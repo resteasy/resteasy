@@ -1,8 +1,19 @@
 package org.jboss.resteasy.client.core;
 
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Providers;
+
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ProxyConfig;
 import org.jboss.resteasy.client.core.extractors.ClientErrorHandler;
 import org.jboss.resteasy.client.core.extractors.ClientRequestContext;
 import org.jboss.resteasy.client.core.extractors.EntityExtractor;
@@ -12,15 +23,6 @@ import org.jboss.resteasy.client.core.marshallers.Marshaller;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,19 +48,23 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
 
    public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor, EntityExtractorFactory extractorFactory)
    {
+	   this(baseUri, declaring, method, new ProxyConfig(null, executor, providerFactory, extractorFactory, null, null, null));
+   }
+   
+   public ClientInvoker(URI baseUri, Class declaring, Method method, ProxyConfig config)
+   {
       this.declaring = declaring;
       this.method = method;
-      this.marshallers = ClientMarshallerFactory.createMarshallers(declaring, method,
-              providerFactory);
-      this.providerFactory = providerFactory;
-      this.executor = executor;
-      accepts = MediaTypeHelper.getProduces(declaring, method);
+      this.marshallers = ClientMarshallerFactory.createMarshallers(declaring, method, providerFactory, config.getServerConsumes());
+      this.providerFactory = config.getProviderFactory();
+      this.executor = config.getExecutor();
+      accepts = MediaTypeHelper.getProduces(declaring, method, config.getServerProduces());
       this.uri = new UriBuilderImpl();
       this.baseUri = baseUri;
       uri.uri(baseUri);
       if (declaring.isAnnotationPresent(Path.class)) uri.path(declaring);
       if (method.isAnnotationPresent(Path.class)) uri.path(method);
-      this.extractorFactory = extractorFactory;
+      this.extractorFactory = config.getExtractorFactory();
       this.extractor = extractorFactory.createExtractor(method);
    }
 

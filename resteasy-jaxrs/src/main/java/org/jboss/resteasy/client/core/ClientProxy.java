@@ -5,12 +5,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
 
-import org.jboss.resteasy.client.ClientExecutor;
-import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ProxyBuilder;
-import org.jboss.resteasy.client.core.extractors.DefaultEntityExtractorFactory;
-import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.client.ProxyConfig;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -21,20 +17,14 @@ public class ClientProxy implements InvocationHandler
 	private Map<Method, MethodInvoker> methodMap;
 	private Class<?> clazz;
 	private final URI base;
-	private ClassLoader loader;
-	private ClientExecutor executor = ClientRequest.getDefaultExecutor();
-	private ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
-	private EntityExtractorFactory extractorFactory = new DefaultEntityExtractorFactory();
+	private final ProxyConfig config;
 
-	public ClientProxy(Map<Method, MethodInvoker> methodMap, URI base, ClassLoader loader, ClientExecutor executor, ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory)
+	public ClientProxy(Map<Method, MethodInvoker> methodMap, URI base, ProxyConfig config)
 	{
 		super();
 		this.methodMap = methodMap;
 		this.base = base;
-		this.loader = loader;
-		this.executor = executor;
-		this.providerFactory = providerFactory;
-		this.extractorFactory = extractorFactory;
+		this.config = config;
 	}
 
 	public Class<?> getClazz()
@@ -87,7 +77,7 @@ public class ClientProxy implements InvocationHandler
          }
          else if(method.getName().equals("as") && args.length == 1 && args[0] instanceof Class)
          {
-        	 return ProxyBuilder.build((Class<?>)args[0], base).classloader(loader).executor(executor).extractorFactory(extractorFactory).providerFactory(providerFactory).now();
+        	 return ProxyBuilder.createProxy((Class<?>)args[0], base, config);
          }
       }
 

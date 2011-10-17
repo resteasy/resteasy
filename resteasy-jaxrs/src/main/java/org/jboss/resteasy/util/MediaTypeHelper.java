@@ -33,12 +33,17 @@ public class MediaTypeHelper
 
    public static MediaType getProduces(Class declaring, Method method)
    {
+	   return getProduces(declaring, method, null);
+   }
+   
+   public static MediaType getProduces(Class declaring, Method method, MediaType defaultProduces)
+   {
       Produces consume = method.getAnnotation(Produces.class);
       if (consume == null)
       {
          consume = (Produces) declaring.getAnnotation(Produces.class);
       }
-      if (consume == null) return null;
+      if (consume == null) return defaultProduces;
       return MediaType.valueOf(consume.value()[0]);
    }
 

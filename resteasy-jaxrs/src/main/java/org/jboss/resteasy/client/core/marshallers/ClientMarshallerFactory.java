@@ -24,8 +24,13 @@ import java.lang.reflect.Type;
 public class ClientMarshallerFactory
 {
 
-   public static Marshaller[] createMarshallers(Class declaringClass, Method method, ResteasyProviderFactory providerFactory)
-   {
+	public static Marshaller[] createMarshallers(Class declaringClass, Method method, ResteasyProviderFactory providerFactory)
+	{
+		return createMarshallers(declaringClass, method, providerFactory, null);
+	}
+	
+	public static Marshaller[] createMarshallers(Class declaringClass, Method method, ResteasyProviderFactory providerFactory, MediaType defaultConsumes)
+	{
       Marshaller[] params = new Marshaller[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
@@ -33,15 +38,23 @@ public class ClientMarshallerFactory
          Annotation[] annotations = method.getParameterAnnotations()[i];
          Type genericType = method.getGenericParameterTypes()[i];
          AccessibleObject target = method;
-         params[i] = ClientMarshallerFactory.createMarshaller(declaringClass, providerFactory, type, annotations, genericType, target, false);
+         params[i] = ClientMarshallerFactory.createMarshaller(declaringClass, providerFactory, type, annotations, genericType, target, defaultConsumes, false);
       }
       return params;
    }
 
-   public static Marshaller createMarshaller(Class<?> declaring,
-                                             ResteasyProviderFactory providerFactory, Class<?> type,
-                                             Annotation[] annotations, Type genericType, AccessibleObject target,
-                                             boolean ignoreBody)
+	   public static Marshaller createMarshaller(Class<?> declaring,
+               ResteasyProviderFactory providerFactory, Class<?> type,
+               Annotation[] annotations, Type genericType, AccessibleObject target,
+               boolean ignoreBody)
+	   {
+		   return createMarshaller(declaring, providerFactory, type, annotations, genericType, target, null, ignoreBody);
+	   }
+	   
+	   public static Marshaller createMarshaller(Class<?> declaring,
+               ResteasyProviderFactory providerFactory, Class<?> type,
+               Annotation[] annotations, Type genericType, AccessibleObject target, MediaType defaultConsumes,
+               boolean ignoreBody)
    {
       Marshaller marshaller = null;
 
@@ -108,10 +121,12 @@ public class ClientMarshallerFactory
       else if (!ignoreBody)
       {
          MediaType mediaType = MediaTypeHelper.getConsumes(declaring, target);
+         if(mediaType == null)
+        	 mediaType = defaultConsumes;
          if (mediaType == null)
          {
             throw new RuntimeException(
-                    "You must define a @Consumes type on your client method or interface");
+                    "You must define a @Consumes type on your client method or interface, or supply a default");
          }
          marshaller = new MessageBodyParameterMarshaller(mediaType, type,
                  genericType, annotations);
