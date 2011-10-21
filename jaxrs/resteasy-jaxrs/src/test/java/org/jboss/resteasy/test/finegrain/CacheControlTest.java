@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.finegrain;
 
+import static org.junit.Assert.assertTrue;
+
+import org.jboss.resteasy.core.ExtendedCacheControl;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
@@ -77,6 +80,32 @@ public class CacheControlTest
          assertEqual(cc, cc2);
 
       }
+   }
+   
+   @Test
+   public void testEveryDirectiveAppearsInStringifiedVersion() // TCK requires this
+   {
+       CacheControl cc = new CacheControl();
+       cc.setNoCache(true);
+       cc.setPrivate(true);
+       cc.setNoStore(true);
+       String value = cc.toString();
+       assertTrue(value.contains("no-cache"));
+       assertTrue(value.contains("no-store"));
+       assertTrue(value.contains("private"));
+   }
+   
+   @Test
+   public void testExtendedCacheControl()
+   {
+       ExtendedCacheControl cc = new ExtendedCacheControl();
+       cc.setNoCache(true);
+       cc.setPublic(true);
+       cc.setNoStore(true);
+       String value = cc.toString();
+       assertTrue(value.contains("no-cache"));
+       assertTrue(value.contains("no-store"));
+       assertTrue(value.contains("public"));
    }
 
 }
