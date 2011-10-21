@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.application;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -138,50 +138,43 @@ public class ApplicationConfigTest
       EmbeddedContainer.stop();
    }
 
-   private void _test(HttpClient client, String uri, String body)
+   private void _test(String uri, String body)
    {
       {
-         GetMethod method = new GetMethod(uri);
+         ClientRequest request = new ClientRequest(uri);
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            Assert.assertEquals(body, method.getResponseBodyAsString());
-         }
-         catch (IOException e)
+            ClientResponse<String> response = request.get(String.class);
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
-
    }
 
    @Test
    public void testIt()
    {
-      HttpClient client = new HttpClient();
-      _test(client, generateURL("/my"), "\"hello\"");
-      _test(client, generateURL("/myinterface"), "hello");
+      _test(generateURL("/my"), "\"hello\"");
+      _test(generateURL("/myinterface"), "hello");
    }
 
    @Test
    public void testFieldInjection()
    {
-      HttpClient client = new HttpClient();
-      _test(client, generateURL("/injection/field"), "true");
+      _test(generateURL("/injection/field"), "true");
    }
 
    @Test
    public void testSetterInjection()
    {
-      HttpClient client = new HttpClient();
-      _test(client, generateURL("/injection/setter"), "true");
+      _test(generateURL("/injection/setter"), "true");
    }
 
    @Test
    public void testConstructorInjection()
    {
-      HttpClient client = new HttpClient();
-      _test(client, generateURL("/injection/constructor"), "true");
+      _test(generateURL("/injection/constructor"), "true");
    }
 }

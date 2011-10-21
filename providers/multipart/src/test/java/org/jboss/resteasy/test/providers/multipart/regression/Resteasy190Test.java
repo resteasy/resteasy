@@ -1,15 +1,11 @@
 package org.jboss.resteasy.test.providers.multipart.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.LocateTestData;
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -33,8 +29,6 @@ import javax.ws.rs.core.Response;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * See RESTEASY-190
@@ -108,39 +102,49 @@ public class Resteasy190Test extends BaseResourceTest
    @Test
    public void testPost() throws Exception
    {
-      HttpClient client = new HttpClient();
-      List<Part> partsList = new ArrayList<Part>();
-      partsList.add(new StringPart("part1", "This is Value 1"));
-      partsList.add(new StringPart("part2", "This is Value 2"));
-      partsList.add(new FilePart("data.txt", LocateTestData.getTestData("data.txt")));
-      Part[] parts = partsList.toArray(new Part[partsList.size()]);
-      PostMethod method = new PostMethod(TEST_URI);
-      RequestEntity entity = new MultipartRequestEntity(parts, method.getParams());
-      method.setRequestEntity(entity);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-
-      InputStream response = method.getResponseBodyAsStream();
-      BufferedInputStream in = new BufferedInputStream(response);
-      String contentType = method.getResponseHeader("content-type").getValue();
+      ClientRequest request = new ClientRequest(TEST_URI);
+      MultipartOutput mpo = new MultipartOutput();
+      mpo.addPart("This is Value 1", MediaType.TEXT_PLAIN_TYPE);
+      mpo.addPart("This is Value 2", MediaType.TEXT_PLAIN_TYPE);
+      mpo.addPart(LocateTestData.getTestData("data.txt"), MediaType.TEXT_PLAIN_TYPE);
+      request.body(MediaType.MULTIPART_FORM_DATA_TYPE, mpo);
+      ClientResponse<InputStream> response = request.post(InputStream.class);
+      BufferedInputStream in = new BufferedInputStream(response.getEntity());
+      String contentType = response.getHeaders().getFirst("content-type");
       System.out.println(contentType);
       ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
       MimeMultipart mimeMultipart = new MimeMultipart(ds);
       Assert.assertEquals(mimeMultipart.getCount(), 3);
-      method.releaseConnection();
-
+      response.releaseConnection();
    }
 
    @Test
+   public void testPostForm() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TEST_URI);
+      MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
+      mpfdo.addFormData("part1", "This is Value 1", MediaType.TEXT_PLAIN_TYPE);
+      mpfdo.addFormData("part2", "This is Value 2", MediaType.TEXT_PLAIN_TYPE);
+      mpfdo.addFormData("data.txt", LocateTestData.getTestData("data.txt"), MediaType.TEXT_PLAIN_TYPE);
+      request.body(MediaType.MULTIPART_FORM_DATA_TYPE, mpfdo);
+      ClientResponse<InputStream> response = request.post(InputStream.class);
+      BufferedInputStream in = new BufferedInputStream(response.getEntity());
+      String contentType = response.getHeaders().getFirst("content-type");
+      System.out.println(contentType);
+      ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
+      MimeMultipart mimeMultipart = new MimeMultipart(ds);
+      Assert.assertEquals(mimeMultipart.getCount(), 3);
+      response.releaseConnection();
+   }
+   
+   @Test
    public void testGet() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(TEST_URI);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpServletResponse.SC_OK, status);
-      InputStream response = method.getResponseBodyAsStream();
-      BufferedInputStream in = new BufferedInputStream(response);
-      String contentType = method.getResponseHeader("content-type").getValue();
+      ClientRequest request = new ClientRequest(TEST_URI);
+      ClientResponse<InputStream> response = request.get(InputStream.class);
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());  
+      BufferedInputStream in = new BufferedInputStream(response.getEntity());
+      String contentType = response.getHeaders().getFirst("content-type");
       ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
       MimeMultipart mimeMultipart = new MimeMultipart(ds);
       Assert.assertEquals(mimeMultipart.getCount(), 1);

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -160,43 +160,37 @@ public class GenericEntityTest
    @Test
    public void testDoubles()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/doubles");
+      ClientRequest request = new ClientRequest(generateURL("/doubles"));
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         String result = method.getResponseBodyAsString();
-         Assert.assertEquals("45.0D 50.0D ", result);
-         System.out.println(result);
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String body = response.getEntity();
+         Assert.assertEquals("45.0D 50.0D ", body);
+         System.out.println(body);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testFloats()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/floats");
+      ClientRequest request = new ClientRequest(generateURL("/floats"));
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         String result = method.getResponseBodyAsString();
-         Assert.assertEquals("45.0F 50.0F ", result);
-         System.out.println(result);
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String body = response.getEntity();
+         Assert.assertEquals("45.0F 50.0F ", body);
+         System.out.println(body);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
 }

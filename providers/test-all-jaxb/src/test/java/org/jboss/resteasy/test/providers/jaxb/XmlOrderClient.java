@@ -3,6 +3,7 @@
  */
 package org.jboss.resteasy.test.providers.jaxb;
 
+import org.jboss.resteasy.test.providers.jaxb.data.Order;
 import org.jboss.resteasy.test.providers.jaxb.generated.order.Ordertype;
 
 import javax.ws.rs.Consumes;
@@ -27,7 +28,7 @@ public interface XmlOrderClient
 
    @GET
    @Path("/{orderId}")
-   Ordertype getOrderById(@PathParam("orderId") String orderId);
+   Order getOrderById(@PathParam("orderId") String orderId);
 
    /**
     * FIXME Comment this
@@ -40,6 +41,6 @@ public interface XmlOrderClient
 
    @PUT
    @Path("/{orderId}")
-   Ordertype updateOrder(Ordertype order, @PathParam("orderId") String orderId);
+   Order updateOrder(Order order, @PathParam("orderId") String orderId);
 
 }

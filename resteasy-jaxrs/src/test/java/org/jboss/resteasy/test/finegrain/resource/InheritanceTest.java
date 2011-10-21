@@ -1,9 +1,10 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,12 +82,11 @@ public class InheritanceTest extends BaseResourceTest
    @Test
    public void Test1() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(TestPortProvider.generateURL("/InheritanceTest"));
-      method.addRequestHeader("Accept", "text/plain");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      Assert.assertEquals("First", method.getResponseBodyAsString());
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/InheritanceTest"));
+      request.header("Accept", "text/plain");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("First", response.getEntity());
    }
 
 
@@ -97,13 +97,11 @@ public class InheritanceTest extends BaseResourceTest
    @Test
    public void Test2() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(TestPortProvider.generateURL("/InheritanceTest1"));
-      method.addRequestHeader("Accept", "text/html");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      Assert.assertTrue(method.getResponseBodyAsString().indexOf("Second") > -1);
-
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/InheritanceTest1"));
+      request.header("Accept", "text/html");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertTrue(response.getEntity().indexOf("Second") > -1);
    }
 
 

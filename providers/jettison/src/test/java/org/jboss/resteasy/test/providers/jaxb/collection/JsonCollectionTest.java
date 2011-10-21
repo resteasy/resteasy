@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.providers.jaxb.collection;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
@@ -386,17 +382,14 @@ public class JsonCollectionTest extends BaseResourceTest
    @Test
    public void testIntfTempalte() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/intf");
-      int status = client.executeMethod(get);
-      junit.framework.Assert.assertEquals(200, status);
-      String str = get.getResponseBodyAsString();
+      ClientRequest request = new ClientRequest(generateURL("/intf"));
+      ClientResponse<?> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity(String.class);
       System.out.println(str);
-
-      PutMethod put = createPutMethod("/intf");
-      put.setRequestEntity(new StringRequestEntity(str, "application/json", null));
-      status = client.executeMethod(put);
-      junit.framework.Assert.assertEquals(204, status);
+      request.body("application/json", str);
+      response = request.put();
+      Assert.assertEquals(204, response.getStatus());      
    }
 
 

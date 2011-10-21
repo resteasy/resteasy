@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -15,7 +15,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import java.io.IOException;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -84,20 +83,31 @@ public class EncodedParamsTest
       }
    }
 
-   private void _test(HttpClient client, String path)
+   private void _test(String path)
    {
+      try
       {
-         GetMethod method = createGetMethod(path);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientRequest request = new ClientRequest(generateURL(path));
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         response.releaseConnection();
+      } catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
+//      {
+//    	 HttpGet method = createGetMethod(path);
+//         try
+//         {
+//            HttpResponse response = client.execute(method);
+//            Assert.assertEquals(response.getStatusLine().getStatusCode(), HttpResponseCodes.SC_OK);
+//            EntityUtils.consume(response.getEntity());
+//         }
+//         catch (IOException e)
+//         {
+//            throw new RuntimeException(e);
+//         }
+//      }
 
    }
 
@@ -109,10 +119,10 @@ public class EncodedParamsTest
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
          dispatcher.getRegistry().addPerRequestResource(SimpleResource2.class);
-         _test(new HttpClient(), "/encodedParam?hello%20world=5&stuff=hello%20world");
-         _test(new HttpClient(), "/encodedParam/hello%20world");
-         _test(new HttpClient(), "/encodedMethod?hello%20world=5&stuff=hello%20world");
-         _test(new HttpClient(), "/encodedMethod/hello%20world");
+         _test("/encodedParam?hello%20world=5&stuff=hello%20world");
+         _test("/encodedParam/hello%20world");
+         _test("/encodedMethod?hello%20world=5&stuff=hello%20world");
+         _test("/encodedMethod/hello%20world");
       }
       finally
       {

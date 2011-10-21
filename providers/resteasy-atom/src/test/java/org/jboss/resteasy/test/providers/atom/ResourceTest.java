@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.atom;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.atom.Content;
 import org.jboss.resteasy.plugins.providers.atom.Entry;
 import org.jboss.resteasy.plugins.providers.atom.Feed;
@@ -225,12 +225,11 @@ public class ResourceTest extends BaseResourceTest
    @Test
    public void testAtomFeed() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/atom/feed");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      System.out.println(get.getResponseBodyAsString());
-
+      ClientRequest request = new ClientRequest(generateURL("/atom/feed"));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      System.out.println(response.getEntity());
+      
       AtomServerInterface intf = createProxy(AtomServerInterface.class);
       Feed feed = intf.postFeed(RFC_COMPLEX_XML);
       assertFeed(feed);
@@ -242,11 +241,10 @@ public class ResourceTest extends BaseResourceTest
    @Test
    public void testAtomEntry() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/atom/entry");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      System.out.println(get.getResponseBodyAsString());
+      ClientRequest request = new ClientRequest(generateURL("/atom/entry"));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      System.out.println(response.getEntity());
    }
 
    @Test

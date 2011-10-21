@@ -9,8 +9,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -18,6 +18,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -75,21 +76,20 @@ public class CovariantReturnSubresourceLocators
 	{
 	}
 
-	private void _test(HttpClient client, String path, String body)
+	private void _test(String path, String body)
 	{
-		{
-			GetMethod method = createGetMethod(path);
-			try
-			{
-				int status = client.executeMethod(method);
-				Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-				Assert.assertEquals(body, method.getResponseBodyAsString());
-			}
-			catch (IOException e)
-			{
-				throw new RuntimeException(e);
-			}
-		}
+	   ClientRequest request = new ClientRequest(generateURL(path));
+	   ClientResponse<String> response = null;
+	   try
+	   {
+	      response = request.get(String.class);
+	      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+	      Assert.assertEquals(body, response.getEntity());
+	   }
+	   catch (Exception e)
+       {
+          throw new RuntimeException(e);
+       } 
 
 	}
 
@@ -100,8 +100,7 @@ public class CovariantReturnSubresourceLocators
 		try
 		{
 			dispatcher.getRegistry().addPerRequestResource(RootImpl.class);
-			HttpClient client = new HttpClient();
-			_test(client, "/path/sub/xyz", "Boo! - xyz");
+			_test("/path/sub/xyz", "Boo! - xyz");
 		}
 		finally
 		{

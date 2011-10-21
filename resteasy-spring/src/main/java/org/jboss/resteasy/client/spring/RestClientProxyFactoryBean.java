@@ -1,9 +1,10 @@
 package org.jboss.resteasy.client.spring;
 
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -85,8 +86,8 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
       if (clientExecutor == null)
       {
          if (httpClient == null)
-            httpClient = new HttpClient();
-         clientExecutor = new ApacheHttpClientExecutor(httpClient);
+             httpClient = new DefaultHttpClient();
+         clientExecutor = new ApacheHttpClient4Executor(httpClient);
          client = ProxyFactory.create(serviceInterface, baseUri, clientExecutor,
                  resteasyProviderFactory);
       }
@@ -132,12 +133,12 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
 
    /**
     * Optional property. If this property is set and {@link #clientExecutor} is
-    * null, this will be used by proxy generation. This could be usefull for
+    * null, this will be used by proxy generation. This could be useful for
     * example when you want to use a
-    * {@link org.apache.commons.httpclient.MultiThreadedHttpConnectionManager}
+    * {@link org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager}
     * instead of a
-    * {@link org.apache.commons.httpclient.SimpleHttpConnectionManager} which
-    * is the default in {@link org.apache.commons.httpclient.HttpClient}.
+    * {@link org.apache.http.impl.conn.SingleClientConnManager} which
+    * is the default in {@link org.apache.http.client.HttpClient}.
     *
     * @param httpClient the instance to be used by proxy generation
     * @see ProxyFactory#create(Class, URI, HttpClient, ResteasyProviderFactory)

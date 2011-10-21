@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.providers.multipart.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -65,15 +65,12 @@ public class Resteasy204Test extends BaseResourceTest
    @Test
    public void test() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = new GetMethod(generateURL("/rest/zba"));
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String string = get.getResponseBodyAsString();
+      ClientRequest request = new ClientRequest(generateURL("/rest/zba"));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String string = response.getEntity();
       System.out.println(string);
-      Assert.assertTrue(string.indexOf("Content-Length") > -1);
-
-      get.releaseConnection();
+      Assert.assertTrue(string.indexOf("Content-Length") > -1);      
    }
 
 }

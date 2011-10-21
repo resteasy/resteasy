@@ -1,8 +1,9 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -12,13 +13,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,8 +33,6 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class HeaderParamsAsPrimitivesTest
 {
-   private static HttpClient client = new HttpClient();
-
    private static Dispatcher dispatcher;
 
    private static IResourceHeaderPrimitives resourceHeaderPrimitives;
@@ -283,7 +280,9 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/byte")
       public String doGet(@HeaderParam("byte") @DefaultValue("127") byte v)
       {
+         System.out.println("2a");
          Assert.assertTrue(127 == v);
+         System.out.println("2b");
          return "content";
       }
 
@@ -1005,47 +1004,59 @@ public class HeaderParamsAsPrimitivesTest
    public void _test(String type, String value)
    {
       {
-         GetMethod method = createGetMethod("/");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         method.addRequestHeader(type, value);
+         ClientRequest request = new ClientRequest(generateURL("/"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         request.header(type, value);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+           //response.releaseConnection();
+            ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+            executor.getHttpClient().getConnectionManager().shutdown();
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
 
       {
-         GetMethod method = createGetMethod("/wrappers");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         method.addRequestHeader(type, value);
+         ClientRequest request = new ClientRequest(generateURL("/wrappers"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         request.header(type, value);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpServletResponse.SC_OK, status);
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+           //response.releaseConnection();
+            ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+            executor.getHttpClient().getConnectionManager().shutdown();
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
-
+     
       {
-         GetMethod method = createGetMethod("/list");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         method.addRequestHeader(type, value);
-         method.addRequestHeader(type, value);
-         method.addRequestHeader(type, value);
+         ClientRequest request = new ClientRequest(generateURL("/list"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         request.header(type, value);
+         request.header(type, value);
+         request.header(type, value);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpServletResponse.SC_OK, status);
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+           //response.releaseConnection();
+            ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+            executor.getHttpClient().getConnectionManager().shutdown();
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1055,41 +1066,58 @@ public class HeaderParamsAsPrimitivesTest
    public void _testDefault(String base, String type, String value)
    {
       {
-         GetMethod method = createGetMethod("" + base + "default/null");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         System.out.println("DOING _testDefault() 1");
+         ClientRequest request = new ClientRequest(generateURL("" + base + "default/null"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+           //response.releaseConnection();
+            ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+            executor.getHttpClient().getConnectionManager().shutdown();
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+
       {
-         GetMethod method = createGetMethod("" + base + "default");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         System.out.println("DOING _testDefault() 2");
+         ClientRequest request = new ClientRequest(generateURL("" + base + "default"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+           //response.releaseConnection();
+            ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+            executor.getHttpClient().getConnectionManager().shutdown();
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+
       {
-         GetMethod method = createGetMethod("" + base + "default/override");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         method.addRequestHeader(type, value);
+         System.out.println("DOING _testDefault() 3");
+         ClientRequest request = new ClientRequest(generateURL("" + base + "default/override"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         request.header(type, value);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+           //response.releaseConnection();
+            ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+            executor.getHttpClient().getConnectionManager().shutdown();
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1115,46 +1143,55 @@ public class HeaderParamsAsPrimitivesTest
    public void testSet()
    {
       {
-         GetMethod method = createGetMethod("/set");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/boolean");
-         method.addRequestHeader("header", "one");
-         method.addRequestHeader("header", "one");
-         method.addRequestHeader("header", "one");
-         method.addRequestHeader("header", "two");
+         ClientRequest request = new ClientRequest(generateURL("/set"));
+         request.header(HttpHeaderNames.ACCEPT, "application/boolean");
+         request.header("header", "one");
+         request.header("header", "one");
+         request.header("header", "one");
+         request.header("header", "two");
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpServletResponse.SC_OK, status);
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+           //response.releaseConnection();
+            ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+            executor.getHttpClient().getConnectionManager().shutdown();
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
          IResourceHeaderPrimitiveSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSet.class,
-                 generateBaseUrl());
+               generateBaseUrl());
          HashSet<String> set = new HashSet<String>();
          set.add("one");
          set.add("two");
          setClient.doGetBoolean(set);
       }
+
       {
-         GetMethod method = createGetMethod("/sortedset");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/boolean");
-         method.addRequestHeader("header", "one");
-         method.addRequestHeader("header", "one");
-         method.addRequestHeader("header", "one");
-         method.addRequestHeader("header", "two");
+         ClientRequest request = new ClientRequest(generateURL("/sortedset"));
+         request.header(HttpHeaderNames.ACCEPT, "application/boolean");
+         request.header("header", "one");
+         request.header("header", "one");
+         request.header("header", "one");
+         request.header("header", "two");
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpServletResponse.SC_OK, status);
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+           //response.releaseConnection();
+            ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+            executor.getHttpClient().getConnectionManager().shutdown();
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
-         }
+         };
          IResourceHeaderPrimitiveSortedSet setClient = ProxyFactory.create(IResourceHeaderPrimitiveSortedSet.class,
-                 generateBaseUrl());
+               generateBaseUrl());
          TreeSet<String> set = new TreeSet<String>();
          set.add("one");
          set.add("two");
@@ -1190,9 +1227,13 @@ public class HeaderParamsAsPrimitivesTest
    @Test
    public void testGetBooleanPrimitiveWrapperDefault()
    {
+      System.out.println("entering testGetBooleanPrimitiveWrapperDefault()");
       _testWrappersDefault("boolean", "true");
+      System.out.println("CALLING resourceHeaderPrimitiveWrappersDefault.doGetBoolean()");
       resourceHeaderPrimitiveWrappersDefault.doGetBoolean();
+      System.out.println("CALLING resourceHeaderPrimitiveWrappersDefaultNull.doGetBoolean()");
       resourceHeaderPrimitiveWrappersDefaultNull.doGetBoolean();
+      System.out.println("CALLING resourceHeaderPrimitiveWrappersDefaultOverride.doGet()");
       resourceHeaderPrimitiveWrappersDefaultOverride.doGet(Boolean.TRUE);
    }
 
@@ -1228,10 +1269,15 @@ public class HeaderParamsAsPrimitivesTest
    @Test
    public void testGetBytePrimitivesDefault()
    {
+      System.out.println("1");
       _testDefault("byte", "127");
+      System.out.println("2");
       resourceHeaderPrimitivesDefault.doGetByte();
+      System.out.println("3");
       resourceHeaderPrimitivesDefaultNull.doGetByte();
+      System.out.println("4");
       resourceHeaderPrimitivesDefaultOverride.doGet((byte) 127);
+      System.out.println("5");
    }
 
    @Test
@@ -1384,59 +1430,65 @@ public class HeaderParamsAsPrimitivesTest
    @Test
    public void testBadPrimitiveValue()
    {
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.ACCEPT, "application/int");
+      request.header("int", "abcdef");
+      ClientResponse<?> response;
+      try
       {
-         GetMethod method = createGetMethod("/");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
-         method.addRequestHeader("int", "abcdef");
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(400, status);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         response = request.get();
+         Assert.assertEquals(400, response.getStatus());
+        //response.releaseConnection();
+         ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+         executor.getHttpClient().getConnectionManager().shutdown();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 
    @Test
    public void testBadPrimitiveWrapperValue()
    {
+      ClientRequest request = new ClientRequest(generateURL("/wrappers"));
+      request.header(HttpHeaderNames.ACCEPT, "application/int");
+      request.header("int", "abcdef");
+      ClientResponse<?> response;
+      try
       {
-         GetMethod method = createGetMethod("/wrappers");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
-         method.addRequestHeader("int", "abcdef");
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(400, status);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         response = request.get();
+         Assert.assertEquals(400, response.getStatus());
+        //response.releaseConnection();
+         ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+         executor.getHttpClient().getConnectionManager().shutdown();
       }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }  
    }
 
    @Test
    public void testBadPrimitiveListValue()
    {
+      ClientRequest request = new ClientRequest(generateURL("/list"));
+      request.header(HttpHeaderNames.ACCEPT, "application/int");
+      request.header("int", "abcdef");
+      request.header("int", "abcdef");
+      request.header("int", "abcdef");
+      ClientResponse<?> response;
+      try
       {
-         GetMethod method = createGetMethod("/list");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
-         method.addRequestHeader("int", "abcdef");
-         method.addRequestHeader("int", "abcdef");
-         method.addRequestHeader("int", "abcdef");
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(400, status);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         response = request.get();
+         Assert.assertEquals(400, response.getStatus());
+        //response.releaseConnection();
+         ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+         executor.getHttpClient().getConnectionManager().shutdown();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 

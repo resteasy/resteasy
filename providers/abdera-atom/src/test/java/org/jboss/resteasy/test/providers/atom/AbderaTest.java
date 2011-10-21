@@ -4,10 +4,8 @@ import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.atom.AbderaEntryProvider;
 import org.jboss.resteasy.plugins.providers.atom.AbderaFeedProvider;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -28,6 +26,7 @@ import javax.xml.bind.JAXBContext;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
+
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -131,31 +130,28 @@ public class AbderaTest extends BaseResourceTest
    @Test
    public void testAbderaFeed() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/atom/feed");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      String str = method.getResponseBodyAsString();
-
-      PutMethod put = createPutMethod("/atom/feed");
-      put.setRequestEntity(new StringRequestEntity(str, MediaType.APPLICATION_ATOM_XML, null));
-      status = client.executeMethod(put);
-      Assert.assertEquals(204, status);
-
+      ClientRequest request = new ClientRequest(generateURL("/atom/feed"));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity();
+      
+      request.body(MediaType.APPLICATION_ATOM_XML, str);
+      response = request.put(String.class);
+      Assert.assertEquals(204, response.getStatus());
+      response.releaseConnection();
    }
 
    @Test
    public void testAbderaEntry() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/atom/entry");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      String str = method.getResponseBodyAsString();
-
-      PutMethod put = createPutMethod("/atom/entry");
-      put.setRequestEntity(new StringRequestEntity(str, MediaType.APPLICATION_ATOM_XML, null));
-      status = client.executeMethod(put);
-      Assert.assertEquals(204, status);
+      ClientRequest request = new ClientRequest(generateURL("/atom/entry"));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity();
+      
+      request.body(MediaType.APPLICATION_ATOM_XML, str);
+      response = request.put(String.class);
+      Assert.assertEquals(204, response.getStatus());
+      response.releaseConnection();
    }
 }

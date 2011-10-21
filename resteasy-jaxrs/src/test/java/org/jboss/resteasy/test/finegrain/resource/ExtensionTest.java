@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -16,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -98,51 +97,45 @@ public class ExtensionTest
       EmbeddedContainer.stop();
    }
 
-   private void _test(HttpClient client, String path, String body)
+   private void _test(String path, String body)
    {
+      ClientRequest request = new ClientRequest(generateURL(path));
+      try
       {
-         GetMethod method = createGetMethod(path);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            Assert.assertEquals(body, method.getResponseBodyAsString());
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals(body, response.getEntity());
       }
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @Test
    public void testIt()
    {
-      HttpClient client = new HttpClient();
-      _test(client, "/extension.xml", "xml");
-      _test(client, "/extension.html.en", "html");
-      _test(client, "/extension.en.html", "html");
-      _test(client, "/extension/stuff.old.en.txt", "plain");
-      _test(client, "/extension/stuff.en.old.txt", "plain");
-      _test(client, "/extension/stuff.en.txt.old", "plain");
+      _test("/extension.xml", "xml");
+      _test("/extension.html.en", "html");
+      _test("/extension.en.html", "html");
+      _test("/extension/stuff.old.en.txt", "plain");
+      _test("/extension/stuff.en.old.txt", "plain");
+      _test("/extension/stuff.en.txt.old", "plain");
    }
 
    @Test
    public void testError()
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/extension.junk"));
+      try
       {
-         GetMethod method = createGetMethod("/extension.junk");
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_NOT_FOUND);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+         response.releaseConnection();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 }

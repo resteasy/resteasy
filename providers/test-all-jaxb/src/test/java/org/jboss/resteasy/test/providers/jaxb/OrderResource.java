@@ -54,7 +54,10 @@ public class OrderResource
    {
       Item updatedItem = order.getItem(0);
       updatedItem.setQuantity(updatedItem.getQuantity() + 1);
-      assert updatedItem.getOrder().equals(order);
+      
+//      Commenting following line because Item.order is marked @XmlTransient.
+//      assert updatedItem.getOrder().equals(order);
+
       Item item = new Item();
       item.setNote("New Item");
       item.setPrice(21.99d);

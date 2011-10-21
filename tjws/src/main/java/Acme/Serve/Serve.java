@@ -4161,7 +4161,9 @@ public class Serve implements ServletContext, Serializable
                out.println(sb2.toString());
                //System.err.println("We sent cookies 2: " + sb2);
             }
-            if (wasContentLen == false && chunked_out == false && serve.isKeepAlive())
+            // Test for existence of 
+            if (resCode != 204 && wasContentLen == false && chunked_out == false && serve.isKeepAlive())
+//            if (wasContentLen == false && chunked_out == false && serve.isKeepAlive())
             {
                out.println(TRANSFERENCODING + ": " + CHUNKED);
                chunked_out = true;

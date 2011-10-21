@@ -1,18 +1,22 @@
 package org.jboss.resteasy.test.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.providers.DefaultTextPlain;
+import org.jboss.resteasy.plugins.providers.ProviderHelper;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.util.TypeConverter;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -22,9 +26,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -78,6 +84,15 @@ public class RegressionTest
          return builder.build();
       }
 
+      @Path("/string")
+      @GET
+      public Response getString()
+      {
+         Response.ResponseBuilder builder = Response.ok("hello world");
+         builder.header("CoNtEnT-type", "text/plain");
+         return builder.build();         
+      }
+      
       @Path("/complex")
       @GET
       public Object getComplex()
@@ -162,28 +177,27 @@ public class RegressionTest
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getProviderFactory().addMessageBodyWriter(CustomerWriter.class);
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+      ClientResponse<?> response = null;
       try
       {
-         HttpClient client = new HttpClient();
-         GetMethod method = createGetMethod("/implicit");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         Assert.assertEquals(method.getResponseHeader("content-type").getValue(), "application/xml");
-         byte[] responseBody = method.getResponseBody();
-         String response = new String(responseBody, "US-ASCII");
-         Assert.assertEquals("<customer><name>bill</name></customer>", response);
+         ClientRequest request = new ClientRequest(generateURL("/implicit"));
+         response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("application/xml", response.getHeaders().getFirst("content-type"));
+         String s = new String(response.getEntity(byte[].class), "US-ASCII");
+         Assert.assertEquals("<customer><name>bill</name></customer>", s);
 
-         DeleteMethod del = createDeleteMethod("/implicit");
-         status = client.executeMethod(del);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+         response = request.delete();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         response.releaseConnection();
 
          SimpleClient proxy = ProxyFactory.create(SimpleClient.class, generateBaseUrl());
-         proxy.deleteCustomer();
+         response = proxy.deleteCustomer();
+         response.releaseConnection();
 
-         Assert.assertEquals(204, proxy.deleteComplex().getStatus());
-
-         method.releaseConnection();
-         client.getHttpConnectionManager().closeIdleConnections(0);
+         response = proxy.deleteComplex();
+         Assert.assertEquals(204, response.getStatus());
+         response.releaseConnection();
       }
       finally
       {
@@ -203,16 +217,42 @@ public class RegressionTest
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       try
       {
-         HttpClient client = new HttpClient();
-         GetMethod method = createGetMethod("/simple");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         Assert.assertEquals(method.getResponseHeader("content-type").getValue(), "text/plain");
-         byte[] responseBody = method.getResponseBody();
-         String response = new String(responseBody, "US-ASCII");
-         Assert.assertEquals("hello world", response);
-         method.releaseConnection();
-         client.getHttpConnectionManager().closeIdleConnections(0);
+         ClientRequest request = new ClientRequest(generateURL("/simple"));
+         ClientResponse<byte[]> response = request.get(byte[].class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("text/plain", response.getHeaders().getFirst("content-type"));
+         String s = new String(response.getEntity(), "US-ASCII");
+         Assert.assertEquals("hello world", s);
+         EmbeddedContainer.stop();
+      }
+      finally
+      {
+         EmbeddedContainer.stop();
+      }
+   }
+   
+   @Test
+   public void test1New() throws Exception
+   {
+      ResteasyDeployment deployment = new ResteasyDeployment();
+      deployment.setRegisterBuiltin(false);
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
+      factory.addMessageBodyWriter(new DefaultTextPlain());
+      factory.addMessageBodyWriter(new TestReaderWriter());
+      factory.addMessageBodyReader(new TestReaderWriter());
+      deployment.setProviderFactory(factory);
+      EmbeddedContainer.start(deployment);
+      dispatcher = deployment.getDispatcher();      
+      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
+
+      try
+      {
+         ClientRequest request = new ClientRequest(generateURL("/string"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("text/plain", response.getHeaders().getFirst("content-type"));
+         Assert.assertEquals("hello world", response.getEntity());
+         Assert.assertTrue(TestReaderWriter.used);
       }
       finally
       {
@@ -220,6 +260,40 @@ public class RegressionTest
       }
    }
 
+   @Provider
+   @Produces("*/*")
+   @Consumes("*/*")
+   public static class TestReaderWriter implements MessageBodyWriter, MessageBodyReader
+   {
+      public static boolean used;
+      
+      public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return true;
+      }
+      public long getSize(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return o.toString().getBytes().length;
+      }
+      public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+      {
+         entityStream.write(o.toString().getBytes());
+         used = true;
+      }
+      public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return true;
+      }
+      public Object readFrom(Class type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap httpHeaders, InputStream entityStream)
+            throws IOException, WebApplicationException
+      {
+         String value = ProviderHelper.readString(entityStream, mediaType);
+         return TypeConverter.getType(type, value);
+      }
+   }
+   
    /**
     * Test JIRA bugs RESTEASY-61
     *
@@ -253,16 +327,13 @@ public class RegressionTest
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       try
       {
-         HttpClient client = new HttpClient();
-         GetMethod method = createGetMethod("/complex");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpResponseCodes.SC_FOUND, status);
-         Assert.assertEquals(method.getResponseHeader("content-type").getValue(), "text/plain");
-         byte[] responseBody = method.getResponseBody();
-         String response = new String(responseBody, "US-ASCII");
-         Assert.assertEquals("hello world", response);
-         method.releaseConnection();
-         client.getHttpConnectionManager().closeIdleConnections(0);
+         ClientRequest request = new ClientRequest(generateURL("/complex"));
+         ClientResponse<byte[]> response = request.get(byte[].class);
+         Assert.assertEquals(HttpResponseCodes.SC_FOUND, response.getStatus());
+         Assert.assertEquals(response.getHeaders().getFirst("content-type"), "text/plain");
+         byte[] responseBody = response.getEntity();
+         String responseString = new String(responseBody, "US-ASCII");
+         Assert.assertEquals("hello world", responseString);
       }
       finally
       {
@@ -330,12 +401,10 @@ public class RegressionTest
       dispatcher.getRegistry().addPerRequestResource(Spaces.class);
       try
       {
-         HttpClient client = new HttpClient();
-         GetMethod method = createGetMethod("/spaces/with%20spaces/without");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(200, status);
-         method.releaseConnection();
-         client.getHttpConnectionManager().closeIdleConnections(0);
+         ClientRequest request = new ClientRequest(generateURL("/spaces/with%20spaces/without"));
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(200, response.getStatus());
+         response.releaseConnection();
       }
       finally
       {
@@ -366,17 +435,14 @@ public class RegressionTest
       dispatcher.getRegistry().addPerRequestResource(CurlyBraces.class);
       try
       {
-         HttpClient client = new HttpClient();
-         GetMethod method = createGetMethod("/curly/abcd");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(200, status);
-         method.releaseConnection();
-         client.getHttpConnectionManager().closeIdleConnections(0);
+         ClientRequest request = new ClientRequest(generateURL("/curly/abcd"));
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(200, response.getStatus());
+         response.releaseConnection();
       }
       finally
       {
          EmbeddedContainer.stop();
       }
-
    }
 }

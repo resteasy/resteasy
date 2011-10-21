@@ -31,7 +31,7 @@ public class ApplicationTest
    public void testNullJaxb() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:9095/my/null");
-      request.header("Content-Length", "0");
+//      request.header("Content-Length", "0");
       request.header("Content-Type", "application/xml");
       ClientResponse res = request.post();
       Assert.assertEquals(204, res.getStatus());

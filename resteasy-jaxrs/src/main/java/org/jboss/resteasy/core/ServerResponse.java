@@ -253,6 +253,8 @@ public class ServerResponse extends Response
       }
       catch (Exception ex)
       {
+         System.out.println("error: " + ex.getMessage());
+         ex.printStackTrace();
          if (ex instanceof WriterException)
          {
             throw (WriterException) ex;

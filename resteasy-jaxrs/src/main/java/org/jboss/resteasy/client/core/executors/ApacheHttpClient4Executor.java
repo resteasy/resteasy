@@ -15,6 +15,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HttpContext;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -39,6 +40,7 @@ import java.util.Map;
 public class ApacheHttpClient4Executor implements ClientExecutor
 {
    protected HttpClient httpClient;
+   protected HttpContext httpContext;
 
    public ApacheHttpClient4Executor()
    {
@@ -50,9 +52,20 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       this.httpClient = httpClient;
    }
 
+   public ApacheHttpClient4Executor(HttpClient httpClient, HttpContext httpContext)
+   {
+      this.httpClient = httpClient;
+      this.httpContext = httpContext;
+   }
+   
    public HttpClient getHttpClient()
    {
       return httpClient;
+   }
+   
+   public HttpContext getHttpContext()
+   {
+	  return httpContext;
    }
 
    public static CaseInsensitiveMap<String> extractHeaders(
@@ -84,8 +97,8 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       final HttpRequestBase httpMethod = createHttpMethod(uri, request.getHttpMethod());
       loadHttpMethod(request, httpMethod);
 
-      final HttpResponse res = httpClient.execute(httpMethod);
-
+      final HttpResponse res = httpClient.execute(httpMethod, httpContext);
+      
       BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory()
       {
          InputStream stream;

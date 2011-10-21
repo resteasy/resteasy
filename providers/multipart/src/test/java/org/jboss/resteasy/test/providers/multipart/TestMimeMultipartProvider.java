@@ -3,14 +3,6 @@
  */
 package org.jboss.resteasy.test.providers.multipart;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
@@ -39,7 +31,6 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -72,27 +63,36 @@ public class TestMimeMultipartProvider extends BaseResourceTest
               SimpleMimeMultipartResource.class);
    }
 
+//   @Test
+   public void testPutForm() throws Exception
+   {
+      MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
+      mpfdo.addFormData("part1", "This is Value 1", MediaType.TEXT_PLAIN_TYPE);
+      mpfdo.addFormData("part2", "This is Value 2", MediaType.TEXT_PLAIN_TYPE);
+      mpfdo.addFormData("data.txt",  LocateTestData.getTestData("data.txt"), MediaType.TEXT_PLAIN_TYPE);
+      ClientRequest request = new ClientRequest(TEST_URI);
+      request.body(MediaType.MULTIPART_FORM_DATA_TYPE, mpfdo);
+      ClientResponse<String> response = request.put(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String responseBody = response.getEntity();
+      Assert.assertEquals(responseBody, "Count: 3");      
+   }
+
    @Test
    public void testPut() throws Exception
    {
-      HttpClient client = new HttpClient();
-      List<Part> partsList = new ArrayList<Part>();
-      partsList.add(new StringPart("part1", "This is Value 1"));
-      partsList.add(new StringPart("part2", "This is Value 2"));
-      partsList.add(new FilePart("data.txt", LocateTestData
-              .getTestData("data.txt")));
-      Part[] parts = partsList.toArray(new Part[partsList.size()]);
-      PutMethod method = new PutMethod(TEST_URI);
-      RequestEntity entity = new MultipartRequestEntity(parts, method
-              .getParams());
-      method.setRequestEntity(entity);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      String responseBody = method.getResponseBodyAsString();
-      Assert.assertEquals(responseBody, "Count: 3");
-      method.releaseConnection();
+      MultipartOutput mpo = new MultipartOutput();
+      mpo.addPart("This is Value 1", MediaType.TEXT_PLAIN_TYPE);
+      mpo.addPart("This is Value 2", MediaType.TEXT_PLAIN_TYPE);
+      mpo.addPart(LocateTestData.getTestData("data.txt"), MediaType.TEXT_PLAIN_TYPE);
+      ClientRequest request = new ClientRequest(TEST_URI);
+      request.body(MediaType.MULTIPART_FORM_DATA_TYPE, mpo);
+      ClientResponse<String> response = request.put(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String responseBody = response.getEntity();
+      Assert.assertEquals(responseBody, "Count: 3");      
    }
-
+   
    @Test
    public void testForm() throws Exception
    {
@@ -104,25 +104,16 @@ public class TestMimeMultipartProvider extends BaseResourceTest
       testMultipart(TEST_URI + "/multi/list");
    }
 
-   private void testMultipart(String uri) throws JAXBException, IOException
+   private void testMultipart(String uri) throws Exception
    {
-      HttpClient client = new HttpClient();
-      List<Part> partsList = new ArrayList<Part>();
-      StringPart part = new StringPart("bill", createCustomerData("bill"));
-      part.setContentType("application/xml");
-      partsList.add(part);
-      StringPart part1 = new StringPart("monica",
-              createCustomerData("monica"));
-      part1.setContentType("application/xml");
-      partsList.add(part1);
-      Part[] parts = partsList.toArray(new Part[partsList.size()]);
-      PutMethod method = new PutMethod(uri);
-      RequestEntity entity = new MultipartRequestEntity(parts, method
-              .getParams());
-      method.setRequestEntity(entity);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(204, status);
-      method.releaseConnection();
+      MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
+      mpfdo.addFormData("bill", createCustomerData("bill"), MediaType.APPLICATION_XML_TYPE);
+      mpfdo.addFormData("monica", createCustomerData("monica"), MediaType.APPLICATION_XML_TYPE);
+      ClientRequest request = new ClientRequest(uri);
+      request.body(MediaType.MULTIPART_FORM_DATA_TYPE, mpfdo);
+      ClientResponse<?> response = request.put();
+      Assert.assertEquals(204, response.getStatus());
+      response.releaseConnection();
    }
 
    @Path("mime")
@@ -279,18 +270,15 @@ public class TestMimeMultipartProvider extends BaseResourceTest
    @Test
    public void testGet() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(TEST_URI);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpServletResponse.SC_OK, status);
-      InputStream response = method.getResponseBodyAsStream();
-      BufferedInputStream in = new BufferedInputStream(response);
-      String contentType = method.getResponseHeader("content-type")
-              .getValue();
+      ClientRequest request = new ClientRequest(TEST_URI);
+      ClientResponse<InputStream> response = request.get(InputStream.class);
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus()); 
+      BufferedInputStream in = new BufferedInputStream(response.getEntity());
+      String contentType = response.getHeaders().getFirst("content-type");
       ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
       MimeMultipart mimeMultipart = new MimeMultipart(ds);
       Assert.assertEquals(mimeMultipart.getCount(), 2);
-      method.releaseConnection();
+      response.releaseConnection();
    }
 
    @Test

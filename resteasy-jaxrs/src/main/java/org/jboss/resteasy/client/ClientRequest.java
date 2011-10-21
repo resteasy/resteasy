@@ -67,8 +67,8 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    protected LinkHeader linkHeader;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
 
-   private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor";
-   //private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor";
+//   private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor";
+   private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor";
 
    /**
     * Set the default executor class name.
@@ -713,7 +713,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       return response;
    }
 
-   public <T> ClientResponse<T> httpmethod(String method, Class<T> returnType,
+   public <T> ClientResponse<T> httpMethod(String method, Class<T> returnType,
                                            Type genericType) throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) httpMethod(method);

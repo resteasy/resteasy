@@ -1,8 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.regression.resteasy143;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -99,22 +98,20 @@ public class TestJAXB
    @Test
    public void testWire() throws Exception
    {
-
-      HttpClient client = new HttpClient();
-
       {
-         PostMethod method = createPostMethod("/storeXML");
-         method.setRequestEntity(new StringRequestEntity(XML_CONTENT, "application/xml", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(201, status);
-         method.releaseConnection();
+         ClientRequest request = new ClientRequest(generateURL("/storeXML"));
+         request.body("application/xml", XML_CONTENT);
+         ClientResponse<?> response = request.post();
+         Assert.assertEquals(201, response.getStatus());
+         response.releaseConnection();
       }
+      
       {
-         PostMethod method = createPostMethod("/storeXML/abstract");
-         method.setRequestEntity(new StringRequestEntity(XML_CONTENT, "application/xml", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(201, status);
-         method.releaseConnection();
+         ClientRequest request = new ClientRequest(generateURL("/storeXML/abstract"));
+         request.body("application/xml", XML_CONTENT);
+         ClientResponse<?> response = request.post();
+         Assert.assertEquals(201, response.getStatus());
+         response.releaseConnection();
       }
    }
 }

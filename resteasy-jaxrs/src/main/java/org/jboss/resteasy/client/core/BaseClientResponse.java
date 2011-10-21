@@ -376,7 +376,15 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          unmarshaledEntity = readFrom(type, genericType, getMediaType(), anns);
          // only release connection if we actually unmarshalled something and if the object is *NOT* an InputStream
          // If it is an input stream, the user may be doing their own stream processing.
-         if (unmarshaledEntity != null && !InputStream.class.isInstance(unmarshaledEntity)) releaseConnection();
+         if (unmarshaledEntity != null && !InputStream.class.isInstance(unmarshaledEntity)) 
+         {
+            System.out.println("Closing entity");
+            releaseConnection();
+         }
+         else
+         {
+            System.out.println("Not closing entity");
+         }
       }
       return (T2) unmarshaledEntity;
    }
@@ -535,6 +543,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
    public final void releaseConnection()
    {
+//      new Exception(this + ".releaseConnection(): " + System.currentTimeMillis()).printStackTrace();
       if (!wasReleased)
       {
          if (streamFactory != null) streamFactory.performReleaseConnection();

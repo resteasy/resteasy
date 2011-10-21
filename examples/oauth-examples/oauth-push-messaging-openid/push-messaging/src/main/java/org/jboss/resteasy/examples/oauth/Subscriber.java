@@ -5,12 +5,9 @@ import java.util.Properties;
 
 import net.oauth.OAuth;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 
@@ -82,37 +79,72 @@ public class Subscriber
    
    public String registerMessagingService(String consumerKey) throws Exception
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(ConsumerRegistrationURL);
-      method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
-      method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
-      int status = client.executeMethod(method);
-      if (HttpResponseCodes.SC_OK != status) {
-          throw new RuntimeException("Registration failed");
+      ClientRequest request = new ClientRequest(ConsumerRegistrationURL);
+      request.header("Authorization", "OpenId " + SubscriberOpenIdIdentifier);
+      request.formParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+      ClientResponse<String> response = null;
+      try {
+         response = request.post(String.class);
+         if (HttpResponseCodes.SC_OK != response.getStatus()) {
+             throw new RuntimeException("Registration failed");
+         }
+         // check that we got all tokens
+         Map<String, String> tokens = OAuth.newMap(OAuth.decodeForm(response.getEntity()));
+         String secret = tokens.get("xoauth_consumer_secret");
+         if (secret == null) {
+             throw new RuntimeException("No secret available");
+         }
+         return secret;
+      } finally {
+         response.releaseConnection();
       }
-      // check that we got all tokens
-      Map<String, String> response = OAuth.newMap(OAuth.decodeForm(method.getResponseBodyAsString()));
-      String secret = response.get("xoauth_consumer_secret");
-      if (secret == null) {
-          throw new RuntimeException("No secret available");
-      }
-      return secret;
+//      
+//      HttpClient client = new HttpClient();
+//      PostMethod method = new PostMethod(ConsumerRegistrationURL);
+//      method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
+//      method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+//      int status = client.executeMethod(method);
+//      if (HttpResponseCodes.SC_OK != status) {
+//          throw new RuntimeException("Registration failed");
+//      }
+//      // check that we got all tokens
+//      Map<String, String> response = OAuth.newMap(OAuth.decodeForm(method.getResponseBodyAsString()));
+//      String secret = response.get("xoauth_consumer_secret");
+//      if (secret == null) {
+//          throw new RuntimeException("No secret available");
+//      }
+//      return secret;
    }
    
    
    
    public void registerMessagingServiceScopes(String consumerKey, String scope) throws Exception
    {
-       HttpClient client = new HttpClient();
-       PostMethod method = new PostMethod(ConsumerScopesRegistrationURL);
-       method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
-       method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
-       method.addParameter("xoauth_scope", scope);
-       method.addParameter("xoauth_permission", "sendMessages");
-       int status = client.executeMethod(method);
-       if (HttpResponseCodes.SC_OK != status) {
-          throw new RuntimeException("Scopes can not be registered");
-       }
+      ClientRequest request = new ClientRequest(ConsumerScopesRegistrationURL);
+      request.header("Authorization", "OpenId " + SubscriberOpenIdIdentifier);
+      request.formParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+      request.formParameter("xoauth_scope", scope);
+      request.formParameter("xoauth_permission", "sendMessages");
+      ClientResponse<?> response = null;
+      try {
+         response = request.post();
+         if (HttpResponseCodes.SC_OK != response.getStatus()) {
+            throw new RuntimeException("Scopes can not be registered");
+         }
+      } finally {
+         response.releaseConnection();
+      }
+      
+//       HttpClient client = new HttpClient();
+//       PostMethod method = new PostMethod(ConsumerScopesRegistrationURL);
+//       method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
+//       method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+//       method.addParameter("xoauth_scope", scope);
+//       method.addParameter("xoauth_permission", "sendMessages");
+//       int status = client.executeMethod(method);
+//       if (HttpResponseCodes.SC_OK != status) {
+//          throw new RuntimeException("Scopes can not be registered");
+//       }
    }
    
    //TODO : the subscriber may need to provide some form of id known
@@ -123,62 +155,123 @@ public class Subscriber
    public void registerMessagingServiceCallback(String consumerKey, String consumerSecret, String callback) 
        throws Exception
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(MessagingServiceCallbackRegistrationURL);
-      method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
-      method.addParameter("consumer_id", consumerKey);
-      method.addParameter("consumer_secret", consumerSecret);
-      method.addParameter("callback_uri", callback);
-      int status = client.executeMethod(method);
-      if (HttpResponseCodes.SC_OK != status) {
-          throw new RuntimeException("Callback Registration failed");
+      ClientRequest request = new ClientRequest(MessagingServiceCallbackRegistrationURL);
+      request.header("Authorization", "OpenId " + SubscriberOpenIdIdentifier);
+      request.formParameter("consumer_id", consumerKey);
+      request.formParameter("consumer_secret", consumerSecret);
+      request.formParameter("callback_uri", callback);
+      ClientResponse<?> response = null;
+      try {
+         response = request.post();
+         if (HttpResponseCodes.SC_OK != response.getStatus()) {
+            throw new RuntimeException("Callback Registration failed");
+         }
+      } finally {
+         response.releaseConnection();
       }
+      
+      
+//      HttpClient client = new HttpClient();
+//      PostMethod method = new PostMethod(MessagingServiceCallbackRegistrationURL);
+//      method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
+//      method.addParameter("consumer_id", consumerKey);
+//      method.addParameter("consumer_secret", consumerSecret);
+//      method.addParameter("callback_uri", callback);
+//      int status = client.executeMethod(method);
+//      if (HttpResponseCodes.SC_OK != status) {
+//          throw new RuntimeException("Callback Registration failed");
+//      }
    }
    
    public void produceMessages() 
       throws Exception
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(MessagingServiceMessagesURL);
-      method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
-      method.setRequestEntity(new StringRequestEntity("Hello !", "text/plain", "UTF-8"));
-      int status = client.executeMethod(method);
-      if (HttpResponseCodes.SC_OK != status) {
-          throw new RuntimeException("Messages can not be sent");
+      ClientRequest request = new ClientRequest(MessagingServiceMessagesURL);
+      request.header("Authorization", "OpenId " + SubscriberOpenIdIdentifier);
+      request.body("text/plain", "Hello !");
+      ClientResponse<?> response = null;
+      try {
+         response = request.post();
+         if (HttpResponseCodes.SC_OK != response.getStatus()) {
+            throw new RuntimeException("Messages can not be sent");
+         }
+      } finally {
+         response.releaseConnection();
       }
+      
+//      HttpClient client = new HttpClient();
+//      PostMethod method = new PostMethod(MessagingServiceMessagesURL);
+//      method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
+//      method.setRequestEntity(new StringRequestEntity("Hello !", "text/plain", "UTF-8"));
+//      int status = client.executeMethod(method);
+//      if (HttpResponseCodes.SC_OK != status) {
+//          throw new RuntimeException("Messages can not be sent");
+//      }
    }
    
    public void getMessages() 
        throws Exception
    {
-       HttpClient client = new HttpClient();
-       GetMethod method = new GetMethod(MessageReceiverGetURL);
-       method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
-       int status = client.executeMethod(method);
-       if (HttpResponseCodes.SC_OK != status) {
-           throw new RuntimeException("Messages can not be received");
-       }
-       String message = method.getResponseBodyAsString();
-       if (!"Hello !".equals(message))
-       {
-           throw new RuntimeException("Wrong Message");
-       }
-       System.out.println("Success : " + message);
+      ClientRequest request = new ClientRequest(MessageReceiverGetURL);
+      request.header("Authorization", "OpenId " + SubscriberOpenIdIdentifier);
+      ClientResponse<String> response = null;
+      try {
+         response = request.post(String.class);
+         if (HttpResponseCodes.SC_OK != response.getStatus()) {
+            throw new RuntimeException("Messages can not be received");
+         }
+         String message = response.getEntity();
+         if (!"Hello !".equals(message))
+         {
+             throw new RuntimeException("Wrong Message");
+         }
+         System.out.println("Success : " + message);
+      } finally {
+         response.releaseConnection();
+      }
+      
+//       HttpClient client = new HttpClient();
+//       GetMethod method = new GetMethod(MessageReceiverGetURL);
+//       method.addRequestHeader(new Header("Authorization", "OpenId " + SubscriberOpenIdIdentifier));
+//       int status = client.executeMethod(method);
+//       if (HttpResponseCodes.SC_OK != status) {
+//           throw new RuntimeException("Messages can not be received");
+//       }
+//       String message = method.getResponseBodyAsString();
+//       if (!"Hello !".equals(message))
+//       {
+//           throw new RuntimeException("Wrong Message");
+//       }
+//       System.out.println("Success : " + message);
    }
    
    public void registerTrustedOpenIdRealms() 
        throws Exception
     {
-       HttpClient client = new HttpClient();
-       PostMethod method = new PostMethod(OpenIdTrustedRealmsURL);
-       Base64 base64 = new Base64();
-       String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
-       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
-       method.addParameter("xopenid.realm", OpenIdTrustedRealm);
-       int status = client.executeMethod(method);
-       if (HttpResponseCodes.SC_OK != status) {
-           throw new RuntimeException("OpenId realms can not be registered");
-       }
-       
+      ClientRequest request = new ClientRequest(OpenIdTrustedRealmsURL);
+      String base64Credentials = new String(Base64.encodeBytes("admin:admin".getBytes()));
+      request.header("Authorization", "Basic " + base64Credentials);
+      request.formParameter("xopenid.realm", OpenIdTrustedRealm);
+      ClientResponse<?> response = null;
+      try {
+         response = request.post();
+         if (HttpResponseCodes.SC_OK != response.getStatus()) {
+            throw new RuntimeException("OpenId realms can not be registered");
+         }
+      } finally {
+         response.releaseConnection();
+      }
+      
+//       HttpClient client = new HttpClient();
+//       PostMethod method = new PostMethod(OpenIdTrustedRealmsURL);
+//       Base64 base64 = new Base64();
+//       String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+//       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
+//       method.addParameter("xopenid.realm", OpenIdTrustedRealm);
+//       int status = client.executeMethod(method);
+//       if (HttpResponseCodes.SC_OK != status) {
+//           throw new RuntimeException("OpenId realms can not be registered");
+//       }
+//       
     }
 }

@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -112,95 +110,73 @@ public class FormUrlEncodedTest
    @Test
    public void testResteasy109()
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/RESTEASY-109"));
+      request.body(MediaType.APPLICATION_FORM_URLENCODED,
+                   "name=jon&address1=123+Main+St&address2=&zip=12345");
+      try
       {
-         PostMethod method = createPostMethod("/RESTEASY-109");
-         try
-         {
-            method.setRequestEntity(new StringRequestEntity("name=jon&address1=123+Main+St&address2=&zip=12345",
-                    MediaType.APPLICATION_FORM_URLENCODED, null));
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, 204);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<?> response = request.post();
+         Assert.assertEquals(204, response.getStatus());
+         response.releaseConnection();
       }
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @Test
    public void testQueryParamIsNull()
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/simple"));
+      request.formParameter("hello", "world");
+      try
       {
-         PostMethod method = createPostMethod("/simple");
-         NameValuePair[] params =
-                 {new NameValuePair("hello", "world")};
-         method.setRequestBody(params);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            String body = method.getResponseBodyAsString();
-            Assert.assertEquals("hello=world", body);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<String> response = request.post(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("hello=world", response.getEntity());
       }
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @Test
    public void testPost()
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/form"));
+      request.formParameter("hello", "world");
+      try
       {
-         PostMethod method = createPostMethod("/form");
-         NameValuePair[] params =
-                 {new NameValuePair("hello", "world")};
-         method.setRequestBody(params);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            String body = method.getResponseBodyAsString();
-            Assert.assertEquals("hello=world", body);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<String> response = request.post(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("hello=world", response.getEntity());
       }
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @Test
    public void testPostTwoParameters()
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/form/twoparams"));
+      request.formParameter("hello", "world");
+      request.formParameter("yo", "mama");
+      try
       {
-         PostMethod method = createPostMethod("/form/twoparams");
-         NameValuePair[] params =
-                 {new NameValuePair("hello", "world"), new NameValuePair("yo", "mama")};
-         method.setRequestBody(params);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            String body = method.getResponseBodyAsString();
-            Assert.assertTrue(body.indexOf("hello=world") != -1);
-            Assert.assertTrue(body.indexOf("yo=mama") != -1);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<String> response = request.post(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String body = response.getEntity();
+         Assert.assertTrue(body.indexOf("hello=world") != -1);
+         Assert.assertTrue(body.indexOf("yo=mama") != -1);
       }
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @Path("/")

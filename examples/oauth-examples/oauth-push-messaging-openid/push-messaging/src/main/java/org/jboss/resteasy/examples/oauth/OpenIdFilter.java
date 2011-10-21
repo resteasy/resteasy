@@ -17,9 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.openid4java.OpenIDException;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.openid4java.association.AssociationSessionType;
 import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
@@ -113,25 +112,48 @@ public class OpenIdFilter extends OAuthPushMessagingFilter {
 
             String returnToUrl = httpReq.getRequestURL().toString();
             authReq = manager.authenticate(discovered, returnToUrl);
-            
             String destinationUrl = authReq.getDestinationUrl(true);
-            HttpClient client = new HttpClient();
-            GetMethod request = new GetMethod(destinationUrl);
-            client.executeMethod(request);
-            String body = request.getResponseBodyAsString();
-            String[] paramValues = body.split("\n");
-            Map<String, String> paramsMap = new HashMap<String, String>();
-            for (String paramValue : paramValues) {
-                String theRealValue = paramValue.trim();
-                if (theRealValue.isEmpty()) {
-                    continue;
-                }
-                int index = theRealValue.indexOf(":");
-                String key = theRealValue.substring(0, index);
-                String value = theRealValue.substring(index + 1);
-                paramsMap.put(key, value);
+            
+            ClientRequest req = new ClientRequest(destinationUrl);
+            ClientResponse<String> resp = null;
+            ParameterList response = null;
+            try {
+               resp = req.get(String.class);
+               String body = resp.getEntity();
+               String[] paramValues = body.split("\n");
+               Map<String, String> paramsMap = new HashMap<String, String>();
+               for (String paramValue : paramValues) {
+                   String theRealValue = paramValue.trim();
+                   if (theRealValue.isEmpty()) {
+                       continue;
+                   }
+                   int index = theRealValue.indexOf(":");
+                   String key = theRealValue.substring(0, index);
+                   String value = theRealValue.substring(index + 1);
+                   paramsMap.put(key, value);
+               }
+               response = new ParameterList(paramsMap);
+            } finally {
+               resp.releaseConnection();
             }
-            ParameterList response = new ParameterList(paramsMap);
+            
+//            HttpClient client = new HttpClient();
+//            GetMethod request = new GetMethod(destinationUrl);
+//            client.executeMethod(request);
+//            String body = request.getResponseBodyAsString();
+//            String[] paramValues = body.split("\n");
+//            Map<String, String> paramsMap = new HashMap<String, String>();
+//            for (String paramValue : paramValues) {
+//                String theRealValue = paramValue.trim();
+//                if (theRealValue.isEmpty()) {
+//                    continue;
+//                }
+//                int index = theRealValue.indexOf(":");
+//                String key = theRealValue.substring(0, index);
+//                String value = theRealValue.substring(index + 1);
+//                paramsMap.put(key, value);
+//            }
+//            ParameterList response = new ParameterList(paramsMap);
 
             // verify the response; ConsumerManager needs to be the same
             // (static) instance used to place the authentication request
@@ -150,7 +172,7 @@ public class OpenIdFilter extends OAuthPushMessagingFilter {
                 }
             }
              
-        } catch (OpenIDException e) {
+        } catch (Exception e) {
             // present error to the user
             throw new ServletException(e);
         }

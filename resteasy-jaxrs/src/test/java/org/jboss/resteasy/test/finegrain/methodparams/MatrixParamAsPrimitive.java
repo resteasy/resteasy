@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -16,7 +16,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import java.io.IOException;
 import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -27,8 +26,6 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class MatrixParamAsPrimitive
 {
-   private static HttpClient client = new HttpClient();
-
    private static Dispatcher dispatcher;
 
    //private static IResourceUriBoolean resourceUriBoolean;
@@ -623,7 +620,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean") List<Boolean> v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.size() == 0);
          return "content";
       }
 
@@ -631,7 +629,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte") List<Byte> v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.size() == 0);
          return "content";
       }
 
@@ -639,7 +638,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/short")
       public String doGetShort(@MatrixParam("short") List<Short> v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.size() == 0);
          return "content";
       }
 
@@ -647,7 +647,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/int")
       public String doGetInteger(@MatrixParam("int") List<Integer> v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.size() == 0);
          return "content";
       }
 
@@ -655,7 +656,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/long")
       public String doGetLong(@MatrixParam("long") List<Long> v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.size() == 0);
          return "content";
       }
 
@@ -663,7 +665,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") List<Float> v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.size() == 0);
          return "content";
       }
 
@@ -671,7 +674,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") List<Double> v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.size() == 0);
          return "content";
       }
    }
@@ -877,7 +881,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/boolean")
       public String doGetBoolean(@MatrixParam("boolean") boolean[] v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.length == 0);
          return "content";
       }
 
@@ -885,7 +890,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/byte")
       public String doGetByte(@MatrixParam("byte") byte[] v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.length == 0);
          return "content";
       }
 
@@ -893,7 +899,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/short")
       public String doGetShort(@MatrixParam("short") short[] v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.length == 0);
          return "content";
       }
 
@@ -901,7 +908,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/int")
       public String doGetInteger(@MatrixParam("int") int[] v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.length == 0);
          return "content";
       }
 
@@ -909,7 +917,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/long")
       public String doGetLong(@MatrixParam("long") long[] v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.length == 0);
          return "content";
       }
 
@@ -917,7 +926,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") float[] v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.length == 0);
          return "content";
       }
 
@@ -925,7 +935,8 @@ public class MatrixParamAsPrimitive
       @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") double[] v)
       {
-         Assert.assertEquals(null, v);
+//         Assert.assertEquals(null, v);
+         Assert.assertTrue(v.length == 0);
          return "content";
       }
    }
@@ -1054,102 +1065,113 @@ public class MatrixParamAsPrimitive
    {
       String param = ";" + type + "=" + value;
       {
-         GetMethod method = createGetMethod("/" + param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("/" + param));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+      
       {
-         GetMethod method = createGetMethod("/wrappers" + param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("/wrappers" + param));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+
       {
-         GetMethod method = createGetMethod("/list" + param + param + param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("/list" + param + param + param));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+
       {
-         GetMethod method = createGetMethod("/array" + param + param + param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("/array" + param + param + param));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
-      }
+      }      
    }
 
    public void _testDefault(String base, String type, String value)
    {
       {
-         GetMethod method = createGetMethod("" + base + "default/null");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("" + base + "default/null"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
-      }
+      }  
+      
       {
-         GetMethod method = createGetMethod("" + base + "default");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("" + base + "default"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
-      }
+      }  
 
       String param = ";" + type + "=" + value;
       {
-         GetMethod method = createGetMethod("" + base + "default/override" + param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("" + base + "default/override" + param));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
-      }
+      }  
    }
 
    public void _testDefault(String type, String value)
@@ -1351,14 +1373,15 @@ public class MatrixParamAsPrimitive
    public void testBadPrimitiveValue()
    {
       {
-         GetMethod method = createGetMethod("/;int=abcdef");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
+         ClientRequest request = new ClientRequest(generateURL("/;int=abcdef"));
+         request.header(HttpHeaderNames.ACCEPT, "application/int");
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, 400);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(400, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1369,14 +1392,15 @@ public class MatrixParamAsPrimitive
    public void testBadPrimitiveWrapperValue()
    {
       {
-         GetMethod method = createGetMethod("/wrappers;int=abcdef");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
+         ClientRequest request = new ClientRequest(generateURL("/wrappers;int=abcdef"));
+         request.header(HttpHeaderNames.ACCEPT, "application/int");
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, 400);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(400, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1387,14 +1411,15 @@ public class MatrixParamAsPrimitive
    public void testBadPrimitiveListValue()
    {
       {
-         GetMethod method = createGetMethod("/list;int=abcdef;int=abcdef");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
+         ClientRequest request = new ClientRequest(generateURL("/list;int=abcdef;int=abcdef"));
+         request.header(HttpHeaderNames.ACCEPT, "application/int");
+         ClientResponse<?> response;
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, 400);
-         }
-         catch (IOException e)
+            response = request.get();
+            Assert.assertEquals(400, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }

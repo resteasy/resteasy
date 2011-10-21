@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.providers;
 
 import junit.framework.Assert;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,12 +53,11 @@ public class TestProvider extends BaseResourceTest
 
       });
 
-      HttpClient client = new HttpClient();
-
-      PostMethod method = new PostMethod(TEST_URI);
-      method.setRequestEntity(new StringRequestEntity("foo", "application/octet-stream", "utf-8"));
-      int status = client.executeMethod(method);
-      Assert.assertEquals(999, status);
+      ClientRequest request = new ClientRequest(TEST_URI);
+      request.body("application/octet-stream", "foo");
+      ClientResponse<?> response = request.post();
+      Assert.assertEquals(999, response.getStatus());
+      response.releaseConnection();
    }
 
    @Test
@@ -88,11 +86,10 @@ public class TestProvider extends BaseResourceTest
 
       });
 
-      HttpClient client = new HttpClient();
-
-      GetMethod method = new GetMethod(TEST_URI);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(999, status);
+      ClientRequest request = new ClientRequest(TEST_URI);
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(999, response.getStatus());
+      response.releaseConnection();
    }
 
 }

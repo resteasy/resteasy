@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>resteasy-crypto</module>
+        <!--module>resteasy-crypto</module-->
         <module>resteasy-oauth</module>
     </modules>
 </project>

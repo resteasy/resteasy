@@ -9,8 +9,10 @@ package org.jboss.resteasy.springmvc.test.spring;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import static org.junit.Assert.*;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
@@ -19,9 +21,7 @@ import org.junit.Test;
 
 public class TypeMappingTest
 {
-
-   private HttpClient hc = new HttpClient();
-
+   
    private TJWSEmbeddedSpringMVCServer server;
 
    @Test
@@ -118,14 +118,23 @@ public class TypeMappingTest
       {
          url = url + "." + extension;
       }
-      GetMethod gm = new GetMethod(url);
+      ClientRequest request = new ClientRequest(url);
       if (accept != null)
       {
-         gm.setRequestHeader("Accept", accept);
+         request.accept(accept);
       }
-      int status = hc.executeMethod(gm);
-      assertEquals("Request for " + url + " returned a non-200 status", 200, status);
-      assertEquals("Request for " + url + " returned an unexpected content type", expectedContentType, gm
-            .getResponseHeader("Content-type").getValue());
+      ClientResponse<?> response = null;
+      try
+      {
+         response = request.get(); 
+         int status = response.getStatus();
+         String contentType = response.getHeaders().getFirst("Content-type");
+         assertEquals("Request for " + url + " returned a non-200 status", 200, status);
+         assertEquals("Request for " + url + " returned an unexpected content type", expectedContentType, contentType);
+      }
+      finally
+      {
+         response.releaseConnection();
+      }
    }
 }

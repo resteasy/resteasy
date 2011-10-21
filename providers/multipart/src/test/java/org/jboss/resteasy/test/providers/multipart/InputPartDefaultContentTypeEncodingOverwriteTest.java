@@ -10,10 +10,9 @@ import javax.ws.rs.ext.Provider;
 
 import junit.framework.Assert;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
@@ -73,16 +72,13 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest extends
 				+ "Content-Disposition: form-data; name=\"foo\"\r\n"
 				+ "Content-Transfer-Encoding: 8bit\r\n\r\n" + "bar\r\n"
 				+ "--boo--\r\n";
-		HttpClient httpClient = new HttpClient();
-		PostMethod postMethod = new PostMethod(TEST_URI + "/mime");
-		postMethod.setRequestEntity(new ByteArrayRequestEntity(message
-				.getBytes("utf-8"), "multipart/form-data; boundary=boo"));
-		httpClient.executeMethod(postMethod);
-		String response = postMethod.getResponseBodyAsString();
-		Assert.assertEquals("Status code is wrong.", 20, postMethod
-				.getStatusCode() / 10);
-		Assert.assertEquals("Response text is wrong", MediaType
-				.valueOf(TEXT_PLAIN_WITH_CHARSET_UTF_8), MediaType
-				.valueOf(response));
+		
+		ClientRequest request = new ClientRequest(TEST_URI + "/mime");
+		request.body("multipart/form-data; boundary=boo", message.getBytes());
+		ClientResponse<String> response = request.post(String.class);
+		Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
+		Assert.assertEquals("Response text is wrong", 
+		                    MediaType.valueOf(TEXT_PLAIN_WITH_CHARSET_UTF_8),
+		                    MediaType.valueOf(response.getEntity()));
 	}
 }

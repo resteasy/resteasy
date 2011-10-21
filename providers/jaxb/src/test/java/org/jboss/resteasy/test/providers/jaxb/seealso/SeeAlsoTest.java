@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.seealso;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 
 /**
@@ -75,11 +76,8 @@ public class SeeAlsoTest extends BaseResourceTest
 
    }
 
-   private void runTest(String url)
-           throws JAXBException, IOException
+   private void runTest(String url) throws Exception
    {
-      HttpClient client = new HttpClient();
-
       JAXBContext ctx = JAXBContext.newInstance(RealFoo.class);
       StringWriter writer = new StringWriter();
       RealFoo foo = new RealFoo();
@@ -90,13 +88,14 @@ public class SeeAlsoTest extends BaseResourceTest
       String s = writer.getBuffer().toString();
       System.out.println(s);
 
-      PostMethod method = new PostMethod(url);
-      method.addRequestHeader("Content-Type", "application/xml");
-      method.setRequestBody(s);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      foo = (RealFoo) ctx.createUnmarshaller().unmarshal(method.getResponseBodyAsStream());
-      Assert.assertEquals(((RealFoo) foo).getName(), "bill");
+      ClientRequest request = new ClientRequest(url);
+      request.header("Content-Type", "application/xml");
+      request.body("application/xml", s);
+      ClientResponse<InputStream> response = request.post(InputStream.class);
+      Assert.assertEquals(200, response.getStatus());
+      foo = (RealFoo) ctx.createUnmarshaller().unmarshal(response.getEntity());
+      Assert.assertEquals(((RealFoo) foo).getName(), "bill"); 
+      response.releaseConnection();
    }
 
 }
