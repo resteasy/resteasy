@@ -2,6 +2,9 @@ package org.jboss.resteasy.plugins.delegates;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.jboss.resteasy.core.ExtendedCacheControl;
+
 import java.util.List;
 
 /**
@@ -13,7 +16,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
    public CacheControl fromString(String value) throws IllegalArgumentException
    {
       if (value == null) throw new IllegalArgumentException("Cache-Control value is null");
-      CacheControl result = new CacheControl();
+      ExtendedCacheControl result = new ExtendedCacheControl();
 
       String[] directives = value.split(",");
       for (String directive : directives)
@@ -77,7 +80,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
          }
          else if ("public".equals(lowercase))
          {
-            // do nothing
+             result.setPublic(true);
          }
          else
          {
@@ -104,7 +107,6 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
          if (fields.size() < 1)
          {
             addDirective("no-cache", buffer);
-            return buffer.toString();
          }
          else
          {
@@ -114,7 +116,14 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
             }
          }
       }
-      if (!value.isPrivate()) buffer.append("public");
+      if (value instanceof ExtendedCacheControl)
+      {
+          ExtendedCacheControl ecc = (ExtendedCacheControl) value;
+          if (ecc.isPublic())
+          {
+              addDirective("public", buffer);
+          }
+      }
       if (value.isMustRevalidate()) addDirective("must-revalidate", buffer);
       if (value.isNoTransform()) addDirective("no-transform", buffer);
       if (value.isNoStore()) addDirective("no-store", buffer);

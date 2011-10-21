@@ -37,8 +37,7 @@ public class CacheControlInterceptor implements PostProcessInterceptor, Accepted
       }
       else if (noMethodCache != null)
       {
-         cacheControl = new CacheControl();
-         cacheControl.setNoCache(true);
+         initCacheControl(noMethodCache);
       }
       else if (cache != null)
       {
@@ -46,9 +45,8 @@ public class CacheControlInterceptor implements PostProcessInterceptor, Accepted
       }
       else if (nocache != null)
       {
-         cacheControl = new CacheControl();
-         cacheControl.setNoCache(true);
-         for (String field : nocache.fields()) cacheControl.getNoCacheFields().add(field);
+         initCacheControl(nocache);
+         
       }
 
       return cacheControl != null;
@@ -73,6 +71,14 @@ public class CacheControlInterceptor implements PostProcessInterceptor, Accepted
       cacheControl.setNoStore((methodCached.noStore()));
       cacheControl.setNoTransform((methodCached.noTransform()));
       cacheControl.setProxyRevalidate(methodCached.proxyRevalidate());
+   }
+   
+   protected void initCacheControl(NoCache value)
+   {
+       cacheControl = new CacheControl();
+       cacheControl.setNoCache(true);
+       cacheControl.setNoTransform(false);
+       for (String field : value.fields()) cacheControl.getNoCacheFields().add(field);
    }
 
    public void postProcess(ServerResponse response)
