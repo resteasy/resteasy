@@ -8,7 +8,7 @@
     </description>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>2.2.2.GA</version>
+    <version>2.2.3.GA</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -537,7 +537,7 @@
                     <maxmemory>1024m</maxmemory>
                     <quiet>false</quiet>
                     <aggregate>true</aggregate>
-                    <excludePackageNames>com.restfully.*:org.jboss.resteasy.examples.*:org.jboss.resteasy.tests.*
+                    <excludePackageNames>com.restfully.*:org.jboss.resteasy.examples.*:org.jboss.resteasy.tests.*:se.*
                     </excludePackageNames>
                 </configuration>
             </plugin>

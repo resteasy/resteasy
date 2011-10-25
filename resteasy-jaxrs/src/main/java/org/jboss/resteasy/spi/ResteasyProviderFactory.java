@@ -1028,7 +1028,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected <T> T getProviderInstance(Class<? extends T> clazz)
    {
-      Constructor<?> constructor = PickConstructor.pickConstructor(clazz);
+      Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)
       {
          throw new RuntimeException("Unable to find a public constructor for provider class " + clazz.getName());

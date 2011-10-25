@@ -271,7 +271,7 @@ public class ResteasyDeployment
          throw new RuntimeException(e);
       }
 
-      Constructor<?> constructor = PickConstructor.pickConstructor(clazz);
+      Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)
       {
          throw new RuntimeException("Unable to find a public constructor for class " + clazz.getName());

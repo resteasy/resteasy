@@ -29,7 +29,7 @@ public class POJOResourceFactory implements ResourceFactory
 
    public void registered(InjectorFactory factory)
    {
-      Constructor constructor = PickConstructor.pickConstructor(scannableClass);
+      Constructor constructor = PickConstructor.pickPerRequestConstructor(scannableClass);
       if (constructor == null)
       {
          throw new RuntimeException("Unable to find a public constructor for class " + scannableClass.getName());

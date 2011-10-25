@@ -103,7 +103,7 @@ public class InterceptorRegistry<T>
 
       public PerMethodInterceptorFactory(Class clazz)
       {
-         Constructor<?> constructor = PickConstructor.pickConstructor(clazz);
+         Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
          if (constructor == null)
          {
             throw new RuntimeException("Unable to find a public constructor for interceptor class " + clazz.getName());
