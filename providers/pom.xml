@@ -26,5 +26,6 @@
         <module>yaml</module>
         <module>resteasy-html</module>
         <module>test-resteasy-html</module>
+        <module>resteasy-hibernatevalidator-provider</module>
     </modules>
 </project>
