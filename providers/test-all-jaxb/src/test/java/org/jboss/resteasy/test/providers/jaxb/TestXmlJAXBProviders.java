@@ -4,8 +4,9 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
 import junit.framework.Assert;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
@@ -28,6 +29,7 @@ import java.io.InputStream;
  */
 public class TestXmlJAXBProviders extends BaseResourceTest
 {
+   @SuppressWarnings("unused")
    private static final Logger logger = Logger.getLogger(TestXmlJAXBProviders.class);
 
    private static final String URL = generateURL("/jaxb/orders");
@@ -53,7 +55,12 @@ public class TestXmlJAXBProviders extends BaseResourceTest
       Assert.assertEquals("Ryan J. McDonough", order.getPerson());
    }
 
-   // @Test
+   /**
+    * This test was commented out in RESTEasy 2.2.
+    * 
+    * The file order_123.xml is an Order, not an Ordertype.
+    */
+//   @Test
    public void testUnmarshalOrdertype() throws Exception
    {
       InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
@@ -65,35 +72,95 @@ public class TestXmlJAXBProviders extends BaseResourceTest
       Assert.assertEquals("Ryan J. McDonough", order.getPerson());
    }
 
-   // @Test
+   /**
+    * This test was commented out in RESTEasy 2.2.
+    * 
+    * It was fixed by assigning the result of client.getOrderById() to an
+    * Order instead of an Ordertype.
+    */
+   @Test
    public void testGetOrder()
    {
-      Ordertype order = client.getOrderById("order_123");
+      Order order = client.getOrderById("order_123");
       Assert.assertEquals("Ryan J. McDonough", order.getPerson());
    }
 
+   
+   /**
+    * This test is the RESTEasy client framework version of the original
+    * testGetOrderWithParams().
+    */
    @Test
    public void testGetOrderWithParams() throws Exception
    {
-      HttpClient httpClient = new HttpClient();
-      GetMethod method = new GetMethod(URL + "/order_123");
-      method.addRequestHeader(JAXBHelper.FORMAT_XML_HEADER, "true");
-      int status = httpClient.executeMethod(method);
-      Assert.assertEquals(200, status);
-      ProviderHelper.writeTo(method.getResponseBodyAsStream(), System.out);
+      ClientRequest request = new ClientRequest(URL + "/order_123");
+      request.getHeaders().add(JAXBHelper.FORMAT_XML_HEADER, "true");
+      ClientResponse<InputStream> response = request.get(InputStream.class);
+      Assert.assertEquals(200, response.getStatus());
+      ProviderHelper.writeTo(response.getEntity(), System.out);
+      response.releaseConnection();
+   }
+   
+   /**
+    * This test is new.
+    * 
+    * It is the RESTEasy client framework version of the original
+    * testGetOrderWithParams(), except that it unmarshals the returned
+    * order from an OutputStream and tests its value, instead of just
+    * printing it out.
+    */
+   @Test
+   public void testGetOrderAndUnmarshal() throws Exception
+   {
+      ClientRequest request = new ClientRequest(URL + "/order_123");
+      request.header(JAXBHelper.FORMAT_XML_HEADER, "true");
+      ClientResponse<InputStream> response = request.get(InputStream.class);
+      Assert.assertEquals(200, response.getStatus());
+      JAXBContext jaxb = JAXBContext.newInstance(Order.class);
+      Unmarshaller u = jaxb.createUnmarshaller();
+      Order order = (Order) u.unmarshal(response.getEntity());
+      Assert.assertNotNull(order);
+      Assert.assertEquals("Ryan J. McDonough", order.getPerson());
+      response.releaseConnection();
    }
 
-   // @Test
+   /**
+    * This test is new.
+    * 
+    * It is the RESTEasy client framework version of the original
+    * testGetOrderWithParams(), except that it uses the client framework
+    * to implicitly unmarshal the returned order and it tests its value,
+    * instead of just printing it out.
+    */
+   @Test
+   public void testGetOrderWithParamsToOrder() throws Exception
+   {
+      ClientRequest request = new ClientRequest(URL + "/order_123");
+      request.getHeaders().add(JAXBHelper.FORMAT_XML_HEADER, "true");
+      ClientResponse<Order> response = request.get(Order.class);
+      Assert.assertEquals(200, response.getStatus());
+      Order order = response.getEntity();
+      Assert.assertEquals("Ryan J. McDonough", order.getPerson());
+   }
+   
+   /**
+    * This test was commented out in RESTEasy 2.2.
+    * 
+    * It was fixed by assigning the result of JAXBHelper.unmarshall(() to an
+    * Order instead of an Ordertype.  Also, an assert had to commented in
+    * OrderResource.updateOrder().
+    */
+   @Test
    public void testUpdateOrder()
    {
       InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
               "orders/order_123.xml");
-      Ordertype order = JAXBHelper.unmarshall(Ordertype.class, in).getValue();
-      int initialItemCount = order.getItem().size();
+      Order order = JAXBHelper.unmarshall(Order.class, in).getValue();
+      int initialItemCount = order.getItems().size();
       order = client.updateOrder(order, "order_123");
       Assert.assertEquals("Ryan J. McDonough", order.getPerson());
-      Assert.assertNotSame(initialItemCount, order.getItem().size());
-      Assert.assertEquals(3, order.getItem().size());
+      Assert.assertNotSame(initialItemCount, order.getItems().size());
+      Assert.assertEquals(3, order.getItems().size());
    }
 
 }
