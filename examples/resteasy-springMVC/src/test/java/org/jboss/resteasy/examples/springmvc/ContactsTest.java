@@ -1,5 +1,6 @@
 package org.jboss.resteasy.examples.springmvc;
 
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -63,16 +64,18 @@ public class ContactsTest
    @Test
    public void testData()
    {
-      Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
+      ClientResponse<?> response = (ClientResponse<?>) proxy.createContact(new Contact("Solomon", "Duskis"));
       Assert.assertEquals(response.getStatus(), 201);
       String duskisUri = (String) response.getMetadata().getFirst(
               HttpHeaderNames.LOCATION);
       System.out.println(duskisUri);
       Assert.assertTrue(duskisUri.endsWith(ContactsResource.CONTACTS_URL
               + "/data/Duskis"));
+      response.releaseConnection();
       Assert
               .assertEquals("Solomon", proxy.getContact(duskisUri).getFirstName());
-      proxy.createContact(new Contact("Bill", "Burkie"));
+      response = (ClientResponse<?>) proxy.createContact(new Contact("Bill", "Burkie"));
+      response.releaseConnection();
       System.out.println(proxy.getString(ContactsResource.CONTACTS_URL
               + "/data"));
    }
