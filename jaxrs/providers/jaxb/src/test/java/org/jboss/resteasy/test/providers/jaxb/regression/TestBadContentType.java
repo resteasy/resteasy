@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
@@ -96,15 +94,13 @@ public class TestBadContentType extends BaseResourceTest
    @Test
    public void testHtmlError() throws Exception
    {
-      HttpClient hc = new HttpClient();
-      GetMethod gm = new GetMethod(generateURL("/test"));
-      gm.addRequestHeader("accept", "text/html");
-      int status = hc.executeMethod(gm);
-      assertEquals(500, status);
-      String response = gm.getResponseBodyAsString();
-      System.out.println("response: " + response);
-      assertTrue(response
-              .contains("media type: text/html"));
+      ClientRequest request = new ClientRequest(generateURL("/test"));
+      request.header("Accept", "text/html");
+      ClientResponse<String> response = request.get(String.class);
+      String entity = response.getEntity();
+      System.out.println("response: " + entity);
+      assertEquals(500, response.getStatus());
+      assertTrue(entity.contains("media type: text/html"));
    }
 
 }
