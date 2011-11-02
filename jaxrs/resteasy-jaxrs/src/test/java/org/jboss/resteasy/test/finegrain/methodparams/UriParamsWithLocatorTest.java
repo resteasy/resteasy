@@ -19,7 +19,7 @@ import javax.ws.rs.core.PathSegment;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class UriParamsWithLocator
+public class UriParamsWithLocatorTest
 {
    public static class Resource
    {
