@@ -48,10 +48,10 @@ public class ShoppingTest
    @Test
    public void testPopulateDB() throws Exception
    {
-      String url = "http://localhost:9095/shop";
       ClientRequest request = new ClientRequest("http://localhost:8080/ex11_1-war/shop");
       ClientResponse response = request.head();
       Map<String, Link> shoppingLinks = processLinkHeaders(response);
+      response.releaseConnection();
 
       System.out.println("** Populate Products");
       request = new ClientRequest(shoppingLinks.get("products").getHref());
@@ -62,6 +62,7 @@ public class ShoppingTest
       request.body("application/xml", product);
       response = request.post();
       Assert.assertEquals(201, response.getStatus());
+      response.releaseConnection();
 
       product = new Product();
       product.setName("MacBook Pro");
@@ -69,6 +70,7 @@ public class ShoppingTest
       request.body("application/xml", product);
       response = request.post();
       Assert.assertEquals(201, response.getStatus());
+      response.releaseConnection();
 
       product = new Product();
       product.setName("iPod");
@@ -76,16 +78,16 @@ public class ShoppingTest
       request.body("application/xml", product);
       response = request.post();
       Assert.assertEquals(201, response.getStatus());
-
+      response.releaseConnection();
    }
 
    @Test
    public void testCreateOrder() throws Exception
    {
-      String url = "http://localhost:9095/shop";
       ClientRequest request = new ClientRequest("http://localhost:8080/ex11_1-war/shop");
       ClientResponse response = request.head();
       Map<String, Link> shoppingLinks = processLinkHeaders(response);
+      response.releaseConnection();
 
       System.out.println("** Buy an iPhone for Bill Burke");
       System.out.println();
@@ -114,7 +116,8 @@ public class ShoppingTest
          response = request.post();
          Assert.assertEquals(201, response.getStatus());
          String uri = (String) response.getHeaders().getFirst("Location");
-
+         response.releaseConnection();
+         
          request = new ClientRequest(uri);
          customer = request.getTarget(Customer.class);
       }
@@ -148,6 +151,7 @@ public class ShoppingTest
       request.body("application/xml", order);
       response = request.post();
       Assert.assertEquals(201, response.getStatus());
+      response.releaseConnection();
 
       System.out.println();
       System.out.println("** Show all orders.");
