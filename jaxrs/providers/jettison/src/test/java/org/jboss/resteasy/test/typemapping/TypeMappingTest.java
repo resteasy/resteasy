@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.typemapping;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -19,9 +19,6 @@ import java.util.Map;
 
 public class TypeMappingTest
 {
-
-   private HttpClient hc;
-
 
    @Test
    public void acceptXMLOnlyRequestNoProducesNoExtension() throws Exception
@@ -102,7 +99,6 @@ public class TypeMappingTest
    @Before
    public void startServer() throws Exception
    {
-      hc = new HttpClient();
       ResteasyDeployment deployment = new ResteasyDeployment();
       Map<String, String> mediaTypeMappings = new HashMap<String, String>();
       mediaTypeMappings.put("xml", "application/xml");
@@ -127,15 +123,15 @@ public class TypeMappingTest
       {
          url = url + "." + extension;
       }
-      GetMethod gm = new GetMethod(url);
+      ClientRequest request = new ClientRequest(url);
       if (accept != null)
       {
-         gm.setRequestHeader(HttpHeaderNames.ACCEPT, accept);
+         request.header(HttpHeaderNames.ACCEPT, accept);
       }
-      int status = hc.executeMethod(gm);
-      assertEquals("Request for " + url + " returned a non-200 status", 200, status);
+      ClientResponse<?> response = request.get();
+      assertEquals("Request for " + url + " returned a non-200 status", 200, response.getStatus());
       assertEquals("Request for " + url + " returned an unexpected content type",
-              expectedContentType, gm.getResponseHeader("Content-type").getValue());
+              expectedContentType, response.getHeaders().getFirst("Content-type"));
    }
 
    @XmlRootElement
