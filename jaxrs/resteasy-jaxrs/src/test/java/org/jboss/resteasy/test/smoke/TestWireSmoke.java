@@ -1,10 +1,7 @@
 package org.jboss.resteasy.test.smoke;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
@@ -46,40 +43,35 @@ public class TestWireSmoke
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
-      HttpClient client = new HttpClient();
+      {
+         ClientRequest request = new ClientRequest(generateURL("/basic"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("basic", response.getEntity());
+      }
 
       {
-         GetMethod method = createGetMethod("/basic");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("basic", method.getResponseBodyAsString());
-         method.releaseConnection();
+         ClientRequest request = new ClientRequest(generateURL("/basic"));
+         request.body("text/plain", "basic");
+         ClientResponse<?> response = request.put();
+         Assert.assertEquals(204, response.getStatus());
       }
+      
       {
-         PutMethod method = createPutMethod("/basic");
-         method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(204, status);
-         method.releaseConnection();
+         ClientRequest request = new ClientRequest(generateURL("/queryParam"));
+         request.queryParameter("param", "hello world");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("hello world", response.getEntity());
       }
+
       {
-         GetMethod method = createGetMethod("/queryParam");
-         NameValuePair[] params =
-                 {new NameValuePair("param", "hello world")};
-         method.setQueryString(params);
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("hello world", method.getResponseBodyAsString());
-         method.releaseConnection();
+         ClientRequest request = new ClientRequest(generateURL("/uriParam/1234"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("1234", response.getEntity());         
       }
-      {
-         GetMethod method = createGetMethod("/uriParam/1234");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("1234", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
-      client.getHttpConnectionManager().closeIdleConnections(0);
+
       dispatcher.getRegistry().removeRegistrations(SimpleResource.class);
       Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }
@@ -91,40 +83,35 @@ public class TestWireSmoke
       dispatcher.getRegistry().addPerRequestResource(LocatingResource.class);
       Assert.assertTrue(oldSize < dispatcher.getRegistry().getSize());
 
-      HttpClient client = new HttpClient();
+      {
+         ClientRequest request = new ClientRequest(generateURL("/locating/basic"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("basic", response.getEntity());
+      }
 
       {
-         GetMethod method = createGetMethod("/locating/basic");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("basic", method.getResponseBodyAsString());
-         method.releaseConnection();
+         ClientRequest request = new ClientRequest(generateURL("/locating/basic"));
+         request.body("text/plain", "basic");
+         ClientResponse<?> response = request.put(String.class);
+         Assert.assertEquals(204, response.getStatus());
       }
+
       {
-         PutMethod method = createPutMethod("/locating/basic");
-         method.setRequestEntity(new StringRequestEntity("basic", "text/plain", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(204, status);
-         method.releaseConnection();
+         ClientRequest request = new ClientRequest(generateURL("/locating/queryParam"));
+         request.queryParameter("param", "hello world");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("hello world", response.getEntity());
       }
+
       {
-         GetMethod method = createGetMethod("/locating/queryParam");
-         NameValuePair[] params =
-                 {new NameValuePair("param", "hello world")};
-         method.setQueryString(params);
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("hello world", method.getResponseBodyAsString());
-         method.releaseConnection();
+         ClientRequest request = new ClientRequest(generateURL("/locating/uriParam/1234"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("1234", response.getEntity());
       }
-      {
-         GetMethod method = createGetMethod("/locating/uriParam/1234");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals("1234", method.getResponseBodyAsString());
-         method.releaseConnection();
-      }
-      client.getHttpConnectionManager().closeIdleConnections(0);
+
       dispatcher.getRegistry().removeRegistrations(LocatingResource.class);
       Assert.assertEquals(oldSize, dispatcher.getRegistry().getSize());
    }
