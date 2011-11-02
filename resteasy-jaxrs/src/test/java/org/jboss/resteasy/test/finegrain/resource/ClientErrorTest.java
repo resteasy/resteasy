@@ -1,11 +1,16 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import java.io.IOException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -22,9 +27,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import java.io.IOException;
+import javax.ws.rs.core.MediaType;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -92,193 +98,193 @@ public class ClientErrorTest
    public void testComplex()
    {
       // this tests a Accept failure match and that another method can match the accept
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/complex/match");
-      method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/xml");
+      ClientRequest request = new ClientRequest(generateURL("/complex/match"));
+      request.header(HttpHeaderNames.ACCEPT, "text/xml");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpServletResponse.SC_OK);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testNotFound()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/foo/notthere");
-      method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/foo");
+      ClientRequest request = new ClientRequest(generateURL("/foo/notthere"));
+      request.header(HttpHeaderNames.ACCEPT, "application/foo");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_NOT_FOUND);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testMethodNotAllowed()
    {
-      HttpClient client = new HttpClient();
-
-      GetMethod method = createGetMethod("");
-      method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/foo");
+      ClientRequest request = new ClientRequest(generateURL(""));
+      request.header(HttpHeaderNames.ACCEPT, "application/foo");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_METHOD_NOT_ALLOWED);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
-
    }
 
    @Test
    public void testNotAcceptable()
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(generateBaseUrl());
-      method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/bar");
+      ClientRequest request = new ClientRequest(generateBaseUrl());
+      request.header(HttpHeaderNames.ACCEPT, "application/bar");
+      request.body("application/bar", "content");
       try
       {
-         method.setRequestEntity(new StringRequestEntity("content", "application/bar", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_NOT_ACCEPTABLE);
+         ClientResponse<?> response = request.post();
+         Assert.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testNoContentPost()
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = createPostMethod("/nocontent");
+      ClientRequest request = new ClientRequest(generateURL("/nocontent"));
+      request.body("text/plain", "content");
       try
       {
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_NO_CONTENT);
+         ClientResponse<?> response = request.post();
+         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testNoContent()
    {
-      HttpClient client = new HttpClient();
-      DeleteMethod method = new DeleteMethod(generateBaseUrl());
+      ClientRequest request = new ClientRequest(generateBaseUrl());
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_NO_CONTENT);
+         ClientResponse<?> response = request.delete();
+         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
-      }
-      method.releaseConnection();
+      }  
    }
 
    @Test
    public void testUnsupportedMediaType()
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(generateBaseUrl());
-      method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/foo");
+      ClientRequest request = new ClientRequest(generateBaseUrl());
+      request.header(HttpHeaderNames.ACCEPT, "application/foo");
+      request.body("text/plain", "content");
       try
       {
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE);
+         ClientResponse<?> response = request.post();
+         Assert.assertEquals(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
-
    }
 
    @Test
    public void testBadAcceptMediaTypeNoSubType()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/complex/match");
-      method.addRequestHeader(HttpHeaderNames.ACCEPT, "text");
+      ClientRequest request = new ClientRequest(generateURL("/complex/match"));
+      request.header(HttpHeaderNames.ACCEPT, "text");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpServletResponse.SC_BAD_REQUEST);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
-      }
-      finally {
-         method.releaseConnection();
       }
    }
 
    @Test
    public void testBadAcceptMediaTypeNonNumericQualityValue()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/complex/match");
-      method.addRequestHeader(HttpHeaderNames.ACCEPT, "text/plain; q=bad");
+      ClientRequest request = new ClientRequest(generateURL("/complex/match"));
+      request.header(HttpHeaderNames.ACCEPT, "text/plain; q=bad");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpServletResponse.SC_BAD_REQUEST);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+         response.releaseConnection();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
-      }
-      finally {
-         method.releaseConnection();
       }
    }
 
+   /**
+    * This test needs a special extension of MediaTypeHeaderDelegate
+    * to work with the RESTEasy client framework, so it has been moved
+    * to a separate class, ClientErrorBadMediaTest.
+    */
    @Test
    public void testBadContentType()
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = createPostMethod("/");
+      HttpClient client = new DefaultHttpClient();
+      HttpPost method = createPostMethod("/");
+      HttpResponse response = null;
       try
       {
-         method.setRequestEntity(new StringRequestEntity("content", "text", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_BAD_REQUEST);
+         method.setEntity(new StringEntity("content", "text", null));
+         response = client.execute(method);
+         Assert.assertEquals(response.getStatusLine().getStatusCode(), HttpResponseCodes.SC_BAD_REQUEST);
       }
       catch (IOException e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
+      finally
+      {
+         consumeEntity(response);
+      }
+   }
+   
+   static class TestMediaTypeHeaderDelegate extends MediaTypeHeaderDelegate
+   {
+      public static MediaType parse(String type)
+      {
+         if ("text".equals(type))
+         {
+            return new MediaType("text", "");
+         }
+         return MediaTypeHeaderDelegate.parse(type);
+      }
    }
 }
