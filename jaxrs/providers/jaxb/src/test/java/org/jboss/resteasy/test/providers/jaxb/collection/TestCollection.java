@@ -1,11 +1,9 @@
 package org.jboss.resteasy.test.providers.jaxb.collection;
 
 import junit.framework.Assert;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Before;
@@ -185,86 +183,75 @@ public class TestCollection extends BaseResourceTest
    @Test
    public void testArray() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/array");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String str = get.getResponseBodyAsString();
+      ClientRequest request = new ClientRequest(generateURL("/array"));
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity(String.class);
       System.out.println(str);
-      PutMethod put = createPutMethod("/array");
-      put.setRequestEntity(new StringRequestEntity(str, "application/xml", null));
-      status = client.executeMethod(put);
-      Assert.assertEquals(204, status);
-
+      request.body("application/xml", str);
+      response = request.put();
+      Assert.assertEquals(204, response.getStatus());  
+      response.releaseConnection();
    }
 
    @Test
    public void testList() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/list");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String str = get.getResponseBodyAsString();
+      ClientRequest request = new ClientRequest(generateURL("/list"));
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity(String.class);
       System.out.println(str);
-      PutMethod put = createPutMethod("/list");
-      put.setRequestEntity(new StringRequestEntity(str, "application/xml", null));
-      status = client.executeMethod(put);
-      Assert.assertEquals(204, status);
-
+      request.body("application/xml", str);
+      response = request.put();
+      Assert.assertEquals(204, response.getStatus());
+      response.releaseConnection();
    }
 
    @Test
    public void testResponse() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/list/response");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String str = get.getResponseBodyAsString();
-      System.out.println(str);
+      ClientRequest request = new ClientRequest(generateURL("/list/response"));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      System.out.println(response.getEntity());
    }
 
    @Test
    public void testNamespacedArray() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/namespaced/array");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String str = get.getResponseBodyAsString();
+      ClientRequest request = new ClientRequest(generateURL("/namespaced/array"));
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity(String.class);
       System.out.println(str);
-      PutMethod put = createPutMethod("/namespaced/array");
-      put.setRequestEntity(new StringRequestEntity(str, "application/xml", null));
-      status = client.executeMethod(put);
-      Assert.assertEquals(204, status);
-
+      request.body("application/xml", str);
+      response = request.put();
+      Assert.assertEquals(204, response.getStatus());      
+      response.releaseConnection();
    }
 
    @Test
    public void testNamespacedList() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/namespaced/list");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String str = get.getResponseBodyAsString();
+      ClientRequest request = new ClientRequest(generateURL("/namespaced/list"));
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity(String.class);
       System.out.println(str);
-      PutMethod put = createPutMethod("/namespaced/list");
-      put.setRequestEntity(new StringRequestEntity(str, "application/xml", null));
-      status = client.executeMethod(put);
-      Assert.assertEquals(204, status);
-
+      request.body("application/xml", str);
+      response = request.put();
+      Assert.assertEquals(204, response.getStatus());      
+      response.releaseConnection();
    }
 
    @Test
    public void testNamespacedResponse() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/namespaced/list/response");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String str = get.getResponseBodyAsString();
+      ClientRequest request = new ClientRequest(generateURL("/namespaced/list/response"));
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity(String.class);
       System.out.println(str);
    }
 
