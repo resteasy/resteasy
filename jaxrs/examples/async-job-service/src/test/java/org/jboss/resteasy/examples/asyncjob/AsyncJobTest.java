@@ -1,15 +1,12 @@
 package org.jboss.resteasy.examples.asyncjob;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.junit.Assert;
-import org.junit.Test;
-
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -17,45 +14,40 @@ import javax.ws.rs.core.Response;
  */
 public class AsyncJobTest
 {
+	   
    @Test
    public void testOneway() throws Exception
    {
-      HttpClient client = new HttpClient();
-      {
-         PutMethod method = new PutMethod("http://localhost:9095/resource?oneway=true");
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(202, status);
-         Thread.sleep(1500);
-         GetMethod get = new GetMethod("http://localhost:9095/resource");
-         status = client.executeMethod(get);
-         Assert.assertEquals(Integer.toString(1), get.getResponseBodyAsString());
-
-         method.releaseConnection();
-      }
+      ClientRequest request = new ClientRequest("http://localhost:9095/resource?oneway=true");
+      request.body("text/plain", "content");
+      ClientResponse<String> response = request.put(String.class);
+      Assert.assertEquals(202, response.getStatus());
+      response.releaseConnection();
+      Thread.sleep(1500);
+      request = new ClientRequest("http://localhost:9095/resource");
+      response = request.get(String.class);
+      Assert.assertEquals(Integer.toString(1), response.getEntity());
    }
 
    @Test
    public void testAsynch() throws Exception
    {
-      HttpClient client = new HttpClient();
-      {
-         PostMethod method = new PostMethod("http://localhost:9095/resource?asynch=true");
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), status);
-         String jobUrl1 = method.getResponseHeader(HttpHeaders.LOCATION).getValue();
-
-         GetMethod get = new GetMethod(jobUrl1);
-         status = client.executeMethod(get);
-         Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), status);
-
-         Thread.sleep(1500);
-         status = client.executeMethod(get);
-         Assert.assertEquals(Response.Status.OK.getStatusCode(), status);
-         Assert.assertEquals(get.getResponseBodyAsString(), "content");
-
-         method.releaseConnection();
-      }
+      ClientRequest request = new ClientRequest("http://localhost:9095/resource?asynch=true");
+      request.body("text/plain", "content");
+      ClientResponse<String> response = request.post(String.class);
+      Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
+      String jobUrl1 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+      System.out.println("jobUrl1: " + jobUrl1);
+      response.releaseConnection();
+      
+      request = new ClientRequest(jobUrl1);
+      response = request.get(String.class);
+      Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
+      response.releaseConnection();
+      
+      Thread.sleep(1500);
+      response = request.get(String.class);
+      Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+      Assert.assertEquals("content", response.getEntity());
    }
 }

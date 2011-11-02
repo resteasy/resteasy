@@ -13,13 +13,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jboss.resteasy.auth.oauth.OAuthConsumerRegistration;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.examples.oauth.provider.OAuthDBProvider;
+import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 
@@ -125,41 +123,44 @@ public class SubscriberReceiver
    
    public void registerMessagingServiceCallback(String consumerKey, String callback)
    {
-      try 
-      {
-          HttpClient client = new HttpClient();
-          PostMethod method = new PostMethod(MessagingServiceCallbackRegistrationURL);
-          Base64 base64 = new Base64();
-          String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
-          method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
-          method.addParameter("consumer_id", consumerKey);
-          method.addParameter("callback_uri", callback);
-          int status = client.executeMethod(method);
-          if (HttpResponseCodes.SC_OK != status) {
-              throw new RuntimeException("Callback Registration failed");
-          }
+      ClientRequest request = new ClientRequest(MessagingServiceCallbackRegistrationURL);
+      String base64Credentials = new String(Base64.encodeBytes("admin:admin".getBytes()));
+      request.header("Authorization", "Basic " + base64Credentials);
+      request.formParameter("consumer_id", consumerKey);
+      request.formParameter("callback_uri", callback);
+      ClientResponse<?> response = null;
+      try {
+         response = request.post();
+         if (HttpResponseCodes.SC_OK != response.getStatus()) {
+            throw new RuntimeException("Callback Registration failed");
+         }
       }
       catch (Exception ex) {
          throw new RuntimeException("Callback Registration failed");
+      }
+      finally {
+         response.releaseConnection();
       }
    }
    
    public void produceMessages()
     {
-       try {
-           HttpClient client = new HttpClient();
-           PostMethod method = new PostMethod(MessagingServiceMessagesURL);
-           Base64 base64 = new Base64();
-           String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
-           method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
-           method.setRequestEntity(new StringRequestEntity("Hello2 !", "text/plain", "UTF-8"));
-           int status = client.executeMethod(method);
-           if (HttpResponseCodes.SC_OK != status) {
-               throw new RuntimeException("Messages can not be sent");
-           }
-       }
-       catch (Exception ex) {
-           throw new RuntimeException("Messages can not be sent");
-       }
+      ClientRequest request = new ClientRequest(MessagingServiceMessagesURL);
+      String base64Credentials = new String(Base64.encodeBytes("admin:admin".getBytes()));
+      request.header("Authorization", "Basic " + base64Credentials);
+      request.body("text/plain", "Hello2 !");
+      ClientResponse<?> response = null;
+      try {
+         response = request.post();
+         if (HttpResponseCodes.SC_OK != response.getStatus()) {
+            throw new RuntimeException("Messages can not be sent");
+         }
+      }
+      catch (Exception ex) {
+         throw new RuntimeException("Messages can not be sent");
+      }
+      finally {
+         response.releaseConnection();
+      }
     }
 }

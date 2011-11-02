@@ -21,10 +21,9 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.auth.oauth.OAuthUtils;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 @Path("consumer")
@@ -78,12 +77,12 @@ public class ConsumerResource
 
    private void accessWithoutToken(String uri) throws Exception
    {
-       HttpClient client = new HttpClient();
-       GetMethod method = new GetMethod(uri + "/resource1");
-       int status = client.executeMethod(method);
-       if (400 != status) {
-           throw new RuntimeException("Consumer has not been authorized yet but already can access the resource");
-       }
+      ClientRequest request = new ClientRequest(uri + "/resource1");
+      ClientResponse<?> response = request.get();
+      response.releaseConnection();
+      if (400 != response.getStatus()) {
+         throw new RuntimeException("Consumer has not been authorized yet but already can access the resource");
+      }
    }
    
    
@@ -125,18 +124,18 @@ public class ConsumerResource
    
    public String getSharedSecret(String consumerKey) throws Exception
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(ConsumerRegistrationURL);
-      method.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
-      int status = client.executeMethod(method);
-      if (HttpResponseCodes.SC_OK != status) {
-          throw new RuntimeException("Registration failed");
+      ClientRequest request = new ClientRequest(ConsumerRegistrationURL);
+      request.formParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+      ClientResponse<String> response = request.post(String.class);
+      if (HttpResponseCodes.SC_OK != response.getStatus()) {
+         response.releaseConnection();
+         throw new RuntimeException("Registration failed");
       }
       // check that we got all tokens
-      Map<String, String> response = OAuth.newMap(OAuth.decodeForm(method.getResponseBodyAsString()));
-      String secret = response.get("xoauth_consumer_secret");
+      Map<String, String> tokens = OAuth.newMap(OAuth.decodeForm(response.getEntity()));
+      String secret = tokens.get("xoauth_consumer_secret");
       if (secret == null) {
-          throw new RuntimeException("No secret available");
+         throw new RuntimeException("No secret available");
       }
       return secret;
    }
@@ -144,87 +143,83 @@ public class ConsumerResource
    public Token getRequestToken(String consumerKey, String consumerSecret, 
                                 String callbackURI, String scope, String permission) throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(
-              getRequestURL(consumerKey, consumerSecret, callbackURI, scope, permission));
-      int status = client.executeMethod(method);
-      if (HttpResponseCodes.SC_OK != status) {
-          throw new RuntimeException("Request token can not be obtained");
+      ClientRequest request = new ClientRequest(getRequestURL(consumerKey, consumerSecret, callbackURI, scope, permission));
+      ClientResponse<String> response = request.get(String.class);
+      if (HttpResponseCodes.SC_OK != response.getStatus()) {
+         response.releaseConnection();
+         throw new RuntimeException("Request token can not be obtained");
       }
       // check that we got all tokens
-      Map<String, String> response = getResponse(method);
-      if (response.size() != 3
-          || !response.containsKey(OAuth.OAUTH_TOKEN)
-          || !(response.get(OAuth.OAUTH_TOKEN).length() > 0)
-          || !response.containsKey(OAuth.OAUTH_TOKEN_SECRET)
-          || !(response.get(OAuth.OAUTH_TOKEN_SECRET).length() > 0)
-          || !response.containsKey(OAuthUtils.OAUTH_CALLBACK_CONFIRMED_PARAM)
-          || !response.get(OAuthUtils.OAUTH_CALLBACK_CONFIRMED_PARAM).equals("true")) {
-          throw new RuntimeException("Wrong request token details");
+      Map<String, String> tokens = getTokens(response.getEntity());
+      if (tokens.size() != 3
+            || !tokens.containsKey(OAuth.OAUTH_TOKEN)
+            || !(tokens.get(OAuth.OAUTH_TOKEN).length() > 0)
+            || !tokens.containsKey(OAuth.OAUTH_TOKEN_SECRET)
+            || !(tokens.get(OAuth.OAUTH_TOKEN_SECRET).length() > 0)
+            || !tokens.containsKey(OAuthUtils.OAUTH_CALLBACK_CONFIRMED_PARAM)
+            || !tokens.get(OAuthUtils.OAUTH_CALLBACK_CONFIRMED_PARAM).equals("true")) {
+         throw new RuntimeException("Wrong request token details");
       }
 
-      method.releaseConnection();
-      
-      return new Token(response.get(OAuth.OAUTH_TOKEN), response.get(OAuth.OAUTH_TOKEN_SECRET));
+      return new Token(tokens.get(OAuth.OAUTH_TOKEN), tokens.get(OAuth.OAUTH_TOKEN_SECRET));
    }
 
-   private Map<String, String> getResponse(GetMethod method) throws Exception {
-	   return OAuth.newMap(OAuth.decodeForm(method.getResponseBodyAsString()));
+   private Map<String, String> getTokens(String response) throws Exception {
+	   return OAuth.newMap(OAuth.decodeForm(response));
    }
 
 
    public Token getAccessToken(String consumerKey, String consumerSecret,
            Token requestToken) throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(getAccessURL(consumerKey, consumerSecret, 
-                 requestToken.getToken(), requestToken.getSecret(), requestToken.getVerifier()));
-      int status = client.executeMethod(method);
-      if (HttpResponseCodes.SC_OK != status) {
-          throw new RuntimeException("Request token can not be obtained");
+      String url = getAccessURL(consumerKey, consumerSecret, 
+                                requestToken.getToken(), requestToken.getSecret(),
+                                requestToken.getVerifier());
+      ClientRequest request = new ClientRequest(url);
+      ClientResponse<String> response = request.get(String.class);
+      if (HttpResponseCodes.SC_OK != response.getStatus()) {
+         response.releaseConnection();
+         throw new RuntimeException("Request token can not be obtained");
       }
       // check that we got all tokens
-      Map<String, String> response = getResponse(method);
-      if (response.size() != 2
-          || !response.containsKey(OAuth.OAUTH_TOKEN)
-          || !(response.get(OAuth.OAUTH_TOKEN).length() > 0)
-          || !response.containsKey(OAuth.OAUTH_TOKEN_SECRET)
-          || !(response.get(OAuth.OAUTH_TOKEN_SECRET).length() > 0)) {
-          throw new RuntimeException("Wrong access token details");
+      Map<String, String> tokens = getTokens(response.getEntity());
+      if (tokens.size() != 2
+            || !tokens.containsKey(OAuth.OAUTH_TOKEN)
+            || !(tokens.get(OAuth.OAUTH_TOKEN).length() > 0)
+            || !tokens.containsKey(OAuth.OAUTH_TOKEN_SECRET)
+            || !(tokens.get(OAuth.OAUTH_TOKEN_SECRET).length() > 0)) {
+         throw new RuntimeException("Wrong access token details");
       }
-      
-      method.releaseConnection();
-      return new Token(response.get(OAuth.OAUTH_TOKEN), response.get(OAuth.OAUTH_TOKEN_SECRET));
+
+      return new Token(tokens.get(OAuth.OAUTH_TOKEN), tokens.get(OAuth.OAUTH_TOKEN_SECRET));
    }
 
-   
-	public String accessEndUserResource(Token accessToken) throws Exception
-	{
-	    HttpClient client = new HttpClient();
-        GetMethod method = new GetMethod(getEndUserURL("/resource1", DEFAULT_CONSUMER_ID, consumerSecret, accessToken.getToken(), accessToken.getSecret()));
-	    try {
-    	    int status = client.executeMethod(method);
-    	    if (200 != status) {
-    	        throw new RuntimeException("Unexpected status");
-    	    }
-    	    return method.getResponseBodyAsString();
-	    } finally {
-	        method.releaseConnection();
-	    }
+
+   public String accessEndUserResource(Token accessToken) throws Exception
+   {
+      String url = getEndUserURL("/resource1", DEFAULT_CONSUMER_ID, consumerSecret, accessToken.getToken(), accessToken.getSecret());
+      ClientRequest request = new ClientRequest(url);
+      ClientResponse<String> response = request.get(String.class);
+      if (200 != response.getStatus()) {
+         response.releaseConnection();
+         throw new RuntimeException("Unexpected status: " + response.getStatus());
+      }
+      return response.getEntity();
    }
-	
-	public void tryAccessEndUserAdminResource(Token accessToken) throws Exception
-    {
-        HttpClient client = new HttpClient();
-        GetMethod method = new GetMethod(getEndUserURL("/resource2", DEFAULT_CONSUMER_ID, consumerSecret, accessToken.getToken(), accessToken.getSecret()));
-        try {
-            int status = client.executeMethod(method);
-            if (401 != status) {
-                throw new RuntimeException("Unexpected status");
-            }
-        } finally {
-            method.releaseConnection();
-        }
+
+   public void tryAccessEndUserAdminResource(Token accessToken) throws Exception
+   {
+      String url = getEndUserURL("/resource2", DEFAULT_CONSUMER_ID, consumerSecret, accessToken.getToken(), accessToken.getSecret());
+      ClientRequest request = new ClientRequest(url);
+      ClientResponse<?> response = null;
+      try {
+         response = request.get();
+         if (401 != response.getStatus()) {
+            throw new RuntimeException("Unexpected status: " + response.getStatus());
+         }
+      } finally {
+         response.releaseConnection();
+      }
    }	
 
    private String getRequestURL(String consumerKey, String consumerSecret, 

@@ -15,11 +15,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.xml.sax.InputSource;
 
@@ -65,25 +63,46 @@ public class EndUser
    
    private static void accessEndUserResource(String relativeURI) throws Exception
    {
-       HttpClient client = new HttpClient();
-       GetMethod method = new GetMethod(EndUserResourceURL + relativeURI);
-       
-       Base64 base64 = new Base64();
-       String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
-       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
-       
-       int status = client.executeMethod(method);
-       if ("/invisible".equals(relativeURI)) {
-           if (status != 401) {
-               throw new RuntimeException("End user can access the invisible resource");
-           } else {
-               return;
-           }
-       }
-       if (HttpResponseCodes.SC_OK != status) {
-           throw new RuntimeException("End user can not access its own resources");
-       }
-       System.out.println("End user resource : " + method.getResponseBodyAsString());
+      ClientRequest request = new ClientRequest(EndUserResourceURL + relativeURI);
+      String base64Credentials = new String(Base64.encodeBytes("admin:admin".getBytes()));
+      request.header("Authorization", "Basic " + base64Credentials);
+      ClientResponse<String> response = null;
+      try {
+         response = request.get(String.class);
+         if ("/invisible".equals(relativeURI)) {
+            if (response.getStatus() != 401) {
+                throw new RuntimeException("End user can access the invisible resource");
+            } else {
+                return;
+            }
+        }
+        if (HttpResponseCodes.SC_OK != response.getStatus()) {
+            throw new RuntimeException("End user can not access its own resources");
+        }
+        System.out.println("End user resource : " + response.getEntity());
+      } finally {
+         response.releaseConnection();
+      }
+      
+//       HttpClient client = new HttpClient();
+//       GetMethod method = new GetMethod(EndUserResourceURL + relativeURI);
+//       
+//       Base64 base64 = new Base64();
+//       String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+//       method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
+//       
+//       int status = client.executeMethod(method);
+//       if ("/invisible".equals(relativeURI)) {
+//           if (status != 401) {
+//               throw new RuntimeException("End user can access the invisible resource");
+//           } else {
+//               return;
+//           }
+//       }
+//       if (HttpResponseCodes.SC_OK != status) {
+//           throw new RuntimeException("End user can not access its own resources");
+//       }
+//       System.out.println("End user resource : " + method.getResponseBodyAsString());
    }
    
    /**
@@ -95,23 +114,40 @@ public class EndUser
     */
    public String requestServiceFromThirdPartyWebApp() throws Exception
    {
-      HttpClient client = new HttpClient();
-      
-      GetMethod method = new GetMethod(ConsumerWebAppURL
-              + "?scope=" + URLEncoder.encode(EndUserResourceURL, "UTF-8"));
-      method.setFollowRedirects(false);
-      int status = client.executeMethod(method);
-      if (302 != status) {
-          // note that if the end user knows about the OAuth service's token authorization endpoint
-          // then it can try to read the request token from the body and build the authorization URL
-          // itself, in case the consumer has not provided the redirection URI
-          throw new RuntimeException("Service request has failed - redirection is expected");
+      String url = ConsumerWebAppURL + "?scope=" + URLEncoder.encode(EndUserResourceURL, "UTF-8");
+      ClientRequest request = new ClientRequest(url);
+      request.followRedirects(false);
+      ClientResponse<?> response = request.get();
+      response.releaseConnection();
+      if (302 != response.getStatus()) {
+         // note that if the end user knows about the OAuth service's token authorization endpoint
+         // then it can try to read the request token from the body and build the authorization URL
+         // itself, in case the consumer has not provided the redirection URI
+         throw new RuntimeException("Service request has failed - redirection is expected");
       }
-      String authorizationURI = method.getResponseHeader("Location").getValue();
+      String authorizationURI = response.getHeaders().getFirst("Location");
       if (authorizationURI == null) {
-          throw new RuntimeException("Token authorization URI is missing");
+         throw new RuntimeException("Token authorization URI is missing");
       }
       return authorizationURI;
+//      
+//      HttpClient client = new HttpClient();
+//      
+//      GetMethod method = new GetMethod(ConsumerWebAppURL
+//              + "?scope=" + URLEncoder.encode(EndUserResourceURL, "UTF-8"));
+//      method.setFollowRedirects(false);
+//      int status = client.executeMethod(method);
+//      if (302 != status) {
+//          // note that if the end user knows about the OAuth service's token authorization endpoint
+//          // then it can try to read the request token from the body and build the authorization URL
+//          // itself, in case the consumer has not provided the redirection URI
+//          throw new RuntimeException("Service request has failed - redirection is expected");
+//      }
+//      String authorizationURI = method.getResponseHeader("Location").getValue();
+//      if (authorizationURI == null) {
+//          throw new RuntimeException("Token authorization URI is missing");
+//      }
+//      return authorizationURI;
    }
    
    /**
@@ -123,45 +159,88 @@ public class EndUser
     */
    public String authorizeConsumerRequestToken(String url) throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(url);
+      ClientRequest request = new ClientRequest(url);
       // request that XML formatted authorization request is presented
-      method.addRequestHeader(new Header("Accept", "application/xml"));
-      Base64 base64 = new Base64();
-      String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
-      method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
+      request.header("Accept", "application/xml");
+      String base64Credentials = new String(Base64.encodeBytes("admin:admin".getBytes()));
+      request.header("Authorization", "Basic " + base64Credentials);
+      ClientResponse<String> response = null;
+      try {
+         response = request.get(String.class);
+         if (200 != response.getStatus()) {
+            throw new RuntimeException("No authorization request data is available");
+         }
+         // at this stage we have an XML-formatted token authorization request
+         String body = response.getEntity();
+         String consumerId = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+         "/ns:tokenAuthorizationRequest/ns:consumerId/text()");
+         String consumerName = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+         "/ns:tokenAuthorizationRequest/ns:consumerName/text()");
+         String requestScope = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+         "/ns:tokenAuthorizationRequest/ns:scopes/text()");
+         String requestPermission = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+         "/ns:tokenAuthorizationRequest/ns:permissions/text()");
+         // TODO : ask about read/write permissions
+         String message = "Authorize " 
+            + ("".equals(consumerName) ? consumerId : consumerName)
+            + System.getProperty("line.separator")
+            + " to access " + ("".equals(requestScope) ? "your resources" : requestScope)
+            + (requestPermission == null ? "" :
+               (System.getProperty("line.separator")
+                     + " and grant the following permissions : \"" + requestPermission + "\""))
+                     + " (yes/no) ?";
+         String decision = JOptionPane.showInputDialog(message);
+         if (decision == null || !"yes".equalsIgnoreCase(decision)) {
+            decision = "no";
+         }
+         String replyTo = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+         "/ns:tokenAuthorizationRequest/@replyTo");
+         replyTo += "&xoauth_end_user_decision=" + decision.toLowerCase();
+         return confirmAuthorization(replyTo);
+
+      } finally {
+         response.releaseConnection();
+      }
       
-      int status = client.executeMethod(method);
-      if (200 != status) {
-          throw new RuntimeException("No authorization request data is available");
-      }
-      // at this stage we have an XML-formatted token authorization request
-      String body = method.getResponseBodyAsString();
-      String consumerId = evaluateBody(new ByteArrayInputStream(body.getBytes()),
-                                        "/ns:tokenAuthorizationRequest/ns:consumerId/text()");
-      String consumerName = evaluateBody(new ByteArrayInputStream(body.getBytes()),
-                                        "/ns:tokenAuthorizationRequest/ns:consumerName/text()");
-      String requestScope = evaluateBody(new ByteArrayInputStream(body.getBytes()),
-                                        "/ns:tokenAuthorizationRequest/ns:scopes/text()");
-      String requestPermission = evaluateBody(new ByteArrayInputStream(body.getBytes()),
-                                        "/ns:tokenAuthorizationRequest/ns:permissions/text()");
-      // TODO : ask about read/write permissions
-      String message = "Authorize " 
-                        + ("".equals(consumerName) ? consumerId : consumerName)
-                        + System.getProperty("line.separator")
-                        + " to access " + ("".equals(requestScope) ? "your resources" : requestScope)
-                        + (requestPermission == null ? "" :
-                            (System.getProperty("line.separator")
-                             + " and grant the following permissions : \"" + requestPermission + "\""))
-                        + " (yes/no) ?";
-      String decision = JOptionPane.showInputDialog(message);
-      if (decision == null || !"yes".equalsIgnoreCase(decision)) {
-          decision = "no";
-      }
-      String replyTo = evaluateBody(new ByteArrayInputStream(body.getBytes()),
-                                        "/ns:tokenAuthorizationRequest/@replyTo");
-      replyTo += "&xoauth_end_user_decision=" + decision.toLowerCase();
-      return confirmAuthorization(replyTo);
+//      HttpClient client = new HttpClient();
+//      GetMethod method = new GetMethod(url);
+//      // request that XML formatted authorization request is presented
+//      method.addRequestHeader(new Header("Accept", "application/xml"));
+//      Base64 base64 = new Base64();
+//      String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+//      method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
+//      
+//      int status = client.executeMethod(method);
+//      if (200 != status) {
+//          throw new RuntimeException("No authorization request data is available");
+//      }
+//      // at this stage we have an XML-formatted token authorization request
+//      String body = method.getResponseBodyAsString();
+//      String consumerId = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+//                                        "/ns:tokenAuthorizationRequest/ns:consumerId/text()");
+//      String consumerName = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+//                                        "/ns:tokenAuthorizationRequest/ns:consumerName/text()");
+//      String requestScope = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+//                                        "/ns:tokenAuthorizationRequest/ns:scopes/text()");
+//      String requestPermission = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+//                                        "/ns:tokenAuthorizationRequest/ns:permissions/text()");
+//      // TODO : ask about read/write permissions
+//      String message = "Authorize " 
+//                        + ("".equals(consumerName) ? consumerId : consumerName)
+//                        + System.getProperty("line.separator")
+//                        + " to access " + ("".equals(requestScope) ? "your resources" : requestScope)
+//                        + (requestPermission == null ? "" :
+//                            (System.getProperty("line.separator")
+//                             + " and grant the following permissions : \"" + requestPermission + "\""))
+//                        + " (yes/no) ?";
+//      String decision = JOptionPane.showInputDialog(message);
+//      if (decision == null || !"yes".equalsIgnoreCase(decision)) {
+//          decision = "no";
+//      }
+//      String replyTo = evaluateBody(new ByteArrayInputStream(body.getBytes()),
+//                                        "/ns:tokenAuthorizationRequest/@replyTo");
+//      replyTo += "&xoauth_end_user_decision=" + decision.toLowerCase();
+//      return confirmAuthorization(replyTo);
    }
    
    private String evaluateBody(InputStream body, String expression) {
@@ -179,33 +258,64 @@ public class EndUser
    
    public String confirmAuthorization(String url) throws Exception
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(url);
-      Base64 base64 = new Base64();
-      String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
-      method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
+      ClientRequest request = new ClientRequest(url);
+      String base64Credentials = new String(Base64.encodeBytes("admin:admin".getBytes()));
+      request.header("Authorization", "Basic " + base64Credentials);
+      ClientResponse<String> response = null;
+      try {
+         response = request.post(String.class);
+         if (302 != response.getStatus()) {
+            throw new RuntimeException("Initiation failed");
+        }
+        // check that we got all tokens
+        String callbackURI = response.getHeaders().getFirst("Location");
+        if (callbackURI == null) {
+            throw new RuntimeException("Callback failed");
+        }
+        return callbackURI;
+      } finally {
+         response.releaseConnection();
+      }
       
-      int status = client.executeMethod(method);
-      if (302 != status) {
-          throw new RuntimeException("Initiation failed");
-      }
-      // check that we got all tokens
-      String callbackURI = method.getResponseHeader("Location").getValue();
-      if (callbackURI == null) {
-          throw new RuntimeException("Callback failed");
-      }
-      return callbackURI;
+//      HttpClient client = new HttpClient();
+//      PostMethod method = new PostMethod(url);
+//      Base64 base64 = new Base64();
+//      String base64Credentials = new String(base64.encode("admin:admin".getBytes()));
+//      method.addRequestHeader(new Header("Authorization", "Basic " + base64Credentials));
+//      
+//      int status = client.executeMethod(method);
+//      if (302 != status) {
+//          throw new RuntimeException("Initiation failed");
+//      }
+//      // check that we got all tokens
+//      String callbackURI = method.getResponseHeader("Location").getValue();
+//      if (callbackURI == null) {
+//          throw new RuntimeException("Callback failed");
+//      }
+//      return callbackURI;
    }
    
    public String setCallback(String url) throws Exception
    {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(url);
-      int status = client.executeMethod(method);
-      if (200 != status) {
-          throw new RuntimeException("Service failed");
+      ClientRequest request = new ClientRequest(url);
+      ClientResponse<String> response = null;
+      try {
+         response = request.post(String.class);
+         if (200 != response.getStatus()) {
+            throw new RuntimeException("Service failed");
+        }
+        return response.getEntity();
+      } finally {
+         response.releaseConnection();
       }
-      return method.getResponseBodyAsString();
+      
+//      HttpClient client = new HttpClient();
+//      PostMethod method = new PostMethod(url);
+//      int status = client.executeMethod(method);
+//      if (200 != status) {
+//          throw new RuntimeException("Service failed");
+//      }
+//      return method.getResponseBodyAsString();
    }
    
    private static class NamespaceContextImpl implements NamespaceContext {
