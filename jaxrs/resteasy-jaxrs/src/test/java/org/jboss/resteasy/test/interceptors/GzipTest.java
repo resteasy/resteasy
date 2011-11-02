@@ -1,7 +1,10 @@
 package org.jboss.resteasy.test.interceptors;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.jboss.resteasy.annotations.GZIP;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -103,30 +106,30 @@ public class GzipTest extends BaseResourceTest
    {
       // test that it was zipped by running it through Apache HTTP Client which does not automatically unzip
 
-      HttpClient client = new HttpClient();
+      HttpClient client = new DefaultHttpClient();
       {
-         GetMethod get = new GetMethod(TestPortProvider.generateURL("/encoded/text"));
-         get.addRequestHeader("Accept-Encoding", "gzip, deflate");
-         int status = client.executeMethod(get);
-         Assert.assertEquals(200, status);
-         String response = get.getResponseBodyAsString();
-         Assert.assertEquals("gzip", get.getResponseHeader("Content-Encoding").getValue());
+         HttpGet get = new HttpGet(TestPortProvider.generateURL("/encoded/text"));
+         get.addHeader("Accept-Encoding", "gzip, deflate");
+         HttpResponse response = client.execute(get);
+         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+         Assert.assertEquals("gzip", response.getFirstHeader("Content-Encoding").getValue());
 
          // test that it is actually zipped
-         Assert.assertNotSame(response, "HELLO WORLD");
+         String entity = EntityUtils.toString(response.getEntity());
+         Assert.assertNotSame(entity, "HELLO WORLD");
       }
 
 
       {
-         GetMethod get = new GetMethod(TestPortProvider.generateURL("/text"));
-         get.addRequestHeader("Accept-Encoding", "gzip, deflate");
-         int status = client.executeMethod(get);
-         Assert.assertEquals(200, status);
-         String response = get.getResponseBodyAsString();
-         Assert.assertEquals("gzip", get.getResponseHeader("Content-Encoding").getValue());
+         HttpGet get = new HttpGet(TestPortProvider.generateURL("/text"));
+         get.addHeader("Accept-Encoding", "gzip, deflate");
+         HttpResponse response = client.execute(get);
+         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+         Assert.assertEquals("gzip", response.getFirstHeader("Content-Encoding").getValue());
 
          // test that it is actually zipped
-         Assert.assertNotSame(response, "HELLO WORLD");
+         String entity = EntityUtils.toString(response.getEntity());
+         Assert.assertNotSame(entity, "HELLO WORLD");
       }
    }
 
@@ -135,15 +138,15 @@ public class GzipTest extends BaseResourceTest
    {
       // test that if there is no accept-encoding: gzip header that result isn't encoded
 
-      HttpClient client = new HttpClient();
-      GetMethod get = new GetMethod(TestPortProvider.generateURL("/encoded/text"));
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String response = get.getResponseBodyAsString();
-      Assert.assertNull(get.getResponseHeader("Content-Encoding"));
+      HttpClient client = new DefaultHttpClient();
+      HttpGet get = new HttpGet(TestPortProvider.generateURL("/encoded/text"));
+      HttpResponse response = client.execute(get);
+      Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+      Assert.assertNull(response.getFirstHeader("Content-Encoding"));
 
       // test that it is actually zipped
-      Assert.assertEquals(response, "HELLO WORLD");
+      String entity = EntityUtils.toString(response.getEntity());
+      Assert.assertEquals(entity, "HELLO WORLD");
 
    }
 
