@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -107,15 +109,11 @@ public class StringCharsetTest extends BaseResourceTest
    @Test
    public void testIt() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(generateURL("/charset/test.xml"));
-      method.addRequestHeader("Accept", "application/xml;charset=iso-8859-2");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      String str = new String(method.getResponseBody(), "UTF-8");
+      ClientRequest request = new ClientRequest(generateURL("/charset/test.xml"));
+      request.getHeaders().add("Accept", "application/xml;charset=iso-8859-2");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String str = response.getEntity();
       System.out.println(str);
-
    }
-
-
 }
