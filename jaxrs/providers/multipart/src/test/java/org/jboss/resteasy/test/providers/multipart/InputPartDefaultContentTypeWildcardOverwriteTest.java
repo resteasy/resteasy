@@ -14,12 +14,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import junit.framework.Assert;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
@@ -117,14 +116,11 @@ public class InputPartDefaultContentTypeWildcardOverwriteTest extends
 				+ "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
 				+ "<xmlBean><myInt>27</myInt><myString>Lorem Ipsum</myString></xmlBean>\r\n"
 				+ "--boo--\r\n";
-		HttpClient httpClient = new HttpClient();
-		PostMethod postMethod = new PostMethod(TEST_URI + "/mime");
-		postMethod.setRequestEntity(new ByteArrayRequestEntity(message
-				.getBytes("utf-8"), "multipart/form-data; boundary=boo"));
-		httpClient.executeMethod(postMethod);
-		String response = postMethod.getResponseBodyAsString();
-		Assert.assertEquals("Status code is wrong.", 20, postMethod
-				.getStatusCode() / 10);
-		Assert.assertEquals("Response text is wrong", "27", response);
+		
+		ClientRequest request = new ClientRequest(TEST_URI + "/mime");
+		request.body("multipart/form-data; boundary=boo", message.getBytes("utf-8"));
+		ClientResponse<String> response = request.post(String.class);
+        Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
+        Assert.assertEquals("Response text is wrong", "27", response.getEntity());
 	}
 }
