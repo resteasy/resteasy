@@ -135,7 +135,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
       }
 
       byte[] bytes = baos.toByteArray();
-      httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(bytes.length));
+//      httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(bytes.length));
       entityStream.write(bytes);
 
    }
