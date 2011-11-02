@@ -1,8 +1,9 @@
 package org.jboss.resteasy.test.providers.jaxb.inheritance;
 
 import junit.framework.Assert;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Before;
@@ -23,10 +24,10 @@ public class InheritanceTest extends BaseResourceTest
    @Test
    public void testInheritance() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("/zoo");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
+      ClientRequest request = new ClientRequest(generateURL("/zoo"));
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.releaseConnection();
    }
 
 }
