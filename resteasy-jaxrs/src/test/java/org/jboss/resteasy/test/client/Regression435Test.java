@@ -17,7 +17,7 @@ import javax.ws.rs.WebApplicationException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class Regression435 extends BaseResourceTest
+public class Regression435Test extends BaseResourceTest
 {
    @Path("/test")
    public interface MyTest
