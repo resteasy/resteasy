@@ -9,8 +9,10 @@ package org.jboss.resteasy.test;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.OptionsMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -61,14 +63,14 @@ public class TestPortProvider
    }
 
    /**
-    * Create a commons-httpclient GetMethod object.
+    * Create an httpclient HttpGet object.
     *
     * @param path the request path
     * @return a GetMethod object
     */
-   public static GetMethod createGetMethod(String path)
+   public static HttpGet createGetMethod(String path)
    {
-      return new GetMethod(generateURL(path));
+      return new HttpGet(generateURL(path));
    }
 
    /**
@@ -77,20 +79,20 @@ public class TestPortProvider
     * @param path the request path
     * @return an OptionsMethod object
     */
-   public static OptionsMethod createOptionsMethod(String path)
+   public static HttpOptions createOptionsMethod(String path)
    {
-      return new OptionsMethod(generateURL(path));
+      return new HttpOptions(generateURL(path));
    }
 
    /**
-    * Create a commons-httpclient PostMethod object.
+    * Create an httpclient HttpPost object.
     *
     * @param path the request path
-    * @return a PostMethod object
+    * @return a HttpPost object
     */
-   public static PostMethod createPostMethod(String path)
+   public static HttpPost createPostMethod(String path)
    {
-      return new PostMethod(generateURL(path));
+      return new HttpPost(generateURL(path));
    }
 
    /**
@@ -117,14 +119,14 @@ public class TestPortProvider
    }
 
    /**
-    * Create a commons-httpclient PutMethod object.
+    * Create an httpclient HttpPut object.
     *
     * @param path the request path
-    * @return a PutMethod object
+    * @return a HttpPut object
     */
-   public static PutMethod createPutMethod(String path)
+   public static HttpPut createPutMethod(String path)
    {
-      return new PutMethod(generateURL(path));
+      return new HttpPut(generateURL(path));
    }
 
    /**
