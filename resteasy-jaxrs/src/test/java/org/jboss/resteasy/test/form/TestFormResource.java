@@ -6,8 +6,6 @@
  */
 package org.jboss.resteasy.test.form;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -57,6 +55,7 @@ public class TestFormResource extends BaseResourceTest
 
    private static final String TEST_URI = generateURL("/form/42?query=42");
 
+   @SuppressWarnings("unused")
    private static final Logger logger = Logger.getLogger(TestFormResource.class);
 
    @Path("/form/{id}")
@@ -148,48 +147,86 @@ public class TestFormResource extends BaseResourceTest
       Assert.assertEquals(rtn.getFirst(DOUBLE_VALUE_FIELD), "123.45");
       Assert.assertEquals(rtn.getFirst(LONG_VALUE_FIELD), "566780");
       Assert.assertEquals(rtn.getFirst(INTEGER_VALUE_FIELD), "3");
+      Assert.assertEquals(rtn.getFirst(SHORT_VALUE_FIELD), "12345");
       String str = proxy.postString(form);
+      System.out.println("STR: " + str);
+      String[] params = str.split("&");
+      Map<String, String> map = new HashMap<String, String>();
+      for (int i = 0; i < params.length; i++)
+      {
+         int index = params[i].indexOf('=');
+         String key = params[i].substring(0, index).trim();
+         String value = params[i].substring(index + 1).trim().replace('+', ' ');
+         map.put(key, value);
+      }
+      Assert.assertEquals(map.get(BOOLEAN_VALUE_FIELD), "true");
+      Assert.assertEquals(map.get(NAME_FIELD), "This is My Name");
+      Assert.assertEquals(map.get(DOUBLE_VALUE_FIELD), "123.45");
+      Assert.assertEquals(map.get(LONG_VALUE_FIELD), "566780");
+      Assert.assertEquals(map.get(INTEGER_VALUE_FIELD), "3");
+      Assert.assertEquals(map.get(SHORT_VALUE_FIELD), "12345");
    }
 
    @Test
    public void testFormResource() throws Exception
-   {
-      HttpClient client = new HttpClient();
-      PostMethod method = new PostMethod(TEST_URI);
-      method.addRequestHeader("custom-header", "42");
-      method.addParameter(BOOLEAN_VALUE_FIELD, "true");
-      method.addParameter(NAME_FIELD, "This is My Name");
-      method.addParameter(DOUBLE_VALUE_FIELD, "123.45");
-      method.addParameter(LONG_VALUE_FIELD, "566780");
-      method.addParameter(INTEGER_VALUE_FIELD, "3");
-      method.addParameter(SHORT_VALUE_FIELD, "12345");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpServletResponse.SC_OK, status);
-      InputStream response = method.getResponseBodyAsStream();
-      BufferedInputStream in = new BufferedInputStream(response);
-      String contentType = method.getResponseHeader("content-type").getValue();
-      Assert.assertEquals("application/x-www-form-urlencoded", contentType);
-      String formData = readString(in);
-      String[] keys = formData.split("&");
-      Map<String, String> values = new HashMap<String, String>();
-      for (String pair : keys)
+   {      
+      InputStream in = null;
+      try
       {
-         int index = pair.indexOf('=');
-         if (index < 0)
+         ClientRequest request = new ClientRequest(TEST_URI);
+         request.header("custom-header", "42");
+         request.formParameter(BOOLEAN_VALUE_FIELD, "true");
+         request.formParameter(NAME_FIELD, "This is My Name");
+         request.formParameter(DOUBLE_VALUE_FIELD, "123.45");
+         request.formParameter(LONG_VALUE_FIELD, "566780");
+         request.formParameter(INTEGER_VALUE_FIELD, "3");
+         request.formParameter(SHORT_VALUE_FIELD, "12345");
+         ClientResponse<InputStream> response = request.post(InputStream.class);
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         String contentType = response.getHeaders().getFirst("content-type");
+         Assert.assertEquals("application/x-www-form-urlencoded", contentType);
+         InputStream responseStream = response.getEntity();
+         in = new BufferedInputStream(responseStream);
+         String formData = readString(in);
+         String[] keys = formData.split("&");
+         Map<String, String> values = new HashMap<String, String>();
+         for (String pair : keys)
          {
-            values.put(URLDecoder.decode(pair, "UTF-8"), null);
+            int index = pair.indexOf('=');
+            if (index < 0)
+            {
+               values.put(URLDecoder.decode(pair, "UTF-8"), null);
+            }
+            else if (index > 0)
+            {
+               values.put(URLDecoder.decode(pair.substring(0, index), "UTF-8"), URLDecoder.decode(pair
+                     .substring(index + 1), "UTF-8"));
+            }
          }
-         else if (index > 0)
+         Assert.assertEquals(values.get(BOOLEAN_VALUE_FIELD), "true");
+         Assert.assertEquals(values.get(NAME_FIELD), "This is My Name");
+         Assert.assertEquals(values.get(DOUBLE_VALUE_FIELD), "123.45");
+         Assert.assertEquals(values.get(LONG_VALUE_FIELD), "566780");
+         Assert.assertEquals(values.get(INTEGER_VALUE_FIELD), "3");
+      }
+      finally
+      {
+         if (in != null)
          {
-            values.put(URLDecoder.decode(pair.substring(0, index), "UTF-8"), URLDecoder.decode(pair
-                    .substring(index + 1), "UTF-8"));
+            in.close();
          }
       }
-      Assert.assertEquals(values.get(BOOLEAN_VALUE_FIELD), "true");
-      Assert.assertEquals(values.get(NAME_FIELD), "This is My Name");
-      Assert.assertEquals(values.get(DOUBLE_VALUE_FIELD), "123.45");
-      Assert.assertEquals(values.get(LONG_VALUE_FIELD), "566780");
-      Assert.assertEquals(values.get(INTEGER_VALUE_FIELD), "3");
    }
-
+   
+   static class StringPair
+   {
+      public String key;
+      public String value;
+      
+      public StringPair(String key, String value)
+      {
+         this.key = key;
+         this.value = value;
+      }
+   }
 }
