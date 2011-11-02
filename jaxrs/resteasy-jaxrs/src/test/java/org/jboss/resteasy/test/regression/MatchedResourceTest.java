@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
@@ -17,8 +15,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -154,20 +150,16 @@ public class MatchedResourceTest
 
    public void _test(String uri, String value)
    {
+      try
       {
-         HttpClient client = new HttpClient();
-         GetMethod method = new GetMethod(uri);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            Assert.assertEquals(method.getResponseBodyAsString(), value);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-         client.getHttpConnectionManager().closeIdleConnections(0);
+         ClientRequest request = new ClientRequest(uri);
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals(value, response.getEntity());
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 
