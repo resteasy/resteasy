@@ -1,9 +1,10 @@
 package org.jboss.resteasy.test.xml;
 
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.providers.jaxb.json.BadgerContext;
 import org.jboss.resteasy.plugins.providers.jaxb.json.JettisonMappedContext;
@@ -22,6 +23,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Simple smoke test
@@ -52,8 +54,8 @@ public class TestJAXB
       POJOResourceFactory noDefaults = new POJOResourceFactory(BookStore.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
-      HttpClient httpClient = new HttpClient();
-      ApacheHttpClientExecutor executor = new ApacheHttpClientExecutor(httpClient);
+      HttpClient httpClient = new DefaultHttpClient();
+      ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
       BookStoreClient client = ProxyFactory.create(BookStoreClient.class, generateBaseUrl(),
               executor);
 
@@ -63,7 +65,7 @@ public class TestJAXB
 
       // TJWS does not support chunk encodings well so I need to kill kept
       // alive connections
-      httpClient.getHttpConnectionManager().closeIdleConnections(0);
+      httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
 
       book = new Book("Bill Burke", "666", "EJB 3.0");
       client.addBook(book);
@@ -71,13 +73,13 @@ public class TestJAXB
       client.addBookJson(book);
       // TJWS does not support chunk encodings so I need to kill kept alive
       // connections
-      httpClient.getHttpConnectionManager().closeIdleConnections(0);
+      httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
       book = client.getBookByISBN("666");
       Assert.assertEquals("Bill Burke", book.getAuthor());
       book = client.getBookByISBNJson("3434");
       Assert.assertEquals("Bill Burke", book.getAuthor());
       Assert.assertEquals("JBoss Workbook", book.getTitle());
-      httpClient.getHttpConnectionManager().closeIdleConnections(0);
+      httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
    }
 
    @XmlRootElement
