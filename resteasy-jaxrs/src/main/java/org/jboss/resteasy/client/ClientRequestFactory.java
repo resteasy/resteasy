@@ -1,11 +1,11 @@
 package org.jboss.resteasy.client;
 
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.ClientInvokerModifier;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -64,7 +64,7 @@ public class ClientRequestFactory
       else
          this.providerFactory = providerFactory;
       if (executor == null)
-         this.executor = new ApacheHttpClientExecutor(new HttpClient());
+    	  this.executor = new ApacheHttpClient4Executor(new DefaultHttpClient());
       else
          this.executor = executor;
       this.base = base;
