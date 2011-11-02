@@ -6,7 +6,6 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.smoke.SimpleResource;
@@ -182,14 +181,22 @@ public class ClientResponseTest
       Assert.assertEquals(1234, paramPathResult.getEntity().intValue());
 
       Assert.assertEquals(Response.Status.NO_CONTENT, client.putBasicReturnCode("hello world"));
-      ClientResponse putResponse = createClientRequest("/basic").body("text/plain", "hello world").put();
-
+      ClientResponse<?> putResponse = createClientRequest("/basic").body("text/plain", "hello world").put();
       Assert.assertEquals(Response.Status.NO_CONTENT, putResponse.getResponseStatus());
+      putResponse.releaseConnection();
 
-      Assert.assertEquals("headervalue", ((BaseClientResponse) client.getHeaderClientResponse()).getHeaders().getFirst("header"));
-      Assert.assertEquals("headervalue", requestFactory.createRequest(generateURL("/header")).get().getHeaders().getFirst("header"));
-      Assert.assertEquals("headervalue", client.getHeaderResponse().getMetadata().getFirst("header"));
-
+      ClientResponse<Void> crv = client.getHeaderClientResponse();
+      Assert.assertEquals("headervalue", crv.getHeaders().getFirst("header"));
+      crv.releaseConnection();
+      
+      ClientResponse<?> cr = requestFactory.createRequest(generateURL("/header")).get();
+      Assert.assertEquals("headervalue", cr.getHeaders().getFirst("header"));
+      cr.releaseConnection();
+      
+      cr = (ClientResponse<?>) client.getHeaderResponse();
+      Assert.assertEquals("headervalue", cr.getMetadata().getFirst("header"));
+      cr.releaseConnection();
+      
       Assert.assertTrue(Arrays.equals("basic".getBytes(), client.getBasicBytes().getEntity()));
       Assert.assertTrue(Arrays.equals("basic".getBytes(), (byte[]) client.getBasicResponse().getEntity()));
 
@@ -208,9 +215,10 @@ public class ClientResponseTest
       client = createProxy(Client.class, "/shite");
       ClientResponse<String> response = client.getBasic();
       Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+      response.releaseConnection();
       response = client.getError();
       Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
-
+      response.releaseConnection();
    }
 
    @Path("/redirect")
