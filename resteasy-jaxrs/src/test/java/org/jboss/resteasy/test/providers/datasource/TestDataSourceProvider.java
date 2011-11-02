@@ -3,11 +3,8 @@
  */
 package org.jboss.resteasy.test.providers.datasource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.FileRequestEntity;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.LocateTestData;
 import org.junit.Assert;
@@ -44,34 +41,31 @@ public class TestDataSourceProvider extends BaseResourceTest
    @Test
    public void testPostDataSource() throws Exception
    {
-      HttpClient client = new HttpClient();
       //File file = new File("./src/test/test-data/harper.jpg");
       File file = LocateTestData.getTestData("harper.jpg");
       Assert.assertTrue(file.exists());
-      PostMethod method = new PostMethod(TEST_URI);
-      method.setRequestEntity(new FileRequestEntity(file, "image/jpeg"));
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpServletResponse.SC_OK, status);
-      Assert.assertEquals("image/jpeg", method.getResponseBodyAsString());
-      method.releaseConnection();
+      ClientRequest request = new ClientRequest(TEST_URI);
+      request.body("image/jpeg", file);
+      ClientResponse<?> response = request.post();
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      Assert.assertEquals("image/jpeg", response.getEntity(String.class));      
    }
 
    @Test
    public void testEchoDataSourceBigData() throws Exception
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(TEST_URI + "/echo");
       File file = LocateTestData.getTestData("harper.jpg");
       Assert.assertTrue(file.exists());
-      PostMethod method = new PostMethod(TEST_URI + "/echo");
-      method.setRequestEntity(new FileRequestEntity(file, "image/jpeg"));
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpServletResponse.SC_OK, status);
-
+      request.body("image/jpeg", file);
+      ClientResponse<?> response = request.post();
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      
       InputStream ris = null;
       InputStream fis = null;
       try
       {
-         ris = method.getResponseBodyAsStream();
+         ris = response.getEntity(InputStream.class);
          fis = new FileInputStream(file);
          int fi;
          int ri;
@@ -80,8 +74,8 @@ public class TestDataSourceProvider extends BaseResourceTest
             fi = fis.read();
             ri = ris.read();
             if (fi != ri)
-               Assert.fail("The sent and recived stream is not identical.");
-         } while (fi != -1);
+               Assert.fail("The sent and received stream is not identical.");
+         } while (fi != -1);         
       }
       finally
       {
@@ -90,25 +84,22 @@ public class TestDataSourceProvider extends BaseResourceTest
          if (fis != null)
             fis.close();
       }
-
-      method.releaseConnection();
    }
 
    @Test
    public void testEchoDataSourceSmallData() throws Exception
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(TEST_URI + "/echo");
       byte[] input = "Hello World!".getBytes("utf-8");
-      PostMethod method = new PostMethod(TEST_URI + "/echo");
-      method.setRequestEntity(new ByteArrayRequestEntity(input, MediaType.APPLICATION_OCTET_STREAM));
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpServletResponse.SC_OK, status);
-
+      request.body(MediaType.APPLICATION_OCTET_STREAM, input);
+      ClientResponse<?> response = request.post();
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      
       InputStream ris = null;
       InputStream bis = null;
       try
       {
-         ris = method.getResponseBodyAsStream();
+         ris = response.getEntity(InputStream.class);
          bis = new ByteArrayInputStream(input);
          int fi;
          int ri;
@@ -127,19 +118,15 @@ public class TestDataSourceProvider extends BaseResourceTest
          if (bis != null)
             bis.close();
       }
-
-      method.releaseConnection();
    }
 
    @Test
    public void testGetDataSource() throws Exception
    {
-      HttpClient client = new HttpClient();
       String value = "foo";
-      GetMethod method = new GetMethod(TEST_URI + "/" + value);
-      int status = client.executeMethod(method);
-      Assert.assertEquals(HttpServletResponse.SC_OK, status);
-      Assert.assertEquals(value, method.getResponseBodyAsString());
-      method.releaseConnection();
+      ClientRequest request = new ClientRequest(TEST_URI + "/" + value);
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      Assert.assertEquals(value, response.getEntity(String.class));
    }
 }
