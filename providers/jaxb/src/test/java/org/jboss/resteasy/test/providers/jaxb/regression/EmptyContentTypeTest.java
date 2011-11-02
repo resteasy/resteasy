@@ -26,7 +26,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class EmptyContentType  extends BaseResourceTest
+public class EmptyContentTypeTest  extends BaseResourceTest
 {
    @XmlRootElement
    public static class Foo
