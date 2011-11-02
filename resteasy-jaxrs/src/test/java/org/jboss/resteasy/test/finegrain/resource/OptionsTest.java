@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.OptionsMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -17,7 +15,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
@@ -79,79 +76,73 @@ public class OptionsTest
    @Test
    public void testOptions() throws Exception
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/options"));
+      try
       {
-         OptionsMethod method = createOptionsMethod("/options");
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            Header[] headers = method.getResponseHeaders("Allow");
-            Assert.assertNotNull(headers);
-            Assert.assertEquals(headers[0].getValue(), "GET, POST");
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<?> response = request.options();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("GET, POST", response.getHeaders().getFirst("Allow")); 
+         response.releaseConnection();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 
    @Test
    public void testDefaultOptions() throws Exception
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/stuff"));
+      try
       {
-         OptionsMethod method = createOptionsMethod("/stuff");
-         try
+         ClientResponse<?> response = request.options();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String allowed = response.getHeaders().getFirst("Allow");
+         Assert.assertNotNull(allowed);
+         HashSet<String> vals = new HashSet<String>();
+         for (String v : allowed.split(","))
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            Header[] headers = method.getResponseHeaders("Allow");
-            Assert.assertNotNull(headers);
-            String value = headers[0].getValue();
-            HashSet<String> vals = new HashSet<String>();
-            for (String v : value.split(","))
-               vals.add(v.trim());
-            Assert.assertEquals(4, vals.size());
-            Assert.assertTrue(vals.contains("GET"));
-            Assert.assertTrue(vals.contains("DELETE"));
-            Assert.assertTrue(vals.contains("HEAD"));
-            Assert.assertTrue(vals.contains("OPTIONS"));
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+            vals.add(v.trim());
+         }  
+         Assert.assertEquals(4, vals.size());
+         Assert.assertTrue(vals.contains("GET"));
+         Assert.assertTrue(vals.contains("DELETE"));
+         Assert.assertTrue(vals.contains("HEAD"));
+         Assert.assertTrue(vals.contains("OPTIONS"));
+         response.releaseConnection();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 
    @Test
    public void testMethodNotAllowed() throws Exception
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/stuff"));
+      try
       {
-         PostMethod method = createPostMethod("/stuff");
-         try
+         ClientResponse<?> response = request.post();
+         Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+         String allowed = response.getHeaders().getFirst("Allow");
+         Assert.assertNotNull(allowed);
+         HashSet<String> vals = new HashSet<String>();
+         for (String v : allowed.split(","))
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_METHOD_NOT_ALLOWED);
-            Header[] headers = method.getResponseHeaders("Allow");
-            Assert.assertNotNull(headers);
-            String value = headers[0].getValue();
-            HashSet<String> vals = new HashSet<String>();
-            for (String v : value.split(","))
-               vals.add(v.trim());
-            Assert.assertEquals(4, vals.size());
-            Assert.assertTrue(vals.contains("HEAD"));
-            Assert.assertTrue(vals.contains("OPTIONS"));
-            Assert.assertTrue(vals.contains("GET"));
-            Assert.assertTrue(vals.contains("DELETE"));
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+            vals.add(v.trim());
+         }  
+         Assert.assertEquals(4, vals.size());
+         Assert.assertTrue(vals.contains("GET"));
+         Assert.assertTrue(vals.contains("DELETE"));
+         Assert.assertTrue(vals.contains("HEAD"));
+         Assert.assertTrue(vals.contains("OPTIONS"));
+         response.releaseConnection();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 }

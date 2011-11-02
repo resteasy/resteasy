@@ -1,7 +1,8 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -17,7 +18,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.GregorianCalendar;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -64,149 +64,141 @@ public class PreconditionTest
    @Test
    public void testIfUnmodifiedSinceBeforeLastModified()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/");
-      method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 412);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(412, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testIfUnmodifiedSinceAfterLastModified()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/");
-      method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testIfModifiedSinceBeforeLastModified()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/");
-      method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testIfModifiedSinceAfterLastModified()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/");
-      method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 304);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(304, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testIfUnmodifiedSinceBeforeLastModified_IfModifiedSinceBeforeLastModified()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/");
-      method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
-      method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 412);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(412, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testIfUnmodifiedSinceBeforeLastModified_IfModifiedSinceAfterLastModified()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/");
-      method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
-      method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 304);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(304, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testIfUnmodifiedSinceAfterLastModified_IfModifiedSinceAfterLastModified()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/");
-      method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
-      method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 304);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(304, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testIfUnmodifiedSinceAfterLastModified_IfModifiedSinceBeforeLastModified()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/");
-      method.addRequestHeader(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
-      method.addRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 200);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(200, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Path("/etag")
@@ -314,157 +306,149 @@ public class PreconditionTest
 
    public void testIfMatchWithMatchingETag(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_MATCH, "\"1\"");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_MATCH, "\"1\"");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    public void testIfMatchWithoutMatchingETag(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_MATCH, "\"2\"");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_MATCH, "\"2\"");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 412);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(412, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    public void testIfMatchWildCard(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_MATCH, "*");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_MATCH, "*");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    public void testIfNonMatchWithMatchingETag(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "\"1\"");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "\"1\"");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 304);
-         Assert.assertEquals("1", method.getResponseHeader(HttpHeaderNames.ETAG).getValue());
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(304, response.getStatus());
+         Assert.assertEquals("1", response.getHeaders().getFirst(HttpHeaderNames.ETAG));
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    public void testIfNonMatchWithoutMatchingETag(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "2");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
-   }
+  }
 
    public void testIfNonMatchWildCard(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "*");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "*");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 304);
-         Assert.assertEquals("1", method.getResponseHeader(HttpHeaderNames.ETAG).getValue());
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(304, response.getStatus());
+         Assert.assertEquals("1", response.getHeaders().getFirst(HttpHeaderNames.ETAG));
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    public void testIfMatchWithMatchingETag_IfNonMatchWithMatchingETag(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_MATCH, "1");
-      method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "1");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_MATCH, "1");
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "1");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 304);
-         Assert.assertEquals("1", method.getResponseHeader(HttpHeaderNames.ETAG).getValue());
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(304, response.getStatus());
+         Assert.assertEquals("1", response.getHeaders().getFirst(HttpHeaderNames.ETAG));
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    public void testIfMatchWithMatchingETag_IfNonMatchWithoutMatchingETag(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_MATCH, "1");
-      method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_MATCH, "1");
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "2");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 200);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(200, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    public void testIfMatchWithoutMatchingETag_IfNonMatchWithMatchingETag(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_MATCH, "2");
-      method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "1");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_MATCH, "2");
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "1");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 412);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(412, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
@@ -472,19 +456,31 @@ public class PreconditionTest
 
    public void testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag(String fromField)
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/etag" + fromField);
-      method.addRequestHeader(HttpHeaderNames.IF_MATCH, "2");
-      method.addRequestHeader(HttpHeaderNames.IF_NONE_MATCH, "2");
+      ClientRequest request = new ClientRequest(generateURL("/etag" + fromField));
+      request.header(HttpHeaderNames.IF_MATCH, "2");
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "2");
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 412);
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(412, response.getStatus());
+         shutdownConnections(request);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
    }
 
+   private void shutdownConnections(ClientRequest request)
+   {
+      ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+      executor.getHttpClient().getConnectionManager().shutdown();
+//      try
+//      {
+//         request.getExecutor().close();
+//      } catch (Exception e)
+//      {
+//         throw new RuntimeException(e);
+//      }
+   }
 }

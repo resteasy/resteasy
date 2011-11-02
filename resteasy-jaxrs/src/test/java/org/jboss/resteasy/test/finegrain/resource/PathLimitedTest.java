@@ -1,8 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -15,7 +14,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import java.io.IOException;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -116,67 +114,60 @@ public class PathLimitedTest
       EmbeddedContainer.stop();
    }
 
-   private void _test(HttpClient client, String path)
+   private void _test(String path)
    {
+      ClientRequest request = new ClientRequest(generateURL(path));
+      try
       {
-         GetMethod method = createGetMethod(path);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         response.releaseConnection();
       }
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @SuppressWarnings("unused")
-   private void _testPut(HttpClient client, String path)
+   private void _testPut(String path)
    {
+      ClientRequest request = new ClientRequest(generateURL(path));
+      try
       {
-         PutMethod method = createPutMethod(path);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<?> response = request.put();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         response.releaseConnection();
       }
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @Test
    public void testUnlimitedOnClass()
    {
-      HttpClient client = new HttpClient();
-      _test(client, "/unlimited");
-      _test(client, "/unlimited/on/and/on");
+      _test("/unlimited");
+      _test("/unlimited/on/and/on");
    }
 
    @Test
    public void testUnlimitedOnMethod()
    {
-      HttpClient client = new HttpClient();
-      _test(client, "/unlimited2/on/and/on");
-      _test(client, "/uriparam/on/and/on?expected=on%2Fand%2Fon");
+      _test("/unlimited2/on/and/on");
+      _test("/uriparam/on/and/on?expected=on%2Fand%2Fon");
    }
 
    @Test
    public void testLocator()
    {
-      HttpClient client = new HttpClient();
-      _test(client, "/locator");
-      _test(client, "/locator/on/and/on");
-      _test(client, "/locator2/on/and/on?expected=on%2Fand%2Fon");
-      _test(client, "/locator3/unlimited/unlimited2/on/and/on");
-      _test(client, "/locator3/unlimited/uriparam/on/and/on?expected=on%2Fand%2Fon");
-      _test(client, "/locator3/uriparam/1/uriparam/on/and/on?firstExpected=1&expected=on%2Fand%2Fon");
+      _test("/locator");
+      _test("/locator/on/and/on");
+      _test("/locator2/on/and/on?expected=on%2Fand%2Fon");
+      _test("/locator3/unlimited/unlimited2/on/and/on");
+      _test("/locator3/unlimited/uriparam/on/and/on?expected=on%2Fand%2Fon");
+      _test("/locator3/uriparam/1/uriparam/on/and/on?firstExpected=1&expected=on%2Fand%2Fon");
 
    }
 }

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -19,9 +19,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -96,21 +94,19 @@ public class UriInfoTest
 
    }
 
-   private void _test(HttpClient client, String path)
+   private void _test(String path)
    {
+      ClientRequest request = new ClientRequest(generateURL(path));
+      try
       {
-         GetMethod method = createGetMethod(path);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         response.releaseConnection();
       }
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @Test
@@ -120,7 +116,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addResourceFactory(new SingletonResource(new SimpleResource()));
-         _test(new HttpClient(), "/simple/fromField");
+         _test("/simple/fromField");
       }
       finally
       {
@@ -136,8 +132,8 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
-         _test(new HttpClient(), "/simple");
-         _test(new HttpClient(), "/simple/fromField");
+         _test("/simple");
+         _test("/simple/fromField");
       }
       finally
       {
@@ -152,7 +148,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
-         _test(new HttpClient(), "/resteasy/simple?abs=resteasy");
+         _test("/resteasy/simple?abs=resteasy");
       }
       finally
       {
@@ -207,7 +203,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(EscapedMatrParamResource.class);
-         _test(new HttpClient(), "/queryEscapedMatrParam;a=a%3Bb;b=x%2Fy;c=m%5Cn;d=k%3Dl");
+         _test("/queryEscapedMatrParam;a=a%3Bb;b=x%2Fy;c=m%5Cn;d=k%3Dl");
       }
       finally
       {
@@ -222,7 +218,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(EncodedTemplateResource.class);
-         _test(new HttpClient(), "/a%20b/x%20y");
+         _test("/a%20b/x%20y");
       }
       finally
       {
@@ -250,7 +246,7 @@ public class UriInfoTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(EncodedQueryResource.class);
-         _test(new HttpClient(), "/query?a=a%20b");
+         _test("/query?a=a%20b");
       }
       finally
       {
