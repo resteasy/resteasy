@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.httpclient.methods.OptionsMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
@@ -81,32 +79,30 @@ public class MethodDefaultTest extends BaseResourceTest
    @Test
    public void testHead() throws Exception
    {
-      HttpClient client = new HttpClient();
-      HeadMethod method = new HeadMethod(TestPortProvider.generateURL("/GetTest"));
-      method.addRequestHeader("Accept", "text/plain");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      Header header = method.getResponseHeader("CTS-HEAD");
-      Assert.assertNotNull(header);
-      Assert.assertEquals("text-plain", header.getValue());
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/GetTest"));
+      request.header("Accept", "text/plain");
+      ClientResponse<?> response = request.head();
+      Assert.assertEquals(200, response.getStatus());
+      String header = response.getHeaders().getFirst("CTS-HEAD");
+      Assert.assertEquals("text-plain", header);
+      response.releaseConnection();
    }
 
    /*
-    * lient invokes HEAD on root resource at /GetTest;
+    * Client invokes HEAD on root resource at /GetTest;
     *                 which no request method designated for HEAD;
     *                 Verify that corresponding GET Method is invoked.
     */
    @Test
    public void testHead2() throws Exception
    {
-      HttpClient client = new HttpClient();
-      HeadMethod method = new HeadMethod(TestPortProvider.generateURL("/GetTest"));
-      method.addRequestHeader("Accept", "text/html");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      Header header = method.getResponseHeader("CTS-HEAD");
-      Assert.assertNotNull(header);
-      Assert.assertEquals("text-html", header.getValue());
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/GetTest"));
+      request.header("Accept", "text/html");
+      ClientResponse<?> response = request.head();
+      Assert.assertEquals(200, response.getStatus());
+      String header = response.getHeaders().getFirst("CTS-HEAD");
+      Assert.assertEquals("text-html", header);
+      response.releaseConnection();
    }
 
    /*
@@ -117,14 +113,13 @@ public class MethodDefaultTest extends BaseResourceTest
    @Test
    public void testHeadSubresource() throws Exception
    {
-      HttpClient client = new HttpClient();
-      HeadMethod method = new HeadMethod(TestPortProvider.generateURL("/GetTest/sub"));
-      method.addRequestHeader("Accept", "text/plain");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      Header header = method.getResponseHeader("CTS-HEAD");
-      Assert.assertNotNull(header);
-      Assert.assertEquals("sub-text-plain", header.getValue());
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/GetTest/sub"));
+      request.header("Accept", "text/plain");
+      ClientResponse<?> response = request.head();
+      Assert.assertEquals(200, response.getStatus());
+      String header = response.getHeaders().getFirst("CTS-HEAD");
+      Assert.assertEquals("sub-text-plain", header);
+      response.releaseConnection();
    }
 
    /*
@@ -134,15 +129,13 @@ public class MethodDefaultTest extends BaseResourceTest
    @Test
    public void testOptions() throws Exception
    {
-      HttpClient client = new HttpClient();
-      OptionsMethod method = new OptionsMethod(TestPortProvider.generateURL("/GetTest/sub"));
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      Header allowHeader = method.getResponseHeader("Allow");
-      Assert.assertNotNull(allowHeader);
-      String allowValue = allowHeader.getValue();
-      String[] allowed = allowValue.split(",");
-      HashSet set = new HashSet();
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/GetTest/sub"));
+      ClientResponse<?> response = request.options();
+      Assert.assertEquals(200, response.getStatus());
+      String allowedHeader = response.getHeaders().getFirst("Allow");
+      Assert.assertNotNull(allowedHeader);
+      String[] allowed = allowedHeader.split(",");
+      HashSet<String> set = new HashSet<String>();
       for (String allow : allowed)
       {
          set.add(allow.trim());
@@ -151,8 +144,7 @@ public class MethodDefaultTest extends BaseResourceTest
       Assert.assertTrue(set.contains("GET"));
       Assert.assertTrue(set.contains("OPTIONS"));
       Assert.assertTrue(set.contains("HEAD"));
-
+      response.releaseConnection();
    }
-
 
 }

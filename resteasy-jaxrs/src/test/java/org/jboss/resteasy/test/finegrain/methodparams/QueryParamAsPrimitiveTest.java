@@ -1,8 +1,9 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -17,11 +18,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,8 +30,6 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class QueryParamAsPrimitiveTest
 {
-
-   private static HttpClient client = new HttpClient();
 
    private static Dispatcher dispatcher;
 
@@ -1084,58 +1083,64 @@ public class QueryParamAsPrimitiveTest
       String param = type + "=" + value;
 
       {
-         GetMethod method = createGetMethod("/");
-         method.setQueryString(param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         String uri = updateQuery(generateURL("/"), param);
+         ClientRequest request = new ClientRequest(uri);
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      {
-         GetMethod method = createGetMethod("/wrappers");
-         method.setQueryString(param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-         }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
 
       {
-         GetMethod method = createGetMethod("/list");
-         method.setQueryString(param + "&" + param + "&" + param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         String uri = updateQuery(generateURL("/wrappers"), param);
+         ClientRequest request = new ClientRequest(uri);
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+
       {
-         GetMethod method = createGetMethod("/array");
-         method.setQueryString(param + "&" + param + "&" + param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         String uri = updateQuery(generateURL("/list"), param + "&" + param + "&" + param);
+         ClientRequest request = new ClientRequest(uri);
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+
+      {
+         String uri = updateQuery(generateURL("/array"), param + "&" + param + "&" + param);
+         ClientRequest request = new ClientRequest(uri);
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         try
+         {
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            shutdown(request);
+         }
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1145,42 +1150,47 @@ public class QueryParamAsPrimitiveTest
    public void _testDefault(String base, String type, String value)
    {
       {
-         GetMethod method = createGetMethod("" + base + "default/null");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("" + base + "default/null"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+
       {
-         GetMethod method = createGetMethod("" + base + "default");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         ClientRequest request = new ClientRequest(generateURL("" + base + "default"));
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+
       String param = type + "=" + value;
       {
-         GetMethod method = createGetMethod("" + base + "default/override");
-         method.setQueryString(param);
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/" + type);
+         String uri = updateQuery(generateURL("" + base + "default/override"), param);
+         ClientRequest request = new ClientRequest(uri);
+         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1411,15 +1421,16 @@ public class QueryParamAsPrimitiveTest
    public void testBadPrimitiveValue()
    {
       {
-         GetMethod method = createGetMethod("/");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
-         method.setQueryString("int=abcdef");
+         String uri = updateQuery(generateURL("/"), "int=abcdef");
+         ClientRequest request = new ClientRequest(uri);
+         request.header(HttpHeaderNames.ACCEPT, "application/int");
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(400, status);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(400, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1430,15 +1441,16 @@ public class QueryParamAsPrimitiveTest
    public void testBadPrimitiveWrapperValue()
    {
       {
-         GetMethod method = createGetMethod("/wrappers");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
-         method.setQueryString("int=abcdef");
+         String uri = updateQuery(generateURL("/wrappers"), "int=abcdef");
+         ClientRequest request = new ClientRequest(uri);
+         request.header(HttpHeaderNames.ACCEPT, "application/int");
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(400, status);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(400, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1449,15 +1461,16 @@ public class QueryParamAsPrimitiveTest
    public void testBadPrimitiveListValue()
    {
       {
-         GetMethod method = createGetMethod("/list");
-         method.addRequestHeader(HttpHeaderNames.ACCEPT, "application/int");
-         method.setQueryString("int=abcdef&int=abcdef");
+         String uri = updateQuery(generateURL("/list"), "int=abcdef&int=abcdef");
+         ClientRequest request = new ClientRequest(uri);
+         request.header(HttpHeaderNames.ACCEPT, "application/int");
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(400, status);
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(400, response.getStatus());
+            shutdown(request);
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -1590,5 +1603,12 @@ public class QueryParamAsPrimitiveTest
       @GET
       @Produces("application/double")
       String doGetDouble(@QueryParam("double") double[] v);
+   }
+   
+   static private void shutdown(ClientRequest request) throws Exception
+   {
+//      request.getExecutor().close();
+      ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
+      executor.getHttpClient().getConnectionManager().shutdown();
    }
 }
