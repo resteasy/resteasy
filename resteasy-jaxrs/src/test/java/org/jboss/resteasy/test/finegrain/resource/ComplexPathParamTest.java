@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -13,7 +13,6 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import java.io.IOException;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -131,22 +130,18 @@ public class ComplexPathParamTest
    }
 
 
-   private void _test(HttpClient client, String path, String body)
+   private void _test(String path, String body)
    {
+      ClientRequest request = new ClientRequest(generateURL(path));
+      try
       {
-         GetMethod method = createGetMethod(path);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            Assert.assertEquals(body, method.getResponseBodyAsString());
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals(body, response.getEntity());
+      } catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
-
    }
 
    @Test
@@ -159,13 +154,12 @@ public class ComplexPathParamTest
          dispatcher.getRegistry().addPerRequestResource(TrickyResource.class);
          dispatcher.getRegistry().addPerRequestResource(UnlimitedResource.class);
          dispatcher.getRegistry().addPerRequestResource(Resteasy145.class);
-         HttpClient client = new HttpClient();
-         _test(client, "/1,2/3/blah4-5ttt", "hello");
-         _test(client, "/tricky/1,2", "2Groups");
-         _test(client, "/tricky/h1", "prefixed");
-         _test(client, "/tricky/1", "hello");
-         _test(client, "/unlimited/1-on/and/on", "ok");
-         _test(client, "/repository/workspaces/aaaaaaxvi/wdddd", "sub2");
+         _test("/1,2/3/blah4-5ttt", "hello");
+         _test("/tricky/1,2", "2Groups");
+         _test("/tricky/h1", "prefixed");
+         _test("/tricky/1", "hello");
+         _test("/unlimited/1-on/and/on", "ok");
+         _test("/repository/workspaces/aaaaaaxvi/wdddd", "sub2");
       }
       finally
       {
