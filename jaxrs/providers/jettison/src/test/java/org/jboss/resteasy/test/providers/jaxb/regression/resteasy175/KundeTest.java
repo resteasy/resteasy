@@ -1,9 +1,10 @@
 package org.jboss.resteasy.test.providers.jaxb.regression.resteasy175;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,12 +24,10 @@ public class KundeTest extends BaseResourceTest
    @Test
    public void testKunde() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(TestPortProvider.generateURL("/kundenverwaltung/kunden"));
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      System.out.println(method.getResponseBodyAsString());
-
+      ClientRequest request = new ClientRequest(generateURL("/kundenverwaltung/kunden"));
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.releaseConnection();
    }
 
 }
