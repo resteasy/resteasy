@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -146,15 +144,14 @@ public class PathParamTest extends BaseResourceTest
    {
 
       String[] Headers = {"list=abcdef"};//, "list=fedcba"};
-      HttpClient client = new HttpClient();
-
+      
       for (String header : Headers)
       {
-         GetMethod method = new GetMethod(TestPortProvider.generateURL("/PathParamTest/a/b/c/d/e/f"));
-         method.addRequestHeader("Accept", "text/plain");
-         int status = client.executeMethod(method);
-         Assert.assertEquals(200, status);
-         Assert.assertEquals(header, method.getResponseBodyAsString());
+         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/PathParamTest/a/b/c/d/e/f"));
+         request.header("Accept", "text/plain");
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         Assert.assertEquals(header, response.getEntity());
       }
    }
 
@@ -162,19 +159,18 @@ public class PathParamTest extends BaseResourceTest
    public void test178() throws Exception
    {
       {
-         HttpClient client = new HttpClient();
-         GetMethod method = new GetMethod(TestPortProvider.generateURL("/digits/5150"));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(200, status);
+         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/digits/5150"));
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(200, response.getStatus());
+         response.releaseConnection();
       }
-
+      
       {
-         HttpClient client = new HttpClient();
-         GetMethod method = new GetMethod(TestPortProvider.generateURL("/digits/5150A"));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(404, status);
+         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/digits/5150A"));
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(404, response.getStatus());
+         response.releaseConnection();         
       }
-
    }
 
    @Path("/cars/{make}")
@@ -249,6 +245,7 @@ public class PathParamTest extends BaseResourceTest
       ClientResponse<String> response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
+      // This must be a typo.  Should be "A midnight blue 2006 Porsche 911 Carrera S".
 
       System.out.println("**** Via PathSegment ***");
       get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/pathsegment/e55;color=black/2006"));

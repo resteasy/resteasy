@@ -1,7 +1,8 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -14,9 +15,8 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import java.io.IOException;
-
 import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,8 +24,6 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class UriParamAsPrimitiveTest
 {
-   private static HttpClient client = new HttpClient();
-
    private static ResteasyDeployment deployment;
 
    private static IResourceUriBoolean resourceUriBoolean;
@@ -231,25 +229,26 @@ public class UriParamAsPrimitiveTest
    void _test(String type, String value)
    {
       {
-         GetMethod method = createGetMethod("/" + type + "/" + value);
+         ClientRequest request = new ClientRequest(generateURL("/" + type + "/" + value));
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         }
-         catch (IOException e)
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
       }
+      
       {
-         GetMethod method = createGetMethod("/" + type + "/wrapper/" + value);
+         ClientRequest request = new ClientRequest(generateURL("/" + type + "/wrapper/" + value));
          try
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, status);
-         }
-         catch (IOException e)
+            ClientResponse<?> response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.releaseConnection();
+         } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
@@ -302,35 +301,31 @@ public class UriParamAsPrimitiveTest
 
    public void testBadPrimitiveValue()
    {
+      String uri = updateQuery(generateURL("/int/abcdef"), "int=abcdef");
+      ClientRequest request = new ClientRequest(uri);
+      try
       {
-         GetMethod method = createGetMethod("/int/abcdef");
-         method.setQueryString("int=abcdef");
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, 400);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         response.releaseConnection();
+      } catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 
    public void testBadPrimitiveWrapperValue()
    {
+      String uri = updateQuery(generateURL("/int/wrapper/abcdef"), "int=abcdef");
+      ClientRequest request = new ClientRequest(uri);
+      try
       {
-         GetMethod method = createGetMethod("/int/wrapper/abcdef");
-         method.setQueryString("int=abcdef");
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, 400);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         response.releaseConnection();
+      } catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
    }
 }
