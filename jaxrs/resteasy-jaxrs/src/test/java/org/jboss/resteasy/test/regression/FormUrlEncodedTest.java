@@ -1,8 +1,7 @@
 package org.jboss.resteasy.test.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -70,26 +69,19 @@ public class FormUrlEncodedTest
    public void testPost()
    {
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("/simple"));
+      request.formParameter("hello", "world");
+      try
       {
-         PostMethod method = createPostMethod("/simple");
-         NameValuePair[] params =
-                 {new NameValuePair("hello", "world")};
-         method.setRequestBody(params);
-         try
-         {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            String body = method.getResponseBodyAsString();
-            Assert.assertEquals("hello=world", body);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ClientResponse<String> response = request.post(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String body = response.getEntity();
+         Assert.assertEquals("hello=world", body);
       }
-      client.getHttpConnectionManager().closeIdleConnections(0);
-
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
 }
