@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.asynch;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.jboss.resteasy.annotations.Suspend;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
@@ -56,11 +56,9 @@ public class MockAsyncHttpTest extends BaseResourceTest
    public void testMock() throws Exception
    {
       addPerRequestResource(MyResource.class);
-      HttpClient client = new HttpClient();
-      GetMethod get = createGetMethod("");
-      int status = client.executeMethod(get);
-      Assert.assertEquals(200, status);
-      String response = get.getResponseBodyAsString();
-      Assert.assertEquals(response, "hello");
+      ClientRequest request = new ClientRequest(generateURL(""));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("hello", response.getEntity());
    }
 }

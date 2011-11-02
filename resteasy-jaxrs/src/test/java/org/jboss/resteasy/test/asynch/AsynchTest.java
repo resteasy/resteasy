@@ -1,11 +1,7 @@
 package org.jboss.resteasy.test.asynch;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -22,6 +18,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+
+import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -102,129 +100,132 @@ public class AsynchTest
    @Test
    public void testOneway() throws Exception
    {
-      HttpClient client = new HttpClient();
+      ClientRequest request = new ClientRequest(generateURL("?oneway=true"));
+      request.body("text/plain", "content");
+      ClientResponse<?> response = null;
+      try
       {
          latch = new CountDownLatch(1);
-         PutMethod method = createPutMethod("?oneway=true");
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
          long start = System.currentTimeMillis();
-         int status = client.executeMethod(method);
+         response = request.put();
          long end = System.currentTimeMillis() - start;
-         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
+         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
          Assert.assertTrue(end < 1000);
          Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
-
-         method.releaseConnection();
       }
-      client.getHttpConnectionManager().closeIdleConnections(0);
+      finally
+      {
+         response.releaseConnection();
+      }
    }
 
    @Test
    public void testAsynch() throws Exception
    {
-      HttpClient client = new HttpClient();
+      ClientResponse<?> response = null;
+      ClientRequest request = null;
+      
       {
          latch = new CountDownLatch(1);
-         PostMethod method = createPostMethod("?asynch=true");
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
+         request = new ClientRequest(generateURL("?asynch=true"));
+         request.body("text/plain", "content");
          long start = System.currentTimeMillis();
-         int status = client.executeMethod(method);
+         response = request.post();
          @SuppressWarnings("unused")
          long end = System.currentTimeMillis() - start;
-         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
-         String jobUrl = method.getResponseHeader(HttpHeaders.LOCATION).getValue();
+         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+         String jobUrl = response.getHeaders().getFirst(HttpHeaders.LOCATION);
          System.out.println("JOB: " + jobUrl);
-         GetMethod get = new GetMethod(jobUrl);
-         status = client.executeMethod(get);
-         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
+         response.releaseConnection();
+
+         request = new ClientRequest(jobUrl);
+         response = request.get();
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
+         response.releaseConnection();
          // there's a lag between when the latch completes and the executor
          // registers the completion of the call 
-         String existingQueryString = get.getQueryString();
-         get.setQueryString((existingQueryString == null ? "" : "&") + "wait=1000");
-         status = client.executeMethod(get);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals(get.getResponseBodyAsString(), "content");
+         URI uri = new URI(request.getUri());
+         String query = (uri.getQuery() == null ? "" : "&") + "wait=1000";
+         URI newURI = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), query, uri.getFragment());
+         request = new ClientRequest(newURI.toString());
+         response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(response.getEntity(String.class), "content");
 
          // test its still there
-         status = client.executeMethod(get);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals(get.getResponseBodyAsString(), "content");
+         response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(response.getEntity(String.class), "content");
 
          // delete and test delete
-         DeleteMethod delete = new DeleteMethod(jobUrl);
-         status = client.executeMethod(delete);
-         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, status);
-
-         status = client.executeMethod(get);
-         Assert.assertEquals(HttpServletResponse.SC_GONE, status);
-
-         method.releaseConnection();
+         request = new ClientRequest(jobUrl);
+         response = request.delete();
+         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+         response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+         response.releaseConnection();
       }
-
+      
+      // test cache size
       {
          dispatcher.setMaxCacheSize(1);
          latch = new CountDownLatch(1);
-         PostMethod method = createPostMethod("?asynch=true");
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
-         String jobUrl1 = method.getResponseHeader(HttpHeaders.LOCATION).getValue();
+         request = new ClientRequest(generateURL("?asynch=true"));
+         request.body("text/plain", "content");
+         response = request.post();
+         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+         String jobUrl1 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-
+         response.releaseConnection();
+         
          latch = new CountDownLatch(1);
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
-         status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
-         String jobUrl2 = method.getResponseHeader(HttpHeaders.LOCATION).getValue();
+         response = request.post();
+         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+         String jobUrl2 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-
          Assert.assertTrue(!jobUrl1.equals(jobUrl2));
 
-         GetMethod get = new GetMethod(jobUrl1);
-         status = client.executeMethod(get);
-         Assert.assertEquals(HttpServletResponse.SC_GONE, status);
+         request = new ClientRequest(jobUrl1);
+         response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+         response.releaseConnection();
 
          // test its still there
-         get = new GetMethod(jobUrl2);
-         status = client.executeMethod(get);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals(get.getResponseBodyAsString(), "content");
+         request = new ClientRequest(jobUrl2);
+         response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(response.getEntity(String.class), "content");
 
          // delete and test delete
-         DeleteMethod delete = new DeleteMethod(jobUrl2);
-         status = client.executeMethod(delete);
-         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, status);
-
-         status = client.executeMethod(get);
-         Assert.assertEquals(HttpServletResponse.SC_GONE, status);
-
-         method.releaseConnection();
+         request = new ClientRequest(jobUrl2);
+         response = request.delete();
+         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+         response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+         response.releaseConnection();
       }
+      
       // test readAndRemove
       {
          dispatcher.setMaxCacheSize(10);
          latch = new CountDownLatch(1);
-         PostMethod method = createPostMethod("?asynch=true");
-         method.setRequestEntity(new StringRequestEntity("content", "text/plain", null));
-         int status = client.executeMethod(method);
-         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, status);
-         String jobUrl2 = method.getResponseHeader(HttpHeaders.LOCATION).getValue();
+         request = new ClientRequest(generateURL("?asynch=true"));
+         request.body("text/plain", "content");
+         response = request.post();
+         Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+         String jobUrl2 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-
+  
          // test its still there
-         PostMethod post = new PostMethod(jobUrl2);
-         status = client.executeMethod(post);
-         Assert.assertEquals(HttpServletResponse.SC_OK, status);
-         Assert.assertEquals(post.getResponseBodyAsString(), "content");
+         request = new ClientRequest(jobUrl2);
+         response = request.post();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus()) ;
+         Assert.assertEquals(response.getEntity(String.class), "content");         
 
-         GetMethod get = new GetMethod(jobUrl2);
-         status = client.executeMethod(get);
-         Assert.assertEquals(HttpServletResponse.SC_GONE, status);
-
-         method.releaseConnection();
+         response = request.get();
+         Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+         response.releaseConnection();
       }
-      client.getHttpConnectionManager().closeIdleConnections(0);
    }
 
 }
