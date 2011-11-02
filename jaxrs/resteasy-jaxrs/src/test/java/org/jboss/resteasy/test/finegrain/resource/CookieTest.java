@@ -1,10 +1,11 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientExecutor;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -22,7 +23,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
+import javax.ws.rs.core.UriBuilder;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -107,37 +109,38 @@ public class CookieTest
       EmbeddedContainer.stop();
    }
 
-   private void _test(HttpClient client, String path)
+   private void _test(ClientRequest request, UriBuilder uriBuilder, String path)
    {
+      request.clear();
+      uriBuilder.replacePath(generateURL(path));
+      try
       {
-         GetMethod method = createGetMethod(path);
-         try
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         MultivaluedMap<String, String> headers = response.getHeaders();
+         for (Object key : headers.keySet())
          {
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-            for (Header header : method.getResponseHeaders())
-            {
-               System.out.println(header.getName() + ": " + header.getValue());
-            }
+            System.out.println(key + ": " + headers.get(key));
          }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         response.releaseConnection();
+      } catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
-
    }
 
    @Test
    public void testIt()
    {
-      HttpClient client = new HttpClient();
-      _test(client, "/set");
-      _test(client, "/headers");
-      _test(client, "/headers/fromField");
-      _test(client, "/cookieparam");
-      _test(client, "/param");
-      _test(client, "/default");
+      UriBuilder uriBuilder = new UriBuilderImpl().uriTemplate("/");
+      ClientExecutor executor = ClientRequest.getDefaultExecutor();
+      ClientRequest request = new ClientRequest(uriBuilder, executor);
+      _test(request, uriBuilder, "/set");
+      _test(request, uriBuilder, "/headers");
+      _test(request, uriBuilder, "/headers/fromField");
+      _test(request, uriBuilder, "/cookieparam");
+      _test(request, uriBuilder, "/param");
+      _test(request, uriBuilder, "/default");
    }
 
    public static interface CookieProxy
