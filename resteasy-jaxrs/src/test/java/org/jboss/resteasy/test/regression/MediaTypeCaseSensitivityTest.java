@@ -1,8 +1,7 @@
 package org.jboss.resteasy.test.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
@@ -89,13 +88,18 @@ public class MediaTypeCaseSensitivityTest extends BaseResourceTest
       Assert.assertNotNull(messageBodyReader);
       Assert.assertNotNull(messageBodyReader.getClass());
       Assert.assertEquals(StuffProvider.class, messageBodyReader.getClass());
-      HttpClient client = new HttpClient();
-      PostMethod post = new PostMethod(generateURL("/stuff"));
-      post.setRequestEntity(new StringRequestEntity("bill", "Application/Stuff", null));
-      int status = client.executeMethod(post);
-      Assert.assertEquals(204, status);
-
-
+      ClientRequest request = new ClientRequest(generateURL("/stuff"));
+      request.body("Application/Stuff", "bill");
+      ClientResponse<?> response = null;
+      try
+      {
+         response = request.post();
+         Assert.assertEquals(204, response.getStatus());
+      }
+      finally
+      {
+         response.releaseConnection();
+      }
    }
 
 }
