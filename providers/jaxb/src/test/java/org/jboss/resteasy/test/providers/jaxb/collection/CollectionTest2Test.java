@@ -24,7 +24,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CollectionTest2 extends BaseResourceTest
+public class CollectionTest2Test extends BaseResourceTest
 {
    @XmlRootElement
    @XmlAccessorType(XmlAccessType.FIELD)
