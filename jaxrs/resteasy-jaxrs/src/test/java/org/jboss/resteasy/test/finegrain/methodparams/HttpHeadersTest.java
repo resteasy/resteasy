@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
@@ -245,14 +245,13 @@ public class HttpHeadersTest extends BaseResourceTest
    @Test
    public void RequestHeadersTest() throws Exception
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = new GetMethod(TestPortProvider.generateURL("/HeadersTest/headers"));
-      method.addRequestHeader("Accept", "text/plain, text/html, text/html;level=1, */*");
-      method.addRequestHeader("Content-Type", "application/xml;charset=utf8");
-      int status = client.executeMethod(method);
-      Assert.assertEquals(200, status);
-      String content = method.getResponseBodyAsString();
-
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/HeadersTest/headers"));
+      request.header("Accept", "text/plain, text/html, text/html;level=1, */*");
+      request.header("Content-Type", "application/xml;charset=utf8");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      String content = response.getEntity();
+      
       Assert.assertTrue(-1 < content.indexOf("Accept:"));
       Assert.assertTrue(-1 < content.indexOf("Content-Type:"));
       Assert.assertTrue(-1 < content.indexOf("application/xml"));

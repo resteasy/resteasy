@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -19,8 +19,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import java.io.IOException;
-
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
@@ -133,74 +131,64 @@ public class ExceptionMapperTest
    @Test
    public void testProvidersInjection()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/providers");
+      ClientRequest request = new ClientRequest(generateURL("/providers"));
+      ClientResponse<?> response;
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_OK);
-      }
-      catch (IOException e)
+         response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         response.releaseConnection();
+      } catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testMapping()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("");
+      ClientRequest request = new ClientRequest(generateURL(""));
+      ClientResponse<?> response;
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_NOT_MODIFIED);
-      }
-      catch (IOException e)
+         response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
+         response.releaseConnection();
+      } catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testSubclassMapping()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/subclass");
+      ClientRequest request = new ClientRequest(generateURL("/subclass"));
+      ClientResponse<?> response;
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, HttpResponseCodes.SC_NOT_MODIFIED);
-      }
-      catch (IOException e)
+         response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
+         response.releaseConnection();
+      } catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
    }
 
    @Test
    public void testResteasyExceptionMapping()
    {
-      HttpClient client = new HttpClient();
-      GetMethod method = createGetMethod("/notexist");
+      ClientRequest request = new ClientRequest(generateURL("/notexist"));
+      ClientResponse<?> response;
       try
       {
-         int status = client.executeMethod(method);
-         Assert.assertEquals(status, 410);
-         Assert.assertTrue(notFoundMapper);
-      }
-      catch (IOException e)
+         response = request.get();
+         Assert.assertEquals(410, response.getStatus());
+         response.releaseConnection();
+      } catch (Exception e)
       {
-         method.releaseConnection();
          throw new RuntimeException(e);
       }
-      method.releaseConnection();
-
    }
 }
