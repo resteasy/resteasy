@@ -1,8 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextWrapper;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -85,33 +84,33 @@ public class AbstractJAXBClassTest
    public void testPost() throws Exception
    {
       {
-         HttpClient client = new HttpClient();
-         PostMethod method = createPostMethod("");
          try
          {
-            method.setRequestEntity(new StringRequestEntity(
-                    "<?xml version=\"1.0\"?><person><name>bill</name></person>",
-                    "application/xml", null));
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, 204);
+            ClientRequest request = new ClientRequest(generateURL(""));
+            String s = "<?xml version=\"1.0\"?><person><name>bill</name></person>";
+            request.body("application/xml", s);
+            ClientResponse<?> response = request.post();
+            Assert.assertEquals(204, response.getStatus());
+            response.releaseConnection();
          }
          catch (IOException e)
          {
             throw new RuntimeException(e);
          }
-      }
-      {
-         HttpClient client = new HttpClient();
-         PostMethod method = createPostMethod("/kunde");
-         try
+         
          {
-            method.setRequestEntity(new StringRequestEntity(kundeXml, "application/xml", null));
-            int status = client.executeMethod(method);
-            Assert.assertEquals(status, 204);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
+            try
+            {
+               ClientRequest request = new ClientRequest(generateURL("/kunde"));
+               request.body("application/xml", kundeXml);
+               ClientResponse<?> response = request.post();
+               Assert.assertEquals(204, response.getStatus());
+               response.releaseConnection();
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
          }
       }
    }
