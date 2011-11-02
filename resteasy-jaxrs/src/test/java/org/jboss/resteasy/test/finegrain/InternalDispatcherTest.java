@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.finegrain;
 
 import junit.framework.Assert;
 import org.jboss.resteasy.annotations.ClientResponseType;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.MessageBodyParameterInjector;
@@ -245,10 +246,13 @@ public class InternalDispatcherTest
       Assert.assertEquals("basic", client.getForwardBasic());
       Assert.assertEquals("object1", client.getObject(1).getEntity());
       Assert.assertEquals("object1", client.getForwardedObject(1).getEntity());
-      Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), client
-              .getObject(0).getStatus());
-      Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), client
-              .getForwardedObject(0).getStatus());
+      ClientResponse<?> cr = (ClientResponse<?>) client.getObject(0);
+      Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
+      cr.releaseConnection();
+      cr = (ClientResponse<?>) client.getForwardedObject(0);
+      Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
+      cr.releaseConnection();
+      
       client.putForwardBasic("testBasic");
       Assert.assertEquals("testBasic", client.getBasic());
       client.postForwardBasic("testBasic1");
