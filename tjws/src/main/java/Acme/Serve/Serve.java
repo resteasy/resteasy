@@ -4161,7 +4161,8 @@ public class Serve implements ServletContext, Serializable
                out.println(sb2.toString());
                //System.err.println("We sent cookies 2: " + sb2);
             }
-            if (wasContentLen == false && chunked_out == false && serve.isKeepAlive())
+            // Test for existence of message body
+            if (containsBody() && wasContentLen == false && chunked_out == false && serve.isKeepAlive())
             {
                out.println(TRANSFERENCODING + ": " + CHUNKED);
                chunked_out = true;
@@ -4170,6 +4171,11 @@ public class Serve implements ServletContext, Serializable
             out.flush();
             ((ServeOutputStream) out).setChunked(chunked_out);
          }
+      }
+      
+      private boolean containsBody()
+      {
+         return !("HEAD".equalsIgnoreCase(reqMethod) || (100 <= resCode && resCode < 200) || resCode == 204 || resCode == 304);
       }
 
       // / Writes an error response using the specified status code and
