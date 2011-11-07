@@ -173,9 +173,12 @@ public class JBossCache implements ServerCache
       return cacheEntry;
    }
 
-   public void remove(String key)
+   public void remove(String uri)
    {
-      // let JBossCache clean it up
+      Node parent = cache.getRoot().getChild(Fqn.fromElements(uri));
+      if (parent == null) return;
+      cache.getRoot().removeChild(Fqn.fromElements(uri));
+
    }
 
    public void clear()
