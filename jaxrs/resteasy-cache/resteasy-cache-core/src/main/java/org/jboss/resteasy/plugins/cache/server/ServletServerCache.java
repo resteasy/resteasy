@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.cache.server;
 
+import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.ServletContext;
@@ -38,6 +39,9 @@ public class ServletServerCache implements ServletContextListener
       cache.setProviderFactory(providerFactory);
 
       cache.start();
+      Dispatcher dispatcher = (Dispatcher) servletContext.getAttribute(Dispatcher.class.getName());
+      dispatcher.getDefaultContextObjects().put(ServerCache.class, cache);
+
    }
 
    public void contextDestroyed(ServletContextEvent servletContextEvent)
