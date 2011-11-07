@@ -5,16 +5,19 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.cache.server.JBossCache;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -38,6 +41,11 @@ public class ServerCacheTest extends BaseResourceTest
          return "hello world" + count;
       }
 
+      @PUT
+      @Consumes("text/plain")
+      public void put(String val)
+      {
+      }
 
       @GET
       @Produces("text/plain")
@@ -169,6 +177,32 @@ public class ServerCacheTest extends BaseResourceTest
          Assert.assertEquals(response.getEntity(), "hello world" + 2);
       }
 
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "hello world" + 2);
+      }
+
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache"));
+         ClientResponse response = request.body("text/plain", "yo").put();
+         Assert.assertEquals(204, response.getStatus());
+      }
+      {
+         ClientRequest request = new ClientRequest(generateURL("/cache"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         Assert.assertNotNull(cc);
+         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         Assert.assertNotNull(etag);
+         Assert.assertEquals(response.getEntity(), "hello world" + 3);
+      }
    }
 
 

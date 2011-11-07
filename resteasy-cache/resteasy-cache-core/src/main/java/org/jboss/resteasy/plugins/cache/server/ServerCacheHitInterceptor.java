@@ -39,9 +39,23 @@ public class ServerCacheHitInterceptor implements PreProcessInterceptor
 
    public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
    {
-      if (!request.getHttpMethod().equalsIgnoreCase("GET")) return null;
-
       String key = request.getUri().getRequestUri().toString();
+      if (request.getHttpMethod().equalsIgnoreCase("GET"))
+      {
+         return handleGET(request, method, key);
+      }
+      else if (request.getHttpMethod().equalsIgnoreCase("PUT")
+              || request.getHttpMethod().equalsIgnoreCase("POST")
+              || request.getHttpMethod().equalsIgnoreCase("DELETE"))
+      {
+         // if PUT, POST, DELETE, automatically clear cache
+         cache.remove(key);
+      }
+      return null;
+   }
+
+   private ServerResponse handleGET(HttpRequest request, ResourceMethod method, String key)
+   {
       MediaType chosenType = method.resolveContentType(request, null);
       ServerCache.Entry entry = cache.get(key, chosenType);
       if (entry != null)
@@ -53,7 +67,7 @@ public class ServerCacheHitInterceptor implements PreProcessInterceptor
          }
          else
          {
-            // validation if client sent 
+            // validation if client sent
             Response.ResponseBuilder builder = validation.evaluatePreconditions(new EntityTag(entry.getEtag()));
             CacheControl cc = new CacheControl();
             cc.setMaxAge(entry.getExpirationInSeconds());
