@@ -165,4 +165,37 @@ Accept-Language: en-US
 The mapped file suffixes are stripped from the target URL path before the request is dispatched to a corresponding JAX-RS resource.
 </para>
 </sect1>
+
+<sect1 id="param_media_mappings">
+<title>Query String Parameter-based negotiation</title>
+<para>
+RESTEasy can do content negotiation based in a parameter in query string. To enable this, the web.xml can be configured like follow:
+</para>
+<programlisting>
+<![CDATA[
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+    <context-param>
+        <param-name>resteasy.media.type.param.mapping</param-name>
+        <param-value>someName</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+</web-app>
+]]>
+</programlisting>
+<para>The param-value is the name of the query string parameter that RESTEasy will use in the place of the Accept header.</para>
+<para>Invoking http://service.foo.com/resouce?someName=application/xml, will give the application/xml media type the highest priority in the content negotiation.</para>
+<para>In cases where the request contains both the parameter and the Accept header, the parameter will be more relevant.</para>
+<para>It is possible to left the param-value empty, what will cause the processor to look for a parameter named 'accept'.</para>
+</sect1>
+
 </chapter>
