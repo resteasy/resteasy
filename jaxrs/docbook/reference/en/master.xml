@@ -50,6 +50,7 @@
                 <!ENTITY CDI SYSTEM "modules/CDI.xml">
                 <!ENTITY Signature SYSTEM "modules/signature.xml">
                 <!ENTITY SMIME SYSTEM "modules/smime.xml">
+                <!ENTITY Validation SYSTEM "modules/Validation.xml">
                 ]>
 
 <book>
@@ -135,6 +136,7 @@
     &Guice;
    &RESTEasy_Client_Framework;
    &AJAX_Client;
+   &Validation;
    &Maven_and_RESTEasy;
    &JBoss;
    &Migration_from_older_versions;
