@@ -94,6 +94,7 @@ public class ServerCacheTest extends BaseResourceTest
       JBossCache cache = new JBossCache();
       cache.setProviderFactory(getProviderFactory());
       cache.start();
+
       addPerRequestResource(MyService.class);
    }
 
