@@ -101,15 +101,38 @@ public static void main(String[] args) throws Exception
    </sect1>
    <sect1 id="server_cache">
       <title>Local Server-Side Response Cache</title>
-      <para>Resteasy has a server-side, local, in-memory cache that can sit in front of your JAX-RS services.  It automatically caches marshalled responses from HTTP GET JAX-RS invocations if, and only if your JAX-RS resource method sets a Cache-Control header.  When a GET comes in, the Resteasy Server Cache checks to see if the URI is stored in the cache.  If it does, it returns the already marshalled response without invoking your JAX-RS method.  Each cache entry has a max age to whatever is specified in the Cache-Control header of the initial request.  The cache also will automatically generate an ETag using an MD5 hash on the response body.  This allows the client to do HTTP 1.1 cache revalidation with the IF-NONE-MATCH header.  The cache is also smart enough to perform revalidation if there is no initial cache hit, but the jax-rs method still returns a body that has the same ETag.
+      <para>Resteasy has a server-side, local, in-memory cache that can sit in front of your JAX-RS services.
+          It automatically caches marshalled responses from HTTP GET JAX-RS invocations if, and only if your
+          JAX-RS resource method sets a Cache-Control header.  When a GET comes in, the Resteasy Server Cache checks
+          to see if the URI is stored in the cache.  If it does, it returns the already marshalled response without
+          invoking your JAX-RS method.  Each cache entry has a max age to whatever is specified in the Cache-Control
+          header of the initial request.  The cache also will automatically generate an ETag using an MD5 hash on the
+          response body.  This allows the client to do HTTP 1.1 cache revalidation with the IF-NONE-MATCH header.
+          The cache is also smart enough to perform revalidation if there is no initial cache hit, but the jax-rs
+          method still returns a body that has the same ETag.
       </para>
+       <para>
+          Starting in Resteasy 2.3, the cache is also automatically invalidated for a particular URI that has
+           PUT, POST, or DELETE invoked on it.  You can also obtain a reference to the cache by injecting a
+           org.jboss.resteasy.plugins.cache.ServerCache
+           via the @Context annotation
+       </para>
+<programlisting>
+
+    @Context
+    ServerCache cache;
+
+    @GET
+    public String get(@Context ServerCache cache) {...}
+
+</programlisting>
       <para>To set up the server-side cache, there are a few simple steps you have to perform.  If you are using Maven you must depend on the resteasy-cache-core artifact:</para>
 <programlisting>
 <![CDATA[
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
    <artifactId>resteasy-cache-core</artifactId>
-   <version>1.2.1.GA</version>
+   <version>2.3-beta-2-SNAPSHOT</version>
 </dependency>
 ]]>
 </programlisting>
