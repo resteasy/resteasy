@@ -12,6 +12,10 @@
     <title>Migrating from 2.2.x to 2.3</title>
     <itemizedlist>
         <listitem>
+            Apache Http Client 4.x is now the default underlying client HTTP mechanism.  If there are problems, you
+            can change the default mechanism by calling ClientRequest.setDefaultExecutorClass.
+        </listitem>
+        <listitem>
           resteasy-doseta module no longer exists.  It is now renamed to the resteasy-crypto module and also includes other things beyond doseta.
         </listitem>
         <listitem>
@@ -27,7 +31,10 @@
         <listitem>
 	  Some subtle changes were made to ExceptionMapper handling so that you can write ExceptionMappers for any exception thrown internally or within
 	  your application.  See JIRA Issue RESTEASY-595 for more details.  This may have an effect on existing applications that have an ExceptionMapper
-	  for RuntimeException in that you will start to see Resteasy internal exceptions being caught be this kind of ExceptionMapper.
+	  for RuntimeException in that you will start to see Resteasy internal exceptions being caught by this kind of ExceptionMapper.
+        </listitem>
+        <listitem>
+            The resteasy-cache (Server-side cache) will now invalidate the cache when a PUT, POST, or DELETE is done on a particular URI.
         </listitem>
     </itemizedlist>
 </sect1>
