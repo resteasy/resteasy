@@ -26,6 +26,7 @@
             <id>jboss</id>
             <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </pluginRepository>
+        <!--
         <pluginRepository>
             <id>maven2-repository.dev.java.net</id>
             <url>http://download.java.net/maven/2</url>
@@ -40,6 +41,7 @@
             <url>http://download.java.net/maven/1</url>
             <layout>legacy</layout>
         </pluginRepository>
+        -->
     </pluginRepositories>
 
     <build>

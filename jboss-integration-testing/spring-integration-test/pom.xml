@@ -15,14 +15,6 @@
             <id>jboss</id>
             <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>maven</id>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>
-        <repository>
-            <id>ibiblio mirror</id>
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-        </repository>
     </repositories>
     <dependencies>
         <dependency>

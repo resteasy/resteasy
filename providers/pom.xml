@@ -20,7 +20,6 @@
         <module>test-all-jaxb</module>
         <module>jackson</module>
         <module>test-jackson-jaxb-coexistence</module>
-        <module>abdera-atom</module>
         <module>resteasy-atom</module>
         <module>multipart</module>
         <module>yaml</module>
