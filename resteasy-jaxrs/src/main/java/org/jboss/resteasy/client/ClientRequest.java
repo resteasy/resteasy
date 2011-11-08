@@ -73,47 +73,17 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
     * Set the default executor class name.
     *
     * @param classname
-    * @param createPerRequestInstance whether the instance can be used by every request
     */
-   public static void setDefaultExecutorClass(String classname, boolean createPerRequestInstance)
+   public static void setDefaultExecutorClass(String classname)
    {
-      synchronized (lock)
-      {
-         defaultExecutorClasss = classname;
-         defaultExecutor = null;
-         createPerInstance = createPerRequestInstance;
-      }
+      defaultExecutorClasss = classname;
    }
-
-   private static volatile boolean createPerInstance = true;
-
-   private static volatile ClientExecutor defaultExecutor = null;
-
-   private static final Object lock = new Object();
 
    public static ClientExecutor getDefaultExecutor()
    {
-      if (createPerInstance) return createDefaultExecutorInstance();
-      ClientExecutor result = defaultExecutor;
-      if (result == null)
-      {
-         synchronized (lock)
-         {
-            result = defaultExecutor;
-            if (result == null)
-            {
-               defaultExecutor = result = createDefaultExecutorInstance();
-            }
-         }
-      }
-      return result;
-   }
-
-   private static ClientExecutor createDefaultExecutorInstance()
-   {
       try
       {
-         Class clazz = Thread.currentThread().getContextClassLoader().loadClass(defaultExecutorClasss);
+         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(defaultExecutorClasss);
          return (ClientExecutor) clazz.newInstance();
       }
       catch (Exception e)
