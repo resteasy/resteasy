@@ -37,10 +37,10 @@ public class ProxyBuilder<T>
 	private final Class<T> iface;
 	private final URI baseUri;
 	private ClassLoader loader;
-	private ClientExecutor executor = ClientRequest.getDefaultExecutor();
-	private ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
-	private EntityExtractorFactory extractorFactory = new DefaultEntityExtractorFactory();
-	private Map<String, Object> requestAttributes = Collections.emptyMap();
+	private ClientExecutor executor;
+	private ResteasyProviderFactory providerFactory;
+	private EntityExtractorFactory extractorFactory;
+	private Map<String, Object> requestAttributes;
 	private MediaType serverConsumes;
 	private MediaType serverProduces;
 
@@ -109,10 +109,17 @@ public class ProxyBuilder<T>
 	public T now()
 	{
 		if (providerFactory instanceof ProviderFactoryDelegate)
-		{
 			providerFactory = ((ProviderFactoryDelegate) providerFactory).getDelegate();
-		}
 
+		if (executor == null)
+			executor = ClientRequest.getDefaultExecutor();
+		if (providerFactory == null)
+			providerFactory = ResteasyProviderFactory.getInstance();
+		if (extractorFactory == null)
+			extractorFactory = new DefaultEntityExtractorFactory();
+		if (requestAttributes == null)
+			requestAttributes = Collections.emptyMap();
+		
 		final ProxyConfig config = new ProxyConfig(loader, executor, providerFactory, extractorFactory, requestAttributes, serverConsumes, serverProduces);
 		return createProxy(iface, baseUri, config);
 	}
