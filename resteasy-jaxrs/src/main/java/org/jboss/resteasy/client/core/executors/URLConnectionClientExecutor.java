@@ -117,6 +117,11 @@ public class URLConnectionClientExecutor implements ClientExecutor
       response.setHeaders(getHeaders(connection));
       return response;
    }
+   
+   public void close()
+   {
+      // empty
+   }
 
    private MultivaluedMap<String, String> getHeaders(
            final HttpURLConnection connection)
