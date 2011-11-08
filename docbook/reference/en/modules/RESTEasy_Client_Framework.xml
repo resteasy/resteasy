@@ -407,5 +407,213 @@ public class ExampleInterceptor implements ClientErrorInterceptor
     p:serviceInterface="a.b.c.Echo" p:baseUri="http://server.far.far.away:8080/echo" />
 ]]></programlisting>
    </sect1>
+   
+   <sect1 id="transport_layer">
+     <title>Transport Layer</title>
+     
+     <para>
+         Network communication between the client and server is handled in Resteasy,
+         by default, by HttpClient (4.x) from the Apache HttpComponents project.  In general,
+         the interface between the Resteasy Client Framework and the network is
+         found in an implementation of
+         <classname>org.jboss.resteasy.client.ClientExecutor</classname>, and
+         <classname>org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor</classname>,
+         which uses HttpClient (4.x), is the default implementation.  Resteasy
+         also ships with the following client executors, all found in the
+         <code>org.jboss.resteasy.client.core.executors</code> package:
+     </para>
+     
+     <itemizedlist>
+         <listitem>ApacheHttpClientExecutor: uses HttpClient (3.x);</listitem>
+         <listitem>
+             URLConnectionClientExecutor: uses <classname>java.net.HttpURLConnection</classname>;
+         </listitem>
+         <listitem>InMemoryClientExecutor: dispatches requests to a server in the same JVM.</listitem>
+     </itemizedlist>
+     <para>
+         The choice of a default executor may be overriden by calling
+         <methodname>ClientRequest.setDefaultExecutorClass()</methodname>:
+     </para>
+     
+     <programlisting>
+ClientRequest.setDefaultExecutorClass("org.bluemonkeydiamond.MyClientExecutor");
+     </programlisting>
+     
+     <para>
+         and a client executor may be passed to a specific <classname>ClientRequest</classname>:
+     </para>
+     
+     <programlisting>
+ClientExecutor executor = new MyClientExecutor();
+ClientRequest request = new ClientRequest("http://localhost:8081/customer", executor);
+     </programlisting>
+     
+     <para>
+         or to a specific proxy:
+     </para>
+     
+     <programlisting>
+ClientExecutor executor = new MyClientExecutor();
+SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081/customer", executor);
+     </programlisting>
+     
+     <para>
+         Resteasy and HttpClient make reasonable default decisions so that it is possible to use the client
+         framework without ever referencing HttpClient, but for some applications it may be necessary to drill
+         down into the HttpClient details.  <classname>ApacheHttpClient4Executor</classname> can
+         be supplied with an instance of <classname>org.apache.http.client.HttpClient</classname> and
+         an instance of <classname>org.apache.http.protocol.HttpContext</classname>, which can carry
+         additional configuration details into the HttpClient layer.  For example, authentication
+         may be configured as follows:
+     </para>
+     
+     <programlisting>
+// Configure HttpClient to authenticate preemptively
+// by prepopulating the authentication data cache.
+ 
+// 1. Create AuthCache instance
+AuthCache authCache = new BasicAuthCache();
+ 
+// 2. Generate BASIC scheme object and add it to the local auth cache
+BasicScheme basicAuth = new BasicScheme();
+authCache.put("com.bluemonkeydiamond.sippycups", basicAuth);
+ 
+// 3. Add AuthCache to the execution context
+BasicHttpContext localContext = new BasicHttpContext();
+localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+ 
+// 4. Create client executor and proxy
+httpClient = new DefaultHttpClient();
+ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient, localContext);
+client = ProxyFactory.create(BookStoreService.class, url, executor);
+     </programlisting>
+
+     <para>
+         One default decision made by HttpClient and adopted by Resteasy is the use of
+         <classname>org.apache.http.impl.conn.SingleClientConnManager</classname>,
+         which manages a single socket at any given time and which
+         supports the use case in which one or more invocations are made serially
+         from a single thread.  For multithreaded applications, 
+         <classname>SingleClientConnManager</classname> may be replaced by 
+         <classname>org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager</classname>:
+     </para>
+     
+     <programlisting>
+ClientConnectionManager cm = new ThreadSafeClientConnManager();
+HttpClient httpClient = new DefaultHttpClient(cm);
+ClientExecutor executor = new ApacheHttpClient4Executor(httpClient);
+client = ProxyFactory.create(BookStoreService.class, url, executor);
+     </programlisting>
+     
+     <para>
+         For more information about HttpClient (4.x), see the documentation
+         at <ulink url="http://hc.apache.org/httpcomponents-client-ga/tutorial/html/">
+         http://hc.apache.org/httpcomponents-client-ga/tutorial/html/</ulink>.
+     </para>
+     
+     <para>
+         <emphasis role="bold">Note.</emphasis> It is important to understand
+         the difference between "releasing" a connection and "closing" a
+         connection.  <emphasis role="bold">Releasing</emphasis> a connection
+         makes it available for reuse.  <emphasis role="bold">Closing</emphasis>
+         a connection frees its resources and makes it unusable.
+     </para>
+     <para>
+         <classname>SingleClientConnManager</classname> manages
+         a single socket, which it allocates to at most a single invocation
+         at any given time.  Before that socket can be reused, it has to be
+         released from its current use, which can occur in one of two ways.  If
+         an execution of a <classname>ClientRequest</classname> or a call on
+         a proxy returns a class other than <classname>ClientResponse</classname>,
+         then Resteasy will take care of releasing the connection.  For example,
+         in the fragments
+     </para>
+     
+     <programlisting>
+ClientRequest request = new ClientRequest("http://localhost:8081/customer/123");
+String answer = request.getTarget(String.class);
+     </programlisting>
+     
+     <para>
+         or
+     </para>
+     
+     <programlisting>
+RegistryStats stats = ProxyFactory.create(RegistryStats.class, "http://localhost:8081/customer/123");
+RegistryData data = stats.get();
+     </programlisting>
+     
+     <para>
+        Resteasy will release the connection under the covers.  The only counterexample is the case
+        in which the response is an instance of <classname>InputStream</classname>, which must
+        be closed explicitly.
+     </para>
+     
+     <para>
+         On the other hand, if the result of an invocation is an instance of
+         <classname>ClientResponse</classname>, then one of two additional steps must be taken
+         to release the connection.  If some version of the overloaded method
+         <methodname>ClientResponse.getEntity()</methodname> is called, then
+         Resteasy will release the connection (unless the entity is an instance
+         of <classname>InputStream</classname>).  If the entity is ignored,
+         then the connection must be released explicitly:
+     </para>
+     
+     <programlisting>
+ClientRequest request = new ClientRequest("http://localhost:8081:/customer/123"));
+ClientResponse&lt;?&gt; response = request.get();
+System.out.println(response.getStatus());
+response.releaseConnection();
+response = request.delete("123");
+System.out.println(response.getStatus());
+response.releaseConnection();
+     </programlisting>
+     
+     <para>
+         Again, releasing a connection only makes it available
+         for another use. <emphasis role="bold">It does not normally close the socket.</emphasis>
+     </para>
+         
+     <para>
+         On the other hand,
+         <methodname>ApacheHttpClient4Executor.finalize()</methodname> will close any open
+         sockets, but only if it created the <classname>HttpClient</classname> it has been
+         using.  If an <classname>HttpClient</classname> has been passed into the
+         <classname>ApacheHttpClient4Executor</classname>, then the user is responsible
+         for closing the connections:
+     </para>
+     
+     <programlisting>
+HttpClient httpClient = new DefaultHttpClient();
+ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
+ClientRequest request = new ClientRequest("http://localhost:8081/customer"), executor);
+...
+httpClient.getConnectionManager().shutdown();
+     </programlisting>
+     
+     <para>
+         Note that if <classname>ApacheHttpClient4Executor</classname> has created its own
+         instance of <classname>HttpClient</classname>, it is not necessary to wait
+         for <methodname>finalize()</methodname> to close open sockets.  The
+         <classname>ClientExecutor</classname> interface has a <methodname>close()</methodname>
+         method for this purpose:
+     </para>
+     
+     <programlisting>
+ClientRequest request = new ClientRequest("http://localhost:8081/customer/123"));
+ClientResponse&lt;Customer&gt; response = request.get(Customer.class);
+response.releaseConnection();
+request.delete();
+request.getExecutor().close();
+     </programlisting>
+     
+     <para>
+         The call to <methodname>ClientResponse.releaseConnection()</methodname>
+         makes the underlying connection available for the 
+         <methodname>delete()</methodname> invocation.  The call to
+         <methodname>ClientRequest.getExecutor().close()</methodname>
+         closes the underlying connection.
+     </para>
+   </sect1>
 </chapter>
 
