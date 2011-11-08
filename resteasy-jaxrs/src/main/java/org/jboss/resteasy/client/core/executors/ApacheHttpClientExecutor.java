@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.core.executors;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
@@ -22,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -32,10 +34,13 @@ import java.util.Map;
 public class ApacheHttpClientExecutor implements ClientExecutor
 {
    protected HttpClient httpClient;
-
+   protected boolean createdHttpClient;
+   protected boolean closed;
+   
    public ApacheHttpClientExecutor()
    {
       this.httpClient = new HttpClient();
+      createdHttpClient = true;
    }
 
    public ApacheHttpClientExecutor(HttpClient httpClient)
@@ -231,5 +236,42 @@ public class ApacheHttpClientExecutor implements ClientExecutor
       }
    }
 
-
+   public boolean isClosed()
+   {
+      return closed;
+   }
+   
+   public void close() throws Exception
+   {
+      if (closed)
+      {
+         return;
+      }
+      if (createdHttpClient)
+      { 
+         HttpConnectionManager manager = httpClient.getHttpConnectionManager();
+         if (manager == null)
+         {
+            return;
+         }
+         Method shutdown = null;
+         try
+         {
+            shutdown = manager.getClass().getDeclaredMethod("shutdown");
+         }
+         catch (Exception e)
+         {
+            // ignore
+            return;
+         }
+         shutdown.invoke(manager);
+         closed = true;
+      }
+   }
+   
+   public void finalize() throws Throwable
+   {
+      close();
+      super.finalize();
+   }
 }
