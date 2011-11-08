@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client;
 
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
@@ -64,7 +63,7 @@ public class ClientRequestFactory
       else
          this.providerFactory = providerFactory;
       if (executor == null)
-    	  this.executor = new ApacheHttpClient4Executor(new DefaultHttpClient());
+    	  this.executor = new ApacheHttpClient4Executor();
       else
          this.executor = executor;
       this.base = base;
