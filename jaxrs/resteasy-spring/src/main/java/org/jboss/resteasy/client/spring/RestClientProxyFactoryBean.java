@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.spring;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
@@ -86,8 +85,13 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
       if (clientExecutor == null)
       {
          if (httpClient == null)
-             httpClient = new DefaultHttpClient();
-         clientExecutor = new ApacheHttpClient4Executor(httpClient);
+         {
+            clientExecutor = new ApacheHttpClient4Executor();
+         }
+         else
+         {
+            clientExecutor = new ApacheHttpClient4Executor(httpClient);
+         }
          client = ProxyFactory.create(serviceInterface, baseUri, clientExecutor,
                  resteasyProviderFactory);
       }
