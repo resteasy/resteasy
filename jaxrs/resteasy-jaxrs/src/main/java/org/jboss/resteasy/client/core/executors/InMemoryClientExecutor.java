@@ -189,4 +189,9 @@ public class InMemoryClientExecutor implements ClientExecutor
       return dispatcher;
    }
 
+   public void close()
+   {
+      // empty
+   }
+   
 }
