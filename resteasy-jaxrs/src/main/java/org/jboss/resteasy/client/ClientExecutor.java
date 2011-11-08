@@ -13,4 +13,6 @@ public interface ClientExecutor
    ClientRequest createRequest(UriBuilder uriBuilder);
 
    ClientResponse execute(ClientRequest request) throws Exception;
+   
+   void close() throws Exception;
 }
