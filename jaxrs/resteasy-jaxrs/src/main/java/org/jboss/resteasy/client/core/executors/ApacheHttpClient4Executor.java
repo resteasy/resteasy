@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
@@ -40,11 +41,14 @@ import java.util.Map;
 public class ApacheHttpClient4Executor implements ClientExecutor
 {
    protected HttpClient httpClient;
+   protected boolean createdHttpClient;
    protected HttpContext httpContext;
+   protected boolean closed;
 
    public ApacheHttpClient4Executor()
    {
       this.httpClient = new DefaultHttpClient();
+      this.createdHttpClient  = true;
    }
 
    public ApacheHttpClient4Executor(HttpClient httpClient)
@@ -256,4 +260,30 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       }
    }
 
+   public void close() 
+   {
+      if (closed)
+         return;
+      
+      if (createdHttpClient && httpClient != null)
+      {
+         ClientConnectionManager manager = httpClient.getConnectionManager();
+         if (manager != null)
+         {
+            manager.shutdown();
+         }
+      }
+      closed = true;
+   }
+   
+   public boolean isClosed()
+   {
+      return closed;
+   }
+   
+   public void finalize() throws Throwable
+   {
+      close();
+      super.finalize();
+   }
 }
