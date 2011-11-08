@@ -20,6 +20,11 @@
             can change the default mechanism by calling ClientRequest.setDefaultExecutorClass.
         </listitem>
         <listitem>
+            ClientRequest no longer supports a shared default executor.  The 
+            <code>createPerRequestInstance</code> parameter has been removed from
+            <methodname>ClientRequest.setDefaultExecutorClass()</methodname>.
+        </listitem>
+        <listitem>
           resteasy-doseta module no longer exists.  It is now renamed to the resteasy-crypto module and also includes other things beyond doseta.
         </listitem>
         <listitem>
