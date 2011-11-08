@@ -12,6 +12,10 @@
     <title>Migrating from 2.2.x to 2.3</title>
     <itemizedlist>
         <listitem>
+            The Apache Abdera integration has been removed as a project.  If you want the integration back, please
+            ping our dev lists or open a JIRA.
+        </listitem>
+        <listitem>
             Apache Http Client 4.x is now the default underlying client HTTP mechanism.  If there are problems, you
             can change the default mechanism by calling ClientRequest.setDefaultExecutorClass.
         </listitem>
