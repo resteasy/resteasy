@@ -2,12 +2,14 @@ package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
+import org.jboss.resteasy.util.WeightedLanguage;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -77,7 +79,14 @@ public class HttpHeadersImpl implements HttpHeaders
       else
       {
          this.acceptableLanguages = new ArrayList<Locale>(acceptableLanguages.size());
-         for (String lang : acceptableLanguages) this.acceptableLanguages.add(LocaleHelper.extractLocale(lang));
+         List<WeightedLanguage> languages = new ArrayList<WeightedLanguage>(acceptableLanguages.size());
+         for (String lang : acceptableLanguages)
+         {
+            languages.add(WeightedLanguage.parse(lang));
+         }
+         Collections.sort(languages);
+
+         for (WeightedLanguage lang : languages) this.acceptableLanguages.add(lang.getLocale());
       }
    }
 
