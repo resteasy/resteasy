@@ -125,6 +125,7 @@ public class StringParameterInjector
                {
                   throw new RuntimeException(e);
                }
+               factory.injectProperties(unmarshaller);
                unmarshaller.setAnnotations(annotations);
                return;
             }
