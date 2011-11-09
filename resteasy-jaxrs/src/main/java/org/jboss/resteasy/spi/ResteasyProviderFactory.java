@@ -731,6 +731,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (stringParameterUnmarshallers.size() == 0) return null;
       Class<? extends StringParameterUnmarshaller> un = stringParameterUnmarshallers.get(clazz);
+      if (un == null) return null;
       StringParameterUnmarshaller<T> provider = getProviderInstance(un);
       injectProperties(provider);
       return provider;
