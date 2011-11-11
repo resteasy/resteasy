@@ -49,6 +49,8 @@ public class ContextService
    public String get(@Context ServletConfig config)
    {
       Assert.assertNotNull(config);
+      Assert.assertNotNull(config.getInitParameter("servlet.greeting"));
+      Assert.assertTrue(config.getInitParameterNames().hasMoreElements());
       return "ok";
    }
 
