@@ -51,6 +51,8 @@ public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
 
    public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
-      entityStream.write(o.toString().getBytes());
+      String charset = mediaType.getParameters().get("charset");
+      if (charset == null) entityStream.write(o.toString().getBytes());
+      else entityStream.write(o.toString().getBytes(charset));
    }
 }
