@@ -28,7 +28,7 @@
   hashing the message body then combining this hash with an arbitrary set of
   metadata included within the DKIM-Signature header. You can also add other
   request or response headers to the calculation of the signature. Adding
-  metadata to the signature calculation gives you a lot of flexiblity to
+  metadata to the signature calculation gives you a lot of flexibility to
   piggyback various features like expiration and authorization. Here's what an
   example DKIM-Signature header might look like.</para>
 
@@ -99,7 +99,7 @@
       <term>h</term>
 
       <listitem>
-        <para>Semi-colon dilimited list of headers that are included in the
+        <para>Semi-colon delimited list of headers that are included in the
         signature calculation.</para>
       </listitem>
     </varlistentry>
@@ -151,7 +151,7 @@
   record under that entry. In our above example burke._domainKey.example.com
   would be used as a string. This is a every interesting way to publish public
   keys. For one, it becomes very easy for verifiers to find public keys.
-  THere's no real central store that is needed. DNS is a infrastructure IT
+  There's no real central store that is needed. DNS is a infrastructure IT
   knows how to deploy. Verifiers can choose which domains they allow requests
   from. Resteasy supports discovering public keys via DNS. It also instead
   allows you to discover public keys within a local Java KeyStore if you do
@@ -240,7 +240,7 @@ ClientResponse response = request.put();
       <title>@Signed annotation</title>
 
       <para>Instead of using the API, Resteasy also provides you an
-      annotationAn alternative to the manual way of signing using a
+      annotation alternative to the manual way of signing using a
       DKIMSignature instances is to use the
       @org.jboss.resteasy.annotations.security.doseta.Signed annotation. It is
       required that you configure a KeyRepository as described later in this
@@ -311,7 +311,7 @@ public void verifyManual(@HeaderParam("Content-Signature") DKIMSignature signatu
     converted into. You will also have to configure a KeyRepository. This is
     describe later in this chapter.</para>
 
-    <para>The cient side is a little bit different:</para>
+    <para>The client side is a little bit different:</para>
 
     <para><programlisting>ClientRequest request = new ClientRequest("http://localhost:9095/signed"));
 
@@ -335,7 +335,7 @@ String entity = response.getEntity();
       <para>The easiest way to verify a signature sent in a HTTP request on
       the server side is to use the
       @@org.jboss.resteasy.annotations.security.doseta.Verify (or
-      @Verifications which is used to verify multilpe signatures). Here's an
+      @Verifications which is used to verify multiple signatures). Here's an
       example:</para>
 
       <para><programlisting>      @POST
@@ -350,7 +350,7 @@ String entity = response.getEntity();
       discovered using the configured KeyRepository (discussed later in this
       chapter). You can also specify which specific signatures you want to
       verify as well as define multiple verifications you want to happen via
-      the @Verifications annoation. Here's a complex example:</para>
+      the @Verifications annotation. Here's a complex example:</para>
 
       <para><programlisting>@POST
 @Consumes("text/plain")
@@ -392,7 +392,7 @@ public void post(String input) {...}
       <para>For example:</para>
 
       <para><programlisting>$ keytool -genkeypair -alias burke._domainKey.example.com -keyalg RSA -keysize 1024 -keystore my-apps.jks </programlisting>You
-      can always import your own offical certificates too. See the JDK
+      can always import your own official certificates too. See the JDK
       documentation for more details.</para>
     </section>
 

@@ -459,7 +459,7 @@
 	</itemizedlist>
         <para>
             The logging categories are still a work in progress, but the initial set should make it easier to
-            trouleshoot issues. Currently, the framework has defined the following log categories:
+            troubleshoot issues. Currently, the framework has defined the following log categories:
         </para>
         <para>
 

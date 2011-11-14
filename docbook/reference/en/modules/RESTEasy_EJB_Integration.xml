@@ -73,7 +73,9 @@ Next, in RESTeasy's web.xml file you must manually register the EJB with RESTeas
 </para>
 <para>
 
-This is the only portable way we can offer EJB integration.  Future versions of RESTeasy will have tighter integration with JBoss AS so you do not have to do any manual registrations or modications to web.xml.  For right now though, we're focusing on portability.
+This is the only portable way we can offer EJB integration.  Future versions of RESTeasy will have tighter integration
+    with JBoss AS so you do not have to do any manual registrations or modifications to web.xml.  For right now though,
+    we're focusing on portability.
 </para>
 <para>
 

@@ -121,7 +121,7 @@ public interface StringConverter<T>
     </sect1>
     <sect1 id="StringParamUnmarshaller">
         <title>StringParamUnmarshaller</title>
-        <para>org.jboss.resteasy.spi.StringParameterUnmarshaller is sensative to the annotations placed
+        <para>org.jboss.resteasy.spi.StringParameterUnmarshaller is sensitive to the annotations placed
         on the parameter or field you are injecting into.  It is created per injector.  The setAnnotations()
         method is called by resteasy to initialize the unmarshaller.</para>
 <programlisting><![CDATA[

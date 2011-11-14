@@ -40,8 +40,8 @@ POST http://example.com/asynch/jobs/122?wait=3000
    <para>  If you do not specify a "wait" parameter, the GET or POST will not wait at all if the job is not complete.</para>
    <para>  NOTE!!  While you can invoke GET, DELETE, and PUT methods asynchronously, this breaks the HTTP 1.1 contract of these methods.  While these invocations may not change the state of the resource if invoked more than once, they do change the state of the server as new Job entries with each invocation.  If you want to be a purist, stick with only invoking POST methods asynchronously.
    </para>
-   <para> Security NOTE!  Resteasy role-based security (annotations) does not work with the Asynchronoous Job Service.  You must use
-   XML declaritive security within your web.xml file. Why? It is impossible to implement role-based security portably.  In the future, we may have specific JBoss integration, but will not support other environments.</para>
+   <para> Security NOTE!  Resteasy role-based security (annotations) does not work with the Asynchronous Job Service.  You must use
+   XML declarative security within your web.xml file. Why? It is impossible to implement role-based security portably.  In the future, we may have specific JBoss integration, but will not support other environments.</para>
    </sect1>
    <sect1 id="oneway">
       <title>Oneway: Fire and Forget</title>
@@ -52,12 +52,12 @@ POST http://example.com/asynch/jobs/122?wait=3000
 <programlisting>
 POST http://example.com/myservice?oneway=true
 </programlisting>
-   <para> Security NOTE!  Resteasy role-based security (annotations) does not work with the Asynchronoous Job Service.  You must use
+   <para> Security NOTE!  Resteasy role-based security (annotations) does not work with the Asynchronous Job Service.  You must use
    XML declaritive security within your web.xml file. Why? It is impossible to implement role-based security portably.  In the future, we may have specific JBoss integration, but will not support other environments.</para>
    </sect1>
    <sect1 id="async_job_setup">
      <title>Setup and Configuration</title>
-     <para>You must enable the Asychronous Job Service in your web.xml file as it is not turned on by default.</para>
+     <para>You must enable the Asynchronous Job Service in your web.xml file as it is not turned on by default.</para>
 <programlisting>
 <![CDATA[
 <web-app>

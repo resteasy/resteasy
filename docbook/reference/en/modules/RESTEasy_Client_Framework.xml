@@ -127,7 +127,7 @@ public interface MyProxy {
         </para>
         <para>
 
-            Interally, after invoking on the server, the client proxy internals will convert the HTTP response code into
+            Internally, after invoking on the server, the client proxy internals will convert the HTTP response code into
             a
             Response.Status enum.
         </para>
@@ -207,7 +207,7 @@ public abstract class ClientResponse<T> extends Response
         <para>
             All the getEntity() methods are deferred until you invoke them. In other words, the response OutputStream is
             not read
-            until you call one of these methods. The empty paramed getEntity() method can only be used if you have
+            until you call one of these methods. The empty parameter getEntity() method can only be used if you have
             templated the ClientResponse within your method declaration. Resteasy uses this generic type information to
             know what type to unmarshal the raw OutputStream into. The other two getEntity() methods that take
             parameters, allow you to specify which Object types you want to marshal the response into. These methods
@@ -240,7 +240,7 @@ public interface LibraryService {
         <para>
             It is generally possible to share an interface between the client and server. In this scenario, you just
             have your JAX-RS services implement an annotated interface
-            and then reuse that same interface to create client proxies to invoke on on the client-side. One caveat to
+            and then reuse that same interface to create client proxies to invoke on the client-side. One caveat to
             this is when your JAX-RS methods return a Response object.
             The problem on the client is that the client does not have any type information with a raw Response return
             type declaration. There are two ways of getting around
@@ -308,7 +308,7 @@ List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>()
 
 	<para>
 		In cases where Client Proxy methods do not return Response or
-		ClientResponse, it may be not be desireable for the Client Proxy
+		ClientResponse, it may be not be desirable for the Client Proxy
 		Framework to throw generic ClientResponseFailure exceptions. In these
 		scenarios, where more fine-grained control of thrown Exceptions is
 		required, the ClientErrorInterceptor API may be used.

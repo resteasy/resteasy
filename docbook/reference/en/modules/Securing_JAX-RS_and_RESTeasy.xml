@@ -51,7 +51,7 @@ functionality instead of Resteasy.
 </para>
 <para>
 
-How does Resteasy do authorization?  Well, its really simple.  It just sees if a method is annotated with @RolesAllowed and then just does HttpServletRequest.isUserInRole.  If one of the the @RolesAllowed passes, then allow the request, otherwise, a response is sent back with a 401 (Unauthorized) response code.
+How does Resteasy do authorization?  Well, its really simple.  It just sees if a method is annotated with @RolesAllowed and then just does HttpServletRequest.isUserInRole.  If one of the @RolesAllowed passes, then allow the request, otherwise, a response is sent back with a 401 (Unauthorized) response code.
 </para>
 <para>
 

@@ -124,7 +124,7 @@ public class MyHeaderDecorator implements MessageBodyWriterInterceptor {
 </programlisting>
         <para>Here we have a server side interceptor that adds a header value to the
             response.  You see that it is annotated with @Provider and @ServerInterceptor.
-        It must modify the header before calling context.proceed() as the reseponse may
+        It must modify the header before calling context.proceed() as the response may
         be committed after the MessageBodyReader runs.  Remember, you MUST call context.proceed().  If
         you don't, your invocation will not happen.</para>
     </sect1>
@@ -162,7 +162,7 @@ public class MyHeaderDecorator implements MessageBodyWriterInterceptor {
           The org.jboss.resteasy.spi.interception.PostProcessInterceptor runs after the JAX-RS method was invoked
             but before MessageBodyWriters are invoked.  They can only be used on the server side.  Use them
             if you need to set a response header when there might not
-            be any MessageBodyWriter invoked.  They are there for symetry with PreProcessInterceptor.  They do not wrap anything and
+            be any MessageBodyWriter invoked.  They are there for symmetry with PreProcessInterceptor.  They do not wrap anything and
             are invoked in order like PreProcessInterceptors are.
         </para>
 <programlisting>
@@ -236,9 +236,9 @@ public class MyHeaderDecorator implements MessageBodyWriterInterceptor, Accepted
     </sect1>
     <sect1 id="registering">
          <title>Registering Interceptors</title>
-        <para>Registering interceptors is easy.  Since they are a @Provider, (you remebered to annotate it right?)
+        <para>Registering interceptors is easy.  Since they are a @Provider, (you remembered to annotate it right?)
         they can be listed in the resteasy.providers context-param in web.xml or returned as a class or object in the
-        Application.getClasses() or Appication.getSingletons() method.</para>
+        Application.getClasses() or Application.getSingletons() method.</para>
     </sect1>
     <sect1 id="interceptorPrecedence">
         <title>Interceptor Ordering and Precedence</title>

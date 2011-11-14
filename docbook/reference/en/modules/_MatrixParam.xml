@@ -12,7 +12,7 @@ GET http://host.com/library/book;name=EJB 3.0;author=Bill Burke
 </para>
 <para>
 
-The basic idea of matrix parameters is that it represents resources that are addressable by their attributes as well as their raw id.  The @MatrixParam annotation allows you to inject URI matrix paramters into your method invocation
+The basic idea of matrix parameters is that it represents resources that are addressable by their attributes as well as their raw id.  The @MatrixParam annotation allows you to inject URI matrix parameters into your method invocation
 </para>
 <para>
 

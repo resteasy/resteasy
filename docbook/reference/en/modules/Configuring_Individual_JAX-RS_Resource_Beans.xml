@@ -41,7 +41,7 @@ public class MyBean {
 </para>
 <para>
 
-You can also manually configure and register your beans through the Registry.  To do this in a WAR-based deployment, you need to write a specific ServletContextListener to do this.  Within the listern, you can obtain a reference to the registry as follows:
+You can also manually configure and register your beans through the Registry.  To do this in a WAR-based deployment, you need to write a specific ServletContextListener to do this.  Within the listener, you can obtain a reference to the registry as follows:
 </para>
 <para>
 
