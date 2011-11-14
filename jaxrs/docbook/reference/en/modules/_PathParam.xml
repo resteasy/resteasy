@@ -197,7 +197,9 @@ You can have Resteasy inject a PathSegment instead of a value with your @PathPar
 </para>
 <para>
 
-This is very useful if you have a bunch of @PathParams that use matrix parameters.  The idea of matrix parameters is that they are an arbitrary set of name-value pairs embedded in a uri path segment.  The PathSegment object gives you access to theese parameters. See also MatrixParam.
+This is very useful if you have a bunch of @PathParams that use matrix parameters.  The idea of matrix parameters is
+    that they are an arbitrary set of name-value pairs embedded in a uri path segment.  The PathSegment object gives you
+    access to these parameters. See also MatrixParam.
 </para>
 <para>
 

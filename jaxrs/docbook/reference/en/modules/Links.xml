@@ -241,7 +241,7 @@ public class Book {
 		<section>
 			<title>Specifying path parameter values for URI templates</title>
 			<para>
-			When RESTEasy adds links to your resources it needs to insert the right values in the URI remplate.
+			When RESTEasy adds links to your resources it needs to insert the right values in the URI template.
 			This is done either automatically by guessing the list of values from the entity, or by specifying
 			the values in the <classname>@LinkResource</classname> <varname>pathParameters</varname> parameter.
 			</para>

@@ -103,7 +103,7 @@
 				After successfully receiving the Access Token and Token Secret, the Consumer is able to access the Protected Resources on behalf of the User.
 			</para>
 			<para>
-				RESTEasy supports OAuth authentication for protected resources using a servlet filter wich should be mapped in your web.xml for all
+				RESTEasy supports OAuth authentication for protected resources using a servlet filter which should be mapped in your web.xml for all
 				protected resources:
 			</para>
 			<programlisting language="xml">

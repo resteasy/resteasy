@@ -7,13 +7,16 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -34,12 +37,27 @@ public class RegressionBasketTest extends BaseResourceTest
       {
 
       }
+
+
+   }
+
+   @Path("/{api:(?i:api)}")
+   public static class Api
+   {
+      @Path("/{func:(?i:func)}")
+      @GET
+      @Produces("text/plain")
+      public String func()
+      {
+         return "hello";
+      }
    }
 
    @BeforeClass
    public static void setup() throws Exception
    {
       addPerRequestResource(MyTest.class);
+      addPerRequestResource(Api.class);
    }
 
    @Test
@@ -50,5 +68,15 @@ public class RegressionBasketTest extends BaseResourceTest
       ClientResponse<?> response = request.post();
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
+   }
+
+   @Test
+   public void test624() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/ApI/FuNc"));
+      ClientResponse<?> response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.releaseConnection();
+
    }
 }

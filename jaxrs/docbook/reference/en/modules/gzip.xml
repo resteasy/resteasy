@@ -2,7 +2,7 @@
    <title>GZIP Compression/Decompression</title>
    <para>
     Resteasy has automatic GZIP decompression support.  If the client framework or a JAX-RS
-    service receives a messagy body with a Content-Encoding of "gzip", it
+    service receives a message body with a Content-Encoding of "gzip", it
     will automatically decompress it.  The client framework automatically
     sets the Accept-Encoding header to be "gzip, deflate".  So you do not
     have to set this header yourself.

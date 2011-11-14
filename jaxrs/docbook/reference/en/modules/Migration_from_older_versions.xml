@@ -95,7 +95,7 @@
                 tjws. It will match the resteasy distribution version
             </listitem>
             <listitem>
-                Please check out the JBoss 6 integration. It makes things alot easier if you are deploying in that
+                Please check out the JBoss 6 integration. It makes things a lot easier if you are deploying in that
                 environment
             </listitem>
             <listitem>
@@ -113,7 +113,7 @@
                 We have forked TJWS, the servlet container used for embedded testing into the group
                 org.jboss.resteasy, with the artifact id of tjws. You will need
                 to remove these dependencies from your maven builds if you are using any part of the resteasy
-                embebbable server. TJWS has a number of startup/shutdown
+                embeddable server. TJWS has a number of startup/shutdown
                 race conditions we had to fix in order to make unit testing viable.
             </listitem>
             <listitem>

@@ -64,10 +64,11 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
       return 0;
    }
 
-   public static final Pattern GROUP = Pattern.compile("[^\\\\]\\(");
+   // [^?] is in expression to ignore non-capturing group
+   public static final Pattern GROUP = Pattern.compile("[^\\\\]\\([^?]");
 
    /**
-    * Find the number of groups int he regular expression
+    * Find the number of groups in the regular expression
     * don't count escaped '('
     *
     * @param regex
@@ -75,9 +76,9 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
     */
    private static int groupCount(String regex)
    {
+      regex = " " + regex; // add a space because GROUP regex trans to match a non-preceding slash.
       Matcher matcher = GROUP.matcher(regex);
       int groupCount = 0;
-      if (regex.startsWith("(")) groupCount++; // couldn't find a good regex to match start
       while (matcher.find()) groupCount++;
       return groupCount;
    }

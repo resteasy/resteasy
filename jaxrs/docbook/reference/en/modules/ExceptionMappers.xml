@@ -117,7 +117,7 @@
 <entry>ReaderException</entry>
 <entry>400</entry>
 <entry>All exceptions thrown from MessageBodyReaders are wrapped within this exception.  If there is no ExceptionMapper for the
-wrapped exception or if the excepiton isn't a WebApplicationException, then resteasy will return a 400 code by default.</entry>
+wrapped exception or if the exception isn't a WebApplicationException, then resteasy will return a 400 code by default.</entry>
 </row>
 <row>
 <entry>WriterException</entry>

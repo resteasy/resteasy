@@ -49,13 +49,13 @@
    <para>
 
       RESTEasy will select a different provider based on the return type or parameter type used in the resource. This
-      section decribes how the selection process works.
+      section describes how the selection process works.
    </para>
    <para>
 
       @XmlRootEntity
       When a class is annotated with a @XmlRootElement annotation, RESTEasy will select the
-      JAXBXmlRootElementProvider. This provider handles basic marhaling and and unmarshalling of custom JAXB
+      JAXBXmlRootElementProvider. This provider handles basic marshaling and unmarshalling of custom JAXB
       entities.
    </para>
    <para>
@@ -279,7 +279,7 @@ public static class TestService
                details on how you can use substitution values provided by resteasy.
                </para>
            <para>
-               Resteasy also has a convinience annotation for stylesheet headers.  For example:
+               Resteasy also has a convenience annotation for stylesheet headers.  For example:
            </para>
  <programlisting>
  <![CDATA[

@@ -507,7 +507,7 @@ public static interface MultipartClient {
 }
 </programlisting>
 	<para>We used @Consumes(MediaType.MULTIPART_RELATED) to tell RESTEasy that we want to send multipart/related
-	packages (thats the container format that will hold our Xop message). We used @XopWithMultipartRelated to tell
+	packages (that's the container format that will hold our Xop message). We used @XopWithMultipartRelated to tell
 	RESTEasy that we want to make Xop messages. So we have a POJO and a client service that is willing to send it. All
 	we need now a server that can read it:</para>
 <programlisting>
@@ -538,7 +538,7 @@ public class XopService {
       This is the value defined by the MIME RFC. However for example some web clients (like most, if not all, web browsers)
       do not send Content-Type headers for all fields in a multipart/form-data request (only for the file parts). This can
       cause character encoding and unmarshalling errors on the server side. To correct this there is an option to define an
-      other, non-rfc compliant fallback value. This can be done dynamicly per request with the PreProcessInterceptor
+      other, non-rfc compliant fallback value. This can be done dynamically per request with the PreProcessInterceptor
       infrastructure of RESTEasy. In the following example we will set "*/*; charset=UTF-8" as the new default fallback:
 <programlisting>
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
