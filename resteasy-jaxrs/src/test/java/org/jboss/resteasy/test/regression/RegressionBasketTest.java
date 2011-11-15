@@ -1,24 +1,33 @@
 package org.jboss.resteasy.test.regression;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
 
 /**
  * A basket of JIRA regression tests
@@ -51,6 +60,13 @@ public class RegressionBasketTest extends BaseResourceTest
       {
          return "hello";
       }
+
+      @PUT
+      public void put(@Context HttpHeaders headers, String val)
+      {
+         System.out.println(headers.getMediaType());
+         Assert.assertEquals(val, "hello");
+      }
    }
 
    @BeforeClass
@@ -77,6 +93,29 @@ public class RegressionBasketTest extends BaseResourceTest
       ClientResponse<?> response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.releaseConnection();
+
+   }
+
+   @Test
+   public void test583() throws Exception
+   {
+      HttpClient client = new DefaultHttpClient();
+      HttpPut method = new HttpPut(generateURL("/api"));
+      HttpResponse response = null;
+      try
+      {
+         method.setEntity(new StringEntity("hello", "vnd.net.juniper.space.target-management.targets+xml;version=1;charset=UTF-8", null));
+         response = client.execute(method);
+         Assert.assertEquals(response.getStatusLine().getStatusCode(), 400);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
+         consumeEntity(response);
+      }
 
    }
 }

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.core.marshallers;
 
-import org.apache.commons.httpclient.HttpMethodBase;
 import org.jboss.resteasy.client.ClientRequest;
 
 import java.util.Collection;
@@ -76,9 +75,5 @@ public class QueryParamMarshaller implements Marshaller
       {
          request.queryParameter(paramName, object);
       }
-   }
-
-   public void buildRequest(Object object, HttpMethodBase httpMethod)
-   {
    }
 }

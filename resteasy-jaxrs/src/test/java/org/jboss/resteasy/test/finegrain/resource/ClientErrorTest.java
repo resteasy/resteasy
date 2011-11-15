@@ -258,7 +258,7 @@ public class ClientErrorTest
    public void testBadContentType()
    {
       HttpClient client = new DefaultHttpClient();
-      HttpPost method = createPostMethod("/");
+      HttpPost method = new HttpPost(generateURL("/"));
       HttpResponse response = null;
       try
       {
