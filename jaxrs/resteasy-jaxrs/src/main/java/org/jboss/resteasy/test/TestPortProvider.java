@@ -6,13 +6,6 @@
  */
 package org.jboss.resteasy.test;
 
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.OptionsMethod;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -52,50 +45,6 @@ public class TestPortProvider
    }
 
    /**
-    * Create a commons-httpclient DeleteMethod object.
-    *
-    * @param path the request path
-    * @return a DeleteMethod object
-    */
-   public static DeleteMethod createDeleteMethod(String path)
-   {
-      return new DeleteMethod(generateURL(path));
-   }
-
-   /**
-    * Create an httpclient HttpGet object.
-    *
-    * @param path the request path
-    * @return a GetMethod object
-    */
-   public static HttpGet createGetMethod(String path)
-   {
-      return new HttpGet(generateURL(path));
-   }
-
-   /**
-    * Create a commons-httpclient OptionsMethod object.
-    *
-    * @param path the request path
-    * @return an OptionsMethod object
-    */
-   public static HttpOptions createOptionsMethod(String path)
-   {
-      return new HttpOptions(generateURL(path));
-   }
-
-   /**
-    * Create an httpclient HttpPost object.
-    *
-    * @param path the request path
-    * @return a HttpPost object
-    */
-   public static HttpPost createPostMethod(String path)
-   {
-      return new HttpPost(generateURL(path));
-   }
-
-   /**
     * Create a Resteasy client proxy with an empty base request path.
     *
     * @param clazz the client interface class
@@ -116,17 +65,6 @@ public class TestPortProvider
    public static <T> T createProxy(Class<T> clazz, String path)
    {
       return ProxyFactory.create(clazz, generateURL(path));
-   }
-
-   /**
-    * Create an httpclient HttpPut object.
-    *
-    * @param path the request path
-    * @return a HttpPut object
-    */
-   public static HttpPut createPutMethod(String path)
-   {
-      return new HttpPut(generateURL(path));
    }
 
    /**

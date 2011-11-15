@@ -234,7 +234,7 @@ public class BasicAuthTest
       DefaultHttpClient client = new DefaultHttpClient();
 
       {
-         HttpGet method = createGetMethod("/secured");
+         HttpGet method = new HttpGet(generateURL("/secured"));
          HttpResponse response = client.execute(method);
          Assert.assertEquals(401, response.getStatusLine().getStatusCode());
          EntityUtils.consume(response.getEntity());

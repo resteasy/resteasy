@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import static org.jboss.resteasy.test.TestPortProvider.createGetMethod;
-
-import java.io.IOException;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
