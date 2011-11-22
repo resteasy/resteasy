@@ -42,8 +42,8 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces("*/*")
-@Consumes("*/*")
+@Produces({"application/*+xml", "text/*+xml"})
+@Consumes({"application/*+xml", "text/*+xml"})
 public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
    @Context

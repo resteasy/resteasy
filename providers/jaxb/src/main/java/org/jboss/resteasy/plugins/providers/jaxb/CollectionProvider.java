@@ -44,8 +44,8 @@ import java.util.Set;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces("*/*")
-@Consumes("*/*")
+@Produces({"application/*+xml", "text/*+xml"})
+@Consumes({"application/*+xml", "text/*+xml"})
 public class CollectionProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
    @Context
