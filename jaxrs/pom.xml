@@ -8,7 +8,7 @@
     </description>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>2.3-beta-2-SNAPSHOT</version>
+    <version>2.3-RC1</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -127,19 +127,6 @@
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>1.2.14</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>jaxrs-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-test-data</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>

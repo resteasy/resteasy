@@ -26,8 +26,8 @@ import java.lang.reflect.Type;
  * @version $Revision:$
  */
 @Provider
-@Produces("*/*")
-@Consumes("*/*")
+@Produces({"application/*+xml", "text/*+xml"})
+@Consumes({"application/*+xml", "text/*+xml"})
 public class JAXBXmlSeeAlsoProvider extends AbstractJAXBProvider<Object>
 {
    @Override
