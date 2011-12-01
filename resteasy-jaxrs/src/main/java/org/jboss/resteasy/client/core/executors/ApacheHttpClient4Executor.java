@@ -164,10 +164,6 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       {
          return new HttpPost(url);
       }
-      else if ("DELETE".equals(restVerb))
-      {
-         return new HttpDelete(url);
-      }
       else
       {
          final String verb = restVerb;

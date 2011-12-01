@@ -14,6 +14,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -69,11 +71,33 @@ public class RegressionBasketTest extends BaseResourceTest
       }
    }
 
+   @Path("/delete")
+   public static class DeleteTest
+   {
+      @DELETE
+      @Consumes("text/plain")
+      public void delete(String msg)
+      {
+         Assert.assertEquals("hello", msg);
+      }
+   }
+
    @BeforeClass
    public static void setup() throws Exception
    {
       addPerRequestResource(MyTest.class);
       addPerRequestResource(Api.class);
+      addPerRequestResource(DeleteTest.class);
+   }
+
+   @Test
+   public void test631() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/delete"));
+      ClientResponse response = request.body("text/plain", "hello").delete();
+      Assert.assertEquals(204, response.getStatus());
+
+
    }
 
    @Test
