@@ -62,6 +62,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder type(MediaType type)
    {
+      if (type == null)
+      {
+         metadata.remove(HttpHeaderNames.CONTENT_TYPE);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.CONTENT_TYPE, type);
       return this;
    }
@@ -69,6 +74,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder type(String type)
    {
+      if (type == null)
+      {
+         metadata.remove(HttpHeaderNames.CONTENT_TYPE);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.CONTENT_TYPE, type);
       return this;
    }
@@ -76,15 +86,28 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder variant(Variant variant)
    {
-      if (variant.getMediaType() != null) type(variant.getMediaType());
-      if (variant.getLanguage() != null) language(variant.getLanguage());
+      if (variant == null)
+      {
+         type((String)null);
+         language((String)null);
+         metadata.remove(HttpHeaderNames.CONTENT_ENCODING);
+         return this;
+      }
+      type(variant.getMediaType());
+      language(variant.getLanguage());
       if (variant.getEncoding() != null) metadata.putSingle(HttpHeaderNames.CONTENT_ENCODING, variant.getEncoding());
+      else metadata.remove(HttpHeaderNames.CONTENT_ENCODING);
       return this;
    }
 
    @Override
    public Response.ResponseBuilder variants(List<Variant> variants)
    {
+      if (variants == null)
+      {
+         metadata.remove(HttpHeaderNames.VARY);
+         return this;
+      }
       String vary = createVaryHeader(variants);
       metadata.putSingle(HttpHeaderNames.VARY, vary);
 
@@ -122,6 +145,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder language(String language)
    {
+      if (language == null)
+      {
+         metadata.remove(HttpHeaderNames.CONTENT_LANGUAGE);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.CONTENT_LANGUAGE, language);
       return this;
    }
@@ -129,6 +157,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder location(URI location)
    {
+      if (location == null)
+      {
+         metadata.remove(HttpHeaderNames.LOCATION);
+         return this;
+      }
       if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
       {
          String path = location.toString();
@@ -143,6 +176,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder contentLocation(URI location)
    {
+      if (location == null)
+      {
+         metadata.remove(HttpHeaderNames.CONTENT_LOCATION);
+         return this;
+      }
       if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
       {
          String path = location.toString();
@@ -157,6 +195,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder tag(EntityTag tag)
    {
+      if (tag == null)
+      {
+         metadata.remove(HttpHeaderNames.ETAG);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.ETAG, tag);
       return this;
    }
@@ -164,6 +207,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder tag(String tag)
    {
+      if (tag == null)
+      {
+         metadata.remove(HttpHeaderNames.ETAG);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.ETAG, tag);
       return this;
    }
@@ -171,6 +219,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder lastModified(Date lastModified)
    {
+      if (lastModified == null) metadata.remove(HttpHeaderNames.LAST_MODIFIED);
       metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, DateUtil.formatDate(lastModified));
       return this;
    }
@@ -178,6 +227,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder cacheControl(CacheControl cacheControl)
    {
+      if (cacheControl == null)
+      {
+         metadata.remove(HttpHeaderNames.CACHE_CONTROL);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.CACHE_CONTROL, cacheControl);
       return this;
    }
@@ -185,6 +239,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder header(String name, Object value)
    {
+      if (value == null)
+      {
+         metadata.remove(name);
+         return this;
+      }
       metadata.add(name, value);
       return this;
    }
@@ -206,6 +265,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 
    public Response.ResponseBuilder language(Locale language)
    {
+      if (language == null)
+      {
+         metadata.remove(HttpHeaderNames.CONTENT_LANGUAGE);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.CONTENT_LANGUAGE, language);
       return this;
    }
@@ -214,6 +278,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 
    public Response.ResponseBuilder expires(Date expires)
    {
+      if (expires == null)
+      {
+         metadata.remove(HttpHeaderNames.EXPIRES);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.EXPIRES, dateFormatRFC822.format(expires));
       return this;
    }
