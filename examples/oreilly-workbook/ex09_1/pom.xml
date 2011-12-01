@@ -20,12 +20,12 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.3-RC1</version>
+            <version>2.3.0.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>2.3-RC1</version>
+            <version>2.3.0.GA</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
