@@ -28,9 +28,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * This class will be removed in Resteasy 3.0.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public class ApacheHttpClientExecutor implements ClientExecutor
 {
    protected HttpClient httpClient;
