@@ -3,21 +3,29 @@ package org.jboss.resteasy.specimpl;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.ResponseHeaders;
+import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.core.Variant;
+import java.io.InputStream;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -285,5 +293,116 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       }
       metadata.putSingle(HttpHeaderNames.EXPIRES, dateFormatRFC822.format(expires));
       return this;
+   }
+
+   // spec
+
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public int getStatus()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.Status getStatusEnum()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public ResponseHeaders getHeaders()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Object getEntity()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T getEntity(Class<T> type) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean hasEntity()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public InputStream getEntityInputStream()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder entityInputStream(InputStream entity)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder allow(String... methods)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder allow(Set<String> methods)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder encoding(String encoding)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder replaceAll(ResponseHeaders headers)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder variants(Variant... variants)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder links(Link... links)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder link(URI uri, String rel)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder link(String uri, String rel)
+   {
+      throw new NotImplementedYetException();
    }
 }

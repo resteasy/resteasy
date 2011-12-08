@@ -71,7 +71,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("en", response.getEntity());
-      Assert.assertEquals("en", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("en", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
@@ -82,7 +82,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("zh", response.getEntity());
-      Assert.assertEquals("zh", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("zh", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
@@ -93,7 +93,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("fr", response.getEntity());
-      Assert.assertEquals("fr", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("fr", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Path("/complex")
@@ -130,8 +130,8 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
-      Assert.assertEquals("en-us", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
@@ -149,8 +149,8 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
-      Assert.assertEquals("en-us", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
@@ -168,8 +168,8 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
-      Assert.assertEquals("en-us", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
@@ -187,8 +187,8 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("text/xml", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
-      Assert.assertEquals("en", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("text/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("en", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
 
@@ -201,7 +201,7 @@ public class VariantsTest
          request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en");
          ClientResponse<?> response = request.get();
          Assert.assertEquals(406, response.getStatus());;
-         String vary = response.getHeaders().getFirst(HttpHeaderNames.VARY);
+         String vary = response.getResponseHeaders().getFirst(HttpHeaderNames.VARY);
          Assert.assertNotNull(vary);
          System.out.println("vary: " + vary);
          Assert.assertTrue(contains(vary, "Accept"));
@@ -215,7 +215,7 @@ public class VariantsTest
          request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "fr");
          ClientResponse<?> response = request.get();
          Assert.assertEquals(406, response.getStatus());;
-         String vary = response.getHeaders().getFirst(HttpHeaderNames.VARY);
+         String vary = response.getResponseHeaders().getFirst(HttpHeaderNames.VARY);
          Assert.assertNotNull(vary);
          System.out.println("vary: " + vary);
          Assert.assertTrue(contains(vary, "Accept"));
@@ -247,7 +247,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
       Assert.assertEquals("enc1", response.getEntity());
-      Assert.assertEquals("enc1", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc1", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    @Test
@@ -258,7 +258,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
       Assert.assertEquals("enc2", response.getEntity());
-      Assert.assertEquals("enc2", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc2", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    @Test
@@ -269,7 +269,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
       Assert.assertEquals("enc3", response.getEntity());
-      Assert.assertEquals("enc3", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc3", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    @Test
@@ -280,7 +280,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
       Assert.assertEquals("enc2", response.getEntity());
-      Assert.assertEquals("enc2", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc2", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    @Test
@@ -291,7 +291,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
       Assert.assertEquals("enc3", response.getEntity());
-      Assert.assertEquals("enc3", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc3", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    private boolean contains(String l, String v)

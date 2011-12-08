@@ -274,7 +274,7 @@ public class TestMimeMultipartProvider extends BaseResourceTest
       ClientResponse<InputStream> response = request.get(InputStream.class);
       Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus()); 
       BufferedInputStream in = new BufferedInputStream(response.getEntity());
-      String contentType = response.getHeaders().getFirst("content-type");
+      String contentType = response.getResponseHeaders().getFirst("content-type");
       ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
       MimeMultipart mimeMultipart = new MimeMultipart(ds);
       Assert.assertEquals(mimeMultipart.getCount(), 2);

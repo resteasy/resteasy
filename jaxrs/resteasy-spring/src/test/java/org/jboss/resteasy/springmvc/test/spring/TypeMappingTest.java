@@ -9,8 +9,6 @@ package org.jboss.resteasy.springmvc.test.spring;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 import static org.junit.Assert.*;
 
-import javax.ws.rs.core.Response;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
@@ -128,7 +126,7 @@ public class TypeMappingTest
       {
          response = request.get(); 
          int status = response.getStatus();
-         String contentType = response.getHeaders().getFirst("Content-type");
+         String contentType = response.getResponseHeaders().getFirst("Content-type");
          assertEquals("Request for " + url + " returned a non-200 status", 200, status);
          assertEquals("Request for " + url + " returned an unexpected content type", expectedContentType, contentType);
       }

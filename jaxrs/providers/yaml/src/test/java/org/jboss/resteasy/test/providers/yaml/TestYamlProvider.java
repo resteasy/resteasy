@@ -30,7 +30,7 @@ public class TestYamlProvider extends BaseResourceTest {
        
        Assert.assertEquals(200, response.getStatus());
        
-       Assert.assertEquals("text/x-yaml", response.getHeaders().getFirst("Content-Type")); 
+       Assert.assertEquals("text/x-yaml", response.getResponseHeaders().getFirst("Content-Type"));
        
        String s = response.getEntity();       
        
@@ -57,7 +57,7 @@ public class TestYamlProvider extends BaseResourceTest {
        
        Assert.assertEquals(200, response.getStatus());
        
-       Assert.assertEquals("text/x-yaml", response.getHeaders().getFirst("Content-Type"));       
+       Assert.assertEquals("text/x-yaml", response.getResponseHeaders().getFirst("Content-Type"));
        
        Assert.assertEquals(s1, response.getEntity());       
 

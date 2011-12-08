@@ -83,7 +83,7 @@ public class MethodDefaultTest extends BaseResourceTest
       request.header("Accept", "text/plain");
       ClientResponse<?> response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      String header = response.getHeaders().getFirst("CTS-HEAD");
+      String header = response.getResponseHeaders().getFirst("CTS-HEAD");
       Assert.assertEquals("text-plain", header);
       response.releaseConnection();
    }
@@ -100,7 +100,7 @@ public class MethodDefaultTest extends BaseResourceTest
       request.header("Accept", "text/html");
       ClientResponse<?> response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      String header = response.getHeaders().getFirst("CTS-HEAD");
+      String header = response.getResponseHeaders().getFirst("CTS-HEAD");
       Assert.assertEquals("text-html", header);
       response.releaseConnection();
    }
@@ -117,7 +117,7 @@ public class MethodDefaultTest extends BaseResourceTest
       request.header("Accept", "text/plain");
       ClientResponse<?> response = request.head();
       Assert.assertEquals(200, response.getStatus());
-      String header = response.getHeaders().getFirst("CTS-HEAD");
+      String header = response.getResponseHeaders().getFirst("CTS-HEAD");
       Assert.assertEquals("sub-text-plain", header);
       response.releaseConnection();
    }
@@ -132,7 +132,7 @@ public class MethodDefaultTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/GetTest/sub"));
       ClientResponse<?> response = request.options();
       Assert.assertEquals(200, response.getStatus());
-      String allowedHeader = response.getHeaders().getFirst("Allow");
+      String allowedHeader = response.getResponseHeaders().getFirst("Allow");
       Assert.assertNotNull(allowedHeader);
       String[] allowed = allowedHeader.split(",");
       HashSet<String> set = new HashSet<String>();

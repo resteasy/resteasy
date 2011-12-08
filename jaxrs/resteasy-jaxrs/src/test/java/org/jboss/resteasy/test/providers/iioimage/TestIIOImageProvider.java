@@ -67,7 +67,7 @@ public class TestIIOImageProvider extends BaseResourceTest
       request.body("image/jpeg", file);
       ClientResponse<InputStream> response = request.post(InputStream.class);
       Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus()); 
-      String contentType = response.getHeaders().getFirst("content-type");
+      String contentType = response.getResponseHeaders().getFirst("content-type");
       Assert.assertEquals("image/png", contentType);
       
       BufferedInputStream in = new BufferedInputStream(response.getEntity()); 

@@ -68,7 +68,7 @@ public class SigningTest
       response.getAttributes().put(Verifier.class.getName(), verifier);
 
       System.out.println("Client: ");
-      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
 
       // verification doesn't happen unless you try and extract the entity

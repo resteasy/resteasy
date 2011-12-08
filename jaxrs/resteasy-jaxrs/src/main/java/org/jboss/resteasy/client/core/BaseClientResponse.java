@@ -7,6 +7,7 @@ import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.MarshalledEntity;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
@@ -19,7 +20,11 @@ import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.ResponseHeaders;
+import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -89,7 +94,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       {
          BaseClientResponse base = (BaseClientResponse) copy;
          InputStream is = null;
-         if (copy.getHeaders().containsKey("Content-Type"))
+         if (copy.getResponseHeaders().containsKey("Content-Type"))
          {
             try
             {
@@ -127,7 +132,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       else
       {
          InputStream is = null;
-         if (copy.getHeaders().containsKey("Content-Type"))
+         if (copy.getResponseHeaders().containsKey("Content-Type"))
          {
             GenericType<byte[]> gt = new GenericType<byte[]>()
             {
@@ -158,7 +163,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          tmp.status = copy.getStatus();
          tmp.providerFactory = ResteasyProviderFactory.getInstance();
          tmp.headers = new CaseInsensitiveMap<String>();
-         tmp.headers.putAll(copy.getHeaders());
+         tmp.headers.putAll(copy.getResponseHeaders());
          tmp.headers.remove("Content-Encoding"); // remove encoding because we will have already extracted byte array
          return tmp;
       }
@@ -430,7 +435,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          }
 
          final Object obj = new ClientMessageBodyReaderContext(messageBodyReaderInterceptors, reader1, useType,
-                 useGeneric, this.annotations, media, getHeaders(), is, attributes)
+                 useGeneric, this.annotations, media, getResponseHeaders(), is, attributes)
                  .proceed();
          if (isMarshalledEntity)
          {
@@ -482,7 +487,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return getEntity(genericType.getType(), genericType.getGenericType(), ann);
    }
 
-   public MultivaluedMap<String, String> getHeaders()
+   public MultivaluedMap<String, String> getResponseHeaders()
    {
       return headers;
    }
@@ -548,4 +553,54 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       releaseConnection();
    }
 
+   // spec
+
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Status getStatusEnum()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public ResponseHeaders getHeaders()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean hasEntity()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public void bufferEntity() throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public void close() throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public InputStream getEntityInputStream()
+   {
+      throw new NotImplementedYetException();
+   }
 }

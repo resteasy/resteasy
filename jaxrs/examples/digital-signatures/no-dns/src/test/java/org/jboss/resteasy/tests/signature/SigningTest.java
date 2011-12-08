@@ -68,7 +68,7 @@ public class SigningTest
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
 
-      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
 
       // If you don't extract the entity, then verification will not happen
@@ -86,7 +86,7 @@ public class SigningTest
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
 
-      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
 
       // If you don't extract the entity, then verification will not happen
@@ -131,7 +131,7 @@ public class SigningTest
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
 
-      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
 
       // If you don't extract the entity, then verification will not happen
@@ -153,7 +153,7 @@ public class SigningTest
       ClientRequest request = new ClientRequest("http://localhost:9095/signed/expires-short");
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       Thread.sleep(1500);
       try

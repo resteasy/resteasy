@@ -106,7 +106,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(generateURL("/mapper/produces"));
       ClientResponse response = request.get();
       Assert.assertEquals(412, response.getStatus());
-      Assert.assertEquals("application/xml", response.getHeaders().getFirst("Content-Type"));
+      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst("Content-Type"));
       String error = (String) response.getEntity(String.class);
       Assert.assertNotNull(error);
       System.out.println(error);
@@ -122,7 +122,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
          request.accept("application/json");
          ClientResponse response = request.get();
          Assert.assertEquals(412, response.getStatus());
-         Assert.assertEquals("application/json", response.getHeaders().getFirst("Content-Type"));
+         Assert.assertEquals("application/json", response.getResponseHeaders().getFirst("Content-Type"));
          String error = (String) response.getEntity(String.class);
          Assert.assertNotNull(error);
          System.out.println(error);
@@ -133,7 +133,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
          request.accept("application/xml");
          ClientResponse response = request.get();
          Assert.assertEquals(412, response.getStatus());
-         Assert.assertEquals("application/xml", response.getHeaders().getFirst("Content-Type"));
+         Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst("Content-Type"));
          String error = (String) response.getEntity(String.class);
          Assert.assertNotNull(error);
          System.out.println(error);
@@ -149,7 +149,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
          request.accept("application/json");
          ClientResponse response = request.get();
          Assert.assertEquals(412, response.getStatus());
-         Assert.assertEquals("application/json", response.getHeaders().getFirst("Content-Type"));
+         Assert.assertEquals("application/json", response.getResponseHeaders().getFirst("Content-Type"));
          String error = (String) response.getEntity(String.class);
          Assert.assertNotNull(error);
          System.out.println(error);
@@ -160,7 +160,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
          request.accept("application/xml");
          ClientResponse response = request.get();
          Assert.assertEquals(412, response.getStatus());
-         Assert.assertEquals("application/xml", response.getHeaders().getFirst("Content-Type"));
+         Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst("Content-Type"));
          String error = (String) response.getEntity(String.class);
          Assert.assertNotNull(error);
          System.out.println(error);
@@ -176,7 +176,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
          request.accept("application/json");
          ClientResponse response = request.get();
          Assert.assertEquals(200, response.getStatus());
-         Assert.assertEquals("application/json", response.getHeaders().getFirst("Content-Type"));
+         Assert.assertEquals("application/json", response.getResponseHeaders().getFirst("Content-Type"));
          String error = (String) response.getEntity(String.class);
          Assert.assertNotNull(error);
          System.out.println(error);
@@ -187,7 +187,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
          request.accept("application/xml");
          ClientResponse response = request.get();
          Assert.assertEquals(200, response.getStatus());
-         Assert.assertEquals("application/xml", response.getHeaders().getFirst("Content-Type"));
+         Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst("Content-Type"));
          String error = (String) response.getEntity(String.class);
          Assert.assertNotNull(error);
          System.out.println(error);

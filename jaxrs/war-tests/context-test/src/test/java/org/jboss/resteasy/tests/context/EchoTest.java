@@ -38,10 +38,10 @@ public class EchoTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ok", response.getEntity());
-      Assert.assertTrue(response.getHeaders().containsKey("before-encoder"));
-      Assert.assertTrue(response.getHeaders().containsKey("after-encoder"));
-      Assert.assertTrue(response.getHeaders().containsKey("end"));
-      Assert.assertTrue(response.getHeaders().containsKey("encoder"));
+      Assert.assertTrue(response.getResponseHeaders().containsKey("before-encoder"));
+      Assert.assertTrue(response.getResponseHeaders().containsKey("after-encoder"));
+      Assert.assertTrue(response.getResponseHeaders().containsKey("end"));
+      Assert.assertTrue(response.getResponseHeaders().containsKey("encoder"));
    }
 
    @Test

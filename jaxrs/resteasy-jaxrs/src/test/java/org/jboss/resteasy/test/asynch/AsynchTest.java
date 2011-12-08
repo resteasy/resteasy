@@ -134,7 +134,7 @@ public class AsynchTest
          @SuppressWarnings("unused")
          long end = System.currentTimeMillis() - start;
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-         String jobUrl = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+         String jobUrl = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
          System.out.println("JOB: " + jobUrl);
          response.releaseConnection();
 
@@ -174,14 +174,14 @@ public class AsynchTest
          request.body("text/plain", "content");
          response = request.post();
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-         String jobUrl1 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+         String jobUrl1 = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
          response.releaseConnection();
          
          latch = new CountDownLatch(1);
          response = request.post();
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-         String jobUrl2 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+         String jobUrl2 = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
          Assert.assertTrue(!jobUrl1.equals(jobUrl2));
 
@@ -213,7 +213,7 @@ public class AsynchTest
          request.body("text/plain", "content");
          response = request.post();
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-         String jobUrl2 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+         String jobUrl2 = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
   
          // test its still there

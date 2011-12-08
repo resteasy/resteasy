@@ -24,7 +24,7 @@ public class OrderResourceTest
 {
    protected Map<String, Link> processLinkHeaders(ClientResponse response)
    {
-      List<String> linkHeaders = (List<String>) response.getHeaders().get("Link");
+      List<String> linkHeaders = (List<String>) response.getResponseHeaders().get("Link");
       Map<String, Link> links = new HashMap<String, Link>();
       for (String header : linkHeaders)
       {
@@ -78,7 +78,7 @@ public class OrderResourceTest
       request.body("application/xml", order);
       response = request.post();
       Assert.assertEquals(201, response.getStatus());
-      String createdOrderUrl = (String) response.getHeaders().getFirst("Location");
+      String createdOrderUrl = (String) response.getResponseHeaders().getFirst("Location");
 
       System.out.println();
       System.out.println("** New list of orders");

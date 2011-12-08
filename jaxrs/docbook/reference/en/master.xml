@@ -58,7 +58,7 @@
    <bookinfo>
       <title>RESTEasy JAX-RS</title>
       <subtitle>RESTFul Web Services for Java</subtitle>
-      <releaseinfo>2.3.0.GA</releaseinfo>
+      <releaseinfo>3.0-alpha-1-SNAPSHOT</releaseinfo>
    </bookinfo>
 
    <toc/>

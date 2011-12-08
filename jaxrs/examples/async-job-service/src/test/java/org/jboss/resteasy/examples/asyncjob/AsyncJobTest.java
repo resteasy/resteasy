@@ -36,7 +36,7 @@ public class AsyncJobTest
       request.body("text/plain", "content");
       ClientResponse<String> response = request.post(String.class);
       Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
-      String jobUrl1 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+      String jobUrl1 = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
       System.out.println("jobUrl1: " + jobUrl1);
       response.releaseConnection();
       

@@ -129,7 +129,7 @@ public class IntegrationTest extends BaseResourceTest
       ClientResponse<String> res = request.get(String.class);
       Assert.assertEquals(200, res.getStatus());
       System.out.println(res.getEntity());
-      MediaType contentType = MediaType.valueOf(res.getHeaders().getFirst("Content-Type"));
+      MediaType contentType = MediaType.valueOf(res.getResponseHeaders().getFirst("Content-Type"));
       System.out.println(contentType);
    }
 
@@ -151,7 +151,7 @@ public class IntegrationTest extends BaseResourceTest
       ClientResponse<String> res = request.get(String.class);
       Assert.assertEquals(200, res.getStatus());
       System.out.println(res.getEntity());
-      MediaType contentType = MediaType.valueOf(res.getHeaders().getFirst("Content-Type"));
+      MediaType contentType = MediaType.valueOf(res.getResponseHeaders().getFirst("Content-Type"));
       System.out.println(contentType);
    }
 
@@ -170,7 +170,7 @@ public class IntegrationTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/smime/encrypted/signed"));
       ClientResponse<String> res = request.get(String.class);
-      MediaType contentType = MediaType.valueOf(res.getHeaders().getFirst("Content-Type"));
+      MediaType contentType = MediaType.valueOf(res.getResponseHeaders().getFirst("Content-Type"));
       System.out.println(contentType);
       System.out.println();
       System.out.println(res.getEntity());

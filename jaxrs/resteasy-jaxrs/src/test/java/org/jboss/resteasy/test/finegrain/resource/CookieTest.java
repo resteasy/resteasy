@@ -117,7 +117,7 @@ public class CookieTest
       {
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         MultivaluedMap<String, String> headers = response.getHeaders();
+         MultivaluedMap<String, String> headers = response.getResponseHeaders();
          for (Object key : headers.keySet())
          {
             System.out.println(key + ": " + headers.get(key));

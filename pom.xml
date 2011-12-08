@@ -12,7 +12,6 @@
 
     <modules>
         <module>jaxrs</module>
-        <module>rest-star</module>
     </modules>
 
 </project>

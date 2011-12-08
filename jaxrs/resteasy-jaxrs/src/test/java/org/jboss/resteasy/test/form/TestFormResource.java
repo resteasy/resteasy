@@ -183,7 +183,7 @@ public class TestFormResource extends BaseResourceTest
          request.formParameter(SHORT_VALUE_FIELD, "12345");
          ClientResponse<InputStream> response = request.post(InputStream.class);
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         String contentType = response.getHeaders().getFirst("content-type");
+         String contentType = response.getResponseHeaders().getFirst("content-type");
          Assert.assertEquals("application/x-www-form-urlencoded", contentType);
          InputStream responseStream = response.getEntity();
          in = new BufferedInputStream(responseStream);

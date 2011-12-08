@@ -186,11 +186,11 @@ public class ClientResponseTest
       putResponse.releaseConnection();
 
       ClientResponse<Void> crv = client.getHeaderClientResponse();
-      Assert.assertEquals("headervalue", crv.getHeaders().getFirst("header"));
+      Assert.assertEquals("headervalue", crv.getResponseHeaders().getFirst("header"));
       crv.releaseConnection();
       
       ClientResponse<?> cr = requestFactory.createRequest(generateURL("/header")).get();
-      Assert.assertEquals("headervalue", cr.getHeaders().getFirst("header"));
+      Assert.assertEquals("headervalue", cr.getResponseHeaders().getFirst("header"));
       cr.releaseConnection();
       
       cr = (ClientResponse<?>) client.getHeaderResponse();
@@ -278,7 +278,7 @@ public class ClientResponseTest
 
    private void testRedirect(ClientResponse response)
    {
-      MultivaluedMap headers = response.getHeaders();
+      MultivaluedMap headers = response.getResponseHeaders();
       System.out.println("size: " + headers.size());
       for (Object name : headers.keySet())
       {

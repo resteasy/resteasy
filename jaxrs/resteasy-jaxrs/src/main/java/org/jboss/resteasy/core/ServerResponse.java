@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.core.interception.ServerMessageBodyWriterContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
@@ -13,16 +14,21 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.ResponseHeaders;
+import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -313,4 +319,59 @@ public class ServerResponse extends Response
       }
    }
 
+   // spec
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Status getStatusEnum()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public ResponseHeaders getHeaders()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T getEntity(Class<T> type) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean hasEntity()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public void bufferEntity() throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public void close() throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public InputStream getEntityInputStream()
+   {
+      throw new NotImplementedYetException();
+   }
 }

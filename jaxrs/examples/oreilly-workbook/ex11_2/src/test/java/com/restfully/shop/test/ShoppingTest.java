@@ -25,7 +25,7 @@ public class ShoppingTest
 {
    protected Map<String, Link> processLinkHeaders(ClientResponse response)
    {
-      List<String> linkHeaders = (List<String>) response.getHeaders().get("Link");
+      List<String> linkHeaders = (List<String>) response.getResponseHeaders().get("Link");
       Map<String, Link> links = new HashMap<String, Link>();
       for (String header : linkHeaders)
       {
@@ -107,7 +107,7 @@ public class ShoppingTest
          request.body("application/xml", customer);
          response = request.post();
          Assert.assertEquals(201, response.getStatus());
-         String uri = (String) response.getHeaders().getFirst("Location");
+         String uri = (String) response.getResponseHeaders().getFirst("Location");
 
          request = new ClientRequest(uri);
          customer = request.getTarget(Customer.class);

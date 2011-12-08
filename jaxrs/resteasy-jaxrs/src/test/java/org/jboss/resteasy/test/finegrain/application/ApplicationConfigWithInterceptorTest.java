@@ -131,7 +131,7 @@ public class ApplicationConfigWithInterceptorTest
       ClientRequest request = new ClientRequest(generateURL(path));
       ClientResponse response = get ? request.get() : request.delete();
       Assert.assertEquals(expectedStatus, response.getStatus());
-      Assert.assertNotNull(response.getHeaders().getFirst("custom-header"));
+      Assert.assertNotNull(response.getResponseHeaders().getFirst("custom-header"));
 
    }
 }

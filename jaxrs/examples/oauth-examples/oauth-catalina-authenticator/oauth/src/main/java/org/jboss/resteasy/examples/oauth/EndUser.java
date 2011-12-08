@@ -125,7 +125,7 @@ public class EndUser
          // itself, in case the consumer has not provided the redirection URI
          throw new RuntimeException("Service request has failed - redirection is expected");
       }
-      String authorizationURI = response.getHeaders().getFirst("Location");
+      String authorizationURI = response.getResponseHeaders().getFirst("Location");
       if (authorizationURI == null) {
          throw new RuntimeException("Token authorization URI is missing");
       }
@@ -268,7 +268,7 @@ public class EndUser
             throw new RuntimeException("Initiation failed");
         }
         // check that we got all tokens
-        String callbackURI = response.getHeaders().getFirst("Location");
+        String callbackURI = response.getResponseHeaders().getFirst("Location");
         if (callbackURI == null) {
             throw new RuntimeException("Callback failed");
         }

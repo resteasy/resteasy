@@ -1,20 +1,41 @@
 /*
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
- * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.php
- * See the License for the specific language governing
- * permissions and limitations under the License.
- */
-
-/*
- * PathParam.java
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Created on November 16, 2006, 2:04 PM
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * http://glassfish.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 package javax.ws.rs;
 
@@ -31,7 +52,7 @@ import java.lang.annotation.Target;
  * is disabled using the {@link Encoded} annotation.
  * A default value can be specified using the {@link DefaultValue}
  * annotation.
- * <p/>
+ *
  * The type of the annotated parameter, field or property must either:
  * <ul>
  * <li>Be {@link javax.ws.rs.core.PathSegment}, the value will be the final
@@ -49,37 +70,40 @@ import java.lang.annotation.Target;
  * that accepts a single
  * String argument (see, for example, {@link Integer#valueOf(String)}).
  * </ul>
- * <p/>
+ *
  * <p>The injected value corresponds to the latest use (in terms of scope) of
  * the path parameter. E.g. if a class and a sub-resource method are both
  * annotated with a {@link Path} containing the same URI template parameter, use
  * of {@code PathParam} on a subresource method parameter will bind the value
  * matching URI template parameter in the method's {@link Path} annotation.</p>
- * <p/>
+ *
  * <p>Because injection occurs at object creation time, use of this annotation
  * on resource class fields and bean properties is only supported for the
  * default per-request resource class lifecycle. Resource classes using
  * other lifecycles should only use this annotation on resource method
  * parameters.</p>
  *
+ * @author Paul Sandoz
+ * @author Marc Hadley
  * @see Encoded
  * @see DefaultValue
  * @see javax.ws.rs.core.PathSegment
  * @see javax.ws.rs.core.UriInfo
+ * @since 1.0
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PathParam
-{
-   /**
-    * Defines the name of the URI template parameter whose value will be used
-    * to initialize the value of the annotated method parameter, class field or
-    * property. See {@link Path#value()} for a description of the syntax of
-    * template parameters.
-    * <p/>
-    * <p>E.g. a class annotated with: <code>&#64;Path("widgets/{id}")</code>
-    * can have methods annotated whose arguments are annotated
-    * with <code>&#64;PathParam("id")</code>.
-    */
-   String value();
+public @interface PathParam {
+
+    /**
+     * Defines the name of the URI template parameter whose value will be used
+     * to initialize the value of the annotated method parameter, class field or
+     * property. See {@link Path#value()} for a description of the syntax of
+     * template parameters.
+     *
+     * <p>E.g. a class annotated with: <code>&#64;Path("widgets/{id}")</code>
+     * can have methods annotated whose arguments are annotated
+     * with <code>&#64;PathParam("id")</code>.
+     */
+    String value();
 }

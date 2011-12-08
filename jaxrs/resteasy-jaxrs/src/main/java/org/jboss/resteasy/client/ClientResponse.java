@@ -25,7 +25,7 @@ public abstract class ClientResponse<T> extends Response
     *
     * @return
     */
-   public abstract MultivaluedMap<String, String> getHeaders();
+   public abstract MultivaluedMap<String, String> getResponseHeaders();
 
    public abstract Response.Status getResponseStatus();
 

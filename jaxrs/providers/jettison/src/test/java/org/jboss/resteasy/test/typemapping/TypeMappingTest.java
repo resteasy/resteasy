@@ -131,7 +131,7 @@ public class TypeMappingTest
       ClientResponse<?> response = request.get();
       assertEquals("Request for " + url + " returned a non-200 status", 200, response.getStatus());
       assertEquals("Request for " + url + " returned an unexpected content type",
-              expectedContentType, response.getHeaders().getFirst("Content-type"));
+              expectedContentType, response.getResponseHeaders().getFirst("Content-type"));
    }
 
    @XmlRootElement

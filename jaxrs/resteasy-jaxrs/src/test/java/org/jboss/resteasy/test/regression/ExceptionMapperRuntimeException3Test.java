@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.regression;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.Failure;
-import org.jboss.resteasy.spi.NotAcceptableException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -77,7 +76,7 @@ public class ExceptionMapperRuntimeException3Test extends BaseResourceTest
       ClientRequest request = new ClientRequest(generateBaseUrl() + "/test");
       ClientResponse response = request.get();
       Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
-      Assert.assertEquals(response.getHeaders().getFirst("custom"), "header");
+      Assert.assertEquals(response.getResponseHeaders().getFirst("custom"), "header");
    }
 
    @Test
@@ -87,7 +86,7 @@ public class ExceptionMapperRuntimeException3Test extends BaseResourceTest
       request.accept("application/xml");
       ClientResponse response = request.get();
       Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
-      Assert.assertEquals(response.getHeaders().getFirst("custom"), "header");
+      Assert.assertEquals(response.getResponseHeaders().getFirst("custom"), "header");
    }
 
 

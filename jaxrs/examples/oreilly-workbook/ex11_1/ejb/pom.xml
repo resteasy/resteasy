@@ -20,12 +20,12 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.3.0.GA</version>
+            <version>3.0-alpha-1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>2.3.0.GA</version>
+            <version>3.0-alpha-1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax.ejb</groupId>

@@ -22,7 +22,7 @@ public class CustomerResourceTest
       Assert.assertEquals(200, response.getStatus());
       Customer cust = response.getEntity();
 
-      String etag = response.getHeaders().getFirst("ETag");
+      String etag = response.getResponseHeaders().getFirst("ETag");
       System.out.println("Doing a conditional GET with ETag: " + etag);
       request.clear();
       request.header("If-None-Match", etag);

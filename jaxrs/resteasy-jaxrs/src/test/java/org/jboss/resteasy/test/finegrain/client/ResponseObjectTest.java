@@ -112,7 +112,7 @@ public class ResponseObjectTest
       BasicObject obj = client.get();
       Assert.assertEquals(javax.ws.rs.core.Response.Status.OK.getStatusCode(), obj.status());
       Assert.assertEquals("ABC", obj.body());
-      Assert.assertEquals("text/plain", obj.response().getHeaders().getFirst("Content-Type"));
+      Assert.assertEquals("text/plain", obj.response().getResponseHeaders().getFirst("Content-Type"));
       Assert.assertEquals("text/plain", obj.contentType());
    }
 

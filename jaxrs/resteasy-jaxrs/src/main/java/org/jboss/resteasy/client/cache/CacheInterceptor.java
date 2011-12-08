@@ -115,8 +115,8 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
       old.getHeaders().remove(HttpHeaders.CACHE_CONTROL);
       old.getHeaders().remove(HttpHeaders.EXPIRES);
       old.getHeaders().remove(HttpHeaders.LAST_MODIFIED);
-      String cc = (String) response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
-      String exp = (String) response.getHeaders().getFirst(HttpHeaders.EXPIRES);
+      String cc = (String) response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+      String exp = (String) response.getResponseHeaders().getFirst(HttpHeaders.EXPIRES);
       int expires = -1;
 
       if (cc != null)
@@ -143,8 +143,8 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
          old.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, exp);
       }
 
-      String lastModified = (String) response.getHeaders().getFirst(HttpHeaders.LAST_MODIFIED);
-      String etag = (String) response.getHeaders().getFirst(HttpHeaders.ETAG);
+      String lastModified = (String) response.getResponseHeaders().getFirst(HttpHeaders.LAST_MODIFIED);
+      String etag = (String) response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
 
       if (etag == null) etag = old.getHeaders().getFirst(HttpHeaders.ETAG);
       else old.getHeaders().putSingle(HttpHeaders.ETAG, etag);
@@ -177,8 +177,8 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
 
    public ClientResponse cacheIfPossible(ClientRequest request, BaseClientResponse response) throws Exception
    {
-      String cc = (String) response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
-      String exp = (String) response.getHeaders().getFirst(HttpHeaders.EXPIRES);
+      String cc = (String) response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+      String exp = (String) response.getResponseHeaders().getFirst(HttpHeaders.EXPIRES);
       int expires = -1;
 
       if (cc != null)
@@ -193,17 +193,17 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
          expires = (int) ((date.getTime() - System.currentTimeMillis()) / 1000);
       }
 
-      String lastModified = (String) response.getHeaders().getFirst(HttpHeaders.LAST_MODIFIED);
-      String etag = (String) response.getHeaders().getFirst(HttpHeaders.ETAG);
+      String lastModified = (String) response.getResponseHeaders().getFirst(HttpHeaders.LAST_MODIFIED);
+      String etag = (String) response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
 
-      String contentType = (String) response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
+      String contentType = (String) response.getResponseHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
 
       byte[] cached = ReadFromStream.readFromStream(1024, response.getStreamFactory().getInputStream());
       response.getStreamFactory().performReleaseConnection();
 
       MediaType mediaType = MediaType.valueOf(contentType);
       final BrowserCache.Entry entry = cache.put(request.getUri(), mediaType,
-              response.getHeaders(), cached, expires, etag, lastModified);
+              response.getResponseHeaders(), cached, expires, etag, lastModified);
 
       response.setStreamFactory(new CachedStreamFactory(entry));
 

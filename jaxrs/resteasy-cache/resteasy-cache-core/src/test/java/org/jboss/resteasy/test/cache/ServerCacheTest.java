@@ -109,9 +109,9 @@ public class ServerCacheTest extends BaseResourceTest
          ClientRequest request = new ClientRequest(generateURL("/cache/stuff"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "stuff");
       }
@@ -138,9 +138,9 @@ public class ServerCacheTest extends BaseResourceTest
          ClientRequest request = new ClientRequest(generateURL("/cache"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "hello world" + 1);
       }
@@ -150,9 +150,9 @@ public class ServerCacheTest extends BaseResourceTest
          ClientRequest request = new ClientRequest(generateURL("/cache"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "hello world" + 1);
       }
@@ -171,9 +171,9 @@ public class ServerCacheTest extends BaseResourceTest
          ClientRequest request = new ClientRequest(generateURL("/cache"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "hello world" + 2);
       }
@@ -182,9 +182,9 @@ public class ServerCacheTest extends BaseResourceTest
          ClientRequest request = new ClientRequest(generateURL("/cache"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "hello world" + 2);
       }
@@ -198,9 +198,9 @@ public class ServerCacheTest extends BaseResourceTest
          ClientRequest request = new ClientRequest(generateURL("/cache"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "hello world" + 3);
       }
@@ -219,9 +219,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.accept("text/plain");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "plain" + 1);
       }
@@ -231,9 +231,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.accept("text/plain");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "plain" + 1);
       }
@@ -243,9 +243,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.accept("text/html");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "html" + 1);
       }
@@ -254,9 +254,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.accept("text/html");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "html" + 1);
       }
@@ -274,9 +274,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.accept("text/plain");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "plain" + 1);
       }
@@ -286,9 +286,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.accept("text/html");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "html" + 1);
       }
@@ -298,9 +298,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.header(HttpHeaders.ACCEPT, "text/html;q=0.5, text/plain");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "plain" + 1);
       }
@@ -309,9 +309,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.header(HttpHeaders.ACCEPT, "text/plain;q=0.5, text/html");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "html" + 1);
       }
@@ -329,9 +329,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.accept("text/plain");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "plain" + 1);
       }
@@ -342,9 +342,9 @@ public class ServerCacheTest extends BaseResourceTest
          request.header(HttpHeaders.ACCEPT, "text/plain;q=0.5, text/html");
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         String cc = response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
+         String cc = response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
          Assert.assertNotNull(cc);
-         etag = response.getHeaders().getFirst(HttpHeaders.ETAG);
+         etag = response.getResponseHeaders().getFirst(HttpHeaders.ETAG);
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.getEntity(), "html" + 1);
       }

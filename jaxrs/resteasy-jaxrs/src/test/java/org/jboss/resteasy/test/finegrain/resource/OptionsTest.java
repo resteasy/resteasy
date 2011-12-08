@@ -81,7 +81,7 @@ public class OptionsTest
       {
          ClientResponse<?> response = request.options();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("GET, POST", response.getHeaders().getFirst("Allow")); 
+         Assert.assertEquals("GET, POST", response.getResponseHeaders().getFirst("Allow"));
          response.releaseConnection();
       }
       catch (Exception e)
@@ -98,7 +98,7 @@ public class OptionsTest
       {
          ClientResponse<?> response = request.options();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         String allowed = response.getHeaders().getFirst("Allow");
+         String allowed = response.getResponseHeaders().getFirst("Allow");
          Assert.assertNotNull(allowed);
          HashSet<String> vals = new HashSet<String>();
          for (String v : allowed.split(","))
@@ -126,7 +126,7 @@ public class OptionsTest
       {
          ClientResponse<?> response = request.post();
          Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
-         String allowed = response.getHeaders().getFirst("Allow");
+         String allowed = response.getResponseHeaders().getFirst("Allow");
          Assert.assertNotNull(allowed);
          HashSet<String> vals = new HashSet<String>();
          for (String v : allowed.split(","))

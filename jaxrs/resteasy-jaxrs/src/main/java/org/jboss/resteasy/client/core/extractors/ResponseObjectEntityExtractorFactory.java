@@ -67,7 +67,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
          {
             public Object extractEntity(ClientRequestContext context, Object... args)
             {
-               return context.getClientResponse().getHeaders().getFirst(headerParam.value());
+               return context.getClientResponse().getResponseHeaders().getFirst(headerParam.value());
             }
          };
       }

@@ -183,7 +183,7 @@ public class RegressionTest
          ClientRequest request = new ClientRequest(generateURL("/implicit"));
          response = request.get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("application/xml", response.getHeaders().getFirst("content-type"));
+         Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst("content-type"));
          String s = new String(response.getEntity(byte[].class), "US-ASCII");
          Assert.assertEquals("<customer><name>bill</name></customer>", s);
 
@@ -220,7 +220,7 @@ public class RegressionTest
          ClientRequest request = new ClientRequest(generateURL("/simple"));
          ClientResponse<byte[]> response = request.get(byte[].class);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("text/plain", response.getHeaders().getFirst("content-type"));
+         Assert.assertEquals("text/plain", response.getResponseHeaders().getFirst("content-type"));
          String s = new String(response.getEntity(), "US-ASCII");
          Assert.assertEquals("hello world", s);
          EmbeddedContainer.stop();
@@ -258,7 +258,7 @@ public class RegressionTest
          ClientRequest request = new ClientRequest(generateURL("/string"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("text/plain", response.getHeaders().getFirst("content-type"));
+         Assert.assertEquals("text/plain", response.getResponseHeaders().getFirst("content-type"));
          Assert.assertEquals("hello world", response.getEntity());
          Assert.assertTrue(TestReaderWriter.used);
       }
@@ -338,7 +338,7 @@ public class RegressionTest
          ClientRequest request = new ClientRequest(generateURL("/complex"));
          ClientResponse<byte[]> response = request.get(byte[].class);
          Assert.assertEquals(HttpResponseCodes.SC_FOUND, response.getStatus());
-         Assert.assertEquals(response.getHeaders().getFirst("content-type"), "text/plain");
+         Assert.assertEquals(response.getResponseHeaders().getFirst("content-type"), "text/plain");
          byte[] responseBody = response.getEntity();
          String responseString = new String(responseBody, "US-ASCII");
          Assert.assertEquals("hello world", responseString);

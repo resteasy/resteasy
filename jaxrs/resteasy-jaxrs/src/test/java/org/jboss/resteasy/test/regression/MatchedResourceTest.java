@@ -143,7 +143,7 @@ public class MatchedResourceTest
       ClientRequest request = new ClientRequest(generateURL("/match"));
       request.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
       ClientResponse<String> rtn = request.get(String.class);
-      Assert.assertEquals("text/html", rtn.getHeaders().getFirst("Content-Type"));
+      Assert.assertEquals("text/html", rtn.getResponseHeaders().getFirst("Content-Type"));
       String res = rtn.getEntity();
       Assert.assertEquals("*/*", res);
    }

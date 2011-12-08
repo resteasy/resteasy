@@ -56,8 +56,8 @@ public class CacheControlAnnotationTest extends BaseResourceTest
       {
          ClientResponse<?> response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         System.out.println("Cache-Control: " + response.getHeaders().getFirst("cache-control"));
-         CacheControl cc = CacheControl.valueOf(response.getHeaders().getFirst("cache-control"));
+         System.out.println("Cache-Control: " + response.getResponseHeaders().getFirst("cache-control"));
+         CacheControl cc = CacheControl.valueOf(response.getResponseHeaders().getFirst("cache-control"));
          Assert.assertFalse(cc.isPrivate());
          Assert.assertEquals(3600, cc.getMaxAge());
          response.releaseConnection();
@@ -76,7 +76,7 @@ public class CacheControlAnnotationTest extends BaseResourceTest
       {
          ClientResponse<?> response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         String value = response.getHeaders().getFirst("cache-control");
+         String value = response.getResponseHeaders().getFirst("cache-control");
          Assert.assertEquals("no-cache", value);
          System.out.println("Cache-Control: " + value);
          CacheControl cc = CacheControl.valueOf(value);
