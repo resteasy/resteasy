@@ -319,7 +319,11 @@ public class MediaTypeMap<T>
       return convert(matches);
    }
 
-   private static final boolean useCache = true;
+   /**
+    * By default, MediaTypeMap will cache possible MediaType/Class matches.
+    *
+    */
+   public static final boolean useCache = true;
 
    public List<T> getPossible(MediaType accept, Class type)
    {
