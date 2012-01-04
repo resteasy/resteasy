@@ -216,11 +216,15 @@ public class MediaTypeMap<T>
       // Although, these reference should get cleared up with any add() invocation
       private WeakReference<Class> clazz;
       private MediaType mediaType;
+      private final int hash;
 
       private CachedMediaTypeAndClass(Class clazz, MediaType mediaType)
       {
          this.clazz = new WeakReference(clazz);
          this.mediaType = mediaType;
+         int result = getClazz().hashCode();
+         result = 31 * result + (mediaType.getType() != null ? mediaType.getType().hashCode() : 0) +  (mediaType.getSubtype() != null ? mediaType.getSubtype().hashCode() : 0);
+         hash = result;
       }
 
       private Class getClazz()
@@ -240,8 +244,18 @@ public class MediaTypeMap<T>
          if (getClazz() == null || that.getClazz() == null) return false;
 
          if (!getClazz().equals(that.getClazz())) return false;
-         if (!mediaType.getType().equals(that.mediaType.getType())) return false;
-         if (!mediaType.getSubtype().equals(that.mediaType.getSubtype())) return false;
+
+         if (mediaType.getType() != null)
+         {
+            if (!mediaType.getType().equals(that.mediaType.getType())) return false;
+         }
+         else if ((mediaType.getType() != that.mediaType.getType())) return false;
+
+         if (mediaType.getSubtype() != null)
+         {
+            if (!mediaType.getSubtype().equals(that.mediaType.getSubtype())) return false;
+         }
+         else if ((mediaType.getSubtype() != that.mediaType.getSubtype())) return false;
 
          return true;
       }
@@ -249,9 +263,7 @@ public class MediaTypeMap<T>
       @Override
       public int hashCode()
       {
-         int result = getClazz().hashCode();
-         result = 31 * result + mediaType.hashCode();
-         return result;
+         return hash;
       }
    }
 
