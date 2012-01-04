@@ -240,7 +240,8 @@ public class MediaTypeMap<T>
          if (getClazz() == null || that.getClazz() == null) return false;
 
          if (!getClazz().equals(that.getClazz())) return false;
-         if (!mediaType.equals(that.mediaType)) return false;
+         if (!mediaType.getType().equals(that.mediaType.getType())) return false;
+         if (!mediaType.getSubtype().equals(that.mediaType.getSubtype())) return false;
 
          return true;
       }
