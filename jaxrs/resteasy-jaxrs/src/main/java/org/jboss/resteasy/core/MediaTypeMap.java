@@ -210,7 +210,12 @@ public class MediaTypeMap<T>
    private List<T> everything = new ArrayList<T>();
    private Map<CachedMediaTypeAndClass, List<T>> classCache = new ConcurrentHashMap<CachedMediaTypeAndClass, List<T>>();
 
-   private static class CachedMediaTypeAndClass
+   public Map<CachedMediaTypeAndClass, List<T>> getClassCache()
+   {
+      return classCache;
+   }
+
+   public static class CachedMediaTypeAndClass
    {
       // we need a weak reference because of possible hot deployment
       // Although, these reference should get cleared up with any add() invocation
@@ -332,17 +337,19 @@ public class MediaTypeMap<T>
    }
 
    /**
-    * By default, MediaTypeMap will cache possible MediaType/Class matches.
+    * By default, MediaTypeMap will cache possible MediaType/Class matches.  Set this to false to turn off
+    * caching
     *
     */
-   public static final boolean useCache = true;
+   public static boolean useCache = true;
 
    public List<T> getPossible(MediaType accept, Class type)
    {
       List<T> cached = null;
-      CachedMediaTypeAndClass cacheEntry = new CachedMediaTypeAndClass(type, accept);
+      CachedMediaTypeAndClass cacheEntry = null;
       if (useCache)
       {
+         cacheEntry = new CachedMediaTypeAndClass(type, accept);
          cached = classCache.get(cacheEntry);
          if (cached != null) return cached;
       }
