@@ -210,17 +210,26 @@ public class MediaTypeMap<T>
    private List<T> everything = new ArrayList<T>();
    private Map<CachedMediaTypeAndClass, List<T>> classCache = new ConcurrentHashMap<CachedMediaTypeAndClass, List<T>>();
 
-   private static class CachedMediaTypeAndClass
+   public Map<CachedMediaTypeAndClass, List<T>> getClassCache()
+   {
+      return classCache;
+   }
+
+   public static class CachedMediaTypeAndClass
    {
       // we need a weak reference because of possible hot deployment
       // Although, these reference should get cleared up with any add() invocation
       private WeakReference<Class> clazz;
       private MediaType mediaType;
+      private final int hash;
 
       private CachedMediaTypeAndClass(Class clazz, MediaType mediaType)
       {
          this.clazz = new WeakReference(clazz);
          this.mediaType = mediaType;
+         int result = getClazz().hashCode();
+         result = 31 * result + (mediaType.getType() != null ? mediaType.getType().hashCode() : 0) +  (mediaType.getSubtype() != null ? mediaType.getSubtype().hashCode() : 0);
+         hash = result;
       }
 
       private Class getClazz()
@@ -240,7 +249,18 @@ public class MediaTypeMap<T>
          if (getClazz() == null || that.getClazz() == null) return false;
 
          if (!getClazz().equals(that.getClazz())) return false;
-         if (!mediaType.equals(that.mediaType)) return false;
+
+         if (mediaType.getType() != null)
+         {
+            if (!mediaType.getType().equals(that.mediaType.getType())) return false;
+         }
+         else if ((mediaType.getType() != that.mediaType.getType())) return false;
+
+         if (mediaType.getSubtype() != null)
+         {
+            if (!mediaType.getSubtype().equals(that.mediaType.getSubtype())) return false;
+         }
+         else if ((mediaType.getSubtype() != that.mediaType.getSubtype())) return false;
 
          return true;
       }
@@ -248,9 +268,7 @@ public class MediaTypeMap<T>
       @Override
       public int hashCode()
       {
-         int result = getClazz().hashCode();
-         result = 31 * result + mediaType.hashCode();
-         return result;
+         return hash;
       }
    }
 
@@ -318,14 +336,19 @@ public class MediaTypeMap<T>
       return convert(matches);
    }
 
-   private static final boolean useCache = true;
+   /**
+    * By default, MediaTypeMap will cache possible MediaType/Class matches.  Set this to false to turn this off.
+    *
+    */
+   public static boolean useCache = true;
 
    public List<T> getPossible(MediaType accept, Class type)
    {
       List<T> cached = null;
-      CachedMediaTypeAndClass cacheEntry = new CachedMediaTypeAndClass(type, accept);
+      CachedMediaTypeAndClass cacheEntry = null;
       if (useCache)
       {
+         cacheEntry = new CachedMediaTypeAndClass(type, accept);
          cached = classCache.get(cacheEntry);
          if (cached != null) return cached;
       }

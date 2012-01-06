@@ -22,6 +22,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.Map;
 
@@ -39,13 +40,31 @@ public class JAXBContextWrapper extends JAXBContext
    private static final Logger logger = Logger.getLogger(JAXBContextWrapper.class);
 
    private static final String NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+   private static final String XML_NAMESPACE_PREFIX_MAPPER = "org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper";
+   private static Constructor mapperConstructor = null;
+
+   static
+   {
+      try
+      {
+         // check to see if NamespacePrefixMapper is in classpath
+         Class namespace =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
+         Class mapper =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
+         mapperConstructor = mapper.getConstructors()[0];
+      }
+      catch (ClassNotFoundException e)
+      {
+
+      }
+
+   }
 
    private JAXBContext wrappedContext;
 
    /**
     * An optional namespace mapper that is used to apply prefixes to elements with a given namespace.
     */
-   private XmlNamespacePrefixMapper mapper;
+   private Object mapper;
 
    /**
     * The optional Schema that is bound to this context
@@ -109,7 +128,18 @@ public class JAXBContextWrapper extends JAXBContext
       {
          if (config.useNameSpacePrefix())
          {
-            mapper = new XmlNamespacePrefixMapper(config.namespaces());
+            if (mapperConstructor == null)
+            {
+               throw new JAXBException("com.sun.xml.bind.marshaller.NamespacePrefixMapper is not in your classpath.  You need to use the JAXB RI for the prefix mapping feature");
+            }
+            try
+            {
+               mapper = mapperConstructor.newInstance(config.namespaces());
+            }
+            catch (Exception e)
+            {
+               throw new JAXBException(e);
+            }
          }
          if (!"".equals(config.schema()))
          {
@@ -122,7 +152,7 @@ public class JAXBContextWrapper extends JAXBContext
             }
             catch (SAXException e)
             {
-               throw new JAXBException("Error wil trying to load schema for " + config.schema(), e);
+               throw new JAXBException("Error while trying to load schema for " + config.schema(), e);
             }
          }
 
