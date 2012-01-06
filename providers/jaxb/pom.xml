@@ -25,11 +25,6 @@
             <artifactId>jaxb-impl</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.stream</groupId>
-            <artifactId>sjsxp</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>test</scope>

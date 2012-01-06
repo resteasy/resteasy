@@ -4,7 +4,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-
 import javax.xml.bind.annotation.XmlNs;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,19 +29,6 @@ public class XmlNamespacePrefixMapper extends NamespacePrefixMapper
       for (XmlNs namespace : namespaces)
       {
          namespaceMap.put(namespace.namespaceURI(), namespace.prefix());
-      }
-   }
-
-   /**
-    * Create a new XmlNamespecePrefixMapper.
-    *
-    * @param namespaces
-    */
-   public XmlNamespacePrefixMapper(final Map<String, String> namespaces)
-   {
-      for (Map.Entry<String, String> namespace : namespaces.entrySet())
-      {
-         namespaceMap.put(namespace.getKey(), namespace.getValue());
       }
    }
 
