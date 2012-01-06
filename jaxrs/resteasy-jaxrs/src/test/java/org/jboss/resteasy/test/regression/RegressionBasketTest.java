@@ -8,11 +8,15 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -25,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -140,6 +145,29 @@ public class RegressionBasketTest extends BaseResourceTest
       {
          consumeEntity(response);
       }
+
+   }
+
+   private static class SubFactory extends ResteasyProviderFactory
+   {
+      public MediaTypeMap<SortedKey<MessageBodyReader>> getMBRMap() { return messageBodyReaders; }
+
+   }
+
+   @Test
+   public void test638() throws Exception
+   {
+      SubFactory factory = new SubFactory();
+      RegisterBuiltin.register(factory);
+
+      for (int i = 0; i < 10; i++)
+      {
+         MediaType type = MediaType.valueOf("text/xml; boundary=" + i);
+         Assert.assertTrue(factory.getMBRMap().getPossible(type, Document.class).size() > 1);
+      }
+
+      System.out.println("cache size: " + factory.getMBRMap().getClassCache().size());
+      Assert.assertEquals(1, factory.getMBRMap().getClassCache().size());
 
    }
 }
