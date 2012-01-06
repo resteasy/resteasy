@@ -4,14 +4,14 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>2.3.0.GA</version>
+        <version>2.3.1.GA</version>
 	    <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>examples-jsapi</artifactId>
     <packaging>war</packaging>
-    <version>2.3.0.GA</version>
+    <version>2.3.1.GA</version>
     <name>Example: JS-API</name>
     <description/>
 
@@ -19,12 +19,12 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.3.0.GA</version>
+            <version>2.3.1.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jsapi</artifactId>
-            <version>2.3.0.GA</version>
+            <version>2.3.1.GA</version>
         </dependency>
     </dependencies>
     <build>
