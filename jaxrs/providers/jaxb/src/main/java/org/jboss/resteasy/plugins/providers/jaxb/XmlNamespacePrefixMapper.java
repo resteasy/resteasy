@@ -33,19 +33,6 @@ public class XmlNamespacePrefixMapper extends NamespacePrefixMapper
       }
    }
 
-   /**
-    * Create a new XmlNamespecePrefixMapper.
-    *
-    * @param namespaces
-    */
-   public XmlNamespacePrefixMapper(final Map<String, String> namespaces)
-   {
-      for (Map.Entry<String, String> namespace : namespaces.entrySet())
-      {
-         namespaceMap.put(namespace.getKey(), namespace.getValue());
-      }
-   }
-
 
    /**
     *
