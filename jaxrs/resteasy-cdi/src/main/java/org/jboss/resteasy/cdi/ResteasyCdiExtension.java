@@ -68,8 +68,13 @@ public class ResteasyCdiExtension implements Extension
     * or Application subclass.
     * 
     */
-   public <T> void observeResources(@Observes ProcessAnnotatedType<T> event)
+   public <T> void observeResources(@Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
    {
+       if (this.beanManager == null) {
+           // this may happen if Solder Config receives BBD first
+           this.beanManager = beanManager;
+       }
+
       AnnotatedType<T> type = event.getAnnotatedType();
 
       if (!type.getJavaClass().isInterface())
