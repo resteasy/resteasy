@@ -1,12 +1,18 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.core.request.AcceptHeaders;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
 import org.w3c.dom.Document;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -32,13 +38,26 @@ import java.lang.reflect.Type;
 @Consumes({"text/*+xml", "application/*+xml"})
 public class DocumentProvider extends AbstractEntityProvider<Document>
 {
+   private static final Logger logger = Logger.getLogger(DocumentProvider.class);
+   
    private final TransformerFactory transformerFactory;
    private final DocumentBuilderFactory documentBuilder;
+   private boolean expandEntityReferences = true;
 
-   public DocumentProvider()
+   public DocumentProvider(@Context ServletConfig servletConfig)
    {
       this.documentBuilder = DocumentBuilderFactory.newInstance();
       this.transformerFactory = TransformerFactory.newInstance();
+      try
+      {
+         ServletContext context = servletConfig.getServletContext();
+         String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_EXPAND_ENTITY_REFERENCES);
+         expandEntityReferences = (s == null ? true : Boolean.parseBoolean(s));
+      }
+      catch (Exception e)
+      {
+         logger.debug("Unable to retrieve ServletContext: expandEntityReferences defaults to true");
+      }
    }
 
    public boolean isReadable(Class<?> clazz, Type type,
@@ -54,6 +73,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
    {
       try
       {
+         documentBuilder.setExpandEntityReferences(expandEntityReferences);
          return documentBuilder.newDocumentBuilder().parse(input);
       }
       catch (Exception e)
