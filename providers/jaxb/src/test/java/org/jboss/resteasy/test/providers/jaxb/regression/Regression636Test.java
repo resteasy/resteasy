@@ -141,6 +141,7 @@ public class Regression636Test extends BaseResourceTest
       public AssignedPermissionsResource getPermissionsResource();
 
       // TODO These two methods should not have to be added as the annotation information is in a super generic interface
+
       @GET
       public DataCenter get();
 
