@@ -150,7 +150,7 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
                  genericType, annotations, mediaType);
          if (reader == null)
          {
-            return new BadRequestException(
+            throw new BadRequestException(
                     "Could not find message body reader for type: "
                             + genericType + " of content type: " + mediaType);
          }
