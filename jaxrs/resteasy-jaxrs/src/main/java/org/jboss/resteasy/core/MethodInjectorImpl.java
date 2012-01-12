@@ -57,14 +57,15 @@ public class MethodInjectorImpl implements MethodInjector
               public void put(List<Customer> l) {...}
           }
        */
-      Type[] genericParameterTypes = Types.getGenericParameterTypesOfGenericInterfaceMethod(root, method);
-      for (int i = 0; i < method.getParameterTypes().length; i++)
+      Method actualMethod = Types.getImplementingMethod(root, method);
+      Type[] genericParameterTypes = actualMethod.getGenericParameterTypes();
+      for (int i = 0; i < actualMethod.getParameterTypes().length; i++)
       {
          Class<?> type;
          Type genericType;
 
          // the parameter type might be a type variable defined in a superclass
-         if (genericParameterTypes[i] instanceof TypeVariable<?>)
+         if (actualMethod.getGenericParameterTypes()[i] instanceof TypeVariable<?>)
          {
             // try to find out the value of the type variable
             genericType = Types.getActualValueOfTypeVariable(root, (TypeVariable<?>) genericParameterTypes[i]);
@@ -72,7 +73,7 @@ public class MethodInjectorImpl implements MethodInjector
          }
          else
          {
-            type = method.getParameterTypes()[i];
+            type = actualMethod.getParameterTypes()[i];
             genericType = genericParameterTypes[i];
          }
 
