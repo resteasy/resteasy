@@ -12,6 +12,7 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
@@ -126,21 +127,25 @@ public class ResourceMethodRegistry implements Registry
       }
    }
 
-	private Method findAnnotatedInterfaceMethod(Class<?> iface, Method implementation)
+	private Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)
 	{
-		try
-		{
-			Method method = iface.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
-			if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
-				return method;
-		}
-		catch (NoSuchMethodException e)
-		{
-			// ignore
-		}
+      for (Method method : iface.getMethods())
+      {
+         if (method.isSynthetic()) continue;
+
+         if (!method.getName().equals(implementation.getName())) continue;
+         if (method.getParameterTypes().length != implementation.getParameterTypes().length) continue;
+
+         Method actual = Types.getImplementingMethod(root, method);
+         if (!actual.equals(implementation)) continue;
+
+         if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
+            return method;
+
+      }
 		for (Class<?> extended : iface.getInterfaces())
 		{
-			Method m = findAnnotatedInterfaceMethod(extended, implementation);
+			Method m = findAnnotatedInterfaceMethod(root, extended, implementation);
 			if(m != null)
 				return m;
 		}
@@ -149,12 +154,17 @@ public class ResourceMethodRegistry implements Registry
 
 	private Method findAnnotatedMethod(Class<?> root, Method implementation)
 	{
+      // check the method itself
+      if (implementation.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(implementation) != null)
+         return implementation;
+
 		// Per http://download.oracle.com/auth/otn-pub/jcp/jaxrs-1.0-fr-oth-JSpec/jaxrs-1.0-final-spec.pdf
 		// Section 3.2 Annotation Inheritance
 
-		// First check local declaration and possible superclass declarations
-		for (Class<?> clazz = implementation.getDeclaringClass(); clazz != null; clazz = clazz.getSuperclass())
+		// Check possible superclass declarations
+		for (Class<?> clazz = implementation.getDeclaringClass().getSuperclass(); clazz != null; clazz = clazz.getSuperclass())
 		{
+
 			try
 			{
 				Method method = clazz.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
@@ -175,7 +185,7 @@ public class ResourceMethodRegistry implements Registry
 			Method method = null;
 			for (Class<?> iface : clazz.getInterfaces())
 			{
-				Method m = findAnnotatedInterfaceMethod(iface, implementation);
+				Method m = findAnnotatedInterfaceMethod(root, iface, implementation);
 				if (m != null)
 				{
 					if(method != null && !m.equals(method))
