@@ -109,7 +109,7 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (mediaType.isWildcardType() || mediaType.isWildcardSubtype() ||
-         		  !mediaType.isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) return false;
+              !mediaType.isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) return false;
       if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
       if (genericType == null) return true;
 
@@ -150,7 +150,7 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
                  genericType, annotations, mediaType);
          if (reader == null)
          {
-            return new BadRequestException(
+            throw new BadRequestException(
                     "Could not find message body reader for type: "
                             + genericType + " of content type: " + mediaType);
          }

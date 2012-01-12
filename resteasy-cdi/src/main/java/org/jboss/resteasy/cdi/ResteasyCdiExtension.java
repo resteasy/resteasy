@@ -1,9 +1,7 @@
 package org.jboss.resteasy.cdi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.util.GetRestful;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -20,9 +18,10 @@ import javax.enterprise.inject.spi.ProcessSessionBean;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
-
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.util.GetRestful;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This Extension handles default scopes for discovered JAX-RS components. It
@@ -31,9 +30,8 @@ import org.jboss.resteasy.util.GetRestful;
  * builds the sessionBeanInterface map which maps Session Bean classes to a
  * local interface. This map is used in CdiInjectorFactory during lookup of
  * Sesion Bean JAX-RS components.
- * 
+ *
  * @author Jozef Hartinger
- * 
  */
 public class ResteasyCdiExtension implements Extension
 {
@@ -66,10 +64,14 @@ public class ResteasyCdiExtension implements Extension
    /**
     * Set a default scope for each CDI bean which is a JAX-RS Resource, Provider
     * or Application subclass.
-    * 
     */
-   public <T> void observeResources(@Observes ProcessAnnotatedType<T> event)
+   public <T> void observeResources(@Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
    {
+      if (this.beanManager == null)
+      {
+         // this may happen if Solder Config receives BBD first
+         this.beanManager = beanManager;
+      }
       AnnotatedType<T> type = event.getAnnotatedType();
 
       if (!type.getJavaClass().isInterface())
