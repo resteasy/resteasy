@@ -28,6 +28,7 @@ public class TJWSServletServer
    {
       private static final long serialVersionUID = -5031104686755790970L;
       private PathTreeDictionary mappingTable = null;
+      private Hashtable<String,String> initParams = null;
 
       public void initFileMappings()
       {
@@ -46,6 +47,25 @@ public class TJWSServletServer
          }
          mappingTable.put(context, directory);
       }
+      
+      public String getInitParameter(String param)
+      {
+         if (initParams == null)
+         {
+            return null;
+         }
+         return initParams.get(param);
+      }
+
+      public Hashtable<String, String> getInitParams()
+      {
+         return initParams;
+      }
+
+      public void setInitParams(Hashtable<String, String> initParams)
+      {
+         this.initParams = initParams;
+      }
    }
 
    protected FileMappingServe server = new FileMappingServe();
@@ -61,7 +81,13 @@ public class TJWSServletServer
    {
       server.addServlet(bindPath, servlet, initParams);
    }
-
+   
+   public void addServlet(String bindPath, HttpServlet servlet, Hashtable<String,String> initParams, Hashtable<String,String> contextParams)
+   {
+      server.setInitParams(contextParams);
+      server.addServlet(bindPath, servlet, initParams);
+   }
+   
    public void setProps(Properties props)
    {
       this.props.putAll(props);
