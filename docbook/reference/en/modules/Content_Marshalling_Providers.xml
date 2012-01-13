@@ -276,4 +276,44 @@ public interface Providers
 
       </para>
    </sect1>
+   
+   <sect1 id="Configuring_Document_Marshalling">
+      <title>Configuring Document Marshalling</title>
+
+      <para>
+   
+         XML document parsers are subject to a form of attack known as the XXE (Xml eXternal Entity) Attack
+         (<ulink url="http://www.securiteam.com/securitynews/6D0100A5PU.html">http://www.securiteam.com/securitynews/6D0100A5PU.html</ulink>),
+         in which expanding an external entity causes an unsafe file to be loaded.  For example, the document
+      </para>
+      
+      <programlisting>
+      &lt;?xml version="1.0"?&gt;
+      &lt;!DOCTYPE foo
+      [&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt; 
+      &lt;search&gt;
+         &lt;user&gt;bill&lt;/user&gt;
+         &lt;file&gt;&amp;xxe;&lt;file&gt;
+      &lt;/search&gt;
+      </programlisting>
+      
+      <para>
+      
+      could cause the passwd file to be loaded.
+      </para>
+      
+      <para>
+      
+         The Resteasy's built-in unmarshaller for org.w3c.dom.Document files will expand external entities by default, but it can be configured to replace them by the empty string by setting the context parameter "resteasy.document.expand.entity.references" to "false" in the web.xml file:
+   
+      </para>
+      
+      <programlisting>
+         &lt;context-param&gt;
+            &lt;param-name&gt;resteasy.document.expand.entity.references&lt;/param-name&gt;
+            &lt;param-value&gt;false&lt;/param-value&gt;
+         &lt;/context-param&gt;
+      </programlisting>
+   </sect1>
+   
 </chapter>
