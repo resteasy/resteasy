@@ -4,6 +4,8 @@ import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import java.lang.reflect.Method;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -11,7 +13,7 @@ import java.lang.reflect.Method;
  */
 public class EmbeddedContainer
 {
-   private static Class bootstrap = TJWSServletContainer.class;
+   private static Class<?> bootstrap = TJWSServletContainer.class;
 
    public static Class getBootstrap()
    {
@@ -51,7 +53,41 @@ public class EmbeddedContainer
 
    public static ResteasyDeployment start() throws Exception
    {
-      return start("/");
+      return start("/", (Hashtable<String,String>) null);
+   }
+   
+   public static ResteasyDeployment start(String bindPath) throws Exception
+   {
+      return start(bindPath, null, null);
+   }
+   
+   public static ResteasyDeployment start(Hashtable<String,String> initParams) throws Exception
+   {
+      return start("/", initParams);
+   }
+
+   public static ResteasyDeployment start(Hashtable<String,String> initParams, Hashtable<String,String> contextParams) throws Exception
+   {
+      return start("/", initParams, contextParams);
+   }
+   
+   public static ResteasyDeployment start(String bindPath, Hashtable<String,String> initParams) throws Exception
+   {
+      Method start = bootstrap.getMethod("start", String.class, Hashtable.class);
+      return (ResteasyDeployment) start.invoke(null, bindPath, initParams);
+   }
+
+   public static ResteasyDeployment start(String bindPath, Hashtable<String,String> initParams, Hashtable<String,String> contextParams) throws Exception
+   {
+      Method start = bootstrap.getMethod("start", String.class, Hashtable.class, Hashtable.class);
+      return (ResteasyDeployment) start.invoke(null, bindPath, initParams, contextParams);
+   }
+   
+   public static ResteasyDeployment start(String bindPath, SecurityDomain domain) throws Exception
+   {
+      Method start = bootstrap.getMethod("start", String.class, SecurityDomain.class);
+      return (ResteasyDeployment) start.invoke(null, bindPath, domain);
+
    }
 
    public static void start(ResteasyDeployment deployment) throws Exception
@@ -60,20 +96,6 @@ public class EmbeddedContainer
       start.invoke(null, deployment);
 
    }
-
-   public static ResteasyDeployment start(String bindPath) throws Exception
-   {
-      Method start = bootstrap.getMethod("start", String.class);
-      return (ResteasyDeployment) start.invoke(null, bindPath);
-   }
-
-   public static ResteasyDeployment start(String bindPath, SecurityDomain domain) throws Exception
-   {
-      Method start = bootstrap.getMethod("start", String.class, SecurityDomain.class);
-      return (ResteasyDeployment) start.invoke(null, bindPath, domain);
-
-   }
-
 
    public static void stop() throws Exception
    {
