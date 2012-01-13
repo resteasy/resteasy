@@ -31,6 +31,7 @@ public interface ResteasyContextParameters
    String RESTEASY_SCANNED_BY_DEPLOYER = "resteasy.scanned.by.deployer";
    String RESTEASY_JNDI_COMPONENT_RESOURCES = "resteasy.jndi.component.resources";
    String RESTEASY_UNWRAPPED_EXCEPTIONS = "resteasy.unwrapped.exceptions";
+   String RESTEASY_EXPAND_ENTITY_REFERENCES = "resteasy.document.expand.entity.references";
 
    // these scanned variables are provided by a deployer
    String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";
