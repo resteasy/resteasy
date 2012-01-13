@@ -213,6 +213,17 @@
                                 JAX-RS Content Negotiation chapter for more details
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.document.expand.entity.references
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                Expand external entities in org.w3c.dom.Document files
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
