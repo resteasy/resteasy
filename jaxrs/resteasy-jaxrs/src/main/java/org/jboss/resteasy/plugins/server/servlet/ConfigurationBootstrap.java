@@ -87,7 +87,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 
       String providers = getParameter(ResteasyContextParameters.RESTEASY_PROVIDERS);
 
-      if (providers != null)
+      if (providers != null && ! "".equals(providers.trim()))
       {
          String[] p = providers.split(",");
          for (String pr : p) deployment.getProviderClasses().add(pr.trim());
@@ -207,7 +207,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 
 
       String jndiResources = getParameter(ResteasyContextParameters.RESTEASY_JNDI_RESOURCES);
-      if (jndiResources != null)
+      if (jndiResources != null && ! "".equals(jndiResources.trim()))
       {
          processJndiResources(jndiResources);
       }
@@ -219,7 +219,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       }
 
       String resources = getParameter(ResteasyContextParameters.RESTEASY_RESOURCES);
-      if (resources != null)
+      if (resources != null && ! "".equals(resources.trim()))
       {
          processResources(resources);
       }
