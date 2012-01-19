@@ -240,48 +240,6 @@ public class RequestImpl implements Request
    }
 
    @Override
-   public URI getPath()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public UriBuilder getPathBuilder()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public String getPath(boolean decode)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public List<PathSegment> getPathSegments()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public List<PathSegment> getPathSegments(boolean decode)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public MultivaluedMap<String, String> getQueryParameters()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public MultivaluedMap<String, String> getQueryParameters(boolean decode)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Object getEntity()
    {
       throw new NotImplementedYetException();
@@ -305,9 +263,4 @@ public class RequestImpl implements Request
       throw new NotImplementedYetException();
    }
 
-   @Override
-   public InputStream getEntityInputStream()
-   {
-      throw new NotImplementedYetException();
-   }
 }

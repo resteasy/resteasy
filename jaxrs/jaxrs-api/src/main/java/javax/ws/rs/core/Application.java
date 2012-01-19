@@ -73,7 +73,7 @@ public class Application {
      *
      * <p>The default implementation returns an empty set.</p>
      *
-     * @return a set of root resource and provider classes. Returning null
+     * @return a set of root resource and provider classes. Returning {@code null}
      * is equivalent to returning an empty set.
      */
     public Set<Class<?>> getClasses() {
@@ -93,7 +93,7 @@ public class Application {
      *
      * <p>The default implementation returns an empty set.</p>
      *
-     * @return a set of root resource and provider instances. Returning null
+     * @return a set of root resource and provider instances. Returning {@code null}
      * is equivalent to returning an empty set.
      */
     public Set<Object> getSingletons() {

@@ -347,18 +347,6 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    }
 
    @Override
-   public InputStream getEntityInputStream()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public Response.ResponseBuilder entityInputStream(InputStream entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Response.ResponseBuilder allow(String... methods)
    {
       throw new NotImplementedYetException();

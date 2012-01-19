@@ -45,14 +45,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * When multiple filters (or multiple handlers) are configured for
- * a resource class and method (or an invocation as part of
- * the client API) the order in which they are applied is 
- * determined by their binding priority. Binding priorities are
- * represented by integer numbers; the lower the value the higher
- * the priority. This class defines a few built-in priority classes.
- * By default all filters and handlers are defined in the 
- * {@link #USER} class.
+ * <p>Filters and interceptors are grouped in chains for each of the extension
+ * points: Pre, PreMatch, Post as well as ReadFrom and WriteTo.
+ * Each of these chains is sorted by binding priorities which are represented
+ * as integer numbers.
+ * All chains except Post are sorted in ascending order; the lower
+ * the number the higher the priority. The Post filter chain is sorted
+ * in descending order to ensure that response filters are executed in
+ * <em>reverse order</em>.</p>
+ *
+ * <p>This class defines a few built-in priority classes. Filters and interceptors
+ * that belong to the same priority class (same integer value) are executed
+ * in an implementation-defined manner. By default, i.e. when
+ * this annotation is absent, a filter or interceptor is defined in the
+ * {@link #USER} class.</p>
  * 
  * @author Santiago Pericas-Geertsen
  * @since 2.0
@@ -68,10 +74,9 @@ public @interface BindingPriority {
     public static final int USER = 500;
 
     /**
-     * Priority defined for a filter or handler. Default is
-     * {@link javax.ws.rs.BindingPriority#USER}.
+     * Priority defined for a filter or interceptor.
      * 
-     * @return filter or handler priority
+     * @return filter or interceptor priority
      */
-    int value() default USER;
+    int value();
 }
