@@ -6,9 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -21,13 +19,13 @@ public class Types
 {
    public static Class getTemplateParameterOfInterface(Class base, Class desiredInterface)
    {
-      Object rtn = getSomething(base, desiredInterface);
+      Object rtn = searchForInterfaceTemplateParameter(base, desiredInterface);
       if (rtn != null && rtn instanceof Class) return (Class) rtn;
       return null;
    }
 
 
-   private static Object getSomething(Class base, Class desiredInterface)
+   private static Object searchForInterfaceTemplateParameter(Class base, Class desiredInterface)
    {
       for (int i = 0; i < base.getInterfaces().length; i++)
       {
@@ -50,7 +48,7 @@ public class Types
          }
       }
       if (base.getSuperclass() == null || base.getSuperclass().equals(Object.class)) return null;
-      Object rtn = getSomething(base.getSuperclass(), desiredInterface);
+      Object rtn = searchForInterfaceTemplateParameter(base.getSuperclass(), desiredInterface);
       if (rtn == null || rtn instanceof Class) return rtn;
       if (!(rtn instanceof TypeVariable)) return null;
 
