@@ -40,62 +40,34 @@
 package javax.ws.rs.ext;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import javax.ws.rs.WebApplicationException;
 
 /**
- * Context class used by {@link javax.ws.rs.ext.WriteToHandler}
- * intercepting calls to <tt>javax.ws.rs.ext.MessageBodyWriter.writeTo</tt>.
- * The getters and setters in this context class correspond to the
- * parameters of the intercepted method.
+ * Interface for message body writer interceptors that wrap around calls
+ * to {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. Message body
+ * interceptors implementing this interface MUST be annotated with
+ * {@link javax.ws.rs.ext.Provider}.
  *
- * @param <T> Java type supported by corresponding message body provider
+ * @param <T> Java type supported by corresponding message body writer
  *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see WriteToHandler
  * @see MessageBodyWriter
  */
-public interface WriteToHandlerContext<T> extends MessageBodyHandlerContext<T> {
-
+public interface WriterInterceptor<T> {
+    
     /**
-     * Proceed to the next handler in the chain. Handlers MUST explicitly
-     * call this method to continue the execution chain; the call to this
-     * method in the last handler of the chain will invoke
-     * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-     * java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[],
-     * javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
-     * javax.ws.rs.ext.MessageBodyWriter.writeTo(...)} method.
+     * Interceptor method wrapping calls to
+     * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. The parameters
+     * of the wrapped method called are available from <code>context</code>.
+     * Implementations of this method SHOULD explicitly call
+     * {@link javax.ws.rs.ext.WriterInterceptorContext#proceed} to invoke
+     * the next interceptor in the chain, and ultimately the wrapped method.
      *
-     * @throws IOException
+     * @param context invocation context
+     * @throws IOException if an IO error arises
+     * @throws WebApplicationException thrown by wrapped method
      */
-    void proceed() throws IOException;
-
-    /**
-     * Get object to be written as HTTP entity
-     *
-     * @return object to be written as HTTP entity
-     */
-    T getEntity();
-
-    /**
-     * Update object to be written as HTTP entity
-     *
-     * @param entity new object to be written
-     */
-    void setEntity(T entity);
-
-    /**
-     * Get the output stream for the object to be written
-     *
-     * @return output stream for the object to be written
-     */
-    OutputStream getOutputStream();
-
-    /**
-     * Update the output stream for the object to be written
-     *
-     * @param os new output stream for the object to be written
-     */
-    public void setOutputStream(OutputStream os);
+    void aroundWriteTo(WriterInterceptorContext<T> context) throws IOException, WebApplicationException;
 }

@@ -42,12 +42,12 @@ package javax.ws.rs.ext;
 import java.lang.reflect.Method;
 
 /**
- * A handler or filter that implements this interface supports
+ * A filter or interceptor that implements this interface supports
  * dynamic binding. Dynamic binding is supported only as part of
- * the server API. Regardless of whether a handler or filter
- * is global or by an annotation derived from {@link javax.ws.rs.NameBinding},
- * this interface will be used to determine if the handler
- * or filter applies to a particular resource class and method.
+ * the server API. Regardless of whether a filter or interceptor
+ * is bound globally or bound via an annotation derived from 
+ * {@link javax.ws.rs.NameBinding}, this interface will be used to 
+ * determine if it applies to a particular resource class and method.
  *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
@@ -57,7 +57,7 @@ import java.lang.reflect.Method;
 public interface DynamicBinding {
 
     /**
-     * Determine if this handler or filter applies to a particular 
+     * Determine if this filter or interceptor applies to a particular 
      * resource class and method.
      *
      * @param type resource class

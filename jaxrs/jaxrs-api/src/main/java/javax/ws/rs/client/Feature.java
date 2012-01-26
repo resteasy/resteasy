@@ -42,7 +42,7 @@ package javax.ws.rs.client;
 /**
  * A configurable feature.
  * <p />
- * Typically encapsulates concepts that involve multiple filters, handlers and/or
+ * Typically encapsulates concepts that involve multiple filters, interceptors and/or
  * configuration properties.
  *
  * @author Marek Potociar (marek.potociar at oracle.com)

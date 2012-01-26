@@ -43,12 +43,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Context shared by handlers. Handlers can be used to intercept calls
- * to <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt> and
- * <tt>javax.ws.rs.ext.MessageBodyWriter.writeTo</tt>. The getters and
+ * Context shared by message body interceptors that can be used to wrap
+ * calls to {@link javax.ws.rs.ext.MessageBodyReader#readFrom} and
+ * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. The getters and
  * setters in this context class correspond to the parameters in
  * the aforementioned methods.
  *
@@ -57,20 +56,20 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see ReadFromHandler
- * @see WriteToHandler
+ * @see ReaderInterceptor
+ * @see WriterInterceptor
+ * @see ReaderInterceptorContext
+ * @see WriterInterceptorContext
  */
-public interface MessageBodyHandlerContext<T> {
+public interface InterceptorContext<T> {
 
     /**
      * Get a mutable map of properties that can be used for
-     * communication between handlers and between filters. In
+     * communication between message body interceptors. In
      * the Client API, this property map is initialized by calling
      * {@link javax.ws.rs.client.Configuration#getProperties()} on
      * the configuration object associated with the corresponding
-     * {@link javax.ws.rs.client.Invocation} or
-     * {@link javax.ws.rs.client.Invocation.Builder} instance on
-     * which a filter or handler is registered.
+     * {@link javax.ws.rs.client.Invocation}.
      * Otherwise, it is initialized to the empty map.
      *
      * @return a mutable property map
@@ -138,11 +137,4 @@ public interface MessageBodyHandlerContext<T> {
      * @param mediaType new type for HTTP entity
      */
     void setMediaType(MediaType mediaType);
-
-    /**
-     * Get mutable map of HTTP headers.
-     *
-     * @return map of HTTP headers
-     */
-    MultivaluedMap<String, String> getHeaders();
 }
