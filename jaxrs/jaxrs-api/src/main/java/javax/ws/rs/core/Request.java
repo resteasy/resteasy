@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,6 +69,8 @@ import javax.ws.rs.ext.FilterContext;
  *
  * @author Paul Sandoz
  * @author Marc Hadley
+ * @author Marek Potociar
+ * @see Request.RequestBuilder
  * @since 1.0
  */
 public interface Request {
@@ -96,7 +98,7 @@ public interface Request {
          *
          * @param methods the methods to be listed as allowed for the resource,
          *     if {@code null} any existing allowed method list will be removed.
-         * @return the updated headers builder.
+         * @return the updated request builder.
          */
         public RequestBuilder allow(String... methods);
 
@@ -105,7 +107,7 @@ public interface Request {
          *
          * @param methods the methods to be listed as allowed for the resource,
          *     if {@code null} any existing allowed method list will be removed.
-         * @return the updated headers builder.
+         * @return the updated request builder.
          */
         public RequestBuilder allow(Set<String> methods);
 
@@ -114,7 +116,7 @@ public interface Request {
          *
          * @param cacheControl the cache control directives, if {@code null}
          *     any existing cache control directives will be removed.
-         * @return the updated headers builder.
+         * @return the updated request builder.
          */
         public RequestBuilder cacheControl(CacheControl cacheControl);
 
@@ -124,7 +126,7 @@ public interface Request {
          * @param encoding the content encoding of the message entity,
          *     if {@code null} any existing value for content encoding will be
          *     removed.
-         * @return the updated headers builder.
+         * @return the updated request builder.
          */
         public RequestBuilder encoding(String encoding);
 
@@ -138,7 +140,7 @@ public interface Request {
          *     for the class of {@code value} or using its {@code toString} method
          *     if a header delegate is not available. If {@code value} is {@code null}
          *     then all current headers of the same name will be removed.
-         * @return the updated header builder.
+         * @return the updated request builder.
          */
         public RequestBuilder header(String name, Object value);
 
@@ -147,7 +149,7 @@ public interface Request {
          *
          * @param headers new headers to be set, if {@code null} all existing
          *     headers will be removed.
-         * @return the updated headers builder.
+         * @return the updated request builder.
          */
         public RequestBuilder replaceAll(RequestHeaders headers);
 
@@ -156,7 +158,7 @@ public interface Request {
          *
          * @param language the language of the message entity, if {@code null} any
          *     existing value for language will be removed.
-         * @return the updated headers builder.
+         * @return the updated request builder.
          */
         public RequestBuilder language(String language);
 
@@ -165,7 +167,7 @@ public interface Request {
          *
          * @param language the language of the message entity, if {@code null} any
          *     existing value for type will be removed.
-         * @return the updated headers builder.
+         * @return the updated request builder.
          */
         public RequestBuilder language(Locale language);
 
@@ -174,7 +176,7 @@ public interface Request {
          *
          * @param type the media type of the message entity. If {@code null}, any
          *     existing value for type will be removed
-         * @return the updated header builder.
+         * @return the updated request builder.
          */
         public RequestBuilder type(MediaType type);
 
@@ -183,7 +185,7 @@ public interface Request {
          *
          * @param type the media type of the message entity. If {@code null}, any
          *     existing value for type will be removed
-         * @return the updated header builder.
+         * @return the updated request builder.
          */
         public RequestBuilder type(String type);
 
@@ -195,7 +197,7 @@ public interface Request {
          *
          * @param variant metadata of the message entity, a {@code null} value is
          *     equivalent to a variant with all {@code null} properties.
-         * @return the updated header builder.
+         * @return the updated request builder.
          *
          * @see #encoding(java.lang.String)
          * @see #language(java.util.Locale)
@@ -208,7 +210,7 @@ public interface Request {
          * Add acceptable media types.
          *
          * @param types an array of the acceptable media types
-         * @return updated request headers builder.
+         * @return updated request builder.
          */
         public RequestBuilder accept(MediaType... types);
 
@@ -216,7 +218,7 @@ public interface Request {
          * Add acceptable media types.
          *
          * @param types an array of the acceptable media types
-         * @return updated request headers builder.
+         * @return updated request builder.
          */
         public RequestBuilder accept(String... types);
 
@@ -224,7 +226,7 @@ public interface Request {
          * Add acceptable languages.
          *
          * @param locales an array of the acceptable languages
-         * @return updated request headers builder.
+         * @return updated request builder.
          */
         public RequestBuilder acceptLanguage(Locale... locales);
 
@@ -232,7 +234,7 @@ public interface Request {
          * Add acceptable languages.
          *
          * @param locales an array of the acceptable languages
-         * @return updated request headers builder.
+         * @return updated request builder.
          */
         public RequestBuilder acceptLanguage(String... locales);
 
@@ -240,7 +242,7 @@ public interface Request {
          * Add a cookie to be set.
          *
          * @param cookie to be set.
-         * @return updated request headers builder.
+         * @return updated request builder.
          */
         public RequestBuilder cookie(Cookie cookie);
 
@@ -266,15 +268,16 @@ public interface Request {
         public RequestBuilder method(String httpMethod);
 
         /**
-         * Set the request entity.
+         * Set the request entity in the builder.
          * <p />
-         * Any Java type instance for a request entity, that is supported by the client
-         * configuration of the client, can be passed. If generic information is
-         * required then an instance of {@link javax.ws.rs.core.GenericEntity} may
-         * be used.
+         * Any Java type instance for a request entity, that is supported by the
+         * runtime can be passed. It is the callers responsibility to wrap the
+         * actual entity with {@link GenericEntity} if preservation of its generic
+         * type is required. Note that the entity can be also set as an
+         * {@link java.io.InputStream input stream}.
          * <p />
          * A specific entity media type can be set using one of the {@code type(...)}
-         * methods. If required (e.g. for validation purposes).
+         * methods.
          *
          * @param entity the request entity.
          * @return updated request builder instance.
@@ -283,14 +286,6 @@ public interface Request {
          * @see #type(java.lang.String)
          */
         public RequestBuilder entity(Object entity);
-
-        /**
-         * Set the input stream of the request.
-         *
-         * @param entity the input stream of the request.
-         * @return updated request builder instance.
-         */
-        public RequestBuilder entityInputStream(InputStream entity);
 
         /**
          * Create a copy of the request builder preserving its state.
@@ -337,87 +332,6 @@ public interface Request {
     public UriBuilder getUriBuilder();
 
     /**
-     * Get the absolute path of the request. This includes everything preceding
-     * the path (host, port etc) but excludes query parameters and fragment.
-     * <p/>
-     *
-     * @return the absolute path of the request.
-     * @since 2.0
-     */
-    public URI getPath();
-
-    /**
-     * Get the absolute path of the request in the form of a {@link UriBuilder}.
-     * This includes everything preceding the path (host, port etc) but excludes
-     * query parameters and fragment.
-     *
-     * @return a {@code UriBuilder} initialized with the absolute path of the request.
-     * @since 2.0
-     */
-    public UriBuilder getPathBuilder();
-
-    /**
-     * Get the absolute path of the request in the form of a {@link String}.
-     *
-     * @param decode controls whether sequences of escaped octets are decoded
-     * ({@code true}) or not ({@code false}).
-     * @return the {@link String} containing the absolute path of the request.
-     * @since 2.0
-     */
-    public String getPath(boolean decode);
-
-    /**
-     * Get the path of the current request relative to the base URI as a list
-     * of {@link PathSegment}. This method is useful when the path needs to be
-     * parsed, particularly when matrix parameters may be present in the path.
-     * All sequences of escaped octets in path segments and matrix parameter names
-     * and values are decoded, equivalent to {@code getPathSegments(true)}.
-     *
-     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
-     *     map of each path segment is also unmodifiable.
-     * @see PathSegment
-     * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
-     * @since 2.0
-     */
-    public List<PathSegment> getPathSegments();
-
-    /**
-     * Get the path of the current request relative to the base URI as a list
-     * of {@link PathSegment}. This method is useful when the path needs to be
-     * parsed, particularly when matrix parameters may be present in the path.
-     *
-     * @param decode controls whether sequences of escaped octets in path segments
-     *     and matrix parameter names and values are decoded ({@code true})
-     *     or not ({@code false}).
-     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
-     *     map of each path segment is also unmodifiable.
-     * @see PathSegment
-     * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
-     * @since 2.0
-     */
-    public List<PathSegment> getPathSegments(boolean decode);
-
-    /**
-     * Get the URI query parameters of the current request. All sequences of
-     * escaped octets in parameter names and values are decoded,
-     * equivalent to {@code getQueryParameters(true)}.
-     *
-     * @return an unmodifiable map of query parameter names and values.
-     * @since 2.0
-     */
-    public MultivaluedMap<String, String> getQueryParameters();
-
-    /**
-     * Get the URI query parameters of the current request.
-     *
-     * @param decode controls whether sequences of escaped octets in parameter
-     * names and values are decoded ({@code true}) or not ({@code false}).
-     * @return an unmodifiable map of query parameter names and values.
-     * @since 2.0
-     */
-    public MultivaluedMap<String, String> getQueryParameters(boolean decode);
-
-    /**
      * Get the message entity, returns {@code null} if the message does not
      * contain an entity body.
      *
@@ -429,12 +343,21 @@ public interface Request {
     /**
      * Get the message entity, returns {@code null} if the message does not
      * contain an entity body.
+     * <p/>
+     * Entity can also be retrieved as an {@link java.io.InputStream}, in which
+     * case it will be fully consumed once the reading from input stream is finished.
+     * All subsequent calls to {@code getEntity(...)} on the same request instance
+     * will result in a {@link MessageProcessingException} being thrown. It is up
+     * to the consumer of the entity input stream to ensure that consuming the stream
+     * is properly mitigated (e.g. by substituting the consumed request instance
+     * with a new one etc.).
      *
      * @param <T> entity type.
      * @param type the type of entity.
      * @return the message entity or {@code null}.
      * @throws MessageProcessingException if the content of the message
      *     cannot be mapped to an entity of the requested type.
+     * @see #hasEntity()
      * @since 2.0
      */
     public <T> T getEntity(Class<T> type) throws MessageProcessingException;
@@ -453,28 +376,25 @@ public interface Request {
     public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException;
 
     /**
-     * Check if there is an entity available in the request.
+     * Check if there is an entity available in the request. The method returns
+     * {@code true} if the entity is present, returns {@code false} otherwise.
+     * <p/>
+     * In case the request contained an entity, but it was already consumed as an
+     * input stream via {@code getEntity(InputStream.class)}, the method returns
+     * {@code false}.
      *
-     * @return {@code true} if there is an entity present in the request.
+     * @return {@code true} if there is an entity present in the request, {@code false}
+     *     otherwise.
+     * @see #getEntity(java.lang.Class)
      * @since 2.0
      */
     public boolean hasEntity();
-
-    /**
-     * Get the request input stream.
-     *
-     * @return the input stream of the request.
-     * @since 2.0
-     */
-    public InputStream getEntityInputStream();
 
     /**
      * Select the representation variant that best matches the request. More
      * explicit variants are chosen ahead of less explicit ones. A vary header
      * is computed from the supplied list and automatically added to the
      * response.
-     *
-     * TODO fix the above sentence about vary header?
      *
      * @param variants a list of Variant that describe all of the
      * available representation variants.

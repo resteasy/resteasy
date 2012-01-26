@@ -63,13 +63,13 @@ public interface FilterContext {
 
     /**
      * Get a mutable map of properties that can be used for
-     * communication between handlers and between filters. In
+     * communication between interceptors and between filters. In
      * the Client API, this property map is initialized by calling
      * {@link javax.ws.rs.client.Configuration#getProperties()} on
      * the configuration object associated with the corresponding
      * {@link javax.ws.rs.client.Invocation} or
      * {@link javax.ws.rs.client.Invocation.Builder} instance on
-     * which a filter or handler is registered.
+     * which a filter or interceptor is registered.
      * Otherwise, it is initialized to the empty map.
      *
      * @return a mutable property map

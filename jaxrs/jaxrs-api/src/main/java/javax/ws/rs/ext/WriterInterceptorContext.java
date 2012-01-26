@@ -40,34 +40,67 @@
 package javax.ws.rs.ext;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Interface implemented by handlers that intercept calls to
- * <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt>. Handlers 
- * implementing this interface MUST be annotated with 
- * {@link javax.ws.rs.ext.Provider}.
- * 
- * @param <T> Java type supported by corresponding message body provider
- * 
+ * Context class used by {@link javax.ws.rs.ext.WriterInterceptor}
+ * to intercept calls to (@link javax.ws.rs.ext.MessageBodyWriter#writeTo}.
+ * The getters and setters in this context class correspond to the
+ * parameters of the intercepted method.
+ *
+ * @param <T> Java type supported by corresponding message body writer
+ *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see MessageBodyReader
+ * @see WriterInterceptor
+ * @see MessageBodyWriter
  */
-public interface ReadFromHandler<T> {
+public interface WriterInterceptorContext<T> extends InterceptorContext<T> {
 
     /**
-     * Handler method wrapping calls to 
-     * <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt>. The parameters
-     * to the wrapped method called are available from <code>context</code>.
-     * Implementations of this method SHOULD explicitly call 
-     * {@link javax.ws.rs.ext.ReadFromHandlerContext#proceed()} to invoke
-     * the next handler in the chain, and ultimately the wrapped method.
+     * Proceed to the next interceptor in the chain. Interceptors MUST explicitly
+     * call this method to continue the execution chain; the call to this
+     * method in the last interceptor of the chain will invoke
+     * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo} method.
      *
-     * @param context invocation context
-     * @return result of next handler invoked or the wrapped method if
-     *         last handler in chain
-     * @throws IOException 
+     * @throws IOException if an IO exception arises
      */
-    T readFrom(ReadFromHandlerContext<T> context) throws IOException;
+    void proceed() throws IOException;
+
+    /**
+     * Get object to be written as HTTP entity
+     *
+     * @return object to be written as HTTP entity
+     */
+    T getEntity();
+
+    /**
+     * Update object to be written as HTTP entity
+     *
+     * @param entity new object to be written
+     */
+    void setEntity(T entity);
+
+    /**
+     * Get the output stream for the object to be written
+     *
+     * @return output stream for the object to be written
+     */
+    OutputStream getOutputStream();
+
+    /**
+     * Update the output stream for the object to be written
+     *
+     * @param os new output stream for the object to be written
+     */
+    public void setOutputStream(OutputStream os);
+
+    /**
+     * Get mutable map of HTTP headers.
+     *
+     * @return map of HTTP headers
+     */
+    MultivaluedMap<String, Object> getHeaders();
 }

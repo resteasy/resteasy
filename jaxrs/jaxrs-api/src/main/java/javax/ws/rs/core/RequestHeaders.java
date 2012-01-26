@@ -43,7 +43,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * general-header =
@@ -58,7 +57,7 @@ import java.util.Set;
  *        Warning                  ; Section 14.46
  *
  * entity-header  =                                    Req     Res
- *      *  Allow                    ; Section 14.7      +       +
+ *      *  Allow                    ; Section 14.7      -       +
  *      *  Content-Encoding         ; Section 14.11     +       +
  *      *  Content-Language         ; Section 14.12     +       +
  *      a  Content-Length           ; Section 14.13     +       +
@@ -98,20 +97,12 @@ import java.util.Set;
  * via its {@link Request#getHeaders() getHeaders()} method.
  *
  * @author Marek Potociar
+ * @see Context
  * @since 2.0
  */
 public interface RequestHeaders {
 
     // General header getters
-    /**
-     * Get the allowed HTTP methods from the Allow HTTP header.
-     *
-     * @return the allowed HTTP methods, all methods will returned as upper case
-     *     strings.
-     * @since 2.0
-     */
-    public Set<String> getAllowedMethods();
-
     /**
      * Get message date.
      *

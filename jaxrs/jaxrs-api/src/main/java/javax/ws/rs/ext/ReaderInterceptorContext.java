@@ -41,32 +41,33 @@ package javax.ws.rs.ext;
 
 import java.io.IOException;
 import java.io.InputStream;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Context class used by {@link javax.ws.rs.ext.ReadFromHandler} 
- * to intercept calls to <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt>.
+ * Context class used by {@link javax.ws.rs.ext.ReaderInterceptor}
+ * to intercept calls to (@link javax.ws.rs.ext.MessageBodyReader#readFrom}.
  * The getters and setters in this context class correspond to the 
  * parameters of the intercepted method.
  * 
- * @param <T> Java type supported by corresponding message body provider
+ * @param <T> Java type supported by corresponding message body reader
  * 
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see ReadFromHandler
+ * @see ReaderInterceptor
  * @see MessageBodyReader
  */
-public interface ReadFromHandlerContext<T> extends MessageBodyHandlerContext<T> {
+public interface ReaderInterceptorContext<T> extends InterceptorContext<T> {
 
     /**
-     * Proceed to the next handler in the chain. Return the result of the 
-     * next handler invoked. Handlers MUST explicitly call this method
+     * Proceed to the next interceptor in the chain. Return the result of the 
+     * next interceptor invoked. Interceptors MUST explicitly call this method
      * to continue the execution chain; the call to this method in the 
-     * last handler of the chain will invoke
-     * <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt>.
+     * last interceptor of the chain will invoke
+     * {@link javax.ws.rs.ext.MessageBodyReader#readFrom}.
      * 
-     * @return result of next handler invoked
-     * @throws IOException 
+     * @return result of next interceptor invoked
+     * @throws IOException if an IO error arises
      */
     T proceed() throws IOException;
 
@@ -84,4 +85,11 @@ public interface ReadFromHandlerContext<T> extends MessageBodyHandlerContext<T> 
      * @param is new input stream 
      */
     void setInputStream(InputStream is);
+
+    /**
+     * Get mutable map of HTTP headers.
+     *
+     * @return map of HTTP headers
+     */
+    MultivaluedMap<String, String> getHeaders();
 }

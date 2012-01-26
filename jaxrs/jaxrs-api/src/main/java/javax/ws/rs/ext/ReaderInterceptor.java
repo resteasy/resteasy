@@ -40,32 +40,36 @@
 package javax.ws.rs.ext;
 
 import java.io.IOException;
+import javax.ws.rs.WebApplicationException;
 
 /**
- * Interface implemented by handlers that intercept calls to
- * <tt>javax.ws.rs.ext.MessageBodyWriter.writeTo</tt>. Handlers 
- * implementing this interface MUST be annotated with 
+ * Interface for message body reader interceptors that wrap around calls
+ * to {@link javax.ws.rs.ext.MessageBodyReader#readFrom}. Message body
+ * interceptors implementing this interface MUST be annotated with
  * {@link javax.ws.rs.ext.Provider}.
  * 
- * @param <T> Java type supported by corresponding message body provider
+ * @param <T> Java type supported by corresponding message body reader
  * 
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see MessageBodyWriter
+ * @see MessageBodyReader
  */
-public interface WriteToHandler<T> {
-    
-   /**
-     * Handler method wrapping calls to 
-     * <tt>javax.ws.rs.ext.MessageBodyWriter.writeTo</tt>. The parameters
-     * to the wrapped method called are available from <code>context</code>.
+public interface ReaderInterceptor<T> {
+
+    /**
+     * Interceptor method wrapping calls to
+     * {@link javax.ws.rs.ext.MessageBodyReader#readFrom}. The parameters
+     * of the wrapped method called are available from <code>context</code>.
      * Implementations of this method SHOULD explicitly call 
-     * {@link javax.ws.rs.ext.WriteToHandlerContext#proceed()} to invoke
-     * the next handler in the chain, and ultimately the wrapped method.
+     * {@link javax.ws.rs.ext.ReaderInterceptorContext#proceed} to invoke
+     * the next interceptor in the chain, and ultimately the wrapped method.
      *
      * @param context invocation context
-     * @throws IOException 
+     * @return result of next interceptor invoked or the wrapped method if
+     *         last interceptor in chain
+     * @throws IOException if an IO error arises
+     * @throws WebApplicationException thrown by wrapped method
      */
-    void writeTo(WriteToHandlerContext<T> context) throws IOException;
+    T aroundReadFrom(ReaderInterceptorContext<T> context) throws IOException, WebApplicationException;
 }

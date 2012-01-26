@@ -598,9 +598,4 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       throw new NotImplementedYetException();
    }
 
-   @Override
-   public InputStream getEntityInputStream()
-   {
-      throw new NotImplementedYetException();
-   }
 }

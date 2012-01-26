@@ -369,9 +369,4 @@ public class ServerResponse extends Response
       throw new NotImplementedYetException();
    }
 
-   @Override
-   public InputStream getEntityInputStream()
-   {
-      throw new NotImplementedYetException();
-   }
 }
