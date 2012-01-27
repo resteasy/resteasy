@@ -340,13 +340,13 @@ public class ServerResponse extends Response
    }
 
    @Override
-   public <T> T getEntity(Class<T> type) throws MessageProcessingException
+   public <T> T readEntity(Class<T> type) throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }

@@ -168,13 +168,13 @@ public class InvocationBuilder implements Invocation.Builder
    @Override
    public <T> T get(Class<T> responseType) throws InvocationException
    {
-      return get().getEntity(responseType);
+      return get().readEntity(responseType);
    }
 
    @Override
    public <T> T get(TypeLiteral<T> responseType) throws InvocationException
    {
-      return get().getEntity(responseType);
+      return get().readEntity(responseType);
    }
 
    @Override
@@ -186,13 +186,13 @@ public class InvocationBuilder implements Invocation.Builder
    @Override
    public <T> T put(Entity<?> entity, Class<T> responseType) throws InvocationException
    {
-      return put(entity).getEntity(responseType);
+      return put(entity).readEntity(responseType);
    }
 
    @Override
    public <T> T put(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
    {
-      return put(entity).getEntity(responseType);
+      return put(entity).readEntity(responseType);
    }
 
    @Override
@@ -204,13 +204,13 @@ public class InvocationBuilder implements Invocation.Builder
    @Override
    public <T> T post(Entity<?> entity, Class<T> responseType) throws InvocationException
    {
-      return buildPost(entity).invoke().getEntity(responseType);
+      return buildPost(entity).invoke().readEntity(responseType);
    }
 
    @Override
    public <T> T post(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
    {
-      return buildPost(entity).invoke().getEntity(responseType);
+      return buildPost(entity).invoke().readEntity(responseType);
    }
 
    @Override
@@ -222,31 +222,19 @@ public class InvocationBuilder implements Invocation.Builder
    @Override
    public <T> T delete(Class<T> responseType) throws InvocationException
    {
-      return buildDelete().invoke().getEntity(responseType);
+      return buildDelete().invoke().readEntity(responseType);
    }
 
    @Override
    public <T> T delete(TypeLiteral<T> responseType) throws InvocationException
    {
-      return buildDelete().invoke().getEntity(responseType);
+      return buildDelete().invoke().readEntity(responseType);
    }
 
    @Override
    public Response head() throws InvocationException
    {
       return build(HttpMethod.HEAD).invoke();
-   }
-
-   @Override
-   public <T> T head(Class<T> responseType) throws InvocationException
-   {
-      return head().getEntity(responseType);
-   }
-
-   @Override
-   public <T> T head(TypeLiteral<T> responseType) throws InvocationException
-   {
-      return head().getEntity(responseType);
    }
 
    @Override
@@ -258,13 +246,13 @@ public class InvocationBuilder implements Invocation.Builder
    @Override
    public <T> T options(Class<T> responseType) throws InvocationException
    {
-      return options().getEntity(responseType);
+      return options().readEntity(responseType);
    }
 
    @Override
    public <T> T options(TypeLiteral<T> responseType) throws InvocationException
    {
-      return options().getEntity(responseType);
+      return options().readEntity(responseType);
    }
 
    @Override
@@ -276,13 +264,13 @@ public class InvocationBuilder implements Invocation.Builder
    @Override
    public <T> T trace(Entity<?> entity, Class<T> responseType) throws InvocationException
    {
-      return trace(entity).getEntity(responseType);
+      return trace(entity).readEntity(responseType);
    }
 
    @Override
    public <T> T trace(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
    {
-      return trace(entity).getEntity(responseType);
+      return trace(entity).readEntity(responseType);
    }
 
    @Override
@@ -294,13 +282,13 @@ public class InvocationBuilder implements Invocation.Builder
    @Override
    public <T> T method(String name, Class<T> responseType) throws InvocationException
    {
-      return method(name).getEntity(responseType);
+      return method(name).readEntity(responseType);
    }
 
    @Override
    public <T> T method(String name, TypeLiteral<T> responseType) throws InvocationException
    {
-      return method(name).getEntity(responseType);
+      return method(name).readEntity(responseType);
    }
 
    @Override
@@ -312,12 +300,12 @@ public class InvocationBuilder implements Invocation.Builder
    @Override
    public <T> T method(String name, Entity<?> entity, Class<T> responseType) throws InvocationException
    {
-      return method(name, entity).getEntity(responseType);
+      return method(name, entity).readEntity(responseType);
    }
 
    @Override
    public <T> T method(String name, Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
    {
-      return method(name, entity).getEntity(responseType);
+      return method(name, entity).readEntity(responseType);
    }
 }

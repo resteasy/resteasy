@@ -262,15 +262,15 @@ public abstract class ClientResponse extends Response
    }
 
    @Override
-   public <T> T getEntity(Class<T> type) throws MessageProcessingException
+   public <T> T readEntity(Class<T> type) throws MessageProcessingException
    {
-      return getEntity(type, null, null);
+      return readEntity(type, null, null);
    }
 
    @Override
-   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
-      return getEntity(entityType.getRawType(), entityType.getType(), null);
+      return readEntity(entityType.getRawType(), entityType.getType(), null);
    }
 
 
@@ -312,7 +312,7 @@ public abstract class ClientResponse extends Response
    }
 
 
-   public <T2> T2 getEntity(Class<T2> type, Type genericType, Annotation[] anns)
+   public <T2> T2 readEntity(Class<T2> type, Type genericType, Annotation[] anns)
    {
       if (entity != null && !type.isInstance(this.entity))
          throw new RuntimeException("The entity was already read, and it was of type "

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,17 +40,16 @@
 package javax.ws.rs.ext;
 
 import java.io.IOException;
-import javax.ws.rs.ext.FilterContext.FilterAction;
 
 /**
- * <p>Interface implemented by filters invoked at the <emph>Post</emph> 
- * extension point. Filters implementing this interface MUST be 
+ * <p>Interface implemented by filters invoked at the <emph>Post</emph>
+ * extension point. Filters implementing this interface MUST be
  * annotated with {@link javax.ws.rs.ext.Provider}.</p>
- * 
- * <p>As part of the client API, these filters are executed after the 
+ *
+ * <p>As part of the client API, these filters are executed after the
  * HTTP invocation returns. As part of the server API, these filters are
  * executed after the resource method returns.</p>
- * 
+ *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
@@ -60,15 +59,12 @@ public interface ResponseFilter {
     /**
      * Filter method called at the <emph>Post</emph> extension point.
      * I.e., after the invocation returns in the client API and after the
-     * resource method returns in the server API. This method
-     * can return {@link javax.ws.rs.ext.FilterContext.FilterAction#NEXT}
-     * to continue the execution of the filter chain, or 
-     * {@link javax.ws.rs.ext.FilterContext.FilterAction#STOP} to 
-     * abort the execution of the filter chain. 
+     * resource method returns in the server API. Filters in a chain are
+     * ordered according to their binding priority (see
+     * {@link javax.ws.rs.BindingPriority}).
      *
      * @param context invocation context
-     * @return filter action to continue or stop filter chain
-     * @throws IOException 
+     * @throws IOException if an I/O exception occurs
      */
-    FilterAction postFilter(FilterContext context) throws IOException;
+    void postFilter(FilterContext context) throws IOException;
 }

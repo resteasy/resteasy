@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.impl;
 
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -8,6 +9,7 @@ import org.jboss.resteasy.util.DateUtil;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.RequestHeaders;
@@ -231,6 +233,29 @@ public class ClientRequestHeaders implements RequestHeaders
 
    }
 
+   @Override
+   public Set<Link> getLinks()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean hasLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Link getLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Link.Builder getLinkBuilder(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
 
    @Override
    public Date getDate()
