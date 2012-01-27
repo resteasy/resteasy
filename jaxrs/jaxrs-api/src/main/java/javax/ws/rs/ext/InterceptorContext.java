@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,15 +64,32 @@ import javax.ws.rs.core.MediaType;
 public interface InterceptorContext<T> {
 
     /**
-     * Get a mutable map of properties that can be used for
-     * communication between message body interceptors. In
-     * the Client API, this property map is initialized by calling
-     * {@link javax.ws.rs.client.Configuration#getProperties()} on
-     * the configuration object associated with the corresponding
-     * {@link javax.ws.rs.client.Invocation}.
-     * Otherwise, it is initialized to the empty map.
+     * Get a mutable map of request-scoped properties that can be used for communication
+     * between different request/response processing components. May be empty, but
+     * MUST never be {@code null}. In the scope of a single request/response processing,
+     * a same property map instance is shared by the following methods:
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Request#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.core.Response#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.ext.FilterContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
+     * </ul>
+     * A request-scoped property is an application-defined property that may be
+     * added, removed or modified by any of the components (user, filter, interceptor etc.)
+     * that participate in a given request/response processing flow.
+     * <p />
+     * On the client side, this property map is initialized by calling
+     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
+     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
+     * on the configuration object associated with the corresponding
+     * {@link javax.ws.rs.client.Invocation request invocation}.
+     * <p />
+     * On the server side, specifying the initial values is implementation-specific.
+     * <p />
+     * If there are no initial properties set, the request-scoped property map is
+     * initialized to an empty map.
      *
-     * @return a mutable property map
+     * @return a mutable request-scoped property map.
      * @see javax.ws.rs.client.Configuration
      */
     Map<String, Object> getProperties();

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,9 +47,9 @@ import javax.ws.rs.WebApplicationException;
  * to {@link javax.ws.rs.ext.MessageBodyReader#readFrom}. Message body
  * interceptors implementing this interface MUST be annotated with
  * {@link javax.ws.rs.ext.Provider}.
- * 
+ *
  * @param <T> Java type supported by corresponding message body reader
- * 
+ *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
@@ -61,7 +61,7 @@ public interface ReaderInterceptor<T> {
      * Interceptor method wrapping calls to
      * {@link javax.ws.rs.ext.MessageBodyReader#readFrom}. The parameters
      * of the wrapped method called are available from <code>context</code>.
-     * Implementations of this method SHOULD explicitly call 
+     * Implementations of this method SHOULD explicitly call
      * {@link javax.ws.rs.ext.ReaderInterceptorContext#proceed} to invoke
      * the next interceptor in the chain, and ultimately the wrapped method.
      *

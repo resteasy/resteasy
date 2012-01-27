@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,8 +45,8 @@ import java.lang.reflect.Method;
  * A filter or interceptor that implements this interface supports
  * dynamic binding. Dynamic binding is supported only as part of
  * the server API. Regardless of whether a filter or interceptor
- * is bound globally or bound via an annotation derived from 
- * {@link javax.ws.rs.NameBinding}, this interface will be used to 
+ * is bound globally or bound via an annotation derived from
+ * {@link javax.ws.rs.NameBinding}, this interface will be used to
  * determine if it applies to a particular resource class and method.
  *
  * @author Santiago Pericas-Geertsen
@@ -57,7 +57,7 @@ import java.lang.reflect.Method;
 public interface DynamicBinding {
 
     /**
-     * Determine if this filter or interceptor applies to a particular 
+     * Determine if this filter or interceptor applies to a particular
      * resource class and method.
      *
      * @param type resource class

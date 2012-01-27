@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -166,14 +167,14 @@ public class ClientInvocation implements Invocation, Request
    public <T> T invoke(Class<T> responseType) throws InvocationException
    {
       Response response = httpEngine.invoke(this);
-      return response.getEntity(responseType);
+      return response.readEntity(responseType);
    }
 
    @Override
    public <T> T invoke(TypeLiteral<T> responseType) throws InvocationException
    {
       Response response = httpEngine.invoke(this);
-      return response.getEntity(responseType);
+      return response.readEntity(responseType);
    }
 
    @Override
@@ -219,14 +220,14 @@ public class ClientInvocation implements Invocation, Request
          public T get() throws InterruptedException, ExecutionException
          {
             Response response = future.get();
-            return response.getEntity(type);
+            return response.readEntity(type);
          }
 
          @Override
          public T get(long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException
          {
             Response response = future.get(l, timeUnit);
-            return response.getEntity(type);
+            return response.readEntity(type);
          }
       };
    }
@@ -266,7 +267,7 @@ public class ClientInvocation implements Invocation, Request
          Response response = future.get();
          try
          {
-            return response.getEntity(type);
+            return response.readEntity(type);
          }
          catch (MessageProcessingException e)
          {
@@ -280,7 +281,7 @@ public class ClientInvocation implements Invocation, Request
          Response response = future.get(l, timeUnit);
          try
          {
-            return response.getEntity(type);
+            return response.readEntity(type);
          }
          catch (MessageProcessingException e)
          {
@@ -310,6 +311,8 @@ public class ClientInvocation implements Invocation, Request
          if (type == null) type = Response.class;
       }
 
+      final InvocationCallback<T> cb = callback;
+
       if (type.equals(Response.class))
       {
          Future<Response> future = executor.submit(new Callable<Response>()
@@ -317,7 +320,17 @@ public class ClientInvocation implements Invocation, Request
             @Override
             public Response call() throws Exception
             {
-               return httpEngine.invoke(ClientInvocation.this);
+               try
+               {
+                  Response res = httpEngine.invoke(ClientInvocation.this);
+                  cb.completed((T)res);
+                  return res;
+               }
+               catch (InvocationException e)
+               {
+                  cb.failed(e);
+               }
+               return null;
             }
          });
          return (Future<T>)future;
@@ -332,8 +345,22 @@ public class ClientInvocation implements Invocation, Request
             @Override
             public T call() throws Exception
             {
-               Response response = httpEngine.invoke(ClientInvocation.this);
-               return response.getEntity(theType);
+               try
+               {
+                  Response response = httpEngine.invoke(ClientInvocation.this);
+                  T obj = response.readEntity((TypeLiteral<T>)TypeLiteral.of(theType, theGenericType));
+                  cb.completed(obj);
+                  return obj;
+               }
+               catch (InvocationException e)
+               {
+                  cb.failed(e);
+               }
+               catch (MessageProcessingException e)
+               {
+                  cb.failed(new InvocationException("MPE", e));
+               }
+               return null;
             }
          });
          return future;
@@ -341,6 +368,13 @@ public class ClientInvocation implements Invocation, Request
    }
 
    // Request required methods
+
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      return null;
+   }
 
    @Override
    public Configuration configuration()
@@ -380,14 +414,16 @@ public class ClientInvocation implements Invocation, Request
    }
 
    @Override
-   public <T> T getEntity(Class<T> type) throws MessageProcessingException
+   public <T> T readEntity(Class<T> type) throws MessageProcessingException
    {
+      if (entity == null) return null;
       return (T) entity.getEntity();
    }
 
    @Override
-   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
+      if (entity == null) return null;
       return (T) entity.getEntity();
    }
 
