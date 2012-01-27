@@ -26,7 +26,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class InvocationTest extends BaseResourceTest
+public class SyncInvokeTest extends BaseResourceTest
 {
 
    @java.lang.annotation.Target({ElementType.METHOD})
@@ -90,7 +90,7 @@ public class InvocationTest extends BaseResourceTest
       {
          Response res = client.target(generateURL("/test")).request().get();
          Assert.assertEquals(200, res.getStatus());
-         String entity = res.getEntity(String.class);
+         String entity = res.readEntity(String.class);
          Assert.assertEquals("get", entity);
 
       }
@@ -104,7 +104,7 @@ public class InvocationTest extends BaseResourceTest
       {
          Response res = client.target(generateURL("/test")).request().delete();
          Assert.assertEquals(200, res.getStatus());
-         String entity = res.getEntity(String.class);
+         String entity = res.readEntity(String.class);
          Assert.assertEquals("delete", entity);
 
       }
@@ -117,7 +117,7 @@ public class InvocationTest extends BaseResourceTest
       {
           Response res = client.target(generateURL("/test")).request().put(Entity.text("hello"));
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.getEntity(String.class);
+          String entity = res.readEntity(String.class);
           Assert.assertEquals("put hello", entity);
 
        }
@@ -130,7 +130,7 @@ public class InvocationTest extends BaseResourceTest
       {
           Response res = client.target(generateURL("/test")).request().post(Entity.text("hello"));
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.getEntity(String.class);
+          String entity = res.readEntity(String.class);
           Assert.assertEquals("post hello", entity);
 
        }
@@ -143,7 +143,7 @@ public class InvocationTest extends BaseResourceTest
       {
           Response res = client.target(generateURL("/test")).request().method("PATCH", Entity.text("hello"));
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.getEntity(String.class);
+          String entity = res.readEntity(String.class);
           Assert.assertEquals("patch hello", entity);
 
        }
@@ -162,7 +162,7 @@ public class InvocationTest extends BaseResourceTest
       {
          Response res = client.target(generateURL("/test")).request().buildGet().invoke();
          Assert.assertEquals(200, res.getStatus());
-         String entity = res.getEntity(String.class);
+         String entity = res.readEntity(String.class);
          Assert.assertEquals("get", entity);
 
       }
@@ -176,7 +176,7 @@ public class InvocationTest extends BaseResourceTest
       {
          Response res = client.target(generateURL("/test")).request().buildDelete().invoke();
          Assert.assertEquals(200, res.getStatus());
-         String entity = res.getEntity(String.class);
+         String entity = res.readEntity(String.class);
          Assert.assertEquals("delete", entity);
 
       }
@@ -189,7 +189,7 @@ public class InvocationTest extends BaseResourceTest
       {
           Response res = client.target(generateURL("/test")).request().buildPut(Entity.text("hello")).invoke();
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.getEntity(String.class);
+          String entity = res.readEntity(String.class);
           Assert.assertEquals("put hello", entity);
 
        }
@@ -202,7 +202,7 @@ public class InvocationTest extends BaseResourceTest
       {
           Response res = client.target(generateURL("/test")).request().buildPost(Entity.text("hello")).invoke();
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.getEntity(String.class);
+          String entity = res.readEntity(String.class);
           Assert.assertEquals("post hello", entity);
 
        }
@@ -215,7 +215,7 @@ public class InvocationTest extends BaseResourceTest
       {
           Response res = client.target(generateURL("/test")).request().build("PATCH", Entity.text("hello")).invoke();
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.getEntity(String.class);
+          String entity = res.readEntity(String.class);
           Assert.assertEquals("patch hello", entity);
 
        }

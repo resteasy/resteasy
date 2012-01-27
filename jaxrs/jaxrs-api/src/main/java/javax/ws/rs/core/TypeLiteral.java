@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -71,8 +71,50 @@ public abstract class TypeLiteral<T> {
      * The actual raw parameter type.
      */
     private transient Class<T> rawType;
+    /**
+     * The types of the generic type parameters (if any).
+     */
+    private transient Type[] parameterTypes;
 
+
+    /**
+     * Construct a type literal instance with programmatically set values of type
+     * and raw type.
+     *
+     * @param <T> Java type.
+     *
+     * @param rawType raw parameter type.
+     * @param type parameter type (possibly generic).
+     * @return programmatically constructed type literal instance.
+     */
+    public static <T> TypeLiteral<T> of(final Class<?> rawType, final Type type) {
+        return new TypeLiteral<T>() {
+
+            @Override
+            @SuppressWarnings("unchecked")
+            Class<T> _rawType() {
+                return (Class<T>) rawType;
+            }
+
+            @Override
+            Type _type() {
+                return type;
+            }
+        };
+    }
+
+    /**
+     * Protected constructor for a type literal of a concrete Java type.
+     */
     protected TypeLiteral() {
+    }
+
+    /*package*/ Type _type() {
+        return type;
+    }
+
+    /*package*/ Class<T> _rawType() {
+        return rawType;
     }
 
     /**
@@ -82,13 +124,16 @@ public abstract class TypeLiteral<T> {
      */
     public final Type getType() {
         if (type == null) {
-            // Get the class that directly extends TypeLiteral<?>
-            Class<?> typeLiteralSubclass = getTypeLiteralSubclass(this.getClass());
-
-            // Get the type parameter of TypeLiteral<T> (aka the T value)
-            type = getTypeParameter(typeLiteralSubclass);
+            type = _type();
             if (type == null) {
-                throw new RuntimeException(getClass() + " does not specify the type parameter T of TypeLiteral<T>");
+                // Get the class that directly extends TypeLiteral<?>
+                Class<?> typeLiteralSubclass = getTypeLiteralSubclass(this.getClass());
+
+                // Get the type parameter of TypeLiteral<T> (aka the T value)
+                type = getTypeParameter(typeLiteralSubclass);
+                if (type == null) {
+                    throw new RuntimeException(getClass() + " does not specify the type parameter T of TypeLiteral<T>");
+                }
             }
         }
         return type;
@@ -110,12 +155,15 @@ public abstract class TypeLiteral<T> {
      *     be instantiated for any reason.
      */
     public final Type[] getParameterTypes() {
-        type = getType();
-        if (type instanceof ParameterizedType) {
-            return ((ParameterizedType) type).getActualTypeArguments();
-        } else {
-            return new Type[0];
+        if (parameterTypes == null) {
+            Type t = getType();
+            if (t instanceof ParameterizedType) {
+                parameterTypes = ((ParameterizedType) t).getActualTypeArguments();
+            } else {
+                parameterTypes = new Type[0];
+            }
         }
+        return parameterTypes;
     }
 
     /**

@@ -150,21 +150,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> head(Class<T> responseType) throws InvocationException
-   {
-      invocation.setMethod(HttpMethod.HEAD);
-      return invocation.submit(responseType);
-   }
-
-   @Override
-   public <T> Future<T> head(TypeLiteral<T> responseType) throws InvocationException
-   {
-      invocation.setMethod(HttpMethod.HEAD);
-      return invocation.submit(responseType);
-   }
-
-   @Override
-   public <T> Future<T> head(InvocationCallback<T> callback)
+   public Future<Response> head(InvocationCallback<Response> callback)
    {
       invocation.setMethod(HttpMethod.HEAD);
       return invocation.submit(callback);

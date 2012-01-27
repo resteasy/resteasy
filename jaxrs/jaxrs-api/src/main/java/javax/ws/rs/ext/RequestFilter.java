@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,19 +40,18 @@
 package javax.ws.rs.ext;
 
 import java.io.IOException;
-import javax.ws.rs.ext.FilterContext.FilterAction;
 
 /**
- * <p>Interface implemented by filters invoked at the <emph>Pre</emph> 
- * extension point. Filters implementing this interface MUST be 
+ * <p>Interface implemented by filters invoked at the <emph>Pre</emph>
+ * extension point. Filters implementing this interface MUST be
  * annotated with {@link javax.ws.rs.ext.Provider}.</p>
- * 
- * <p>As part of the client API, these filters are executed before 
+ *
+ * <p>As part of the client API, these filters are executed before
  * the HTTP invocation. As part of the server API, these filters are
  * executed before the resource method is called but after it has been
  * matched. If processing is required before resource matching,
  * a {@link PreMatchRequestFilter} should be used instead.</p>
- * 
+ *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
@@ -61,19 +60,23 @@ import javax.ws.rs.ext.FilterContext.FilterAction;
 public interface RequestFilter {
 
     /**
-     * Filter method called at the <emph>Pre</emph> extension point. 
+     * <p>Filter method called at the <emph>Pre</emph> extension point.
      * I.e., before the HTTP invocation in the client and before the
      * resource method invocation (but after resource matching) in the
-     * server. This method can return
-     * {@link javax.ws.rs.ext.FilterContext.FilterAction#NEXT}
-     * to continue the execution of the filter chain, or 
-     * {@link javax.ws.rs.ext.FilterContext.FilterAction#STOP} to 
-     * abort the execution of the filter chain (e.g., a caching filter
-     * may want to stop execution upon a cache hit). 
+     * server.</p>
+     *
+     * <p>Filters in a chain are ordered according to their binding
+     * priority (see {@link javax.ws.rs.BindingPriority}). If a request filter
+     * produces a response by calling {@link FilterContext#setResponse},
+     * the execution of the request chain is stopped and the response is
+     * returned without calling the corresponding resource method
+     * (Server API) or HTTP invocation (Client API). For example, a
+     * caching filter may produce a response in this way. Note that
+     * responses produced in this manner are still processed by
+     * the response filter chain.</p>
      *
      * @param context invocation context
-     * @return filter action to continue or stop filter chain
-     * @throws IOException 
+     * @throws IOException if an I/O exception occurs
      */
-    FilterAction preFilter(FilterContext context) throws IOException;
+    void preFilter(FilterContext context) throws IOException;
 }

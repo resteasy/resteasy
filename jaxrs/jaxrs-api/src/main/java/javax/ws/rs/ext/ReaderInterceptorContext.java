@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,11 +46,11 @@ import javax.ws.rs.core.MultivaluedMap;
 /**
  * Context class used by {@link javax.ws.rs.ext.ReaderInterceptor}
  * to intercept calls to (@link javax.ws.rs.ext.MessageBodyReader#readFrom}.
- * The getters and setters in this context class correspond to the 
+ * The getters and setters in this context class correspond to the
  * parameters of the intercepted method.
- * 
+ *
  * @param <T> Java type supported by corresponding message body reader
- * 
+ *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
@@ -60,12 +60,12 @@ import javax.ws.rs.core.MultivaluedMap;
 public interface ReaderInterceptorContext<T> extends InterceptorContext<T> {
 
     /**
-     * Proceed to the next interceptor in the chain. Return the result of the 
+     * Proceed to the next interceptor in the chain. Return the result of the
      * next interceptor invoked. Interceptors MUST explicitly call this method
-     * to continue the execution chain; the call to this method in the 
+     * to continue the execution chain; the call to this method in the
      * last interceptor of the chain will invoke
      * {@link javax.ws.rs.ext.MessageBodyReader#readFrom}.
-     * 
+     *
      * @return result of next interceptor invoked
      * @throws IOException if an IO error arises
      */
@@ -73,7 +73,7 @@ public interface ReaderInterceptorContext<T> extends InterceptorContext<T> {
 
     /**
      * Get the input stream of the object to be read.
-     * 
+     *
      * @return input stream of the object to be read
      */
     InputStream getInputStream();
@@ -81,8 +81,8 @@ public interface ReaderInterceptorContext<T> extends InterceptorContext<T> {
     /**
      * Update the input stream of the object to be read.
      * For example, by wrapping it with another input stream
-     * 
-     * @param is new input stream 
+     *
+     * @param is new input stream
      */
     void setInputStream(InputStream is);
 
