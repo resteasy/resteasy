@@ -3,11 +3,13 @@
  */
 package org.jboss.resteasy.client.core.extractors;
 
-import org.jboss.resteasy.client.core.BaseClientResponse;
-
-import javax.ws.rs.ext.MessageBodyReader;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+
+import javax.ws.rs.ext.MessageBodyReader;
+
+import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.client.core.BaseClientResponse;
 
 /**
  * BodyEntityExtractor extract body objects from responses. This ends up calling
@@ -34,6 +36,12 @@ public class BodyEntityExtractor implements EntityExtractor
       try
       {
          response.checkFailureStatus();
+      }
+      catch (ClientResponseFailure ce)
+      {
+         // If ClientResponseFailure do a copy of the response and then release the connection,
+         // we need to use the copy here and not the original response
+         context.getErrorHandler().clientErrorHandling((BaseClientResponse) ce.getResponse(), ce);
       }
       catch (RuntimeException e)
       {
