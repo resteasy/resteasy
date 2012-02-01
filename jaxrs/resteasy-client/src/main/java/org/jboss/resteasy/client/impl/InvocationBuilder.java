@@ -32,9 +32,9 @@ public class InvocationBuilder implements Invocation.Builder
    protected ResteasyProviderFactory providerFactory;
    protected ClientHttpEngine httpEngine;
    protected ExecutorService executor;
-   protected Configuration configuration;
+   protected ClientConfiguration configuration;
 
-   public InvocationBuilder(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, Configuration configuration)
+   public InvocationBuilder(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
    {
       this.uri = uri;
       this.providerFactory = providerFactory;

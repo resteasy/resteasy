@@ -22,7 +22,7 @@ public class ResteasyClient implements Client
    protected volatile ResteasyProviderFactory providerFactory;
    protected volatile ClientHttpEngine httpEngine;
    protected volatile ExecutorService executor;
-   protected Configuration configuration;
+   protected ClientConfiguration configuration = new ClientConfiguration();
 
    public ResteasyProviderFactory getProviderFactory()
    {
