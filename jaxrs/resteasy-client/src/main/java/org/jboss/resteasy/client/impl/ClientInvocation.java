@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.impl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -24,6 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -45,11 +47,12 @@ public class ClientInvocation implements Invocation, Request
    protected String method;
    protected Entity entity;
    protected Annotation[] entityAnnotations;
-   protected Configuration configuration;
+   protected ClientConfiguration configuration;
    protected URI uri;
    protected ResteasyProviderFactory providerFactory;
+   protected Map<String, Object> properties = new HashMap<String, Object>();
 
-   public ClientInvocation(URI uri, ClientRequestHeaders headers, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, Configuration configuration)
+   public ClientInvocation(URI uri, ClientRequestHeaders headers, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
    {
       this.uri = uri;
       this.providerFactory = providerFactory;
@@ -57,6 +60,7 @@ public class ClientInvocation implements Invocation, Request
       this.executor = executor;
       this.configuration = configuration;
       this.headers = headers;
+      this.properties.putAll(configuration.getProperties());
    }
 
    public ClientInvocation clone()
@@ -97,21 +101,6 @@ public class ClientInvocation implements Invocation, Request
       headers.setLanguage(v.getLanguage());
       headers.header("Content-Encoding", v.getEncoding());
 
-   }
-
-   public void setConfiguration(Configuration configuration)
-   {
-      this.configuration = configuration;
-   }
-
-   public void setUri(URI uri)
-   {
-      this.uri = uri;
-   }
-
-   public void setEntityAnnotations(Annotation[] entityAnnotations)
-   {
-      this.entityAnnotations = entityAnnotations;
    }
 
    public ResteasyProviderFactory getProviderFactory()
@@ -160,20 +149,22 @@ public class ClientInvocation implements Invocation, Request
    @Override
    public Response invoke() throws InvocationException
    {
-      return httpEngine.invoke(this);
+      ClientResponse response = httpEngine.invoke(this);
+      response.setProperties(properties);
+      return response;
    }
 
    @Override
    public <T> T invoke(Class<T> responseType) throws InvocationException
    {
-      Response response = httpEngine.invoke(this);
+      Response response = invoke();
       return response.readEntity(responseType);
    }
 
    @Override
    public <T> T invoke(TypeLiteral<T> responseType) throws InvocationException
    {
-      Response response = httpEngine.invoke(this);
+      Response response = invoke();
       return response.readEntity(responseType);
    }
 
@@ -185,7 +176,9 @@ public class ClientInvocation implements Invocation, Request
          @Override
          public Response call() throws Exception
          {
-            return httpEngine.invoke(ClientInvocation.this);
+            ClientResponse response = httpEngine.invoke(ClientInvocation.this);
+            response.setProperties(properties);
+            return response;
          }
       });
    }
@@ -322,7 +315,8 @@ public class ClientInvocation implements Invocation, Request
             {
                try
                {
-                  Response res = httpEngine.invoke(ClientInvocation.this);
+                  ClientResponse res = httpEngine.invoke(ClientInvocation.this);
+                  res.setProperties(properties);
                   cb.completed((T)res);
                   return res;
                }
@@ -347,8 +341,9 @@ public class ClientInvocation implements Invocation, Request
             {
                try
                {
-                  Response response = httpEngine.invoke(ClientInvocation.this);
-                  T obj = response.readEntity((TypeLiteral<T>)TypeLiteral.of(theType, theGenericType));
+                  ClientResponse response = httpEngine.invoke(ClientInvocation.this);
+                  response.setProperties(properties);
+                  T obj = response.readEntity((TypeLiteral<T>) TypeLiteral.of(theType, theGenericType));
                   cb.completed(obj);
                   return obj;
                }
@@ -373,7 +368,7 @@ public class ClientInvocation implements Invocation, Request
    @Override
    public Map<String, Object> getProperties()
    {
-      return null;
+      return properties;
    }
 
    @Override

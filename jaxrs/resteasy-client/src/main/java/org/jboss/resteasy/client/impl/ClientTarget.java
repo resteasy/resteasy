@@ -25,30 +25,30 @@ public class ClientTarget implements Target
    protected ResteasyProviderFactory providerFactory;
    protected ClientHttpEngine httpEngine;
    protected ExecutorService executor;
-   protected Configuration configuration;
+   protected ClientConfiguration configuration;
    protected Map<String, Object> pathParams = new HashMap<String, Object>();
 
-   protected ClientTarget(ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, Configuration configuration)
+   protected ClientTarget(ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
    {
       this.providerFactory = providerFactory;
       this.httpEngine = httpEngine;
       this.executor = executor;
-      this.configuration = configuration;
+      this.configuration = new ClientConfiguration(configuration);
    }
 
-   public ClientTarget(String uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, Configuration configuration) throws IllegalArgumentException, NullPointerException
+   public ClientTarget(String uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration) throws IllegalArgumentException, NullPointerException
    {
       this(providerFactory, httpEngine, executor, configuration);
       uriBuilder = UriBuilder.fromUri(uri);
    }
 
-   public ClientTarget(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, Configuration configuration) throws NullPointerException
+   public ClientTarget(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration) throws NullPointerException
    {
       this(providerFactory, httpEngine, executor, configuration);
       uriBuilder = UriBuilder.fromUri(uri);
    }
 
-   public ClientTarget(UriBuilder uriBuilder, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, Configuration configuration) throws NullPointerException
+   public ClientTarget(UriBuilder uriBuilder, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration) throws NullPointerException
    {
       this(providerFactory, httpEngine, executor, configuration);
       this.uriBuilder = uriBuilder.clone();
