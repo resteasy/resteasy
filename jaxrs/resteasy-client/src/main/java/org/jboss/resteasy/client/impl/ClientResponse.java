@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.impl;
 
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.spi.MarshalledEntity;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
@@ -225,31 +226,31 @@ public abstract class ClientResponse extends Response
          @Override
          public URI getLocation()
          {
-            return null;
+            throw new NotImplementedYetException();
          }
 
          @Override
          public Set<Link> getLinks()
          {
-            return null;
+            throw new NotImplementedYetException();
          }
 
          @Override
          public Link getLink(String relation)
          {
-            return null;
+            throw new NotImplementedYetException();
          }
 
          @Override
          public boolean hasLink(String relation)
          {
-            return false;
+            throw new NotImplementedYetException();
          }
 
          @Override
          public Link.Builder getLinkBuilder(String relation)
          {
-            return null;
+            throw new NotImplementedYetException();
          }
       };
    }

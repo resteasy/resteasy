@@ -209,7 +209,7 @@ public class HttpServletInputMessage implements HttpRequest
          {
             try
             {
-               setupResponse((ServerResponse) response);
+               setupResponse(ServerResponse.convertToServerResponse(response));
                dispatcher.asynchronousDelivery(HttpServletInputMessage.this, httpResponse, response);
             }
             finally

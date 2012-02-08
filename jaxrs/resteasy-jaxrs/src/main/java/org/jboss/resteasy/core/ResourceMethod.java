@@ -258,7 +258,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
       catch (WebApplicationException wae)
       {
-         prepareResponse(ServerResponse.copyIfNotServerResponse(wae.getResponse()));
+         prepareResponse(ServerResponse.convertToServerResponse(wae.getResponse()));
          throw wae;
       }
 
@@ -277,7 +277,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
-         return prepareResponse(ServerResponse.copyIfNotServerResponse((Response) rtn));
+         return prepareResponse(ServerResponse.convertToServerResponse((Response) rtn));
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);

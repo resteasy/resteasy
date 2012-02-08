@@ -58,7 +58,7 @@ public class ServerResponse extends Response
    {
    }
 
-   public static ServerResponse copyIfNotServerResponse(Response response)
+   public static ServerResponse convertToServerResponse(Response response)
    {
       if (response instanceof ServerResponse) return (ServerResponse) response;
       ServerResponse serverResponse = new ServerResponse();

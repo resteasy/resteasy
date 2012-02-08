@@ -45,7 +45,7 @@ public class ClientInvocation implements Invocation, Request
    protected ExecutorService executor;
    protected ClientRequestHeaders headers;
    protected String method;
-   protected Entity entity;
+   protected Object entity;
    protected Annotation[] entityAnnotations;
    protected ClientConfiguration configuration;
    protected URI uri;
@@ -95,7 +95,7 @@ public class ClientInvocation implements Invocation, Request
 
    public void setEntity(Entity entity)
    {
-      this.entity = entity;
+      this.entity = entity.getEntity();
       Variant v = entity.getVariant();
       headers.setMediaType(v.getMediaType());
       headers.setLanguage(v.getLanguage());
@@ -120,7 +120,7 @@ public class ClientInvocation implements Invocation, Request
          return;
       }
 
-      Object obj = entity.getEntity();
+      Object obj = entity;
       Class type = obj.getClass();
       Type genericType = null;
 
@@ -140,7 +140,7 @@ public class ClientInvocation implements Invocation, Request
                  + this.getHeaders().getMediaType() + " type: " + type.getName());
       }
       // todo handle writer interceptors
-      writer.writeTo(entity.getEntity(), type, genericType, entityAnnotations, entity.getMediaType(), headers.getHeaders(), outputStream);
+      writer.writeTo(entity, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
    }
 
 
@@ -405,21 +405,21 @@ public class ClientInvocation implements Invocation, Request
    public Object getEntity()
    {
       if (entity == null) return null;
-      return entity.getEntity();
+      return entity;
    }
 
    @Override
    public <T> T readEntity(Class<T> type) throws MessageProcessingException
    {
       if (entity == null) return null;
-      return (T) entity.getEntity();
+      return (T) entity;
    }
 
    @Override
    public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
       if (entity == null) return null;
-      return (T) entity.getEntity();
+      return (T) entity;
    }
 
    @Override
