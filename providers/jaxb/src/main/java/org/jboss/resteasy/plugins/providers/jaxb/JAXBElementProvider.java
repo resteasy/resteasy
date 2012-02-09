@@ -45,15 +45,6 @@ import java.lang.reflect.Type;
 @Consumes({"application/*+xml", "text/*+xml"})
 public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
 {
-   
-   public JAXBElementProvider(@Context ServletContext context)
-   {
-      super(context);
-   }
-   
-   public JAXBElementProvider()
-   {
-   }
 
    @Override
    protected boolean isReadWritable(Class<?> type,

@@ -8,6 +8,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.core.interception.DecoratorMatcher;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.TypeConverter;
 
 import javax.servlet.ServletContext;
@@ -41,18 +42,18 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    protected Providers providers;
    
    private boolean expandEntityReferences = true;
-   
-   public AbstractJAXBProvider(ServletContext context)
-   {
-      String s = context.getInitParameter("resteasy.document.expand.entity.references");
-      if (s != null)
-      {
-         setExpandEntityReferences(Boolean.parseBoolean(s));
-      }
-   }
 
    public AbstractJAXBProvider()
    {
+      ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+      if (context != null)
+      {
+         String s = context.getInitParameter("resteasy.document.expand.entity.references");
+         if (s != null)
+         {
+            setExpandEntityReferences(Boolean.parseBoolean(s));
+         }
+      }
    }
    
    public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType, boolean reader)

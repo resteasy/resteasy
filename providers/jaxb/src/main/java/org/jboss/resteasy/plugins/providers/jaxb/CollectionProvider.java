@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
 import org.w3c.dom.Element;
@@ -55,18 +56,17 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
    protected Providers providers;
    private boolean expandEntityReferences = true;
    
-   public CollectionProvider(@Context ServletContext context)
-   {
-      String s = context.getInitParameter("resteasy.document.expand.entity.references");
-      if (s != null)
-      {
-         setExpandEntityReferences(Boolean.parseBoolean(s));
-      }
-   }
-   
    public CollectionProvider()
    {
-      super();
+      ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+      if (context != null)
+      {
+         String s = context.getInitParameter("resteasy.document.expand.entity.references");
+         if (s != null)
+         {
+            setExpandEntityReferences(Boolean.parseBoolean(s));
+         }
+      }
    }
 
    protected JAXBContextFinder getFinder(MediaType type)

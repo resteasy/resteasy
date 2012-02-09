@@ -60,15 +60,6 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 {
 
    protected static final String OBJECT_FACTORY_NAME = ".ObjectFactory";
-
-   public JAXBXmlTypeProvider(@Context ServletContext context)
-   {
-      super(context);
-   }
-
-   public JAXBXmlTypeProvider()
-   {
-   }
    
    /**
     *

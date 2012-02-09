@@ -28,15 +28,6 @@ import java.lang.reflect.Type;
 public class JAXBXmlRootElementProvider extends AbstractJAXBProvider<Object>
 {
    
-   public JAXBXmlRootElementProvider(@Context ServletContext context)
-   {
-      super(context);
-   }
-
-   public JAXBXmlRootElementProvider()
-   {
-   }
-   
    @Override
    protected boolean isReadWritable(Class<?> type,
                                     Type genericType,

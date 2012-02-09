@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
 import org.w3c.dom.Attr;
@@ -52,18 +53,18 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
    @Context
    protected Providers providers;
    private boolean expandEntityReferences = true;
-
-   public MapProvider(@Context ServletContext context)
-   {
-      String s = context.getInitParameter("resteasy.document.expand.entity.references");
-      if (s != null)
-      {
-         setExpandEntityReferences(Boolean.parseBoolean(s));
-      }
-   }
    
    public MapProvider()
    {
+      ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+      if (context != null)
+      {
+         String s = context.getInitParameter("resteasy.document.expand.entity.references");
+         if (s != null)
+         {
+            setExpandEntityReferences(Boolean.parseBoolean(s));
+         }
+      }
    }
    
    protected JAXBContextFinder getFinder(MediaType type)
