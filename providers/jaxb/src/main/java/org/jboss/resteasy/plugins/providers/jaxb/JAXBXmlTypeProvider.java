@@ -6,8 +6,10 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.util.FindAnnotation;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -59,6 +61,15 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 
    protected static final String OBJECT_FACTORY_NAME = ".ObjectFactory";
 
+   public JAXBXmlTypeProvider(@Context ServletContext context)
+   {
+      super(context);
+   }
+
+   public JAXBXmlTypeProvider()
+   {
+   }
+   
    /**
     *
     */
@@ -82,6 +93,10 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       {
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+         if (!isExpandEntityReferences())
+         {
+            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+         }
          Object obj = unmarshaller.unmarshal(entityStream);
          if (obj instanceof JAXBElement)
          {
