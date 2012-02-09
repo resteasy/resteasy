@@ -40,7 +40,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    @Context
    protected Providers providers;
    
-   private boolean expandEntityReferences;
+   private boolean expandEntityReferences = true;
    
    public AbstractJAXBProvider(ServletContext context)
    {

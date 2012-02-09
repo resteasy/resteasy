@@ -152,6 +152,13 @@ public class TestXXE
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
 
+   public static void before() throws Exception
+   {
+      deployment = EmbeddedContainer.start();
+      dispatcher = deployment.getDispatcher();
+      deployment.getRegistry().addPerRequestResource(MovieResource.class);
+   }
+   
    public static void after() throws Exception
    {
       EmbeddedContainer.stop();
@@ -159,6 +166,28 @@ public class TestXXE
       deployment = null;
    }
 
+   @Test
+   public void testXmlRootElementDefault() throws Exception
+   {
+      before();
+      ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
+      String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
+      String str = "<?xml version=\"1.0\"?>\r" +
+                   "<!DOCTYPE foo\r" +
+                   "[<!ENTITY xxe SYSTEM \"" + filename + "\">\r" +
+                   "]>\r" + 
+                   "<favoriteMovieXmlRootElement><title>&xxe;</title></favoriteMovieXmlRootElement>";
+      
+      System.out.println(str);
+      request.body("application/xml", str);
+      ClientResponse<?> response = request.post();
+      Assert.assertEquals(200, response.getStatus());
+      String entity = response.getEntity(String.class);
+      System.out.println("Result: " + entity);
+      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
+      after();
+   }
+   
    @Test
    public void testXmlRootElementWithoutExpansion() throws Exception
    {
@@ -199,6 +228,28 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       System.out.println("result: " + entity);
+      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
+      after();
+   }
+
+   @Test
+   public void testXmlTypeDefault() throws Exception
+   {
+      before();
+      ClientRequest request = new ClientRequest(generateURL("/xmlType"));
+      String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
+      String str = "<?xml version=\"1.0\"?>\r" +
+                   "<!DOCTYPE foo\r" +
+                   "[<!ENTITY xxe SYSTEM \"" + filename + "\">\r" +
+                   "]>\r" + 
+                   "<favoriteMovie><title>&xxe;</title></favoriteMovie>";
+      
+      System.out.println(str);
+      request.body("application/xml", str);
+      ClientResponse<?> response = request.post();
+      Assert.assertEquals(200, response.getStatus());
+      String entity = response.getEntity(String.class);
+      System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
       after();
    }
@@ -248,6 +299,28 @@ public class TestXXE
    }
    
    @Test
+   public void testJAXBElementDefault() throws Exception
+   {
+      before();
+      ClientRequest request = new ClientRequest(generateURL("/JAXBElement"));
+      String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
+      String str = "<?xml version=\"1.0\"?>\r" +
+                   "<!DOCTYPE foo\r" +
+                   "[<!ENTITY xxe SYSTEM \"" + filename + "\">\r" +
+                   "]>\r" + 
+                   "<favoriteMovieXmlType><title>&xxe;</title></favoriteMovieXmlType>";
+      
+      System.out.println(str);
+      request.body("application/xml", str);
+      ClientResponse<?> response = request.post();
+      Assert.assertEquals(200, response.getStatus());
+      String entity = response.getEntity(String.class);
+      System.out.println("Result: " + entity);
+      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
+      after();
+   }
+   
+   @Test
    public void testJAXBElementWithoutExpansion() throws Exception
    {
       before("false");
@@ -292,6 +365,12 @@ public class TestXXE
    }
    
    @Test
+   public void testListDefault() throws Exception
+   {
+      doCollectionTest(null, "list");
+   }
+   
+   @Test
    public void testListWithoutExpansion() throws Exception
    {
       doCollectionTest(false, "list");
@@ -301,6 +380,12 @@ public class TestXXE
    public void testListWithExpansion() throws Exception
    {
       doCollectionTest(true, "list");
+   }
+   
+   @Test
+   public void testSetDefault() throws Exception
+   {
+      doCollectionTest(null, "set");
    }
    
    @Test
@@ -316,6 +401,12 @@ public class TestXXE
    }
    
    @Test
+   public void testArrayDefault() throws Exception
+   {
+      doCollectionTest(null, "array");
+   }
+   
+   @Test
    public void testArrayWithoutExpansion() throws Exception
    {
       doCollectionTest(false, "array");
@@ -328,20 +419,34 @@ public class TestXXE
    }
 
    @Test
-   public void testMapWithExpansion() throws Exception
+   public void testMapDefault() throws Exception
    {
-      doMapTest(true);
+      doMapTest(null);
    }
-
+   
    @Test
    public void testMapWithoutExpansion() throws Exception
    {
       doMapTest(false);
    }
    
-   void doCollectionTest(boolean expand, String path) throws Exception
+   @Test
+   public void testMapWithExpansion() throws Exception
    {
-      before(Boolean.toString(expand));
+      doMapTest(true);
+   }
+   
+   void doCollectionTest(Boolean expand, String path) throws Exception
+   {
+      if (expand == null)
+      {
+         before();
+         expand = true;
+      }
+      else
+      {
+         before(Boolean.toString(expand));
+      }
       ClientRequest request = new ClientRequest(generateURL("/" + path));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -370,9 +475,17 @@ public class TestXXE
       after();
    }
    
-   void doMapTest(boolean expand) throws Exception
+   void doMapTest(Boolean expand) throws Exception
    {
-      before(Boolean.toString(expand));
+      if (expand == null)
+      {
+         before();
+         expand = true;
+      }
+      else
+      {
+         before(Boolean.toString(expand));  
+      }
       ClientRequest request = new ClientRequest(generateURL("/map"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +

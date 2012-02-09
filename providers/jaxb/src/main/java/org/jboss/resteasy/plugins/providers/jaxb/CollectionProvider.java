@@ -53,7 +53,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 {
    @Context
    protected Providers providers;
-   private boolean expandEntityReferences;
+   private boolean expandEntityReferences = true;
    
    public CollectionProvider(@Context ServletContext context)
    {
