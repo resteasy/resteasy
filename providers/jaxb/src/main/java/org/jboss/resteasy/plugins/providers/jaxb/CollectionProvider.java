@@ -63,6 +63,11 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          setExpandEntityReferences(Boolean.parseBoolean(s));
       }
    }
+   
+   public CollectionProvider()
+   {
+      super();
+   }
 
    protected JAXBContextFinder getFinder(MediaType type)
    {

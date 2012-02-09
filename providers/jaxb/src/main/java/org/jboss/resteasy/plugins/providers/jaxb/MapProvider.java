@@ -62,6 +62,10 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       }
    }
    
+   public MapProvider()
+   {
+   }
+   
    protected JAXBContextFinder getFinder(MediaType type)
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, type);
