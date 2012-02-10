@@ -10,6 +10,7 @@ import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.filter.Interceptors;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
@@ -164,6 +165,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected static volatile ResteasyProviderFactory instance;
 
    public static boolean registerBuiltinByDefault = true;
+
+   protected Interceptors serverInterceptors = new Interceptors(this);
+   protected Interceptors clientInterceptors = new Interceptors(this);
 
    protected InterceptorRegistry<MessageBodyReaderInterceptor> serverMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
    protected InterceptorRegistry<MessageBodyWriterInterceptor> serverMessageBodyWriterInterceptorRegistry = new InterceptorRegistry<MessageBodyWriterInterceptor>(MessageBodyWriterInterceptor.class, this);

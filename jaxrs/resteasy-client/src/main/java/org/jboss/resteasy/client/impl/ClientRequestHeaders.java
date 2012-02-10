@@ -2,7 +2,6 @@ package org.jboss.resteasy.client.impl;
 
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 
@@ -13,7 +12,6 @@ import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.RequestHeaders;
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,6 +59,11 @@ public class ClientRequestHeaders implements RequestHeaders
    {
       header("Language", language);
       this.language = language;
+   }
+
+   public void setLanguage(String language)
+   {
+      setLanguage(new Locale(language));
    }
 
    public void setMediaType(MediaType mediaType)
@@ -165,41 +168,12 @@ public class ClientRequestHeaders implements RequestHeaders
 
    public void allow(String... methods)
    {
-      StringBuilder builder = new StringBuilder();
-      boolean isFirst = true;
-      for (String l : methods)
-      {
-         if (isFirst)
-         {
-            isFirst = false;
-         }
-         else
-         {
-            builder.append(", ");
-         }
-         builder.append(l);
-      }
-      headers.putSingle("Allow", builder.toString());
-
+      HeaderHelper.setAllow(this.headers, methods);
    }
 
    public void allow(Set<String> methods)
    {
-      StringBuilder builder = new StringBuilder();
-      boolean isFirst = true;
-      for (String l : methods)
-      {
-         if (isFirst)
-         {
-            isFirst = false;
-         }
-         else
-         {
-            builder.append(", ");
-         }
-         builder.append(l);
-      }
-      headers.putSingle("Allow", builder.toString());
+      HeaderHelper.setAllow(headers, methods);
    }
 
    public void cacheControl(CacheControl cacheControl)
@@ -215,22 +189,6 @@ public class ClientRequestHeaders implements RequestHeaders
          return;
       }
       headers.add(name, value);
-   }
-
-   protected String toHeaderString(Object object)
-   {
-      StringConverter converter = providerFactory.getStringConverter(object
-              .getClass());
-      if (converter != null)
-         return converter.toString(object);
-
-      RuntimeDelegate.HeaderDelegate delegate = providerFactory
-              .createHeaderDelegate(object.getClass());
-      if (delegate != null)
-         return delegate.toString(object);
-      else
-         return object.toString();
-
    }
 
    @Override
@@ -272,7 +230,7 @@ public class ClientRequestHeaders implements RequestHeaders
       Object val = headers.getFirst(name);
       if (val == null) return null;
 
-      return toHeaderString(val);
+      return HeaderHelper.toHeaderString(val, providerFactory);
    }
 
    @Override
@@ -283,7 +241,7 @@ public class ClientRequestHeaders implements RequestHeaders
       {
          for (Object obj : entry.getValue())
          {
-            map.add(entry.getKey(), toHeaderString(obj));
+            map.add(entry.getKey(), HeaderHelper.toHeaderString(obj, providerFactory));
          }
       }
       return map;
@@ -297,7 +255,7 @@ public class ClientRequestHeaders implements RequestHeaders
       List<String> values = new ArrayList<String>();
       for (Object val : vals)
       {
-         values.add(toHeaderString(val));
+         values.add(HeaderHelper.toHeaderString(val, providerFactory));
       }
       return values;
    }
