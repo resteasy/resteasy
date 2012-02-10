@@ -75,7 +75,7 @@
       This provider simplifies this task by attempting to locate the XmlRegistry for the target class. By default, a
       JAXB implementation will create a class called ObjectFactory and is located in the same package as the target
       class. When this class is located, it will contain a &quot;create&quot; method that takes the object instance
-      as a parameter. For example, of the target type is called &quot;Contact&quot;, then the ObjectFactory class
+      as a parameter. For example, if the target type is called &quot;Contact&quot;, then the ObjectFactory class
       will have a method:
    </para>
    <para>
@@ -972,5 +972,17 @@ public void put(IFoo foo) {...}
 <para>
 The extra @XmlSeeAlso on IFoo allows RESTEasy to create a JAXBContext that knows how to unmarshal RealFoo instances.
 </para>
+</sect1>
+
+<sect1 id="configuration">
+   <title>Configurating JAXB Marshalling</title>
+   <para>
+     As a consumer of XML datasets, JAXB is subject to a form of attack
+     known as the XXE (Xml eXternal Entity) Attack
+     (<ulink url="http://www.securiteam.com/securitynews/6D0100A5PU.html">http://www.securiteam.com/securitynews/6D0100A5PU.html</ulink>),
+     in which expanding an external entity causes an unsafe file to be loaded.  Preventing the expansion of 
+     external entities is discussed in <xref linkend="Configuring_Document_Marshalling"/>.  The same context
+     parameter, "resteasy.document.expand.entity.references", applies to JAXB unmarshallers as well.
+   </para>
 </sect1>
 </chapter>
