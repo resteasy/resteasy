@@ -34,7 +34,7 @@ public class ServletUtil
    public static UriInfoImpl extractUriInfo(HttpServletRequest request, String servletPrefix)
    {
       String contextPath = request.getContextPath();
-      if (servletPrefix != null && servletPrefix.length() > 0)
+      if (servletPrefix != null && servletPrefix.length() > 0&& !servletPrefix.equals("/"))
       {
          if (!contextPath.endsWith("/") && !servletPrefix.startsWith("/"))
             contextPath += "/";
