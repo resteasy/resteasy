@@ -11,6 +11,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.RequestHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.TypeLiteral;
@@ -26,77 +27,69 @@ import java.util.concurrent.ExecutorService;
 public class InvocationBuilder implements Invocation.Builder
 {
    protected ClientInvocation invocation;
-   protected ClientRequestHeaders headers;
-
-   protected URI uri;
-   protected ResteasyProviderFactory providerFactory;
-   protected ClientHttpEngine httpEngine;
-   protected ExecutorService executor;
-   protected ClientConfiguration configuration;
 
    public InvocationBuilder(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
    {
-      this.uri = uri;
-      this.providerFactory = providerFactory;
-      this.httpEngine = httpEngine;
-      this.executor = executor;
-      this.configuration = configuration;
+      invocation = new ClientInvocation(uri, new ClientRequestHeaders(providerFactory), providerFactory, httpEngine, executor, configuration);
+   }
 
-      headers = new ClientRequestHeaders(providerFactory);
-      invocation = new ClientInvocation(uri, headers, providerFactory, httpEngine, executor, configuration);
+   public InvocationBuilder(ClientInvocation invocation)
+   {
+      this.invocation = invocation.clone();
+
    }
 
    public ClientRequestHeaders getHeaders()
    {
-      return headers;
+      return invocation.headers;
    }
 
    @Override
    public Invocation.Builder acceptLanguage(Locale... locales)
    {
-      headers.acceptLanguage(locales);
+      getHeaders().acceptLanguage(locales);
       return this;
    }
 
    @Override
    public Invocation.Builder acceptLanguage(String... locales)
    {
-      headers.acceptLanguage(locales);
+      getHeaders().acceptLanguage(locales);
       return this;
    }
 
    @Override
    public Invocation.Builder cookie(Cookie cookie)
    {
-      headers.cookie(cookie);
+      getHeaders().cookie(cookie);
       return this;
    }
 
    @Override
    public Invocation.Builder allow(String... methods)
    {
-      headers.allow(methods);
+      getHeaders().allow(methods);
       return this;
    }
 
    @Override
    public Invocation.Builder allow(Set<String> methods)
    {
-      headers.allow(methods);
+      getHeaders().allow(methods);
       return this;
    }
 
    @Override
    public Invocation.Builder cacheControl(CacheControl cacheControl)
    {
-      headers.cacheControl(cacheControl);
+      getHeaders().cacheControl(cacheControl);
       return this;
    }
 
    @Override
    public Invocation.Builder header(String name, Object value)
    {
-      headers.header(name, value);
+      getHeaders().header(name, value);
       return this;
    }
 

@@ -88,7 +88,7 @@ public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
          }
          finally
          {
-            gzipOutputStream.getGzip().finish();
+            if (gzipOutputStream.getGzip() != null) gzipOutputStream.getGzip().finish();
             context.setOutputStream(old);
          }
          return;
