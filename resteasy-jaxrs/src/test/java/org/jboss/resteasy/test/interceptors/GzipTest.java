@@ -18,9 +18,13 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -66,6 +70,22 @@ public class GzipTest extends BaseResourceTest
       {
          return "HELLO WORLD";
       }
+
+      @GET
+      @Path("error")
+      @GZIP
+      @Produces({"application/json;charset=UTF-8"})
+      public StreamingOutput getTest()
+      {
+         return new StreamingOutput()
+         {
+            @Override
+            public void write(OutputStream outputStream) throws IOException, WebApplicationException
+            {
+               throw new WebApplicationException(405);
+            }
+         };
+      }
    }
 
    @Before
@@ -81,6 +101,15 @@ public class GzipTest extends BaseResourceTest
       IGZIP proxy = ProxyFactory.create(IGZIP.class, generateBaseUrl());
       Assert.assertEquals("HELLO WORLD", proxy.getText());
       Assert.assertEquals("HELLO WORLD", proxy.getGzipText());
+   }
+
+   @Test
+   public void testRequestError() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/error"));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(405, response.getStatus());
+
    }
 
    @Test

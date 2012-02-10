@@ -6,14 +6,19 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -40,6 +45,36 @@ public class Regression657 extends BaseResourceTest
    public interface BaseCrudService<T>
    {
 
+      @GET
+      @Path("/content/{id}")
+      @Produces(MediaType.APPLICATION_JSON)
+      public T getContent(
+              @PathParam("id")
+              String id);
+
+      @POST
+      @Path("/add")
+      @Produces(MediaType.APPLICATION_JSON)
+      @Consumes(MediaType.APPLICATION_JSON)
+      public T add(T object);
+
+      @GET
+      @Path("/all")
+      @Produces(MediaType.APPLICATION_JSON)
+      public List<T> get();
+
+      @PUT
+      @Path("/update")
+      @Produces(MediaType.APPLICATION_JSON)
+      @Consumes(MediaType.APPLICATION_JSON)
+      public T update(T object);
+
+      @DELETE
+      @Path("/delete/{id}")
+      @Produces(MediaType.TEXT_PLAIN)
+      public Boolean delete(
+              @PathParam("id")
+              String id);
    }
 
    @Path("/platform")
@@ -82,6 +117,36 @@ public class Regression657 extends BaseResourceTest
       {
          return new UserRestService()
          {
+            @Override
+            public OhaUserModel getContent(String id)
+            {
+               return null;
+            }
+
+            @Override
+            public OhaUserModel add(OhaUserModel object)
+            {
+               return null;
+            }
+
+            @Override
+            public List<OhaUserModel> get()
+            {
+               return null;
+            }
+
+            @Override
+            public OhaUserModel update(OhaUserModel object)
+            {
+               return null;
+            }
+
+            @Override
+            public Boolean delete(String id)
+            {
+               return null;
+            }
+
             @Override
             public OhaUserModel getUserDataByAdaId(String adaId)
             {
