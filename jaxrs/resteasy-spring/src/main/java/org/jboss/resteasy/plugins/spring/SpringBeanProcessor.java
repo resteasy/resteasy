@@ -384,7 +384,16 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          }
          else
          {
-            factoryClassName = beanDef.getBeanClassName();
+            // Checks if beanDefinition has a factorybean defined. If so, lookup the classname of that bean
+            // definition and use that as the factory class name.
+            if (beanDef.getFactoryBeanName() != null)
+            {
+               factoryClassName = beanFactory.getBeanDefinition(beanDef.getFactoryBeanName()).getBeanClassName();
+            }
+            else
+            {
+               factoryClassName = beanDef.getBeanClassName();
+            }
          }
 
          for (Method method : getBeanClass(factoryClassName).getDeclaredMethods())
