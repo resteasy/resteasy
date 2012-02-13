@@ -151,7 +151,15 @@ public class Types
          TypeVariable<? extends Class<?>>[] vars = declaringClass.getTypeParameters();
          for (int i = 0; i < vars.length; i++)
          {
-            typeVarMap.put(vars[i].getName(), intfTypes[i]);
+            if (intfTypes != null && i < intfTypes.length)
+            {
+               typeVarMap.put(vars[i].getName(), intfTypes[i]);
+            }
+            else
+            {
+               // Interface type parameters may not have been filled out
+               typeVarMap.put(vars[i].getName(), vars[i].getGenericDeclaration());
+            }
          }
          Type[] paramGenericTypes = intfMethod.getGenericParameterTypes();
          paramTypes = new Class[paramTypes.length];
