@@ -110,6 +110,11 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       {
          InputStream stream;
 
+         @Override
+         protected void setInputStream(InputStream is)
+         {
+            stream = is;
+         }
 
          @Override
          public void bufferEntity() throws MessageProcessingException
@@ -160,6 +165,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
             }
          }
       };
+      response.setProperties(request.getProperties());
       response.setStatus(res.getStatusLine().getStatusCode());
       response.setHeaders(extractHeaders(res));
       response.setProviderFactory(request.getProviderFactory());

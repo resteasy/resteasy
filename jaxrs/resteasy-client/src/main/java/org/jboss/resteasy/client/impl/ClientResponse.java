@@ -302,7 +302,7 @@ public abstract class ClientResponse extends Response
    }
 
    protected abstract InputStream getInputStream();
-
+   protected abstract void setInputStream(InputStream is);
    protected abstract void releaseConnection();
 
 

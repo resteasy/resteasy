@@ -13,6 +13,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.ResponseHeaders;
 import javax.ws.rs.core.Variant;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
@@ -47,15 +48,34 @@ public class ClientResponseBuilder extends Response.ResponseBuilder
 
    protected ClientResponse response = new ClientResponse()
    {
+      protected InputStream is;
+
+      @Override
+      protected void setInputStream(InputStream is)
+      {
+         this.is = is;
+      }
+
       @Override
       protected InputStream getInputStream()
       {
-         return null;
+         return is;
       }
 
       @Override
       protected void releaseConnection()
       {
+         if (is != null)
+         {
+            try
+            {
+               is.close();
+            }
+            catch (IOException ignored)
+            {
+
+            }
+         }
       }
 
       @Override
