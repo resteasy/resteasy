@@ -1,9 +1,9 @@
 package org.jboss.resteasy.client.impl;
 
+import org.jboss.resteasy.core.filter.WriterInterceptorContextImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -19,6 +19,10 @@ import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.RequestFilter;
+import javax.ws.rs.ext.ResponseFilter;
+import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -131,6 +135,7 @@ public class ClientInvocation implements Invocation, Request
          genericType = genericEntity.getType();
       }
 
+
       MessageBodyWriter writer = providerFactory
               .getMessageBodyWriter(type, genericType,
                       entityAnnotations, this.getHeaders().getMediaType());
@@ -139,18 +144,87 @@ public class ClientInvocation implements Invocation, Request
          throw new RuntimeException("could not find writer for content-type "
                  + this.getHeaders().getMediaType() + " type: " + type.getName());
       }
-      // todo handle writer interceptors
-      writer.writeTo(entity, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
+      WriterInterceptor[] interceptors = getWriterInterceptors();
+      if (interceptors == null || interceptors.length == 0)
+      {
+         writer.writeTo(entity, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
+      }
+      else
+      {
+         WriterInterceptorContextImpl ctx = new WriterInterceptorContextImpl(entity,
+                 type,
+                 genericType,
+                 entityAnnotations,
+                 headers.getMediaType(),
+                 headers.getHeaders(),
+                 outputStream,
+                 interceptors,
+                 writer,
+                 getProperties());
+         ctx.proceed();
+      }
    }
 
+   protected WriterInterceptor[] getWriterInterceptors()
+   {
+      return providerFactory.getClientInterceptors().getWriterInterceptors().bind(null, null);
+   }
+
+   protected RequestFilter[] getRequestFilters()
+   {
+      return providerFactory.getClientInterceptors().getRequestFilters().bind(null, null);
+   }
+
+   protected ResponseFilter[] getResponseFilters()
+   {
+      return providerFactory.getClientInterceptors().getResponseFilters().bind(null, null);
+   }
 
    // Invocation methods
 
    @Override
    public Response invoke() throws InvocationException
    {
+      RequestFilter[] requestFilters = getRequestFilters();
+      if (requestFilters != null && requestFilters.length > 0)
+      {
+         ClientFilterContext ctx = new ClientFilterContext(this);
+         for (RequestFilter filter : requestFilters)
+         {
+            try
+            {
+               filter.preFilter(ctx);
+               if (ctx.getResponse() != null)
+               {
+                  return ctx.getResponse();
+               }
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      }
       ClientResponse response = httpEngine.invoke(this);
       response.setProperties(properties);
+      ResponseFilter[] responseFilters = getResponseFilters();
+      if (requestFilters != null && requestFilters.length > 0)
+      {
+         ClientFilterContext ctx = new ClientFilterContext(this);
+         ctx.setResponse(response);
+         for (ResponseFilter filter : responseFilters)
+         {
+            try
+            {
+               filter.postFilter(ctx);
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+         return ctx.getResponse();
+      }
       return response;
    }
 
@@ -176,9 +250,7 @@ public class ClientInvocation implements Invocation, Request
          @Override
          public Response call() throws Exception
          {
-            ClientResponse response = httpEngine.invoke(ClientInvocation.this);
-            response.setProperties(properties);
-            return response;
+            return invoke();
          }
       });
    }
@@ -315,8 +387,7 @@ public class ClientInvocation implements Invocation, Request
             {
                try
                {
-                  ClientResponse res = httpEngine.invoke(ClientInvocation.this);
-                  res.setProperties(properties);
+                  Response res = invoke();
                   cb.completed((T)res);
                   return res;
                }
@@ -341,9 +412,8 @@ public class ClientInvocation implements Invocation, Request
             {
                try
                {
-                  ClientResponse response = httpEngine.invoke(ClientInvocation.this);
-                  response.setProperties(properties);
-                  T obj = response.readEntity((TypeLiteral<T>) TypeLiteral.of(theType, theGenericType));
+                  Response res = invoke();
+                  T obj = res.readEntity((TypeLiteral<T>) TypeLiteral.of(theType, theGenericType));
                   cb.completed(obj);
                   return obj;
                }
