@@ -12,10 +12,15 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientRequestFilterContext implements FilterContext
+public class ClientFilterContext implements FilterContext
 {
    protected ClientInvocation request;
-   protected ClientResponse res;
+   protected Response res;
+
+   public ClientFilterContext(ClientInvocation request)
+   {
+      this.request = request;
+   }
 
    @Override
    public Map<String, Object> getProperties()
@@ -64,12 +69,12 @@ public class ClientRequestFilterContext implements FilterContext
    @Override
    public Response.ResponseBuilder getResponseBuilder()
    {
-      return new ResponseBuilderImpl();
+      return new ClientResponseBuilder(request.getProviderFactory(), request.getProperties());
    }
 
    @Override
    public Response.ResponseBuilder createResponse()
    {
-      return null;
+      return new ClientResponseBuilder(request.getProviderFactory(), request.getProperties());
    }
 }
