@@ -4,9 +4,12 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.util.Types;
+import org.xml.sax.InputSource;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -14,6 +17,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,8 +81,17 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       try
       {
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
-         JAXBElement<?> e = unmarshaller.unmarshal(new StreamSource(entityStream), (Class<?>) typeArg);
-         result = e;
+         if (!isExpandEntityReferences())
+         {
+            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            SAXSource source = new SAXSource(new InputSource(entityStream));
+            result = unmarshaller.unmarshal(source, (Class<?>) typeArg);
+         }
+         else
+         {
+            JAXBElement<?> e = unmarshaller.unmarshal(new StreamSource(entityStream), (Class<?>) typeArg);
+            result = e;
+         }
       }
       catch (JAXBException e)
       {

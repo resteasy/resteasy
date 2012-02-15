@@ -2,12 +2,15 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.xml.sax.InputSource;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -28,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +52,21 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 {
    @Context
    protected Providers providers;
-
+   private boolean expandEntityReferences = true;
+   
+   public MapProvider()
+   {
+      ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+      if (context != null)
+      {
+         String s = context.getInitParameter("resteasy.document.expand.entity.references");
+         if (s != null)
+         {
+            setExpandEntityReferences(Boolean.parseBoolean(s));
+         }
+      }
+   }
+   
    protected JAXBContextFinder getFinder(MediaType type)
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, type);
@@ -92,12 +110,23 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       }
       Class valueType = Types.getMapValueType(genericType);
       JaxbMap jaxbMap = null;
+      JAXBElement<JaxbMap> ele = null;
+      
       try
       {
-         StreamSource source = new StreamSource(entityStream);
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
-         JAXBElement<JaxbMap> ele = ctx.createUnmarshaller().unmarshal(source, JaxbMap.class);
-
+         if (!isExpandEntityReferences())
+         {
+            SAXSource source = new SAXSource(new InputSource(entityStream));
+            Unmarshaller unmarshaller = ctx.createUnmarshaller();
+            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            ele = unmarshaller.unmarshal(source, JaxbMap.class);
+         }
+         else
+         {
+            StreamSource source = new StreamSource(entityStream);
+            ele = ctx.createUnmarshaller().unmarshal(source, JaxbMap.class);
+         }
          WrappedMap wrapped = FindAnnotation.findAnnotation(annotations, WrappedMap.class);
          if (wrapped != null)
          {
@@ -212,5 +241,15 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       {
          throw new JAXBMarshalException(e);
       }
+   }
+   
+   public boolean isExpandEntityReferences()
+   {
+      return expandEntityReferences;
+   }
+
+   public void setExpandEntityReferences(boolean expandEntityReferences)
+   {
+      this.expandEntityReferences = expandEntityReferences;
    }
 }

@@ -8,8 +8,10 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.core.interception.DecoratorMatcher;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.TypeConverter;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -38,7 +40,22 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 {
    @Context
    protected Providers providers;
+   
+   private boolean expandEntityReferences = true;
 
+   public AbstractJAXBProvider()
+   {
+      ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+      if (context != null)
+      {
+         String s = context.getInitParameter("resteasy.document.expand.entity.references");
+         if (s != null)
+         {
+            setExpandEntityReferences(Boolean.parseBoolean(s));
+         }
+      }
+   }
+   
    public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType, boolean reader)
            throws JAXBException
    {
@@ -95,6 +112,12 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
+      
+         if (!isExpandEntityReferences())
+         {
+            return processWithoutEntityExpansion(unmarshaller, entityStream);
+         }
+         
          return (T) unmarshaller.unmarshal(new StreamSource(entityStream));
       }
       catch (JAXBException e)
@@ -212,5 +235,19 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       return null;
    }
 
+   public boolean isExpandEntityReferences()
+   {
+      return expandEntityReferences;
+   }
 
+   public void setExpandEntityReferences(boolean expandEntityReferences)
+   {
+      this.expandEntityReferences = expandEntityReferences;
+   }
+   
+   protected T processWithoutEntityExpansion(Unmarshaller unmarshaller, InputStream entityStream) throws JAXBException
+   {
+      unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+      return (T) unmarshaller.unmarshal(entityStream);
+   }
 }
