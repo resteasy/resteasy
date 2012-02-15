@@ -441,6 +441,18 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    {
       for (SpringResourceFactory resourceFactory : resourceFactories.values())
       {
+         getRegistry().removeRegistrations(resourceFactory.getScannableClass());
+      }
+      
+//  The following code would reprocess the bean factory, in case the configuration changed.
+//  However, it needs work.
+//      if (event.getSource() instanceof XmlWebApplicationContext)
+//      {
+//         ConfigurableListableBeanFactory beanFactory = ((XmlWebApplicationContext) event.getSource()).getBeanFactory();
+//         postProcessBeanFactory(beanFactory);
+//      }
+      for (SpringResourceFactory resourceFactory : resourceFactories.values())
+      {
          getRegistry().addResourceFactory(resourceFactory, resourceFactory.getContext());
       }
    }

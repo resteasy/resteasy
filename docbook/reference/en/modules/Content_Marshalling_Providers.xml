@@ -304,7 +304,7 @@ public interface Providers
       
       <para>
       
-         The Resteasy's built-in unmarshaller for org.w3c.dom.Document files will expand external entities by default, but it can be configured to replace them by the empty string by setting the context parameter "resteasy.document.expand.entity.references" to "false" in the web.xml file:
+         Resteasy's built-in unmarshaller for org.w3c.dom.Document files will expand external entities by default, but it can be configured to replace them by the empty string by setting the context parameter "resteasy.document.expand.entity.references" to "false" in the web.xml file:
    
       </para>
       
