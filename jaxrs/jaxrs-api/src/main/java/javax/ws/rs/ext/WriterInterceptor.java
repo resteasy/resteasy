@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,34 +40,34 @@
 package javax.ws.rs.ext;
 
 import java.io.IOException;
+import javax.ws.rs.WebApplicationException;
 
 /**
- * Interface implemented by handlers that intercept calls to
- * <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt>. Handlers 
- * implementing this interface MUST be annotated with 
+ * Interface for message body writer interceptors that wrap around calls
+ * to {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. Message body
+ * interceptors implementing this interface MUST be annotated with
  * {@link javax.ws.rs.ext.Provider}.
- * 
- * @param <T> Java type supported by corresponding message body provider
- * 
+ *
+ * @param <T> Java type supported by corresponding message body writer
+ *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see MessageBodyReader
+ * @see MessageBodyWriter
  */
-public interface ReadFromHandler<T> {
+public interface WriterInterceptor<T> {
 
     /**
-     * Handler method wrapping calls to 
-     * <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt>. The parameters
-     * to the wrapped method called are available from <code>context</code>.
-     * Implementations of this method SHOULD explicitly call 
-     * {@link javax.ws.rs.ext.ReadFromHandlerContext#proceed()} to invoke
-     * the next handler in the chain, and ultimately the wrapped method.
+     * Interceptor method wrapping calls to
+     * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. The parameters
+     * of the wrapped method called are available from <code>context</code>.
+     * Implementations of this method SHOULD explicitly call
+     * {@link javax.ws.rs.ext.WriterInterceptorContext#proceed} to invoke
+     * the next interceptor in the chain, and ultimately the wrapped method.
      *
      * @param context invocation context
-     * @return result of next handler invoked or the wrapped method if
-     *         last handler in chain
-     * @throws IOException 
+     * @throws IOException if an IO error arises
+     * @throws WebApplicationException thrown by wrapped method
      */
-    T readFrom(ReadFromHandlerContext<T> context) throws IOException;
+    void aroundWriteTo(WriterInterceptorContext<T> context) throws IOException, WebApplicationException;
 }

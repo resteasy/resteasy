@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,7 @@ import java.util.Set;
  *        Warning                  ; Section 14.46
  *
  * entity-header  =                                    Req     Res
- *      *  Allow                    ; Section 14.7      +       +
+ *      *  Allow                    ; Section 14.7      -       +
  *      *  Content-Encoding         ; Section 14.11     +       +
  *      *  Content-Language         ; Section 14.12     +       +
  *      a  Content-Length           ; Section 14.13     +       +
@@ -98,20 +98,12 @@ import java.util.Set;
  * via its {@link Request#getHeaders() getHeaders()} method.
  *
  * @author Marek Potociar
+ * @see Context
  * @since 2.0
  */
 public interface RequestHeaders {
 
     // General header getters
-    /**
-     * Get the allowed HTTP methods from the Allow HTTP header.
-     *
-     * @return the allowed HTTP methods, all methods will returned as upper case
-     *     strings.
-     * @since 2.0
-     */
-    public Set<String> getAllowedMethods();
-
     /**
      * Get message date.
      *
@@ -228,4 +220,40 @@ public interface RequestHeaders {
      * @since 2.0
      */
     public Map<String, Cookie> getCookies();
+
+    /**
+     * Get the links attached to the message as header.
+     *
+     * @return links, may return empty {@link Set} if no links are present. Never
+     *     returns {@code null}.
+     * @since 2.0
+     */
+    public Set<Link> getLinks();
+
+    /**
+     * Check if link for relation exists.
+     *
+     * @param relation link relation.
+     * @return outcome of boolean test.
+     * @since 2.0
+     */
+    boolean hasLink(String relation);
+
+    /**
+     * Get the link for the relation.
+     *
+     * @param relation link relation.
+     * @return the link for the relation, otherwise {@code null} if not present.
+     * @since 2.0
+     */
+    public Link getLink(String relation);
+
+    /**
+     * Convenience method that returns a {@link Link.Builder} for the relation.
+     *
+     * @param relation link relation.
+     * @return the link builder for the relation, otherwise {@code null} if not present.
+     * @since 2.0
+     */
+    public Link.Builder getLinkBuilder(String relation);
 }

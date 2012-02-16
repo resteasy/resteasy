@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,12 +43,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Context shared by handlers. Handlers can be used to intercept calls
- * to <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt> and
- * <tt>javax.ws.rs.ext.MessageBodyWriter.writeTo</tt>. The getters and
+ * Context shared by message body interceptors that can be used to wrap
+ * calls to {@link javax.ws.rs.ext.MessageBodyReader#readFrom} and
+ * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. The getters and
  * setters in this context class correspond to the parameters in
  * the aforementioned methods.
  *
@@ -57,23 +56,40 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see ReadFromHandler
- * @see WriteToHandler
+ * @see ReaderInterceptor
+ * @see WriterInterceptor
+ * @see ReaderInterceptorContext
+ * @see WriterInterceptorContext
  */
-public interface MessageBodyHandlerContext<T> {
+public interface InterceptorContext<T> {
 
     /**
-     * Get a mutable map of properties that can be used for
-     * communication between handlers and between filters. In
-     * the Client API, this property map is initialized by calling
-     * {@link javax.ws.rs.client.Configuration#getProperties()} on
-     * the configuration object associated with the corresponding
-     * {@link javax.ws.rs.client.Invocation} or
-     * {@link javax.ws.rs.client.Invocation.Builder} instance on
-     * which a filter or handler is registered.
-     * Otherwise, it is initialized to the empty map.
+     * Get a mutable map of request-scoped properties that can be used for communication
+     * between different request/response processing components. May be empty, but
+     * MUST never be {@code null}. In the scope of a single request/response processing,
+     * a same property map instance is shared by the following methods:
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Request#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.core.Response#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.ext.FilterContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
+     * </ul>
+     * A request-scoped property is an application-defined property that may be
+     * added, removed or modified by any of the components (user, filter, interceptor etc.)
+     * that participate in a given request/response processing flow.
+     * <p />
+     * On the client side, this property map is initialized by calling
+     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
+     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
+     * on the configuration object associated with the corresponding
+     * {@link javax.ws.rs.client.Invocation request invocation}.
+     * <p />
+     * On the server side, specifying the initial values is implementation-specific.
+     * <p />
+     * If there are no initial properties set, the request-scoped property map is
+     * initialized to an empty map.
      *
-     * @return a mutable property map
+     * @return a mutable request-scoped property map.
      * @see javax.ws.rs.client.Configuration
      */
     Map<String, Object> getProperties();
@@ -138,11 +154,4 @@ public interface MessageBodyHandlerContext<T> {
      * @param mediaType new type for HTTP entity
      */
     void setMediaType(MediaType mediaType);
-
-    /**
-     * Get mutable map of HTTP headers.
-     *
-     * @return map of HTTP headers
-     */
-    MultivaluedMap<String, String> getHeaders();
 }

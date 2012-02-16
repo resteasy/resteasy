@@ -1,5 +1,7 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.logging.Logger;
+
 import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -13,6 +15,7 @@ import java.lang.reflect.Modifier;
  */
 public class PickConstructor
 {
+    private final static Logger logger = Logger.getLogger(PickConstructor.class);
 
    /**
     * Pick best constructor for a provider or resource class
@@ -29,14 +32,19 @@ public class PickConstructor
       // prefer a no-arg constructor
       int numParameters = 0;
       Constructor pick = null;
+      boolean potentialConflict = false; // https://issues.jboss.org/browse/RESTEASY-645
       for (Constructor con : constructors)
       {
          if (Modifier.isPublic(con.getModifiers()) == false)
          {
             continue;
          }
+
          if (con.getParameterTypes().length >= numParameters)
          {
+            if (con.getParameterTypes().length > numParameters) {
+                potentialConflict = false;
+            }
             boolean noContextAnnotation = false;
             if (con.getParameterAnnotations() != null)
             {
@@ -49,9 +57,16 @@ public class PickConstructor
                }
             }
             if (noContextAnnotation) continue;
+            if (con.getParameterTypes().length == numParameters && numParameters != 0) {
+                potentialConflict = true;
+            }
             numParameters = con.getParameterTypes().length;
             pick = con;
+
          }
+      }
+      if (potentialConflict) {
+          logger.warn("Ambiguity constructors are found in " + clazz + ". More details please refer to http://jsr311.java.net/nonav/releases/1.1/spec/spec.html");
       }
       return pick;
    }
@@ -71,6 +86,7 @@ public class PickConstructor
       // prefer a no-arg constructor
       int numParameters = 0;
       Constructor pick = null;
+      boolean potentialConflict = false; // https://issues.jboss.org/browse/RESTEASY-645
       for (Constructor con : constructors)
       {
          if (Modifier.isPublic(con.getModifiers()) == false)
@@ -79,6 +95,10 @@ public class PickConstructor
          }
          if (con.getParameterTypes().length >= numParameters)
          {
+            if (con.getParameterTypes().length > numParameters) {
+                potentialConflict = false;
+            }
+
             boolean noContextAnnotation = false;
             if (con.getParameterAnnotations() != null)
             {
@@ -91,9 +111,16 @@ public class PickConstructor
                }
             }
             if (noContextAnnotation) continue;
+            if (con.getParameterTypes().length == numParameters && numParameters != 0) {
+                potentialConflict = true;
+            }
             numParameters = con.getParameterTypes().length;
             pick = con;
          }
+      }
+
+      if (potentialConflict) {
+          logger.warn("Ambiguity constructors are found in " + clazz + ". More details please refer to http://jsr311.java.net/nonav/releases/1.1/spec/spec.html");
       }
       return pick;
    }

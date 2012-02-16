@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,19 +40,18 @@
 package javax.ws.rs.ext;
 
 import java.io.IOException;
-import javax.ws.rs.ext.FilterContext.FilterAction;
 
 /**
  * <p>Interface implemented by filters invoked at the <emph>PreMatch</emph>
  * extension point. Use a filter of this type to update the input to the
- * JAX-RS matching algorithm, e.g., the HTTP method, Accept header, etc. 
+ * JAX-RS matching algorithm, e.g., the HTTP method, Accept header, etc.
  * Otherwise, the use of a filter invoked at the <emph>Pre</emph> extension
- * point (after resource matching) is recommended. </p>
- * 
+ * point (after resource matching) is recommended.</p>
+ *
  * <p>Filters implementing
  * this interface MUST be annotated with {@link javax.ws.rs.ext.Provider}.
  * This type of filters is supported only as part of the Server API.</p>
- * 
+ *
  * @author Santiago Pericas-Geertsen
  * @since 2.0
  * @see RequestFilter
@@ -60,16 +59,21 @@ import javax.ws.rs.ext.FilterContext.FilterAction;
 public interface PreMatchRequestFilter {
 
     /**
-     * Filter method called at the <emph>PreMatch</emph> extension point.
-     * I.e., before resource matching as part of the Server API. This method
-     * can return {@link javax.ws.rs.ext.FilterContext.FilterAction#NEXT}
-     * to continue the execution of the filter chain, or 
-     * {@link javax.ws.rs.ext.FilterContext.FilterAction#STOP} to 
-     * abort the execution of the filter chain.
+     * <p>Filter method called at the <emph>PreMatch</emph> extension point.
+     * I.e., before resource matching as part of the Server API. This type
+     * of filters are not supported in the Client API.</p>
+     *
+     * <p>Filters in a chain are ordered according to their binding
+     * priority (see {@link javax.ws.rs.BindingPriority}). If a pre-match
+     * request filter produces a response by calling
+     * {@link FilterContext#setResponse}, the execution of the pre-match request
+     * chain is stopped and the response is returned without matching a resource
+     * method. For example, a caching filter may produce a response in this way.
+     * Note that responses produced in this manner are still processed by
+     * the response filter chain.</p>
      *
      * @param context invocation context
-     * @return filter action to continue or stop filter chain
-     * @throws IOException 
+     * @throws IOException if an I/O exception occurs
      */
-    FilterAction preMatchFilter(FilterContext context) throws IOException;
+    void preMatchFilter(FilterContext context) throws IOException;
 }

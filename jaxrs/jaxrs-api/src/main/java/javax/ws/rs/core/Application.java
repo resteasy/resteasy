@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,7 +73,7 @@ public class Application {
      *
      * <p>The default implementation returns an empty set.</p>
      *
-     * @return a set of root resource and provider classes. Returning null
+     * @return a set of root resource and provider classes. Returning {@code null}
      * is equivalent to returning an empty set.
      */
     public Set<Class<?>> getClasses() {
@@ -93,7 +93,7 @@ public class Application {
      *
      * <p>The default implementation returns an empty set.</p>
      *
-     * @return a set of root resource and provider instances. Returning null
+     * @return a set of root resource and provider instances. Returning {@code null}
      * is equivalent to returning an empty set.
      */
     public Set<Object> getSingletons() {

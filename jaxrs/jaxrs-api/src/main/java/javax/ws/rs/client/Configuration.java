@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -152,7 +152,7 @@ public interface Configuration {
      * configured instance.
      * <p/>
      * As opposed to the providers registered by the
-     * {@link #register(java.lang.Object[]) provider instances}, providers
+     * {@link #register(java.lang.Object) provider instances}, providers
      * registered using this method are instantiated and properly injected
      * by the JAX-RS implementation provider. In case of a conflict between
      * a registered provider instance and instantiated registered provider class,
@@ -167,8 +167,8 @@ public interface Configuration {
     Configuration register(Class<?> providerClass);
 
     /**
-     * Register one or more provider ("singleton") instances to be used in the
-     * scope of the configured instance.
+     * Register a provider ("singleton") instance to be used in the scope of the
+     * configured instance.
      * <p/>
      * As opposed to the providers registered by the
      * {@link #register(java.lang.Class) provider classes}, provider instances
@@ -178,12 +178,12 @@ public interface Configuration {
      * class, the registered provider instance takes precedence and the registered
      * provider class will not be instantiated in such case.
      *
-     * @param providers one or more provider instances to be used in the scope of
-     *     the configured instance.
+     * @param provider a provider instance to be used in the scope of the configured
+     *     instance.
      * @return the updated configuration.
      * @see #getProviderInstances()
      */
-    Configuration register(Object... providers);
+    Configuration register(Object provider);
 
     /**
      * Enable a feature using the feature class.
@@ -241,10 +241,12 @@ public interface Configuration {
 
     /**
      * Set the new configuration property, if already set, the existing value of
-     * the property will be updated.
+     * the property will be updated. Setting a {@code null} value into a property
+     * effectively removes the property from the property bag.
      *
      * @param name property name.
-     * @param value (new) property value.
+     * @param value (new) property value. {@code null} value removes the property
+     *     with the given name.
      * @return the updated configuration.
      * @see Configuration
      */

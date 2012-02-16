@@ -58,7 +58,7 @@ public class ServerResponse extends Response
    {
    }
 
-   public static ServerResponse copyIfNotServerResponse(Response response)
+   public static ServerResponse convertToServerResponse(Response response)
    {
       if (response instanceof ServerResponse) return (ServerResponse) response;
       ServerResponse serverResponse = new ServerResponse();
@@ -340,13 +340,13 @@ public class ServerResponse extends Response
    }
 
    @Override
-   public <T> T getEntity(Class<T> type) throws MessageProcessingException
+   public <T> T readEntity(Class<T> type) throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }
@@ -369,9 +369,4 @@ public class ServerResponse extends Response
       throw new NotImplementedYetException();
    }
 
-   @Override
-   public InputStream getEntityInputStream()
-   {
-      throw new NotImplementedYetException();
-   }
 }

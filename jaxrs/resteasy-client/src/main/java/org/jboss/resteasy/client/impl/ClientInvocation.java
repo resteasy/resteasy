@@ -1,16 +1,37 @@
 package org.jboss.resteasy.client.impl;
 
-import com.sun.org.apache.xml.internal.security.transforms.params.InclusiveNamespaces;
+import org.jboss.resteasy.core.filter.WriterInterceptorContextImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.client.Configuration;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.InvocationException;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MessageProcessingException;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.RequestHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.TypeLiteral;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.Variant;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.RequestFilter;
+import javax.ws.rs.ext.ResponseFilter;
+import javax.ws.rs.ext.WriterInterceptor;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -22,42 +43,203 @@ import java.util.concurrent.TimeoutException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientInvocation extends ClientRequest implements Invocation
+public class ClientInvocation implements Invocation, Request
 {
-   protected ClientExecutor clientExecutor;
+   protected ClientHttpEngine httpEngine;
    protected ExecutorService executor;
+   protected ClientRequestHeaders headers;
+   protected String method;
+   protected Object entity;
+   protected Annotation[] entityAnnotations;
+   protected ClientConfiguration configuration;
+   protected URI uri;
+   protected ResteasyProviderFactory providerFactory;
+   protected Map<String, Object> properties = new HashMap<String, Object>();
 
-   public ClientInvocation(ClientExecutor clientExecutor)
+   public ClientInvocation(URI uri, ClientRequestHeaders headers, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
    {
-      this.clientExecutor = clientExecutor;
+      this.uri = uri;
+      this.providerFactory = providerFactory;
+      this.httpEngine = httpEngine;
+      this.executor = executor;
+      this.configuration = configuration;
+      this.headers = headers;
+      this.properties.putAll(configuration.getProperties());
    }
 
-   @Override
-   public RequestBuilder clone()
+   public ClientInvocation clone()
    {
-      ClientInvocation copy = new ClientInvocation(clientExecutor);
-      super.copy(copy);
+      ClientInvocation copy = new ClientInvocation(uri, headers.clone(), providerFactory, httpEngine, executor, configuration);
+      copy.method = method;
+      copy.entity = entity;
+      copy.entityAnnotations = entityAnnotations;
+      copy.configuration = configuration;
       return copy;
    }
+
+   public void setHttpEngine(ClientHttpEngine httpEngine)
+   {
+      this.httpEngine = httpEngine;
+   }
+
+   public void setExecutor(ExecutorService executor)
+   {
+      this.executor = executor;
+   }
+
+   public void setMethod(String method)
+   {
+      this.method = method;
+   }
+
+   public void setHeaders(ClientRequestHeaders headers)
+   {
+      this.headers = headers;
+   }
+
+   public void setEntity(Entity entity)
+   {
+      this.entity = entity.getEntity();
+      Variant v = entity.getVariant();
+      headers.setMediaType(v.getMediaType());
+      headers.setLanguage(v.getLanguage());
+      headers.header("Content-Encoding", v.getEncoding());
+
+   }
+
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return providerFactory;
+   }
+
+   public void setProviderFactory(ResteasyProviderFactory providerFactory)
+   {
+      this.providerFactory = providerFactory;
+   }
+
+   public void writeRequestBody(OutputStream outputStream) throws IOException
+   {
+      if (entity == null)
+      {
+         return;
+      }
+
+      Object obj = entity;
+      Class type = obj.getClass();
+      Type genericType = null;
+
+      if (obj instanceof GenericEntity)
+      {
+         GenericEntity genericEntity = (GenericEntity) obj;
+         type = genericEntity.getRawType();
+         genericType = genericEntity.getType();
+      }
+
+
+      MessageBodyWriter writer = providerFactory
+              .getMessageBodyWriter(type, genericType,
+                      entityAnnotations, this.getHeaders().getMediaType());
+      if (writer == null)
+      {
+         throw new RuntimeException("could not find writer for content-type "
+                 + this.getHeaders().getMediaType() + " type: " + type.getName());
+      }
+      WriterInterceptor[] interceptors = getWriterInterceptors();
+      if (interceptors == null || interceptors.length == 0)
+      {
+         writer.writeTo(entity, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
+      }
+      else
+      {
+         WriterInterceptorContextImpl ctx = new WriterInterceptorContextImpl(entity,
+                 type,
+                 genericType,
+                 entityAnnotations,
+                 headers.getMediaType(),
+                 headers.getHeaders(),
+                 outputStream,
+                 interceptors,
+                 writer,
+                 getProperties());
+         ctx.proceed();
+      }
+   }
+
+   protected WriterInterceptor[] getWriterInterceptors()
+   {
+      return providerFactory.getClientInterceptors().getWriterInterceptors().bind(null, null);
+   }
+
+   protected RequestFilter[] getRequestFilters()
+   {
+      return providerFactory.getClientInterceptors().getRequestFilters().bind(null, null);
+   }
+
+   protected ResponseFilter[] getResponseFilters()
+   {
+      return providerFactory.getClientInterceptors().getResponseFilters().bind(null, null);
+   }
+
+   // Invocation methods
 
    @Override
    public Response invoke() throws InvocationException
    {
-      return clientExecutor.invoke(this);
+      RequestFilter[] requestFilters = getRequestFilters();
+      if (requestFilters != null && requestFilters.length > 0)
+      {
+         ClientFilterContext ctx = new ClientFilterContext(this);
+         for (RequestFilter filter : requestFilters)
+         {
+            try
+            {
+               filter.preFilter(ctx);
+               if (ctx.getResponse() != null)
+               {
+                  return ctx.getResponse();
+               }
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+      ClientResponse response = httpEngine.invoke(this);
+      response.setProperties(properties);
+      ResponseFilter[] responseFilters = getResponseFilters();
+      if (requestFilters != null && requestFilters.length > 0)
+      {
+         ClientFilterContext ctx = new ClientFilterContext(this);
+         ctx.setResponse(response);
+         for (ResponseFilter filter : responseFilters)
+         {
+            try
+            {
+               filter.postFilter(ctx);
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+         return ctx.getResponse();
+      }
+      return response;
    }
 
    @Override
    public <T> T invoke(Class<T> responseType) throws InvocationException
    {
-      Response response = clientExecutor.invoke(this);
-      return response.getEntity(responseType);
+      Response response = invoke();
+      return response.readEntity(responseType);
    }
 
    @Override
    public <T> T invoke(TypeLiteral<T> responseType) throws InvocationException
    {
-      Response response = clientExecutor.invoke(this);
-      return response.getEntity(responseType);
+      Response response = invoke();
+      return response.readEntity(responseType);
    }
 
    @Override
@@ -68,11 +250,10 @@ public class ClientInvocation extends ClientRequest implements Invocation
          @Override
          public Response call() throws Exception
          {
-            return clientExecutor.invoke(ClientInvocation.this);
+            return invoke();
          }
       });
    }
-
 
 
    @Override
@@ -104,14 +285,14 @@ public class ClientInvocation extends ClientRequest implements Invocation
          public T get() throws InterruptedException, ExecutionException
          {
             Response response = future.get();
-            return response.getEntity(type);
+            return response.readEntity(type);
          }
 
          @Override
          public T get(long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException
          {
             Response response = future.get(l, timeUnit);
-            return response.getEntity(type);
+            return response.readEntity(type);
          }
       };
    }
@@ -151,7 +332,7 @@ public class ClientInvocation extends ClientRequest implements Invocation
          Response response = future.get();
          try
          {
-            return response.getEntity(type);
+            return response.readEntity(type);
          }
          catch (MessageProcessingException e)
          {
@@ -165,7 +346,7 @@ public class ClientInvocation extends ClientRequest implements Invocation
          Response response = future.get(l, timeUnit);
          try
          {
-            return response.getEntity(type);
+            return response.readEntity(type);
          }
          catch (MessageProcessingException e)
          {
@@ -184,32 +365,165 @@ public class ClientInvocation extends ClientRequest implements Invocation
    @Override
    public <T> Future<T> submit(InvocationCallback<T> callback)
    {
-      Class<T> type = null;
+      Class type = Response.class;
       Type genericType = null;
 
-      Object[] typeInfo = Types.getInterfaceTemplateParameter(callback.getClass(), InvocationCallback.class);
+      Type[] typeInfo = Types.getActualTypeArgumentsOfAnInterface(callback.getClass(), InvocationCallback.class);
       if (typeInfo != null)
       {
-         type = (Class<T>)typeInfo[0];
-         genericType = (Type)typeInfo[1];
+         type = (Class<T>) Types.getRawType(typeInfo[0]);
+         genericType = typeInfo[0];
+         if (type == null) type = Response.class;
       }
 
+      final InvocationCallback<T> cb = callback;
 
-
-      Future<T> future = executor.submit(new Callable<Response>()
+      if (type.equals(Response.class))
       {
-         @Override
-         public Response call() throws Exception
+         Future<Response> future = executor.submit(new Callable<Response>()
          {
-            return clientExecutor.invoke(ClientInvocation.this);
-         }
-      });
+            @Override
+            public Response call() throws Exception
+            {
+               try
+               {
+                  Response res = invoke();
+                  cb.completed((T)res);
+                  return res;
+               }
+               catch (InvocationException e)
+               {
+                  cb.failed(e);
+               }
+               return null;
+            }
+         });
+         return (Future<T>)future;
 
-      return null;
+      }
+      else
+      {
+         final Class<T> theType = type;
+         final Type theGenericType = genericType;
+         Future<T> future = executor.submit(new Callable<T>()
+         {
+            @Override
+            public T call() throws Exception
+            {
+               try
+               {
+                  Response res = invoke();
+                  T obj = res.readEntity((TypeLiteral<T>) TypeLiteral.of(theType, theGenericType));
+                  cb.completed(obj);
+                  return obj;
+               }
+               catch (InvocationException e)
+               {
+                  cb.failed(e);
+               }
+               catch (MessageProcessingException e)
+               {
+                  cb.failed(new InvocationException("MPE", e));
+               }
+               return null;
+            }
+         });
+         return future;
+      }
+   }
+
+   // Request required methods
+
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      return properties;
    }
 
    @Override
    public Configuration configuration()
+   {
+      return configuration;
+   }
+
+   @Override
+   public String getMethod()
+   {
+      return method;
+   }
+
+   @Override
+   public RequestHeaders getHeaders()
+   {
+      return headers;
+   }
+
+   @Override
+   public URI getUri()
+   {
+      return uri;
+   }
+
+   @Override
+   public UriBuilder getUriBuilder()
+   {
+      return UriBuilder.fromUri(uri);
+   }
+
+   @Override
+   public Object getEntity()
+   {
+      if (entity == null) return null;
+      return entity;
+   }
+
+   @Override
+   public <T> T readEntity(Class<T> type) throws MessageProcessingException
+   {
+      if (entity == null) return null;
+      return (T) entity;
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   {
+      if (entity == null) return null;
+      return (T) entity;
+   }
+
+   @Override
+   public boolean hasEntity()
+   {
+      return entity != null;
+   }
+
+   @Override
+   public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
+   {
+      return null;
+   }
+
+   @Override
+   public Response.ResponseBuilder evaluatePreconditions(EntityTag eTag)
+   {
+      return null;
+   }
+
+   @Override
+   public Response.ResponseBuilder evaluatePreconditions(Date lastModified)
+   {
+      return null;
+   }
+
+   @Override
+   public Response.ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag)
+   {
+      return null;
+   }
+
+   @Override
+   public Response.ResponseBuilder evaluatePreconditions()
    {
       return null;
    }

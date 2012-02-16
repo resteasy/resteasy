@@ -575,7 +575,13 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
-   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(Class<T> type) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }
@@ -598,9 +604,4 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       throw new NotImplementedYetException();
    }
 
-   @Override
-   public InputStream getEntityInputStream()
-   {
-      throw new NotImplementedYetException();
-   }
 }

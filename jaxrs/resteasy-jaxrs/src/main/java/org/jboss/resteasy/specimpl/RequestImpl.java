@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,6 +47,8 @@ public class RequestImpl implements Request
    {
       return httpMethod;
    }
+
+
 
    public MultivaluedMap<String, String> getFormParameters()
    {
@@ -221,6 +224,25 @@ public class RequestImpl implements Request
 
    // spec
 
+
+   @Override
+   public <T> T readEntity(Class<T> type) throws MessageProcessingException
+   {
+      return null;
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   {
+      return null;
+   }
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      return null;
+   }
+
    @Override
    public RequestHeaders getHeaders()
    {
@@ -240,61 +262,7 @@ public class RequestImpl implements Request
    }
 
    @Override
-   public URI getPath()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public UriBuilder getPathBuilder()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public String getPath(boolean decode)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public List<PathSegment> getPathSegments()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public List<PathSegment> getPathSegments(boolean decode)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public MultivaluedMap<String, String> getQueryParameters()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public MultivaluedMap<String, String> getQueryParameters(boolean decode)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Object getEntity()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T getEntity(Class<T> type) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }
@@ -305,9 +273,4 @@ public class RequestImpl implements Request
       throw new NotImplementedYetException();
    }
 
-   @Override
-   public InputStream getEntityInputStream()
-   {
-      throw new NotImplementedYetException();
-   }
 }

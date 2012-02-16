@@ -1,23 +1,32 @@
 package org.jboss.resteasy.client.impl;
 
-import org.apache.http.client.methods.HttpHead;
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
-import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.jboss.resteasy.spi.MarshalledEntity;
+import org.jboss.resteasy.spi.NotImplementedYetException;
+import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MessageProcessingException;
-import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.ResponseHeaders;
 import javax.ws.rs.core.TypeLiteral;
+import javax.ws.rs.ext.MessageBodyReader;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,16 +36,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import static java.lang.String.*;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientResponse extends Response
+public abstract class ClientResponse extends Response
 {
    protected int status;
    protected MultivaluedMap<String, String> headers;
    protected Map<String, Object> properties;
    protected Object entity;
+   protected ResteasyProviderFactory providerFactory;
+   protected boolean isClosed;
 
    public void setHeaders(MultivaluedMap<String, String> headers)
    {
@@ -51,6 +64,11 @@ public class ClientResponse extends Response
    public void setStatus(int status)
    {
       this.status = status;
+   }
+
+   public void setProviderFactory(ResteasyProviderFactory providerFactory)
+   {
+      this.providerFactory = providerFactory;
    }
 
    @Override
@@ -139,7 +157,7 @@ public class ClientResponse extends Response
             if (language != null) return language;
             String lang = headers.getFirst("Language");
             if (lang == null) return null;
-            language =  new LocaleDelegate().fromString(lang);
+            language = new LocaleDelegate().fromString(lang);
             return language;
          }
 
@@ -208,19 +226,31 @@ public class ClientResponse extends Response
          @Override
          public URI getLocation()
          {
-            return null;
+            throw new NotImplementedYetException();
          }
 
          @Override
          public Set<Link> getLinks()
          {
-            return null;
+            throw new NotImplementedYetException();
          }
 
          @Override
          public Link getLink(String relation)
          {
-            return null;
+            throw new NotImplementedYetException();
+         }
+
+         @Override
+         public boolean hasLink(String relation)
+         {
+            throw new NotImplementedYetException();
+         }
+
+         @Override
+         public Link.Builder getLinkBuilder(String relation)
+         {
+            throw new NotImplementedYetException();
          }
       };
    }
@@ -229,22 +259,21 @@ public class ClientResponse extends Response
    public Object getEntity()
    {
       if (entity != null) return entity;
-
-
       return entity;
    }
 
    @Override
-   public <T> T getEntity(Class<T> type) throws MessageProcessingException
+   public <T> T readEntity(Class<T> type) throws MessageProcessingException
    {
-      return null;
+      return readEntity(type, null, null);
    }
 
    @Override
-   public <T> T getEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
-      return null;
+      return readEntity(entityType.getRawType(), entityType.getType(), null);
    }
+
 
    @Override
    public boolean hasEntity()
@@ -253,18 +282,131 @@ public class ClientResponse extends Response
    }
 
    @Override
-   public void bufferEntity() throws MessageProcessingException
+   public MultivaluedMap<String, Object> getMetadata()
    {
+      return (MultivaluedMap) headers;
    }
 
    @Override
    public void close() throws MessageProcessingException
    {
+      if (isClosed) return;
+      releaseConnection();
    }
 
    @Override
-   public MultivaluedMap<String, Object> getMetadata()
+   protected void finalize() throws Throwable
    {
-      return headers;
+      if (isClosed) return;
+      releaseConnection();
+   }
+
+   protected abstract InputStream getInputStream();
+   protected abstract void setInputStream(InputStream is);
+   protected abstract void releaseConnection();
+
+
+   protected MediaType getMediaType()
+   {
+      String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
+      return mediaType == null ? MediaType.WILDCARD_TYPE : MediaType.valueOf(mediaType);
+   }
+
+
+   public <T2> T2 readEntity(Class<T2> type, Type genericType, Annotation[] anns)
+   {
+      if (entity != null && !type.isInstance(this.entity))
+         throw new RuntimeException("The entity was already read, and it was of type "
+                 + entity.getClass());
+
+      if (entity == null)
+      {
+         if (status == HttpResponseCodes.SC_NO_CONTENT)
+            return null;
+
+         entity = readFrom(type, genericType, getMediaType(), anns);
+         // only release connection if we actually unmarshalled something and if the object is *NOT* an InputStream
+         // If it is an input stream, the user may be doing their own stream processing.
+         if (entity != null && !InputStream.class.isInstance(entity)) close();
+      }
+      return (T2) entity;
+   }
+
+   protected <T2> Object readFrom(Class<T2> type, Type genericType,
+                                  MediaType media, Annotation[] annotations)
+   {
+      Type useGeneric = genericType == null ? type : genericType;
+      Class<?> useType = type;
+      boolean isMarshalledEntity = false;
+      if (type.equals(MarshalledEntity.class))
+      {
+         isMarshalledEntity = true;
+         ParameterizedType param = (ParameterizedType) useGeneric;
+         useGeneric = param.getActualTypeArguments()[0];
+         useType = Types.getRawType(useGeneric);
+      }
+
+
+      MessageBodyReader reader1 = providerFactory.getMessageBodyReader(useType,
+              useGeneric, annotations, media);
+      if (reader1 == null)
+      {
+         throw new MessageProcessingException(format(
+                 "Unable to find a MessageBodyReader of content-type %s and type %s",
+                 media, genericType));
+      }
+
+      try
+      {
+         InputStream is = getInputStream();
+         if (is == null)
+         {
+            throw new MessageProcessingException("Input stream was empty, there is no entity");
+         }
+         if (isMarshalledEntity)
+         {
+            is = new InputStreamToByteArray(is);
+
+         }
+
+         // todo put in reader interception
+         final Object obj = reader1.readFrom(type, genericType, annotations, media, headers, is);
+
+         if (isMarshalledEntity)
+         {
+            InputStreamToByteArray isba = (InputStreamToByteArray) is;
+            final byte[] bytes = isba.toByteArray();
+            return new MarshalledEntity()
+            {
+               @Override
+               public byte[] getMarshalledBytes()
+               {
+                  return bytes;
+               }
+
+               @Override
+               public Object getEntity()
+               {
+                  return obj;
+               }
+            };
+         }
+         else
+         {
+            return (T2) obj;
+         }
+
+      }
+      catch (Exception e)
+      {
+         if (e instanceof ReaderException)
+         {
+            throw (ReaderException) e;
+         }
+         else
+         {
+            throw new ReaderException(e);
+         }
+      }
    }
 }

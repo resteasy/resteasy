@@ -14,7 +14,7 @@
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
         <dep.jaxb-impl.version>2.2.4</dep.jaxb-impl.version>
-        <dep.jettison.version>1.2</dep.jettison.version>
+        <dep.jettison.version>1.3.1</dep.jettison.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -86,8 +86,9 @@
         <module>jaxrs-api</module>
         <module>resteasy-test-data</module>
         <module>resteasy-jaxrs</module>
+        <module>resteasy-client</module>
+        <module>resteasy-jaxrs-testsuite</module>
         <module>providers</module>
-<!--        <module>resteasy-jaxrs-war</module>-->
         <module>resteasy-bom</module>
         <module>resteasy-cache</module>
         <module>resteasy-guice</module>

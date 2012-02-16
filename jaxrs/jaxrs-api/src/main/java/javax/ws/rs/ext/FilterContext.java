@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,9 +45,9 @@ import javax.ws.rs.core.Response;
 
 /**
  * Context class used by filters implementing
- * {@link javax.ws.rs.ext.RequestFilter} or 
- * {@link javax.ws.rs.ext.ResponseFilter} (or both). 
- * 
+ * {@link javax.ws.rs.ext.RequestFilter} or
+ * {@link javax.ws.rs.ext.ResponseFilter} (or both).
+ *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
@@ -55,90 +55,99 @@ import javax.ws.rs.core.Response;
 public interface FilterContext {
 
     /**
-     * Enumeration to control how the filter chain is processed.
-     * A filter can return {@link #NEXT} to continue the filter chain 
-     * or {@link #STOP} to abort it.
-     */
-    public enum FilterAction { STOP, NEXT };
-
-    /**
-     * Get a mutable map of properties that can be used for
-     * communication between handlers and between filters. In
-     * the Client API, this property map is initialized by calling
-     * {@link javax.ws.rs.client.Configuration#getProperties()} on
-     * the configuration object associated with the corresponding
-     * {@link javax.ws.rs.client.Invocation} or
-     * {@link javax.ws.rs.client.Invocation.Builder} instance on
-     * which a filter or handler is registered.
-     * Otherwise, it is initialized to the empty map.
+     * Get a mutable map of request-scoped properties that can be used for communication
+     * between different request/response processing components. May be empty, but
+     * MUST never be {@code null}. In the scope of a single request/response processing,
+     * a same property map instance is shared by the following methods:
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Request#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.core.Response#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.ext.FilterContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
+     * </ul>
+     * A request-scoped property is an application-defined property that may be
+     * added, removed or modified by any of the components (user, filter, interceptor etc.)
+     * that participate in a given request/response processing flow.
+     * <p />
+     * On the client side, this property map is initialized by calling
+     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
+     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
+     * on the configuration object associated with the corresponding
+     * {@link javax.ws.rs.client.Invocation request invocation}.
+     * <p />
+     * On the server side, specifying the initial values is implementation-specific.
+     * <p />
+     * If there are no initial properties set, the request-scoped property map is
+     * initialized to an empty map.
      *
-     * @return a mutable property map
+     * @return a mutable request-scoped property map.
      * @see javax.ws.rs.client.Configuration
      */
     Map<String, Object> getProperties();
-    
+
     /**
      * Get the request object.
-     * 
+     *
      * @return request object being filtered
      */
     Request getRequest();
 
     /**
-     * Get the response object. May return null if a 
+     * Get the response object. May return null if a
      * response is not available, e.g. in a
      * {@link javax.ws.rs.ext.RequestFilter}, and has not been
      * set by calling
      * {@link #setResponse(javax.ws.rs.core.Response)}.
-     * 
+     *
      * @return response object being filtered or null
      */
     Response getResponse();
 
     /**
-     * Set the request object in the context. 
-     * 
+     * Set the request object in the context.
+     *
      * @param req request object to be set
      */
     void setRequest(Request req);
 
     /**
      * Set the response object in the context. A caching filter
-     * could set a response by calling this method and returning
-     * {@link javax.ws.rs.ext.FilterContext.FilterAction#STOP} to
-     * stop the filter chain.
-     * 
+     * that implements {@link RequestFilter} or {@link PreMatchRequestFilter}
+     * could set a response by calling this method. See
+     * {@link RequestFilter#preFilter} and {@link PreMatchRequestFilter#preMatchFilter}
+     * for more information.
+     *
      * @param res response object to be set
      */
     void setResponse(Response res);
-    
+
     /**
      * Get a builder for the request object. A newly built request can
      * be set by calling {@link #setRequest(javax.ws.rs.core.Request)}.
-     * 
-     * @return request builder object 
+     *
+     * @return request builder object
      */
     Request.RequestBuilder getRequestBuilder();
-    
+
     /**
-     * Get a builder for the response object. May return null if a 
+     * Get a builder for the response object. May return null if a
      * response is not available, e.g. in a
-     * {@link javax.ws.rs.ext.RequestFilter}, and has not been set. 
-     * A newly built response can be set by calling 
+     * {@link javax.ws.rs.ext.RequestFilter}, and has not been set.
+     * A newly built response can be set by calling
      * {@link #setResponse(javax.ws.rs.core.Response)}.
-     * 
+     *
      * @return response builder object or null
      */
     Response.ResponseBuilder getResponseBuilder();
-            
+
     /**
      * Create a fresh response builder instance. A caching filter
      * could call this method to get a response builder and
      * initialize it from a cache. This method does not update
      * the state of the context object.
-     * 
+     *
      * @return newly created response builder
-     * @see #setResponse(javax.ws.rs.core.Response) 
+     * @see #setResponse(javax.ws.rs.core.Response)
      */
     Response.ResponseBuilder createResponse();
 }

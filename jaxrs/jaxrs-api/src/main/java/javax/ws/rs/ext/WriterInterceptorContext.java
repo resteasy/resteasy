@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,33 +41,31 @@ package javax.ws.rs.ext;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Context class used by {@link javax.ws.rs.ext.WriteToHandler}
- * intercepting calls to <tt>javax.ws.rs.ext.MessageBodyWriter.writeTo</tt>.
+ * Context class used by {@link javax.ws.rs.ext.WriterInterceptor}
+ * to intercept calls to (@link javax.ws.rs.ext.MessageBodyWriter#writeTo}.
  * The getters and setters in this context class correspond to the
  * parameters of the intercepted method.
  *
- * @param <T> Java type supported by corresponding message body provider
+ * @param <T> Java type supported by corresponding message body writer
  *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see WriteToHandler
+ * @see WriterInterceptor
  * @see MessageBodyWriter
  */
-public interface WriteToHandlerContext<T> extends MessageBodyHandlerContext<T> {
+public interface WriterInterceptorContext<T> extends InterceptorContext<T> {
 
     /**
-     * Proceed to the next handler in the chain. Handlers MUST explicitly
+     * Proceed to the next interceptor in the chain. Interceptors MUST explicitly
      * call this method to continue the execution chain; the call to this
-     * method in the last handler of the chain will invoke
-     * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-     * java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[],
-     * javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
-     * javax.ws.rs.ext.MessageBodyWriter.writeTo(...)} method.
+     * method in the last interceptor of the chain will invoke
+     * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo} method.
      *
-     * @throws IOException
+     * @throws IOException if an IO exception arises
      */
     void proceed() throws IOException;
 
@@ -98,4 +96,11 @@ public interface WriteToHandlerContext<T> extends MessageBodyHandlerContext<T> {
      * @param os new output stream for the object to be written
      */
     public void setOutputStream(OutputStream os);
+
+    /**
+     * Get mutable map of HTTP headers.
+     *
+     * @return map of HTTP headers
+     */
+    MultivaluedMap<String, Object> getHeaders();
 }

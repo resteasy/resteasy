@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,48 +40,36 @@
 package javax.ws.rs.ext;
 
 import java.io.IOException;
-import java.io.InputStream;
+import javax.ws.rs.WebApplicationException;
 
 /**
- * Context class used by {@link javax.ws.rs.ext.ReadFromHandler} 
- * to intercept calls to <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt>.
- * The getters and setters in this context class correspond to the 
- * parameters of the intercepted method.
- * 
- * @param <T> Java type supported by corresponding message body provider
- * 
+ * Interface for message body reader interceptors that wrap around calls
+ * to {@link javax.ws.rs.ext.MessageBodyReader#readFrom}. Message body
+ * interceptors implementing this interface MUST be annotated with
+ * {@link javax.ws.rs.ext.Provider}.
+ *
+ * @param <T> Java type supported by corresponding message body reader
+ *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
- * @see ReadFromHandler
  * @see MessageBodyReader
  */
-public interface ReadFromHandlerContext<T> extends MessageBodyHandlerContext<T> {
+public interface ReaderInterceptor<T> {
 
     /**
-     * Proceed to the next handler in the chain. Return the result of the 
-     * next handler invoked. Handlers MUST explicitly call this method
-     * to continue the execution chain; the call to this method in the 
-     * last handler of the chain will invoke
-     * <tt>javax.ws.rs.ext.MessageBodyReader.readFrom</tt>.
-     * 
-     * @return result of next handler invoked
-     * @throws IOException 
+     * Interceptor method wrapping calls to
+     * {@link javax.ws.rs.ext.MessageBodyReader#readFrom}. The parameters
+     * of the wrapped method called are available from <code>context</code>.
+     * Implementations of this method SHOULD explicitly call
+     * {@link javax.ws.rs.ext.ReaderInterceptorContext#proceed} to invoke
+     * the next interceptor in the chain, and ultimately the wrapped method.
+     *
+     * @param context invocation context
+     * @return result of next interceptor invoked or the wrapped method if
+     *         last interceptor in chain
+     * @throws IOException if an IO error arises
+     * @throws WebApplicationException thrown by wrapped method
      */
-    T proceed() throws IOException;
-
-    /**
-     * Get the input stream of the object to be read.
-     * 
-     * @return input stream of the object to be read
-     */
-    InputStream getInputStream();
-
-    /**
-     * Update the input stream of the object to be read.
-     * For example, by wrapping it with another input stream
-     * 
-     * @param is new input stream 
-     */
-    void setInputStream(InputStream is);
+    T aroundReadFrom(ReaderInterceptorContext<T> context) throws IOException, WebApplicationException;
 }

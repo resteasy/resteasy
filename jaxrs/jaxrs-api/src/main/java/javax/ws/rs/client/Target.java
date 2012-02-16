@@ -41,6 +41,7 @@ package javax.ws.rs.client;
 
 import java.net.URI;
 
+import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -62,8 +63,10 @@ public interface Target {
     public URI getUri();
 
     /**
-     * Get the URI builder initialized with the {@link URI} identifying the
-     * resource.
+     * Get the URI builder initialized with the {@link URI} of the current
+     * resource target. The returned URI builder is detached from the target,
+     * i.e. any updates in the URI builder MUST NOT have any effects on the
+     * URI of the originating target.
      *
      * @return the initialized URI builder.
      */
@@ -123,7 +126,7 @@ public interface Target {
      * @exception IllegalArgumentException if the supplied map is empty.
      * @exception NullPointerException if the parameter map or any of the names or values is null.
      */
-    public Target pathParams(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException;
+    public Target pathParams(Map<String, Object> parameters) throws IllegalArgumentException, NullPointerException;
 
     /**
      * Create a new {@code Target} instance by appending a matrix parameter to
