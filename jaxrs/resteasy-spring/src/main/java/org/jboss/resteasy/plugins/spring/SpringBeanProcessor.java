@@ -44,7 +44,7 @@ import org.springframework.util.ClassUtils;
  * It also sets up Registry and ResteasyProviderFactory to be autowirable via @Autowire
  * in Controllers/service layers.
  * </p>
- * 
+ * <p/>
  * <p>
  * There's quite a bit of spring integration functionality under the covers:
  * </p>
@@ -52,14 +52,14 @@ import org.springframework.util.ClassUtils;
  * <li>@Providers, such as RESTEasy interceptors and String converters have to
  * be registered in RESTEasy before resources and registers. That gets a bit
  * tricky, so depends-on functionality is used as well</li>
- * 
+ * <p/>
  * <li>
  * </ol>
- * 
+ * <p/>
  * <p>
  * This class takes advantaage of quite a few Spring
  * </p>
- * 
+ *
  * @author <a href="mailto:sduskis@burkecentral.com">Bill Burke</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -440,6 +440,18 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    @Override
    public void onApplicationEvent(ApplicationEvent event)
    {
+      for (SpringResourceFactory resourceFactory : resourceFactories.values())
+      {
+         getRegistry().removeRegistrations(resourceFactory.getScannableClass());
+      }
+      
+//  The following code would reprocess the bean factory, in case the configuration changed.
+//  However, it needs work.
+//      if (event.getSource() instanceof XmlWebApplicationContext)
+//      {
+//         ConfigurableListableBeanFactory beanFactory = ((XmlWebApplicationContext) event.getSource()).getBeanFactory();
+//         postProcessBeanFactory(beanFactory);
+//      }
       for (SpringResourceFactory resourceFactory : resourceFactories.values())
       {
          getRegistry().addResourceFactory(resourceFactory, resourceFactory.getContext());
