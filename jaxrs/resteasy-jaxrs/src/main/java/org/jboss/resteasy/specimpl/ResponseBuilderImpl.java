@@ -227,7 +227,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder lastModified(Date lastModified)
    {
-      if (lastModified == null) metadata.remove(HttpHeaderNames.LAST_MODIFIED);
+      if (lastModified == null)
+      {
+         metadata.remove(HttpHeaderNames.LAST_MODIFIED);
+         return this;
+      }
       metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, DateUtil.formatDate(lastModified));
       return this;
    }
