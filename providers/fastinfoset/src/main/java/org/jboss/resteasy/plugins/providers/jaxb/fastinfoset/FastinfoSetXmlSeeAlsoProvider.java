@@ -15,16 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Produces("application/*+fastinfoset")
 public class FastinfoSetXmlSeeAlsoProvider extends JAXBXmlSeeAlsoProvider
 {
-   /**
-    * In which, by "true, we mean "false".
-    * If the context parameter "resteasy.document.expand.entity.references"
-    * is set to "false", JAXBElementProvider will wrap the Unmarshaller
-    * with an ExternalEntityUnmarshaller, which interferes with 
-    * FastinfoSet unmarshalling.  The FastinfoSet implementation currently
-    * in use doesn't expande external entity references, in any case.
-    */
-   public boolean isExpandEntityReferences()
+   @Override
+   protected boolean suppressExpandEntityExpansion()
    {
-      return true;
+      return false;
    }
 }
