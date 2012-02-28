@@ -8,6 +8,7 @@ import org.apache.http.util.EntityUtils;
 import org.jboss.resteasy.annotations.GZIP;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
@@ -47,6 +48,12 @@ public class GzipTest extends BaseResourceTest
       @Path("encoded/text")
       @GZIP
       public String getGzipText();
+
+      @GET
+      @Path("encoded/text/error")
+      @GZIP
+      public String getGzipErrorText();
+
    }
 
    @Path("/")
@@ -86,6 +93,17 @@ public class GzipTest extends BaseResourceTest
             }
          };
       }
+
+      @GET
+      @Path("encoded/text/error")
+      @GZIP
+      public String getGzipErrorText()
+      {
+         throw new WebApplicationException(
+                 Response.status(500).entity("Hello").type("text/plain").build()
+         );
+      }
+
    }
 
    @Before
@@ -101,6 +119,19 @@ public class GzipTest extends BaseResourceTest
       IGZIP proxy = ProxyFactory.create(IGZIP.class, generateBaseUrl());
       Assert.assertEquals("HELLO WORLD", proxy.getText());
       Assert.assertEquals("HELLO WORLD", proxy.getGzipText());
+
+      // resteasy-651
+      try
+      {
+          String error = proxy.getGzipErrorText();
+          Assert.fail("unreachable");
+      }
+      catch (ClientResponseFailure failure)
+      {
+         Assert.assertEquals(500, failure.getResponse().getStatus());
+         String txt = (String)failure.getResponse().getEntity(String.class);
+         Assert.assertEquals("Hello", txt);
+      }
    }
 
    @Test
