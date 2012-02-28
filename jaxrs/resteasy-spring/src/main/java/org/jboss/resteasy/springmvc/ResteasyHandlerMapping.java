@@ -129,7 +129,7 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
    {
       if (!throwNotFound && order == Integer.MAX_VALUE)
       {
-         logger.info("ResteasyHandlerMapping has the default order and throwNotFound settings.  Consider adding explicit ordering to your HandlerMappings, with ResteasyHandlerMapping being lsat, and set throwNotFound = true.");
+         logger.info("ResteasyHandlerMapping has the default order and throwNotFound settings.  Consider adding explicit ordering to your HandlerMappings, with ResteasyHandlerMapping being last, and set throwNotFound = true.");
       }
    }
 }
