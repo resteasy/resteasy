@@ -121,11 +121,12 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          tmp.providerFactory = base.providerFactory;
          tmp.headers = new CaseInsensitiveMap<String>();
          tmp.headers.putAll(base.headers);
-         tmp.headers.remove("Content-Encoding"); // remove encoding because we will have already extracted byte array
+         tmp.messageBodyReaderInterceptors = base.messageBodyReaderInterceptors;
          return tmp;
       }
       else
       {
+         // not sure why this code path would ever be executed!
          InputStream is = null;
          if (copy.getHeaders().containsKey("Content-Type"))
          {
