@@ -171,7 +171,7 @@ public class TestXXE
       deployment = null;
    }
 
-   //@Test
+   @Test
    public void testXmlRootElementDefault() throws Exception
    {
       before();
@@ -186,7 +186,7 @@ public class TestXXE
       after();
    }
    
-   //@Test
+   @Test
    public void testXmlRootElementWithoutExpansion() throws Exception
    {
       before("false");
@@ -202,7 +202,7 @@ public class TestXXE
       after();
    }
 
-   //@Test
+   @Test
    public void testXmlRootElementWithExpansion() throws Exception
    {
       before("true");
@@ -217,7 +217,7 @@ public class TestXXE
       after();
    }
 
-//   //@Test
+//   @Test
    public void testXmlTypeDefault() throws Exception
    {
       before();
@@ -232,7 +232,7 @@ public class TestXXE
       after();
    }
    
-//   //@Test
+//   @Test
    public void testXmlTypeWithoutExpansion() throws Exception
    {
       before("false");
@@ -248,7 +248,7 @@ public class TestXXE
       after();
    }
 
-//   //@Test
+//   @Test
    public void testXmlTypeWithExpansion() throws Exception
    {
       before("true");
@@ -264,7 +264,7 @@ public class TestXXE
       after();
    }
    
-   //@Test
+   @Test
    public void testJAXBElementDefault() throws Exception
    {
       before();
@@ -279,7 +279,7 @@ public class TestXXE
       after();
    }
    
-   //@Test
+   @Test
    public void testJAXBElementWithoutExpansion() throws Exception
    {
       before("false");
@@ -294,7 +294,7 @@ public class TestXXE
       after();
    }
    
-   //@Test
+   @Test
    public void testJAXBElementWithExpansion() throws Exception
    {
       before("true");
@@ -309,55 +309,55 @@ public class TestXXE
       after();
    }
    
-   //@Test
+   @Test
    public void testListDefault() throws Exception
    {
       doListTest(null);
    }
    
-   //@Test
+   @Test
    public void testListWithoutExpansion() throws Exception
    {
       doListTest(false);
    }
 
-   //@Test
+   @Test
    public void testListWithExpansion() throws Exception
    {
       doListTest(true);
    }
    
-   //@Test
+   @Test
    public void testSetDefault() throws Exception
    {
       doSetTest(null);
    }
    
-   //@Test
+   @Test
    public void testSetWithoutExpansion() throws Exception
    {
       doSetTest(false);
    }
 
-   //@Test
+   @Test
    public void testSetWithExpansion() throws Exception
    {
       doSetTest(true);
    }
    
-   //@Test
+   @Test
    public void testArrayDefault() throws Exception
    {
       doArrayTest(null);
    }
    
-   //@Test
+   @Test
    public void testArrayWithoutExpansion() throws Exception
    {
       doArrayTest(false);
    }
 
-   //@Test
+   @Test
    public void testArrayWithExpansion() throws Exception
    {
       doArrayTest(true);
@@ -369,13 +369,13 @@ public class TestXXE
       doMapTest(null);
    }
    
-   //@Test
+   @Test
    public void testMapWithoutExpansion() throws Exception
    {
       doMapTest(false);
    }
    
-   //@Test
+   @Test
    public void testMapWithExpansion() throws Exception
    {
       doMapTest(true);
