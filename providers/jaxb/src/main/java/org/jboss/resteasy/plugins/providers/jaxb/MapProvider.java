@@ -115,7 +115,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
-         if (!isExpandEntityReferences())
+         if (suppressExpandEntityExpansion())
          {
             SAXSource source = new SAXSource(new InputSource(entityStream));
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
@@ -251,5 +251,10 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
    public void setExpandEntityReferences(boolean expandEntityReferences)
    {
       this.expandEntityReferences = expandEntityReferences;
+   }
+   
+   protected boolean suppressExpandEntityExpansion()
+   {
+      return !isExpandEntityReferences();
    }
 }
