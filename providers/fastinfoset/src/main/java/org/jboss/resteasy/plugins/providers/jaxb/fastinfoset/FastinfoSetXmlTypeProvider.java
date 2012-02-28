@@ -15,4 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Produces("application/*+fastinfoset")
 public class FastinfoSetXmlTypeProvider extends JAXBXmlTypeProvider
 {
+   @Override
+   protected boolean suppressExpandEntityExpansion()
+   {
+      return false;
+   }
 }

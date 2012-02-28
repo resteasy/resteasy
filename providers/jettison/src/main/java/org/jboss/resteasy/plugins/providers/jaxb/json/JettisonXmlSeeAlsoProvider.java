@@ -15,4 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Consumes("application/*+json")
 public class JettisonXmlSeeAlsoProvider extends JAXBXmlSeeAlsoProvider
 {
+   @Override
+   protected boolean suppressExpandEntityExpansion()
+   {
+      return false;
+   }
 }

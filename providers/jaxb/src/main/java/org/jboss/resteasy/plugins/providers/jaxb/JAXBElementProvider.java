@@ -81,7 +81,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       try
       {
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
-         if (!isExpandEntityReferences())
+         if (suppressExpandEntityExpansion())
          {
             unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
             SAXSource source = new SAXSource(new InputSource(entityStream));
