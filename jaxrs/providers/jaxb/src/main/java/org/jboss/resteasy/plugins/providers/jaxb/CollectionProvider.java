@@ -112,7 +112,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          JAXBElement<JaxbCollection> ele = null;
          
-         if (!isExpandEntityReferences())
+         if (suppressExpandEntityExpansion())
          {
             SAXSource source = new SAXSource(new InputSource(entityStream));
             JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
@@ -264,5 +264,10 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
    public void setExpandEntityReferences(boolean expandEntityReferences)
    {
       this.expandEntityReferences = expandEntityReferences;
+   }
+   
+   protected boolean suppressExpandEntityExpansion()
+   {
+      return !isExpandEntityReferences();
    }
 }
