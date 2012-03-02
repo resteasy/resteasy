@@ -50,7 +50,7 @@ import java.util.Set;
  * general-header =
  *      * Cache-Control            ; Section 14.9
  *        Connection               ; Section 14.10
- *        a? Date                  ; Section 14.18
+ *        Date                     ; Section 14.18
  *        Pragma                   ; Section 14.32
  *        Trailer                  ; Section 14.40
  *        Transfer-Encoding        ; Section 14.41
@@ -59,7 +59,7 @@ import java.util.Set;
  *        Warning                  ; Section 14.46
  *
  * entity-header  =                                    Req     Res
- *      *  Allow                    ; Section 14.7      +       +
+ *      *  Allow                    ; Section 14.7      -       +
  *      *  Content-Encoding         ; Section 14.11     +       +
  *      *  Content-Language         ; Section 14.12     +       +
  *      a  Content-Length           ; Section 14.13     +       +
