@@ -1,7 +1,6 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.Headers;
-import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -10,22 +9,20 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.ResponseHeaders;
-import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.core.Variant;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -34,14 +31,15 @@ import java.util.Set;
  */
 public class ResponseBuilderImpl extends Response.ResponseBuilder
 {
-   private Object entity;
-   private int status;
-   private Headers<Object> metadata = new Headers<Object>();
+   protected Object entity;
+   protected Annotation[] entityAnnotations;
+   protected int status;
+   protected Headers<Object> metadata = new Headers<Object>();
 
    @Override
    public Response build()
    {
-      return new ServerResponse(entity, status, metadata);
+      return new BuiltResponse(status, metadata, entity, entityAnnotations);
    }
 
    @Override
@@ -51,6 +49,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       impl.metadata.putAll(metadata);
       impl.entity = entity;
       impl.status = status;
+      impl.entityAnnotations = entityAnnotations;
       return impl;
    }
 
@@ -65,6 +64,14 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    public Response.ResponseBuilder entity(Object entity)
    {
       this.entity = entity;
+      return this;
+   }
+
+   @Override
+   public Response.ResponseBuilder entity(Object entity, Annotation[] annotations)
+   {
+      this.entity = entity;
+      this.entityAnnotations = annotations;
       return this;
    }
 
@@ -318,7 +325,13 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder encoding(String encoding)
    {
-      throw new NotImplementedYetException();
+      if (encoding == null)
+      {
+         metadata.remove(HttpHeaders.CONTENT_ENCODING);
+         return this;
+      }
+      metadata.putSingle(HttpHeaders.CONTENT_ENCODING, encoding);
+      return this;
    }
 
    @Override
@@ -330,7 +343,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder variants(Variant... variants)
    {
-      throw new NotImplementedYetException();
+      return this.variants(Arrays.asList(variants));
    }
 
    @Override
@@ -351,9 +364,4 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       throw new NotImplementedYetException();
    }
 
-   @Override
-   public Response.ResponseBuilder entity(Object entity, Annotation[] annotations)
-   {
-      throw new NotImplementedYetException();
-   }
 }

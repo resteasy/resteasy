@@ -17,6 +17,11 @@ public class WeightedLanguage implements Comparable<WeightedLanguage>
    private Locale locale;
    private Map<String, String> params;
 
+   public WeightedLanguage(Locale locale, float weight)
+   {
+      this.locale = locale;
+      this.weight = weight;
+   }
 
    private WeightedLanguage(String lang, Map<String, String> parameters)
    {
