@@ -1,5 +1,7 @@
 package org.jboss.resteasy.client.impl;
 
+import org.jboss.resteasy.spi.NotImplementedYetException;
+
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
@@ -7,6 +9,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.RequestHeaders;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Locale;
 import java.util.Set;
@@ -183,5 +186,11 @@ public class ClientRequestBuilder implements Request.RequestBuilder
    public Request build()
    {
       return invocationBuilder.invocation;
+   }
+
+   @Override
+   public Request.RequestBuilder entity(Object entity, Annotation[] annotations)
+   {
+      throw new NotImplementedYetException();
    }
 }

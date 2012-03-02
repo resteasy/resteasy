@@ -15,6 +15,7 @@ import javax.ws.rs.core.ResponseHeaders;
 import javax.ws.rs.core.Variant;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -269,6 +270,12 @@ public class ClientResponseBuilder extends Response.ResponseBuilder
 
    @Override
    public Response.ResponseBuilder link(String uri, String rel)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder entity(Object entity, Annotation[] annotations)
    {
       throw new NotImplementedYetException();
    }

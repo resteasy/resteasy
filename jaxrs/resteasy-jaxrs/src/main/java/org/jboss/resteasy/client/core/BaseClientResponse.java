@@ -605,4 +605,21 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       throw new NotImplementedYetException();
    }
 
+   @Override
+   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   {
+      return null;
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   {
+      return null;
+   }
+
+   @Override
+   public boolean isEntityRetrievable()
+   {
+      throw new NotImplementedYetException();
+   }
 }

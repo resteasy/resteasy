@@ -39,6 +39,7 @@
  */
 package javax.ws.rs;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -61,6 +62,7 @@ import java.lang.annotation.Target;
  * @since 2.0
  */
 @Target(ElementType.ANNOTATION_TYPE)
-@Retention(value = RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface NameBinding {
 }
