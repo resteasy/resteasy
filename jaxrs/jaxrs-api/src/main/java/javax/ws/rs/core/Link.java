@@ -80,17 +80,14 @@ public final class Link {
     public static final String TITLE = "title";
     public static final String REL = "rel";
     public static final String TYPE = "type";
-
     /**
-     * This link's underlying URI.
+     * The underlying link URI.
      */
     private URI uri;
-
     /**
-     * A map for all the link's parameters such as "rel", "type", "method", etc.
+     * A map for all the link parameters such as "rel", "type", "method", etc.
      */
     private MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
-
     /**
      * Underlying implementation delegate to serialize as link header.
      */
@@ -382,11 +379,11 @@ public final class Link {
      * @since 2.0
      */
     public static class Builder {
+
         /**
          * Link being built by the builder.
          */
         private Link link = new Link();
-
         /**
          * Underlying builder for link's URI.
          */

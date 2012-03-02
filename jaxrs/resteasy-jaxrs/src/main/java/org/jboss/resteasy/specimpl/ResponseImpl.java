@@ -137,4 +137,22 @@ public class ResponseImpl extends Response
    {
       throw new NotImplementedYetException();
    }
+
+   @Override
+   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean isEntityRetrievable()
+   {
+      throw new NotImplementedYetException();
+   }
 }

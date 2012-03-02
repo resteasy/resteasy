@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+import org.jboss.resteasy.core.filter.Interceptors;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
@@ -50,6 +51,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       ResteasyProviderFactory factory = delegate.get();
       if (factory == null) return defaultFactory;
       return factory;
+   }
+
+   @Override
+   public Interceptors getServerInterceptors()
+   {
+      return getDelegate().getServerInterceptors();
+   }
+
+   @Override
+   public Interceptors getClientInterceptors()
+   {
+      return getDelegate().getClientInterceptors();
    }
 
    @Override

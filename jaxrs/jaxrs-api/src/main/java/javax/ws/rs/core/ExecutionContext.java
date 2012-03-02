@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -157,14 +157,19 @@ public interface ExecutionContext {
      * return {@code null}, {@link WebApplicationException} is raised with a HTTP
      * 503 error status (Service unavailable). Use {@link #setResponse(java.lang.Object)}
      * method to customize the default timeout response.
+     * <p />
+     * Note that in some concurrent scenarios a call to {@code resume(...)} may
+     * occur before the call to {@code suspend(...)}. In which case the call to
+     * {@code suspend(...)} is ignored. The returned {@link Future response future}
+     * will be marked as {@link Future#isDone() done}.
      *
      * @param millis suspend timeout value in milliseconds.
      * @return handle of the suspended request processing that can be used for
      *    querying its current state via one of the {@code Future.isXxx()} methods.
      *    Invoking any other method on the returned {@code Future} instance is
      *    not defined and reserved for future extensions of JAX-RS API.
-     * @throws IllegalStateException in case the request has already been suspended,
-     *     resumed or has been canceled previously.
+     * @throws IllegalStateException in case the request has already been suspended
+     *     or has been canceled previously.
      *
      * @see #suspend()
      * @see #suspend(long, java.util.concurrent.TimeUnit)
@@ -191,6 +196,11 @@ public interface ExecutionContext {
      * return {@code null}, {@link WebApplicationException} is raised with a HTTP
      * 503 error status (Service unavailable). Use {@link #setResponse(java.lang.Object)}
      * method to customize the default timeout response.
+     * <p />
+     * Note that in some concurrent scenarios a call to {@code resume(...)} may
+     * occur before the call to {@code suspend(...)}. In which case the call to
+     * {@code suspend(...)} is ignored. The returned {@link Future response future}
+     * will be marked as {@link Future#isDone() done}.
      *
      * @param time suspend timeout value in the give time {@code unit}.
      * @param unit suspend timeout value time unit
@@ -198,8 +208,8 @@ public interface ExecutionContext {
      *    querying its current state via one of the {@code Future.isXxx()} methods.
      *    Invoking any other method on the returned {@code Future} instance is
      *    not defined and reserved for future extensions of JAX-RS API.
-     * @throws IllegalStateException in case the request has already been suspended,
-     *     resumed or has been canceled previously.
+     * @throws IllegalStateException in case the request has already been suspended
+     *     or has been canceled previously.
      *
      * @see #suspend()
      * @see #suspend(long, java.util.concurrent.TimeUnit)

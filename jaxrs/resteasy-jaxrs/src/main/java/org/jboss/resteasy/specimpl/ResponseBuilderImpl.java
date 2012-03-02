@@ -19,6 +19,7 @@ import javax.ws.rs.core.ResponseHeaders;
 import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.core.Variant;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -346,6 +347,12 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 
    @Override
    public Response.ResponseBuilder link(String uri, String rel)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder entity(Object entity, Annotation[] annotations)
    {
       throw new NotImplementedYetException();
    }

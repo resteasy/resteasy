@@ -466,12 +466,6 @@ public class ClientInvocation implements Invocation, Request
    }
 
    @Override
-   public UriBuilder getUriBuilder()
-   {
-      return UriBuilder.fromUri(uri);
-   }
-
-   @Override
    public Object getEntity()
    {
       if (entity == null) return null;
@@ -526,5 +520,33 @@ public class ClientInvocation implements Invocation, Request
    public Response.ResponseBuilder evaluatePreconditions()
    {
       return null;
+   }
+
+   @Override
+   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   {
+      return null;
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   {
+      return null;
+   }
+
+   @Override
+   public boolean isEntityRetrievable()
+   {
+      return false;
+   }
+
+   @Override
+   public void bufferEntity() throws MessageProcessingException
+   {
+   }
+
+   @Override
+   public void close() throws MessageProcessingException
+   {
    }
 }

@@ -19,6 +19,7 @@ import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
@@ -256,12 +257,6 @@ public class RequestImpl implements Request
    }
 
    @Override
-   public UriBuilder getUriBuilder()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Object getEntity()
    {
       throw new NotImplementedYetException();
@@ -273,4 +268,33 @@ public class RequestImpl implements Request
       throw new NotImplementedYetException();
    }
 
+   @Override
+   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean isEntityRetrievable()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public void bufferEntity() throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public void close() throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
 }

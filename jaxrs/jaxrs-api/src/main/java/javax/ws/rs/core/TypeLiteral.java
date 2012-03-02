@@ -224,15 +224,15 @@ public abstract class TypeLiteral<T> {
      *     the {@code TypeLiteral<T>}
      */
     private static Class<?> getTypeLiteralSubclass(Class<?> clazz) {
-        // Start with super class
+        // Start with a super class
         Class<?> superClass = clazz.getSuperclass();
 
         if (superClass.equals(TypeLiteral.class)) {
             // Super class is TypeLiteral, return the current class
             return clazz;
-        } else if (TypeLiteral.class.isAssignableFrom(superClass)) {
-            // Hmm, strange case, we don not extends TypeLiteral !
-            throw new IllegalArgumentException(clazz + " is not a subclass of TypeLiteral<T>");
+        } else if (!TypeLiteral.class.isAssignableFrom(clazz)) {
+            // The clazz IS a direct TypeLiteral instance, we should not be here at all...
+            throw new IllegalStateException("No type information has been specified for this TypeLiteral instance.");
         } else {
             // Continue processing, one level deeper
             return (getTypeLiteralSubclass(superClass));
