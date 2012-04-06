@@ -1,10 +1,6 @@
 package org.jboss.resteasy.util;
 
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -30,7 +26,8 @@ public final class FindAnnotation
                    CookieParam.class,
                    PathParam.class,
                    MatrixParam.class,
-                   Context.class
+                   Context.class,
+                   FormParam.class
            };
 
    private static final Class[] findJaxRSAnnotations_TYPE = new Class[]{};
