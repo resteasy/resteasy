@@ -409,4 +409,28 @@ public abstract class ClientResponse extends Response
          }
       }
    }
+
+   @Override
+   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean isEntityRetrievable()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public void bufferEntity() throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
 }

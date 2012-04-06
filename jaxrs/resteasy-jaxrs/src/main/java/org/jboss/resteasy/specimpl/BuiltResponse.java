@@ -14,26 +14,29 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
+ * A response object not attached to a client or server invocation.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResponseImpl extends Response
+public class BuiltResponse extends Response
 {
    protected Object entity;
    protected int status = HttpResponseCodes.SC_OK;
    protected Headers<Object> metadata = new Headers<Object>();
-   protected Annotation[] annotations;
+   protected Annotation[] entityAnnotations;
    protected Type genericType;
 
-   public ResponseImpl()
+   public BuiltResponse()
    {
    }
 
-   public ResponseImpl(Object entity, int status, Headers<Object> metadata)
+   public BuiltResponse(int status, Headers<Object> metadata, Object entity, Annotation[] entityAnnotations)
    {
       this.entity = entity;
       this.status = status;
       this.metadata = metadata;
+      this.entityAnnotations = entityAnnotations;
    }
 
    @Override
@@ -70,14 +73,9 @@ public class ResponseImpl extends Response
       this.metadata.putAll(metadata);
    }
 
-   public Annotation[] getAnnotations()
+   public Annotation[] getEntityAnnotations()
    {
-      return annotations;
-   }
-
-   public void setAnnotations(Annotation[] annotations)
-   {
-      this.annotations = annotations;
+      return entityAnnotations;
    }
 
    public Type getGenericType()
@@ -134,6 +132,24 @@ public class ResponseImpl extends Response
 
    @Override
    public void close() throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean isEntityRetrievable()
    {
       throw new NotImplementedYetException();
    }

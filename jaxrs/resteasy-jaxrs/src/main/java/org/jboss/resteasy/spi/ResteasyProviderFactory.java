@@ -10,6 +10,7 @@ import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.filter.Interceptors;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
@@ -458,7 +459,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public Response.ResponseBuilder createResponseBuilder()
    {
-      return new ResponseBuilderImpl();
+      return new ResponseBuilderImpl()
+      {
+         @Override
+         public Response build()
+         {
+            return new ServerResponse(entity, status, metadata);
+         }
+      };
    }
 
    public Variant.VariantListBuilder createVariantListBuilder()

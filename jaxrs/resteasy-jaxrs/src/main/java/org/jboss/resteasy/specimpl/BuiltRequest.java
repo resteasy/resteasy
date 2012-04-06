@@ -1,24 +1,19 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.RequestHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.ArrayList;
@@ -27,21 +22,27 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A request object not attached to a client or server invocation.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class RequestImpl implements Request
+public class BuiltRequest implements Request
 {
-   private HttpHeaders headers;
-   private String varyHeader;
-   private String httpMethod;
-   private HttpRequest request;
+   protected RequestHeadersImpl headers;
+   protected String varyHeader;
+   protected String httpMethod;
+   protected Object entity;
+   protected Annotation[] entityAnnotations;
+   protected URI uri;
 
-   public RequestImpl(HttpRequest request)
+   public BuiltRequest(String httpMethod, URI uri, RequestHeadersImpl headers, Object entity, Annotation[] entityAnnotations)
    {
-      this.headers = request.getHttpHeaders();
-      this.httpMethod = request.getHttpMethod().toUpperCase();
-      this.request = request;
+      this.httpMethod = httpMethod;
+      this.uri = uri;
+      this.headers = headers;
+      this.entity = entity;
+      this.entityAnnotations = entityAnnotations;
    }
 
    public String getMethod()
@@ -49,19 +50,12 @@ public class RequestImpl implements Request
       return httpMethod;
    }
 
-
-
-   public MultivaluedMap<String, String> getFormParameters()
-   {
-      return request.getDecodedFormParameters();
-   }
-
    public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
    {
       if (variants == null || variants.size() == 0) throw new IllegalArgumentException("Variant list must not be zero");
 
       ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
-      MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
+      MultivaluedMap<String, String> requestHeaders = headers.asMap();
       negotiation.setAcceptHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT));
       negotiation.setAcceptCharsetHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_CHARSET));
       negotiation.setAcceptEncodingHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_ENCODING));
@@ -128,14 +122,14 @@ public class RequestImpl implements Request
    public Response.ResponseBuilder evaluatePreconditions(EntityTag eTag)
    {
       Response.ResponseBuilder builder = null;
-      List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
+      List<String> ifMatch = headers.asMap().get(HttpHeaderNames.IF_MATCH);
       if (ifMatch != null && ifMatch.size() > 0)
       {
          builder = ifMatch(convertEtag(ifMatch), eTag);
       }
       if (builder == null)
       {
-         List<String> ifNoneMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_NONE_MATCH);
+         List<String> ifNoneMatch = headers.asMap().get(HttpHeaderNames.IF_NONE_MATCH);
          if (ifNoneMatch != null && ifNoneMatch.size() > 0)
          {
             builder = ifNoneMatch(convertEtag(ifNoneMatch), eTag);
@@ -176,7 +170,7 @@ public class RequestImpl implements Request
    public Response.ResponseBuilder evaluatePreconditions(Date lastModified)
    {
       Response.ResponseBuilder builder = null;
-      String ifModifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
+      String ifModifiedSince = headers.asMap().getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
       if (ifModifiedSince != null)
       {
          builder = ifModifiedSince(ifModifiedSince, lastModified);
@@ -184,7 +178,7 @@ public class RequestImpl implements Request
       if (builder == null)
       {
          //System.out.println("ifModified returned null");
-         String ifUnmodifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
+         String ifUnmodifiedSince = headers.asMap().getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
          if (ifUnmodifiedSince != null)
          {
             builder = ifUnmodifiedSince(ifUnmodifiedSince, lastModified);
@@ -214,7 +208,7 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder evaluatePreconditions()
    {
-      List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
+      List<String> ifMatch = headers.asMap().get(HttpHeaderNames.IF_MATCH);
       if (ifMatch == null || ifMatch.size() == 0)
       {
          return null;
@@ -223,78 +217,84 @@ public class RequestImpl implements Request
       return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED);
    }
 
+
    // spec
 
 
    @Override
    public <T> T readEntity(Class<T> type) throws MessageProcessingException
    {
-      return null;
+      throw new IllegalStateException("Request isn't attached yet");
    }
 
    @Override
    public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
    {
-      return null;
+      throw new IllegalStateException("Request isn't attached yet");
    }
 
    @Override
    public Map<String, Object> getProperties()
    {
-      return null;
-   }
-
-   @Override
-   public RequestHeaders getHeaders()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public URI getUri()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public Object getEntity()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public boolean hasEntity()
-   {
-      throw new NotImplementedYetException();
+      throw new IllegalStateException("Request isn't attached yet");
    }
 
    @Override
    public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
    {
-      throw new NotImplementedYetException();
+      throw new IllegalStateException("Request isn't attached yet");
    }
 
    @Override
    public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
    {
-      throw new NotImplementedYetException();
+      throw new IllegalStateException("Request isn't attached yet");
+   }
+
+   @Override
+   public RequestHeaders getHeaders()
+   {
+      return headers;
+   }
+
+   @Override
+   public URI getUri()
+   {
+      return uri;
+   }
+
+   @Override
+   public boolean hasEntity()
+   {
+      return entity != null;
+   }
+
+   @Override
+   public Object getEntity()
+   {
+      return entity;
+   }
+
+   public Annotation[] getEntityAnnotations()
+   {
+      return entityAnnotations;
    }
 
    @Override
    public boolean isEntityRetrievable()
    {
-      throw new NotImplementedYetException();
+      return false;
    }
 
    @Override
    public void bufferEntity() throws MessageProcessingException
    {
-      throw new NotImplementedYetException();
+      throw new IllegalStateException("Request isn't attached yet");
    }
 
    @Override
    public void close() throws MessageProcessingException
    {
-      throw new NotImplementedYetException();
+      throw new IllegalStateException("Request isn't attached yet");
    }
 }

@@ -88,25 +88,24 @@ public interface FilterContext {
     /**
      * Get the request object.
      *
-     * @return request object being filtered
+     * @return request object being filtered.
      */
     Request getRequest();
 
     /**
-     * Get the response object. May return null if a
+     * Get the response object. May return {@code null} if a
      * response is not available, e.g. in a
      * {@link javax.ws.rs.ext.RequestFilter}, and has not been
-     * set by calling
-     * {@link #setResponse(javax.ws.rs.core.Response)}.
+     * set by calling {@link #setResponse(javax.ws.rs.core.Response)}.
      *
-     * @return response object being filtered or null
+     * @return response object being filtered or {@code null}.
      */
     Response getResponse();
 
     /**
      * Set the request object in the context.
      *
-     * @param req request object to be set
+     * @param req request object to be set.
      */
     void setRequest(Request req);
 
@@ -117,7 +116,7 @@ public interface FilterContext {
      * {@link RequestFilter#preFilter} and {@link PreMatchRequestFilter#preMatchFilter}
      * for more information.
      *
-     * @param res response object to be set
+     * @param res response object to be set.
      */
     void setResponse(Response res);
 
@@ -125,18 +124,18 @@ public interface FilterContext {
      * Get a builder for the request object. A newly built request can
      * be set by calling {@link #setRequest(javax.ws.rs.core.Request)}.
      *
-     * @return request builder object
+     * @return request builder object.
      */
     Request.RequestBuilder getRequestBuilder();
 
     /**
-     * Get a builder for the response object. May return null if a
+     * Get a builder for the response object. May return {@code null} if a
      * response is not available, e.g. in a
      * {@link javax.ws.rs.ext.RequestFilter}, and has not been set.
      * A newly built response can be set by calling
      * {@link #setResponse(javax.ws.rs.core.Response)}.
      *
-     * @return response builder object or null
+     * @return response builder object or {@code null}.
      */
     Response.ResponseBuilder getResponseBuilder();
 
