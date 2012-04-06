@@ -1,0 +1,60 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean name="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+          p:ignoreUnresolvablePlaceholders="true"
+          p:ignoreResourceNotFound="true">
+        <property name="locations">
+            <list>
+                <value>classpath:db.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="dataSource"
+          class="org.apache.commons.dbcp.BasicDataSource"
+          p:driverClassName="${contacts.db.driver}" p:url="${contacts.db.url}"
+          p:username="${contacts.db.username}"
+          p:password="${contacts.db.password}"/>
+
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
+          p:dataSource-ref="dataSource">
+        <property name="hibernateProperties">
+            <props>
+                <!-- MySQL DIALECT -->
+                <!-- prop key="hibernate.dialect">
+                  org.hibernate.dialect.MySQLDialect
+               </prop -->
+                <!-- HSQLDB DIALECT -->
+                <prop key="hibernate.dialect">
+                    org.hibernate.dialect.HSQLDialect
+                </prop>
+                <prop key="hibernate.show_sql">false</prop>
+            </props>
+        </property>
+        <property name="annotatedClasses">
+            <list>
+                <value>
+                    org.jboss.resteasy.examples.contacts.core.Contact
+                </value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Spring transaction management -->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+          p:sessionFactory-ref="sessionFactory"/>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>

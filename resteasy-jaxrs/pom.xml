@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>2.3.2.Final</version>
+    </parent>
+    <artifactId>resteasy-jaxrs</artifactId>
+    <name>RESTEasy JAX-RS Implementation</name>
+    <description/>
+    <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>jaxrs-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>tjws</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!--
+           Scans classes on cp for annotations and builds quick lookup database
+           of them.
+        -->
+        <dependency>
+            <groupId>org.scannotation</groupId>
+            <artifactId>scannotation</artifactId>
+        </dependency>
+        <!--
+           Needed for javax.annotation.security.* which is part of javaee 6 XXX
+           should this dependency be <scope>provided</scope> and only used if
+           detected runtime?
+        -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+        </dependency>
+
+        <!-- javax.activation.DataSource provider is required by spec -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+        </dependency>
+
+        <!-- Used for org.jboss.resteasy.plugins.client.httpclient.* -->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+
+
+        <!-- 4.0 refactor of apache httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+        </dependency>
+
+        <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
+        <!--
+        <dependency>
+            <groupId>tjws</groupId>
+            <artifactId>webserver</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        -->
+
+    </dependencies>
+</project>

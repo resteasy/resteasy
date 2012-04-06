@@ -1,0 +1,3 @@
+<jboss-web>
+   <security-domain>java:/jaas/other</security-domain>
+</jboss-web>

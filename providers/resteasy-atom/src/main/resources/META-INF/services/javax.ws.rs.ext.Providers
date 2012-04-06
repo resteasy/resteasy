@@ -1,0 +1,2 @@
+org.jboss.resteasy.plugins.providers.atom.AtomFeedProvider
+org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider

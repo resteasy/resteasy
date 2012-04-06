@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema targetNamespace="http://jboss.org/resteasy/test/providers/jaxb/generated/order" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:o="http://jboss.org/resteasy/test/providers/jaxb/generated/order" elementFormDefault="qualified">
+	<xs:simpleType name="stringtype">
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+	<xs:simpleType name="inttype">
+		<xs:restriction base="xs:positiveInteger" />
+	</xs:simpleType>
+	<xs:simpleType name="dectype">
+		<xs:restriction base="xs:decimal" />
+	</xs:simpleType>
+	<xs:simpleType name="orderidtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{6}" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="shiptotype">
+		<xs:sequence>
+			<xs:element name="name" type="o:stringtype" />
+			<xs:element name="address" type="o:stringtype" />
+			<xs:element name="city" type="o:stringtype" />
+			<xs:element name="country" type="o:stringtype" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="itemtype">
+		<xs:sequence>
+			<xs:element name="title" type="o:stringtype" />
+			<xs:element name="note" type="o:stringtype" minOccurs="0" />
+			<xs:element name="quantity" type="o:inttype" />
+			<xs:element name="price" type="o:dectype" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ordertype">
+		<xs:sequence>
+			<xs:element name="person" type="o:stringtype" />
+			<xs:element name="shipto" type="o:shiptotype" />
+			<xs:element name="item" maxOccurs="unbounded" type="o:itemtype" />
+		</xs:sequence>
+		<xs:attribute name="orderid" type="o:orderidtype" use="required" />
+	</xs:complexType>
+	<xs:element name="order" type="o:ordertype" />
+</xs:schema>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <groupId>org.jboss.resteasy</groupId>
+        <version>2.3.2.Final</version>
+    </parent>
+
+    <artifactId>resteasy-common</artifactId>
+    <name>RESTEasy JAX-RS Common Implementation</name>
+
+</project>

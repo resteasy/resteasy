@@ -1,0 +1,146 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+                         "http://www.docbook.org/xml/4.4/docbookx.dtd"
+        [
+                <!ENTITY Overview SYSTEM "modules/Overview.xml">
+                <!ENTITY License SYSTEM "modules/License.xml">
+                <!ENTITY Installation_Configuration SYSTEM "modules/Installation_Configuration.xml">
+                <!ENTITY Using_Path SYSTEM "modules/Using_Path.xml">
+                <!ENTITY _PathParam SYSTEM "modules/_PathParam.xml">
+                <!ENTITY _QueryParam SYSTEM "modules/_QueryParam.xml">
+                <!ENTITY _HeaderParam SYSTEM "modules/_HeaderParam.xml">
+                <!ENTITY Links SYSTEM "modules/Links.xml">
+                <!ENTITY GZIP SYSTEM "modules/gzip.xml">
+                <!ENTITY _MatrixParam SYSTEM "modules/_MatrixParam.xml">
+                <!ENTITY _CookieParam SYSTEM "modules/_CookieParam.xml">
+                <!ENTITY _FormParam SYSTEM "modules/_FormParam.xml">
+                <!ENTITY _Form SYSTEM "modules/_Form.xml">
+                <!ENTITY Cache_NoCache_CacheControl SYSTEM "modules/Cache_NoCache_CacheControl.xml">
+                <!ENTITY _DefaultValue SYSTEM "modules/_DefaultValue.xml">
+                <!ENTITY _Encoded_and_encoding SYSTEM "modules/_Encoded_and_encoding.xml">
+                <!ENTITY _Context SYSTEM "modules/_Context.xml">
+                <!ENTITY JAX-RS_Resource_Locators_and_Sub_Resources SYSTEM "modules/JAX-RS_Resource_Locators_and_Sub_Resources.xml">
+                <!ENTITY JAX-RS_Content_Negotiation SYSTEM "modules/JAX-RS_Content_Negotiation.xml">
+                <!ENTITY Content_Marshalling_Providers SYSTEM "modules/Content_Marshalling_Providers.xml">
+                <!ENTITY StringConverter SYSTEM "modules/StringConverter.xml">
+                <!ENTITY Responses_using_javax.ws.rs.core.Response SYSTEM "modules/Responses_using_javax.ws.rs.core.Response.xml">
+                <!ENTITY ExceptionMappers SYSTEM "modules/ExceptionMappers.xml">
+                <!ENTITY Configuring_Individual_JAX-RS_Resource_Beans SYSTEM "modules/Configuring_Individual_JAX-RS_Resource_Beans.xml">
+                <!ENTITY Asynchronous_HTTP SYSTEM "modules/Asynchronous_HTTP.xml">
+                <!ENTITY Asynchronous_Job SYSTEM "modules/Async_job_service.xml">
+                <!ENTITY RESTEasy_Embedded_Container SYSTEM "modules/RESTEasy_Embedded_Container.xml">
+                <!ENTITY RESTEasy_Server-side_Mock_Framework SYSTEM "modules/RESTEasy_Server-side_Mock_Framework.xml">
+                <!ENTITY Securing_JAX-RS_and_RESTeasy SYSTEM "modules/Securing_JAX-RS_and_RESTeasy.xml">
+                <!ENTITY RESTEasy_EJB_Integration SYSTEM "modules/RESTEasy_EJB_Integration.xml">
+                <!ENTITY RESTEasy_Spring_Integration SYSTEM "modules/RESTEasy_Spring_Integration.xml">
+                <!ENTITY RESTEasy_Client_Framework SYSTEM "modules/RESTEasy_Client_Framework.xml">
+                <!ENTITY AJAX_Client SYSTEM "modules/AJAX_Client.xml">
+                <!ENTITY Maven_and_RESTEasy SYSTEM "modules/Maven_and_RESTEasy.xml">
+                <!ENTITY Migration_from_older_versions SYSTEM "modules/Migration_from_older_versions.xml">
+                <!ENTITY Multipart SYSTEM "modules/Multipart.xml">
+                <!ENTITY Atom SYSTEM "modules/Atom.xml">
+                <!ENTITY Json SYSTEM "modules/Json.xml">
+                <!ENTITY Jaxb SYSTEM "modules/Jaxb.xml">
+                <!ENTITY Yaml SYSTEM "modules/Yaml.xml">
+                <!ENTITY Seam SYSTEM "modules/Seam.xml">
+                <!ENTITY Guice SYSTEM "modules/Guice.xml">
+                <!ENTITY JBoss SYSTEM "modules/JBoss.xml">
+                <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
+                <!ENTITY Books SYSTEM "modules/Books.xml">
+                <!ENTITY Authentication SYSTEM "modules/Authentication.xml">
+                <!ENTITY CDI SYSTEM "modules/CDI.xml">
+                <!ENTITY Signature SYSTEM "modules/signature.xml">
+                <!ENTITY SMIME SYSTEM "modules/smime.xml">
+                <!ENTITY Validation SYSTEM "modules/Validation.xml">
+                ]>
+
+<book>
+
+   <bookinfo>
+      <title>RESTEasy JAX-RS</title>
+      <subtitle>RESTFul Web Services for Java</subtitle>
+      <releaseinfo>2.3.2.Final</releaseinfo>
+   </bookinfo>
+
+   <toc/>
+
+   <preface id="preface" revision="1">
+      <title>Preface</title>
+      <para>
+         Commercial development support, production support and training for RESTEasy JAX-RS is
+         available through JBoss, a division of Red Hat Inc. (see http://www.jboss.com/).
+      </para>
+
+      <para>
+         In some of the example listings, what is meant to be displayed on one line does not fit
+         inside the available page width. These lines have been broken up. A '\' at the end of a
+         line means that a break has been introduced to fit in the page, with the following lines
+         indented. So:
+         <programlisting>
+            Let's pretend to have an extremely \
+            long line that \
+            does not fit
+            This one is short
+         </programlisting>
+         Is really:
+         <programlisting>
+            Let's pretend to have an extremely long line that does not fit
+            This one is short
+         </programlisting>
+      </para>
+   </preface>
+
+
+
+   &Overview;
+   &License;
+   &Installation_Configuration;
+   &Using_Path;
+   &_PathParam;
+   &_QueryParam;
+   &_HeaderParam;
+   &Links;
+   &_MatrixParam;
+   &_CookieParam;
+   &_FormParam;
+   &_Form;
+   &_DefaultValue;
+   &_Encoded_and_encoding;
+   &_Context;
+   &JAX-RS_Resource_Locators_and_Sub_Resources;
+   &JAX-RS_Content_Negotiation;
+    &Content_Marshalling_Providers;
+    &Jaxb;
+    &Atom;
+    &Json;
+    &Multipart;
+    &Yaml;
+   &StringConverter;
+   &Responses_using_javax.ws.rs.core.Response;
+   &ExceptionMappers;
+   &Configuring_Individual_JAX-RS_Resource_Beans;
+   &GZIP;
+   &Cache_NoCache_CacheControl;
+   &Interceptors;
+   &Asynchronous_HTTP;
+   &Asynchronous_Job;
+   &RESTEasy_Embedded_Container;
+   &RESTEasy_Server-side_Mock_Framework;
+   &Securing_JAX-RS_and_RESTeasy;
+   &Authentication;
+   &Signature;
+   &SMIME;
+   &RESTEasy_EJB_Integration;
+   &RESTEasy_Spring_Integration;
+   &CDI;
+   &Seam;
+    &Guice;
+   &RESTEasy_Client_Framework;
+   &AJAX_Client;
+   &Validation;
+   &Maven_and_RESTEasy;
+   &JBoss;
+   &Migration_from_older_versions;
+   &Books;
+
+</book>
+

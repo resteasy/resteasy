@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+    <!-- Scan for both @Provider and JAX-RS resource classes (@Path, @GET, @POST etc..) and register them -->
+    <!-- context-param>
+       <param-name>resteasy.scan</param-name>
+       <param-value>true</param-value>
+    </context-param-->
+
+    <!-- set this if you map the Resteasy servlet to something other than /*
+    <context-param>
+       <param-name>resteasy.servlet.mapping.prefix</param-name>
+       <param-value>/resteasy</param-value>
+    </context-param>
+    -->
+    <listener>
+        <listener-class>
+            org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
+        </listener-class>
+    </listener>
+
+    <!-- Any beans annotated with JAX-RS are automatically loaded (@Path...) -->
+    <listener>
+        <listener-class>
+            org.jboss.resteasy.plugins.spring.SpringContextLoaderListener
+        </listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>
+            org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+        </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <!-- URL would be http://localhost:9095/services/helloservice/hello/toto -->
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>

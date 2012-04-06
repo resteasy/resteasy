@@ -1,0 +1,158 @@
+<chapter id="Validation">
+   <title>Validation</title>
+   <para>
+   RESTEasy is able to trigger validation in beans and method invocation. It introduces a new interface - org.jboss.resteasy.spi.validation.ValidatorAdapter - which is intended to decouple RESTEasy from the real validation API.
+   Although the focus is integrate with the Bean Validation (<ulink url="http://jcp.org/en/jsr/detail?id=303">JSR-303</ulink>), this interface (hopefully ;)) allows us to integrate with any validation framework.
+   </para>
+   <section>
+   		<title>Providing a ValidatorAdapter to RESTEasy</title>
+   		RESTEasy will try to obtain an implementation of ValidatorAdapter through a ContextResolver provider in the classpath. We can provide RESTEasy with an implementation like follow:
+<programlisting><![CDATA[
+@Provider
+public class MyValidatorContextResolver implements ContextResolver<ValidatorAdapter> {
+   
+   @Override
+   public ValidatorAdapter getContext(Class<?> type) {
+      return new MyValidator(); 
+   }
+   
+}]]></programlisting>   		
+   </section>
+   <section>
+   		<title>Telling RESTEasy what needs validation</title>
+   		There are two new annotations - org.jboss.resteasy.spi.validation.ValidateRequest and org.jboss.resteasy.spi.validation.DoNotValidateRequest - that are used to indicate what needs validation or not.
+   		We can tell RESTEasy to validate any method in a resource annotating the resource:
+<programlisting>
+@Path("resourcePath")
+@ValidateRequest
+public interface Resource {
+   
+   @POST
+   @Path("insert")
+   public String insert(...
+
+   @GET
+   @Path("list")
+   public String list(...
+    
+}</programlisting>
+		We can tell it to validate just some methods in an interface:
+<programlisting>
+@Path("resourcePath")
+public interface Resource {
+   
+   @POST
+   @Path("insert")
+   @ValidateRequest
+   public String insert(...
+
+   @GET
+   @Path("list")
+   public String list(...
+    
+}</programlisting>	
+		This way RESTEasy will only trigger validation in insert method.
+		It's possible to say what methods you don't want to be validated: 	   		
+<programlisting>
+@Path("resourcePath")
+@ValidateRequest
+public interface Resource {
+   
+   @POST
+   @Path("insert")
+   public String insert(...
+   
+   @GET
+   @Path("list")
+   @DoNotValidateRequest
+   public String list(...
+    
+}</programlisting>	
+		<important>
+    		<para>
+    			By default RESTEasy will not validate any method. To enable validation it's required to annotate the resource or method with ValidateRequest.
+    		</para>
+    	</important>
+   </section>
+   <section>
+   	   <title>Bean Validation API integration</title>
+   	   <para>
+   	   The Bean Validation API (<ulink url="http://jcp.org/en/jsr/detail?id=303">JSR-303</ulink>) defines a meta-data model and API for bean validation based on annotations, with overrides and extended meta-data through the use of XML validation descriptors.
+   	   There are some implementations of the API, and initially we integrate just with <ulink url="http://www.hibernate.org/subprojects/validator.html">Hibernate Validator</ulink>, which is the reference implementation to the JSR-303. 
+   	   </para>
+	   <para>
+	   The integration between the API implementation and RESTEasy is done through the resteasy-hibernatevalidator-provider component.    
+	   In order to integrate, we need to add resteasy-hibernatevalidator-provider and hibernate-validator to the classpath. With maven it's just a matter of including the following dependency:
+<programlisting><![CDATA[<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-hibernatevalidator-provider</artifactId>
+   <version>2.3.2.Final</version>
+</dependency>]]></programlisting>
+		</para>
+		<para>
+		With this in the classpath, we can use all the infrastructure of the Bean Validation API and Hibernate Validator implementation:
+<programlisting>
+@Path("resourcePath")
+@ValidateRequest
+public interface Resource {
+   
+   @POST
+   @Path("insert")
+   public String insert(
+      @FormParam("name") 
+      @NotNull 
+      @Size(min=1,max=255) 
+      String name,
+      
+      @FormParam("version")
+      @Pattern("\\d")
+      String version
+   );
+   
+   @GET
+   @Path("list")
+   public String list(
+      @QueryParam("keyword") 
+      @NotNull 
+      String 
+      keyword
+   );
+    
+}</programlisting>		
+		</para>
+		<para>
+		If a @Form parameter needs to be used, or the parameter represents the body of the request, this parameter needs to be annotated with @Valid from Bean Validation API:  
+<programlisting>
+@Path("resourcePath")
+@ValidateRequest
+public interface Resource {
+   
+   @POST
+   @Path("insert")
+   public String insert(
+      @Form 
+      @Valid
+      FormBean form
+   );
+   
+}</programlisting>
+		</para>
+		<para>
+		The ValidatorAdapter API doesn't define an exception model yet. Each adapter implementation throws its particular implementation exception.   
+<programlisting>
+@Path("resourcePath")
+@ValidateRequest
+public interface Resource {
+   
+   @POST
+   @Path("insert")
+   public String insert(
+      @Form 
+      @Valid
+      FormBean form
+   );
+   
+}</programlisting>
+		</para>
+   </section>
+</chapter>

@@ -1,0 +1,6 @@
+org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetJAXBContextFinder
+org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetElementProvider
+org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetXmlRootElementProvider
+org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetXmlSeeAlsoProvider
+org.jboss.resteasy.plugins.providers.jaxb.fastinfoset.FastinfoSetXmlTypeProvider
+

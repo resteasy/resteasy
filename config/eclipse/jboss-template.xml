@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates><template id="org.eclipse.jdt.ui.text.codetemplates.gettercomment" name="gettercomment" description="Comment for getter methods" context="gettercomment_context" enabled="true" deleted="false">/**
+ * Get the ${bare_field_name}.
+ * 
+ * @return the ${bare_field_name}.
+ */</template><template id="org.eclipse.jdt.ui.text.codetemplates.settercomment" name="settercomment" description="Comment for setter methods" context="settercomment_context" enabled="true" deleted="false">/**
+ * Set the ${bare_field_name}.
+ * 
+ * @param ${param} The ${bare_field_name} to set.
+ */</template><template id="org.eclipse.jdt.ui.text.codetemplates.constructorcomment" name="constructorcomment" description="Comment for created constructors" context="constructorcomment_context" enabled="true" deleted="false">/**
+ * Create a new ${enclosing_type}.
+ * 
+ * ${tags}
+ */</template><template id="org.eclipse.jdt.ui.text.codetemplates.typecomment" name="typecomment" description="Comment for created types" context="typecomment_context" enabled="true" deleted="false">/**
+ * A ${type_name}.
+ * 
+ * @author &lt;a href="adrian@jboss.com"&gt;Adrian Brock&lt;/a&gt;
+ * @version $$Revision: 1.1 $$
+ */</template><template id="org.eclipse.jdt.ui.text.codetemplates.fieldcomment" name="fieldcomment" description="Comment for fields" context="fieldcomment_context" enabled="true" deleted="false">/** The ${field} */</template><template id="org.eclipse.jdt.ui.text.codetemplates.methodcomment" name="methodcomment" description="Comment for non-overriding methods" context="methodcomment_context" enabled="true" deleted="false">/** FIXME Comment this
+ * 
+ * ${tags}
+ */</template><template id="org.eclipse.jdt.ui.text.codetemplates.overridecomment" name="overridecomment" description="Comment for overriding methods" context="overridecomment_context" enabled="true" deleted="false"/><template id="org.eclipse.jdt.ui.text.codetemplates.newtype" name="newtype" description="Newly created files" context="newtype_context" enabled="true" deleted="false">/*
+ * JBoss, the OpenSource J2EE webOS
+ * 
+ * Distributable under LGPL license.
+ * See terms of license at gnu.org.
+ */
+${package_declaration}
+
+${typecomment}
+${type_declaration}</template><template id="org.eclipse.jdt.ui.text.codetemplates.catchblock" name="catchblock" description="Code in new catch blocks" context="catchblock_context" enabled="true" deleted="false">// FIXME
+log.error("Error", ${exception_var});</template><template id="org.eclipse.jdt.ui.text.codetemplates.methodbody" name="methodbody" description="Code in created method stubs" context="methodbody_context" enabled="true" deleted="false">// FIXME ${enclosing_method}
+${body_statement}</template><template id="org.eclipse.jdt.ui.text.codetemplates.constructorbody" name="constructorbody" description="Code in created constructor stubs" context="constructorbody_context" enabled="true" deleted="false">// FIXME ${enclosing_type} constructor
+${body_statement}</template><template id="org.eclipse.jdt.ui.text.codetemplates.getterbody" name="getterbody" description="Code in created getters" context="getterbody_context" enabled="true" deleted="false">return ${field};</template><template id="org.eclipse.jdt.ui.text.codetemplates.setterbody" name="setterbody" description="Code in created setters" context="setterbody_context" enabled="true" deleted="false">${field} = ${param};</template></templates>

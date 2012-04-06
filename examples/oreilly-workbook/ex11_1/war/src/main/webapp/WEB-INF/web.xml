@@ -1,0 +1,43 @@
+<web-app>
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <ejb-local-ref>
+        <ejb-ref-name>ejb/CustomerResource</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>com.restfully.shop.services.CustomerResource</local>
+        <ejb-link>com.restfull.shop.services.CustomerResourceBean</ejb-link>
+    </ejb-local-ref>
+
+    <ejb-local-ref>
+        <ejb-ref-name>ejb/ProductResource</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>com.restfully.shop.services.ProductResource</local>
+        <ejb-link>com.restfull.shop.services.ProductResourceBean</ejb-link>
+    </ejb-local-ref>
+
+    <ejb-local-ref>
+        <ejb-ref-name>ejb/OrderResource</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>com.restfully.shop.services.OrderResource</local>
+        <ejb-link>com.restfull.shop.services.OrderResourceBean</ejb-link>
+    </ejb-local-ref>
+
+    <ejb-local-ref>
+        <ejb-ref-name>ejb/StoreResource</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>com.restfully.shop.services.StoreResource</local>
+        <ejb-link>com.restfull.shop.services.StoreResourceBean</ejb-link>
+    </ejb-local-ref>
+</web-app>

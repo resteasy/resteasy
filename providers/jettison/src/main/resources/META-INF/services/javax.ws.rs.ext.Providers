@@ -1,0 +1,12 @@
+org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider
+org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider
+org.jboss.resteasy.plugins.providers.jaxb.json.JsonJAXBContextFinder
+org.jboss.resteasy.plugins.providers.jaxb.json.JettisonElementProvider
+org.jboss.resteasy.plugins.providers.jaxb.json.JettisonXmlRootElementProvider
+org.jboss.resteasy.plugins.providers.jaxb.json.JettisonXmlSeeAlsoProvider
+org.jboss.resteasy.plugins.providers.jaxb.json.JettisonXmlTypeProvider
+
+
+
+
+

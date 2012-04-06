@@ -1,0 +1,619 @@
+<chapter id="RESTEasy_Client_Framework">
+    <title>Client Framework</title>
+
+    <para>
+
+        The Resteasy Client Framework is the mirror opposite of the JAX-RS server-side specification. Instead of using
+        JAX-RS annotations to map an incoming request to your RESTFul Web Service method, the client framework builds an
+        HTTP request that it uses to invoke on a remote RESTful Web Service. This remote service does not have to be a
+        JAX-RS service and can be any web resource that accepts HTTP requests.
+    </para>
+    <para>
+
+        Resteasy has a client proxy framework that allows you to use JAX-RS annotations to invoke on a remote HTTP
+        resource.
+        The way it works is that you write a Java interface and use JAX-RS annotations on methods and the interface. For
+        example:
+    </para>
+    <para>
+
+<programlisting>
+public interface SimpleClient
+{
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   String getBasic();
+
+   @PUT
+   @Path("basic")
+   @Consumes("text/plain")
+   void putBasic(String body);
+
+   @GET
+   @Path("queryParam")
+   @Produces("text/plain")
+   String getQueryParam(@QueryParam("param")String param);
+
+   @GET
+   @Path("matrixParam")
+   @Produces("text/plain")
+   String getMatrixParam(@MatrixParam("param")String param);
+
+   @GET
+   @Path("uriParam/{param}")
+   @Produces("text/plain")
+   int getUriParam(@PathParam("param")int param);
+}</programlisting>
+    </para>
+    <para>
+
+        Resteasy has a simple API based on Apache HttpClient. You generate a proxy then you can invoke methods on the
+        proxy. The invoked method gets translated to an HTTP request based on how you annotated the method and posted to
+        the server. Here's how you would set this up:
+    </para>
+    <para>
+
+        <programlisting>
+            import org.jboss.resteasy.client.ProxyFactory;
+            ...
+            // this initialization only needs to be done once per VM
+            RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+
+
+            SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081");
+            client.putBasic("hello world");
+        </programlisting>
+    </para>
+    <para>
+
+        Please see the ProxyFactory javadoc for more options. For instance, you may want to fine tune the HttpClient
+        configuration.
+    </para>
+    <para>
+
+
+    </para>
+    <para>
+
+        @CookieParam works the mirror opposite of its server-side counterpart and creates a cookie header to send to the
+        server. You do not need to use @CookieParam if you allocate your own javax.ws.rs.core.Cookie object and pass it
+        as
+        a parameter to a client proxy method. The client framework understands that you are passing a cookie to the
+        server
+        so no extra metadata is needed.
+    </para>
+    <para>
+
+
+    </para>
+    <para>
+
+        The client framework can use the same providers available on the server. You must manually register them through
+        the ResteasyProviderFactory singleton using the addMessageBodyReader() and addMessageBodyWriter() methods.
+    </para>
+    <programlisting>
+        ResteasyProviderFactory.getInstance().addMessageBodyReader(MyReader.class);
+    </programlisting>
+    <para>
+     The framework also supports the JAX-RS locator pattern, but on the client side.  So, if you have a method annotated only with @Path, that proxy method
+     will return a new proxy of the interface returned by that method.
+    </para>
+    <sect1 id="Custom_client-side_responses">
+        <title>Abstract Responses</title>
+
+        <para>
+
+            Sometimes you are interested not only in the response body of a client request, but also either the response
+            code and/or response headers. The Client-Proxy framework has two ways to get at this information
+        </para>
+        <para>
+
+
+        </para>
+        <para>
+
+            You may return a javax.ws.rs.core.Response.Status enumeration from your method calls:
+        </para>
+        <para>
+
+            <programlisting>
+@Path("/")
+public interface MyProxy {
+   @POST
+   Response.Status updateSite(MyPojo pojo);
+}
+            </programlisting>
+        </para>
+        <para>
+
+            Internally, after invoking on the server, the client proxy internals will convert the HTTP response code into
+            a
+            Response.Status enum.
+        </para>
+        <para>
+
+
+        </para>
+        <para>
+
+            If you are interested in everything, you can get it with the org.jboss.resteasy.spi.ClientResponse interface:
+        </para>
+        <programlisting><![CDATA[
+/**
+ * Response extension for the RESTEasy client framework. Use this, or Response
+ * in your client proxy interface method return type declarations if you want
+ * access to the response entity as well as status and header information.
+ *
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @version $Revision: 1 $
+ */
+public abstract class ClientResponse<T> extends Response
+{
+   /**
+    * This method returns the same exact map as Response.getMetadata() except as a map of strings 
+    * rather than objects.
+    *
+    * @return
+    */
+   public abstract MultivaluedMap<String, String> getHeaders();
+
+   public abstract Response.Status getResponseStatus();
+
+   /**
+    * Unmarshal the target entity from the response OutputStream.  You must have type information
+    * set via <T> otherwise, this will not work.
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  
+    * Afterwards, it will cache the result and return the cached result.
+    *
+    * @return
+    */
+   public abstract T getEntity();
+
+   /**
+    * Extract the response body with the provided type information
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  
+    * Afterwards, it will cache the result and return the cached result.
+    *
+    * @param type
+    * @param genericType
+    * @param <T2>
+    * @return
+    */
+   public abstract <T2> T2 getEntity(Class<T2> type, Type genericType);
+
+   /**
+    * Extract the response body with the provided type information.  GenericType is a trick used to
+    * pass in generic type information to the resteasy runtime.
+    * <p/>
+    * For example:
+    * <pre>
+    * List<String> list = response.getEntity(new GenericType<List<String>() {});
+    * <p/>
+    * <p/>
+    * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
+    * cache the result and return the cached result.
+    *
+    * @param type
+    * @param <T2>
+    * @return
+    */
+   public abstract <T2> T2 getEntity(GenericType<T2> type);
+}
+]]>
+        </programlisting>
+        <para>
+            All the getEntity() methods are deferred until you invoke them. In other words, the response OutputStream is
+            not read
+            until you call one of these methods. The empty parameter getEntity() method can only be used if you have
+            templated the ClientResponse within your method declaration. Resteasy uses this generic type information to
+            know what type to unmarshal the raw OutputStream into. The other two getEntity() methods that take
+            parameters, allow you to specify which Object types you want to marshal the response into. These methods
+            allow you to dynamically extract whatever types you want at runtime. Here's an example:
+        </para>
+        <para>
+
+            <programlisting>
+@Path("/")
+public interface LibraryService {
+
+   @GET
+   @Produces("application/xml")
+   ClientResponse&lt;LibraryPojo&gt; getAllBooks();
+}</programlisting>
+        </para>
+        <para>
+
+            We need to include the LibraryPojo in ClientResponse's generic declaration so that the client proxy
+            framework
+            knows how to unmarshal the HTTP response body.
+        </para>
+        <para>
+
+
+        </para>
+    </sect1>
+    <sect1 id="Sharing_interfaces">
+        <title>Sharing an interface between client and server</title>
+        <para>
+            It is generally possible to share an interface between the client and server. In this scenario, you just
+            have your JAX-RS services implement an annotated interface
+            and then reuse that same interface to create client proxies to invoke on the client-side. One caveat to
+            this is when your JAX-RS methods return a Response object.
+            The problem on the client is that the client does not have any type information with a raw Response return
+            type declaration. There are two ways of getting around
+            this. The first is to use the @ClientResponseType annotation.
+        </para>
+        <programlisting>
+import org.jboss.resteasy.annotations.ClientResponseType;
+import javax.ws.rs.core.Response;
+
+@Path("/")
+public interface MyInterface {
+
+   @GET
+   @ClientResponseType(String.class)
+   @Produces("text/plain")
+   public Response get();
+}</programlisting>
+        <para>
+            This approach isn't always good enough. The problem is that some MessageBodyReaders and Writers need generic
+            type information in order to match and service a request.
+        </para>
+<programlisting>
+@Path("/")
+public interface MyInterface {
+
+   @GET
+   @Produces("application/xml")
+   public Response getMyListOfJAXBObjects();
+}</programlisting>
+        <para>
+            In this case, your client code can cast the returned Response object to a ClientResponse and use one of the
+            typed getEntity() methods.
+        </para>
+        <programlisting><![CDATA[
+MyInterface proxy = ProxyFactory.create(MyInterface.class, "http://localhost:8081");
+ClientResponse response = (ClientResponse)proxy.getMyListOfJAXBObjects();
+List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>());
+]]></programlisting>
+
+    </sect1>
+    
+    
+    
+    <sect1 id="Client_error_handling">
+        <title>Client Error Handling</title>
+
+        <para>
+
+            If you are using the Client Framework and your proxy methods return something other than a
+            ClientResponse, then the default client error handling comes into play. Any response code that is greater
+            tha
+            399 will automatically cause a org.jboss.resteasy.client.ClientResponseFailure exception
+        </para>
+        <para>
+
+<programlisting>
+   @GET
+   ClientResponse&lt;String&gt; get() // will throw an exception if you call getEntity()
+
+   @GET
+   MyObject get(); // will throw a ClientResponseFailure on response code &gt; 399
+</programlisting>
+        </para>
+
+
+	<para>
+		In cases where Client Proxy methods do not return Response or
+		ClientResponse, it may be not be desirable for the Client Proxy
+		Framework to throw generic ClientResponseFailure exceptions. In these
+		scenarios, where more fine-grained control of thrown Exceptions is
+		required, the ClientErrorInterceptor API may be used.
+		</para>
+<programlisting>
+public static T getClientService(final Class clazz, final String serverUri)
+{
+	ResteasyProviderFactory pf = ResteasyProviderFactory.getInstance();
+	pf.addClientErrorInterceptor(new DataExceptionInterceptor());
+
+	System.out.println("Generating REST service for: " + clazz.getName());
+	return ProxyFactory.create(clazz, serverUri);
+}
+</programlisting>
+
+<para>
+	ClientErrorInterceptor provides a hook into the proxy ClientResponse request lifecycle. If a
+	Client Proxy method is called, resulting in a client exception, and the
+	proxy return type is not Response or ClientResponse, registered
+	interceptors will be given a chance to process the response manually,
+	or throw a new exception. If all interceptors successfully return,
+	RestEasy will re-throw the original encountered exception. Note,
+	however, that the response input stream may need to be reset before
+	additional reads will succeed.
+</para>
+
+<programlisting>
+public class ExampleInterceptor implements ClientErrorInterceptor
+{
+	public void handle(ClientResponse response) throws RuntimeException
+	{
+		try
+		{
+			BaseClientResponse r = (BaseClientResponse) response;
+			InputStream stream = r.getStreamFactory().getInputStream();
+			stream.reset();
+			
+			String data = response.getEntity(String.class);
+		
+		
+			if(FORBIDDEN.equals(response.getResponseStatus()))
+			{
+				throw new MyCustomException("This exception will be thrown "
+					+ "instead of the ClientResponseFailure");
+			}
+		
+		}
+		catch (IOException e)
+		{
+			//...
+		}
+		// If we got here, and this method returns successfully, 
+		// RESTEasy will throw the original ClientResponseFailure
+	}
+}
+</programlisting>
+
+		<para>
+		
+		
+        </para>
+    </sect1>
+    
+    
+    
+    
+   <sect1 id="ClientRequest">
+   <title>Manual ClientRequest API</title>
+   <para>Resteasy has a manual API for invoking requests:  org.jboss.resteasy.client.ClientRequest  See the Javadoc for the full capabilities
+    of this class.  Here is a simple example:</para>
+<programlisting>
+
+<![CDATA[   ClientRequest request = new ClientRequest("http://localhost:8080/some/path");
+   request.header("custom-header", "value");
+
+   // We're posting XML and a JAXB object
+   request.body("application/xml", someJaxb);
+
+   // we're expecting a String back
+   ClientResponse<String> response = request.post(String.class);
+   
+   if (response.getStatus() == 200) // OK!
+   {
+      String str = response.getEntity();
+   }]]>
+</programlisting>
+   </sect1>
+   <sect1 id="spring_client_proxy">
+        <title>Spring integration on client side</title>
+        <para>
+            When using spring you can generate a REST client proxy from an interface
+            with the help of org.jboss.resteasy.client.spring.RestClientProxyFactoryBean.
+        </para>
+        <programlisting><![CDATA[
+<bean id="echoClient" class="org.jboss.resteasy.client.spring.RestClientProxyFactoryBean"
+    p:serviceInterface="a.b.c.Echo" p:baseUri="http://server.far.far.away:8080/echo" />
+]]></programlisting>
+   </sect1>
+   
+   <sect1 id="transport_layer">
+     <title>Transport Layer</title>
+     
+     <para>
+         Network communication between the client and server is handled in Resteasy,
+         by default, by HttpClient (4.x) from the Apache HttpComponents project.  In general,
+         the interface between the Resteasy Client Framework and the network is
+         found in an implementation of
+         <classname>org.jboss.resteasy.client.ClientExecutor</classname>, and
+         <classname>org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor</classname>,
+         which uses HttpClient (4.x), is the default implementation.  Resteasy
+         also ships with the following client executors, all found in the
+         <code>org.jboss.resteasy.client.core.executors</code> package:
+     </para>
+     
+     <itemizedlist>
+         <listitem>ApacheHttpClientExecutor: uses HttpClient (3.x);</listitem>
+         <listitem>
+             URLConnectionClientExecutor: uses <classname>java.net.HttpURLConnection</classname>;
+         </listitem>
+         <listitem>InMemoryClientExecutor: dispatches requests to a server in the same JVM.</listitem>
+     </itemizedlist>
+     <para>
+         The choice of a default executor may be overriden by calling
+         <methodname>ClientRequest.setDefaultExecutorClass()</methodname>:
+     </para>
+     
+     <programlisting>
+ClientRequest.setDefaultExecutorClass("org.bluemonkeydiamond.MyClientExecutor");
+     </programlisting>
+     
+     <para>
+         and a client executor may be passed to a specific <classname>ClientRequest</classname>:
+     </para>
+     
+     <programlisting>
+ClientExecutor executor = new MyClientExecutor();
+ClientRequest request = new ClientRequest("http://localhost:8081/customer", executor);
+     </programlisting>
+     
+     <para>
+         or to a specific proxy:
+     </para>
+     
+     <programlisting>
+ClientExecutor executor = new MyClientExecutor();
+SimpleClient client = ProxyFactory.create(SimpleClient.class, "http://localhost:8081/customer", executor);
+     </programlisting>
+     
+     <para>
+         Resteasy and HttpClient make reasonable default decisions so that it is possible to use the client
+         framework without ever referencing HttpClient, but for some applications it may be necessary to drill
+         down into the HttpClient details.  <classname>ApacheHttpClient4Executor</classname> can
+         be supplied with an instance of <classname>org.apache.http.client.HttpClient</classname> and
+         an instance of <classname>org.apache.http.protocol.HttpContext</classname>, which can carry
+         additional configuration details into the HttpClient layer.  For example, authentication
+         may be configured as follows:
+     </para>
+     
+     <programlisting>
+// Configure HttpClient to authenticate preemptively
+// by prepopulating the authentication data cache.
+ 
+// 1. Create AuthCache instance
+AuthCache authCache = new BasicAuthCache();
+ 
+// 2. Generate BASIC scheme object and add it to the local auth cache
+BasicScheme basicAuth = new BasicScheme();
+authCache.put("com.bluemonkeydiamond.sippycups", basicAuth);
+ 
+// 3. Add AuthCache to the execution context
+BasicHttpContext localContext = new BasicHttpContext();
+localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+ 
+// 4. Create client executor and proxy
+httpClient = new DefaultHttpClient();
+ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient, localContext);
+client = ProxyFactory.create(BookStoreService.class, url, executor);
+     </programlisting>
+
+     <para>
+         One default decision made by HttpClient and adopted by Resteasy is the use of
+         <classname>org.apache.http.impl.conn.SingleClientConnManager</classname>,
+         which manages a single socket at any given time and which
+         supports the use case in which one or more invocations are made serially
+         from a single thread.  For multithreaded applications, 
+         <classname>SingleClientConnManager</classname> may be replaced by 
+         <classname>org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager</classname>:
+     </para>
+     
+     <programlisting>
+ClientConnectionManager cm = new ThreadSafeClientConnManager();
+HttpClient httpClient = new DefaultHttpClient(cm);
+ClientExecutor executor = new ApacheHttpClient4Executor(httpClient);
+client = ProxyFactory.create(BookStoreService.class, url, executor);
+     </programlisting>
+     
+     <para>
+         For more information about HttpClient (4.x), see the documentation
+         at <ulink url="http://hc.apache.org/httpcomponents-client-ga/tutorial/html/">
+         http://hc.apache.org/httpcomponents-client-ga/tutorial/html/</ulink>.
+     </para>
+     
+     <para>
+         <emphasis role="bold">Note.</emphasis> It is important to understand
+         the difference between "releasing" a connection and "closing" a
+         connection.  <emphasis role="bold">Releasing</emphasis> a connection
+         makes it available for reuse.  <emphasis role="bold">Closing</emphasis>
+         a connection frees its resources and makes it unusable.
+     </para>
+     <para>
+         <classname>SingleClientConnManager</classname> manages
+         a single socket, which it allocates to at most a single invocation
+         at any given time.  Before that socket can be reused, it has to be
+         released from its current use, which can occur in one of two ways.  If
+         an execution of a <classname>ClientRequest</classname> or a call on
+         a proxy returns a class other than <classname>ClientResponse</classname>,
+         then Resteasy will take care of releasing the connection.  For example,
+         in the fragments
+     </para>
+     
+     <programlisting>
+ClientRequest request = new ClientRequest("http://localhost:8081/customer/123");
+String answer = request.getTarget(String.class);
+     </programlisting>
+     
+     <para>
+         or
+     </para>
+     
+     <programlisting>
+RegistryStats stats = ProxyFactory.create(RegistryStats.class, "http://localhost:8081/customer/123");
+RegistryData data = stats.get();
+     </programlisting>
+     
+     <para>
+        Resteasy will release the connection under the covers.  The only counterexample is the case
+        in which the response is an instance of <classname>InputStream</classname>, which must
+        be closed explicitly.
+     </para>
+     
+     <para>
+         On the other hand, if the result of an invocation is an instance of
+         <classname>ClientResponse</classname>, then one of two additional steps must be taken
+         to release the connection.  If some version of the overloaded method
+         <methodname>ClientResponse.getEntity()</methodname> is called, then
+         Resteasy will release the connection (unless the entity is an instance
+         of <classname>InputStream</classname>).  If the entity is ignored,
+         then the connection must be released explicitly:
+     </para>
+     
+     <programlisting>
+ClientRequest request = new ClientRequest("http://localhost:8081:/customer/123"));
+ClientResponse&lt;?&gt; response = request.get();
+System.out.println(response.getStatus());
+response.releaseConnection();
+response = request.delete("123");
+System.out.println(response.getStatus());
+response.releaseConnection();
+     </programlisting>
+     
+     <para>
+         Again, releasing a connection only makes it available
+         for another use. <emphasis role="bold">It does not normally close the socket.</emphasis>
+     </para>
+         
+     <para>
+         On the other hand,
+         <methodname>ApacheHttpClient4Executor.finalize()</methodname> will close any open
+         sockets, but only if it created the <classname>HttpClient</classname> it has been
+         using.  If an <classname>HttpClient</classname> has been passed into the
+         <classname>ApacheHttpClient4Executor</classname>, then the user is responsible
+         for closing the connections:
+     </para>
+     
+     <programlisting>
+HttpClient httpClient = new DefaultHttpClient();
+ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
+ClientRequest request = new ClientRequest("http://localhost:8081/customer"), executor);
+...
+httpClient.getConnectionManager().shutdown();
+     </programlisting>
+     
+     <para>
+         Note that if <classname>ApacheHttpClient4Executor</classname> has created its own
+         instance of <classname>HttpClient</classname>, it is not necessary to wait
+         for <methodname>finalize()</methodname> to close open sockets.  The
+         <classname>ClientExecutor</classname> interface has a <methodname>close()</methodname>
+         method for this purpose:
+     </para>
+     
+     <programlisting>
+ClientRequest request = new ClientRequest("http://localhost:8081/customer/123"));
+ClientResponse&lt;Customer&gt; response = request.get(Customer.class);
+response.releaseConnection();
+request.delete();
+request.getExecutor().close();
+     </programlisting>
+     
+     <para>
+         The call to <methodname>ClientResponse.releaseConnection()</methodname>
+         makes the underlying connection available for the 
+         <methodname>delete()</methodname> invocation.  The call to
+         <methodname>ClientRequest.getExecutor().close()</methodname>
+         closes the underlying connection.
+     </para>
+   </sect1>
+</chapter>
+

@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>2.3.2.Final</version>
+    </parent>
+    <name>Async Http JBossWeb</name>
+    <description/>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>asynch-http-tomcat-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>asynch-http-tomcat-jar</module>
+    </modules>
+</project>

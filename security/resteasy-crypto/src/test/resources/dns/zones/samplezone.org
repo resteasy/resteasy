@@ -1,0 +1,16 @@
+samplezone.org. IN    SOA   dns.samplezone.org.  unlogic.samplezone.org.  (
+                                        20091118     ; Serial
+                                        5M     ; Refresh
+                                        2M    ; Retry
+                                        1D     ; Expiry
+                                        5M )   ; Minimum
+@                       IN      NS      dns.samplezone.org.	
+@                       IN      A       85.230.75.184
+dns                     IN      A       85.230.75.184
+mail                    IN      A       85.230.75.184
+www                     IN      A       85.230.75.184
+ftp                     IN      A       85.230.75.184
+mail._domainKey         IN      TXT     "hello"
+test._domainKey         IN      TXT     "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZhjBeK6azV16AZVeGp0NjVyuqM2IqJIwhdfnmE0s4QfAwTQmf6ZPxmqGjj8yZxqLzVda6OSy1JNeUrhHWCBd47wnDDRdRgtlFoShf/ENQRzc0rAX61sgRfwvZ4e3d0h3y4BJahzI7Wg2shHBdazpr0CM6zOfNAplnP38fyDceZwIDAQAB; t=s"
+test1._domainKey        IN      TXT     "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCKxct5GHz8dFw0mzAMfvNju2b3oeAv/EOPfVb9mD73Wn+CJYXvnryhqo99Y/q47urWYWAF/bqH9AMyMfibPr6IlP8mO9pNYf/Zsqup/7oJxrvzJU7T0IGdLN1hHcC+qRnwkKddNmD8UPEQ4BXiX4xFxbTjNvKWLZVKGQMyy6EFVQIDAQAB; t=s"
+test2._domainKey        IN      TXT     "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCIKFLFWuQfDfBug688BJ0dazQ/x+GEnH443KpnBK8agpJXSgFAPhlRvf0yhqHeuI+J5onsSOo9Rn4fKaFQaQNBfCQpHSMnZpBC3X0G5Bc1HWq1AtBl6Z1rbyFen4CmGYOyRzDBUOIW6n8QK47bf3hvoSxqpY1pHdgYoVK0YdIP+wIDAQAB; t=s"
