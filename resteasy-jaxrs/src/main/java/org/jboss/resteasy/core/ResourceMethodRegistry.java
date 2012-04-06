@@ -1,15 +1,12 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.registry.RootSegment;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.InjectorFactory;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResourceFactory;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.*;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.Types;
@@ -31,6 +28,8 @@ public class ResourceMethodRegistry implements Registry
 
    protected ResteasyProviderFactory providerFactory;
    protected RootSegment rootSegment = new RootSegment();
+
+   private final static Logger logger = Logger.getLogger(ResourceMethodRegistry.class);
 
    public ResourceMethodRegistry(ResteasyProviderFactory providerFactory)
    {
@@ -125,6 +124,14 @@ public class ResourceMethodRegistry implements Registry
     		  processMethod(ref, base, clazz, method);
 
       }
+
+      // https://issues.jboss.org/browse/JBPAPP-7871
+      for (Method method : clazz.getDeclaredMethods()) {
+           Method _method = findAnnotatedMethod(clazz, method);
+          if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers())) {
+                  logger.warn("JAX-RS annotations found at non-public method: " + method.getDeclaringClass().getName() + "." + method.getName() + "(); Only public methods may be exposed as resource methods.");
+          }
+      }
    }
 
 	private Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)
@@ -177,8 +184,8 @@ public class ResourceMethodRegistry implements Registry
 			}
 		}
 
-		// Not found yet, so next check ALL interfaces from the root, 
-		// but ensure no redefinition by peer interfaces (ambiguous) to preserve logic found in 
+		// Not found yet, so next check ALL interfaces from the root,
+		// but ensure no redefinition by peer interfaces (ambiguous) to preserve logic found in
 		// original implementation
 		for (Class<?> clazz = root; clazz != null; clazz = clazz.getSuperclass())
 		{
@@ -305,7 +312,7 @@ public class ResourceMethodRegistry implements Registry
    {
       List<String> matchedUris = request.getUri().getMatchedURIs(false);
       if (matchedUris == null || matchedUris.size() == 0) return rootSegment.matchRoot(request);
-      // resource location 
+      // resource location
       String currentUri = request.getUri().getMatchedURIs(false).get(0);
       return rootSegment.matchRoot(request, currentUri.length());
    }
