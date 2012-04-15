@@ -24,6 +24,7 @@ import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
@@ -266,6 +267,7 @@ public class TestBeanValidationIntegrationSmoke {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldValidateNothing() {
 		POJOResourceFactory factory = new POJOResourceFactory(ShouldNotValidateResource.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(factory);
@@ -277,6 +279,7 @@ public class TestBeanValidationIntegrationSmoke {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldValidateJustOneMethod() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldValidateJustOneMethod.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -293,6 +296,7 @@ public class TestBeanValidationIntegrationSmoke {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldValidateAllMethods() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldValidateAllMethods.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -314,6 +318,7 @@ public class TestBeanValidationIntegrationSmoke {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldNotValidateOneMethod() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldNotValidateOneMethod.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -330,6 +335,7 @@ public class TestBeanValidationIntegrationSmoke {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldRespectInsertGroup() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldRespectGroups.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);

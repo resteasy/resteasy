@@ -46,6 +46,11 @@
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <!--
            Scans classes on cp for annotations and builds quick lookup database
            of them.
@@ -86,6 +91,12 @@
         <dependency>
             <groupId>net.jcip</groupId>
             <artifactId>jcip-annotations</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.hibernate</groupId> 
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.2.0.Final</version>
         </dependency>
 
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->

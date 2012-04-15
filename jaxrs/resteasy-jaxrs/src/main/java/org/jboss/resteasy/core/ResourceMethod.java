@@ -3,6 +3,8 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
 import org.jboss.resteasy.core.registry.Segment;
+import org.jboss.resteasy.plugins.providers.validation.ResteasyViolationExceptionExtension;
+import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -13,6 +15,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.Types;
 import org.jboss.resteasy.util.WeightedMediaType;
@@ -23,6 +26,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ContextResolver;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -58,6 +63,8 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
    protected MessageBodyWriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
    protected Type genericReturnType;
+   protected GeneralValidator validator;
+   protected ViolationsContainer<?> violationsContainer;
 
 
    public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods)
@@ -120,6 +127,11 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
           }
        */
       genericReturnType = Types.getGenericReturnTypeOfGenericInterfaceMethod(clazz, method);
+      ContextResolver<GeneralValidator> resolver = providerFactory.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE);
+      if (resolver != null)
+      {
+         validator = providerFactory.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE).getContext(null);
+      }
    }
 
    public void cleanup()
@@ -242,6 +254,13 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
 
    protected ServerResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
+      if (validator != null)
+      {
+         violationsContainer = new ViolationsContainer<Object>(validator.validate(target));
+         request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
+         request.setAttribute(GeneralValidator.class.getName(), validator);
+      }
+      
       for (PreProcessInterceptor preInterceptor : preProcessInterceptors)
       {
          ServerResponse serverResponse = preInterceptor.preProcess(request, this);
@@ -260,6 +279,11 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       {
          prepareResponse(ServerResponse.convertToServerResponse(wae.getResponse()));
          throw wae;
+      }
+      
+      if (violationsContainer != null && violationsContainer.size() > 0)
+      {
+         throw new ResteasyViolationExceptionExtension(violationsContainer);
       }
 
       if (request.isSuspended())
