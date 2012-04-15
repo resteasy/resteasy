@@ -15,4 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Produces("application/*+fastinfoset")
 public class FastinfoSetXmlSeeAlsoProvider extends JAXBXmlSeeAlsoProvider
 {
+   @Override
+   protected boolean suppressExpandEntityExpansion()
+   {
+      return false;
+   }
 }

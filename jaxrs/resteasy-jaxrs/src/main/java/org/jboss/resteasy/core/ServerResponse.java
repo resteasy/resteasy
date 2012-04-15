@@ -23,6 +23,7 @@ import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -34,8 +35,9 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ServerResponse extends Response
+public class ServerResponse extends Response implements Serializable
 {
+   private static final long serialVersionUID = 3458762447649978756L;
    protected Object entity;
    protected int status = HttpResponseCodes.SC_OK;
    protected Headers<Object> metadata = new Headers<Object>();

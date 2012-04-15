@@ -10,6 +10,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 
+import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.Failure;
@@ -18,7 +19,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.validation.ValidatorAdapter;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.Types;
 
 /**
@@ -32,7 +33,6 @@ public class MethodInjectorImpl implements MethodInjector
    protected Class rootClass;
    protected ValueInjector[] params;
    protected ResteasyProviderFactory factory;
-   protected ValidatorAdapter validatorAdapter;
 
    public MethodInjectorImpl(Class root, Method method, ResteasyProviderFactory factory)
    {
@@ -80,10 +80,6 @@ public class MethodInjectorImpl implements MethodInjector
          Annotation[] annotations = method.getParameterAnnotations()[i];
          params[i] = factory.getInjectorFactory().createParameterExtractor(root, method, type, genericType, annotations);
       }
-      
-      ContextResolver<ValidatorAdapter> contextResolver = factory.getContextResolver(ValidatorAdapter.class, MediaType.WILDCARD_TYPE);
-	  if( contextResolver == null ) return;
-	  validatorAdapter = contextResolver.getContext(null);
    }
    
    public static Method findInterfaceBasedMethod(Class root, Method method)
@@ -146,13 +142,25 @@ public class MethodInjectorImpl implements MethodInjector
    {
       Object[] args = injectArguments(request, httpResponse);
       
-      if( validatorAdapter != null )
-    	  validatorAdapter.applyValidation(resource, invokedMethod, args);
+      GeneralValidator validator = GeneralValidator.class.cast(request.getAttribute(GeneralValidator.class.getName()));
+      ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
+      if (validator != null && violationsContainer != null)
+      {
+         violationsContainer.addViolations(validator.validateAllParameters(resource, invokedMethod, args));
+         if (violationsContainer.size() > 0)
+         {
+            return null;
+         }
+      }
       
       try
       {
-    	  
-         return invokedMethod.invoke(resource, args);
+         Object result = invokedMethod.invoke(resource, args);
+         if (validator != null && violationsContainer != null)
+         {
+            violationsContainer.addViolations(validator.validateReturnValue(resource, invokedMethod, result));
+         }
+         return result;
       }
       catch (IllegalAccessException e)
       {
