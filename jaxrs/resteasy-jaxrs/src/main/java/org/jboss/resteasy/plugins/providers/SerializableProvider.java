@@ -40,18 +40,7 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
 
    public long getSize(Serializable t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      try
-      {
-         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-         ObjectOutputStream oos = new ObjectOutputStream(baos);
-         oos.writeObject(t);
-         oos.close();
-         return baos.toByteArray().length;
-      }
-      catch (IOException e)
-      {
-         return -1;
-      }
+      return -1;
    }
 
    public void writeTo(Serializable t, Class<?> type, Type genericType,
