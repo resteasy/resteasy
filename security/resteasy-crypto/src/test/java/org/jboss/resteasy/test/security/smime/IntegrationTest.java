@@ -111,9 +111,9 @@ public class IntegrationTest extends BaseResourceTest
       privateKey = PemUtils.decodePrivateKey(privateIs);
       */
 
-      KeyPair keyPair = KeyPairGenerator.getInstance("RSA", "BC").generateKeyPair();
-      privateKey = keyPair.getPrivate();
-      cert = KeyTools.generateTestCertificate(keyPair);
+         KeyPair keyPair = KeyPairGenerator.getInstance("RSA", "BC").generateKeyPair();
+         privateKey = keyPair.getPrivate();
+         cert = KeyTools.generateTestCertificate(keyPair);
 
 
       dispatcher.getRegistry().addPerRequestResource(EncryptedResource.class);
