@@ -33,7 +33,7 @@ import java.util.HashSet;
 @Provider
 @Produces("application/atom+*")
 @Consumes("application/atom+*")
-public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWriter<Feed>
+public class   AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWriter<Feed>
 {
    @Context
    protected Providers providers;
