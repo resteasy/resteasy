@@ -57,7 +57,9 @@ public class CookieTest
       @GET
       public String headers(@Context HttpHeaders headers)
       {
-         String value = headers.getCookies().get("meaning").getValue();
+         Map<String, Cookie> cookies = headers.getCookies();
+         Cookie meaning = cookies.get("meaning");
+         String value = meaning.getValue();
          Assert.assertEquals(value, "42");
          return value;
       }

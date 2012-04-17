@@ -272,7 +272,7 @@ public class ClientErrorTest
       }
       finally
       {
-         consumeEntity(response);
+         if (response != null) consumeEntity(response);
       }
    }
    
