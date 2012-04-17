@@ -15,4 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Consumes("application/*+json")
 public class JettisonXmlTypeProvider extends JAXBXmlTypeProvider
 {
+   @Override
+   protected boolean suppressExpandEntityExpansion()
+   {
+      return false;
+   }
 }

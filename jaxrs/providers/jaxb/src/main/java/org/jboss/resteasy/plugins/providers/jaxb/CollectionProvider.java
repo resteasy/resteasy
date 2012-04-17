@@ -2,10 +2,13 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -26,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +54,20 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 {
    @Context
    protected Providers providers;
+   private boolean expandEntityReferences = true;
+   
+   public CollectionProvider()
+   {
+      ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+      if (context != null)
+      {
+         String s = context.getInitParameter("resteasy.document.expand.entity.references");
+         if (s != null)
+         {
+            setExpandEntityReferences(Boolean.parseBoolean(s));
+         }
+      }
+   }
 
    protected JAXBContextFinder getFinder(MediaType type)
    {
@@ -92,10 +110,23 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       JaxbCollection col = null;
       try
       {
-         StreamSource source = new StreamSource(entityStream);
-         JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
-         JAXBElement<JaxbCollection> ele = ctx.createUnmarshaller().unmarshal(source, JaxbCollection.class);
-
+         JAXBElement<JaxbCollection> ele = null;
+         
+         if (suppressExpandEntityExpansion())
+         {
+            SAXSource source = new SAXSource(new InputSource(entityStream));
+            JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
+            Unmarshaller unmarshaller = ctx.createUnmarshaller();
+            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            ele = unmarshaller.unmarshal(source, JaxbCollection.class);
+         }
+         else
+         {  
+            StreamSource source = new StreamSource(entityStream);
+            JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
+            ele = ctx.createUnmarshaller().unmarshal(source, JaxbCollection.class);
+         }
+      
          Wrapped wrapped = FindAnnotation.findAnnotation(annotations, Wrapped.class);
          if (wrapped != null)
          {
@@ -223,5 +254,20 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          throw new JAXBMarshalException(e);
       }
+   }
+   
+   public boolean isExpandEntityReferences()
+   {
+      return expandEntityReferences;
+   }
+
+   public void setExpandEntityReferences(boolean expandEntityReferences)
+   {
+      this.expandEntityReferences = expandEntityReferences;
+   }
+   
+   protected boolean suppressExpandEntityExpansion()
+   {
+      return !isExpandEntityReferences();
    }
 }
