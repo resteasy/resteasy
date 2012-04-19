@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
 import com.sun.net.httpserver.HttpExchange;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
