@@ -157,7 +157,7 @@
                 <include>org.jboss.resteasy:resteasy-crypto</include>
             </includes>
             <excludes>
-                <exclude>org.jboss.resteasy:resteasy-jaxrs-war</exclude>
+                <exclude>org.jboss.resteasy:resteasy-jdk-http</exclude>
                 <exclude>org.jboss.resteasy:tjws</exclude>
                 <!-- <include>tjws:webserver</include> -->
                 <exclude>javax.servlet:servlet-api</exclude>
@@ -168,6 +168,7 @@
             <unpack>false</unpack>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
+                <include>org.jboss.resteasy:resteasy-jdk-http</include>
                 <include>org.jboss.resteasy:tjws</include>
                 <!-- include>tjws:webserver</include>  -->
                 <include>javax.servlet:servlet-api</include>

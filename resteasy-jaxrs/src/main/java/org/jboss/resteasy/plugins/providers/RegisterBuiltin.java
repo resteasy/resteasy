@@ -71,7 +71,7 @@ public class RegisterBuiltin
          }
          catch (NoClassDefFoundError e)
          {
-            logger.warn("NoClassDefFoundError: Unable to load builtin provider: " + line);
+            logger.error("NoClassDefFoundError: Unable to load builtin provider: " + line, e);
          }
          catch (ClassNotFoundException e)
          {
