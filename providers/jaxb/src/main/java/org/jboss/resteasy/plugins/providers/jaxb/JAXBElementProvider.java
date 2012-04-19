@@ -6,7 +6,6 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 import org.jboss.resteasy.util.Types;
 import org.xml.sax.InputSource;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;

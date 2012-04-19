@@ -1,14 +1,12 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.core.request.AcceptHeaders;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.WriterException;
 import org.w3c.dom.Document;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -44,19 +42,18 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
    private final DocumentBuilderFactory documentBuilder;
    private boolean expandEntityReferences = true;
 
-   public DocumentProvider(@Context ServletConfig servletConfig)
+   public DocumentProvider(@Context ResteasyConfiguration config)
    {
       this.documentBuilder = DocumentBuilderFactory.newInstance();
       this.transformerFactory = TransformerFactory.newInstance();
       try
       {
-         ServletContext context = servletConfig.getServletContext();
-         String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_EXPAND_ENTITY_REFERENCES);
+         String s = config.getParameter(ResteasyContextParameters.RESTEASY_EXPAND_ENTITY_REFERENCES);
          expandEntityReferences = (s == null ? true : Boolean.parseBoolean(s));
       }
       catch (Exception e)
       {
-         logger.debug("Unable to retrieve ServletContext: expandEntityReferences defaults to true");
+         logger.debug("Unable to retrieve config: expandEntityReferences defaults to true");
       }
    }
 
