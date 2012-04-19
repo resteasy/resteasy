@@ -7,18 +7,10 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.plugins.server.embedded.SimplePrincipal;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
-import java.security.Principal;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

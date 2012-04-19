@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
@@ -10,7 +11,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -56,10 +56,10 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
    
    public MapProvider()
    {
-      ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
-         String s = context.getInitParameter("resteasy.document.expand.entity.references");
+         String s = context.getParameter("resteasy.document.expand.entity.references");
          if (s != null)
          {
             setExpandEntityReferences(Boolean.parseBoolean(s));
