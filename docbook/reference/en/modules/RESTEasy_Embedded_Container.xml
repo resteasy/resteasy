@@ -27,6 +27,16 @@
         interface using @Context within your provider and resource classes.
 
     </para>
+
+    <para>Maven project you must include is:</para>
+<programlisting> <![CDATA[
+  <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jdk-http</artifactId>
+      <version>2.3.2.Final</version>
+  </dependency>
+]]></programlisting>
+
     </section>
 
     <section>
