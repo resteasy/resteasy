@@ -155,6 +155,7 @@
                 <include>org.jboss.resteasy:resteasy-jsapi</include>
                 <include>org.jboss.resteasy:resteasy-links</include>
                 <include>org.jboss.resteasy:resteasy-crypto</include>
+                <include>org.jboss.resteasy:resteasy-jdk-http</include>
             </includes>
             <excludes>
                 <exclude>org.jboss.resteasy:resteasy-jaxrs-war</exclude>
