@@ -34,12 +34,15 @@ public class ContextParameterInjector implements ValueInjector
 
    public Object inject(HttpRequest request, HttpResponse response)
    {
-      if (type.equals(HttpHeaders.class)) return request.getHttpHeaders();
-      if (type.equals(UriInfo.class)) return request.getUri();
-      if (type.equals(Request.class)) return new RequestImpl(request);
-      if (type.equals(HttpRequest.class)) return request;
+      // we always inject a proxy for interface types just in case the per-request target is a pooled object
+      // i.e. in the case of an SLSB
       if (type.equals(Providers.class)) return factory;
-      else return ResteasyProviderFactory.getContextData(type);
+      if (!type.isInterface())
+      {
+         return ResteasyProviderFactory.getContextData(type);
+      }
+      Class[] intfs = {type};
+      return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
    }
 
    private class GenericDelegatingProxy implements InvocationHandler
