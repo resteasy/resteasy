@@ -2252,6 +2252,7 @@ public class Serve implements ServletContext, Serializable
                serve.log("Invalid value of input content-length: " + contentLength);
             }
          // the code was originally in processing headers loop, however hhas been moved here
+         /*  Don't do content encoding.  Let RESTEASY handle it
          String encoding = getHeader(CONTENT_ENCODING);
          if (encoding != null)
          {
@@ -2265,6 +2266,7 @@ public class Serve implements ServletContext, Serializable
                return;
             }
          }
+         */
          if (assureHeaders() && socket.getKeepAlive() == false)
             socket.setKeepAlive(true);
          // TODO new SimpleRequestDispatcher(reqUriPathUn).forward((ServletRequest) this, (ServletResponse) this);

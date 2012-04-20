@@ -24,7 +24,7 @@ import java.util.zip.GZIPOutputStream;
 @EncoderPrecedence
 public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
 {
-   private static class EndableGZIPOutputStream extends GZIPOutputStream
+   public static class EndableGZIPOutputStream extends GZIPOutputStream
    {
       public EndableGZIPOutputStream(OutputStream os) throws IOException
       {
