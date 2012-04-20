@@ -2253,6 +2253,7 @@ public class Serve implements ServletContext, Serializable
             }
          // the code was originally in processing headers loop, however hhas been moved here
          String encoding = getHeader(CONTENT_ENCODING);
+         /*  Don't do content encoding.  Let RESTEASY handle it
          if (encoding != null)
          {
             if ((encoding.equalsIgnoreCase("gzip") || encoding.equalsIgnoreCase("compressed"))
@@ -2265,6 +2266,7 @@ public class Serve implements ServletContext, Serializable
                return;
             }
          }
+         */
          if (assureHeaders() && socket.getKeepAlive() == false)
             socket.setKeepAlive(true);
          // TODO new SimpleRequestDispatcher(reqUriPathUn).forward((ServletRequest) this, (ServletResponse) this);
