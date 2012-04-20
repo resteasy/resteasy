@@ -23,14 +23,14 @@ import java.util.zip.GZIPInputStream;
 @DecoderPrecedence
 public class GZIPDecodingInterceptor implements MessageBodyReaderInterceptor
 {
-      private static class FinishableGZIPInputStream extends GZIPInputStream
+  public static class FinishableGZIPInputStream extends GZIPInputStream
    {
       public FinishableGZIPInputStream(final InputStream is) throws IOException
       {
          super(is);
       }
 
-      void finish()
+      public void finish()
       {
          inf.end(); // make sure on finish the inflater's end() is called to release the native code pointer
       }
@@ -52,7 +52,9 @@ public class GZIPDecodingInterceptor implements MessageBodyReaderInterceptor
          }
          finally
          {
-            is.finish();
+            // Don't finish() an InputStream - TODO this still will require a garbage collect to finish the stream
+            // see RESTEASY-554 for more details
+            if (!context.getType().equals(InputStream.class)) is.finish();
             context.setInputStream(old);
          }
       }
@@ -60,5 +62,4 @@ public class GZIPDecodingInterceptor implements MessageBodyReaderInterceptor
       {
          return context.proceed();
       }
-   }
-}
+   }}
