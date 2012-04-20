@@ -5,6 +5,7 @@ import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,9 +25,9 @@ public class RegistryStatsResource
 {
    @GET
    @Produces({"application/xml", "application/json"})
-   public RegistryData get(@Context Registry reg) throws JAXBException
+   public RegistryData get() throws JAXBException
    {
-      ResourceMethodRegistry registry = (ResourceMethodRegistry) reg;
+      ResourceMethodRegistry registry = (ResourceMethodRegistry) ResteasyProviderFactory.getContextData(Registry.class);
 
       RegistryData data = new RegistryData();
 
