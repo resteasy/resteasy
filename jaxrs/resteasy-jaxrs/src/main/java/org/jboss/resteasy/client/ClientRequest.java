@@ -490,6 +490,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    public <T> T getTarget(Class<T> returnType) throws Exception
    {
       BaseClientResponse<T> response = (BaseClientResponse<T>) get(returnType);
+      if (response.getStatus() == 204) return null;
       if (response.getStatus() != 200) throw new ClientResponseFailure(response);
       return response.getEntity();
    }
@@ -575,6 +576,8 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    public <T> T postTarget(Class<T> returnType) throws Exception
    {
       BaseClientResponse<T> response = (BaseClientResponse<T>) post(returnType);
+      if (response.getStatus() == 204) return null;
+      if (response.getStatus() != 200) throw new ClientResponseFailure(response);
       return response.getEntity();
    }
 
