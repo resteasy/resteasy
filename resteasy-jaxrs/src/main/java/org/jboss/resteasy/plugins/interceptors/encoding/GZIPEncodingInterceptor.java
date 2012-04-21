@@ -83,6 +83,10 @@ public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
          OutputStream old = context.getOutputStream();
          // GZIPOutputStream constructor writes to underlying OS causing headers to be written.
          CommittedGZIPOutputStream gzipOutputStream = new CommittedGZIPOutputStream(old, null);
+
+         // Any content length set will be obsolete
+         context.getHeaders().remove("Content-Length");
+
          context.setOutputStream(gzipOutputStream);
          try
          {

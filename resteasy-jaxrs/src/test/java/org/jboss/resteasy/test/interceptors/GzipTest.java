@@ -1,16 +1,9 @@
 package org.jboss.resteasy.test.interceptors;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.jboss.resteasy.annotations.GZIP;
 import org.jboss.resteasy.client.ClientRequest;
@@ -21,7 +14,6 @@ import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayInputStream;
@@ -42,7 +35,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.zip.GZIPOutputStream;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -94,6 +86,16 @@ public class GzipTest extends BaseResourceTest
       {
          return "HELLO WORLD";
       }
+
+      @GET
+      @Path("bytes")
+      @GZIP
+      @Produces("text/plain")
+      public byte[] getBytes()
+      {
+         return "HELLO WORLD".getBytes();
+      }
+
 
       @GET
       @Path("error")
@@ -224,6 +226,43 @@ public class GzipTest extends BaseResourceTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals("HELLO WORLD", response.getEntity());
 
+   }
+
+   /**
+    * RESTEASY-692
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testContentLength() throws Exception
+   {
+      {
+         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/text"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals("HELLO WORLD", response.getEntity());
+         String cl = response.getHeaders().getFirst("Content-Length");
+         if (cl != null)
+         {
+            // make sure the content length is greater than 11 because this will be a gzipped encoding
+            Assert.assertTrue(Integer.parseInt(cl) > 11);
+         }
+      }
+      {
+         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/bytes"));
+         ClientResponse<String> response = request.get(String.class);
+         MultivaluedMap<String,String> headers = response.getHeaders();
+         String cl = headers.getFirst("Content-Length");
+         if (cl != null)
+         {
+            // make sure the content length is greater than 11 because this will be a gzipped encoding
+            int i = Integer.parseInt(cl);
+            System.out.println("***");
+            System.out.println("Content-Length: " + i);
+            System.out.println("***");
+            Assert.assertTrue(i > 11);
+         }
+         Assert.assertEquals("HELLO WORLD", response.getEntity());
+      }
    }
 
    @Test
