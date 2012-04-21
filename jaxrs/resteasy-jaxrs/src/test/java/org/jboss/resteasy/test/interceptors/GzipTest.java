@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -85,6 +86,15 @@ public class GzipTest extends BaseResourceTest
       public String getGzipText()
       {
          return "HELLO WORLD";
+      }
+
+      @GET
+      @Path("bytes")
+      @GZIP
+      @Produces("text/plain")
+      public byte[] getBytes()
+      {
+         return "HELLO WORLD".getBytes();
       }
 
       @GET
@@ -179,6 +189,42 @@ public class GzipTest extends BaseResourceTest
          Assert.assertEquals(500, failure.getResponse().getStatus());
          String txt = (String) failure.getResponse().getEntity(String.class);
          Assert.assertEquals("Hello", txt);
+      }
+   }
+
+   /**
+    * RESTEASY-692
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testContentLength() throws Exception
+   {
+      {
+         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/text"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals("HELLO WORLD", response.getEntity());
+         String cl = response.getResponseHeaders().getFirst("Content-Length");
+         if (cl != null)
+         {
+            // make sure the content length is greater than 11 because this will be a gzipped encoding
+            Assert.assertTrue(Integer.parseInt(cl) > 11);
+         }
+      }
+      {
+         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/bytes"));
+         ClientResponse<String> response = request.get(String.class);
+         String cl = response.getResponseHeaders().getFirst("Content-Length");
+         if (cl != null)
+         {
+            // make sure the content length is greater than 11 because this will be a gzipped encoding
+            int i = Integer.parseInt(cl);
+            System.out.println("***");
+            System.out.println("Content-Length: " + i);
+            System.out.println("***");
+            Assert.assertTrue(i > 11);
+         }
+         Assert.assertEquals("HELLO WORLD", response.getEntity());
       }
    }
 

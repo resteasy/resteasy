@@ -243,7 +243,7 @@ public class ServerResponse extends Response implements Serializable
          OutputStream os = new CommitHeaderOutputStream(response.getOutputStream(), callback);
 
          long size = writer.getSize(ent, type, generic, annotations, contentType);
-         if (size > -1) response.getOutputHeaders().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
+         if (size > -1) getMetadata().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
 
 
          if (messageBodyWriterInterceptors == null || messageBodyWriterInterceptors.length == 0)
