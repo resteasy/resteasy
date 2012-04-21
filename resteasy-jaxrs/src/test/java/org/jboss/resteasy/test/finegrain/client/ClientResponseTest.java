@@ -1,13 +1,16 @@
 package org.jboss.resteasy.test.finegrain.client;
 
 import org.jboss.resteasy.annotations.ClientResponseType;
+import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.smoke.SimpleResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -143,6 +146,26 @@ public class ClientResponseTest
    public static void after() throws Exception
    {
       EmbeddedContainer.stop();
+   }
+
+   /**
+    * RESTEASY-687
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testPostTargetError() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/nowhere"));
+      try
+      {
+         String res = request.body("text/plain", "hello world").postTarget(String.class);
+      }
+      catch (ClientResponseFailure e)
+      {
+      }
+
+
    }
 
    @Test
