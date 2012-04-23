@@ -1,15 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.Failure;
@@ -20,6 +10,16 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.ValidatorAdapter;
 import org.jboss.resteasy.util.Types;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -57,7 +57,19 @@ public class MethodInjectorImpl implements MethodInjector
               public void put(List<Customer> l) {...}
           }
        */
-      Method actualMethod = Types.getImplementingMethod(root, method);
+      Method actualMethod = null;
+      // java.lang.reflect.Proxy removes generic type information
+      // so use the method passed into this class.
+      // see RESTEASY-685 for an example of this.
+      if (Proxy.isProxyClass(root))
+      {
+         actualMethod = method;
+      }
+      else
+      {
+         actualMethod = Types.getImplementingMethod(root, method);
+      }
+
       Type[] genericParameterTypes = actualMethod.getGenericParameterTypes();
       for (int i = 0; i < actualMethod.getParameterTypes().length; i++)
       {
@@ -80,12 +92,12 @@ public class MethodInjectorImpl implements MethodInjector
          Annotation[] annotations = method.getParameterAnnotations()[i];
          params[i] = factory.getInjectorFactory().createParameterExtractor(root, method, type, genericType, annotations);
       }
-      
+
       ContextResolver<ValidatorAdapter> contextResolver = factory.getContextResolver(ValidatorAdapter.class, MediaType.WILDCARD_TYPE);
-	  if( contextResolver == null ) return;
-	  validatorAdapter = contextResolver.getContext(null);
+      if (contextResolver == null) return;
+      validatorAdapter = contextResolver.getContext(null);
    }
-   
+
    public static Method findInterfaceBasedMethod(Class root, Method method)
    {
       if (method.getDeclaringClass().isInterface() || root.isInterface()) return method;
@@ -145,13 +157,13 @@ public class MethodInjectorImpl implements MethodInjector
    public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException, WebApplicationException
    {
       Object[] args = injectArguments(request, httpResponse);
-      
-      if( validatorAdapter != null )
-    	  validatorAdapter.applyValidation(resource, invokedMethod, args);
-      
+
+      if (validatorAdapter != null)
+         validatorAdapter.applyValidation(resource, invokedMethod, args);
+
       try
       {
-    	  
+
          return invokedMethod.invoke(resource, args);
       }
       catch (IllegalAccessException e)
