@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
@@ -57,7 +58,18 @@ public class MethodInjectorImpl implements MethodInjector
               public void put(List<Customer> l) {...}
           }
        */
-      Method actualMethod = Types.getImplementingMethod(root, method);
+      Method actualMethod = null;
+      // java.lang.reflect.Proxy removes generic type information
+      // so use the method passed into this class.
+      // see RESTEASY-685 for an example of this.
+      if (Proxy.isProxyClass(root))
+      {
+         actualMethod = method;
+      }
+      else
+      {
+         actualMethod = Types.getImplementingMethod(root, method);
+      }
       Type[] genericParameterTypes = actualMethod.getGenericParameterTypes();
       for (int i = 0; i < actualMethod.getParameterTypes().length; i++)
       {
