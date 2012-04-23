@@ -59,6 +59,13 @@ public class ListMultipartReader implements MessageBodyReader<List<?>> {
 
 		for (InputPart part : input.getParts())
 			list.add(part.getBody(rawType, baseType));
+
+      if (!InputStream.class.equals(rawType))
+      {
+         // make sure any temporary files are discarded
+         input.close();
+      }
+
 		return list;
 	}
 }

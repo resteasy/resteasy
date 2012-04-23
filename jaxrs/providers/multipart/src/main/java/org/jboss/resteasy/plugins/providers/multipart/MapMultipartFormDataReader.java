@@ -63,6 +63,13 @@ public class MapMultipartFormDataReader implements MessageBodyReader<Map<?, ?>> 
 				.entrySet())
 			map.put(entry.getKey(), entry.getValue().get(0).getBody(rawType,
 					baseType));
+
+      if (!InputStream.class.equals(rawType))
+      {
+         // make sure any temporary files are discarded
+         input.close();
+      }
+
 		return map;
 	}
 }

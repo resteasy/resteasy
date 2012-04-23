@@ -9,6 +9,17 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
+    <title>Migrating from 2.3.2 to 2.3.3</title>
+    <itemizedlist>
+        <listitem>
+            MultipartInput has a new close() method.  If you have a read body that is MultipartInput or one of
+            its subinterfaces, then you must call this method to clean up any temporary files created.  Otherwise,
+            these possible temporary files are deleted on GC or JDK shutdown.  Other multipart providers clean up
+            automatically.
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
     <title>Migrating from 2.3.0 to 2.3.1</title>
     <itemizedlist>
         <listitem>

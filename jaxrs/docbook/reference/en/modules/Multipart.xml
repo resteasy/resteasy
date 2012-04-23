@@ -22,6 +22,10 @@ public interface MultipartInput
    List&lt;InputPart&gt; getParts();
 
    String getPreamble();
+
+   // You must call close to delete any temporary files created
+   // Otherwise they will be deleted on garbage collection or on JVM exit
+   void close();
 }
 
 public interface InputPart
@@ -60,6 +64,7 @@ public interface InputPart
             Customer cust = part.getBody(Customer.class, null);
             customers.add(cust);
          }
+         input.close();
       }
    }
 </programlisting>
@@ -80,6 +85,7 @@ public interface InputPart
          {
             List&lt;Customer&gt; cust = part.getBody(new GenericType&gt;List&gt;Customer&lt;&lt;() {});
          }
+         input.close();
       }
    }
 
