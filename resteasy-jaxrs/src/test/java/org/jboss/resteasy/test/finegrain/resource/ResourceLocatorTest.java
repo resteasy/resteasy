@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
@@ -18,9 +20,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.List;
+
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -121,6 +130,54 @@ public class ResourceLocatorTest
          return new Subresource();
 
       }
+
+      @Path("proxy")
+      public Subresource3Interface sub3()
+      {
+
+         return (Subresource3Interface) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[]{Subresource3Interface.class}, new InvocationHandler()
+         {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+            {
+               return method.invoke(new Subresource3(), args);
+            }
+         });
+
+
+
+         //return new Subresource3();
+      }
+   }
+
+   public static interface Subresource3Interface
+   {
+      @GET
+      @Path("3")
+      String get(@QueryParam("foo") List<Double> params);
+   }
+
+
+   public static class Subresource3 implements Subresource3Interface
+   {
+      @Override
+      public String get(List<Double> params)
+      {
+         Assert.assertNotNull(params);
+         Assert.assertEquals(2, params.size());
+         double p1 = params.get(0);
+         double p2 = params.get(1);
+         return "Subresource3";
+      }
+   }
+
+   @Test
+   public void testProxiedSubresource() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/proxy/3"));
+      ClientResponse res = request.queryParameter("foo", "1.2").queryParameter("foo", "1.3").get();
+      Assert.assertEquals(200, res.getStatus());
+
    }
 
    @Test
@@ -298,4 +355,5 @@ public class ResourceLocatorTest
          Assert.assertEquals("posted: hello!", response.getContentAsString());
       }
    }
+
 }
