@@ -68,10 +68,15 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
          throw new ReaderException(e);
       }
 
+      boolean hasInputStream = false;
+
       Class<?> theType = type;
       while (theType != null && !theType.equals(Object.class))
       {
-         setFields(theType, input, obj);
+         if (setFields(theType, input, obj))
+         {
+            hasInputStream = true;
+         }
          theType = theType.getSuperclass();
       }
 
@@ -92,7 +97,12 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
             // param.value());
             if (part == null)
                continue;
-            Object data = part.getBody(method.getParameterTypes()[0],
+            Class<?> type1 = method.getParameterTypes()[0];
+            if (InputStream.class.equals(type1))
+            {
+               hasInputStream = true;
+            }
+            Object data = part.getBody(type1,
                     method.getGenericParameterTypes()[0]);
             try
             {
@@ -108,13 +118,17 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
             }
          }
       }
-
+      if (!hasInputStream)
+      {
+         input.close();
+      }
       return obj;
    }
 
-   protected void setFields(Class<?> type, MultipartFormDataInputImpl input,
+   protected boolean setFields(Class<?> type, MultipartFormDataInputImpl input,
                             Object obj) throws IOException
    {
+      boolean hasInputStream = false;
       for (Field field : type.getDeclaredFields())
       {
          if (field.isAnnotationPresent(FormParam.class))
@@ -131,6 +145,10 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
             // param.value());
             if (part == null)
                continue;
+            if (InputStream.class.equals(field.getType()))
+            {
+               hasInputStream = true;
+            }
             Object data = part.getBody(field.getType(), field
                     .getGenericType());
             try
@@ -143,6 +161,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
             }
          }
       }
+      return hasInputStream;
    }
 
 }
