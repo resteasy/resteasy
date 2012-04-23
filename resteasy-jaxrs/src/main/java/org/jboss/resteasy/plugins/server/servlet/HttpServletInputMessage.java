@@ -64,7 +64,7 @@ public class HttpServletInputMessage implements HttpRequest
    public MultivaluedMap<String, String> getPutFormParameters()
    {
       if (formParameters != null) return formParameters;
-      if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
+      if (MediaType.APPLICATION_FORM_URLENCODED_TYPE.isCompatible(getHttpHeaders().getMediaType()))
       {
          try
          {
