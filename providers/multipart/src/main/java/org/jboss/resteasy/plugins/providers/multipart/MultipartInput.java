@@ -11,4 +11,10 @@ public interface MultipartInput {
 	List<InputPart> getParts();
 
 	String getPreamble();
+
+   /**
+    * Call this method to delete any temporary files created from unmarshalling this multipart message
+    * Otherwise they will be deleted on Garbage Collection or JVM exit.
+    */
+   void close();
 }
