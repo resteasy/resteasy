@@ -299,4 +299,27 @@ public class MultipartInputImpl implements MultipartInput
       System.out.println("done");
 
    }
+
+   @Override
+   public void close()
+   {
+      if (mimeMessage != null)
+      {
+         try
+         {
+            mimeMessage.dispose();
+         }
+         catch (Exception e)
+         {
+
+         }
+      }
+   }
+
+   protected void finalize() throws Throwable
+   {
+      close();
+   }
+
+
 }
