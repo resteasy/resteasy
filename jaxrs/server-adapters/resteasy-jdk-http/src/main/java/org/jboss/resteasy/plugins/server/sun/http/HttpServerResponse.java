@@ -83,10 +83,17 @@ public class HttpServerResponse implements HttpResponse
    {
       if (committed) return;
       long len = 0;
-      if (outputHeaders.containsKey(""))
       if (outputHeaders.containsKey("Content-Length"))
       {
          len = Long.valueOf(outputHeaders.getFirst("Content-Length").toString());
+      }
+      else if (outputHeaders.containsKey("Content-Type"))
+      {
+         len = 0;
+      }
+      else
+      {
+         len = -1;
       }
 
       for (Map.Entry<String, List<Object>> entry : outputHeaders.entrySet())
