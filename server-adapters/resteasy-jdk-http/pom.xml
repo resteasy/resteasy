@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>resteasy-jboss-jdk-http</artifactId>
+    <artifactId>resteasy-jdk-http</artifactId>
     <name>RESTEasy JBoss Sun JDK HTTP Server Integration</name>
     <description/>
 
@@ -22,10 +22,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.com.sun.httpserver</groupId>
-            <artifactId>httpserver</artifactId>
         </dependency>
     </dependencies>
     <build>
