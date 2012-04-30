@@ -155,6 +155,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public void addStringConverter(StringConverter provider, Class providerClass)
+   {
+      super.addStringConverter(provider, providerClass);
+   }
+
+   @Override
+   public void addExceptionMapper(ExceptionMapper provider, Class providerClass)
+   {
+      getDelegate().addExceptionMapper(provider, providerClass);
+   }
+
+   @Override
    public void addMessageBodyReader(MessageBodyReader provider, Class providerClass, boolean isBuiltin)
    {
       getDelegate().addMessageBodyReader(provider, providerClass, isBuiltin);
