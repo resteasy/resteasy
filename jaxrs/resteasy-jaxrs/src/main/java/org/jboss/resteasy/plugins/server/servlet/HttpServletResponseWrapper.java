@@ -44,9 +44,14 @@ public class HttpServletResponseWrapper implements HttpResponse
       return outputHeaders;
    }
 
-   public OutputStream getOutputStream() throws IOException
+   protected OutputStream getUnwrappedOutputStream() throws IOException
    {
       return response.getOutputStream();
+   }
+
+   public OutputStream getOutputStream() throws IOException
+   {
+      return new DeferringOutputStream();
    }
 
    public void addNewCookie(NewCookie cookie)
@@ -82,4 +87,31 @@ public class HttpServletResponseWrapper implements HttpResponse
       outputHeaders = new HttpServletResponseHeaders(response, factory);
    }
 
+   private class DeferringOutputStream extends OutputStream
+   {
+      public void write(int i) throws IOException
+      {
+         getUnwrappedOutputStream().write(i);
+      }
+
+      public void write(byte[] bytes) throws IOException
+      {
+         getUnwrappedOutputStream().write(bytes);
+      }
+
+      public void write(byte[] bytes, int i, int i1) throws IOException
+      {
+         getUnwrappedOutputStream().write(bytes, i, i1);
+      }
+
+      public void flush() throws IOException
+      {
+         getUnwrappedOutputStream().flush();
+      }
+
+      public void close() throws IOException
+      {
+         getUnwrappedOutputStream().close();
+      }
+   }
 }
