@@ -610,14 +610,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public void addExceptionMapper(Class<? extends ExceptionMapper> providerClass)
    {
       ExceptionMapper provider = getProviderInstance(providerClass);
-      addExceptionMapper(provider);
+      addExceptionMapper(provider, providerClass);
    }
 
    public void addExceptionMapper(ExceptionMapper provider)
    {
-      Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(provider.getClass(), ExceptionMapper.class)[0];
+      addExceptionMapper(provider, provider.getClass());
+   }
+
+   public void addExceptionMapper(ExceptionMapper provider, Class providerClass)
+   {
+      Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ExceptionMapper.class)[0];
       addExceptionMapper(provider, exceptionType);
    }
+
 
    public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
    {
@@ -723,12 +729,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public void addStringConverter(Class<? extends StringConverter> resolver)
    {
       StringConverter writer = getProviderInstance(resolver);
-      addStringConverter(writer);
+      addStringConverter(writer, resolver);
    }
 
    public void addStringConverter(StringConverter provider)
    {
-      Type parameter = Types.getActualTypeArgumentsOfAnInterface(provider.getClass(), StringConverter.class)[0];
+      addStringConverter(provider, provider.getClass());
+   }
+
+   public void addStringConverter(StringConverter provider, Class providerClass)
+   {
+      Type parameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, StringConverter.class)[0];
       addStringConverter(provider, parameter);
    }
 
