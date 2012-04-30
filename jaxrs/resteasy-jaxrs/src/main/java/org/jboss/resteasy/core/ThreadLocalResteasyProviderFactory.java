@@ -66,6 +66,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public void addExceptionMapper(ExceptionMapper provider, Class providerClass)
+   {
+      getDelegate().addExceptionMapper(provider, providerClass);
+   }
+
+   @Override
+   public void addStringConverter(StringConverter provider, Class providerClass)
+   {
+      getDelegate().addStringConverter(provider, providerClass);
+   }
+
+   @Override
    public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
    {
       getDelegate().addExceptionMapper(provider, exceptionType);
