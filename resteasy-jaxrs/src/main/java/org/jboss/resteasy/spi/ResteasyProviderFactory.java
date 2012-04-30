@@ -684,7 +684,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextResolvers.put(parameterClass, resolvers);
       }
       Produces produces = provider.getClass().getAnnotation(Produces.class);
-      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(provider.getClass(), provider, providerClass, builtin);
+      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(ContextResolver.class, provider, providerClass, builtin);
       if (produces != null)
       {
          for (String produce : produces.value())
