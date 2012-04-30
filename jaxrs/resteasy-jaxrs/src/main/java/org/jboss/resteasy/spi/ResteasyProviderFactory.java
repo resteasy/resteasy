@@ -94,16 +94,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public Class template = null;
 
 
-      private SortedKey(Class intf, T reader, boolean isBuiltin)
+      private SortedKey(Class intf, T reader, Class readerClass, boolean isBuiltin)
       {
-         this(intf, reader);
+         this(intf, reader, readerClass);
          this.isBuiltin = isBuiltin;
       }
 
 
-      private SortedKey(Class intf, T reader)
+      private SortedKey(Class intf, T reader, Class readerClass)
       {
-         this.readerClass = reader.getClass();
+         this.readerClass = readerClass;
          this.obj = reader;
          // check the super class for the generic type 1st
          template = Types.getTemplateParameterOfInterface(readerClass, intf);
@@ -492,7 +492,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
    {
       MessageBodyReader reader = getProviderInstance(provider);
-      addMessageBodyReader(reader, isBuiltin);
+      addMessageBodyReader(reader, provider, isBuiltin);
    }
 
    public void addMessageBodyReader(MessageBodyReader provider)
@@ -507,7 +507,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
    {
-      SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider, isBuiltin);
+      addMessageBodyReader(provider, provider.getClass(), isBuiltin);
+   }
+
+   /**
+    * Specify the provider class.  This is there jsut in case the provider instance is a proxy.  Proxies tend
+    * to lose generic type information
+    *
+    * @param provider
+    * @param providerClass
+    * @param isBuiltin
+    */
+
+   public void addMessageBodyReader(MessageBodyReader provider, Class providerClass, boolean isBuiltin)
+   {
+      SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider, providerClass, isBuiltin);
       injectProperties(provider);
       providers.put(provider.getClass(), provider);
       Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
@@ -533,25 +547,38 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
    {
       MessageBodyWriter writer = getProviderInstance(provider);
-      addMessageBodyWriter(writer, isBuiltin);
+      addMessageBodyWriter(writer, provider, isBuiltin);
    }
 
    public void addMessageBodyWriter(MessageBodyWriter provider)
    {
-      addMessageBodyWriter(provider, false);
+      addMessageBodyWriter(provider, provider.getClass(), false);
    }
 
    public void addBuiltInMessageBodyWriter(MessageBodyWriter provider)
    {
-      addMessageBodyWriter(provider, true);
+      addMessageBodyWriter(provider, provider.getClass(), true);
    }
 
    public void addMessageBodyWriter(MessageBodyWriter provider, boolean isBuiltin)
    {
+      addMessageBodyWriter(provider, provider.getClass(), isBuiltin);
+   }
+
+   /**
+    * Specify the provider class.  This is there jsut in case the provider instance is a proxy.  Proxies tend
+    * to lose generic type information
+    *
+    * @param provider
+    * @param providerClass
+    * @param isBuiltin
+    */
+   public void addMessageBodyWriter(MessageBodyWriter provider, Class providerClass, boolean isBuiltin)
+   {
       providers.put(provider.getClass(), provider);
       injectProperties(provider);
       Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
-      SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider, isBuiltin);
+      SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider, providerClass, isBuiltin);
       if (consumeMime != null)
       {
          for (String consume : consumeMime.value())
@@ -634,26 +661,34 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
    {
       ContextResolver writer = getProviderInstance(resolver);
-      addContextResolver(writer, builtin);
+      addContextResolver(writer, resolver, builtin);
    }
 
    public void addContextResolver(ContextResolver provider)
    {
       addContextResolver(provider, false);
    }
-
    public void addContextResolver(ContextResolver provider, boolean builtin)
    {
-      Type parameter = Types.getActualTypeArgumentsOfAnInterface(provider.getClass(), ContextResolver.class)[0];
-      addContextResolver(provider, parameter, builtin);
+      addContextResolver(provider, provider.getClass(), builtin);
+   }
+
+   public void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
+   {
+      Type parameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextResolver.class)[0];
+      addContextResolver(provider, parameter, providerClass, builtin);
    }
 
    public void addContextResolver(ContextResolver provider, Type typeParameter)
    {
-      addContextResolver(provider, typeParameter, false);
+      addContextResolver(provider, typeParameter, provider.getClass(), false);
    }
 
    public void addContextResolver(ContextResolver provider, Type typeParameter, boolean builtin)
+   {
+      addContextResolver(provider, typeParameter, provider.getClass(), builtin);
+   }
+   public void addContextResolver(ContextResolver provider, Type typeParameter, Class providerClass, boolean builtin)
    {
       providers.put(provider.getClass(), provider);
       injectProperties(provider);
@@ -665,7 +700,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextResolvers.put(parameterClass, resolvers);
       }
       Produces produces = provider.getClass().getAnnotation(Produces.class);
-      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(provider.getClass(), provider, builtin);
+      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(provider.getClass(), provider, providerClass, builtin);
       if (produces != null)
       {
          for (String produce : produces.value())
