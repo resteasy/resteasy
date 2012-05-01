@@ -7,11 +7,13 @@ import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.*;
+import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Path;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
@@ -212,6 +214,21 @@ public class ResourceMethodRegistry implements Registry
 		Method method = findAnnotatedMethod(clazz, implementation);
 		if (method != null)
 		{
+
+            Annotation[][] paramAnnotations = method.getParameterAnnotations();
+
+            int notAnnotatedParamCount = 0;
+
+            for (Annotation[] paramAnnotation : paramAnnotations) {
+                if (FindAnnotation.findJaxRSAnnotations(paramAnnotation).length == 0) {
+                    notAnnotatedParamCount++;
+                    if (notAnnotatedParamCount > 1) {
+                        logger.warn(implementation.getDeclaringClass().getName() + "." + implementation.getName() + "(): Resource methods MUST NOT have more than one parameter that is not annotated with one of the JAX-RS Annotations.");
+                        break;
+                    }
+                }
+            }
+
 			Path path = method.getAnnotation(Path.class);
 			Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
 
