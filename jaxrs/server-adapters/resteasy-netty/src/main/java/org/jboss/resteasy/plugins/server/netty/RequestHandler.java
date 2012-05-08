@@ -1,7 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
-import static org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -12,7 +10,6 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
@@ -25,7 +22,7 @@ import org.jboss.resteasy.spi.Failure;
  */
 public class RequestHandler extends SimpleChannelUpstreamHandler
 {
-   protected RequestDispatcher dispatcher;
+   protected final RequestDispatcher dispatcher;
    private final static Logger logger = Logger.getLogger(RequestHandler.class);
 
    public RequestHandler(RequestDispatcher dispatcher)
@@ -36,41 +33,43 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
    @Override
    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
    {
-      HttpRequest request = (HttpRequest) e.getMessage();
+      if (e.getMessage() instanceof NettyHttpRequest) {
+          NettyHttpRequest request = (NettyHttpRequest) e.getMessage();
 
-      if (is100ContinueExpected(request))
-      {
-         send100Continue(e);
-      }
+          if (request.is100ContinueExpected())
+          {
+             send100Continue(e);
+          }
 
-      NettyHttpResponse response = new NettyHttpResponse();
-      try
-      {
-         dispatcher.service("http", request, response, true);
+          NettyHttpResponse response = request.getResponse();
+          try
+          {
+             dispatcher.service("http", request, response, true);
+          }
+          catch (Failure e1)
+          {
+             response.reset();
+             response.setStatus(e1.getErrorCode());
+          }
+          catch (Exception ex)
+          {
+             response.reset();
+             response.setStatus(500);
+             logger.error("Unexpected", ex);
+          }
+          
+
+          // Write the response.
+          ChannelFuture future = e.getChannel().write(response);
+
+          // Close the non-keep-alive connection after the write operation is done.
+          if (!request.isKeepAlive())
+          {
+             future.addListener(ChannelFutureListener.CLOSE);
+          }
       }
-      catch (Failure e1)
-      {
-         response.reset();
-         response.setStatus(e1.getErrorCode());
-      }
-      catch (Exception ex)
-      {
-         response.reset();
-         response.setStatus(500);
-         logger.error("Unexpected", ex);
-      }
+      super.messageReceived(ctx, e);
       
-
-      // Write the response.
-      ChannelFuture future = e.getChannel().write(response);
-
-      // Decide whether to close the connection or not.
-      boolean keepAlive = isKeepAlive(request);
-      // Close the non-keep-alive connection after the write operation is done.
-      if (!keepAlive)
-      {
-         future.addListener(ChannelFutureListener.CLOSE);
-      }
    }
 
    private void send100Continue(MessageEvent e)
