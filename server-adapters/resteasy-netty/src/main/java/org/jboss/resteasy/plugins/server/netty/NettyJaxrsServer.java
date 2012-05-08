@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
@@ -12,6 +13,8 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+
+import javax.net.ssl.SSLContext;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -33,7 +36,13 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    protected SecurityDomain domain;
    private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;
    private int executorThreadCount = 16;
+   private SSLContext sslContext;
 
+   public void setSSLContext(SSLContext sslContext) 
+   {
+      this.sslContext = sslContext;
+   }
+   
    public void setIoWorkerCount(int ioWorkerCount) 
    {
        this.ioWorkerCount = ioWorkerCount;
@@ -96,8 +105,15 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       if (executorThreadCount > 0) {
           executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(executorThreadCount, 0L, 0L));
       }
+      
+      ChannelPipelineFactory factory;
+      if (sslContext == null) {
+          factory = new HttpServerPipelineFactory(dispatcher, root, executionHandler);
+      } else {
+          factory = new HttpsServerPipelineFactory(dispatcher, root, executionHandler, sslContext);
+      }
       // Set up the event pipeline factory.
-      bootstrap.setPipelineFactory(new HttpServerPipelineFactory(dispatcher, root, executionHandler));
+      bootstrap.setPipelineFactory(factory);
 
       // Bind and start to accept incoming connections.
       channel = bootstrap.bind(new InetSocketAddress(port));
