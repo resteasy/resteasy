@@ -40,15 +40,7 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder {
         if (msg instanceof org.jboss.resteasy.spi.HttpResponse) {
             NettyHttpResponse nettyResponse = (NettyHttpResponse) msg;
             // Build the response object.
-            HttpResponseStatus status = null;
-            if (nettyResponse.getMessage() != null)
-            {
-               status = new HttpResponseStatus(nettyResponse.getStatus(), nettyResponse.getMessage());
-            }
-            else
-            {
-                status = HttpResponseStatus.valueOf(nettyResponse.getStatus());
-            }
+            HttpResponseStatus status = HttpResponseStatus.valueOf(nettyResponse.getStatus());
             HttpResponse response = new DefaultHttpResponse(HTTP_1_1, status);
 
             for (Map.Entry<String, List<Object>> entry : nettyResponse.getOutputHeaders().entrySet())

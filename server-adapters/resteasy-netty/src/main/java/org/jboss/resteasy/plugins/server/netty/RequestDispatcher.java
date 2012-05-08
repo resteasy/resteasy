@@ -64,7 +64,7 @@ public class RequestDispatcher
             ThreadLocalResteasyProviderFactory.push(providerFactory);
          }
 
-         SecurityContext securityContext = new NettySecurityContext();
+         SecurityContext securityContext;
          if (domain != null)
          {
             securityContext = basicAuthentication(request, response);
@@ -72,6 +72,8 @@ public class RequestDispatcher
             {
                return;
             }
+         } else {
+            securityContext = new NettySecurityContext();
          }
          try
          {

@@ -24,60 +24,59 @@ import java.io.OutputStream;
 public class NettyHttpResponse implements HttpResponse
 {
    private int status = 200;
-   private ChannelBuffer buffer;
    private ChannelBufferOutputStream os;
    private MultivaluedMap<String, Object> outputHeaders;
-   private String message = null;
    private final Channel channel;
    private boolean committed;
    public NettyHttpResponse(Channel channel)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
-      buffer = ChannelBuffers.dynamicBuffer();
-      os = new ChannelBufferOutputStream(buffer);
+      os = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer());
       this.channel = channel;
    }
 
    public ChannelBuffer getBuffer()
    {
-      return buffer;
+      return os.buffer();
    }
 
-   public String getMessage()
-   {
-      return message;
-   }
-
+   @Override
    public int getStatus()
    {
       return status;
    }
-
+   
+   @Override
    public void setStatus(int status)
    {
       this.status = status;
    }
 
+   @Override
    public MultivaluedMap<String, Object> getOutputHeaders()
    {
       return outputHeaders;
    }
 
+   @Override
    public OutputStream getOutputStream() throws IOException
    {
       return os;
    }
 
+   @Override
    public void addNewCookie(NewCookie cookie)
    {
       outputHeaders.add(HttpHeaders.SET_COOKIE, cookie);
    }
 
+   @Override
    public void sendError(int status) throws IOException
    {
       sendError(status, null);
    }
 
+   @Override
    public void sendError(int status, String message) throws IOException
    {
        if (committed) 
@@ -99,11 +98,13 @@ public class NettyHttpResponse implements HttpResponse
        committed = true;
    }
 
+   @Override
    public boolean isCommitted()
    {
       return committed;
    }
 
+   @Override
    public void reset()
    {
       if (committed) 
@@ -111,7 +112,7 @@ public class NettyHttpResponse implements HttpResponse
           throw new IllegalStateException("HttpResponse is committed");
       }
       outputHeaders.clear();
-      buffer.clear();
+      os.buffer().clear();
       outputHeaders.clear();
    }
 
