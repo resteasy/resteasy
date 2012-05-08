@@ -38,7 +38,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
             return msg;
         }
         org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) msg;
-        NettyHttpResponse response = new NettyHttpResponse();
+        NettyHttpResponse response = new NettyHttpResponse(channel);
 
         HttpHeaders headers = null;
         UriInfoImpl uriInfo = null;
@@ -46,18 +46,20 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
         {
            headers = NettyUtil.extractHttpHeaders(request);
            uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, "http");
+           HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request), org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
+           ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
+           nettyRequest.setInputStream(is);
+           return request;
         }
         catch (Exception e)
         {
            response.sendError(400);
            // made it warn so that people can filter this.
            logger.warn("Failed to parse request.", e);
+           
+           return null;
         }
 
-        HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request), org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
-        ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
-        nettyRequest.setInputStream(is);
-        return request;
     }
 
 }

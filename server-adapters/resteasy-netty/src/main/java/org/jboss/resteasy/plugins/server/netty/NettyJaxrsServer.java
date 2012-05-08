@@ -105,5 +105,6 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    {
       channel.close().awaitUninterruptibly();
       bootstrap.releaseExternalResources();
+      deployment.stop();
    }
 }

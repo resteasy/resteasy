@@ -51,7 +51,7 @@ public class RequestDispatcher
       return providerFactory;
    }
 
-   public void service(String protocol, NettyHttpRequest request, NettyHttpResponse response, boolean handleNotFound) throws Exception
+   public void service(String protocol, HttpRequest request, HttpResponse response, boolean handleNotFound) throws IOException 
    {
       try
       {
