@@ -54,6 +54,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       this.port = port;
    }
 
+   @Override
    public void setDeployment(ResteasyDeployment deployment)
    {
       this.deployment = deployment;
@@ -78,6 +79,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       this.domain = sc;
    }
 
+   @Override
    public void start()
    {
       deployment.start();
@@ -101,6 +103,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       channel = bootstrap.bind(new InetSocketAddress(port));
    }
 
+   @Override
    public void stop()
    {
       channel.close().awaitUninterruptibly();
