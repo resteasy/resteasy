@@ -26,8 +26,8 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    
    public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, ExecutionHandler executionHandler)
    {
-      this.resteasyEncoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root);
-      this.resteasyDecoder = new RestEasyHttpResponseEncoder(dispatcher);
+      this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root);
+      this.resteasyEncoder = new RestEasyHttpResponseEncoder(dispatcher);
       this.resteasyRequestHandler = new RequestHandler(dispatcher);
       this.executionHandler = executionHandler;
    }
@@ -46,6 +46,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       
       pipeline.addLast("encoder", new HttpResponseEncoder());
       pipeline.addLast("resteasyEncoder", resteasyEncoder);
+
       // Remove the following line if you don't want automatic content compression.
       //pipeline.addLast("deflater", new HttpContentCompressor());
 
