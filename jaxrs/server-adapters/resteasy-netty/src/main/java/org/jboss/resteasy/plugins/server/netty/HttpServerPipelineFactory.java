@@ -32,15 +32,11 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       this.executionHandler = executionHandler;
    }
 
+   @Override
    public ChannelPipeline getPipeline() throws Exception
    {
       // Create a default pipeline implementation.
       ChannelPipeline pipeline = pipeline();
-
-      // Uncomment the following line if you want HTTPS
-      //SSLEngine engine = SecureChatSslContextFactory.getServerContext().createSSLEngine();
-      //engine.setUseClientMode(false);
-      //pipeline.addLast("ssl", new SslHandler(engine));
 
       pipeline.addLast("decoder", new HttpRequestDecoder());
       pipeline.addLast("resteasyDecoder", resteasyDecoder);
