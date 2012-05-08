@@ -12,6 +12,13 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 
+/**
+ * This {@link OneToOneDecoder} is responsible for decode {@link org.jboss.netty.handler.codec.http.HttpRequest}
+ * to {@link NettyHttpRequest}'s
+ * 
+ * @author Norman Maurer
+ *
+ */
 @Sharable
 public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
     private final static Logger logger = Logger.getLogger(RestEasyHttpRequestDecoder.class);
