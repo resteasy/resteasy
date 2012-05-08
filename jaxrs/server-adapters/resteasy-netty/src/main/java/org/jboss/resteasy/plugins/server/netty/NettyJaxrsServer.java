@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>
  * @version $Rev: 2080 $, $Date: 2010-01-26 18:04:19 +0900 (Tue, 26 Jan 2010) $
  */
-public class JaxrsServer implements EmbeddedJaxrsServer
+public class NettyJaxrsServer implements EmbeddedJaxrsServer
 {
    protected ServerBootstrap bootstrap;
    protected Channel channel;

@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.server.netty;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
-        if (msg instanceof NettyHttpResponse) {
+        if (msg instanceof org.jboss.resteasy.spi.HttpResponse) {
             NettyHttpResponse nettyResponse = (NettyHttpResponse) msg;
             // Build the response object.
             HttpResponseStatus status = null;
@@ -64,14 +63,7 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder {
                }
             }
 
-            try
-            {
-               nettyResponse.getOutputStream().flush();
-            }
-            catch (IOException e1)
-            {
-               throw new RuntimeException(e1);
-            }
+            nettyResponse.getOutputStream().flush();
             response.setContent(nettyResponse.getBuffer());
             response.setHeader(CONTENT_LENGTH, response.getContent().readableBytes());
             
