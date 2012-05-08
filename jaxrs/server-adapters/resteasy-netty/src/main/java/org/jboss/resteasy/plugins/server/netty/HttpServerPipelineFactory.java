@@ -6,6 +6,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.jboss.netty.handler.execution.ExecutionHandler;
 
 import static org.jboss.netty.channel.Channels.*;
 
@@ -20,12 +21,14 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    private final ChannelHandler resteasyEncoder;
    private final ChannelHandler resteasyDecoder;
    private final ChannelHandler resteasyRequestHandler;
+   private ChannelHandler executionHandler;
    
-   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root)
+   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, ExecutionHandler executionHandler)
    {
       this.resteasyEncoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root);
       this.resteasyDecoder = new RestEasyHttpResponseEncoder(dispatcher);
       this.resteasyRequestHandler = new RequestHandler(dispatcher);
+      this.executionHandler = executionHandler;
    }
 
    public ChannelPipeline getPipeline() throws Exception
@@ -48,6 +51,10 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       // Remove the following line if you don't want automatic content compression.
       //pipeline.addLast("deflater", new HttpContentCompressor());
 
+      if (executionHandler != null) {
+         pipeline.addLast("executionHandler", executionHandler);
+      }
+      
       pipeline.addLast("handler", resteasyRequestHandler);
       return pipeline;
    }

@@ -4,6 +4,8 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -29,7 +31,19 @@ public class JaxrsServer implements EmbeddedJaxrsServer
    protected ResteasyDeployment deployment = new ResteasyDeployment();
    protected String root = "";
    protected SecurityDomain domain;
+   private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;
+   private int executorThreadCount = 16;
 
+   public void setIoWorkerCount(int ioWorkerCount) 
+   {
+       this.ioWorkerCount = ioWorkerCount;
+   }
+   
+   public void setExecutorThreadCount(int executorThreadCount)
+   {
+       this.executorThreadCount = executorThreadCount;
+   }
+   
    public int getPort()
    {
       return port;
@@ -73,10 +87,15 @@ public class JaxrsServer implements EmbeddedJaxrsServer
       ServerBootstrap bootstrap = new ServerBootstrap(
               new NioServerSocketChannelFactory(
                       Executors.newCachedThreadPool(),
-                      Executors.newCachedThreadPool()));
+                      Executors.newCachedThreadPool(), 
+                      ioWorkerCount));
 
+      ExecutionHandler executionHandler = null;
+      if (executorThreadCount > 0) {
+          executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(executorThreadCount, 0L, 0L));
+      }
       // Set up the event pipeline factory.
-      bootstrap.setPipelineFactory(new HttpServerPipelineFactory(dispatcher, root));
+      bootstrap.setPipelineFactory(new HttpServerPipelineFactory(dispatcher, root, executionHandler));
 
       // Bind and start to accept incoming connections.
       channel = bootstrap.bind(new InetSocketAddress(port));
