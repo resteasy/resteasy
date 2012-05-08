@@ -2,7 +2,6 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
@@ -103,14 +102,7 @@ public class JaxrsServer implements EmbeddedJaxrsServer
 
    public void stop()
    {
-      ChannelFuture future = channel.close();
-      try
-      {
-         future.await(5000);
-      }
-      catch (InterruptedException e)
-      {
-
-      }
+      channel.close().awaitUninterruptibly();
+      bootstrap.releaseExternalResources();
    }
 }
