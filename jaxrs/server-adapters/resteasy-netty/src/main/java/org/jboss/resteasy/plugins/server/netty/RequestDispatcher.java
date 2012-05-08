@@ -53,6 +53,7 @@ public class RequestDispatcher
 
    public void service(HttpRequest request, HttpResponse response, boolean handleNotFound) throws IOException 
    {
+
       try
       {
          //logger.info("***PATH: " + request.getRequestURL());
@@ -77,6 +78,7 @@ public class RequestDispatcher
          }
          try
          {
+
             ResteasyProviderFactory.pushContext(SecurityContext.class, securityContext);
             if (handleNotFound)
             {
