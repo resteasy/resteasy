@@ -15,5 +15,6 @@
 
     <modules>
         <module>resteasy-jdk-http</module>
+        <module>resteasy-netty</module>
     </modules>
 </project>
