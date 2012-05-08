@@ -17,6 +17,13 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
 
+/**
+ * {@link OneToOneEncoder} implementation which encodes {@link org.jboss.resteasy.spi.HttpResponse}'s to
+ * {@link HttpResponse}'s
+ * 
+ * @author Norman Maurer
+ *
+ */
 @Sharable
 public class RestEasyHttpResponseEncoder extends OneToOneEncoder {
     

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * We have this abstraction so that we can reuse marshalling objects in a client framework and serverside framework
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author Norman Maurer
  * @version $Revision: 1 $
  */
 public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
