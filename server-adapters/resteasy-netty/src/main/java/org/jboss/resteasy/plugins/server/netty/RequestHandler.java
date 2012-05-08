@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.netty;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -20,6 +21,7 @@ import org.jboss.resteasy.spi.Failure;
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>
  * @version $Rev: 2368 $, $Date: 2010-10-18 17:19:03 +0900 (Mon, 18 Oct 2010) $
  */
+@Sharable
 public class RequestHandler extends SimpleChannelUpstreamHandler
 {
    protected final RequestDispatcher dispatcher;
