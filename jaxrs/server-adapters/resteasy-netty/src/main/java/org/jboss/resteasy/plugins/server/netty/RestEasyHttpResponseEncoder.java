@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -17,6 +18,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
 
+@Sharable
 public class RestEasyHttpResponseEncoder extends OneToOneEncoder {
     
     private final RequestDispatcher dispatcher;
