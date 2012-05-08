@@ -1,8 +1,13 @@
 package org.jboss.resteasy.plugins.server.netty;
 
+import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 
@@ -23,12 +28,14 @@ public class NettyHttpResponse implements HttpResponse
    private ChannelBufferOutputStream os;
    private MultivaluedMap<String, Object> outputHeaders;
    private String message = null;
-
-   public NettyHttpResponse()
+   private final Channel channel;
+   private boolean committed;
+   public NettyHttpResponse(Channel channel)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
       buffer = ChannelBuffers.dynamicBuffer();
       os = new ChannelBufferOutputStream(buffer);
+      this.channel = channel;
    }
 
    public ChannelBuffer getBuffer()
@@ -68,22 +75,43 @@ public class NettyHttpResponse implements HttpResponse
 
    public void sendError(int status) throws IOException
    {
-      this.status = status;
+      sendError(status, null);
    }
 
    public void sendError(int status, String message) throws IOException
    {
-      this.status = status;
-      this.message = message;
+       if (committed) 
+       {
+           throw new IllegalStateException();
+       }
+       
+       HttpResponseStatus responseStatus = null;
+       if (message != null)
+       {
+           responseStatus = new HttpResponseStatus(status, message);
+       }
+       else
+       {
+           responseStatus = HttpResponseStatus.valueOf(status);
+       }
+       DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, responseStatus);
+       channel.write(response);
+       committed = true;
    }
 
    public boolean isCommitted()
    {
-      return false;
+      return committed;
    }
 
    public void reset()
    {
+      if (committed) 
+      {
+          throw new IllegalStateException("HttpResponse is committed");
+      }
+      outputHeaders.clear();
+      buffer.clear();
       outputHeaders.clear();
    }
 
