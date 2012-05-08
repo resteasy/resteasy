@@ -85,7 +85,6 @@ public class NettyHttpResponse implements HttpResponse
    public void reset()
    {
       outputHeaders.clear();
-      buffer.clear();
    }
 
 }
