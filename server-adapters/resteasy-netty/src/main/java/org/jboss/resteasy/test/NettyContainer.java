@@ -43,7 +43,7 @@ public class NettyContainer
    {
       netty = new NettyJaxrsServer();
       netty.setDeployment(deployment);
-      netty.setPort(TestPortProvider.getPort());
+      netty.setPort(8888);
       netty.setRootResourcePath(bindPath);
       netty.setSecurityDomain(domain);
       netty.start();
@@ -66,4 +66,7 @@ public class NettyContainer
       netty = null;
    }
 
+   public static void main(String args[]) throws Exception {
+       start();
+   }
 }

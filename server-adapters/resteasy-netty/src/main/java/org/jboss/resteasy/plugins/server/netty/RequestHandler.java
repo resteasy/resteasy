@@ -61,7 +61,6 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
              logger.error("Unexpected", ex);
           }
           
-
           // Write the response.
           ChannelFuture future = e.getChannel().write(response);
 

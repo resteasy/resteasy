@@ -45,11 +45,12 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
         try
         {
            headers = NettyUtil.extractHttpHeaders(request);
+           // TODO: Fix me
            uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, "http");
            HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request), org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
            ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
            nettyRequest.setInputStream(is);
-           return request;
+           return nettyRequest;
         }
         catch (Exception e)
         {
