@@ -67,11 +67,7 @@ public class JaxrsServer implements EmbeddedJaxrsServer
    public void start()
    {
       deployment.start();
-      RequestDispatcher dispatcher = new RequestDispatcher();
-      dispatcher.setDispatcher((SynchronousDispatcher)deployment.getDispatcher());
-      dispatcher.setProviderFactory(deployment.getProviderFactory());
-      dispatcher.setServletMappingPrefix(root);
-      dispatcher.setDomain(domain);
+      RequestDispatcher dispatcher = new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(), deployment.getProviderFactory(), domain);
 
       // Configure the server.
       ServerBootstrap bootstrap = new ServerBootstrap(
@@ -80,7 +76,7 @@ public class JaxrsServer implements EmbeddedJaxrsServer
                       Executors.newCachedThreadPool()));
 
       // Set up the event pipeline factory.
-      bootstrap.setPipelineFactory(new HttpServerPipelineFactory(dispatcher));
+      bootstrap.setPipelineFactory(new HttpServerPipelineFactory(dispatcher, root));
 
       // Bind and start to accept incoming connections.
       channel = bootstrap.bind(new InetSocketAddress(port));

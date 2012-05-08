@@ -5,7 +5,6 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.spi.AsynchronousResponse;
-import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -43,11 +42,15 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    protected AbstractAsynchronousResponse asynchronousResponse;
    protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
-   protected HttpResponse httpResponse;
+   protected NettyHttpResponse httpResponse;
+   private final boolean iskeepAlive;
+   private final boolean is100ContinueExpected;
 
 
-   public NettyHttpRequest(HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, HttpResponse httpResponse)
+   public NettyHttpRequest(HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean isKeepAlive, boolean is100ContinueExpected)
    {
+      this.is100ContinueExpected = is100ContinueExpected;
+      this.iskeepAlive = isKeepAlive;
       this.httpResponse = httpResponse;
       this.dispatcher = dispatcher;
       this.httpHeaders = httpHeaders;
@@ -187,5 +190,18 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       {
          throw new RuntimeException(e);
       }
+   }
+   
+   public NettyHttpResponse getResponse() 
+   {
+       return httpResponse;
+   }
+   
+   public boolean isKeepAlive() {
+       return iskeepAlive;
+   }
+   
+   public boolean is100ContinueExpected() {
+       return is100ContinueExpected;
    }
 }

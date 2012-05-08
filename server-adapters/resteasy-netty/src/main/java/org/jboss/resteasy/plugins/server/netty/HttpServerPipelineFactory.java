@@ -16,11 +16,13 @@ import static org.jboss.netty.channel.Channels.*;
  */
 public class HttpServerPipelineFactory implements ChannelPipelineFactory
 {
-   protected RequestDispatcher dispatcher;
+   protected final RequestDispatcher dispatcher;
+   private final String root;
 
-   public HttpServerPipelineFactory(RequestDispatcher dispacther)
+   public HttpServerPipelineFactory(RequestDispatcher dispacther, String root)
    {
       this.dispatcher = dispacther;
+      this.root = root;
    }
 
    public ChannelPipeline getPipeline() throws Exception
@@ -34,8 +36,10 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       //pipeline.addLast("ssl", new SslHandler(engine));
 
       pipeline.addLast("decoder", new HttpRequestDecoder());
+      pipeline.addLast("resteasyDecoder", new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root));
       // Uncomment the following line if you don't want to handle HttpChunks.
       pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
+      pipeline.addLast("resteasyEncoder", new RestEasyHttpResponseEncoder(dispatcher));
       pipeline.addLast("encoder", new HttpResponseEncoder());
       // Remove the following line if you don't want automatic content compression.
       //pipeline.addLast("deflater", new HttpContentCompressor());
