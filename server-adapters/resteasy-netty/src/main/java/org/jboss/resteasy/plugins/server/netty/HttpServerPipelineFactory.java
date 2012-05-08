@@ -22,7 +22,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    private final ChannelHandler resteasyEncoder;
    private final ChannelHandler resteasyDecoder;
    private final ChannelHandler resteasyRequestHandler;
-   private ChannelHandler executionHandler;
+   private final ChannelHandler executionHandler;
    
    public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, ExecutionHandler executionHandler)
    {
