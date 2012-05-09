@@ -13,6 +13,9 @@ import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protoc
 import static org.jboss.netty.channel.Channels.*;
 
 /**
+ * The {@link ChannelPipelineFactory} which is used to serve HTTP Traffic.
+ * 
+ * 
  * @author <a href="http://www.jboss.org/netty/">The Netty Project</a>
  * @author Andy Taylor (andy.taylor@jboss.org)
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>

@@ -16,23 +16,28 @@ import org.jboss.resteasy.spi.HttpRequest;
  * This {@link OneToOneDecoder} is responsible for decode {@link org.jboss.netty.handler.codec.http.HttpRequest}
  * to {@link NettyHttpRequest}'s
  * 
+ * This implementation is {@link Sharable}
+ * 
  * @author Norman Maurer
  *
  */
 @Sharable
-public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
+public class RestEasyHttpRequestDecoder extends OneToOneDecoder 
+{
     private final static Logger logger = Logger.getLogger(RestEasyHttpRequestDecoder.class);
 
     private final SynchronousDispatcher dispatcher;
     private final String servletMappingPrefix;
     private final String proto;
     
-    enum Protocol {
+    enum Protocol 
+    {
         HTTPS,
         HTTP
     }
     
-    public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol) {
+    public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol) 
+    {
         this.dispatcher = dispatcher;
         this.servletMappingPrefix = servletMappingPrefix;
         if (protocol == Protocol.HTTP) 
@@ -46,7 +51,8 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
     }
     
     @Override
-    protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
+    protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception 
+    {
         if (!(msg instanceof org.jboss.netty.handler.codec.http.HttpRequest)) 
         {
             return msg;
@@ -64,7 +70,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
            headers = NettyUtil.extractHttpHeaders(request);
 
            uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, proto);
-           HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, keepAlive, org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
+           HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
            ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
            nettyRequest.setInputStream(is);
            return nettyRequest;

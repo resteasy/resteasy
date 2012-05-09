@@ -16,6 +16,10 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
 
 /**
+ * {@link SimpleChannelUpstreamHandler} which handles the requests and dispatch them.
+ * 
+ * This class is {@link Sharable}.
+ * 
  * @author <a href="http://www.jboss.org/netty/">The Netty Project</a>
  * @author Andy Taylor (andy.taylor@jboss.org)
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>

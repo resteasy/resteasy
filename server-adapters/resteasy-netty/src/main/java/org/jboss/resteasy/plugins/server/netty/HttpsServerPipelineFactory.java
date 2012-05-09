@@ -8,22 +8,25 @@ import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol;
 
 /**
- * Enable the use of HTTPS
+ * {@link HttpServerPipelineFactory} subclass which enable the use of HTTPS
  * 
  * @author Norman Maurer
  *
  */
-public class HttpsServerPipelineFactory extends HttpServerPipelineFactory {
+public class HttpsServerPipelineFactory extends HttpServerPipelineFactory 
+{
 
     private final SSLContext context;
 
-    public HttpsServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, SSLContext context) {
+    public HttpsServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, SSLContext context) 
+    {
         super(dispatcher, root, executorThreadCount);
         this.context = context;
     }
 
     @Override
-    public ChannelPipeline getPipeline() throws Exception {
+    public ChannelPipeline getPipeline() throws Exception 
+    {
         ChannelPipeline cp = super.getPipeline();
         SSLEngine engine = context.createSSLEngine();
         engine.setUseClientMode(false);
@@ -32,7 +35,8 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory {
     }
 
     @Override
-    protected Protocol getProtocol() {
+    protected Protocol getProtocol() 
+    {
         return Protocol.HTTPS;
     }
 

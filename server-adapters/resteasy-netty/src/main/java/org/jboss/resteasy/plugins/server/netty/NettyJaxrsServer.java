@@ -4,6 +4,8 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -41,11 +43,24 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       this.sslContext = sslContext;
    }
    
+   /**
+    * Specify the worker count to use. For more informations about this please see the javadocs of {@link NioServerSocketChannelFactory}
+    * 
+    * @param ioWorkerCount
+    */
    public void setIoWorkerCount(int ioWorkerCount) 
    {
        this.ioWorkerCount = ioWorkerCount;
    }
    
+   /**
+    * Set the number of threads to use for the Executor. For more informations please see the javadocs of {@link OrderedMemoryAwareThreadPoolExecutor}. 
+    * If you want to disable the use of the {@link ExecutionHandler} specify a value <= 0.  This should only be done if you are 100% sure that you don't have any blocking
+    * code in there.
+    * 
+    * 
+    * @param executorThreadCount
+    */
    public void setExecutorThreadCount(int executorThreadCount)
    {
        this.executorThreadCount = executorThreadCount;
