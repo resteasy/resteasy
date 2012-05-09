@@ -22,22 +22,27 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
  * {@link OneToOneEncoder} implementation which encodes {@link org.jboss.resteasy.spi.HttpResponse}'s to
  * {@link HttpResponse}'s
  * 
+ * This implementation is {@link Sharable}
+ * 
  * @author Norman Maurer
  *
  */
 @Sharable
-public class RestEasyHttpResponseEncoder extends OneToOneEncoder {
+public class RestEasyHttpResponseEncoder extends OneToOneEncoder 
+{
     
     private final RequestDispatcher dispatcher;
 
-    public RestEasyHttpResponseEncoder(RequestDispatcher dispatcher) {
+    public RestEasyHttpResponseEncoder(RequestDispatcher dispatcher) 
+    {
         this.dispatcher = dispatcher;
     }
     
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
+    protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception 
+    {
         if (msg instanceof org.jboss.resteasy.spi.HttpResponse) {
             NettyHttpResponse nettyResponse = (NettyHttpResponse) msg;
             // Build the response object.

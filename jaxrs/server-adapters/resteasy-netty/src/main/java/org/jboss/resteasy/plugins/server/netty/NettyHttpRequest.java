@@ -44,14 +44,12 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected NettyHttpResponse httpResponse;
-   private final boolean iskeepAlive;
    private final boolean is100ContinueExpected;
 
 
-   public NettyHttpRequest(HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean isKeepAlive, boolean is100ContinueExpected)
+   public NettyHttpRequest(HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean is100ContinueExpected)
    {
       this.is100ContinueExpected = is100ContinueExpected;
-      this.iskeepAlive = isKeepAlive;
       this.httpResponse = httpResponse;
       this.dispatcher = dispatcher;
       this.httpHeaders = httpHeaders;
@@ -210,16 +208,19 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       }
    }
    
+   
    public NettyHttpResponse getResponse() 
    {
        return httpResponse;
    }
    
-   public boolean isKeepAlive() {
-       return iskeepAlive;
+   public boolean isKeepAlive() 
+   {
+       return httpResponse.isKeepAlive();
    }
-   
-   public boolean is100ContinueExpected() {
+
+   public boolean is100ContinueExpected() 
+   {
        return is100ContinueExpected;
    }
 }
