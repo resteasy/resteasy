@@ -28,8 +28,9 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    private final ChannelHandler resteasyDecoder;
    private final ChannelHandler resteasyRequestHandler;
    private final ChannelHandler executionHandler;
+   private final int maxRequestSize;
    
-   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount)
+   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, int maxRequestSize)
    {
       this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, getProtocol());
       this.resteasyEncoder = new RestEasyHttpResponseEncoder(dispatcher);
@@ -42,6 +43,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       {
           this.executionHandler = null;
       }
+      this.maxRequestSize = maxRequestSize;
       
    }
 
@@ -54,7 +56,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       pipeline.addLast("decoder", new HttpRequestDecoder());
       pipeline.addLast("resteasyDecoder", resteasyDecoder);
       
-      pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
+      pipeline.addLast("aggregator", new HttpChunkAggregator(maxRequestSize));
       
       pipeline.addLast("encoder", new HttpResponseEncoder());
       pipeline.addLast("resteasyEncoder", resteasyEncoder);

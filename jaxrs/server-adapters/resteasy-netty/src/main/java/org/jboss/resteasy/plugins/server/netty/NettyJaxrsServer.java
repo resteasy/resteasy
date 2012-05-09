@@ -37,6 +37,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;
    private int executorThreadCount = 16;
    private SSLContext sslContext;
+   private int maxRequestSize = 1024 * 1024 * 10;
 
    public void setSSLContext(SSLContext sslContext) 
    {
@@ -64,6 +65,16 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    public void setExecutorThreadCount(int executorThreadCount)
    {
        this.executorThreadCount = executorThreadCount;
+   }
+
+   /**
+    * Set the max. request size in bytes. If this size is exceed we will send a "413 Request Entity Too Large" to the client.
+    * 
+    * @param maxRequestSize the max request size. This is 10mb by default.
+    */
+   public void setMaxRequestSize(int maxRequestSize) 
+   {
+       this.maxRequestSize  = maxRequestSize;
    }
    
    public int getPort()
@@ -116,9 +127,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
       ChannelPipelineFactory factory;
       if (sslContext == null) {
-          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount);
+          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize);
       } else {
-          factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, sslContext);
+          factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, sslContext);
       }
       // Set up the event pipeline factory.
       bootstrap.setPipelineFactory(factory);
