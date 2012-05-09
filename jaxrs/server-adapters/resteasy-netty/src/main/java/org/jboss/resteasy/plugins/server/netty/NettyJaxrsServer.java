@@ -4,8 +4,6 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -101,16 +99,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                       Executors.newCachedThreadPool(), 
                       ioWorkerCount));
 
-      ExecutionHandler executionHandler = null;
-      if (executorThreadCount > 0) {
-          executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(executorThreadCount, 0L, 0L));
-      }
-      
       ChannelPipelineFactory factory;
       if (sslContext == null) {
-          factory = new HttpServerPipelineFactory(dispatcher, root, executionHandler);
+          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount);
       } else {
-          factory = new HttpsServerPipelineFactory(dispatcher, root, executionHandler, sslContext);
+          factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, sslContext);
       }
       // Set up the event pipeline factory.
       bootstrap.setPipelineFactory(factory);
