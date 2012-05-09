@@ -256,6 +256,11 @@ public class ResteasyDeployment
 
    public static Application createApplication(String applicationClass, ResteasyProviderFactory providerFactory)
    {
+	
+	  if (applicationClass == null || applicationClass.trim().equals("")) {
+		throw new ApplicationException("The implementation of javax.ws.rs.core.Application must be specified.", null);
+	  }
+		
       return (Application) createFromInjectorFactory(applicationClass, providerFactory);
    }
 
