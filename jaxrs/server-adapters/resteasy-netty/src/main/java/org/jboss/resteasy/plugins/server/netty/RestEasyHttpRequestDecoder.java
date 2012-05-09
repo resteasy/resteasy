@@ -25,8 +25,8 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
 
     private final SynchronousDispatcher dispatcher;
     private final String servletMappingPrefix;
-    private final Protocol protocol;
-
+    private final String proto;
+    
     enum Protocol {
         HTTPS,
         HTTP
@@ -35,7 +35,14 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
     public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol) {
         this.dispatcher = dispatcher;
         this.servletMappingPrefix = servletMappingPrefix;
-        this.protocol = protocol;
+        if (protocol == Protocol.HTTP) 
+        {
+            proto = "http";
+        } 
+        else 
+        {
+            proto = "https";
+        }
     }
     
     @Override
@@ -55,16 +62,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
         try
         {
            headers = NettyUtil.extractHttpHeaders(request);
-           String proto;
-           if (protocol == Protocol.HTTP) 
-           {
-               proto = "http";
-           } 
-           else 
-           {
-               proto = "https";
-           }
-           
+
            uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, proto);
            HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, keepAlive, org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
            ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());

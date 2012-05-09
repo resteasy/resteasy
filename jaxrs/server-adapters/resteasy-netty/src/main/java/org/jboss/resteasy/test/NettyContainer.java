@@ -43,7 +43,7 @@ public class NettyContainer
    {
       netty = new NettyJaxrsServer();
       netty.setDeployment(deployment);
-      netty.setPort(8888);
+      netty.setPort(TestPortProvider.getPort());
       netty.setRootResourcePath(bindPath);
       netty.setSecurityDomain(domain);
       netty.start();
