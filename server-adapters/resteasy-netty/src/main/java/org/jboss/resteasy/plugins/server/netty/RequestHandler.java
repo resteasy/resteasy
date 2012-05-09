@@ -10,8 +10,10 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
 
@@ -89,7 +91,17 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
            throws Exception
    {
-      e.getCause().printStackTrace();
-      e.getChannel().close();
+      // handle the case of to big requests.
+      if (e.getCause() instanceof TooLongFrameException) 
+      {
+          DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE);
+          e.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
+      } 
+      else 
+      {
+          e.getCause().printStackTrace();
+          e.getChannel().close();
+      }
+
    }
 }
