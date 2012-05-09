@@ -5,7 +5,6 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.spi.AsynchronousResponse;
-import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -26,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * We have this abstraction so that we can reuse marshalling objects in a client framework and serverside framework
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author Norman Maurer
  * @version $Revision: 1 $
  */
 public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
@@ -43,11 +43,13 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    protected AbstractAsynchronousResponse asynchronousResponse;
    protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
-   protected HttpResponse httpResponse;
+   protected NettyHttpResponse httpResponse;
+   private final boolean is100ContinueExpected;
 
 
-   public NettyHttpRequest(HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, HttpResponse httpResponse)
+   public NettyHttpRequest(HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean is100ContinueExpected)
    {
+      this.is100ContinueExpected = is100ContinueExpected;
       this.httpResponse = httpResponse;
       this.dispatcher = dispatcher;
       this.httpHeaders = httpHeaders;
@@ -57,6 +59,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
 
    }
 
+   @Override
    public MultivaluedMap<String, String> getFormParameters()
    {
       if (formParameters != null) return formParameters;
@@ -78,6 +81,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       return formParameters;
    }
 
+   @Override
    public MultivaluedMap<String, String> getDecodedFormParameters()
    {
       if (decodedFormParameters != null) return decodedFormParameters;
@@ -86,57 +90,67 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    }
 
 
+   @Override
    public Object getAttribute(String attribute)
    {
       return attributes.get(attribute);
    }
 
+   @Override
    public void setAttribute(String name, Object value)
    {
       attributes.put(name, value);
    }
 
+   @Override
    public void removeAttribute(String name)
    {
       attributes.remove(name);
    }
 
+   @Override
    public HttpHeaders getHttpHeaders()
    {
       return httpHeaders;
    }
 
+   @Override
    public InputStream getInputStream()
    {
       return inputStream;
    }
 
+   @Override
    public void setInputStream(InputStream stream)
    {
       this.inputStream = stream;
    }
 
+   @Override
    public UriInfo getUri()
    {
       return uri;
    }
 
+   @Override
    public String getHttpMethod()
    {
       return httpMethod;
    }
 
+   @Override
    public String getPreprocessedPath()
    {
       return preProcessedPath;
    }
 
+   @Override
    public void setPreprocessedPath(String path)
    {
       preProcessedPath = path;
    }
 
-
+   @Override
    public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
    {
       suspended = true;
@@ -144,6 +158,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       this.suspendTimeout = suspendTimeout;
       asynchronousResponse = new AbstractAsynchronousResponse()
       {
+          @Override
          public void setResponse(Response response)
          {
             try
@@ -160,22 +175,26 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       return asynchronousResponse;
    }
 
+   @Override
    public AsynchronousResponse getAsynchronousResponse()
    {
       return asynchronousResponse;
    }
 
+   @Override
    public boolean isInitial()
    {
       return true;
    }
-
+   
+   @Override
    public boolean isSuspended()
    {
       return suspended;
    }
 
 
+   @Override
    public void initialRequestThreadFinished()
    {
       if (latch == null) return; // only block if createAsynchronousResponse was called.
@@ -187,5 +206,21 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       {
          throw new RuntimeException(e);
       }
+   }
+   
+   
+   public NettyHttpResponse getResponse() 
+   {
+       return httpResponse;
+   }
+   
+   public boolean isKeepAlive() 
+   {
+       return httpResponse.isKeepAlive();
+   }
+
+   public boolean is100ContinueExpected() 
+   {
+       return is100ContinueExpected;
    }
 }

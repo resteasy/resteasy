@@ -1,40 +1,39 @@
 package org.jboss.resteasy.plugins.server.netty;
 
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
+
+import javax.ws.rs.core.SecurityContext;
+
 import org.apache.commons.codec.binary.Base64;
-import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.SecurityContext;
-import java.io.IOException;
-import java.security.Principal;
-
 /**
  * Helper/delegate class to unify Servlet and Filter dispatcher implementations
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author Norman Maurer
  * @version $Revision: 1 $
  */
 public class RequestDispatcher
 {
-   private final static Logger logger = Logger.getLogger(RequestDispatcher.class);
+   protected final SynchronousDispatcher dispatcher;
+   protected final ResteasyProviderFactory providerFactory;
+   protected final SecurityDomain domain;
 
-   protected SynchronousDispatcher dispatcher;
-   protected ResteasyProviderFactory providerFactory;
-   protected String servletMappingPrefix = "";
-   protected SecurityDomain domain;
-
-   public RequestDispatcher()
+   public RequestDispatcher(SynchronousDispatcher dispatcher, ResteasyProviderFactory providerFactory, SecurityDomain domain)
    {
+      this.dispatcher = dispatcher;
+      this.providerFactory = providerFactory;
+      this.domain = domain;
    }
 
    public SynchronousDispatcher getDispatcher()
@@ -46,51 +45,24 @@ public class RequestDispatcher
    {
       return domain;
    }
-
-   public void setDomain(SecurityDomain domain)
-   {
-      this.domain = domain;
-   }
-
-   public void setDispatcher(SynchronousDispatcher dispatcher)
-   {
-      this.dispatcher = dispatcher;
-   }
-
+   
    public ResteasyProviderFactory getProviderFactory()
    {
       return providerFactory;
    }
 
-   public void setProviderFactory(ResteasyProviderFactory providerFactory)
+   public void service(HttpRequest request, HttpResponse response, boolean handleNotFound) throws IOException 
    {
-      this.providerFactory = providerFactory;
-   }
 
-   public String getServletMappingPrefix()
-   {
-      return servletMappingPrefix;
-   }
-
-   public void setServletMappingPrefix(String servletMappingPrefix)
-   {
-      this.servletMappingPrefix = servletMappingPrefix;
-   }
-
-   public void service(String protocol, org.jboss.netty.handler.codec.http.HttpRequest request, HttpResponse response, boolean handleNotFound) throws Exception
-   {
       try
       {
-         //logger.info("***PATH: " + request.getRequestURL());
-         // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
-         // ResteasyProviderFactory.getInstance()
          ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
          if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
          {
             ThreadLocalResteasyProviderFactory.push(providerFactory);
          }
 
-         SecurityContext securityContext = new NettySecurityContext();
+         SecurityContext securityContext;
          if (domain != null)
          {
             securityContext = basicAuthentication(request, response);
@@ -98,37 +70,20 @@ public class RequestDispatcher
             {
                return;
             }
+         } else {
+            securityContext = new NettySecurityContext();
          }
-
-         HttpHeaders headers = null;
-         UriInfoImpl uriInfo = null;
          try
          {
-            headers = NettyUtil.extractHttpHeaders(request);
-            uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, protocol);
-         }
-         catch (Exception e)
-         {
-            response.sendError(400);
-            // made it warn so that people can filter this.
-            logger.warn("Failed to parse request.", e);
-            return;
-         }
 
-         HttpRequest in = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response);
-         ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
-         in.setInputStream(is);
-
-         try
-         {
             ResteasyProviderFactory.pushContext(SecurityContext.class, securityContext);
             if (handleNotFound)
             {
-               dispatcher.invoke(in, response);
+               dispatcher.invoke(request, response);
             }
             else
             {
-               dispatcher.invokePropagateNotFound(in, response);
+               dispatcher.invokePropagateNotFound(request, response);
             }
          }
          finally
@@ -147,35 +102,37 @@ public class RequestDispatcher
       }
    }
 
-   private SecurityContext basicAuthentication(org.jboss.netty.handler.codec.http.HttpRequest request, HttpResponse response) throws IOException
+   private SecurityContext basicAuthentication(HttpRequest request, HttpResponse response) throws IOException
    {
-      String auth = request.getHeader(HttpHeaderNames.AUTHORIZATION);
-      if (auth != null && auth.length() > 5)
-      {
-         String type = auth.substring(0, 5);
-         type = type.toLowerCase();
-         if ("basic".equals(type))
+      List<String> headers = request.getHttpHeaders().getRequestHeader(HttpHeaderNames.AUTHORIZATION);
+      if (!headers.isEmpty()) {
+         String auth = headers.get(0);
+         if (auth.length() > 5)
          {
-            String cookie = auth.substring(6);
-            cookie = new String(Base64.decodeBase64(cookie.getBytes()));
-            String[] split = cookie.split(":");
-            //System.out.println("Authenticating user: " + split[0] + " passwd: " + split[1]);
-            Principal user = null;
-            try
+            String type = auth.substring(0, 5);
+            type = type.toLowerCase();
+            if ("basic".equals(type))
             {
-               user = domain.authenticate(split[0], split[1]);
-               return new NettySecurityContext(user, domain, "BASIC", true);
+               String cookie = auth.substring(6);
+               cookie = new String(Base64.decodeBase64(cookie.getBytes()));
+               String[] split = cookie.split(":");
+               Principal user = null;
+               try
+               {
+                  user = domain.authenticate(split[0], split[1]);
+                  return new NettySecurityContext(user, domain, "BASIC", true);
+               }
+               catch (SecurityException e)
+               {
+                  response.sendError(HttpResponseCodes.SC_UNAUTHORIZED);
+                  return null;
+               }
             }
-            catch (SecurityException e)
+            else
             {
                response.sendError(HttpResponseCodes.SC_UNAUTHORIZED);
                return null;
             }
-         }
-         else
-         {
-            response.sendError(HttpResponseCodes.SC_UNAUTHORIZED);
-            return null;
          }
       }
       return null;

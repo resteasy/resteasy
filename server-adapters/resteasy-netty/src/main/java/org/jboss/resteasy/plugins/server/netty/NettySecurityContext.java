@@ -11,14 +11,10 @@ import java.security.Principal;
  */
 public class NettySecurityContext implements SecurityContext
 {
-   protected Principal principal;
-   protected SecurityDomain domain;
-   protected String authScheme;
-   protected boolean isSecure = false;
-
-   public NettySecurityContext()
-   {
-   }
+   protected final Principal principal;
+   protected final SecurityDomain domain;
+   protected final String authScheme;
+   protected final boolean isSecure;
 
    public NettySecurityContext(Principal principal, SecurityDomain domain, String authScheme, boolean secure)
    {
@@ -26,6 +22,9 @@ public class NettySecurityContext implements SecurityContext
       this.domain = domain;
       this.authScheme = authScheme;
       isSecure = secure;
+   }
+   public NettySecurityContext() {
+       this(null, null, null, false);
    }
 
    @Override
@@ -51,25 +50,5 @@ public class NettySecurityContext implements SecurityContext
    public String getAuthenticationScheme()
    {
       return authScheme;
-   }
-
-   public void setPrincipal(Principal principal)
-   {
-      this.principal = principal;
-   }
-
-   public void setDomain(SecurityDomain domain)
-   {
-      this.domain = domain;
-   }
-
-   public void setAuthScheme(String authScheme)
-   {
-      this.authScheme = authScheme;
-   }
-
-   public void setSecure(boolean secure)
-   {
-      isSecure = secure;
    }
 }
