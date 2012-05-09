@@ -5,6 +5,7 @@ import javax.net.ssl.SSLEngine;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.handler.ssl.SslHandler;
+import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol;
 
 /**
  * Enable the use of HTTPS
@@ -28,6 +29,11 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory {
         engine.setUseClientMode(false);
         cp.addFirst("sslHandler", new SslHandler(engine));
         return cp;
+    }
+
+    @Override
+    protected Protocol getProtocol() {
+        return Protocol.HTTPS;
     }
 
 }
