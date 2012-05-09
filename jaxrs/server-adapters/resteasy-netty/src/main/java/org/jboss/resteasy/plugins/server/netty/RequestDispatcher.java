@@ -56,9 +56,6 @@ public class RequestDispatcher
 
       try
       {
-         //logger.info("***PATH: " + request.getRequestURL());
-         // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
-         // ResteasyProviderFactory.getInstance()
          ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
          if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
          {
@@ -119,7 +116,6 @@ public class RequestDispatcher
                String cookie = auth.substring(6);
                cookie = new String(Base64.decodeBase64(cookie.getBytes()));
                String[] split = cookie.split(":");
-               //System.out.println("Authenticating user: " + split[0] + " passwd: " + split[1]);
                Principal user = null;
                try
                {
