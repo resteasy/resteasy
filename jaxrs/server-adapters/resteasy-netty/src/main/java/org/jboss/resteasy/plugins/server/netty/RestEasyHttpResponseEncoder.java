@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 import java.util.List;
@@ -12,6 +11,8 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
+import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
@@ -51,12 +52,10 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder {
                   RuntimeDelegate.HeaderDelegate delegate = dispatcher.providerFactory.createHeaderDelegate(value.getClass());
                   if (delegate != null)
                   {
-                     //System.out.println("addResponseHeader: " + key + " " + delegate.toString(value));
                      response.addHeader(key, delegate.toString(value));
                   }
                   else
                   {
-                     //System.out.println("addResponseHeader: " + key + " " + value.toString());
                      response.setHeader(key, value.toString());
                   }
                }
@@ -64,8 +63,13 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder {
 
             nettyResponse.getOutputStream().flush();
             response.setContent(nettyResponse.getBuffer());
-            response.setHeader(CONTENT_LENGTH, response.getContent().readableBytes());
-            
+
+            if (nettyResponse.isKeepAlive()) 
+            {
+                // Add content length and connection header if needed
+                response.setHeader(Names.CONTENT_LENGTH, response.getContent().readableBytes());
+                response.setHeader(Names.CONNECTION, Values.KEEP_ALIVE);
+            }
             return response;
         }
         return msg;

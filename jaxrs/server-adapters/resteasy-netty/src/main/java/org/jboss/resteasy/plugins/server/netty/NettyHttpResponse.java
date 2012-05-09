@@ -2,20 +2,23 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
+import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -28,11 +31,14 @@ public class NettyHttpResponse implements HttpResponse
    private MultivaluedMap<String, Object> outputHeaders;
    private final Channel channel;
    private boolean committed;
-   public NettyHttpResponse(Channel channel)
+   private boolean keepAlive;
+   
+   public NettyHttpResponse(Channel channel, boolean keepAlive)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
       os = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer());
       this.channel = channel;
+      this.keepAlive = keepAlive;
    }
 
    public ChannelBuffer getBuffer()
@@ -94,6 +100,12 @@ public class NettyHttpResponse implements HttpResponse
            responseStatus = HttpResponseStatus.valueOf(status);
        }
        DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, responseStatus);
+       if (keepAlive) 
+       {
+           // Add keep alive and content length if needed
+           response.addHeader(Names.CONNECTION, Values.KEEP_ALIVE);
+           response.addHeader(Names.CONTENT_LENGTH, 0);
+       }
        channel.write(response);
        committed = true;
    }
@@ -109,11 +121,14 @@ public class NettyHttpResponse implements HttpResponse
    {
       if (committed) 
       {
-          throw new IllegalStateException("HttpResponse is committed");
+          throw new IllegalStateException("Already committed");
       }
       outputHeaders.clear();
       os.buffer().clear();
       outputHeaders.clear();
    }
-
+   
+   public boolean isKeepAlive() {
+       return keepAlive;
+   }
 }
