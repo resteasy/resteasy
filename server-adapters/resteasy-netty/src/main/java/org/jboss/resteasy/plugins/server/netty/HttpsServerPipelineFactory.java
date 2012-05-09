@@ -4,7 +4,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.ssl.SslHandler;
 
 /**
@@ -17,8 +16,8 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory {
 
     private final SSLContext context;
 
-    public HttpsServerPipelineFactory(RequestDispatcher dispatcher, String root, ExecutionHandler executionHandler, SSLContext context) {
-        super(dispatcher, root, executionHandler);
+    public HttpsServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, SSLContext context) {
+        super(dispatcher, root, executorThreadCount);
         this.context = context;
     }
 

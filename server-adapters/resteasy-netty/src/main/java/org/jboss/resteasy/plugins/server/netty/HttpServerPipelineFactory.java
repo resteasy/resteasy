@@ -7,6 +7,7 @@ import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 
 import static org.jboss.netty.channel.Channels.*;
 
@@ -24,12 +25,20 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    private final ChannelHandler resteasyRequestHandler;
    private final ChannelHandler executionHandler;
    
-   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, ExecutionHandler executionHandler)
+   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount)
    {
       this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root);
       this.resteasyEncoder = new RestEasyHttpResponseEncoder(dispatcher);
       this.resteasyRequestHandler = new RequestHandler(dispatcher);
-      this.executionHandler = executionHandler;
+      if (executorThreadCount > 0) 
+      {
+          this.executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(executorThreadCount, 0L, 0L));
+      } 
+      else 
+      {
+          this.executionHandler = null;
+      }
+      
    }
 
    @Override
