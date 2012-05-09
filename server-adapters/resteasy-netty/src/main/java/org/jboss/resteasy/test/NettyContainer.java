@@ -1,8 +1,7 @@
 package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.plugins.server.netty.JaxrsServer;
-import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**
@@ -11,7 +10,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
  */
 public class NettyContainer
 {
-   public static JaxrsServer netty;
+   public static NettyJaxrsServer netty;
 
    public static ResteasyDeployment start() throws Exception
    {
@@ -25,7 +24,7 @@ public class NettyContainer
 
    public static void start(ResteasyDeployment deployment) throws Exception
    {
-      netty = new JaxrsServer();
+      netty = new NettyJaxrsServer();
       netty.setDeployment(deployment);
       netty.setPort(TestPortProvider.getPort());
       netty.setRootResourcePath("");
@@ -42,7 +41,7 @@ public class NettyContainer
 
    public static ResteasyDeployment start(String bindPath, SecurityDomain domain, ResteasyDeployment deployment) throws Exception
    {
-      netty = new JaxrsServer();
+      netty = new NettyJaxrsServer();
       netty.setDeployment(deployment);
       netty.setPort(TestPortProvider.getPort());
       netty.setRootResourcePath(bindPath);
@@ -67,4 +66,7 @@ public class NettyContainer
       netty = null;
    }
 
+   public static void main(String args[]) throws Exception {
+       start();
+   }
 }
