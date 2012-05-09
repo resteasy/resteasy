@@ -7,7 +7,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
-import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
@@ -26,10 +25,17 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
 
     private final SynchronousDispatcher dispatcher;
     private final String servletMappingPrefix;
+    private final Protocol protocol;
 
-    public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix) {
+    enum Protocol {
+        HTTPS,
+        HTTP
+    }
+    
+    public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol) {
         this.dispatcher = dispatcher;
         this.servletMappingPrefix = servletMappingPrefix;
+        this.protocol = protocol;
     }
     
     @Override
@@ -49,16 +55,17 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
         try
         {
            headers = NettyUtil.extractHttpHeaders(request);
-           String protocol;
-           
-           // check if the pipeline contains a SslHandler. If so we serve via HTTPS
-           if (ctx.getPipeline().get(SslHandler.class) == null) {
-               protocol = "http";
-           } else {
-               protocol = "https";
+           String proto;
+           if (protocol == Protocol.HTTP) 
+           {
+               proto = "http";
+           } 
+           else 
+           {
+               proto = "https";
            }
            
-           uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, protocol);
+           uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, proto);
            HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, keepAlive, org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
            ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
            nettyRequest.setInputStream(is);

@@ -8,6 +8,7 @@ import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol;
 
 import static org.jboss.netty.channel.Channels.*;
 
@@ -27,7 +28,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    
    public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount)
    {
-      this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root);
+      this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, getProtocol());
       this.resteasyEncoder = new RestEasyHttpResponseEncoder(dispatcher);
       this.resteasyRequestHandler = new RequestHandler(dispatcher);
       if (executorThreadCount > 0) 
@@ -65,6 +66,10 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       
       pipeline.addLast("handler", resteasyRequestHandler);
       return pipeline;
+   }
+   
+   protected Protocol getProtocol() {
+       return Protocol.HTTP;
    }
 }
 
