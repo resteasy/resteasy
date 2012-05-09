@@ -37,8 +37,11 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
         {
             return msg;
         }
+        
         org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) msg;
-        NettyHttpResponse response = new NettyHttpResponse(channel);
+        boolean keepAlive = org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request);
+
+        NettyHttpResponse response = new NettyHttpResponse(channel, keepAlive);
 
         HttpHeaders headers = null;
         UriInfoImpl uriInfo = null;
@@ -47,7 +50,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder {
            headers = NettyUtil.extractHttpHeaders(request);
            // TODO: Fix me
            uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, "http");
-           HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request), org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
+           HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, keepAlive, org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
            ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
            nettyRequest.setInputStream(is);
            return nettyRequest;

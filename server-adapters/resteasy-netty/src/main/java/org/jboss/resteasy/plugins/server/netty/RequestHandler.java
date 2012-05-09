@@ -53,12 +53,14 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
           {
              response.reset();
              response.setStatus(e1.getErrorCode());
+             return;
           }
           catch (Exception ex)
           {
              response.reset();
              response.setStatus(500);
              logger.error("Unexpected", ex);
+             return;
           }
           
           // Write the response.
@@ -70,7 +72,6 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
              future.addListener(ChannelFutureListener.CLOSE);
           }
       }
-      super.messageReceived(ctx, e);
       
    }
 
