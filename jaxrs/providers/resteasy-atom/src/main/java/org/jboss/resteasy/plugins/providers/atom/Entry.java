@@ -1,11 +1,23 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
+import org.w3c.dom.Element;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,7 +101,7 @@ import java.util.List;
 @XmlRootElement(name = "entry")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder = {"title", "links", "categories", "updated", "id", "published", "authors", "contributors", "source",
-        "rights", "content", "summary"})
+        "rights", "content", "summary", "anyOther"})
 public class Entry extends CommonAttributes
 {
    private List<Person> authors = new ArrayList<Person>();
@@ -114,6 +126,19 @@ public class Entry extends CommonAttributes
    private Source source;
 
    private String summary;
+   
+   private Element anyOtherElement;
+   
+   private List<Object> anyOther;
+   
+   private Object anyOtherJaxbObject;
+
+   protected JAXBContextFinder finder;
+
+   protected void setFinder(JAXBContextFinder finder)
+   {
+      this.finder = finder;
+   }
 
    @XmlElement
    public URI getId()
@@ -231,5 +256,106 @@ public class Entry extends CommonAttributes
    public void setSummary(String summary)
    {
       this.summary = summary;
+   }
+
+   /**
+    * Get content as an XML Element if the content is XML.  Otherwise, this will just return null.
+    *
+    * @return
+    */
+   @XmlTransient
+   public Element getAnyOtherElement()
+   {
+      if (anyOther == null) return null;
+      if (anyOtherElement != null) return anyOtherElement;
+      for (Object obj : anyOther)
+      {
+         if (obj instanceof Element)
+         {
+             anyOtherElement = (Element) obj;
+            return anyOtherElement;
+         }
+      }
+      return null;
+   }
+   
+   @XmlMixed
+   @XmlAnyElement(lax = true)
+   public List<Object> getAnyOther() {
+       if (anyOther == null) {
+           anyOther = new ArrayList<Object>();
+       }
+       return this.anyOther;
+   }
+   /**
+    * Extract the content as the provided JAXB annotated type.
+    * <p/>
+    * This method will use a cached JAXBContext used by the Resteasy JAXB providers
+    * or, if those are not existent, it will create a new JAXBContext from scratch
+    * using the class.
+    *
+    * @param clazz                class type you are expecting
+    * @param otherPossibleClasses Other classe you want to create the JAXBContext with
+    * @return null if there is no XML content
+    * @throws JAXBException
+    */
+   public <T> T getAnyOtherJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException
+   {
+      JAXBContext ctx = null;
+      Class[] classes = {clazz};
+      if (otherPossibleClasses != null && otherPossibleClasses.length > 0)
+      {
+         classes = new Class[1 + otherPossibleClasses.length];
+         classes[0] = clazz;
+         for (int i = 0; i < otherPossibleClasses.length; i++) classes[i + 1] = otherPossibleClasses[i];
+      }
+      if (finder != null)
+      {
+         ctx = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, classes);
+      }
+      else
+      {
+         ctx = JAXBContext.newInstance(classes);
+      }
+      if (getAnyOtherElement() == null) return null;
+      Object obj = ctx.createUnmarshaller().unmarshal(getAnyOtherElement());
+      if (obj instanceof JAXBElement)
+      {
+         anyOtherJaxbObject = ((JAXBElement) obj).getValue();
+         return (T) anyOtherJaxbObject;
+      }
+      else
+      {
+          anyOtherJaxbObject = obj;
+         return (T) obj;
+      }
+   }
+
+   
+   /**
+    * Returns previous extracted jaxbobject from a call to getJAXBObject(Class<T> clazz)
+    * or value passed in through a previous setJAXBObject().
+    *
+    * @return
+    */
+   @XmlTransient
+   public Object getAnyOtherJAXBObject()
+   {
+      return anyOtherJaxbObject;
+   }
+
+   public void setAnyOtherJAXBObject(Object obj)
+   {
+      if (anyOther == null) anyOther = new ArrayList();
+      if (anyOtherJaxbObject != null && anyOther != null) anyOther.clear();
+      if (!obj.getClass().isAnnotationPresent(XmlRootElement.class) && obj.getClass().isAnnotationPresent(XmlType.class))
+      {
+          anyOther.add(JAXBXmlTypeProvider.wrapInJAXBElement(obj, obj.getClass()));
+      }
+      else
+      {
+          anyOther.add(obj);
+      }
+      anyOtherJaxbObject = obj;
    }
 }
