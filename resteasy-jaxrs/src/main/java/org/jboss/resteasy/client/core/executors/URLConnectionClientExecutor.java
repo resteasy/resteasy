@@ -36,7 +36,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
       return execute(request, connection);
    }
 
-   private void setupRequest(ClientRequest request, HttpURLConnection connection)
+   protected void setupRequest(ClientRequest request, HttpURLConnection connection)
            throws ProtocolException
    {
       boolean isGet = "GET".equals(request.getHttpMethod());
