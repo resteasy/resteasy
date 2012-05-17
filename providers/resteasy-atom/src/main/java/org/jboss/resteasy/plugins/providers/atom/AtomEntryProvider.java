@@ -63,6 +63,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
          JAXBContext ctx = finder.findCachedContext(Entry.class, mediaType, annotations);
          Entry entry = (Entry) ctx.createUnmarshaller().unmarshal(entityStream);
          if (entry.getContent() != null) entry.getContent().setFinder(finder);
+         entry.setFinder(finder);
          return entry;
       }
       catch (JAXBException e)
@@ -90,6 +91,10 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       }
       HashSet<Class> set = new HashSet<Class>();
       set.add(Entry.class);
+      if (entry.getAnyOtherJAXBObject() != null)
+      {
+         set.add(entry.getAnyOtherJAXBObject().getClass());
+      }
       if (entry.getContent() != null && entry.getContent().getJAXBObject() != null)
       {
          set.add(entry.getContent().getJAXBObject().getClass());
