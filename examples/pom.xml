@@ -33,6 +33,7 @@
         <module>async-job-service</module>
         <module>resteasy-springMVC</module>
         <module>oreilly-workbook</module>
+        <!-- <module>oreilly-workbook-as7</module> -->
         <module>oauth-examples</module>
         <module>examples-jsapi</module>
         <module>smime</module>
