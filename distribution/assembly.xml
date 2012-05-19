@@ -127,6 +127,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/oreilly-workbook-as7</directory>
+            <outputDirectory>examples/oreilly-workbook-as7</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../docbook/target/docbook/publish/en-US</directory>
             <outputDirectory>docs/userguide</outputDirectory>
         </fileSet>
@@ -157,6 +166,7 @@
                 <include>org.jboss.resteasy:resteasy-crypto</include>
             </includes>
             <excludes>
+                <exclude>org.jboss.resteasy:resteasy-netty</exclude>
                 <exclude>org.jboss.resteasy:resteasy-jdk-http</exclude>
                 <exclude>org.jboss.resteasy:tjws</exclude>
                 <!-- <include>tjws:webserver</include> -->
@@ -169,8 +179,8 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
                 <include>org.jboss.resteasy:resteasy-jdk-http</include>
+                <include>org.jboss.resteasy:resteasy-netty</include>
                 <include>org.jboss.resteasy:tjws</include>
-                <!-- include>tjws:webserver</include>  -->
                 <include>javax.servlet:servlet-api</include>
             </includes>
             <outputDirectory>embedded-lib</outputDirectory>
