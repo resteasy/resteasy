@@ -1,4 +1,3 @@
-
 This project is an example of using JAX-RS, EJB, and JPA all together in one application through a JAX-RS
 portable way.
 
