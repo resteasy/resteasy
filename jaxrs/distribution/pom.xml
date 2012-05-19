@@ -132,13 +132,11 @@
             <artifactId>resteasy-jdk-http</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--
         <dependency>
-            <groupId>tjws</groupId>
-            <artifactId>webserver</artifactId>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-netty</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        -->
-
     </dependencies>
 
     <build>
