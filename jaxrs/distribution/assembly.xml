@@ -15,6 +15,13 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>../jboss-modules/target</directory>
+            <includes>
+                <include>*.zip</include>
+            </includes>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>../target/site/apidocs</directory>
             <outputDirectory>docs/javadocs</outputDirectory>
         </fileSet>
