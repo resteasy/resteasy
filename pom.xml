@@ -99,10 +99,12 @@
         <module>resteasy-jsapi</module>
         <module>resteasy-cdi</module>
         <module>server-adapters</module>
+        <!-- <module>interface-description</module> -->
         <module>war-tests</module>
         <module>examples</module>
         <module>async-http-servlet-3.0</module>
         <module>profiling-tests</module>
+        <module>jboss-modules</module>
         <!-- <module>as7-integration-testing</module> -->
     </modules>
 
