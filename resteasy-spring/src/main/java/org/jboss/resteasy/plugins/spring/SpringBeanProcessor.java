@@ -248,7 +248,8 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             continue;
 
          BeanDefinition beanDef = beanFactory.getBeanDefinition(name);
-         if (beanDef.getBeanClassName() == null || beanDef.isAbstract())
+         if ((beanDef.getBeanClassName() == null && beanDef.getFactoryBeanName() == null)
+                 || beanDef.isAbstract())
             continue;
 
          processBean(beanFactory, dependsOnProviders, name, beanDef);
@@ -395,7 +396,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             }
          }
 
-         for (Method method : getBeanClass(factoryClassName).getDeclaredMethods())
+         for (Method method : getBeanClass(factoryClassName).getMethods())
          {
             if (method.getName().equals(factoryMethodName))
             {
