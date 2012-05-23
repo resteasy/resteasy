@@ -190,6 +190,8 @@ public class FormMarshaller implements Marshaller
 
    public void build(ClientRequest request, Object object)
    {
+      if (object == null) return;
+
       for (Map.Entry<Field, Marshaller> entry : fieldMap.entrySet())
       {
 
