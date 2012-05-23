@@ -21,11 +21,10 @@ import java.util.Map.Entry;
 
 import static org.jboss.resteasy.util.HttpHeaderNames.*;
 
-@SuppressWarnings("unchecked")
 public class URLConnectionClientExecutor implements ClientExecutor
 {
 
-   public ClientResponse execute(ClientRequest request) throws Exception
+   public ClientResponse<?> execute(ClientRequest request) throws Exception
    {
       String uri = request.getUri();
       String httpMethod = request.getHttpMethod();
@@ -37,7 +36,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
       return execute(request, connection);
    }
 
-   private void setupRequest(ClientRequest request, HttpURLConnection connection)
+   protected void setupRequest(ClientRequest request, HttpURLConnection connection)
            throws ProtocolException
    {
       boolean isGet = "GET".equals(request.getHttpMethod());
@@ -89,11 +88,11 @@ public class URLConnectionClientExecutor implements ClientExecutor
    }
 
 
-   private ClientResponse execute(ClientRequest request, final HttpURLConnection connection) throws IOException
+   private <T> ClientResponse<T> execute(ClientRequest request, final HttpURLConnection connection) throws IOException
    {
       outputBody(request, connection);
       final int status = connection.getResponseCode();
-      BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory()
+      BaseClientResponse<T> response = new BaseClientResponse<T>(new BaseClientResponseStreamFactory()
       {
          public InputStream getInputStream() throws IOException
          {
