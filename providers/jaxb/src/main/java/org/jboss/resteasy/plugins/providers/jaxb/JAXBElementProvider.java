@@ -80,6 +80,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       try
       {
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+         unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
          if (suppressExpandEntityExpansion())
          {
             unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
