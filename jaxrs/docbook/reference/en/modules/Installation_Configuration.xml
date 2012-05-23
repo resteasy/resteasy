@@ -428,12 +428,22 @@
         </programlisting>
     </sect1>
     <sect1>
-        <title>Install/Config in JBoss 6-M4 and Higher</title>
+        <title>Patching JBoss AS 7</title>
         <para>
-            RESTEasy is preconfigured and completely integrated with JBoss 6-M4 and higher. You can use it with EJB
-            and CDI and you can rely completely on JBoss for scanning for your JAX-RS services and deploying them. All
-            you have to provide is your JAX-RS service classes packaged within a WAR either as POJOs, CDI beans,
-            or EJBs and provide an empty web.xml file as follows:
+            Resteasy is bundled with JBoss AS 7.  You will likely have the need to upgrade Resteasy in AS7.  The Resteasy
+            distribution comes with a zip file called resteasy-jboss-modules-3.-alpha-1-SNAPSHOT.zip.  In the top level directory
+            of JBoss AS 7 (the one with the modules/ directory), unzip this file.  You should be patched with the latest
+            and greatest Resteasy after this.
+        </para>
+    </sect1>
+    <sect1>
+        <title>Configuring in JBoss AS 7</title>
+        <para>
+            RESTEasy is bundled with JBoss AS 7 and completely integrated as per the requirements of Java EE 6.
+            First you must at least provide an empty web.xml file.  You can of course deploy any custom servlet, filter
+            or security constraint you want to within your web.xml, but the least amount of work is to create an empty
+            web.xml file.  Also, resteasy context-params are available if you want to tweak turn on/off any specific
+            resteasy feature.
         </para>
         <para>
             <programlisting>
@@ -444,6 +454,24 @@
 </web-app>
 ]]>
             </programlisting>
+        </para>
+        <para>
+            Since we're not using a jax-rs servlet mapping, we must define an Application class that is annotated with
+            the @ApplicationPath annotation.  If you return any empty set for by classes and singletons, your WAR will
+            be scanned for JAX-RS annotation resource and provider classes.
+        </para>
+        <programlisting>
+            import javax.ws.rs.ApplicationPath;
+            import javax.ws.rs.core.Application;
+
+            @ApplicationPath("/root-path")
+            public class MyApplication extends Application
+            {
+            }
+        </programlisting>
+        <para>
+            The Resteasy distribution has ported the "Restful Java" O'Reilly workbook examples to AS7.  You can
+            find these under the directory examples/oreilly-workbook-as7.
         </para>
     </sect1>
     <sect1 id="RESTEasyLogging">
