@@ -28,4 +28,6 @@ public class MyService
       else throw new RuntimeException("CDI Bean Injection didn't work for test!");
       return new XFormat("foo");
    }
+
+
 }
