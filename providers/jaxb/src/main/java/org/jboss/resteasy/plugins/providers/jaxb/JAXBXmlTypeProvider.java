@@ -83,6 +83,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       {
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+         unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
          if (suppressExpandEntityExpansion())
          {
             unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
