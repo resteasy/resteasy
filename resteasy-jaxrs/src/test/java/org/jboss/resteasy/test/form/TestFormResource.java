@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -71,6 +72,30 @@ public class TestFormResource extends BaseResourceTest
 
    }
 
+   public static class ClientForm2
+   {
+      @HeaderParam("custom-header")
+      protected String foo;
+
+
+      public String getFoo()
+      {
+         return foo;
+      }
+
+      public void setFoo(String foo)
+      {
+         this.foo = foo;
+      }
+   }
+
+   @Path("/myform")
+   public interface MyFormProxy
+   {
+      @POST
+      public void post(@Form ClientForm2 form2);
+   }
+
    @Path("/myform")
    public static class MyFormResource
    {
@@ -85,6 +110,12 @@ public class TestFormResource extends BaseResourceTest
          serverMap.add("servername", "srv2");
 
          return serverMap;
+      }
+
+      @POST
+      public void post()
+      {
+
       }
    }
 
@@ -127,6 +158,17 @@ public class TestFormResource extends BaseResourceTest
       Assert.assertTrue(sv2);
    }
 
+   /**
+    * RESTEASY-691
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testProxy691() throws Exception
+   {
+      MyFormProxy proxy = ProxyFactory.create(MyFormProxy.class, generateBaseUrl());
+      proxy.post(null);
+   }
    @Test
    public void testProxy() throws Exception
    {
