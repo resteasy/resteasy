@@ -27,6 +27,18 @@ public class BadgerContext extends JAXBContext
       }
    }
 
+   public BadgerContext(String contextPath)
+   {
+      try
+      {
+         context = JAXBContext.newInstance(contextPath);
+      }
+      catch (JAXBException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
    public Unmarshaller createUnmarshaller() throws JAXBException
    {
       return new BadgerUnmarshaller(context);

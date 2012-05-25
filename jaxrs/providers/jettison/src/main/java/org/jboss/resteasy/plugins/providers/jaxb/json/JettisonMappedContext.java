@@ -33,6 +33,33 @@ public class JettisonMappedContext extends JAXBContext
 
    public JettisonMappedContext(Mapped mapped, Class... classes)
    {
+      createConvention(mapped);
+
+      try
+      {
+         context = JAXBContext.newInstance(classes);
+      }
+      catch (JAXBException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   public JettisonMappedContext(Mapped mapped, String contextPath)
+   {
+      createConvention(mapped);
+
+      try
+      {
+         context = JAXBContext.newInstance(contextPath);
+      }
+      catch (JAXBException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+   protected void createConvention(Mapped mapped)
+   {
       List<QName> attributesAsElements = new ArrayList<QName>();
       HashMap<String, String> xmlnsToJson = new HashMap<String, String>();
       if (mapped != null)
@@ -50,15 +77,6 @@ public class JettisonMappedContext extends JAXBContext
       Configuration config = new Configuration(xmlnsToJson, attributesAsElements, new ArrayList());
       //convention = new MappedNamespaceConvention(config);
       convention = new MappedConvention(config);
-
-      try
-      {
-         context = JAXBContext.newInstance(classes);
-      }
-      catch (JAXBException e)
-      {
-         throw new RuntimeException(e);
-      }
    }
 
    public JettisonMappedContext(Map<String, String> xmlnsToJson, List<QName> attributesAsElements, List<QName> ignoredElements, Class... classes)

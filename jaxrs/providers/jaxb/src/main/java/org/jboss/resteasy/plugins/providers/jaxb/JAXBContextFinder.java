@@ -35,5 +35,16 @@ public interface JAXBContextFinder
     */
    JAXBContext findCacheContext(MediaType mediaType, Annotation[] paraAnnotations, Class... classes) throws JAXBException;
 
+   /**
+    * This method will find a JAXBContext from a set of XmlTypes that use an ObjectFactory for creation (i.e. from xjc)
+    *
+    * @param mediaType
+    * @param paraAnnotations
+    * @param packages
+    * @return
+    * @throws JAXBException
+    */
+   JAXBContext findCacheXmlTypeContext(MediaType mediaType, Annotation[] paraAnnotations, Class... classes) throws JAXBException;
+
    JAXBContext createContext(Annotation[] parameterAnnotations, Class... classes) throws JAXBException;
 }

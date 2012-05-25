@@ -115,6 +115,26 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
    }
 
    protected abstract JAXBContext createContextObject(Annotation[] parameterAnnotations, Class... classes) throws JAXBException;
+   protected abstract JAXBContext createContextObject(Annotation[] parameterAnnotations, String contextPath) throws JAXBException;
+
+   public JAXBContext createXmlTypeContext(Annotation[] parameterAnnotations, Class... classes) throws JAXBException
+   {
+
+      HashSet<String> packages = new HashSet<String>();
+      for (Class type : classes)
+      {
+         packages.add(type.getPackage().getName());
+      }
+      boolean first = true;
+      StringBuilder contextPath = new StringBuilder();
+      for (String pkg : packages)
+      {
+         if (first) first = false;
+         else contextPath.append(':');
+         contextPath.append(pkg);
+      }
+      return createContextObject(parameterAnnotations, contextPath.toString());
+   }
 
    public JAXBContext createContext(Annotation[] parameterAnnotations, Class... classes) throws JAXBException
    {
