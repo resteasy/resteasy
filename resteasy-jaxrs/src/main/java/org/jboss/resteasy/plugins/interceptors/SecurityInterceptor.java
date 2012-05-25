@@ -28,6 +28,7 @@ public class SecurityInterceptor implements PreProcessInterceptor, AcceptedByMet
 {
    protected String[] rolesAllowed;
    protected boolean denyAll;
+   protected boolean permitAll;
 
    public boolean accept(Class declaring, Method method)
    {
@@ -44,13 +45,17 @@ public class SecurityInterceptor implements PreProcessInterceptor, AcceptedByMet
               && method.isAnnotationPresent(RolesAllowed.class) == false
               && method.isAnnotationPresent(PermitAll.class) == false) || method.isAnnotationPresent(DenyAll.class);
 
+      permitAll = (declaring.isAnnotationPresent(PermitAll.class) == true
+              && method.isAnnotationPresent(RolesAllowed.class) == false
+              && method.isAnnotationPresent(DenyAll.class) == false) || method.isAnnotationPresent(PermitAll.class);
 
-      return rolesAllowed != null || denyAll;
+      return rolesAllowed != null || denyAll || permitAll;
    }
 
    public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
    {
       if (denyAll) throw new UnauthorizedException();
+      if (permitAll) return null;
       if (rolesAllowed != null)
       {
          SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
