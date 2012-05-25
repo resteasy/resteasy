@@ -3,9 +3,15 @@ package org.jboss.resteasy.security.doseta;
 import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.ClientExecutionContext;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
@@ -29,26 +35,18 @@ import java.util.List;
 @ServerInterceptor
 @ClientInterceptor
 @DecoderPrecedence
-public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
+public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor, ClientExecutionInterceptor, PostProcessInterceptor
 {
-   public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
-   {
-      MultivaluedMap<String, Object> headers = context.getHeaders();
-      if (!headers.containsKey(DKIMSignature.DKIM_SIGNATURE))
-      {
-         context.proceed();
-         return;
-      }
 
+   protected List<DKIMSignature> getHeaders(MultivaluedMap<String, Object> headers)
+   {
+      List<DKIMSignature> list = new ArrayList<DKIMSignature>();
 
       List<Object> signatures = headers.get(DKIMSignature.DKIM_SIGNATURE);
       if (signatures == null || signatures.isEmpty())
       {
-         context.proceed();
-         return;
+         return list;
       }
-
-      List<DKIMSignature> list = new ArrayList<DKIMSignature>();
 
       for (Object obj : signatures)
       {
@@ -57,6 +55,58 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
             list.add((DKIMSignature) obj);
          }
       }
+      return list;
+   }
+
+   @Override
+   public ClientResponse execute(ClientExecutionContext context) throws Exception
+   {
+      if (context.getRequest().getBody() != null)
+      {
+         return context.proceed(); // let the MBW handle this
+      }
+
+      MultivaluedMap<String, Object> headers = context.getRequest().getHeadersAsObjects();
+      List<DKIMSignature> list = getHeaders(headers);
+
+      for (DKIMSignature dosetaSignature : list)
+      {
+         KeyRepository repository = (KeyRepository) context.getRequest().getAttributes().get(KeyRepository.class.getName());
+         sign(repository, headers, null, dosetaSignature);
+      }
+
+      return context.proceed();
+   }
+
+   @Override
+   public void postProcess(ServerResponse response)
+   {
+      if (response.getEntity() != null)
+      {
+         return;  // let the MBW handle this
+      }
+
+      MultivaluedMap<String, Object> headers = response.getMetadata();
+      List<DKIMSignature> list = getHeaders(headers);
+
+      for (DKIMSignature dosetaSignature : list)
+      {
+         try
+         {
+            sign(null, headers, null, dosetaSignature);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+   }
+
+   public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
+   {
+      MultivaluedMap<String, Object> headers = context.getHeaders();
+
+      List<DKIMSignature> list = getHeaders(headers);
 
       if (list.isEmpty())
       {
@@ -76,7 +126,8 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
 
          for (DKIMSignature dosetaSignature : list)
          {
-            sign(context, headers, body, dosetaSignature);
+            KeyRepository repository = (KeyRepository) context.getAttribute(KeyRepository.class.getName());
+            sign(repository, headers, body, dosetaSignature);
          }
 
          old.write(body);
@@ -91,7 +142,7 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
       }
    }
 
-   protected void sign(MessageBodyWriterContext context, MultivaluedMap<String, Object> headers, byte[] body, DKIMSignature dosetaSignature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, UnsupportedEncodingException
+   protected void sign(KeyRepository repository, MultivaluedMap<String, Object> headers, byte[] body, DKIMSignature dosetaSignature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, UnsupportedEncodingException
    {
       // if its already signed, don't bother
       if (dosetaSignature.getBased64Signature() != null) return;
@@ -99,11 +150,7 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
       PrivateKey privateKey = dosetaSignature.getPrivateKey();
       if (privateKey == null)
       {
-         KeyRepository repository = (KeyRepository) context.getAttribute(KeyRepository.class.getName());
-         if (repository == null)
-         {
-            repository = ResteasyProviderFactory.getContextData(KeyRepository.class);
-         }
+         if (repository == null) repository = ResteasyProviderFactory.getContextData(KeyRepository.class);
 
          if (repository == null)
          {
@@ -119,5 +166,4 @@ public class DigitalSigningInterceptor implements MessageBodyWriterInterceptor
       }
       dosetaSignature.sign(headers, body, privateKey);
    }
-
 }
