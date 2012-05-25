@@ -6,9 +6,17 @@ import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Verifications;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
+import org.jboss.resteasy.spi.interception.ClientExecutionContext;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderContext;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.Provider;
@@ -20,10 +28,8 @@ import java.lang.reflect.Method;
  * @version $Revision: 1 $
  */
 @Provider
-@ServerInterceptor
-@ClientInterceptor
 @HeaderDecoratorPrecedence
-public class DigitalVerificationHeaderDecorator implements MessageBodyReaderInterceptor, AcceptedByMethod
+public class DigitalVerificationHeaderDecorator implements ClientExecutionInterceptor, PreProcessInterceptor, AcceptedByMethod
 {
    protected Verify verify;
    protected Verifications verifications;
@@ -37,7 +43,21 @@ public class DigitalVerificationHeaderDecorator implements MessageBodyReaderInte
    }
 
    @Override
-   public Object read(MessageBodyReaderContext context) throws IOException, WebApplicationException
+   public ClientResponse execute(ClientExecutionContext ctx) throws Exception
+   {
+      ClientResponse response = ctx.proceed();
+      response.getAttributes().put(Verifier.class.getName(), create());
+      return response;
+   }
+
+   @Override
+   public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
+   {
+      request.setAttribute(Verifier.class.getName(), create());
+      return null;
+   }
+
+   public Verifier create()
    {
       // Currently we create verifier every time so that the verifications can hold state related to failures
       // todo create a VerifyResult object for each verification.
@@ -55,8 +75,7 @@ public class DigitalVerificationHeaderDecorator implements MessageBodyReaderInte
             verifier.getVerifications().add(v);
          }
       }
-      context.setAttribute(Verifier.class.getName(), verifier);
-      return context.proceed();
+      return verifier;
    }
 
    protected Verification createVerification(Verify v)
@@ -84,6 +103,7 @@ public class DigitalVerificationHeaderDecorator implements MessageBodyReaderInte
          verification.setStaleMonths(staleAfter.months());
          verification.setStaleYears(staleAfter.years());
       }
+      verification.setBodyHashRequired(v.bodyHashRequired());
       return verification;
    }
 

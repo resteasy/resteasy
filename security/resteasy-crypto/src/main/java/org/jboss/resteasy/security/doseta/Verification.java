@@ -26,6 +26,7 @@ public class Verification
    protected int staleDays;
    protected int staleMonths;
    protected int staleYears;
+   protected boolean bodyHashRequired = true;
 
 
    public Verification()
@@ -40,6 +41,16 @@ public class Verification
    public Verification(KeyRepository repository)
    {
       this.repository = repository;
+   }
+
+   public boolean isBodyHashRequired()
+   {
+      return bodyHashRequired;
+   }
+
+   public void setBodyHashRequired(boolean bodyHashRequired)
+   {
+      this.bodyHashRequired = bodyHashRequired;
    }
 
    public String getIdentifierName()
@@ -194,7 +205,7 @@ public class Verification
       if (publicKey == null) publicKey = key;
       if (publicKey == null) throw new SignatureException("Public key is null.");
 
-      MultivaluedMap<String, String> verifiedHeaders = signature.verify(headers, body, publicKey);
+      MultivaluedMap<String, String> verifiedHeaders = signature.verify(bodyHashRequired, headers, body, publicKey);
 
       if (isIgnoreExpiration() == false)
       {
