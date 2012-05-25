@@ -60,6 +60,7 @@ public class DKIMSignature
    protected List<String> headers = new ArrayList<String>();
    protected byte[] signature;
    protected String headerValue;
+   protected boolean bodyHashRequired = true;
 
 
    public DKIMSignature()
@@ -111,6 +112,21 @@ public class DKIMSignature
    public String toString()
    {
       return headerValue;
+   }
+
+   /**
+    * Whether or not to add a body hash to signature
+    *
+    * @return
+    */
+   public boolean isBodyHashRequired()
+   {
+      return bodyHashRequired;
+   }
+
+   public void setBodyHashRequired(boolean bodyHashRequired)
+   {
+      this.bodyHashRequired = bodyHashRequired;
    }
 
    /**
@@ -364,7 +380,7 @@ public class DKIMSignature
          updateSignatureWithHeader(headers, signature);
       }
 
-      if (body != null)
+      if (body != null && bodyHashRequired)
       {
          String encodedBodyHash = calculateEncodedHash(body, hashAlgorithm);
 
@@ -469,6 +485,10 @@ public class DKIMSignature
       return verifiedHeaders;
    }
 
+   public MultivaluedMap<String, String> verify(Map headers, byte[] body, PublicKey key) throws SignatureException
+   {
+      return verify(true, headers, body, key);
+   }
 
    /**
     * Headers can be a Map<String, Object> or a Map<String, List<Object>>.  This gives some compatibility with
@@ -477,11 +497,10 @@ public class DKIMSignature
     * @param headers
     * @param body
     * @param key
-    * @param verification
     * @return map of verified headers and their values
     * @throws SignatureException
     */
-   public MultivaluedMap<String, String> verify(Map headers, byte[] body, PublicKey key) throws SignatureException
+   public MultivaluedMap<String, String> verify(boolean bodyHashRequired, Map headers, byte[] body, PublicKey key) throws SignatureException
    {
       if (key == null) throw new SignatureException("No key to verify with.");
 
@@ -506,7 +525,7 @@ public class DKIMSignature
       String encodedBh = attributes.get("bh");
       if (encodedBh == null)
       {
-         if (body != null) throw new SignatureException("There was no body hash (bh) in header");
+         if (body != null && bodyHashRequired) throw new SignatureException("There was no body hash (bh) in header");
       }
       else
       {

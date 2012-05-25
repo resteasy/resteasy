@@ -117,6 +117,7 @@ public class ApacheHttpClientExecutor implements ClientExecutor
             {}
          }
       }, this);
+      response.setAttributes(request.getAttributes());
       response.setStatus(status);
       response.setHeaders(extractHeaders(httpMethod));
       response.setProviderFactory(request.getProviderFactory());
