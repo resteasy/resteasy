@@ -32,6 +32,10 @@ public class ExceptionMapperInjectionTest extends BaseResourceTest
    {
    }
 
+   public static class MyException2 extends RuntimeException
+   {
+   }
+
    public static class MyExceptionMapper implements ExceptionMapper<MyException>
    {
       @Context
@@ -48,6 +52,13 @@ public class ExceptionMapperInjectionTest extends BaseResourceTest
       }
    }
 
+   public static class MyException2Mapper implements ExceptionMapper<MyException2>
+   {
+      public Response toResponse(MyException2 exception)
+      {
+         return null;
+      }
+   }
    @Path("/test")
    public static class MyService
    {
@@ -57,12 +68,21 @@ public class ExceptionMapperInjectionTest extends BaseResourceTest
       {
          throw new MyException();
       }
+
+      @Path("/null")
+      @GET
+      @Produces("text/plain")
+      public String getNull()
+      {
+         throw new MyException2();
+      }
    }
 
    @Before
    public void init() throws Exception
    {
       getProviderFactory().addExceptionMapper(new MyExceptionMapper());
+      getProviderFactory().addExceptionMapper(new MyException2Mapper());
       addPerRequestResource(MyService.class);
    }
 
@@ -75,5 +95,12 @@ public class ExceptionMapperInjectionTest extends BaseResourceTest
       Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
    }
 
+   @Test
+   public void testMapper2() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateBaseUrl() + "/test/null");
+      ClientResponse response = request.get();
+      Assert.assertEquals(204, response.getStatus());
+   }
 
 }
