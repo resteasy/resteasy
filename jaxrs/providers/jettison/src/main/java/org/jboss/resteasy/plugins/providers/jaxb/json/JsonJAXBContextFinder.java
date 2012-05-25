@@ -26,7 +26,9 @@ public class JsonJAXBContextFinder extends AbstractJAXBContextFinder implements 
    private ConcurrentHashMap<Class<?>, JAXBContext> mappedCache = new ConcurrentHashMap<Class<?>, JAXBContext>();
    private ConcurrentHashMap<Class<?>, JAXBContext> badgerCache = new ConcurrentHashMap<Class<?>, JAXBContext>();
    private ConcurrentHashMap<CacheKey, JAXBContext> mappedCollectionCache = new ConcurrentHashMap<CacheKey, JAXBContext>();
+   private ConcurrentHashMap<CacheKey, JAXBContext> mappedXmlTypeCollectionCache = new ConcurrentHashMap<CacheKey, JAXBContext>();
    private ConcurrentHashMap<CacheKey, JAXBContext> badgerCollectionCache = new ConcurrentHashMap<CacheKey, JAXBContext>();
+   private ConcurrentHashMap<CacheKey, JAXBContext> badgerXmlTypeCollectionCache = new ConcurrentHashMap<CacheKey, JAXBContext>();
 
    protected JAXBContext createContextObject(Annotation[] annotations, Class... classes) throws JAXBException
    {
@@ -39,6 +41,45 @@ public class JsonJAXBContextFinder extends AbstractJAXBContextFinder implements 
       else
       {
          return new JettisonMappedContext(mapped, classes);
+      }
+   }
+
+   @Override
+   protected JAXBContext createContextObject(Annotation[] annotations, String contextPath) throws JAXBException
+   {
+      Mapped mapped = FindAnnotation.findAnnotation(annotations, Mapped.class);
+      BadgerFish badger = FindAnnotation.findAnnotation(annotations, BadgerFish.class);
+      if (badger != null)
+      {
+         return new BadgerContext(contextPath);
+      }
+      else
+      {
+         return new JettisonMappedContext(mapped, contextPath);
+      }
+   }
+
+   @Override
+   public JAXBContext findCacheXmlTypeContext(MediaType mediaType, Annotation[] annotations, Class... classes) throws JAXBException
+   {
+      CacheKey key = new CacheKey(classes);
+      Mapped mapped = FindAnnotation.findAnnotation(annotations, Mapped.class);
+      BadgerFish badger = FindAnnotation.findAnnotation(annotations, BadgerFish.class);
+      if (badger != null)
+      {
+         JAXBContext ctx = badgerXmlTypeCollectionCache.get(key);
+         if (ctx != null) return ctx;
+         ctx = createXmlTypeContext(annotations, classes);
+         badgerCollectionCache.put(key, ctx);
+         return ctx;
+      }
+      else
+      {
+         JAXBContext ctx = mappedXmlTypeCollectionCache.get(key);
+         if (ctx != null) return ctx;
+         ctx = createXmlTypeContext(annotations, classes);
+         mappedCollectionCache.put(key, ctx);
+         return ctx;
       }
    }
 
