@@ -321,7 +321,12 @@ public class SynchronousDispatcher implements Dispatcher
       }
       if (mapper != null)
       {
-         writeFailure(request, response, mapper.toResponse(exception));
+         Response jaxrsResponse = mapper.toResponse(exception);
+         if (jaxrsResponse == null)
+         {
+            jaxrsResponse = Response.status(204).build();
+         }
+         writeFailure(request, response, jaxrsResponse);
          return true;
       }
       return false;
