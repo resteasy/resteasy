@@ -30,4 +30,12 @@ public class FastinfoSetJAXBContextFinder extends XmlJAXBContextFinder implement
       JAXBContext context = new FastinfoSetContext(classes);
       return new JAXBContextWrapper(context, config);
    }
+
+   @Override
+   protected JAXBContext createContextObject(Annotation[] annotations, String contextPath) throws JAXBException
+   {
+      JAXBConfig config = FindAnnotation.findAnnotation(annotations, JAXBConfig.class);
+      JAXBContext context = new FastinfoSetContext(contextPath);
+      return new JAXBContextWrapper(context, config);
+   }
 }

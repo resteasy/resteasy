@@ -27,6 +27,18 @@ public class FastinfoSetContext extends JAXBContext
       }
    }
 
+   public FastinfoSetContext(String contextPath)
+   {
+      try
+      {
+         context = JAXBContext.newInstance(contextPath);
+      }
+      catch (JAXBException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
    public Unmarshaller createUnmarshaller() throws JAXBException
    {
       return new FastinfoSetUnmarshaller(context);
