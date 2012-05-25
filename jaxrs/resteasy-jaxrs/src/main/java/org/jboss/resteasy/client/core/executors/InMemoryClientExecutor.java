@@ -86,6 +86,7 @@ public class InMemoryClientExecutor implements ClientExecutor
       response.setStatus(mockResponse.getStatus());
       setHeaders(mockResponse, response);
       response.setProviderFactory(request.getProviderFactory());
+      response.setAttributes(request.getAttributes());
       return response;
    }
 

@@ -24,6 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -32,6 +33,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.net.URL;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -111,6 +113,38 @@ public class SigningTest extends BaseResourceTest
    @Path("/signed")
    public static class SignedResource
    {
+      @DELETE
+      @Path("request-only")
+      public Response deleteRequestOnly(@Context HttpHeaders headers,
+                                   @Context UriInfo uriInfo,
+                                   @HeaderParam(DKIMSignature.DKIM_SIGNATURE)  DKIMSignature signature)
+      {
+         Assert.assertNotNull(signature);
+         System.out.println("Signature: " + signature);
+         Verification verification = new Verification(keys.getPublic());
+         verification.setBodyHashRequired(false);
+         verification.getRequiredAttributes().put("method", "GET");
+         verification.getRequiredAttributes().put("uri", uriInfo.getPath());
+         try
+         {
+            verification.verify(signature, headers.getRequestHeaders(), null, keys.getPublic());
+         }
+         catch (SignatureException e)
+         {
+            throw new RuntimeException(e);
+         }
+         String token = signature.getAttributes().get("token");
+         signature = new DKIMSignature();
+         signature.setDomain("samplezone.org");
+         signature.setSelector("test");
+         signature.setPrivateKey(keys.getPrivate());
+         signature.setBodyHashRequired(false);
+         signature.getAttributes().put("token", token);
+
+         return Response.ok().header(DKIMSignature.DKIM_SIGNATURE, signature).build();
+
+      }
+
       @GET
       @Produces("text/plain")
       @Path("bad-signature")
@@ -271,6 +305,36 @@ public class SigningTest extends BaseResourceTest
          return "hello world";
       }
    }
+
+   @Test
+   public void testRequestOnly() throws Exception
+   {
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/request-only"));
+      DKIMSignature contentSignature = new DKIMSignature();
+      contentSignature.setDomain("samplezone.org");
+      contentSignature.setSelector("test");
+      contentSignature.setPrivateKey(keys.getPrivate());
+      contentSignature.setBodyHashRequired(false);
+      contentSignature.setAttribute("method", "GET");
+      contentSignature.setAttribute("uri", "/signed/request-only");
+      contentSignature.setAttribute("token", "1122");
+      request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
+
+      ClientResponse response = request.delete();
+      Assert.assertEquals(200, response.getStatus());
+      String signatureHeader = (String)response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE);
+      contentSignature = new DKIMSignature(signatureHeader);
+      Verification verification = new Verification(keys.getPublic());
+      verification.setBodyHashRequired(false);
+      verification.getRequiredAttributes().put("token", "1122");
+      verification.verify(contentSignature, response.getResponseHeaders(), null, keys.getPublic());
+
+
+
+
+
+   }
+
 
    @Test
    public void testSigningManual() throws Exception
