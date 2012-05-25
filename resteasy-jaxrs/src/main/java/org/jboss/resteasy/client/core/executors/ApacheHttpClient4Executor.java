@@ -148,6 +148,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
             }
          }
       }, this);
+      response.setAttributes(request.getAttributes());
       response.setStatus(res.getStatusLine().getStatusCode());
       response.setHeaders(extractHeaders(res));
       response.setProviderFactory(request.getProviderFactory());

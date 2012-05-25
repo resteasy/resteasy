@@ -1,4 +1,5 @@
-org.jboss.resteasy.security.doseta.DigitalSigningHeaderDecorator
+org.jboss.resteasy.security.doseta.ClientDigitalSigningHeaderDecorator
+org.jboss.resteasy.security.doseta.ServerDigitalSigningHeaderDecorator
 org.jboss.resteasy.security.doseta.DigitalSigningInterceptor
 org.jboss.resteasy.security.doseta.DigitalVerificationHeaderDecorator
 org.jboss.resteasy.security.doseta.DigitalVerificationInterceptor

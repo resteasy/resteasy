@@ -114,6 +114,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
       response.setProviderFactory(request.getProviderFactory());
       response.setStatus(status);
       response.setHeaders(getHeaders(connection));
+      response.setAttributes(request.getAttributes());
       return response;
    }
    
