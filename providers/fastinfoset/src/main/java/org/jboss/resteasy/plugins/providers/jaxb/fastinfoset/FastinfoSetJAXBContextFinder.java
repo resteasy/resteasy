@@ -5,6 +5,7 @@ import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextWrapper;
 import org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder;
 import org.jboss.resteasy.util.FindAnnotation;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -28,6 +29,14 @@ public class FastinfoSetJAXBContextFinder extends XmlJAXBContextFinder implement
    {
       JAXBConfig config = FindAnnotation.findAnnotation(annotations, JAXBConfig.class);
       JAXBContext context = new FastinfoSetContext(classes);
+      return new JAXBContextWrapper(context, config);
+   }
+
+   @Override
+   protected JAXBContext createContextObject(Annotation[] annotations, String contextPath) throws JAXBException
+   {
+      JAXBConfig config = FindAnnotation.findAnnotation(annotations, JAXBConfig.class);
+      JAXBContext context = new FastinfoSetContext(contextPath);
       return new JAXBContextWrapper(context, config);
    }
 }
