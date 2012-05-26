@@ -263,6 +263,7 @@ public class ServerDrivenNegotiation
 
       if (!bestQuality.isAcceptable())
          return false;
+
       quality.setMediaTypeQualityValue(bestQuality);
       return true;
    }
@@ -304,6 +305,7 @@ public class ServerDrivenNegotiation
          value = requestedCharacterSets.get(null);
       if (value == null)   // no match
          return false;
+      if (!value.isAcceptable()) return false;
       quality.setCharacterSetQualityValue(value);
       return true;
    }
@@ -321,8 +323,14 @@ public class ServerDrivenNegotiation
          value = requestedEncodings.get(null);
       if (value == null)   // no match
          return false;
+      if (!value.isAcceptable()) return false;
       quality.setEncodingQualityValue(value);
       return true;
+   }
+
+   private boolean hasCountry(Locale locale)
+   {
+      return locale.getCountry() != null && !"".equals(locale.getCountry().trim());
    }
 
 
@@ -333,11 +341,44 @@ public class ServerDrivenNegotiation
       Locale language = option.getLanguage();
       if (language == null)
          return true;
-      QualityValue value = requestedLanguages.get(language);
+      QualityValue value = null;
+      for (Entry<Locale, QualityValue> entry : requestedLanguages.entrySet())
+      {
+         Locale locale = entry.getKey();
+         QualityValue qualityValue = entry.getValue();
+         if (locale == null) continue;
+
+         if (locale.getLanguage().equalsIgnoreCase(language.getLanguage()))
+         {
+            if (hasCountry(locale) && hasCountry(language))
+            {
+               if (locale.getCountry().equalsIgnoreCase(language.getCountry()))
+               {
+                  value = qualityValue;
+                  break;
+               }
+               else
+               {
+                  continue;
+               }
+            }
+            else if (hasCountry(locale) == hasCountry(language))
+            {
+               value = qualityValue;
+               break;
+            }
+            else
+            {
+               value = qualityValue; // might be a better match so re-loop
+            }
+         }
+      }
+
       if (value == null)   // try wildcard
          value = requestedLanguages.get(null);
       if (value == null)   // no match
          return false;
+      if (!value.isAcceptable()) return false;
       quality.setLanguageQualityValue(value);
       return true;
    }
