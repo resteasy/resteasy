@@ -61,6 +61,18 @@ public class VariantsTest
          else
             return Response.ok(v.getLanguage(), v).build();
       }
+      @Path("/brazil")
+      @GET
+      public Response doGetBrazil(@Context Request r)
+      {
+         List<Variant> vs = Variant.VariantListBuilder.newInstance().languages(new Locale("pt", "BR")).add().build();
+
+         Variant v = r.selectVariant(vs);
+         if (v == null)
+            return Response.notAcceptable(vs).build();
+         else
+            return Response.ok(v.getLanguage(), v).build();
+      }
    }
 
    @Test
@@ -72,6 +84,38 @@ public class VariantsTest
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("en", response.getEntity());
       Assert.assertEquals("en", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+   }
+
+   @Test
+   public void testGetLanguageWildcard() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "*");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      System.out.println(response.getEntity());
+      Assert.assertNotNull(response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+   }
+
+   @Test
+   public void testGetLanguageSubLocal() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/brazil"));
+      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "pt");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      System.out.println(response.getEntity());
+      Assert.assertNotNull(response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+   }
+
+   @Test
+   public void testGetLanguageZero() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "*,zh;q=0,en;q=0,fr;q=0");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());
+      System.out.println(response.getEntity());
    }
 
    @Test
@@ -187,8 +231,8 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("text/xml", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
       Assert.assertEquals("en", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("text/xml", response.getHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
    }
 
 
