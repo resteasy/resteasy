@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.core.extractors;
 import org.jboss.resteasy.annotations.ClientResponseType;
 import org.jboss.resteasy.annotations.ResponseObject;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.util.Types;
@@ -49,6 +50,12 @@ public class DefaultEntityExtractorFactory implements EntityExtractorFactory
             try
             {
                context.getClientResponse().checkFailureStatus();
+            }
+            catch (ClientResponseFailure ce)
+            {
+               // If ClientResponseFailure do a copy of the response and then release the connection,
+               // we need to use the copy here and not the original response
+               context.getErrorHandler().clientErrorHandling((BaseClientResponse) ce.getResponse(), ce);
             }
             catch (RuntimeException e)
             {
