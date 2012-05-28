@@ -17,6 +17,22 @@ import java.util.Map;
  */
 public class Types
 {
+   /**
+    * Is the genericType of a certain class?
+    */
+   public static boolean isA(Class clazz, ParameterizedType pType)
+   {
+      return clazz.isAssignableFrom((Class) pType.getRawType());
+   }
+
+   /**
+    * Gets the index-th type argument.
+    */
+   public static Class getArgumentType(ParameterizedType pType, int index)
+   {
+      return (Class) pType.getActualTypeArguments()[index];
+   }
+
    public static Class getTemplateParameterOfInterface(Class base, Class desiredInterface)
    {
       Object rtn = searchForInterfaceTemplateParameter(base, desiredInterface);
