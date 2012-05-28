@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -21,7 +22,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 import static org.jboss.resteasy.util.FindAnnotation.*;
 
@@ -72,6 +76,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       HeaderParam header;
       MatrixParam matrix;
       PathParam uriParam;
+      Form form;
       CookieParam cookie;
       FormParam formParam;
       Suspend suspend;
@@ -97,8 +102,25 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new PathParamInjector(type, genericType, injectTarget, uriParam.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, Form.class) != null)
+      else if ((form = findAnnotation(annotations, Form.class)) != null)
       {
+         String prefix = form.prefix();
+         if (prefix.length() > 0)
+         {
+            if (genericType instanceof ParameterizedType)
+            {
+               ParameterizedType pType = (ParameterizedType) genericType;
+               if (Types.isA(List.class, pType))
+               {
+                  return new ListFormInjector(type, Types.getArgumentType(pType, 0), prefix, providerFactory);
+               }
+               if (Types.isA(Map.class, pType))
+               {
+                  return new MapFormInjector(type, Types.getArgumentType(pType, 0), Types.getArgumentType(pType, 1), prefix, providerFactory);
+               }
+            }
+            return new PrefixedFormInjector(type, prefix, providerFactory);
+         }
          return new FormInjector(type, providerFactory);
       }
       else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null)

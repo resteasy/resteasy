@@ -40,7 +40,91 @@ When somebody posts to /myservice, RESTEasy will instantiate an instance of MyFo
 
 </para>
 <para>
-
-
+Also, @Form has some expanded @FormParam features.  If you specify a prefix within the Form param, this will prepend a prefix to any form parameter lookup.  For example,
+    let's say you have one Address class, but want to reference invoice and shipping addresses from the same set of form parameters:
 </para>
+<programlisting>
+    public static class Person
+    {
+
+       @FormParam("name")
+       private String name;
+
+       @Form(prefix = "invoice")
+       private Address invoice;
+
+       @Form(prefix = "shipping")
+       private Address shipping;
+
+    }
+
+    public static class Address
+    {
+
+       @FormParam("street")
+       private String street;
+    }
+
+    @Path("person")
+    public static class MyResource
+    {
+
+       @POST
+       @Produces(MediaType.TEXT_PLAIN)
+       @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+       public String post(@Form Person p)
+       {
+          return p.toString();
+       }
+    }
+</programlisting>
+    <para>
+        In this example, the client could send the following form parameters:
+    </para>
+    <programlisting>
+name=bill
+invoice.street=xxx
+shipping.street=yyy
+    </programlisting>
+    <para>
+        The Person.invoice and Person.shipping fields would be populated appropriately. Also, prefix mappings also support lists and maps:
+    </para>
+<programlisting>
+    <![CDATA[
+    public static class Person {
+        @Form(prefix="telephoneNumbers") List<TelephoneNumber> telephoneNumbers;
+        @Form(prefix="address") Map<String, Address> addresses;
+    }
+
+    public static class TelephoneNumber {
+        @FormParam("countryCode") private String countryCode;
+        @FormParam("number") private String number;
+    }
+
+    public static class Address {
+        @FormParam("street") private String street;
+        @FormParam("houseNumber") private String houseNumber;
+    }
+
+    @Path("person")
+    public static class MyResource {
+
+        @POST
+        @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+        public void post (@Form Person p) {} ]]>
+
+</programlisting>
+    <para>The following form params could be submitted and the Person.telephoneNumbers and Person.addresses fields would be populated appropriately</para>
+<programlisting>
+    request.addFormHeader("telephoneNumbers[0].countryCode", "31");
+    request.addFormHeader("telephoneNumbers[0].number", "0612345678");
+    request.addFormHeader("telephoneNumbers[1].countryCode", "91");
+    request.addFormHeader("telephoneNumbers[1].number", "9717738723");
+    request.addFormHeader("address[INVOICE].street", "Main Street");
+    request.addFormHeader("address[INVOICE].houseNumber", "2");
+    request.addFormHeader("address[SHIPPING].street", "Square One");
+    request.addFormHeader("address[SHIPPING].houseNumber", "13");
+
+</programlisting>
+
 </chapter>
