@@ -6,9 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -19,6 +17,22 @@ import java.util.Map;
  */
 public class Types
 {
+   /**
+    * Is the genericType of a certain class?
+    */
+   public static boolean isA(Class clazz, ParameterizedType pType)
+   {
+      return clazz.isAssignableFrom((Class) pType.getRawType());
+   }
+
+   /**
+    * Gets the index-th type argument.
+    */
+   public static Class getArgumentType(ParameterizedType pType, int index)
+   {
+      return (Class) pType.getActualTypeArguments()[index];
+   }
+
    public static Class getTemplateParameterOfInterface(Class base, Class desiredInterface)
    {
       Object rtn = getSomething(base, desiredInterface);
@@ -170,7 +184,7 @@ public class Types
          {
             if (paramGenericTypes[i] instanceof TypeVariable)
             {
-               TypeVariable tv = (TypeVariable)paramGenericTypes[i];
+               TypeVariable tv = (TypeVariable) paramGenericTypes[i];
                Type t = typeVarMap.get(tv.getName());
                if (t == null) throw new RuntimeException("Unable to resolve type variable");
                paramTypes[i] = getRawType(t);
