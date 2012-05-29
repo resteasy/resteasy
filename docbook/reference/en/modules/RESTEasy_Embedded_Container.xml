@@ -116,4 +116,32 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
 </programlisting>
       </para>
     </section>
+    <section>
+        <title>Netty</title>
+        <para>
+            Resteasy has integration with the popular Netty project as well..
+        </para>
+    <programlisting> <![CDATA[
+   public static void start(ResteasyDeployment deployment) throws Exception
+   {
+      netty = new NettyJaxrsServer();
+      netty.setDeployment(deployment);
+      netty.setPort(TestPortProvider.getPort());
+      netty.setRootResourcePath("");
+      netty.setSecurityDomain(null);
+      netty.start();
+   }
+    ]]></programlisting>
+
+    <para>Maven project you must include is:</para>
+<programlisting> <![CDATA[
+  <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-netty</artifactId>
+      <version>2.3.4.Final</version>
+  </dependency>
+]]></programlisting>
+
+    </section>
+
 </chapter>
