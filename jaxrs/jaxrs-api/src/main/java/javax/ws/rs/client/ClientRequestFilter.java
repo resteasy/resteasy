@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,34 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs.ext;
+package javax.ws.rs.client;
 
 import java.io.IOException;
 
+import javax.ws.rs.WebApplicationException;
+
 /**
- * <p>Interface implemented by filters invoked at the <emph>Post</emph>
- * extension point. Filters implementing this interface MUST be
- * annotated with {@link javax.ws.rs.ext.Provider}.</p>
+ * An extension interface implemented by client request filters.
  *
- * <p>As part of the client API, these filters are executed after the
- * HTTP invocation returns. As part of the server API, these filters are
- * executed after the resource method returns.</p>
+ * Filters implementing this interface MUST be annotated with
+ * {@link javax.ws.rs.ext.Provider &#64;Provider}. This type of filters is supported
+ * only as part of the Client API.
  *
+ * @author Marek Potociar
  * @author Santiago Pericas-Geertsen
- * @author Bill Burke
+ *
  * @since 2.0
+ *
+ * @see javax.ws.rs.client.ClientResponseFilter
  */
-public interface ResponseFilter {
+public interface ClientRequestFilter {
 
     /**
-     * Filter method called at the <emph>Post</emph> extension point.
-     * I.e., after the invocation returns in the client API and after the
-     * resource method returns in the server API. Filters in a chain are
-     * ordered according to their binding priority (see
-     * {@link javax.ws.rs.BindingPriority}).
+     * Filter method called before a request has been dispatched to a client
+     * transport layer.
      *
-     * @param context invocation context
-     * @throws IOException if an I/O exception occurs
+     * Filters in the filter chain are ordered according to their binding
+     * priority (see {@link javax.ws.rs.BindingPriority}).
+     *
+     * @param requestContext request context.
+     * @throws IOException if an I/O exception occurs.
      */
-    void postFilter(FilterContext context) throws IOException;
+    public void filter(ClientRequestContext requestContext) throws IOException;
 }

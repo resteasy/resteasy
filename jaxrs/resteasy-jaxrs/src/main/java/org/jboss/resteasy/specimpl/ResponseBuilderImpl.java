@@ -9,12 +9,13 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.ResponseHeaders;
 import javax.ws.rs.core.Variant;
 import java.lang.annotation.Annotation;
 import java.net.URI;
@@ -335,12 +336,6 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    }
 
    @Override
-   public Response.ResponseBuilder replaceAll(ResponseHeaders headers)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Response.ResponseBuilder variants(Variant... variants)
    {
       return this.variants(Arrays.asList(variants));
@@ -364,4 +359,15 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       throw new NotImplementedYetException();
    }
 
+   @Override
+   public <T> Response.ResponseBuilder entity(T entity, GenericType<? super T> declaredType, Annotation[] annotations)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Response.ResponseBuilder replaceAll(MultivaluedMap<String, Object> headers)
+   {
+      throw new NotImplementedYetException();
+   }
 }

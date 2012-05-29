@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.validation.ConstraintViolation;
-import javax.ws.rs.ViolationException;
+import javax.ws.rs.ValidationException;
 
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 
@@ -18,7 +18,7 @@ import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
  * @TODO Need to work on representation of exceptions
  * @TODO Add javadoc.
  */
-public class ResteasyViolationException extends ViolationException
+public class ResteasyViolationException extends ValidationException
 {
    private static final long serialVersionUID = 2623733139912277260L;
    
@@ -38,11 +38,6 @@ public class ResteasyViolationException extends ViolationException
       super();
    }
 
-   public ResteasyViolationException(List<String> exceptions)
-   {
-      super(exceptions);
-   }
-   
    public ResteasyViolationException(ViolationsContainer<?> container)
    {
       super();

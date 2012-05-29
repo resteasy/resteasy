@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,12 +39,10 @@
  */
 package javax.ws.rs.ext;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -110,22 +108,23 @@ public interface MessageBodyWriter<T> {
      * @param t the instance to write.
      * @param type the class of object that is to be written.
      * @param genericType the type of object to be written, obtained either
-     * by reflection of a resource method return type or by inspection
-     * of the returned instance. {@link javax.ws.rs.core.GenericEntity}
-     * provides a way to specify this information at runtime.
+     *     by reflection of a resource method return type or by inspection
+     *     of the returned instance. {@link javax.ws.rs.core.GenericEntity}
+     *     provides a way to specify this information at runtime.
      * @param annotations an array of the annotations on the resource
-     * method that returns the object.
+     *     method that returns the object.
      * @param mediaType the media type of the HTTP entity.
      * @param httpHeaders a mutable map of the HTTP response headers.
      * @param entityStream the {@link OutputStream} for the HTTP entity. The
-     * implementation should not close the output stream.
+     *     implementation should not close the output stream.
      * @throws java.io.IOException if an IO error arises
      * @throws javax.ws.rs.WebApplicationException if a specific
-     * HTTP error response needs to be produced. Only effective if thrown prior
-     * to the response being committed.
+     *     HTTP error response needs to be produced. Only effective if thrown
+     *     prior to the response being committed.
      */
     void writeTo(T t, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException, WebApplicationException;
+            OutputStream entityStream)
+            throws java.io.IOException, javax.ws.rs.WebApplicationException;
 }

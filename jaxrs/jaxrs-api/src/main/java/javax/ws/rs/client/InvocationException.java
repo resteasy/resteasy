@@ -64,7 +64,7 @@ import javax.ws.rs.core.Response;
 public class InvocationException extends ClientException {
 
     private static final long serialVersionUID = -8551966770517714263L;
-    private transient final Response response;
+    private transient Response response;
 
     /**
      * Construct a client-side invocation exception without a response.
@@ -92,7 +92,7 @@ public class InvocationException extends ClientException {
      *     {@link #getCause()} method). (A {@code null} value is permitted,
      *     and indicates that the cause is nonexistent or unknown.)
      */
-    public InvocationException(final String message, Throwable cause) {
+    public InvocationException(final String message, final Throwable cause) {
         super(message, cause);
         response = null;
     }

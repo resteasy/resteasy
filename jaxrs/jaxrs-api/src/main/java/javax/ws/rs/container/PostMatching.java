@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
- * 
+ *
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,20 +11,20 @@
  * http://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
- * 
+ *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
  * exception as provided by Oracle in the GPL Version 2 section of the License
  * file that accompanied this code.
- * 
+ *
  * Modifications:
  * If applicable, add the following below the License Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyright [year] [name of copyright owner]"
- * 
+ *
  * Contributor(s):
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
@@ -37,19 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs.ext;
+package javax.ws.rs.container;
 
-import javax.ws.rs.client.Client;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.ws.rs.NameBinding;
 
 /**
- * TODO javadoc.
+ * Global binding annotation that can be applied to a {@link ContainerRequestFilter
+ * container request filter} or a {@link ContainerResponseFilter container response
+ * filter} to indicate that such filter should be applied globally on all resources
+ * in the application but depends on a matched resource information being available.
+ * <p />
+ * The JAX-RS runtime will apply the filters marked with the {@code @PostMatching}
+ * annotation globally to all resources, but only in case the incoming request
+ * has been matched to a particular resource method. In case the request has not
+ * been matched, the filter implementations annotated with the {@code @PostMatching}
+ * annotation will not be applied.
  *
- * @param <B> 
- * @author Marek Potociar
- * @since 2.0
+ * @author Marek Potociar (marek.potociar at oracle.com)
  */
-public interface ClientBuilderFactory<B extends Client.Builder> {
-       
-    B newBuilder();
-    
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@NameBinding
+public @interface PostMatching {
 }

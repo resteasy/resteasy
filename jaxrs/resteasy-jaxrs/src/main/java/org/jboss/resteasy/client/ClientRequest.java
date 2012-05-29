@@ -609,7 +609,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    {
       BaseClientResponse response = (BaseClientResponse) post();
       if (response.getStatus() != 201) throw new ClientResponseFailure(response);
-      return response.getLocation();
+      return response.getLocationLink();
    }
 
 

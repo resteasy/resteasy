@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -129,7 +129,7 @@ public interface UriInfo {
      * Get the absolute path of the request. This includes everything preceding
      * the path (host, port etc) but excludes query parameters.
      * This is a shortcut for
-     * {@code uriInfo.getBase().resolve(uriInfo.getPath()).}
+     * {@code uriInfo.getBaseUri().resolve(uriInfo.getPath()).}
      *
      * @return the absolute path of the request.
      * @throws java.lang.IllegalStateException if called outside the scope of a

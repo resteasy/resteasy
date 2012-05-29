@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,7 +80,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 public abstract class UriBuilder {
 
     /**
-     * Protected constructor, use one of the static <code>from<i>XXX</i></code>
+     * Protected constructor, use one of the static <code>from<i>Xxx</i>(...)</code>
      * methods to obtain an instance.
      */
     protected UriBuilder() {
@@ -134,7 +134,7 @@ public abstract class UriBuilder {
     public static UriBuilder fromLink(Link link) throws IllegalArgumentException {
         return UriBuilder.fromUri(link.getUri());
     }
-    
+
     /**
      * Create a new instance representing a relative URI initialized from a
      * URI path.

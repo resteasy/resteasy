@@ -39,6 +39,7 @@
  */
 package javax.ws.rs.core;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -122,6 +123,23 @@ public interface HttpHeaders {
      * @throws java.lang.IllegalStateException if called outside the scope of a request
      */
     public Map<String, Cookie> getCookies();
+
+    /**
+     * Get message date.
+     *
+     * @return the message date, otherwise {@code null} if not present.
+     * @since 2.0
+     */
+    public Date getDate();
+
+    /**
+     * Get Content-Length value.
+     *
+     * @return Content-Length as integer if present and valid number. In other
+     * cases returns -1.
+     * @since 2.0
+     */
+    public int getLength();
     /**
      * See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">HTTP/1.1 documentation</a>}.
      */

@@ -39,19 +39,22 @@
  */
 package javax.ws.rs.ext;
 
-import java.io.IOException;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.DynamicBinder;
 
 /**
  * Interface for message body writer interceptors that wrap around calls
- * to {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. Message body
- * interceptors implementing this interface MUST be annotated with
- * {@link javax.ws.rs.ext.Provider}.
+ * to {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}.
+ *
+ * Message body interceptors implementing this interface must be annotated with
+ * {@link javax.ws.rs.ext.Provider &#64;Provider} to be discovered by the JAX-RS
+ * runtime. Message body interceptor instances may also be discovered and
+ * bound {@link DynamicBinder dynamically} to particular resource methods.
  *
  * @param <T> Java type supported by corresponding message body writer
  *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
+ * @author Marek Potociar (marek.potociar at oracle.com)
  * @since 2.0
  * @see MessageBodyWriter
  */
@@ -65,9 +68,10 @@ public interface WriterInterceptor<T> {
      * {@link javax.ws.rs.ext.WriterInterceptorContext#proceed} to invoke
      * the next interceptor in the chain, and ultimately the wrapped method.
      *
-     * @param context invocation context
-     * @throws IOException if an IO error arises
-     * @throws WebApplicationException thrown by wrapped method
+     * @param context invocation context.
+     * @throws java.io.IOException if an IO error arises.
+     * @throws javax.ws.rs.WebApplicationException thrown by wrapped method.
      */
-    void aroundWriteTo(WriterInterceptorContext<T> context) throws IOException, WebApplicationException;
+    void aroundWriteTo(WriterInterceptorContext<T> context)
+            throws java.io.IOException, javax.ws.rs.WebApplicationException;
 }

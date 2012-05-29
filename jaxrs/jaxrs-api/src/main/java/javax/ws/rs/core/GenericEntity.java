@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,8 +61,6 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.ext.MessageBodyWriter;
-
 /**
  * Represents a response entity of a generic type {@code T}.
  *
@@ -70,8 +68,8 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * {@link Response} instance that contains, e.g., an entity of type
  * {@code List<String>} appears to contain a raw {@code List<?>} at runtime.
  * When the generic type is required to select a suitable
- * {@link MessageBodyWriter}, this class may be used to wrap the entity and
- * capture its generic type.</p>
+ * {@link javax.ws.rs.ext.MessageBodyWriter}, this class may be used to wrap the
+ * entity and capture its generic type.</p>
  *
  * <p>There are two ways to create an instance:</p>
  * <ol>
@@ -80,7 +78,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * type erasure. For example, the following code shows how to create a
  * {@link Response} containing an entity of type {@code List<String>} whose
  * generic type will be available at runtime for selection of a suitable
- * {@link MessageBodyWriter}:
+ * {@link javax.ws.rs.ext.MessageBodyWriter}:
  *
  * <pre>List&lt;String&gt; list = new ArrayList&lt;String&gt;();
  *GenericEntity&lt;List&lt;String&gt;&gt; entity = new GenericEntity&lt;List&lt;String&gt;&gt;(list) {};
@@ -108,9 +106,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
  */
 public class GenericEntity<T> {
 
-    final Class<?> rawType;
-    final Type type;
-    final T entity;
+    private final Class<?> rawType;
+    private final Type type;
+    private final T entity;
 
     /**
      * Constructs a new generic entity. Derives represented class from type

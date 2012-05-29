@@ -37,43 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs.ext;
+package javax.ws.rs.container;
 
-import java.io.IOException;
+import java.lang.reflect.Method;
 
 /**
- * <p>Interface implemented by filters invoked at the <emph>PreMatch</emph>
- * extension point. Use a filter of this type to update the input to the
- * JAX-RS matching algorithm, e.g., the HTTP method, Accept header, etc.
- * Otherwise, the use of a filter invoked at the <emph>Pre</emph> extension
- * point (after resource matching) is recommended.</p>
- *
- * <p>Filters implementing
- * this interface MUST be annotated with {@link javax.ws.rs.ext.Provider}.
- * This type of filters is supported only as part of the Server API.</p>
+ * An injectable class to access the resource class and resource method
+ * matched by the current request. Methods in this class MAY return
+ * <code>null</code> if a resource class and method have not been matched,
+ * e.g. in a standalone, pre-matching {@link ContainerRequestFilter} that was
+ * not provided by a post-matching {@link PostMatching}.
  *
  * @author Santiago Pericas-Geertsen
  * @since 2.0
- * @see RequestFilter
  */
-public interface PreMatchRequestFilter {
+public interface ResourceInfo {
 
     /**
-     * <p>Filter method called at the <emph>PreMatch</emph> extension point.
-     * I.e., before resource matching as part of the Server API. This type
-     * of filters are not supported in the Client API.</p>
+     * Get the resource method that is the target of a request,
+     * or <code>null</code> if this information is not available.
      *
-     * <p>Filters in a chain are ordered according to their binding
-     * priority (see {@link javax.ws.rs.BindingPriority}). If a pre-match
-     * request filter produces a response by calling
-     * {@link FilterContext#setResponse}, the execution of the pre-match request
-     * chain is stopped and the response is returned without matching a resource
-     * method. For example, a caching filter may produce a response in this way.
-     * Note that responses produced in this manner are still processed by
-     * the response filter chain.</p>
-     *
-     * @param context invocation context
-     * @throws IOException if an I/O exception occurs
+     * @return resource method instance or null
+     * @see #getResourceClass()
      */
-    void preMatchFilter(FilterContext context) throws IOException;
+    Method getResourceMethod();
+
+    /**
+     * Get the resource class that is the target of a request,
+     * or <code>null</code> if this information is not available.
+     *
+     * @return resource class instance or null
+     * @see #getResourceMethod()
+     */
+    Class<?> getResourceClass();
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ public class ClientException extends RuntimeException {
      *     {@link #getCause()} method). (A {@code null} value is permitted,
      *     and indicates that the cause is nonexistent or unknown.)
      */
-    public ClientException(Throwable cause) {
+    public ClientException(final Throwable cause) {
         super(cause);
     }
 
@@ -77,7 +77,7 @@ public class ClientException extends RuntimeException {
      *     {@link #getCause()} method). (A {@code null} value is permitted,
      *     and indicates that the cause is nonexistent or unknown.)
      */
-    public ClientException(String message, Throwable cause) {
+    public ClientException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
@@ -89,7 +89,7 @@ public class ClientException extends RuntimeException {
      * @param  message the detail message (which is saved for later retrieval
      *     by the {@link #getMessage()} method).
      */
-    public ClientException(String message) {
+    public ClientException(final String message) {
         super(message);
     }
 }

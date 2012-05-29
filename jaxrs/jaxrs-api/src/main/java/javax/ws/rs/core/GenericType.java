@@ -49,10 +49,10 @@ import java.lang.reflect.WildcardType;
  * types with actual type parameters.
  *
  * An object that represents any parameterized type may be obtained by
- * sub-classing {@code TypeLiteral}.
+ * sub-classing {@code GenericType}.
  *
  * <pre>
- *  TypeLiteral&lt;List&lt;String>> stringListType = new TypeLiteral&lt;List&lt;String>>() {};
+ *  GenericType&lt;List&lt;String>> stringListType = new GenericType&lt;List&lt;String>>() {};
  * </pre>
  *
  * @param <T> the generic type parameter.
@@ -61,10 +61,10 @@ import java.lang.reflect.WildcardType;
  * @author Marek Potociar
  * @since 2.0
  */
-public abstract class TypeLiteral<T> {
+public abstract class GenericType<T> {
 
     /**
-     * Type represented by the type literal instance.
+     * Type represented by the generic type instance.
      */
     private transient Type type;
     /**
@@ -78,17 +78,17 @@ public abstract class TypeLiteral<T> {
 
 
     /**
-     * Construct a type literal instance with programmatically set values of type
+     * Construct a generic type instance with programmatically set values of type
      * and raw type.
      *
      * @param <T> Java type.
      *
      * @param rawType raw parameter type.
      * @param type parameter type (possibly generic).
-     * @return programmatically constructed type literal instance.
+     * @return programmatically constructed generic type instance.
      */
-    public static <T> TypeLiteral<T> of(final Class<?> rawType, final Type type) {
-        return new TypeLiteral<T>() {
+    public static <T> GenericType<T> of(final Class<?> rawType, final Type type) {
+        return new GenericType<T>() {
 
             @Override
             @SuppressWarnings("unchecked")
@@ -104,9 +104,9 @@ public abstract class TypeLiteral<T> {
     }
 
     /**
-     * Protected constructor for a type literal of a concrete Java type.
+     * Protected constructor for a generic type of a concrete Java type.
      */
-    protected TypeLiteral() {
+    protected GenericType() {
     }
 
     /*package*/ Type _type() {
@@ -118,18 +118,18 @@ public abstract class TypeLiteral<T> {
     }
 
     /**
-     * Retrieve the type represented by the type literal instance.
+     * Retrieve the type represented by the generic type instance.
      *
-     * @return the actual type represented by this type literal instance.
+     * @return the actual type represented by this generic type instance.
      */
     public final Type getType() {
         if (type == null) {
             type = _type();
             if (type == null) {
-                // Get the class that directly extends TypeLiteral<?>
+                // Get the class that directly extends GenericType<?>
                 Class<?> typeLiteralSubclass = getTypeLiteralSubclass(this.getClass());
 
-                // Get the type parameter of TypeLiteral<T> (aka the T value)
+                // Get the type parameter of GenericType<T> (aka the T value)
                 type = getTypeParameter(typeLiteralSubclass);
                 if (type == null) {
                     throw new RuntimeException(getClass() + " does not specify the type parameter T of TypeLiteral<T>");
@@ -141,10 +141,10 @@ public abstract class TypeLiteral<T> {
 
     /**
      * Retrieve an array of {@link Type} objects representing the actual type
-     * arguments to the type represented by this type literal.
+     * arguments to the type represented by this generic type instance.
      * <p/>
      * Note that in some cases, the returned array may be empty. This can occur
-     * if the type represented by this type literal is a non-parameterized type.
+     * if the type represented by this generic type is a non-parameterized type.
      *
      * @return an array of {@code Type} objects representing the actual type
      *     arguments to this type.
@@ -168,10 +168,10 @@ public abstract class TypeLiteral<T> {
 
     /**
      * Returns the object representing the class or interface that declared
-     * the type represented by this type literal instance.
+     * the type represented by this generic type instance.
      *
      * @return the class or interface that declared the type represented by this
-     *     type literal instance.
+     *     generic type instance.
      */
     @SuppressWarnings("unchecked")
     public final Class<T> getRawType() {
@@ -214,24 +214,24 @@ public abstract class TypeLiteral<T> {
     }
 
     /**
-     * Return the class that directly extends the {@code TypeLiteral<T>} class
+     * Return the class that directly extends the {@code GenericType<T>} class
      * in the superclass hierarchy of the supplied {@code clazz} class.
      *
      * @param class instance to inspect.
-     * @return the direct descendant of {@code TypeLiteral<T>} in the hierarchy
+     * @return the direct descendant of {@code GenericType<T>} in the hierarchy
      *     of the supplied class.
      * @exception IllegalArgumentException if the provided class does not extend
-     *     the {@code TypeLiteral<T>}
+     *     the {@code GenericType<T>}
      */
     private static Class<?> getTypeLiteralSubclass(Class<?> clazz) {
         // Start with a super class
         Class<?> superClass = clazz.getSuperclass();
 
-        if (superClass.equals(TypeLiteral.class)) {
-            // Super class is TypeLiteral, return the current class
+        if (superClass.equals(GenericType.class)) {
+            // Super class is GenericType, return the current class
             return clazz;
-        } else if (!TypeLiteral.class.isAssignableFrom(clazz)) {
-            // The clazz IS a direct TypeLiteral instance, we should not be here at all...
+        } else if (!GenericType.class.isAssignableFrom(clazz)) {
+            // The clazz IS a direct GenericType instance, we should not be here at all...
             throw new IllegalStateException("No type information has been specified for this TypeLiteral instance.");
         } else {
             // Continue processing, one level deeper
@@ -240,16 +240,16 @@ public abstract class TypeLiteral<T> {
     }
 
     /**
-     * Return the value of the type parameter of {@code TypeLiteral<T>}.
+     * Return the value of the type parameter of {@code GenericType<T>}.
      *
-     * @param typeLiteralSubclass subClass of {@code TypeLiteral<T>} to analyze.
-     * @return the parameterized type of {@code TypeLiteral<T>} (aka T)
+     * @param typeLiteralSubclass subClass of {@code GenericType<T>} to analyze.
+     * @return the parameterized type of {@code GenericType<T>} (aka T)
      */
     private static Type getTypeParameter(Class<?> typeLiteralSubclass) {
         // Access the typeLiteral<T> super class using generics
         Type type = typeLiteralSubclass.getGenericSuperclass();
         if (type instanceof ParameterizedType) {
-            // TypeLiteral is indeed parametrized
+            // GenericType is indeed parametrized
             ParameterizedType parameterizedType = (ParameterizedType) type;
             if (parameterizedType.getActualTypeArguments().length == 1) {
                 // Return the value of the type parameter (aka T)
@@ -262,9 +262,9 @@ public abstract class TypeLiteral<T> {
     @Override
     public boolean equals(Object obj) {
         boolean result = this == obj;
-        if (!result && obj instanceof TypeLiteral) {
+        if (!result && obj instanceof GenericType) {
             // Compare inner type for equality
-            TypeLiteral<?> that = (TypeLiteral<?>) obj;
+            GenericType<?> that = (GenericType<?>) obj;
             return this.getType().equals(that.getType());
         }
         return result;

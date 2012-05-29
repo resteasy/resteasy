@@ -119,10 +119,11 @@ public class MediaType {
 
     /**
      * Creates a new instance of MediaType by parsing the supplied string.
-     * @param type the media type string
-     * @return the newly created MediaType
+     * 
+     * @param type the media type string.
+     * @return the newly created MediaType.
      * @throws IllegalArgumentException if the supplied string cannot be parsed
-     * or is null
+     *     or is {@code null}.
      */
     public static MediaType valueOf(String type) throws IllegalArgumentException {
         return delegate.fromString(type);

@@ -53,7 +53,6 @@ import javax.ws.rs.core.Response;
 public class ValidationException extends WebApplicationException {
 
     private static final long serialVersionUID = 11660103L;
-
     private List<String> violations;
 
     /**
@@ -93,7 +92,8 @@ public class ValidationException extends WebApplicationException {
      * @param violations list of violations
      * @throws IllegalArgumentException if status or violations is {@code null}
      */
-    public ValidationException(final int status, List<String> violations) throws IllegalArgumentException {
+    public ValidationException(final int status, final List<String> violations)
+            throws IllegalArgumentException {
         super(status);
         if (violations == null) {
             throw new IllegalArgumentException("List of violations must not be null");
@@ -109,7 +109,8 @@ public class ValidationException extends WebApplicationException {
      * @param violations list of violations
      * @throws IllegalArgumentException if status or violations is {@code null}
      */
-    public ValidationException(final Response.Status status, List<String> violations) throws IllegalArgumentException {
+    public ValidationException(final Response.Status status, final List<String> violations)
+            throws IllegalArgumentException {
         super(status);
         if (violations == null) {
             throw new IllegalArgumentException("List of violations must not be null");

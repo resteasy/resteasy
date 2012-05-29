@@ -19,12 +19,11 @@ import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.ResponseHeaders;
-import javax.ws.rs.core.TypeLiteral;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,8 +31,12 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.*;
 
@@ -277,8 +280,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return linkHeader;
    }
 
-   @Override
-   public Link getLocation()
+   public Link getLocationLink()
    {
       if (location != null) return location;
       if (!headers.containsKey("Location")) return null;
@@ -387,7 +389,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return (T2) unmarshaledEntity;
    }
 
-   protected MediaType getMediaType()
+   public MediaType getMediaType()
    {
       String mediaType = getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
       if (mediaType == null)
@@ -554,35 +556,26 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       releaseConnection();
    }
 
-   // spec
-
-
    @Override
-   public Map<String, Object> getProperties()
+   public <T> T readEntity(Class<T> entityType) throws MessageProcessingException, IllegalStateException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public Status getStatusEnum()
+   public <T> T readEntity(javax.ws.rs.core.GenericType<T> entityType) throws MessageProcessingException, IllegalStateException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public ResponseHeaders getHeaders()
+   public <T> T readEntity(Class<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(Class<T> type) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(javax.ws.rs.core.GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
    {
       throw new NotImplementedYetException();
    }
@@ -594,7 +587,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
-   public void bufferEntity() throws MessageProcessingException
+   public boolean bufferEntity() throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }
@@ -606,19 +599,73 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   public String getHeader(String name)
    {
-      return null;
+      throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   public Locale getLanguage()
    {
-      return null;
+      throw new NotImplementedYetException();
    }
 
    @Override
-   public boolean isEntityRetrievable()
+   public int getLength()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Map<String, NewCookie> getCookies()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public EntityTag getEntityTag()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Date getDate()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Date getLastModified()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Set<javax.ws.rs.core.Link> getLinks()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean hasLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public javax.ws.rs.core.Link getLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public javax.ws.rs.core.Link.Builder getLinkBuilder(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public URI getLocation()
    {
       throw new NotImplementedYetException();
    }

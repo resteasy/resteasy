@@ -1,5 +1,6 @@
 package org.jboss.resteasy.specimpl;
 
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedLanguage;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -109,5 +111,17 @@ public class HttpHeadersImpl implements HttpHeaders
    {
       if (acceptableLanguages == null) acceptableLanguages = new ArrayList<Locale>();
       return acceptableLanguages;
+   }
+
+   @Override
+   public Date getDate()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public int getLength()
+   {
+      throw new NotImplementedYetException();
    }
 }
