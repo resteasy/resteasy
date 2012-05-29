@@ -42,6 +42,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -168,6 +170,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             if (type.isInterface())
             {
                if (List.class.isAssignableFrom(type)) outCol = new ArrayList();
+               else if (SortedSet.class.isAssignableFrom(type)) outCol = new TreeSet();
                else if (Set.class.isAssignableFrom(type)) outCol = new HashSet();
                else outCol = new ArrayList();
             }
