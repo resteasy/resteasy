@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.NotFoundException;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -56,6 +58,10 @@ public class SynchronousDispatcher implements Dispatcher
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
       requestPreprocessors.add(extentionHttpPreprocessor = new ExtensionHttpPreprocessor());
+      defaultContextObjects.put(Providers.class, providerFactory);
+      defaultContextObjects.put(Registry.class, registry);
+      defaultContextObjects.put(Dispatcher.class, this);
+      defaultContextObjects.put(InternalDispatcher.class, InternalDispatcher.getInstance());
    }
 
    public ResteasyProviderFactory getProviderFactory()
