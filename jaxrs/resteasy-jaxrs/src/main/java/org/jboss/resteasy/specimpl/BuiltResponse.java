@@ -4,14 +4,21 @@ import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.ws.rs.core.MessageProcessingException;
+import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.ResponseHeaders;
-import javax.ws.rs.core.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A response object not attached to a client or server invocation.
@@ -89,31 +96,25 @@ public class BuiltResponse extends Response
    }
 
    @Override
-   public Map<String, Object> getProperties()
+   public <T> T readEntity(Class<T> entityType) throws MessageProcessingException, IllegalStateException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public Status getStatusEnum()
+   public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException, IllegalStateException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public ResponseHeaders getHeaders()
+   public <T> T readEntity(Class<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(Class<T> type) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
    {
       throw new NotImplementedYetException();
    }
@@ -125,7 +126,7 @@ public class BuiltResponse extends Response
    }
 
    @Override
-   public void bufferEntity() throws MessageProcessingException
+   public boolean bufferEntity() throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }
@@ -137,19 +138,79 @@ public class BuiltResponse extends Response
    }
 
    @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   public String getHeader(String name)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   public MediaType getMediaType()
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public boolean isEntityRetrievable()
+   public Locale getLanguage()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public int getLength()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Map<String, NewCookie> getCookies()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public EntityTag getEntityTag()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Date getDate()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Date getLastModified()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public URI getLocation()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Set<Link> getLinks()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean hasLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Link getLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Link.Builder getLinkBuilder(String relation)
    {
       throw new NotImplementedYetException();
    }

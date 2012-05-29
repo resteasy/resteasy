@@ -115,7 +115,7 @@ public abstract class ClientResponse<T> extends Response
     *
     * @return
     */
-   public abstract Link getLocation();
+   public abstract Link getLocationLink();
 
    /**
     * Header is assumed to be a URL, a Link object is created from it if it exists.  Also, the type field of the
