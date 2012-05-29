@@ -2,29 +2,19 @@ package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.RequestHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.TypeLiteral;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -223,78 +213,4 @@ public class RequestImpl implements Request
       return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED);
    }
 
-   // spec
-
-
-   @Override
-   public <T> T readEntity(Class<T> type) throws MessageProcessingException
-   {
-      return null;
-   }
-
-   @Override
-   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
-   {
-      return null;
-   }
-
-   @Override
-   public Map<String, Object> getProperties()
-   {
-      return null;
-   }
-
-   @Override
-   public RequestHeaders getHeaders()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public URI getUri()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public Object getEntity()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public boolean hasEntity()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public boolean isEntityRetrievable()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public void bufferEntity() throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public void close() throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
 }

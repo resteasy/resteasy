@@ -67,16 +67,29 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface BindingPriority {
 
+    /**
+     * Security filter/interceptor priority.
+     */
     public static final int SECURITY = 100;
+    /**
+     * Header decorator filter/interceptor priority.
+     */
     public static final int HEADER_DECORATOR = 200;
+    /**
+     * Message decoder filter/interceptor priority.
+     */
     public static final int DECODER = 300;
+    /**
+     * Message encoder filter/interceptor priority.
+     */
     public static final int ENCODER = 400;
+    /**
+     * User-level filter/interceptor priority.
+     */
     public static final int USER = 500;
 
     /**
      * Priority defined for a filter or interceptor.
-     *
-     * @return filter or interceptor priority
      */
     int value();
 }

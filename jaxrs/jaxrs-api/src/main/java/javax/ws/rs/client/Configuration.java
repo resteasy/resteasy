@@ -44,11 +44,11 @@ import java.util.Set;
 
 /**
  * Represents inheritable configuration of the main client-side JAX-RS components,
- * such as {@link Client}, {@link Target}, {@link Invocation.Builder Invocation Builder}
+ * such as {@link Client}, {@link WebTarget}, {@link Invocation.Builder Invocation Builder}
  * or {@link Invocation}.
  * <p />
  * Configuration is inherited from a parent component to a child component.
- * When creating new {@link Target resource targets} using a {@link Client} instance,
+ * When creating new {@link WebTarget resource targets} using a {@link Client} instance,
  * the configuration of the {@code Client} instance is inherited by the child target
  * instances being created. Similarly, when creating new
  * {@code Invocation.Builder invocation builders} or derived resource targets
@@ -64,9 +64,17 @@ import java.util.Set;
  * Once the child instance is created, it's configuration can be further customized
  * using the provided set of instance configuration mutator methods. A change
  * made in the configuration of a child instance does not affect the configuration
- * of its parent.
- * <p />
- * TODO example.
+ * of its parent, for example:
+ * <pre>
+ *   Client client = ClientFactory.newClient();
+ *   client.configuration().setProperty("FOO_PROPERTY", "FOO_VALUE");
+ *
+ *   // inherits the configured "FOO_PROPERTY" from the client instance
+ *   WebTarget resourceTarget = client.target("http://examples.jaxrs.com/");
+ *
+ *   // does not modify the client instance configuration
+ *   resourceTarget.configuration().enable(new BarFeature());
+ * </pre>
  *
  * @author Marek Potociar
  * @since 2.0
@@ -186,47 +194,34 @@ public interface Configuration {
     Configuration register(Object provider);
 
     /**
-     * Enable a feature using the feature class.
+     * Enable a feature.
      * <p/>
-     * As opposed to the features enabled via
-     * {@link #enable(javax.ws.rs.client.Feature) feature instances}, features
-     * enabled using this method are instantiated and properly injected
-     * by the JAX-RS implementation provider before executing the
-     * {@link Feature#onEnable(javax.ws.rs.client.Configuration)} method.
+     * The {@code Configuration} instance invokes the
+     * {@link Feature#onEnable(javax.ws.rs.client.Configuration)} method and
+     * lets the feature update it's internal configuration state.
      * <p/>
-     * TODO specify repeated feature enabling behavior.
-     *
-     * @param feature class of the feature to be enabled.
-     * @return the updated configuration.
-     * @see Configuration
-     */
-    Configuration enable(Class<? extends Feature> feature);
-
-    /**
-     * Enable a feature using a feature instance.
-     * <p/>
-     * As opposed to the features enabled via
-     * {@link #enable(java.lang.Class) feature classes}, features
-     * enabled using this method are not managed or injected
-     * by the JAX-RS implementation provider. The JAX-RS runtime merely invokes
-     * the {@link Feature#onEnable(javax.ws.rs.client.Configuration)} method.
-     * <p/>
-     * TODO specify repeated feature enabling behavior.
+     * An attempt to enable an already enabled feature results in an {@code
+     * IllegalStateException} being raised.
      *
      * @param feature instance of the feature to be enabled.
      * @return the updated configuration.
+     * @throws IllegalStateException in case the feature has already been enabled.
      * @see Configuration
      */
-    Configuration enable(Feature feature);
+    Configuration enable(Feature feature) throws IllegalStateException;
 
     /**
      * Disable a feature for the configurable instance using a feature class.
+     * <p />
+     * An attempt to disable a feature that is not enabled results in an {@code
+     * IllegalStateException} being raised.
      *
      * @param feature class of the feature to be disabled.
      * @return the updated configuration.
+     * @throws IllegalStateException in case no such feature is enabled at present.
      * @see Configuration
      */
-    Configuration disable(Class<? extends Feature> feature);
+    Configuration disable(Class<? extends Feature> feature) throws IllegalStateException;
 
     /**
      * Set new configuration properties replacing all previously set properties.

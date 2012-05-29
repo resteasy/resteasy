@@ -69,9 +69,10 @@ public interface InterceptorContext<T> {
      * MUST never be {@code null}. In the scope of a single request/response processing,
      * a same property map instance is shared by the following methods:
      * <ul>
-     *     <li>{@link javax.ws.rs.core.Request#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.core.Response#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.ext.FilterContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.container.ContainerRequestContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.container.ContainerResponseContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.client.ClientRequestContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.client.ClientResponseContext#getProperties() }</li>
      *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
      * </ul>
      * A request-scoped property is an application-defined property that may be

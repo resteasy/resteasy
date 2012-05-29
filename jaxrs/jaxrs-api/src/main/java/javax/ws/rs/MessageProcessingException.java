@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,36 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs.ext;
-
-import java.lang.reflect.Method;
+package javax.ws.rs;
 
 /**
- * An injectable class to access the resource class and resource method
- * matched by the current request. Methods in this class MAY return
- * <code>null</code> if a resource class and method have not been matched.
- * E.g., in a {@link PreMatchRequestFilter}.
+ * TODO javadoc.
  *
- * @author Santiago Pericas-Geertsen
+ * @author Marek Potociar
  * @since 2.0
  */
-public interface ResourceInfo {
+public class MessageProcessingException extends RuntimeException {
+    private static final long serialVersionUID = 1867031673462562629L;
 
-    /**
-     * Get the resource method that is the target of a request,
-     * or <code>null</code> if this information is not available.
-     *
-     * @return resource method instance or null
-     * @see #getResourceClass()
-     */
-    Method getResourceMethod();
+    public MessageProcessingException(Throwable cause) {
+        super(cause);
+    }
 
-    /**
-     * Get the resource class that is the target of a request,
-     * or <code>null</code> if this information is not available.
-     *
-     * @return resource class instance or null
-     * @see #getResourceMethod()
-     */
-    Class<?> getResourceClass();
+    public MessageProcessingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public MessageProcessingException(String message) {
+        super(message);
+    }
+
 }

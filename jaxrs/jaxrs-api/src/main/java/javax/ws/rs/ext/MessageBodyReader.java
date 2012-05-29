@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,12 +39,10 @@
  */
 package javax.ws.rs.ext;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -101,26 +99,28 @@ public interface MessageBodyReader<T> {
      * @return the type that was read from the stream.
      * @param type the type that is to be read from the entity stream.
      * @param genericType the type of object to be produced. E.g. if the
-     * message body is to be converted into a method parameter, this will be
-     * the formal type of the method parameter as returned by
-     * <code>Method.getGenericParameterTypes</code>.
+     *     message body is to be converted into a method parameter, this will be
+     *     the formal type of the method parameter as returned by
+     *     <code>Method.getGenericParameterTypes</code>.
      * @param annotations an array of the annotations on the declaration of the
-     * artifact that will be initialized with the produced instance. E.g. if the
-     * message body is to be converted into a method parameter, this will be
-     * the annotations on that parameter returned by
-     * <code>Method.getParameterAnnotations</code>.
+     *     artifact that will be initialized with the produced instance. E.g.
+     *     if the message body is to be converted into a method parameter, this
+     *     will be the annotations on that parameter returned by
+     *     <code>Method.getParameterAnnotations</code>.
      * @param mediaType the media type of the HTTP entity.
      * @param httpHeaders the read-only HTTP headers associated with HTTP entity.
      * @param entityStream the {@link InputStream} of the HTTP entity. The
-     * caller is responsible for ensuring that the input stream ends when the
-     * entity has been consumed. The implementation should not close the input stream.
+     *     caller is responsible for ensuring that the input stream ends when the
+     *     entity has been consumed. The implementation should not close the input
+     *     stream.
      * @throws java.io.IOException if an IO error arises
      * @throws javax.ws.rs.WebApplicationException if a specific
-     * HTTP error response needs to be produced. Only effective if thrown prior
-     * to the response being committed.
+     *     HTTP error response needs to be produced. Only effective if thrown
+     *     prior to the response being committed.
      */
     T readFrom(Class<T> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders,
-            InputStream entityStream) throws IOException, WebApplicationException;
+            InputStream entityStream)
+            throws java.io.IOException, javax.ws.rs.WebApplicationException;
 }

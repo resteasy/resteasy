@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,11 +60,11 @@ public class Variant {
     /**
      * Create a new instance of Variant.
      *
-     * @param mediaType the media type of the variant - may be null
-     * @param language the language of the variant - may be null
-     * @param encoding the content encoding of the variant - may be null
+     * @param mediaType the media type of the variant - may be {@code null}.
+     * @param language the language of the variant - may be {@code null}.
+     * @param encoding the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException if all three parameters are
-     * null
+     *    {@code null}.
      */
     public Variant(MediaType mediaType, Locale language, String encoding) {
         if (mediaType == null && language == null && encoding == null) {

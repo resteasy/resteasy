@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@ import javax.ws.rs.core.UriBuilder;
  * @author Marek Potociar
  * @since 2.0
  */
-public interface Target {
+public interface WebTarget {
 
     // Getters
     /**
@@ -80,7 +80,7 @@ public interface Target {
     public Configuration configuration();
 
     /**
-     * Create a new {@code Target} instance by appending path to the URI of
+     * Create a new {@code WebTarget} instance by appending path to the URI of
      * the current target instance.
      * <p />
      * When constructing the final path, a '/' separator will be inserted between
@@ -95,10 +95,10 @@ public interface Target {
      * @return a new target instance.
      * @exception NullPointerException if path is null.
      */
-    public Target path(String path) throws NullPointerException;
+    public WebTarget path(String path) throws NullPointerException;
 
     /**
-     * Create a new {@code Target} instance by replacing existing path parameter
+     * Create a new {@code WebTarget} instance by replacing existing path parameter
      * in the URI of the current target instance with a supplied value.
      * <p />
      * A snapshot of the present configuration of the current (parent) target
@@ -111,10 +111,11 @@ public interface Target {
      * @exception IllegalArgumentException if there is no such path parameter.
      * @exception NullPointerException if name or value is null.
      */
-    public Target pathParam(String name, Object value) throws IllegalArgumentException, NullPointerException;
+    public WebTarget pathParam(String name, Object value)
+            throws IllegalArgumentException, NullPointerException;
 
     /**
-     * Create a new {@code Target} instance by replacing one or more existing path parameters
+     * Create a new {@code WebTarget} instance by replacing one or more existing path parameters
      * in the URI of the current target instance with supplied values.
      * <p />
      * A snapshot of the present configuration of the current (parent) target
@@ -126,10 +127,11 @@ public interface Target {
      * @exception IllegalArgumentException if the supplied map is empty.
      * @exception NullPointerException if the parameter map or any of the names or values is null.
      */
-    public Target pathParams(Map<String, Object> parameters) throws IllegalArgumentException, NullPointerException;
+    public WebTarget pathParams(Map<String, Object> parameters)
+            throws IllegalArgumentException, NullPointerException;
 
     /**
-     * Create a new {@code Target} instance by appending a matrix parameter to
+     * Create a new {@code WebTarget} instance by appending a matrix parameter to
      * the existing set of matrix parameters of the current final segment of the
      * URI of the current target instance. If multiple values are supplied
      * the parameter will be added once per value. Note that the matrix parameters
@@ -149,11 +151,12 @@ public interface Target {
      * @exception NullPointerException if the name or any of the values is null.
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
-    public Target matrixParam(String name, Object... values) throws NullPointerException;
+    public WebTarget matrixParam(String name, Object... values)
+            throws NullPointerException;
 
     /**
      *
-     * Create a new {@code Target} instance by adding a query parameter to the URI
+     * Create a new {@code WebTarget} instance by adding a query parameter to the URI
      * of the current target instance. If multiple values are supplied the parameter
      * will be added once per value.
      * <p />
@@ -168,10 +171,11 @@ public interface Target {
      * @return a new target instance.
      * @exception NullPointerException if name or any of the values is {@code null}.
      */
-    public Target queryParam(String name, Object... values) throws NullPointerException;
+    public WebTarget queryParam(String name, Object... values)
+            throws NullPointerException;
 
     /**
-     * Create a new {@code Target} instance by adding one or more query parameters and
+     * Create a new {@code WebTarget} instance by adding one or more query parameters and
      * respective values to the URI of the current target instance.
      * <p />
      * A snapshot of the present configuration of the current (parent) target
@@ -183,7 +187,8 @@ public interface Target {
      * @exception IllegalArgumentException if the supplied map is empty.
      * @exception NullPointerException if the parameter map or any of the names or values is null.
      */
-    public Target queryParams(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException;
+    public WebTarget queryParams(MultivaluedMap<String, Object> parameters)
+            throws IllegalArgumentException, NullPointerException;
 
     /**
      * Start building a request to the targeted web resource.

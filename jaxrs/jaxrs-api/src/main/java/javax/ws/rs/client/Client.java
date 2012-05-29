@@ -62,35 +62,12 @@ import javax.ws.rs.core.UriBuilder;
 public interface Client {
 
     /**
-     * Client instance builder. Provided by {@link javax.ws.rs.ext.ClientBuilderFactory}.
-     *
-     * @param <C> client type.
-     */
-    interface Builder<C extends Client> {
-
-        /**
-         * Build a client instance of a specific type.
-         *
-         * @return new client instance.
-         */
-        C build();
-
-        /**
-         * Build a client instance using an initial configuration.
-         *
-         * @param configuration configures the built client instance.
-         * @return new configured client instance.
-         */
-        C build(Configuration configuration);
-    }
-
-    /**
      * Close client instance and all it's associated resources. Subsequent calls
      * have no effect and are ignored. Once the client is closed, invoking any
      * other method on the client instance would result in an {@link IllegalStateException}
      * being thrown.
      * <p/>
-     * Calling this method effectively invalidates all {@link Target resource targets}
+     * Calling this method effectively invalidates all {@link WebTarget resource targets}
      * produced by the client instance. Invoking any method on such targets once the client
      * is closed would result in an {@link IllegalStateException} being thrown.
      */
@@ -112,7 +89,7 @@ public interface Client {
      * @throws IllegalArgumentException in case the supplied string is not a valid URI.
      * @throws NullPointerException in case the supplied argument is null.
      */
-    Target target(String uri) throws IllegalArgumentException, NullPointerException;
+    WebTarget target(String uri) throws IllegalArgumentException, NullPointerException;
 
     /**
      * Build a new web resource target.
@@ -121,7 +98,7 @@ public interface Client {
      * @return web resource target bound to the provided URI.
      * @throws NullPointerException in case the supplied argument is null.
      */
-    Target target(URI uri) throws NullPointerException;
+    WebTarget target(URI uri) throws NullPointerException;
 
     /**
      * Build a new web resource target.
@@ -130,7 +107,7 @@ public interface Client {
      * @return web resource target bound to the provided URI.
      * @throws NullPointerException in case the supplied argument is null.
      */
-    Target target(UriBuilder uriBuilder) throws NullPointerException;
+    WebTarget target(UriBuilder uriBuilder) throws NullPointerException;
 
     /**
      * Build a new web resource target.
@@ -139,7 +116,7 @@ public interface Client {
      * @return web resource target bound to the linked web resource.
      * @throws NullPointerException in case the supplied argument is null.
      */
-    Target target(Link link) throws NullPointerException;
+    WebTarget target(Link link) throws NullPointerException;
 
     /**
      * <p>Build an invocation from a link. The method and URI are obtained from the

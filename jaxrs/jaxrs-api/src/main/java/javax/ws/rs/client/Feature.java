@@ -42,12 +42,13 @@ package javax.ws.rs.client;
 /**
  * A configurable feature.
  * <p />
- * Typically encapsulates concepts that involve multiple filters, interceptors and/or
- * configuration properties.
+ * Typically encapsulates concepts that involve multiple filters, interceptors
+ * and/or configuration properties.
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
 public interface Feature {
+
     /**
      * Called when the feature is enabled. The responsibility of the feature is
      * to properly update the supplied configuration.
@@ -55,6 +56,7 @@ public interface Feature {
      * @param configuration configuration where the feature should be enabled.
      */
     public void onEnable(Configuration configuration);
+
     /**
      * Called when the feature is disabled. The responsibility of the feature is
      * to properly update the supplied configuration.

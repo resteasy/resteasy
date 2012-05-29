@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,13 +68,6 @@
  *       .register(MyProvider.class)
  *       .enable(MyFeature.class);
  * </pre>
- * Custom {@code Client} extensions are possible via {@link javax.ws.rs.ext.ClientBuilderFactory}
- * SPI. Providing a custom client builder factory implementation at client bootstrapping
- * allows for a type-safe instantiation of the custom clients:
- * <pre>
- *   MyClient myClient = ClientFactory.newClientBy(MyClientBuilderFactory.class).build();
- *   myClient.enableCaching(true);
- * </pre>
  *
  * <h2>Accessing Web Resources</h2>
  * A Web resource can be accessed using a fluent API in which methods invocations
@@ -88,14 +81,14 @@
  * Conceptually, the steps required to submit a request are the following:
  * <ol>
  *   <li>obtain an {@link javax.ws.rs.client.Client} instance</li>
- *   <li>create a resource {@link javax.ws.rs.client.Target Target}</li>
- *   <li>{@link javax.ws.rs.client.Invocation.Builder configure} a request invocation</li>
+ *   <li>create a resource {@link javax.ws.rs.client.WebTarget WebTarget}</li>
+ *   <li>{@link javax.ws.rs.client.Invocation.Builder build} a request invocation</li>
  *   <li>submit a request to directly retrieve a response or get a prepared
  *       {@link javax.ws.rs.client.Invocation} for later submission</li>
  * </ol>
  *
  * As illustrated above, individual Web resources are in the JAX-RS Client API
- * represented as resource targets. Each {@code Target} instance is bound to a
+ * represented as resource targets. Each {@code WebTarget} instance is bound to a
  * concrete URI, e.g. {@code "http://example,org/messages/123"},
  * or a URI template, e.g. {@code "http://example,org/messages/{id}"}.
  * That way a single target can either point at a particular resource or represent
@@ -103,10 +96,10 @@
  * concrete resources can be later derived:
  * <pre>
  *   // Parent target for all messages
- *   Target messages = client.target("http://example.org/messages/{id}");
+ *   WebTarget messages = client.target("http://example.org/messages/{id}");
  *
- *   Target msg123 = messages.path("id", 123); // New target for http://example,org/messages/123
- *   Target msg456 = messages.path("id", 456); // New target for http://example,org/messages/456
+ *   WebTarget msg123 = messages.path("id", 123); // New target for http://example,org/messages/123
+ *   WebTarget msg456 = messages.path("id", 456); // New target for http://example,org/messages/456
  * </pre>
  *
  *<h2>Generic Invocations</h2>

@@ -52,8 +52,6 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.RequestFilter;
-import javax.ws.rs.ext.ResponseFilter;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
@@ -867,38 +865,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          serverPostProcessInterceptorRegistry.register(provider);
       }
-      if (RequestFilter.class.isAssignableFrom(provider))
-      {
-         if (provider.isAnnotationPresent(ServerInterceptor.class))
-         {
-            serverInterceptors.getRequestFilters().register(provider);
-         }
-         if (provider.isAnnotationPresent(ClientInterceptor.class))
-         {
-            clientInterceptors.getRequestFilters().register(provider);
-         }
-         if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
-         {
-            serverInterceptors.getRequestFilters().register(provider);
-            serverInterceptors.getRequestFilters().register(provider);
-         }
-      }
-      if (ResponseFilter.class.isAssignableFrom(provider))
-      {
-         if (provider.isAnnotationPresent(ServerInterceptor.class))
-         {
-            serverInterceptors.getResponseFilters().register(provider);
-         }
-         if (provider.isAnnotationPresent(ClientInterceptor.class))
-         {
-            clientInterceptors.getRequestFilters().register(provider);
-         }
-         if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
-         {
-            clientInterceptors.getRequestFilters().register(provider);
-            serverInterceptors.getRequestFilters().register(provider);
-         }
-      }
       if (ReaderInterceptor.class.isAssignableFrom(provider))
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
@@ -1058,38 +1024,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (provider instanceof PostProcessInterceptor)
       {
          serverPostProcessInterceptorRegistry.register((PostProcessInterceptor) provider);
-      }
-      if (provider instanceof RequestFilter)
-      {
-         if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
-         {
-            serverInterceptors.getRequestFilters().register((RequestFilter) provider);
-         }
-         if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
-         {
-            clientInterceptors.getRequestFilters().register((RequestFilter) provider);
-         }
-         if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
-         {
-            serverInterceptors.getRequestFilters().register((RequestFilter) provider);
-            clientInterceptors.getRequestFilters().register((RequestFilter) provider);
-         }
-      }
-      if (provider instanceof ResponseFilter)
-      {
-         if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
-         {
-            serverInterceptors.getResponseFilters().register((ResponseFilter) provider);
-         }
-         if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
-         {
-            clientInterceptors.getResponseFilters().register((ResponseFilter) provider);
-         }
-         if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
-         {
-            serverInterceptors.getResponseFilters().register((ResponseFilter) provider);
-            clientInterceptors.getResponseFilters().register((ResponseFilter) provider);
-         }
       }
       if (provider instanceof ReaderInterceptor)
       {

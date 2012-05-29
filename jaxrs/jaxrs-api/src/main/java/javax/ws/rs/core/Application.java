@@ -44,7 +44,7 @@ import java.util.Set;
 
 /**
  * Defines the components of a JAX-RS application and supplies additional
- * metadata. A JAX-RS application or implementation supplies a concrete
+ * meta-data. A JAX-RS application or implementation supplies a concrete
  * subclass of this abstract class.
  *
  * <p>The implementation-created instance of an Application subclass may be
@@ -61,8 +61,8 @@ public class Application {
     private static final Set<Class<?>> EMPTY_CLASS_SET = Collections.emptySet();
 
     /**
-     * Get a set of root resource and provider classes. The default lifecycle
-     * for resource class instances is per-request. The default lifecycle for
+     * Get a set of root resource and provider classes. The default life-cycle
+     * for resource class instances is per-request. The default life-cycle for
      * providers is singleton.
      *
      * <p>Implementations should warn about and ignore classes that do not
@@ -74,7 +74,7 @@ public class Application {
      * <p>The default implementation returns an empty set.</p>
      *
      * @return a set of root resource and provider classes. Returning {@code null}
-     * is equivalent to returning an empty set.
+     *     is equivalent to returning an empty set.
      */
     public Set<Class<?>> getClasses() {
         return EMPTY_CLASS_SET;
@@ -94,7 +94,7 @@ public class Application {
      * <p>The default implementation returns an empty set.</p>
      *
      * @return a set of root resource and provider instances. Returning {@code null}
-     * is equivalent to returning an empty set.
+     *     is equivalent to returning an empty set.
      */
     public Set<Object> getSingletons() {
         return EMPTY_OBJECT_SET;

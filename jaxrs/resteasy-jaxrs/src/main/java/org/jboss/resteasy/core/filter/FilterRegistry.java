@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.filter;
 
 import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
 import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.touri.ObjectToURI;
@@ -10,7 +11,7 @@ import org.jboss.resteasy.util.PickConstructor;
 
 import javax.ws.rs.BindingPriority;
 import javax.ws.rs.NameBinding;
-import javax.ws.rs.ext.DynamicBinding;
+import javax.ws.rs.container.DynamicBinder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -174,16 +175,19 @@ public class FilterRegistry<T>
       List<T> list = new ArrayList<T>();
       for (FilterFactory factory : interceptors)
       {
-         if (DynamicBinding.class.isAssignableFrom(factory.getFilterClass()))
+         if (DynamicBinder.class.isAssignableFrom(factory.getFilterClass()))
          {
             if (target == null || !(target instanceof Method)) continue;
 
             Object interceptor = factory.createInterceptor();
-            DynamicBinding accepted = (DynamicBinding) interceptor;
+            DynamicBinder accepted = (DynamicBinder) interceptor;
+            throw new NotImplementedYetException();
+            /*
             if (accepted.isBound(declaring, (Method) target))
             {
                addNewInterceptor(list, interceptor);
             }
+            */
          }
          else if (factory.getNameBindings().size() > 0)
          {
