@@ -1,5 +1,6 @@
-package org.jboss.resteasy.client.impl;
+package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -11,10 +12,9 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.RequestHeaders;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.TypeLiteral;
 import java.net.URI;
 import java.util.Locale;
 import java.util.Set;
@@ -24,16 +24,16 @@ import java.util.concurrent.ExecutorService;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class InvocationBuilder implements Invocation.Builder
+public class ClientInvocationBuilder implements Invocation.Builder
 {
    protected ClientInvocation invocation;
 
-   public InvocationBuilder(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
+   public ClientInvocationBuilder(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
    {
       invocation = new ClientInvocation(uri, new ClientRequestHeaders(providerFactory), providerFactory, httpEngine, executor, configuration);
    }
 
-   public InvocationBuilder(ClientInvocation invocation)
+   public ClientInvocationBuilder(ClientInvocation invocation)
    {
       this.invocation = invocation.clone();
 
@@ -94,13 +94,10 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public Invocation.Builder headers(RequestHeaders headers)
+   public Invocation.Builder headers(MultivaluedMap<String, Object> headers)
    {
-      if (true) throw new NotImplementedYetException();
-      return this;
+      throw new NotImplementedYetException();
    }
-
-
    @Override
    public Invocation build(String method)
    {
@@ -165,7 +162,7 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T get(TypeLiteral<T> responseType) throws InvocationException
+   public <T> T get(GenericType<T> responseType) throws InvocationException
    {
       return get().readEntity(responseType);
    }
@@ -183,7 +180,7 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T put(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
+   public <T> T put(Entity<?> entity, GenericType<T> responseType) throws InvocationException
    {
       return put(entity).readEntity(responseType);
    }
@@ -201,7 +198,7 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T post(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
+   public <T> T post(Entity<?> entity, GenericType<T> responseType) throws InvocationException
    {
       return buildPost(entity).invoke().readEntity(responseType);
    }
@@ -219,7 +216,7 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T delete(TypeLiteral<T> responseType) throws InvocationException
+   public <T> T delete(GenericType<T> responseType) throws InvocationException
    {
       return buildDelete().invoke().readEntity(responseType);
    }
@@ -243,7 +240,7 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T options(TypeLiteral<T> responseType) throws InvocationException
+   public <T> T options(GenericType<T> responseType) throws InvocationException
    {
       return options().readEntity(responseType);
    }
@@ -261,7 +258,7 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T trace(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
+   public <T> T trace(Entity<?> entity, GenericType<T> responseType) throws InvocationException
    {
       return trace(entity).readEntity(responseType);
    }
@@ -279,7 +276,7 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T method(String name, TypeLiteral<T> responseType) throws InvocationException
+   public <T> T method(String name, GenericType<T> responseType) throws InvocationException
    {
       return method(name).readEntity(responseType);
    }
@@ -297,8 +294,9 @@ public class InvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T method(String name, Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
+   public <T> T method(String name, Entity<?> entity, GenericType<T> responseType) throws InvocationException
    {
       return method(name, entity).readEntity(responseType);
    }
+
 }

@@ -1,9 +1,10 @@
-package org.jboss.resteasy.client.impl;
+package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.HeaderHelper;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
@@ -11,7 +12,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.RequestHeaders;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientRequestHeaders implements RequestHeaders
+public class ClientRequestHeaders
 {
    protected CaseInsensitiveMap<Object> headers = new CaseInsensitiveMap<Object>();
    protected Locale language;
@@ -191,31 +191,26 @@ public class ClientRequestHeaders implements RequestHeaders
       headers.add(name, value);
    }
 
-   @Override
    public Set<Link> getLinks()
    {
       throw new NotImplementedYetException();
    }
 
-   @Override
    public boolean hasLink(String relation)
    {
       throw new NotImplementedYetException();
    }
 
-   @Override
    public Link getLink(String relation)
    {
       throw new NotImplementedYetException();
    }
 
-   @Override
    public Link.Builder getLinkBuilder(String relation)
    {
       throw new NotImplementedYetException();
    }
 
-   @Override
    public Date getDate()
    {
       Object d = headers.getFirst(HttpHeaders.DATE);
@@ -224,7 +219,6 @@ public class ClientRequestHeaders implements RequestHeaders
       return DateUtil.parseDate(d.toString());
    }
 
-   @Override
    public String getHeader(String name)
    {
       Object val = headers.getFirst(name);
@@ -233,7 +227,6 @@ public class ClientRequestHeaders implements RequestHeaders
       return HeaderHelper.toHeaderString(val, providerFactory);
    }
 
-   @Override
    public MultivaluedMap<String, String> asMap()
    {
       CaseInsensitiveMap<String> map = new CaseInsensitiveMap<String>();
@@ -247,7 +240,6 @@ public class ClientRequestHeaders implements RequestHeaders
       return map;
    }
 
-   @Override
    public List<String> getHeaderValues(String name)
    {
       List<Object> vals = headers.get(name);
@@ -260,37 +252,31 @@ public class ClientRequestHeaders implements RequestHeaders
       return values;
    }
 
-   @Override
    public Locale getLanguage()
    {
       return language;
    }
 
-   @Override
    public int getLength()
    {
       return -1;
    }
 
-   @Override
    public MediaType getMediaType()
    {
       return mediaType;
    }
 
-   @Override
    public List<MediaType> getAcceptableMediaTypes()
    {
       return accepts;
    }
 
-   @Override
    public List<Locale> getAcceptableLanguages()
    {
       return acceptableLanguages;
    }
 
-   @Override
    public Map<String, Cookie> getCookies()
    {
       return cookies;

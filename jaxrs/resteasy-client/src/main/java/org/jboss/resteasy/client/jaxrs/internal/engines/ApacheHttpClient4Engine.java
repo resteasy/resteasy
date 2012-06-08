@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.impl;
+package org.jboss.resteasy.client.jaxrs.internal.engines;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -14,13 +14,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
+import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.InvocationException;
-import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Request;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -117,8 +120,9 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
          }
 
          @Override
-         public void bufferEntity() throws MessageProcessingException
+         public boolean bufferEntity() throws MessageProcessingException
          {
+            throw new NotImplementedYetException();
          }
 
          public InputStream getInputStream()
@@ -209,7 +213,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
       if (request.getEntity() != null)
       {
-         if (httpMethod instanceof HttpGet) throw new RuntimeException("A GET request cannot have a body.");
+         if (httpMethod instanceof HttpGet) throw new MessageProcessingException("A GET request cannot have a body.");
 
          ByteArrayOutputStream baos = new ByteArrayOutputStream();
          try
@@ -238,7 +242,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
    }
 
-   public void commitHeaders(Request request, HttpRequestBase httpMethod)
+   public void commitHeaders(ClientInvocation request, HttpRequestBase httpMethod)
    {
       MultivaluedMap<String, String> headers = request.getHeaders().asMap();
       for (Map.Entry<String, List<String>> header : headers.entrySet())

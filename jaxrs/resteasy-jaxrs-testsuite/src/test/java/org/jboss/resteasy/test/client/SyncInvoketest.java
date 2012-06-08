@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import org.jboss.resteasy.client.impl.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;

@@ -1,12 +1,12 @@
-package org.jboss.resteasy.client.impl;
+package org.jboss.resteasy.client.jaxrs.internal;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.InvocationException;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.TypeLiteral;
 import java.util.concurrent.Future;
 
 /**
@@ -37,7 +37,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> get(TypeLiteral<T> responseType) throws InvocationException
+   public <T> Future<T> get(GenericType<T> responseType) throws InvocationException
    {
       invocation.setMethod(HttpMethod.GET);
       return invocation.submit(responseType);
@@ -67,7 +67,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> put(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
+   public <T> Future<T> put(Entity<?> entity, GenericType<T> responseType) throws InvocationException
    {
       invocation.setMethod(HttpMethod.PUT);
       invocation.setEntity(entity);
@@ -99,7 +99,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> post(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
+   public <T> Future<T> post(Entity<?> entity, GenericType<T> responseType) throws InvocationException
    {
       invocation.setMethod(HttpMethod.POST);
       invocation.setEntity(entity);
@@ -129,7 +129,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> delete(TypeLiteral<T> responseType) throws InvocationException
+   public <T> Future<T> delete(GenericType<T> responseType) throws InvocationException
    {
       invocation.setMethod(HttpMethod.DELETE);
       return invocation.submit(responseType);
@@ -171,7 +171,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> options(TypeLiteral<T> responseType) throws InvocationException
+   public <T> Future<T> options(GenericType<T> responseType) throws InvocationException
    {
       invocation.setMethod(HttpMethod.OPTIONS);
       return invocation.submit(responseType);
@@ -201,7 +201,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> trace(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
+   public <T> Future<T> trace(Entity<?> entity, GenericType<T> responseType) throws InvocationException
    {
       invocation.setMethod("TRACE");
       invocation.setEntity(entity);
@@ -231,7 +231,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> method(String name, TypeLiteral<T> responseType) throws InvocationException
+   public <T> Future<T> method(String name, GenericType<T> responseType) throws InvocationException
    {
       invocation.setMethod(name);
       return invocation.submit(responseType);
@@ -261,7 +261,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
-   public <T> Future<T> method(String name, Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException
+   public <T> Future<T> method(String name, Entity<?> entity, GenericType<T> responseType) throws InvocationException
    {
       invocation.setMethod(name);
       invocation.setEntity(entity);
