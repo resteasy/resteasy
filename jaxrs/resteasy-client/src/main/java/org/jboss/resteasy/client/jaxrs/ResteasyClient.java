@@ -1,12 +1,15 @@
-package org.jboss.resteasy.client.impl;
+package org.jboss.resteasy.client.jaxrs;
 
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
+import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.Target;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -48,7 +51,9 @@ public class ResteasyClient implements Client
          {
             result = httpEngine;
             if (result == null) // Second check (with locking)
-               httpEngine = result = new ApacheHttpClient4Engine(configuration);
+            {
+               httpEngine = result = new ApacheHttpClient4Engine(configuration());
+            }
          }
       }
       return result;
@@ -67,6 +72,16 @@ public class ResteasyClient implements Client
          }
       }
       return result;
+   }
+
+   public void setHttpEngine(ClientHttpEngine httpEngine)
+   {
+      this.httpEngine = httpEngine;
+   }
+
+   public void setExecutor(ExecutorService executor)
+   {
+      this.executor = executor;
    }
 
    @Override
@@ -89,35 +104,35 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public Target target(String uri) throws IllegalArgumentException, NullPointerException
+   public WebTarget target(String uri) throws IllegalArgumentException, NullPointerException
    {
-      return new ClientTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
+      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
    }
 
    @Override
-   public Target target(URI uri) throws NullPointerException
+   public WebTarget target(URI uri) throws NullPointerException
    {
-      return new ClientTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
+      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
    }
 
    @Override
-   public Target target(UriBuilder uriBuilder) throws NullPointerException
+   public WebTarget target(UriBuilder uriBuilder) throws NullPointerException
    {
-      return new ClientTarget(uriBuilder, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
+      return new ClientWebTarget(uriBuilder, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
    }
 
    @Override
-   public Target target(Link link) throws NullPointerException
+   public WebTarget target(Link link) throws NullPointerException
    {
       URI uri = link.getUri();
-      return new ClientTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
+      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
    }
 
    @Override
    public Invocation invocation(Link link) throws NullPointerException, IllegalArgumentException
    {
       if (link.getMethod() == null) throw new IllegalArgumentException("Link must have a method attribute in order to build an Invocation");
-      Target target = target(link);
+      WebTarget target = target(link);
       return target.request(link.getProduces().toArray(new String[link.getProduces().size()])).build(link.getMethod());
    }
 
@@ -125,7 +140,7 @@ public class ResteasyClient implements Client
    public Invocation invocation(Link link, Entity<?> entity) throws NullPointerException, IllegalArgumentException
    {
       if (link.getMethod() == null) throw new IllegalArgumentException("Link must have a method attribute in order to build an Invocation");
-      Target target = target(link);
+      WebTarget target = target(link);
       return target.request(link.getProduces().toArray(new String[link.getProduces().size()])).build(link.getMethod(), entity);
    }
 }

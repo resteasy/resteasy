@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.impl;
+package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.spi.MarshalledEntity;
@@ -12,15 +12,14 @@ import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MessageProcessingException;
+import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.ResponseHeaders;
-import javax.ws.rs.core.TypeLiteral;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -50,6 +49,14 @@ public abstract class ClientResponse extends Response
    protected Object entity;
    protected ResteasyProviderFactory providerFactory;
    protected boolean isClosed;
+   protected Date date;
+   protected Date lastModified;
+   protected Locale language;
+   protected Integer contentLength;
+   protected MediaType contentType;
+   protected Map<String, NewCookie> cookies;
+   protected EntityTag entityTag;
+
 
    public void setHeaders(MultivaluedMap<String, String> headers)
    {
@@ -71,7 +78,6 @@ public abstract class ClientResponse extends Response
       this.providerFactory = providerFactory;
    }
 
-   @Override
    public Map<String, Object> getProperties()
    {
       return properties;
@@ -83,12 +89,7 @@ public abstract class ClientResponse extends Response
       return status;
    }
 
-   @Override
-   public Status getStatusEnum()
-   {
-      return Status.fromStatusCode(status);
-   }
-
+   /*
    @Override
    public ResponseHeaders getHeaders()
    {
@@ -123,15 +124,6 @@ public abstract class ClientResponse extends Response
             return allowedMethods;
          }
 
-         @Override
-         public Date getDate()
-         {
-            if (date != null) return date;
-            String d = headers.getFirst(HttpHeaders.DATE);
-            if (d == null) return null;
-            date = DateUtil.parseDate(d);
-            return date;
-         }
 
          @Override
          public String getHeader(String name)
@@ -187,41 +179,7 @@ public abstract class ClientResponse extends Response
             return contentType;
          }
 
-         @Override
-         public Map<String, NewCookie> getCookies()
-         {
-            if (cookies != null) return cookies;
-            cookies = new HashMap<String, NewCookie>();
-            List<String> cooks = headers.get(HttpHeaders.SET_COOKIE);
-            if (cooks == null) return cookies;
-            for (String setCookie : cooks)
-            {
-               NewCookie cookie = NewCookie.valueOf(setCookie);
-               cookies.put(cookie.getName(), cookie);
-            }
 
-            return cookies;
-         }
-
-         @Override
-         public EntityTag getEntityTag()
-         {
-            if (entityTag != null) return entityTag;
-            String tag = headers.getFirst(HttpHeaders.ETAG);
-            if (tag == null) return null;
-            entityTag = EntityTag.valueOf(tag);
-            return entityTag;
-         }
-
-         @Override
-         public Date getLastModified()
-         {
-            if (lastModified != null) return lastModified;
-            String d = headers.getFirst(HttpHeaders.LAST_MODIFIED);
-            if (d == null) return null;
-            lastModified = DateUtil.parseDate(d);
-            return lastModified;
-         }
 
          @Override
          public URI getLocation()
@@ -254,6 +212,7 @@ public abstract class ClientResponse extends Response
          }
       };
    }
+   */
 
    @Override
    public Object getEntity()
@@ -263,13 +222,13 @@ public abstract class ClientResponse extends Response
    }
 
    @Override
-   public <T> T readEntity(Class<T> type) throws MessageProcessingException
+   public <T> T readEntity(Class<T> type)
    {
       return readEntity(type, null, null);
    }
 
    @Override
-   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException
    {
       return readEntity(entityType.getRawType(), entityType.getType(), null);
    }
@@ -306,12 +265,12 @@ public abstract class ClientResponse extends Response
    protected abstract void releaseConnection();
 
 
-   protected MediaType getMediaType()
+   @Override
+   public MediaType getMediaType()
    {
       String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
       return mediaType == null ? MediaType.WILDCARD_TYPE : MediaType.valueOf(mediaType);
    }
-
 
    public <T2> T2 readEntity(Class<T2> type, Type genericType, Annotation[] anns)
    {
@@ -413,23 +372,125 @@ public abstract class ClientResponse extends Response
    @Override
    public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
    {
-      throw new NotImplementedYetException();
+      return readEntity(type, null, annotations);
    }
 
    @Override
-   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   {
+      return readEntity(entityType.getRawType(), entityType.getType(), annotations);
+   }
+
+   @Override
+   public boolean bufferEntity() throws MessageProcessingException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public boolean isEntityRetrievable()
+   public String getHeader(String name)
+   {
+      return headers.getFirst(name);
+   }
+
+   @Override
+   public Locale getLanguage()
+   {
+      if (language != null) return language;
+      String lang = headers.getFirst("Language");
+      if (lang == null) return null;
+      language = new LocaleDelegate().fromString(lang);
+      return language;
+   }
+
+   @Override
+   public int getLength()
+   {
+      if (contentLength != null) return contentLength;
+      String cl = headers.getFirst(HttpHeaders.CONTENT_LENGTH);
+      if (cl == null)
+      {
+         contentLength = new Integer(-1);
+      }
+      else
+      {
+         contentLength = Integer.parseInt(cl);
+      }
+      return contentLength;
+   }
+
+   @Override
+   public Map<String, NewCookie> getCookies()
+   {
+      if (cookies != null) return cookies;
+      cookies = new HashMap<String, NewCookie>();
+      List<String> cooks = headers.get(HttpHeaders.SET_COOKIE);
+      if (cooks == null) return cookies;
+      for (String setCookie : cooks)
+      {
+         NewCookie cookie = NewCookie.valueOf(setCookie);
+         cookies.put(cookie.getName(), cookie);
+      }
+
+      return cookies;
+   }
+
+   @Override
+   public Date getDate()
+   {
+      if (date != null) return date;
+      String d = headers.getFirst(HttpHeaders.DATE);
+      if (d == null) return null;
+      date = DateUtil.parseDate(d);
+      return date;
+   }
+
+   @Override
+   public EntityTag getEntityTag()
+   {
+      if (entityTag != null) return entityTag;
+      String tag = headers.getFirst(HttpHeaders.ETAG);
+      if (tag == null) return null;
+      entityTag = EntityTag.valueOf(tag);
+      return entityTag;
+   }
+
+   @Override
+   public Date getLastModified()
+   {
+      if (lastModified != null) return lastModified;
+      String d = headers.getFirst(HttpHeaders.LAST_MODIFIED);
+      if (d == null) return null;
+      lastModified = DateUtil.parseDate(d);
+      return lastModified;
+   }
+
+   @Override
+   public URI getLocation()
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public void bufferEntity() throws MessageProcessingException
+   public Set<Link> getLinks()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean hasLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Link getLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Link.Builder getLinkBuilder(String relation)
    {
       throw new NotImplementedYetException();
    }
