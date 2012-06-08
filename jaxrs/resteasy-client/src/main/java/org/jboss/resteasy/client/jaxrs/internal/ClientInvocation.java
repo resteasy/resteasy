@@ -1,36 +1,28 @@
-package org.jboss.resteasy.client.impl;
+package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.core.filter.WriterInterceptorContextImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.InvocationException;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MessageProcessingException;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.RequestHeaders;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.TypeLiteral;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.RequestFilter;
-import javax.ws.rs.ext.ResponseFilter;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +35,7 @@ import java.util.concurrent.TimeoutException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientInvocation implements Invocation, Request
+public class ClientInvocation implements Invocation
 {
    protected ClientHttpEngine httpEngine;
    protected ExecutorService executor;
@@ -77,6 +69,16 @@ public class ClientInvocation implements Invocation, Request
       return copy;
    }
 
+   public URI getUri()
+   {
+      return uri;
+   }
+
+   public String getMethod()
+   {
+      return method;
+   }
+
    public void setHttpEngine(ClientHttpEngine httpEngine)
    {
       this.httpEngine = httpEngine;
@@ -95,6 +97,21 @@ public class ClientInvocation implements Invocation, Request
    public void setHeaders(ClientRequestHeaders headers)
    {
       this.headers = headers;
+   }
+
+   public Map<String, Object> getProperties()
+   {
+      return properties;
+   }
+
+   public Object getEntity()
+   {
+      return entity;
+   }
+
+   public ClientRequestHeaders getHeaders()
+   {
+      return headers;
    }
 
    public void setEntity(Entity entity)
@@ -170,6 +187,7 @@ public class ClientInvocation implements Invocation, Request
       return providerFactory.getClientInterceptors().getWriterInterceptors().bind(null, null);
    }
 
+   /*
    protected RequestFilter[] getRequestFilters()
    {
       return providerFactory.getClientInterceptors().getRequestFilters().bind(null, null);
@@ -179,12 +197,21 @@ public class ClientInvocation implements Invocation, Request
    {
       return providerFactory.getClientInterceptors().getResponseFilters().bind(null, null);
    }
+   */
 
    // Invocation methods
+
+
+   @Override
+   public Configuration configuration()
+   {
+      return configuration;
+   }
 
    @Override
    public Response invoke() throws InvocationException
    {
+      /*
       RequestFilter[] requestFilters = getRequestFilters();
       if (requestFilters != null && requestFilters.length > 0)
       {
@@ -205,8 +232,11 @@ public class ClientInvocation implements Invocation, Request
             }
          }
       }
+      */
       ClientResponse response = httpEngine.invoke(this);
       response.setProperties(properties);
+
+      /*
       ResponseFilter[] responseFilters = getResponseFilters();
       if (requestFilters != null && requestFilters.length > 0)
       {
@@ -225,6 +255,7 @@ public class ClientInvocation implements Invocation, Request
          }
          return ctx.getResponse();
       }
+      */
       return response;
    }
 
@@ -236,7 +267,7 @@ public class ClientInvocation implements Invocation, Request
    }
 
    @Override
-   public <T> T invoke(TypeLiteral<T> responseType) throws InvocationException
+   public <T> T invoke(GenericType<T> responseType) throws InvocationException
    {
       Response response = invoke();
       return response.readEntity(responseType);
@@ -299,10 +330,10 @@ public class ClientInvocation implements Invocation, Request
 
    private static class TypeLiteralFuture<T> implements Future<T>
    {
-      protected TypeLiteral<T> type;
+      protected GenericType<T> type;
       protected Future<Response> future;
 
-      private TypeLiteralFuture(TypeLiteral<T> type, Future<Response> future)
+      private TypeLiteralFuture(GenericType<T> type, Future<Response> future)
       {
          this.type = type;
          this.future = future;
@@ -356,7 +387,7 @@ public class ClientInvocation implements Invocation, Request
    }
 
    @Override
-   public <T> Future<T> submit(TypeLiteral<T> responseType)
+   public <T> Future<T> submit(GenericType<T> responseType)
    {
       Future<Response> future = submit();
       return new TypeLiteralFuture<T>(responseType, future);
@@ -413,7 +444,7 @@ public class ClientInvocation implements Invocation, Request
                try
                {
                   Response res = invoke();
-                  T obj = res.readEntity((TypeLiteral<T>) TypeLiteral.of(theType, theGenericType));
+                  T obj = res.readEntity((GenericType<T>) GenericType.of(theType, theGenericType));
                   cb.completed(obj);
                   return obj;
                }
@@ -432,121 +463,4 @@ public class ClientInvocation implements Invocation, Request
       }
    }
 
-   // Request required methods
-
-
-   @Override
-   public Map<String, Object> getProperties()
-   {
-      return properties;
-   }
-
-   @Override
-   public Configuration configuration()
-   {
-      return configuration;
-   }
-
-   @Override
-   public String getMethod()
-   {
-      return method;
-   }
-
-   @Override
-   public RequestHeaders getHeaders()
-   {
-      return headers;
-   }
-
-   @Override
-   public URI getUri()
-   {
-      return uri;
-   }
-
-   @Override
-   public Object getEntity()
-   {
-      if (entity == null) return null;
-      return entity;
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type) throws MessageProcessingException
-   {
-      if (entity == null) return null;
-      return (T) entity;
-   }
-
-   @Override
-   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
-   {
-      if (entity == null) return null;
-      return (T) entity;
-   }
-
-   @Override
-   public boolean hasEntity()
-   {
-      return entity != null;
-   }
-
-   @Override
-   public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
-   {
-      return null;
-   }
-
-   @Override
-   public Response.ResponseBuilder evaluatePreconditions(EntityTag eTag)
-   {
-      return null;
-   }
-
-   @Override
-   public Response.ResponseBuilder evaluatePreconditions(Date lastModified)
-   {
-      return null;
-   }
-
-   @Override
-   public Response.ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag)
-   {
-      return null;
-   }
-
-   @Override
-   public Response.ResponseBuilder evaluatePreconditions()
-   {
-      return null;
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
-   {
-      return null;
-   }
-
-   @Override
-   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
-   {
-      return null;
-   }
-
-   @Override
-   public boolean isEntityRetrievable()
-   {
-      return false;
-   }
-
-   @Override
-   public void bufferEntity() throws MessageProcessingException
-   {
-   }
-
-   @Override
-   public void close() throws MessageProcessingException
-   {
-   }
 }

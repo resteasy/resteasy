@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.impl;
+package org.jboss.resteasy.client.jaxrs.internal;
 
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Feature;
@@ -74,12 +74,6 @@ public class ClientConfiguration implements Configuration
 
    @Override
    public Configuration register(Object provider)
-   {
-      return null;
-   }
-
-   @Override
-   public Configuration enable(Class<? extends Feature> feature)
    {
       return null;
    }
