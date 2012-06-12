@@ -36,6 +36,12 @@ public class HttpServerRequest extends BaseHttpRequest
    }
 
    @Override
+   public Map<String, Object> getProperties()
+   {
+      return attributes;
+   }
+
+   @Override
    public HttpHeaders getHttpHeaders()
    {
       return httpHeaders;
@@ -80,18 +86,22 @@ public class HttpServerRequest extends BaseHttpRequest
    @Override
    public Object getAttribute(String attribute)
    {
+      Object val = attributes.get(attribute);
+      if (val != null) return val;
       return exchange.getAttribute(attribute);
    }
 
    @Override
    public void setAttribute(String name, Object value)
    {
+      attributes.put(name, value);
       exchange.setAttribute(name, value);
    }
 
    @Override
    public void removeAttribute(String name)
    {
+      attributes.remove(name);
       exchange.setAttribute(name, null);
    }
 

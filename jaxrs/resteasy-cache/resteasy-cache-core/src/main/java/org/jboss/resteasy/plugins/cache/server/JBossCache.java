@@ -133,8 +133,8 @@ public class JBossCache implements ServerCache
       ServerCacheHitInterceptor hit = new ServerCacheHitInterceptor(this);
       ServerCacheInterceptor interceptor = new ServerCacheInterceptor(this);
 
-      getProviderFactory().getServerPreProcessInterceptorRegistry().register(hit);
-      getProviderFactory().getServerMessageBodyWriterInterceptorRegistry().register(interceptor);
+      getProviderFactory().getContainerRequestFilterRegistry().registerLegacy(hit);
+      getProviderFactory().getServerWriterInterceptorRegistry().registerLegacy(interceptor);
    }
 
    public void stop()

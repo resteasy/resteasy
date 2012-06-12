@@ -19,10 +19,10 @@ public class ClientInvokerInterceptorFactory
            ResteasyProviderFactory providerFactory, Class declaring, Method method)
    {
       repository.setReaderInterceptors(providerFactory
-              .getClientMessageBodyReaderInterceptorRegistry().bind(declaring,
+              .getClientReaderInterceptorRegistry().postMatch(declaring,
                       method));
       repository.setWriterInterceptors(providerFactory
-              .getClientMessageBodyWriterInterceptorRegistry().bind(declaring,
+              .getClientWriterInterceptorRegistry().postMatch(declaring,
                       method));
       repository.setExecutionInterceptors(providerFactory
               .getClientExecutionInterceptorRegistry().bind(declaring, method));

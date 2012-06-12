@@ -4,6 +4,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * Bridge interface between the base Resteasy JAX-RS implementation and the actual HTTP transport (i.e. a servlet container)
@@ -28,7 +29,6 @@ public interface HttpResponse
    void sendError(int status, String message) throws IOException;
 
    boolean isCommitted();
-
 
    /**
     * reset status and headers.  Will fail if response is committed

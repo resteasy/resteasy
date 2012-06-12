@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -47,6 +48,7 @@ public class HttpServletInputMessage implements HttpRequest
    protected MultivaluedMap<String, String> decodedFormParameters;
    protected AbstractAsynchronousResponse asynchronousResponse;
    protected InputStream overridenStream;
+   protected Map<String, Object> properties = new HashMap<String, Object>();
 
 
    public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
@@ -59,6 +61,11 @@ public class HttpServletInputMessage implements HttpRequest
       this.uri = uri;
       this.preProcessedPath = uri.getPath(false);
 
+   }
+
+   public Map<String, Object> getProperties()
+   {
+      return properties;
    }
 
    public MultivaluedMap<String, String> getPutFormParameters()
@@ -92,16 +99,20 @@ public class HttpServletInputMessage implements HttpRequest
 
    public Object getAttribute(String attribute)
    {
+      Object val = properties.get(attribute);
+      if (val != null) return val;
       return request.getAttribute(attribute);
    }
 
    public void setAttribute(String name, Object value)
    {
+      properties.put(name, value);
       request.setAttribute(name, value);
    }
 
    public void removeAttribute(String name)
    {
+      properties.remove(name);
       request.removeAttribute(name);
    }
 

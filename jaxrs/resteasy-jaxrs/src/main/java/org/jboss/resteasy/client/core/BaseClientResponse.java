@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.core;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.core.interception.ReaderInterceptorContextImpl;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +66,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected int status;
    protected boolean wasReleased = false;
    protected Object unmarshaledEntity;
-   protected MessageBodyReaderInterceptor[] messageBodyReaderInterceptors;
+   protected ReaderInterceptor[] readerInterceptors;
    protected Exception exception;// These can only be set by an interceptor
    protected BaseClientResponseStreamFactory streamFactory;
    protected LinkHeader linkHeader;
@@ -129,7 +131,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          tmp.providerFactory = base.providerFactory;
          tmp.headers = new CaseInsensitiveMap<String>();
          tmp.headers.putAll(base.headers);
-         tmp.messageBodyReaderInterceptors = base.messageBodyReaderInterceptors;
+         tmp.readerInterceptors = base.readerInterceptors;
          return tmp;
       }
       else
@@ -184,9 +186,9 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       this.attributes = attributes;
    }
 
-   public void setMessageBodyReaderInterceptors(MessageBodyReaderInterceptor[] messageBodyReaderInterceptors)
+   public void setReaderInterceptors(ReaderInterceptor[] readerInterceptors)
    {
-      this.messageBodyReaderInterceptors = messageBodyReaderInterceptors;
+      this.readerInterceptors = readerInterceptors;
    }
 
    public void setStatus(int status)
@@ -437,7 +439,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
          }
 
-         final Object obj = new ClientMessageBodyReaderContext(messageBodyReaderInterceptors, reader1, useType,
+         final Object obj = new ReaderInterceptorContextImpl(readerInterceptors, reader1, useType,
                  useGeneric, this.annotations, media, getResponseHeaders(), is, attributes)
                  .proceed();
          if (isMarshalledEntity)

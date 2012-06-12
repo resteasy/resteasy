@@ -22,15 +22,14 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class InterceptorRegistry<T>
 {
    protected static interface InterceptorFactory
    {
-      Object createInterceptor();
-
-      String getPrecedence();
-
+      Object preMatch();
+      Object postMatch(Class declaring, AccessibleObject target);
       int getOrder();
    }
 
@@ -77,22 +76,47 @@ public class InterceptorRegistry<T>
          return order;
       }
 
+      protected Object binding(Class declaring, AccessibleObject target, Object inter)
+      {
+         if (inter instanceof AcceptedByMethod)
+         {
+            if (target == null || !(target instanceof Method)) return null;
+            Method method = (Method)target;
+            if (((AcceptedByMethod)inter).accept(declaring, method))
+            {
+               return inter;
+            }
+            else
+            {
+               return null;
+            }
+         }
+         return inter;
+      }
    }
 
 
    protected class SingletonInterceptorFactory extends AbstractInterceptorFactory
    {
-      private Object target;
+      private Object interceptor;
 
-      public SingletonInterceptorFactory(Object target)
+      public SingletonInterceptorFactory(Object interceptor)
       {
-         this.target = target;
-         setPrecedence(target.getClass());
+         this.interceptor = interceptor;
+         setPrecedence(interceptor.getClass());
       }
 
-      public Object createInterceptor()
+      @Override
+      public Object preMatch()
       {
-         return target;
+         return null;
+      }
+
+      @Override
+      public Object postMatch(Class declaring, AccessibleObject target)
+      {
+         final Object inter = interceptor;
+         return binding(declaring, target, inter);
       }
 
    }
@@ -112,9 +136,17 @@ public class InterceptorRegistry<T>
          setPrecedence(clazz);
       }
 
-      public Object createInterceptor()
+      @Override
+      public Object preMatch()
       {
-         return constructorInjector.construct();
+         return null;
+      }
+
+      @Override
+      public Object postMatch(Class declaring, AccessibleObject target)
+      {
+         final Object inter = constructorInjector.construct();
+         return binding(declaring, target, inter);
       }
    }
 
@@ -203,22 +235,8 @@ public class InterceptorRegistry<T>
       List<T> list = new ArrayList<T>();
       for (InterceptorFactory factory : interceptors)
       {
-         Object interceptor = factory.createInterceptor();
-
-         if (interceptor instanceof AcceptedByMethod)
-         {
-            if (target == null || !(target instanceof Method)) continue;
-
-            AcceptedByMethod accepted = (AcceptedByMethod) interceptor;
-            if (accepted.accept(declaring, (Method) target))
-            {
-               addNewInterceptor(list, interceptor);
-            }
-         }
-         else
-         {
-            addNewInterceptor(list, interceptor);
-         }
+         Object interceptor = factory.postMatch(declaring, target);
+         if (interceptor != null) addNewInterceptor(list, interceptor);
       }
       return list;
    }

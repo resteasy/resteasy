@@ -1,18 +1,19 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.ServerMessageBodyWriterContext;
+import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
+import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
+import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.WriterException;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
@@ -22,6 +23,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.WriterInterceptor;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -47,8 +50,8 @@ public class ServerResponse extends Response implements Serializable
    protected Headers<Object> metadata = new Headers<Object>();
    protected Annotation[] annotations;
    protected Type genericType;
-   protected PostProcessInterceptor[] postProcessInterceptors;
-   protected MessageBodyWriterInterceptor[] messageBodyWriterInterceptors;
+   protected ContainerResponseFilter[] responseFilters;
+   protected WriterInterceptor[] writerInterceptors;
    protected Method resourceMethod;
    protected Class resourceClass;
    protected boolean headersCommitted;
@@ -110,24 +113,24 @@ public class ServerResponse extends Response implements Serializable
       this.resourceClass = resourceClass;
    }
 
-   public MessageBodyWriterInterceptor[] getMessageBodyWriterInterceptors()
+   public WriterInterceptor[] getWriterInterceptors()
    {
-      return messageBodyWriterInterceptors;
+      return writerInterceptors;
    }
 
-   public void setMessageBodyWriterInterceptors(MessageBodyWriterInterceptor[] messageBodyWriterInterceptors)
+   public void setWriterInterceptors(WriterInterceptor[] writerInterceptors)
    {
-      this.messageBodyWriterInterceptors = messageBodyWriterInterceptors;
+      this.writerInterceptors = writerInterceptors;
    }
 
-   public PostProcessInterceptor[] getPostProcessInterceptors()
+   public ContainerResponseFilter[] getResponseFilters()
    {
-      return postProcessInterceptors;
+      return responseFilters;
    }
 
-   public void setPostProcessInterceptors(PostProcessInterceptor[] postProcessInterceptors)
+   public void setResponseFilters(ContainerResponseFilter[] responseFilters)
    {
-      this.postProcessInterceptors = postProcessInterceptors;
+      this.responseFilters = responseFilters;
    }
 
    @Override
@@ -195,11 +198,20 @@ public class ServerResponse extends Response implements Serializable
     */
    public void writeTo(HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory) throws WriterException
    {
-      if (postProcessInterceptors != null)
+      if (responseFilters != null)
       {
-         for (PostProcessInterceptor interceptor : postProcessInterceptors)
+         ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
+         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(this, response, request.getProperties());
+         for (ContainerResponseFilter filter : responseFilters)
          {
-            interceptor.postProcess(this);
+            try
+            {
+               filter.filter(requestContext, responseContext);
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
          }
       }
       if (entity == null)
@@ -250,16 +262,15 @@ public class ServerResponse extends Response implements Serializable
          if (size > -1) getMetadata().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
 
 
-         if (messageBodyWriterInterceptors == null || messageBodyWriterInterceptors.length == 0)
+         if (writerInterceptors == null || writerInterceptors.length == 0)
          {
             writer.writeTo(ent, type, generic, annotations,
                     contentType, getMetadata(), os);
          }
          else
          {
-            ServerMessageBodyWriterContext ctx = new ServerMessageBodyWriterContext(messageBodyWriterInterceptors, writer, ent, type, generic,
-                    annotations, contentType, getMetadata(), os, request);
-            ctx.proceed();
+            WriterInterceptorContextImpl writerContext =  new WriterInterceptorContextImpl(writerInterceptors, writer, ent, type, generic, annotations, contentType, getMetadata(), os, request.getProperties());
+            writerContext.proceed();
          }
          callback.commit(); // just in case the output stream is never used
       }

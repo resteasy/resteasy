@@ -65,7 +65,7 @@ import javax.ws.rs.core.NewCookie;
 public interface ClientResponseContext {
     // mutable, shared with ClientRequestContext
 
-    public MultivaluedMap<String, ? extends Serializable> getProperties();
+   Map<String, Object> getProperties();
 
     public int getStatusCode();
 

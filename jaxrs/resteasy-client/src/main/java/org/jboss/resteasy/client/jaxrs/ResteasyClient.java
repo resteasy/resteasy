@@ -24,7 +24,7 @@ public class ResteasyClient implements Client
 {
    protected volatile ResteasyProviderFactory providerFactory;
    protected volatile ClientHttpEngine httpEngine;
-   protected volatile ExecutorService executor;
+   protected volatile ExecutorService asyncInvocationExecutor;
    protected ClientConfiguration configuration = new ClientConfiguration();
 
    public ResteasyProviderFactory getProviderFactory()
@@ -59,16 +59,16 @@ public class ResteasyClient implements Client
       return result;
    }
 
-   public ExecutorService getExecutorService()
+   public ExecutorService getAsyncInvocationExecutor()
    {
-      ExecutorService result = executor;
+      ExecutorService result = asyncInvocationExecutor;
       if (result == null)
       { // First check (no locking)
          synchronized (this)
          {
-            result = executor;
+            result = asyncInvocationExecutor;
             if (result == null) // Second check (with locking)
-               executor = result = Executors.newFixedThreadPool(10);
+               asyncInvocationExecutor = result = Executors.newFixedThreadPool(10);
          }
       }
       return result;
@@ -79,9 +79,9 @@ public class ResteasyClient implements Client
       this.httpEngine = httpEngine;
    }
 
-   public void setExecutor(ExecutorService executor)
+   public void setAsyncInvocationExecutor(ExecutorService asyncInvocationExecutor)
    {
-      this.executor = executor;
+      this.asyncInvocationExecutor = asyncInvocationExecutor;
    }
 
    @Override
@@ -106,26 +106,26 @@ public class ResteasyClient implements Client
    @Override
    public WebTarget target(String uri) throws IllegalArgumentException, NullPointerException
    {
-      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
+      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getAsyncInvocationExecutor(), configuration);
    }
 
    @Override
    public WebTarget target(URI uri) throws NullPointerException
    {
-      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
+      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getAsyncInvocationExecutor(), configuration);
    }
 
    @Override
    public WebTarget target(UriBuilder uriBuilder) throws NullPointerException
    {
-      return new ClientWebTarget(uriBuilder, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
+      return new ClientWebTarget(uriBuilder, getProviderFactory(), getHttpEngine(), getAsyncInvocationExecutor(), configuration);
    }
 
    @Override
    public WebTarget target(Link link) throws NullPointerException
    {
       URI uri = link.getUri();
-      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getExecutorService(), configuration);
+      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getAsyncInvocationExecutor(), configuration);
    }
 
    @Override

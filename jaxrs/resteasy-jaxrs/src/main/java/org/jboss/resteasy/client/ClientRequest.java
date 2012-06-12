@@ -2,8 +2,8 @@ package org.jboss.resteasy.client;
 
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
-import org.jboss.resteasy.client.core.ClientMessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
+import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.Link;
@@ -421,9 +421,9 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       if (linkHeader != null) header("Link", linkHeader);
 
       if (getReaderInterceptorList().isEmpty())
-         setReaderInterceptors(providerFactory
-                 .getClientMessageBodyReaderInterceptorRegistry().bindForList(
-                         null, null));
+      {
+         setReaderInterceptors(providerFactory.getClientReaderInterceptorRegistry().postMatch(null, null));
+      }
 
       if (getExecutionInterceptorList().isEmpty())
       {
@@ -443,7 +443,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          response = (BaseClientResponse) ctx.proceed();
       }
       response.setAttributes(attributes);
-      response.setMessageBodyReaderInterceptors(getReaderInterceptors());
+      response.setReaderInterceptors(getReaderInterceptors());
       return response;
    }
 
@@ -457,9 +457,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
       if (getWriterInterceptorList().isEmpty())
       {
-         setWriterInterceptors(providerFactory
-                 .getClientMessageBodyWriterInterceptorRegistry().bindForList(
-                         null, null));
+         setWriterInterceptors(providerFactory.getClientWriterInterceptorRegistry().postMatch(null, null));
       }
       MessageBodyWriter writer = providerFactory
               .getMessageBodyWriter(bodyType, bodyGenericType,
@@ -469,7 +467,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          throw new RuntimeException("could not find writer for content-type "
                  + bodyContentType + " type: " + bodyType.getName());
       }
-      new ClientMessageBodyWriterContext(getWriterInterceptors(), writer, body,
+      new WriterInterceptorContextImpl(getWriterInterceptors(), writer, body,
               bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
               headers, outputStream, attributes).proceed();
    }
