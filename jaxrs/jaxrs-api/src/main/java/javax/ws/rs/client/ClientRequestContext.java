@@ -63,7 +63,7 @@ import javax.ws.rs.core.Response;
 public interface ClientRequestContext {
 
     // mutable, shared with ClientResponseContext
-    public MultivaluedMap<String, ? extends Serializable> getProperties();
+    Map<String, Object> getProperties();
 
     // request URI getter/setter
     public URI getUri();

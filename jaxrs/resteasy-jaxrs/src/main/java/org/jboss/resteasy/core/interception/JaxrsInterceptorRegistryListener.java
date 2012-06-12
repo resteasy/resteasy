@@ -6,9 +6,8 @@ package org.jboss.resteasy.core.interception;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Deprecated
-public interface InterceptorRegistryListener
+public interface JaxrsInterceptorRegistryListener
 {
-   void registryUpdated(InterceptorRegistry registry);
+   void registryUpdated(JaxrsInterceptorRegistry registry);
 
 }

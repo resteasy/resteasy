@@ -7,18 +7,21 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.WriterInterceptor;
+import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public abstract class MessageBodyWriterContextImpl implements MessageBodyWriterContext
+public class WriterInterceptorContextImpl implements WriterInterceptorContext
 {
-   protected MessageBodyWriterInterceptor[] interceptors;
+   protected WriterInterceptor[] interceptors;
    protected MessageBodyWriter writer;
    protected Object entity;
    protected Class type;
@@ -28,11 +31,12 @@ public abstract class MessageBodyWriterContextImpl implements MessageBodyWriterC
    protected MultivaluedMap<String, Object> headers;
    protected OutputStream outputStream;
    protected int index = 0;
+   protected Map<String, Object> properties;
 
-   public MessageBodyWriterContextImpl(MessageBodyWriterInterceptor[] interceptors, MessageBodyWriter writer,
+   public WriterInterceptorContextImpl(WriterInterceptor[] interceptors, MessageBodyWriter writer,
                                        Object entity, Class type, Type genericType, Annotation[] annotations,
                                        MediaType mediaType, MultivaluedMap<String, Object> headers,
-                                       OutputStream outputStream)
+                                       OutputStream outputStream, Map<String, Object> properties)
    {
       this.interceptors = interceptors;
       this.writer = writer;
@@ -43,6 +47,13 @@ public abstract class MessageBodyWriterContextImpl implements MessageBodyWriterC
       this.mediaType = mediaType;
       this.headers = headers;
       this.outputStream = outputStream;
+      this.properties = properties;
+   }
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      return properties;
    }
 
    public Object getEntity()
@@ -120,7 +131,7 @@ public abstract class MessageBodyWriterContextImpl implements MessageBodyWriterC
       {
          try
          {
-            interceptors[index++].write(this);
+            interceptors[index++].aroundWriteTo(this);
          }
          finally
          {

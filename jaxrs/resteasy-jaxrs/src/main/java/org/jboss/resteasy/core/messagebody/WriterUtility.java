@@ -1,13 +1,13 @@
 package org.jboss.resteasy.core.messagebody;
 
-import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
+import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.WriterInterceptor;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,7 +27,7 @@ import java.util.Map;
 public abstract class WriterUtility
 {
    private ResteasyProviderFactory factory;
-   private MessageBodyWriterInterceptor[] interceptors;
+   private WriterInterceptor[] interceptors;
 
    public static String asString(Object toOutput, String contentType)
            throws IOException
@@ -64,7 +64,7 @@ public abstract class WriterUtility
    }
 
    public WriterUtility(ResteasyProviderFactory factory,
-                        MessageBodyWriterInterceptor[] interceptors)
+                        WriterInterceptor[] interceptors)
    {
       this.factory = factory;
       this.interceptors = interceptors;
@@ -108,28 +108,8 @@ public abstract class WriterUtility
          throw createWriterNotFound(genericType, mediaType);
 
       final Map<String, Object> attributes = new HashMap<String, Object>();
-      MessageBodyWriterContextImpl messageBodyWriterContext = new MessageBodyWriterContextImpl(interceptors, writer, toOutput, type,
-              genericType, annotations, mediaType, requestHeaders, outputStream)
-      {
-         @Override
-         public Object getAttribute(String attribute)
-         {
-            return attributes.get(attribute);
-         }
-
-         @Override
-         public void setAttribute(String name, Object value)
-         {
-            attributes.put(name, value);
-         }
-
-         @Override
-         public void removeAttribute(String name)
-         {
-            attributes.remove(name);
-         }
-
-      };
+      WriterInterceptorContextImpl messageBodyWriterContext = new WriterInterceptorContextImpl(interceptors, writer, toOutput, type,
+              genericType, annotations, mediaType, requestHeaders, outputStream, attributes);
       messageBodyWriterContext
               .proceed();
    }

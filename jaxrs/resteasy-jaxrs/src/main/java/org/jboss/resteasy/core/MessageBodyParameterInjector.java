@@ -1,15 +1,14 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.InterceptorRegistry;
-import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
-import org.jboss.resteasy.core.interception.ServerMessageBodyReaderContext;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
+import org.jboss.resteasy.core.interception.ReaderInterceptorContextImpl;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ThreadLocalStack;
@@ -19,6 +18,7 @@ import javax.ws.rs.Encoded;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -30,7 +30,7 @@ import java.lang.reflect.Type;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class MessageBodyParameterInjector implements ValueInjector, InterceptorRegistryListener
+public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterceptorRegistryListener
 {
    private static ThreadLocalStack<Object> bodyStack = new ThreadLocalStack<Object>();
 
@@ -65,7 +65,7 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
    private ResteasyProviderFactory factory;
    private Class declaringClass;
    private AccessibleObject target;
-   private MessageBodyReaderInterceptor[] interceptors;
+   private ReaderInterceptor[] interceptors;
    private boolean isMarshalledEntity;
 
    public MessageBodyParameterInjector(Class declaringClass, AccessibleObject target, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
@@ -92,17 +92,17 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
       }
       this.annotations = annotations;
       this.interceptors = factory
-              .getServerMessageBodyReaderInterceptorRegistry().bind(
+              .getServerReaderInterceptorRegistry().postMatch(
                       this.declaringClass, this.target);
 
       // this is for when an interceptor is added after the creation of the injector
-      factory.getServerMessageBodyReaderInterceptorRegistry().getListeners().add(this);
+      factory.getServerReaderInterceptorRegistry().getListeners().add(this);
    }
 
-   public void registryUpdated(InterceptorRegistry registry)
+   public void registryUpdated(JaxrsInterceptorRegistry registry)
    {
       this.interceptors = factory
-              .getServerMessageBodyReaderInterceptorRegistry().bind(
+              .getServerReaderInterceptorRegistry().postMatch(
                       declaringClass, target);
    }
 
@@ -163,9 +163,9 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
                is = new InputStreamToByteArray(is);
 
             }
-            ServerMessageBodyReaderContext messageBodyReaderContext = new ServerMessageBodyReaderContext(interceptors, reader, type,
+            ReaderInterceptorContextImpl messageBodyReaderContext = new ReaderInterceptorContextImpl(interceptors, reader, type,
                     genericType, annotations, mediaType, request
-                    .getHttpHeaders().getRequestHeaders(), is, request);
+                    .getHttpHeaders().getRequestHeaders(), is, request.getProperties());
             final Object obj = messageBodyReaderContext.proceed();
             if (isMarshalledEntity)
             {

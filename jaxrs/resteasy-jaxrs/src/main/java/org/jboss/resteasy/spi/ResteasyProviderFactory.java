@@ -11,8 +11,12 @@ import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.core.filter.Interceptors;
+import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
+import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.LegacyPrecedence;
+import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
+import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
@@ -34,8 +38,10 @@ import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.BindingPriority;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
@@ -169,16 +175,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public static boolean registerBuiltinByDefault = true;
 
-   protected Interceptors serverInterceptors = new Interceptors(this);
-   protected Interceptors clientInterceptors = new Interceptors(this);
+   LegacyPrecedence precedence = new LegacyPrecedence();
+   protected ReaderInterceptorRegistry serverReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
+   protected WriterInterceptorRegistry serverWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
+   protected ContainerRequestFilterRegistry containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this, precedence);
+   protected ContainerResponseFilterRegistry containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this, precedence);
 
-   protected InterceptorRegistry<MessageBodyReaderInterceptor> serverMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
-   protected InterceptorRegistry<MessageBodyWriterInterceptor> serverMessageBodyWriterInterceptorRegistry = new InterceptorRegistry<MessageBodyWriterInterceptor>(MessageBodyWriterInterceptor.class, this);
-   protected InterceptorRegistry<PreProcessInterceptor> serverPreProcessInterceptorRegistry = new InterceptorRegistry<PreProcessInterceptor>(PreProcessInterceptor.class, this);
-   protected InterceptorRegistry<PostProcessInterceptor> serverPostProcessInterceptorRegistry = new InterceptorRegistry<PostProcessInterceptor>(PostProcessInterceptor.class, this);
-
-   protected InterceptorRegistry<MessageBodyReaderInterceptor> clientMessageBodyReaderInterceptorRegistry = new InterceptorRegistry<MessageBodyReaderInterceptor>(MessageBodyReaderInterceptor.class, this);
-   protected InterceptorRegistry<MessageBodyWriterInterceptor> clientMessageBodyWriterInterceptorRegistry = new InterceptorRegistry<MessageBodyWriterInterceptor>(MessageBodyWriterInterceptor.class, this);
+   protected ReaderInterceptorRegistry clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
+   protected WriterInterceptorRegistry clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
    protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
 
    protected List<ClientErrorInterceptor> clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
@@ -190,6 +194,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void registerDefaultInterceptorPrecedences(InterceptorRegistry registry)
    {
+      // legacy
       registry.appendPrecedence(SecurityPrecedence.PRECEDENCE_STRING);
       registry.appendPrecedence(HeaderDecoratorPrecedence.PRECEDENCE_STRING);
       registry.appendPrecedence(EncoderPrecedence.PRECEDENCE_STRING);
@@ -200,13 +205,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void registerDefaultInterceptorPrecedences()
    {
-      registerDefaultInterceptorPrecedences(getServerPreProcessInterceptorRegistry());
-      registerDefaultInterceptorPrecedences(getServerMessageBodyReaderInterceptorRegistry());
-      registerDefaultInterceptorPrecedences(getServerMessageBodyWriterInterceptorRegistry());
-      registerDefaultInterceptorPrecedences(getServerPostProcessInterceptorRegistry());
+      precedence.addPrecedence(SecurityPrecedence.PRECEDENCE_STRING, BindingPriority.SECURITY);
+      precedence.addPrecedence(HeaderDecoratorPrecedence.PRECEDENCE_STRING, BindingPriority.HEADER_DECORATOR);
+      precedence.addPrecedence(EncoderPrecedence.PRECEDENCE_STRING, BindingPriority.ENCODER);
+      precedence.addPrecedence(RedirectPrecedence.PRECEDENCE_STRING, BindingPriority.ENCODER + 50);
+      precedence.addPrecedence(DecoderPrecedence.PRECEDENCE_STRING, BindingPriority.DECODER);
 
-      registerDefaultInterceptorPrecedences(getClientMessageBodyReaderInterceptorRegistry());
-      registerDefaultInterceptorPrecedences(getClientMessageBodyWriterInterceptorRegistry());
       registerDefaultInterceptorPrecedences(getClientExecutionInterceptorRegistry());
    }
 
@@ -217,13 +221,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void appendInterceptorPrecedence(String precedence)
    {
-      getServerPreProcessInterceptorRegistry().appendPrecedence(precedence);
-      getServerMessageBodyReaderInterceptorRegistry().appendPrecedence(precedence);
-      getServerMessageBodyWriterInterceptorRegistry().appendPrecedence(precedence);
-      getServerPostProcessInterceptorRegistry().appendPrecedence(precedence);
+      this.precedence.appendPrecedence(precedence);
 
-      getClientMessageBodyReaderInterceptorRegistry().appendPrecedence(precedence);
-      getClientMessageBodyWriterInterceptorRegistry().appendPrecedence(precedence);
       getClientExecutionInterceptorRegistry().appendPrecedence(precedence);
    }
 
@@ -233,13 +232,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
    {
-      getServerPreProcessInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
-      getServerMessageBodyReaderInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
-      getServerMessageBodyWriterInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
-      getServerPostProcessInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+      this.precedence.insertPrecedenceAfter(after, newPrecedence);
 
-      getClientMessageBodyReaderInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
-      getClientMessageBodyWriterInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
       getClientExecutionInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
    }
 
@@ -249,13 +243,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
    {
-      getServerPreProcessInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
-      getServerMessageBodyReaderInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
-      getServerMessageBodyWriterInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
-      getServerPostProcessInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+      this.precedence.insertPrecedenceBefore(before, newPrecedence);
 
-      getClientMessageBodyReaderInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
-      getClientMessageBodyWriterInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
       getClientExecutionInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
    }
 
@@ -405,39 +394,39 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       this.injectorFactory = injectorFactory;
    }
 
-   public InterceptorRegistry<MessageBodyReaderInterceptor> getServerMessageBodyReaderInterceptorRegistry()
-   {
-      return serverMessageBodyReaderInterceptorRegistry;
-   }
-
-   public InterceptorRegistry<MessageBodyWriterInterceptor> getServerMessageBodyWriterInterceptorRegistry()
-   {
-      return serverMessageBodyWriterInterceptorRegistry;
-   }
-
-   public InterceptorRegistry<PreProcessInterceptor> getServerPreProcessInterceptorRegistry()
-   {
-      return serverPreProcessInterceptorRegistry;
-   }
-
-   public InterceptorRegistry<PostProcessInterceptor> getServerPostProcessInterceptorRegistry()
-   {
-      return serverPostProcessInterceptorRegistry;
-   }
-
-   public InterceptorRegistry<MessageBodyReaderInterceptor> getClientMessageBodyReaderInterceptorRegistry()
-   {
-      return clientMessageBodyReaderInterceptorRegistry;
-   }
-
-   public InterceptorRegistry<MessageBodyWriterInterceptor> getClientMessageBodyWriterInterceptorRegistry()
-   {
-      return clientMessageBodyWriterInterceptorRegistry;
-   }
-
    public InterceptorRegistry<ClientExecutionInterceptor> getClientExecutionInterceptorRegistry()
    {
       return clientExecutionInterceptorRegistry;
+   }
+
+   public ReaderInterceptorRegistry getServerReaderInterceptorRegistry()
+   {
+      return serverReaderInterceptorRegistry;
+   }
+
+   public WriterInterceptorRegistry getServerWriterInterceptorRegistry()
+   {
+      return serverWriterInterceptorRegistry;
+   }
+
+   public ContainerRequestFilterRegistry getContainerRequestFilterRegistry()
+   {
+      return containerRequestFilterRegistry;
+   }
+
+   public ContainerResponseFilterRegistry getContainerResponseFilterRegistry()
+   {
+      return containerResponseFilterRegistry;
+   }
+
+   public ReaderInterceptorRegistry getClientReaderInterceptorRegistry()
+   {
+      return clientReaderInterceptorRegistry;
+   }
+
+   public WriterInterceptorRegistry getClientWriterInterceptorRegistry()
+   {
+      return clientWriterInterceptorRegistry;
    }
 
    public boolean isBuiltinsRegistered()
@@ -798,16 +787,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    }
 
-   public Interceptors getServerInterceptors()
-   {
-      return serverInterceptors;
-   }
-
-   public Interceptors getClientInterceptors()
-   {
-      return clientInterceptors;
-   }
-
    public void registerProvider(Class provider)
    {
       registerProvider(provider, false);
@@ -859,53 +838,53 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (PreProcessInterceptor.class.isAssignableFrom(provider))
       {
-         serverPreProcessInterceptorRegistry.register(provider);
+         containerRequestFilterRegistry.registerLegacy(provider);
       }
       if (PostProcessInterceptor.class.isAssignableFrom(provider))
       {
-         serverPostProcessInterceptorRegistry.register(provider);
+         containerResponseFilterRegistry.registerLegacy(provider);
       }
       if (ReaderInterceptor.class.isAssignableFrom(provider))
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
-            serverInterceptors.getReaderInterceptors().register(provider);
+            serverReaderInterceptorRegistry.registerClass(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptors.getReaderInterceptors().register(provider);
+            clientReaderInterceptorRegistry.registerClass(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptors.getReaderInterceptors().register(provider);
-            serverInterceptors.getReaderInterceptors().register(provider);
+            serverReaderInterceptorRegistry.registerClass(provider);
+            clientReaderInterceptorRegistry.registerClass(provider);
          }
       }
       if (WriterInterceptor.class.isAssignableFrom(provider))
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
-            serverInterceptors.getWriterInterceptors().register(provider);
+            serverWriterInterceptorRegistry.registerClass(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptors.getWriterInterceptors().register(provider);
+            clientWriterInterceptorRegistry.registerClass(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptors.getWriterInterceptors().register(provider);
-            serverInterceptors.getWriterInterceptors().register(provider);
+            serverWriterInterceptorRegistry.registerClass(provider);
+            clientWriterInterceptorRegistry.registerClass(provider);
          }
       }
       if (MessageBodyWriterInterceptor.class.isAssignableFrom(provider))
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
-            serverMessageBodyWriterInterceptorRegistry.register(provider);
+            serverWriterInterceptorRegistry.registerLegacy(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            clientMessageBodyWriterInterceptorRegistry.register(provider);
+            clientWriterInterceptorRegistry.registerLegacy(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
@@ -917,11 +896,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
-            serverMessageBodyReaderInterceptorRegistry.register(provider);
+            serverReaderInterceptorRegistry.registerLegacy(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            clientMessageBodyReaderInterceptorRegistry.register(provider);
+            clientReaderInterceptorRegistry.registerLegacy(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
@@ -1019,53 +998,53 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (provider instanceof PreProcessInterceptor)
       {
-         serverPreProcessInterceptorRegistry.register((PreProcessInterceptor) provider);
+         containerRequestFilterRegistry.registerLegacy((PreProcessInterceptor) provider);
       }
       if (provider instanceof PostProcessInterceptor)
       {
-         serverPostProcessInterceptorRegistry.register((PostProcessInterceptor) provider);
+         containerResponseFilterRegistry.registerLegacy((PostProcessInterceptor) provider);
       }
       if (provider instanceof ReaderInterceptor)
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
-            serverInterceptors.getReaderInterceptors().register((ReaderInterceptor) provider);
+            serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptors.getReaderInterceptors().register((ReaderInterceptor) provider);
+            clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            serverInterceptors.getReaderInterceptors().register((ReaderInterceptor) provider);
-            clientInterceptors.getReaderInterceptors().register((ReaderInterceptor) provider);
+            serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider);
+            clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider);
          }
       }
       if (provider instanceof WriterInterceptor)
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
-            serverInterceptors.getWriterInterceptors().register((WriterInterceptor) provider);
+            serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            clientInterceptors.getWriterInterceptors().register((WriterInterceptor) provider);
+            clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            serverInterceptors.getWriterInterceptors().register((WriterInterceptor) provider);
-            clientInterceptors.getWriterInterceptors().register((WriterInterceptor) provider);
+            serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider);
+            clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider);
          }
       }
       if (provider instanceof MessageBodyWriterInterceptor)
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
-            serverMessageBodyWriterInterceptorRegistry.register((MessageBodyWriterInterceptor) provider);
+            serverWriterInterceptorRegistry.registerLegacy((MessageBodyWriterInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            clientMessageBodyWriterInterceptorRegistry.register((MessageBodyWriterInterceptor) provider);
+            clientWriterInterceptorRegistry.registerLegacy((MessageBodyWriterInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
@@ -1077,11 +1056,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
-            serverMessageBodyReaderInterceptorRegistry.register((MessageBodyReaderInterceptor) provider);
+            serverReaderInterceptorRegistry.registerLegacy((MessageBodyReaderInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            clientMessageBodyReaderInterceptorRegistry.register((MessageBodyReaderInterceptor) provider);
+            serverReaderInterceptorRegistry.registerLegacy((MessageBodyReaderInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {

@@ -201,7 +201,7 @@ public class ResteasyDeployment
 
          if (securityEnabled)
          {
-            providerFactory.getServerPreProcessInterceptorRegistry().register(SecurityInterceptor.class);
+            providerFactory.getContainerRequestFilterRegistry().registerLegacy(SecurityInterceptor.class);
          }
 
 

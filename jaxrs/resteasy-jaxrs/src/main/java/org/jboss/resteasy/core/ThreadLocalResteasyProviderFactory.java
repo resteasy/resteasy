@@ -1,8 +1,11 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
-import org.jboss.resteasy.core.filter.Interceptors;
+import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
+import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
+import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -51,18 +54,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       ResteasyProviderFactory factory = delegate.get();
       if (factory == null) return defaultFactory;
       return factory;
-   }
-
-   @Override
-   public Interceptors getServerInterceptors()
-   {
-      return getDelegate().getServerInterceptors();
-   }
-
-   @Override
-   public Interceptors getClientInterceptors()
-   {
-      return getDelegate().getClientInterceptors();
    }
 
    @Override
@@ -216,46 +207,45 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public InterceptorRegistry<MessageBodyReaderInterceptor> getServerMessageBodyReaderInterceptorRegistry()
-   {
-      return getDelegate().getServerMessageBodyReaderInterceptorRegistry();
-   }
-
-   @Override
    public InterceptorRegistry<ClientExecutionInterceptor> getClientExecutionInterceptorRegistry()
    {
       return getDelegate().getClientExecutionInterceptorRegistry();
    }
 
    @Override
-   public InterceptorRegistry<MessageBodyWriterInterceptor> getClientMessageBodyWriterInterceptorRegistry()
+   public ReaderInterceptorRegistry getServerReaderInterceptorRegistry()
    {
-      return getDelegate().getClientMessageBodyWriterInterceptorRegistry();
+      return getDelegate().getServerReaderInterceptorRegistry();
    }
 
    @Override
-   public InterceptorRegistry<MessageBodyReaderInterceptor> getClientMessageBodyReaderInterceptorRegistry()
+   public WriterInterceptorRegistry getServerWriterInterceptorRegistry()
    {
-      return getDelegate().getClientMessageBodyReaderInterceptorRegistry();
+      return getDelegate().getServerWriterInterceptorRegistry();
    }
 
    @Override
-   public InterceptorRegistry<PreProcessInterceptor> getServerPreProcessInterceptorRegistry()
+   public ContainerRequestFilterRegistry getContainerRequestFilterRegistry()
    {
-      return getDelegate().getServerPreProcessInterceptorRegistry();
+      return getDelegate().getContainerRequestFilterRegistry();
    }
 
    @Override
-   public InterceptorRegistry<PostProcessInterceptor> getServerPostProcessInterceptorRegistry()
+   public ContainerResponseFilterRegistry getContainerResponseFilterRegistry()
    {
-      return getDelegate().getServerPostProcessInterceptorRegistry();
+      return getDelegate().getContainerResponseFilterRegistry();
    }
 
+   @Override
+   public ReaderInterceptorRegistry getClientReaderInterceptorRegistry()
+   {
+      return getDelegate().getClientReaderInterceptorRegistry();
+   }
 
    @Override
-   public InterceptorRegistry<MessageBodyWriterInterceptor> getServerMessageBodyWriterInterceptorRegistry()
+   public WriterInterceptorRegistry getClientWriterInterceptorRegistry()
    {
-      return getDelegate().getServerMessageBodyWriterInterceptorRegistry();
+      return getDelegate().getClientWriterInterceptorRegistry();
    }
 
    @Override

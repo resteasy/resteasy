@@ -64,7 +64,7 @@ import javax.ws.rs.core.NewCookie;
 public interface ContainerResponseContext {
 
     // mutable, shared with ContainerRequestContext
-    public MultivaluedMap<String, ? extends Serializable> getProperties();
+    Map<String, Object> getProperties();
 
     // mutable response headers map
     public MultivaluedMap<String, Object> getHeaders();

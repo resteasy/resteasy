@@ -66,7 +66,7 @@ import javax.ws.rs.core.SecurityContext;
 public interface ContainerRequestContext {
 
     // mutable, shared with ContainerResponseContext
-    public MultivaluedMap<String, ? extends Serializable> getProperties();
+    Map<String, Object> getProperties();
 
 
     // request URI getters/setters

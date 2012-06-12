@@ -4,6 +4,8 @@ import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
 import java.util.LinkedList;
 
 /**
@@ -13,9 +15,9 @@ import java.util.LinkedList;
 public interface ClientInterceptorRepository
 {
 
-   LinkedList<MessageBodyReaderInterceptor> getReaderInterceptorList();
+   LinkedList<ReaderInterceptor> getReaderInterceptorList();
 
-   LinkedList<MessageBodyWriterInterceptor> getWriterInterceptorList();
+   LinkedList<WriterInterceptor> getWriterInterceptorList();
 
    LinkedList<ClientExecutionInterceptor> getExecutionInterceptorList();
 
