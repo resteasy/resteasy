@@ -89,6 +89,11 @@ public abstract class ClientResponse extends Response
       return status;
    }
 
+   public MultivaluedMap<String, String> getHeaders()
+   {
+      return headers;
+   }
+
    /*
    @Override
    public ResponseHeaders getHeaders()
