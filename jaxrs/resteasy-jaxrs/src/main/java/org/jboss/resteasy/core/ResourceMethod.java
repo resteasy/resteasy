@@ -1,7 +1,9 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
-import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
+import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.Segment;
 import org.jboss.resteasy.plugins.providers.validation.ResteasyViolationExceptionExtension;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
@@ -12,7 +14,6 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
@@ -23,11 +24,15 @@ import org.jboss.resteasy.util.WeightedMediaType;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.WriterInterceptor;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -42,7 +47,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListener
+public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistryListener
 {
 
    protected MediaType[] produces;
@@ -58,9 +63,9 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
    protected ResteasyProviderFactory providerFactory;
    protected Method method;
    protected Class<?> resourceClass;
-   protected PreProcessInterceptor[] preProcessInterceptors;
-   protected PostProcessInterceptor[] postProcessInterceptors;
-   protected MessageBodyWriterInterceptor[] writerInterceptors;
+   protected ContainerRequestFilter[] requestFilters;
+   protected ContainerResponseFilter[] responseFilters;
+   protected WriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
    protected Type genericReturnType;
    protected GeneralValidator validator;
@@ -107,13 +112,13 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
 
-      preProcessInterceptors = providerFactory.getServerPreProcessInterceptorRegistry().bind(resourceClass, method);
-      postProcessInterceptors = providerFactory.getServerPostProcessInterceptorRegistry().bind(resourceClass, method);
-      writerInterceptors = providerFactory.getServerMessageBodyWriterInterceptorRegistry().bind(resourceClass, method);
+      requestFilters = providerFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
+      responseFilters = providerFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
+      writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
 
-      providerFactory.getServerPreProcessInterceptorRegistry().getListeners().add(this);
-      providerFactory.getServerPostProcessInterceptorRegistry().getListeners().add(this);
-      providerFactory.getServerMessageBodyWriterInterceptorRegistry().getListeners().add(this);
+      providerFactory.getContainerRequestFilterRegistry().getListeners().add(this);
+      providerFactory.getContainerResponseFilterRegistry().getListeners().add(this);
+      providerFactory.getServerWriterInterceptorRegistry().getListeners().add(this);
       /*
           We get the genericReturnType for the case of:
           
@@ -136,31 +141,31 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
 
    public void cleanup()
    {
-      providerFactory.getServerPreProcessInterceptorRegistry().getListeners().remove(this);
-      providerFactory.getServerPostProcessInterceptorRegistry().getListeners().remove(this);
-      providerFactory.getServerMessageBodyWriterInterceptorRegistry().getListeners().remove(this);
+      providerFactory.getContainerRequestFilterRegistry().getListeners().remove(this);
+      providerFactory.getContainerResponseFilterRegistry().getListeners().remove(this);
+      providerFactory.getServerWriterInterceptorRegistry().getListeners().remove(this);
       for (ValueInjector param : methodInjector.getParams())
       {
          if (param instanceof MessageBodyParameterInjector)
          {
-            providerFactory.getServerMessageBodyReaderInterceptorRegistry().getListeners().remove(param);
+            providerFactory.getServerReaderInterceptorRegistry().getListeners().remove(param);
          }
       }
    }
 
-   public void registryUpdated(InterceptorRegistry registry)
+   public void registryUpdated(JaxrsInterceptorRegistry registry)
    {
-      if (registry.getIntf().equals(MessageBodyWriterInterceptor.class))
+      if (registry.getIntf().equals(WriterInterceptor.class))
       {
-         writerInterceptors = providerFactory.getServerMessageBodyWriterInterceptorRegistry().bind(resourceClass, method);
+         writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
       }
-      else if (registry.getIntf().equals(PreProcessInterceptor.class))
+      else if (registry.getIntf().equals(ContainerRequestFilter.class))
       {
-         preProcessInterceptors = providerFactory.getServerPreProcessInterceptorRegistry().bind(resourceClass, method);
+         requestFilters = providerFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
       }
-      else if (registry.getIntf().equals(PostProcessInterceptor.class))
+      else if (registry.getIntf().equals(ContainerResponseFilter.class))
       {
-         postProcessInterceptors = providerFactory.getServerPostProcessInterceptorRegistry().bind(resourceClass, method);
+         responseFilters = providerFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
       }
    }
 
@@ -260,10 +265,19 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
          request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
          request.setAttribute(GeneralValidator.class.getName(), validator);
       }
-      
-      for (PreProcessInterceptor preInterceptor : preProcessInterceptors)
+
+      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this);
+      for (ContainerRequestFilter filter : requestFilters)
       {
-         ServerResponse serverResponse = preInterceptor.preProcess(request, this);
+         try
+         {
+            filter.filter(requestContext);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         ServerResponse serverResponse = (ServerResponse)requestContext.getResponseAbortedWith();
          if (serverResponse != null)
          {
             return prepareResponse(serverResponse);
@@ -291,8 +305,8 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
          AbstractAsynchronousResponse asyncResponse = (AbstractAsynchronousResponse) request.getAsynchronousResponse();
          if (asyncResponse == null) return null;
          asyncResponse.setAnnotations(method.getAnnotations());
-         asyncResponse.setMessageBodyWriterInterceptors(writerInterceptors);
-         asyncResponse.setPostProcessInterceptors(postProcessInterceptors);
+         asyncResponse.setWriterInterceptors(writerInterceptors);
+         asyncResponse.setResponseFilters(responseFilters);
          return null;
       }
       if (rtn == null || method.getReturnType().equals(void.class))
@@ -314,8 +328,8 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
    protected ServerResponse prepareResponse(ServerResponse serverResponse)
    {
       serverResponse.setAnnotations(method.getAnnotations());
-      serverResponse.setMessageBodyWriterInterceptors(writerInterceptors);
-      serverResponse.setPostProcessInterceptors(postProcessInterceptors);
+      serverResponse.setWriterInterceptors(writerInterceptors);
+      serverResponse.setResponseFilters(responseFilters);
       serverResponse.setResourceMethod(method);
       serverResponse.setResourceClass(resourceClass);
       return serverResponse;

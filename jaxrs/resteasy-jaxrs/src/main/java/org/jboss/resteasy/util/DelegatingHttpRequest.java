@@ -7,6 +7,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -121,5 +122,11 @@ public class DelegatingHttpRequest implements HttpRequest
    public void initialRequestThreadFinished()
    {
       delegate.initialRequestThreadFinished();
+   }
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      return delegate.getProperties();
    }
 }

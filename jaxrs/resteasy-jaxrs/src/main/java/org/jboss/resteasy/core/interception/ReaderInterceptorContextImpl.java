@@ -1,15 +1,14 @@
-package org.jboss.resteasy.core.filter;
+package org.jboss.resteasy.core.interception;
+
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.ReaderInterceptorContext;
-import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -20,35 +19,30 @@ import java.util.Map;
  */
 public class ReaderInterceptorContextImpl implements ReaderInterceptorContext
 {
-   protected int index = 0;
    protected ReaderInterceptor[] interceptors;
    protected MessageBodyReader reader;
-   protected Class<?> type;
+   protected Class type;
    protected Type genericType;
    protected Annotation[] annotations;
    protected MediaType mediaType;
    protected MultivaluedMap<String, String> headers;
    protected InputStream inputStream;
+   protected int index = 0;
    protected Map<String, Object> properties;
 
-   public ReaderInterceptorContextImpl(Class<?> type,
-                                       Type genericType,
-                                       Annotation[] annotations,
-                                       MediaType mediaType,
-                                       MultivaluedMap<String, String> headers,
-                                       InputStream inputStream,
-                                       ReaderInterceptor[] interceptors,
-                                       MessageBodyReader reader,
+   public ReaderInterceptorContextImpl(ReaderInterceptor[] interceptors, MessageBodyReader reader, Class type,
+                                       Type genericType, Annotation[] annotations, MediaType mediaType,
+                                       MultivaluedMap<String, String> headers, InputStream inputStream,
                                        Map<String, Object> properties)
    {
+      this.interceptors = interceptors;
+      this.reader = reader;
       this.type = type;
       this.genericType = genericType;
       this.annotations = annotations;
       this.mediaType = mediaType;
       this.headers = headers;
       this.inputStream = inputStream;
-      this.interceptors = interceptors;
-      this.reader = reader;
       this.properties = properties;
    }
 
@@ -65,6 +59,42 @@ public class ReaderInterceptorContextImpl implements ReaderInterceptorContext
       {
          index--;
       }
+   }
+
+   @Override
+   public InputStream getInputStream()
+   {
+      return inputStream;
+   }
+
+   @Override
+   public void setInputStream(InputStream is)
+   {
+      this.inputStream = is;
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getHeaders()
+   {
+      return headers;
+   }
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      return properties;
+   }
+
+   @Override
+   public Annotation[] getAnnotations()
+   {
+      return annotations;
+   }
+
+   @Override
+   public void setAnnotations(Annotation[] annotations)
+   {
+      this.annotations = annotations;
    }
 
    @Override
@@ -92,18 +122,6 @@ public class ReaderInterceptorContextImpl implements ReaderInterceptorContext
    }
 
    @Override
-   public Annotation[] getAnnotations()
-   {
-      return annotations;
-   }
-
-   @Override
-   public void setAnnotations(Annotation[] annotations)
-   {
-      this.annotations = annotations;
-   }
-
-   @Override
    public MediaType getMediaType()
    {
       return mediaType;
@@ -114,29 +132,4 @@ public class ReaderInterceptorContextImpl implements ReaderInterceptorContext
    {
       this.mediaType = mediaType;
    }
-
-   @Override
-   public MultivaluedMap<String, String> getHeaders()
-   {
-      return headers;
-   }
-
-   @Override
-   public InputStream getInputStream()
-   {
-      return inputStream;
-   }
-
-   @Override
-   public void setInputStream(InputStream inputStream)
-   {
-      this.inputStream = inputStream;
-   }
-
-   @Override
-   public Map<String, Object> getProperties()
-   {
-      return properties;
-   }
-
 }

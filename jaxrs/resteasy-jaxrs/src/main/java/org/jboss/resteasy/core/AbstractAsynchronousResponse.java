@@ -4,6 +4,8 @@ import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 
 /**
@@ -12,28 +14,28 @@ import java.lang.annotation.Annotation;
  */
 public abstract class AbstractAsynchronousResponse implements AsynchronousResponse
 {
-   protected PostProcessInterceptor[] postProcessInterceptors;
-   protected MessageBodyWriterInterceptor[] messageBodyWriterInterceptors;
+   protected ContainerResponseFilter[] responseFilters;
+   protected WriterInterceptor[] writerInterceptors;
    protected Annotation[] annotations;
 
-   public PostProcessInterceptor[] getPostProcessInterceptors()
+   public ContainerResponseFilter[] getResponseFilters()
    {
-      return postProcessInterceptors;
+      return responseFilters;
    }
 
-   public void setPostProcessInterceptors(PostProcessInterceptor[] postProcessInterceptors)
+   public void setResponseFilters(ContainerResponseFilter[] responseFilters)
    {
-      this.postProcessInterceptors = postProcessInterceptors;
+      this.responseFilters = responseFilters;
    }
 
-   public MessageBodyWriterInterceptor[] getMessageBodyWriterInterceptors()
+   public WriterInterceptor[] getWriterInterceptors()
    {
-      return messageBodyWriterInterceptors;
+      return writerInterceptors;
    }
 
-   public void setMessageBodyWriterInterceptors(MessageBodyWriterInterceptor[] messageBodyWriterInterceptors)
+   public void setWriterInterceptors(WriterInterceptor[] writerInterceptors)
    {
-      this.messageBodyWriterInterceptors = messageBodyWriterInterceptors;
+      this.writerInterceptors = writerInterceptors;
    }
 
    public Annotation[] getAnnotations()
@@ -48,8 +50,8 @@ public abstract class AbstractAsynchronousResponse implements AsynchronousRespon
 
    public void setupResponse(ServerResponse response)
    {
-      response.setMessageBodyWriterInterceptors(messageBodyWriterInterceptors);
-      response.setPostProcessInterceptors(postProcessInterceptors);
+      response.setWriterInterceptors(writerInterceptors);
+      response.setResponseFilters(responseFilters);
       response.setAnnotations(annotations);
    }
 }

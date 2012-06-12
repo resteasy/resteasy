@@ -144,6 +144,10 @@ public class MockHttpRequest implements HttpRequest
       return mock;
    }
 
+   public Map<String, Object> getProperties()
+   {
+      return attributes;
+   }
 
    public MockHttpRequest header(String name, String value)
    {

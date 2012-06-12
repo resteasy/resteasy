@@ -4,6 +4,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Bridge interface between the base Resteasy JAX-RS implementation and the actual HTTP transport (i.e. a servlet container)
@@ -59,6 +60,8 @@ public interface HttpRequest
    void setAttribute(String name, Object value);
 
    void removeAttribute(String name);
+
+   Map<String, Object> getProperties();
 
 
    /**

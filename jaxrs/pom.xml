@@ -82,6 +82,7 @@
     <modules>
         <module>tjws</module>
         <module>jaxrs-api</module>
+        <!-- <module>localization</module> -->
         <module>resteasy-test-data</module>
         <module>resteasy-jaxrs</module>
         <module>resteasy-client</module>

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client;
 
+import org.jboss.resteasy.client.core.ClientInterceptorRepository;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
@@ -97,12 +98,12 @@ public class ClientRequestFactory
       applyDefaultInterceptors = true;
    }
 
-   public ClientInterceptorRepositoryImpl getPrefixInterceptors()
+   public ClientInterceptorRepository getPrefixInterceptors()
    {
       return prefixInterceptors;
    }
 
-   public ClientInterceptorRepositoryImpl getSuffixInterceptors()
+   public ClientInterceptorRepository getSuffixInterceptors()
    {
       return suffixInterceptors;
    }

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
-import org.jboss.resteasy.core.filter.WriterInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
@@ -168,23 +168,14 @@ public class ClientInvocation implements Invocation
       }
       else
       {
-         WriterInterceptorContextImpl ctx = new WriterInterceptorContextImpl(entity,
-                 type,
-                 genericType,
-                 entityAnnotations,
-                 headers.getMediaType(),
-                 headers.getHeaders(),
-                 outputStream,
-                 interceptors,
-                 writer,
-                 getProperties());
+         WriterInterceptorContextImpl ctx = new WriterInterceptorContextImpl(interceptors, writer, entity, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getProperties());
          ctx.proceed();
       }
    }
 
    protected WriterInterceptor[] getWriterInterceptors()
    {
-      return providerFactory.getClientInterceptors().getWriterInterceptors().bind(null, null);
+      return providerFactory.getClientWriterInterceptorRegistry().postMatch(null, null);
    }
 
    /*
