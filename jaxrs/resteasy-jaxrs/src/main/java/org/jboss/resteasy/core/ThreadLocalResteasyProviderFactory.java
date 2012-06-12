@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -18,6 +19,8 @@ import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -54,6 +57,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       ResteasyProviderFactory factory = delegate.get();
       if (factory == null) return defaultFactory;
       return factory;
+   }
+
+   @Override
+   public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
+   {
+      return getDelegate().getClientRequestFilters();
+   }
+
+   @Override
+   public JaxrsInterceptorRegistry<ClientResponseFilter> getClientResponseFilters()
+   {
+      return getDelegate().getClientResponseFilters();
    }
 
    @Override

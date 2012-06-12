@@ -106,26 +106,26 @@ public class ResteasyClient implements Client
    @Override
    public WebTarget target(String uri) throws IllegalArgumentException, NullPointerException
    {
-      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getAsyncInvocationExecutor(), configuration);
+      return new ClientWebTarget(this, uri, configuration);
    }
 
    @Override
    public WebTarget target(URI uri) throws NullPointerException
    {
-      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getAsyncInvocationExecutor(), configuration);
+      return new ClientWebTarget(this, uri, configuration);
    }
 
    @Override
    public WebTarget target(UriBuilder uriBuilder) throws NullPointerException
    {
-      return new ClientWebTarget(uriBuilder, getProviderFactory(), getHttpEngine(), getAsyncInvocationExecutor(), configuration);
+      return new ClientWebTarget(this, uriBuilder, configuration);
    }
 
    @Override
    public WebTarget target(Link link) throws NullPointerException
    {
       URI uri = link.getUri();
-      return new ClientWebTarget(uri, getProviderFactory(), getHttpEngine(), getAsyncInvocationExecutor(), configuration);
+      return new ClientWebTarget(this, uri, configuration);
    }
 
    @Override

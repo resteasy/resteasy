@@ -14,6 +14,7 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.LegacyPrecedence;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
@@ -41,6 +42,8 @@ import org.jboss.resteasy.util.Types;
 import javax.ws.rs.BindingPriority;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.CacheControl;
@@ -181,6 +184,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected ContainerRequestFilterRegistry containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this, precedence);
    protected ContainerResponseFilterRegistry containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this, precedence);
 
+   protected JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilters = new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class);
+   protected JaxrsInterceptorRegistry<ClientResponseFilter> clientResponseFilters = new JaxrsInterceptorRegistry<ClientResponseFilter>(this, ClientResponseFilter.class);
    protected ReaderInterceptorRegistry clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
    protected WriterInterceptorRegistry clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
    protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
@@ -427,6 +432,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public WriterInterceptorRegistry getClientWriterInterceptorRegistry()
    {
       return clientWriterInterceptorRegistry;
+   }
+
+   public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
+   {
+      return clientRequestFilters;
+   }
+
+   public JaxrsInterceptorRegistry<ClientResponseFilter> getClientResponseFilters()
+   {
+      return clientResponseFilters;
    }
 
    public boolean isBuiltinsRegistered()
