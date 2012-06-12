@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -28,9 +29,9 @@ public class ClientInvocationBuilder implements Invocation.Builder
 {
    protected ClientInvocation invocation;
 
-   public ClientInvocationBuilder(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
+   public ClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
    {
-      invocation = new ClientInvocation(uri, new ClientRequestHeaders(providerFactory), providerFactory, httpEngine, executor, configuration);
+      invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(client.getProviderFactory()), configuration);
    }
 
    public ClientInvocationBuilder(ClientInvocation invocation)

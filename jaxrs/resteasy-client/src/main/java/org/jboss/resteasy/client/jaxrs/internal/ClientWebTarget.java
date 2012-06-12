@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -22,36 +23,32 @@ import java.util.concurrent.ExecutorService;
  */
 public class ClientWebTarget implements WebTarget
 {
+   protected ResteasyClient client;
    protected UriBuilder uriBuilder;
-   protected ResteasyProviderFactory providerFactory;
-   protected ClientHttpEngine httpEngine;
-   protected ExecutorService executor;
    protected ClientConfiguration configuration;
    protected Map<String, Object> pathParams = new HashMap<String, Object>();
 
-   protected ClientWebTarget(ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration)
+   protected ClientWebTarget(ResteasyClient client, ClientConfiguration configuration)
    {
-      this.providerFactory = providerFactory;
-      this.httpEngine = httpEngine;
-      this.executor = executor;
       this.configuration = new ClientConfiguration(configuration);
+      this.client = client;
    }
 
-   public ClientWebTarget(String uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration) throws IllegalArgumentException, NullPointerException
+   public ClientWebTarget(ResteasyClient client, String uri, ClientConfiguration configuration) throws IllegalArgumentException, NullPointerException
    {
-      this(providerFactory, httpEngine, executor, configuration);
+      this(client, configuration);
       uriBuilder = UriBuilder.fromUri(uri);
    }
 
-   public ClientWebTarget(URI uri, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration) throws NullPointerException
+   public ClientWebTarget(ResteasyClient client, URI uri, ClientConfiguration configuration) throws NullPointerException
    {
-      this(providerFactory, httpEngine, executor, configuration);
+      this(client, configuration);
       uriBuilder = UriBuilder.fromUri(uri);
    }
 
-   public ClientWebTarget(UriBuilder uriBuilder, ResteasyProviderFactory providerFactory, ClientHttpEngine httpEngine, ExecutorService executor, ClientConfiguration configuration) throws NullPointerException
+   public ClientWebTarget(ResteasyClient client, UriBuilder uriBuilder, ClientConfiguration configuration) throws NullPointerException
    {
-      this(providerFactory, httpEngine, executor, configuration);
+      this(client, configuration);
       this.uriBuilder = uriBuilder.clone();
    }
 
@@ -78,7 +75,7 @@ public class ClientWebTarget implements WebTarget
    public WebTarget path(String path) throws NullPointerException
    {
       UriBuilder copy = uriBuilder.clone().path(path);
-      return new ClientWebTarget(copy, providerFactory, httpEngine, executor, configuration);
+      return new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
@@ -87,7 +84,7 @@ public class ClientWebTarget implements WebTarget
       UriBuilder copy = uriBuilder.clone();
       HashMap<String, Object> paramMap = new HashMap<String, Object>();
       paramMap.put(name, value);
-      ClientWebTarget target = new ClientWebTarget(copy, providerFactory, httpEngine, executor, configuration);
+      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
       target.pathParams = paramMap;
       return target;
    }
@@ -96,7 +93,7 @@ public class ClientWebTarget implements WebTarget
    public WebTarget pathParams(Map<String, Object> parameters) throws IllegalArgumentException, NullPointerException
    {
       UriBuilder copy = uriBuilder.clone();
-      ClientWebTarget target = new ClientWebTarget(copy, providerFactory, httpEngine, executor, configuration);
+      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
       target.pathParams = parameters;
       return target;
    }
@@ -105,14 +102,14 @@ public class ClientWebTarget implements WebTarget
    public WebTarget matrixParam(String name, Object... values) throws NullPointerException
    {
       UriBuilder copy = uriBuilder.clone().matrixParam(name, values);
-      return new ClientWebTarget(copy, providerFactory, httpEngine, executor, configuration);
+      return new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
    public WebTarget queryParam(String name, Object... values) throws NullPointerException
    {
       UriBuilder copy = uriBuilder.clone().queryParam(name, values);
-      return new ClientWebTarget(copy, providerFactory, httpEngine, executor, configuration);
+      return new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
@@ -123,19 +120,19 @@ public class ClientWebTarget implements WebTarget
       {
          uriBuilder.queryParam(entry.getKey(), entry.getValue().toArray());
       }
-      return new ClientWebTarget(copy, providerFactory, httpEngine, executor, configuration);
+      return new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
    public Invocation.Builder request()
    {
-      return new ClientInvocationBuilder(uriBuilder.build(pathParams), providerFactory, httpEngine, executor, configuration);
+      return new ClientInvocationBuilder(client, uriBuilder.build(pathParams), configuration);
    }
 
    @Override
    public Invocation.Builder request(String... acceptedResponseTypes)
    {
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(uriBuilder.build(pathParams), providerFactory, httpEngine, executor, configuration);
+      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(pathParams), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       return builder;
    }
@@ -143,7 +140,7 @@ public class ClientWebTarget implements WebTarget
    @Override
    public Invocation.Builder request(MediaType... acceptedResponseTypes)
    {
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(uriBuilder.build(pathParams), providerFactory, httpEngine, executor, configuration);
+      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(pathParams), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       return builder;
    }
