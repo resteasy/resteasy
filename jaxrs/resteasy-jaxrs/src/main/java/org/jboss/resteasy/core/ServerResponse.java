@@ -146,6 +146,12 @@ public class ServerResponse extends Response implements Serializable
    }
 
    @Override
+   public StatusType getStatusInfo()
+   {
+      return Status.fromStatusCode(status);
+   }
+
+   @Override
    public MultivaluedMap<String, Object> getMetadata()
    {
       return metadata;

@@ -46,20 +46,20 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * An injectable helper for request processing, all methods throw an
- * {@link java.lang.IllegalStateException} if called outside the scope of a request
+ * {@link IllegalStateException} if called outside the scope of a request
  * (e.g. from a provider constructor).
  *
- * Precondition processing (see the <code>evaluatePreconditions</code> methods)
- * can result in either a <code>null</code> return value to indicate that
+ * Precondition processing (see the {@code evaluatePreconditions} methods)
+ * can result in either a {@code null} return value to indicate that
  * preconditions have been met and that the request should continue, or
  * a non-null return value to indicate that preconditions were not met. In the
- * event that preconditions were not met, the returned <code>ResponseBuilder</code>
- * instance will have an appropriate status and will also include a <code>Vary</code>
+ * event that preconditions were not met, the returned {@code ResponseBuilder}
+ * instance will have an appropriate status and will also include a {@code Vary}
  * header if the {@link #selectVariant(List)} method was called prior to to calling
- * <code>evaluatePreconditions</code>. It is the responsibility of the caller
+ * {@code evaluatePreconditions}. It is the responsibility of the caller
  * to check the status and add additional metadata if required. E.g., see
  * <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.5">HTTP/1.1, section 10.3.5</a>
- * for details of the headers that are expected to accompany a <code>304 Not Modified</code>
+ * for details of the headers that are expected to accompany a {@code 304 Not Modified}
  * response.
  *
  * @author Paul Sandoz
@@ -78,14 +78,16 @@ public interface Request {
     public String getMethod();
 
     /**
-     * Select the representation variant that best matches the request. More
-     * explicit variants are chosen ahead of less explicit ones. A vary header
-     * is computed from the supplied list and automatically added to the
-     * response.
+     * Select the representation variant that best matches the request. Returns
+     * {@code null} in case there is no matching variant in the list.
+     * <p>
+     * More explicit variants are chosen ahead of less explicit ones. A vary header
+     * is computed from the supplied list and automatically added to the  response.
+     * </p>
      *
      * @param variants a list of Variant that describe all of the
      * available representation variants.
-     * @return the variant that best matches the request.
+     * @return the variant that best matches the request or {@code null} if there's no match.
      * @see Variant.VariantListBuilder
      * @throws java.lang.IllegalArgumentException if variants is empty or null
      * @throws java.lang.IllegalStateException if called outside the scope of a request
@@ -136,18 +138,18 @@ public interface Request {
      * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26">
      * If-None-Match: *</a>} preconditions.
      *
-     * <p>Note that both preconditions <code>If-None-Match: *</code> and
+     * <p>Note that both preconditions {@code If-None-Match: *} and
      * <code>If-None-Match: <i>something</i></code> will always be considered to
      * have been met and it is the applications responsibility
      * to enforce any additional method-specific semantics. E.g. a
-     * <code>PUT</code> on a resource that does not exist might succeed whereas
-     * a <code>GET</code> on a resource that does not exist would likely result
+     * {@code PUT} on a resource that does not exist might succeed whereas
+     * a {@code GET} on a resource that does not exist would likely result
      * in a 404 response. It would be the responsibility of the application to
      * generate the 404 response.</p>
      *
      * @return null if the preconditions are met or a ResponseBuilder set with
      * the appropriate status if the preconditions are not met.
-     * @throws java.lang.IllegalStateException if called outside the scope of
+     * @throws IllegalStateException if called outside the scope of
      * a request
      * @since 1.1
      */

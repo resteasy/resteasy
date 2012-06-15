@@ -45,11 +45,15 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 
 /**
- * Supports in-line instantiation of objects that represent parameterized
- * types with actual type parameters.
+ * Represents a generic message entity type {@code T}.
  *
- * An object that represents any parameterized type may be obtained by
- * sub-classing {@code GenericType}.
+ * Supports in-line instantiation of objects that represent generic types with
+ * actual type parameters. An object that represents any parameterized type may
+ * be obtained by sub-classing {@code GenericType}. Alternatively, an object
+ * representing a concrete parameterized type can be created using a
+ * {@link #of(Class, java.lang.reflect.Type) factory method} and manually specifying
+ * the {@link #getRawType() raw class type} and the {@link #getType() actual
+ * (parameterized) type}.
  *
  * <pre>
  *  GenericType&lt;List&lt;String>> stringListType = new GenericType&lt;List&lt;String>>() {};
@@ -176,10 +180,12 @@ public abstract class GenericType<T> {
     @SuppressWarnings("unchecked")
     public final Class<T> getRawType() {
         if (rawType == null) {
-
-            // Get the actual type
-            Type t = getType();
-            return (Class<T>) getRawType(t);
+            rawType = _rawType();
+            if (rawType == null) {
+                // Get the actual type
+                Type t = getType();
+                rawType = (Class<T>) getRawType(t);
+            }
         }
 
         return rawType;
@@ -217,7 +223,7 @@ public abstract class GenericType<T> {
      * Return the class that directly extends the {@code GenericType<T>} class
      * in the superclass hierarchy of the supplied {@code clazz} class.
      *
-     * @param class instance to inspect.
+     * @param clazz instance to inspect.
      * @return the direct descendant of {@code GenericType<T>} in the hierarchy
      *     of the supplied class.
      * @exception IllegalArgumentException if the provided class does not extend
@@ -277,6 +283,6 @@ public abstract class GenericType<T> {
 
     @Override
     public String toString() {
-        return "TypeLiteral{" + getType().toString() +"}";
+        return "GenericType{" + getType().toString() +"}";
     }
 }

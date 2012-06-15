@@ -176,7 +176,7 @@ public final class Entity<T> {
 
     private Entity(final T entity, final MediaType mediaType) {
         this.entity = entity;
-        this.variant = new Variant(mediaType, null, null);
+        this.variant = new Variant(mediaType, (Locale) null, null);
     }
 
     private Entity(final T entity, final Variant variant) {

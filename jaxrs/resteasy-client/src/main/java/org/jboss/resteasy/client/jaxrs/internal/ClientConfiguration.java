@@ -19,9 +19,14 @@ public class ClientConfiguration implements Configuration
    {
    }
 
-   public ClientConfiguration(ClientConfiguration configuration)
+   public ClientConfiguration(ClientConfiguration parent)
    {
-      properties.putAll(configuration.properties);
+      properties.putAll(parent.properties);
+   }
+
+   public Map<String, Object> getMutableProperties()
+   {
+      return properties;
    }
 
    @Override
@@ -40,12 +45,6 @@ public class ClientConfiguration implements Configuration
    public Set<Feature> getFeatures()
    {
       return null;
-   }
-
-   @Override
-   public boolean isEnabled(Class<? extends Feature> feature)
-   {
-      return false;
    }
 
    @Override
@@ -74,18 +73,6 @@ public class ClientConfiguration implements Configuration
 
    @Override
    public Configuration register(Object provider)
-   {
-      return null;
-   }
-
-   @Override
-   public Configuration enable(Feature feature)
-   {
-      return null;
-   }
-
-   @Override
-   public Configuration disable(Class<? extends Feature> feature)
    {
       return null;
    }

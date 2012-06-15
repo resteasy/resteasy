@@ -49,15 +49,13 @@ import javax.ws.rs.core.MultivaluedMap;
  * The getters and setters in this context class correspond to the
  * parameters of the intercepted method.
  *
- * @param <T> Java type supported by corresponding message body writer
- *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
  * @see WriterInterceptor
  * @see MessageBodyWriter
  */
-public interface WriterInterceptorContext<T> extends InterceptorContext<T> {
+public interface WriterInterceptorContext extends InterceptorContext {
 
     /**
      * Proceed to the next interceptor in the chain.
@@ -75,14 +73,14 @@ public interface WriterInterceptorContext<T> extends InterceptorContext<T> {
      *
      * @return object to be written as HTTP entity.
      */
-    T getEntity();
+    Object getEntity();
 
     /**
      * Update object to be written as HTTP entity.
      *
      * @param entity new object to be written.
      */
-    void setEntity(T entity);
+    void setEntity(Object entity);
 
     /**
      * Get the output stream for the object to be written.

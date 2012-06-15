@@ -1,9 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.NotImplementedYetException;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.AsyncInvoker;
@@ -19,7 +17,6 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -31,13 +28,18 @@ public class ClientInvocationBuilder implements Invocation.Builder
 
    public ClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
    {
-      invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(client.getProviderFactory()), configuration);
+      invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(client.providerFactory()), configuration);
    }
 
    public ClientInvocationBuilder(ClientInvocation invocation)
    {
       this.invocation = invocation.clone();
 
+   }
+
+   public ClientInvocation getInvocation()
+   {
+      return invocation;
    }
 
    public ClientRequestHeaders getHeaders()

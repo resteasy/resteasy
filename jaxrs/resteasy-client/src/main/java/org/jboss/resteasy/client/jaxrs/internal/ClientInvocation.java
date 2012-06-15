@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -25,11 +24,9 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -47,15 +44,13 @@ public class ClientInvocation implements Invocation
    protected Annotation[] entityAnnotations;
    protected ClientConfiguration configuration;
    protected URI uri;
-   protected Map<String, Object> properties = new HashMap<String, Object>();
 
-   public ClientInvocation(ResteasyClient client, URI uri, ClientRequestHeaders headers, ClientConfiguration configuration)
+   public ClientInvocation(ResteasyClient client, URI uri, ClientRequestHeaders headers, ClientConfiguration parent)
    {
       this.uri = uri;
       this.client = client;
-      this.configuration = configuration;
+      this.configuration = new ClientConfiguration(parent);
       this.headers = headers;
-      this.properties.putAll(configuration.getProperties());
    }
 
    public ClientInvocation clone()
@@ -99,7 +94,7 @@ public class ClientInvocation implements Invocation
       this.entityAnnotations = entityAnnotations;
    }
 
-   public void setEntity(Object entity)
+   public void setEntityObject(Object entity)
    {
       this.entity = entity;
    }
@@ -119,9 +114,9 @@ public class ClientInvocation implements Invocation
       this.headers = headers;
    }
 
-   public Map<String, Object> getProperties()
+   public Map<String, Object> getMutableProperties()
    {
-      return properties;
+      return configuration.getMutableProperties();
    }
 
    public Object getEntity()
@@ -146,7 +141,7 @@ public class ClientInvocation implements Invocation
 
    public ResteasyProviderFactory getProviderFactory()
    {
-      return client.getProviderFactory();
+      return client.providerFactory();
    }
 
    public void writeRequestBody(OutputStream outputStream) throws IOException
@@ -165,10 +160,11 @@ public class ClientInvocation implements Invocation
          GenericEntity genericEntity = (GenericEntity) obj;
          type = genericEntity.getRawType();
          genericType = genericEntity.getType();
+         obj = genericEntity.getEntity();
       }
 
 
-      MessageBodyWriter writer = client.getProviderFactory()
+      MessageBodyWriter writer = client.providerFactory()
               .getMessageBodyWriter(type, genericType,
                       entityAnnotations, this.getHeaders().getMediaType());
       if (writer == null)
@@ -179,28 +175,28 @@ public class ClientInvocation implements Invocation
       WriterInterceptor[] interceptors = getWriterInterceptors();
       if (interceptors == null || interceptors.length == 0)
       {
-         writer.writeTo(entity, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
+         writer.writeTo(obj, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
       }
       else
       {
-         WriterInterceptorContextImpl ctx = new WriterInterceptorContextImpl(interceptors, writer, entity, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getProperties());
+         WriterInterceptorContextImpl ctx = new WriterInterceptorContextImpl(interceptors, writer, obj, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
          ctx.proceed();
       }
    }
 
    protected WriterInterceptor[] getWriterInterceptors()
    {
-      return client.getProviderFactory().getClientWriterInterceptorRegistry().postMatch(null, null);
+      return client.providerFactory().getClientWriterInterceptorRegistry().postMatch(null, null);
    }
 
    protected ClientRequestFilter[] getRequestFilters()
    {
-      return client.getProviderFactory().getClientRequestFilters().postMatch(null, null);
+      return client.providerFactory().getClientRequestFilters().postMatch(null, null);
    }
 
    protected ClientResponseFilter[] getResponseFilters()
    {
-      return client.getProviderFactory().getClientResponseFilters().postMatch(null, null);
+      return client.providerFactory().getClientResponseFilters().postMatch(null, null);
    }
 
    // Invocation methods
@@ -235,8 +231,8 @@ public class ClientInvocation implements Invocation
             }
          }
       }
-      ClientResponse response = client.getHttpEngine().invoke(this);
-      response.setProperties(properties);
+      ClientResponse response = client.httpEngine().invoke(this);
+      response.setProperties(configuration.getMutableProperties());
 
       ClientResponseFilter[] responseFilters = getResponseFilters();
       if (requestFilters != null && requestFilters.length > 0)
@@ -274,7 +270,7 @@ public class ClientInvocation implements Invocation
    @Override
    public Future<Response> submit()
    {
-      return client.getAsyncInvocationExecutor().submit(new Callable<Response>()
+      return client.asyncInvocationExecutor().submit(new Callable<Response>()
       {
          @Override
          public Response call() throws Exception
@@ -409,7 +405,7 @@ public class ClientInvocation implements Invocation
 
       if (type.equals(Response.class))
       {
-         Future<Response> future = client.getAsyncInvocationExecutor().submit(new Callable<Response>()
+         Future<Response> future = client.asyncInvocationExecutor().submit(new Callable<Response>()
          {
             @Override
             public Response call() throws Exception
@@ -434,7 +430,7 @@ public class ClientInvocation implements Invocation
       {
          final Class<T> theType = type;
          final Type theGenericType = genericType;
-         Future<T> future = client.getAsyncInvocationExecutor().submit(new Callable<T>()
+         Future<T> future = client.asyncInvocationExecutor().submit(new Callable<T>()
          {
             @Override
             public T call() throws Exception

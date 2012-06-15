@@ -68,29 +68,45 @@ import javax.ws.rs.ext.WriterInterceptor;
 public interface DynamicBinder<T> {
 
     /**
-     * Get the filter or interceptor instance that should be bound to the particular
-     * resource method.
-     *
-     * The returned instance is expected to return an instance implementing one
+     * Get the filter or interceptor instance or class that should be bound to the
+     * particular resource method. May return {@code null}.
+     * <p>
+     * The returned provider instance or class is expected to be implementing one
      * or more of the following interfaces:
+     * </p>
      * <ul>
      *     <li>{@link ContainerRequestFilter}</li>
      *     <li>{@link ContainerResponseFilter}</li>
      *     <li>{@link ReaderInterceptor}</li>
      *     <li>{@link WriterInterceptor}</li>
      * </ul>
-     * A returned instance that does not implement any of the interfaces above
-     * is ignored and a {@link java.util.logging.Level#WARNING warning} message
-     * is logged.
+     * A provider instance or class that does not implement any of the interfaces
+     * above is ignored and a {@link java.util.logging.Level#WARNING warning}
+     * message is logged.
      * <p />
+     * <p>
+     * If the returned object is a {@link Class Class&lt;P&gt;}, JAX-RS runtime will
+     * resolve the class to an instance of type {@code P} by first looking at the
+     * already registered provider instances.
+     * If there is already a provider instance of the class registered, the JAX-RS
+     * runtime will use it, otherwise a new provider instance of the class will be
+     * instantiated, injected and registered by the JAX-RS runtime.
+     * </p>
+     * <p>
+     * In case the resolving the returned provider class to an instance fails for
+     * any reason, the dynamically bound provider class is ignored and a
+     * {@link java.util.logging.Level#WARNING warning} message is logged.
+     * </p>
+     * <p>
      * The method is called during a (sub)resource method discovery phase (typically
      * once per each discovered (sub)resource method) to return a filter instance
      * that should be bound to a particular (sub)resource method identified by the
      * supplied {@link ResourceInfo resource information}.
+     * </p>
      *
      * @param resourceInfo resource class and method information.
      * @return a filter or interceptor instance that should be dynamically bound
      *     to the (sub)resource method or {@code null} otherwise.
      */
-    public T getBoundInstance(ResourceInfo resourceInfo);
+    public T getBoundProvider(ResourceInfo resourceInfo);
 }

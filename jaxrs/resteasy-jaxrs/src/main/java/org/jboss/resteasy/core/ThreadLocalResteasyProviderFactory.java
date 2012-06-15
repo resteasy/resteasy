@@ -60,6 +60,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public String toString(Object object)
+   {
+      return getDelegate().toString(object);
+   }
+
+   @Override
+   public String toHeaderString(Object object)
+   {
+      return getDelegate().toHeaderString(object);
+   }
+
+   @Override
    public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
    {
       return getDelegate().getClientRequestFilters();
