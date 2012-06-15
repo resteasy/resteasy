@@ -50,18 +50,20 @@ package javax.ws.rs.client;
 public interface Feature {
 
     /**
-     * Called when the feature is enabled. The responsibility of the feature is
-     * to properly update the supplied configuration.
+     * Called when the feature is to be enabled.
+     *
+     * The responsibility of the feature is to properly update the supplied configuration
+     * and return {@code true} if the feature was enabled or {@code false} otherwise.
+     * <p>
+     * Note that under some circumstances the feature can decide not to enable itself, which
+     * is indicated by the returned {@code false} value. In such case the configuration does
+     * not internally register the feature in the {@link javax.ws.rs.client.Configuration#getFeatures()
+     * collection of enabled features} and the attempt to enable the feature is ignored.
+     * </p>
      *
      * @param configuration configuration where the feature should be enabled.
+     * @return {@code true} if the feature was successfully enabled, {@code false}
+     *         otherwise.
      */
-    public void onEnable(Configuration configuration);
-
-    /**
-     * Called when the feature is disabled. The responsibility of the feature is
-     * to properly update the supplied configuration.
-     *
-     * @param configuration configuration where the feature should be disabled.
-     */
-    public void onDisable(Configuration configuration);
+    public boolean onEnable(Configuration configuration);
 }

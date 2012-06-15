@@ -6,7 +6,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -41,7 +40,7 @@ public class ClientRequestContextImpl implements ClientRequestContext
    @Override
    public Map<String, Object> getProperties()
    {
-      return invocation.getProperties();
+      return invocation.getMutableProperties();
    }
 
    @Override
@@ -84,12 +83,6 @@ public class ClientRequestContextImpl implements ClientRequestContext
    public Locale getLanguage()
    {
       return invocation.getHeaders().getLanguage();
-   }
-
-   @Override
-   public int getLength()
-   {
-      return invocation.getHeaders().getLength();
    }
 
    @Override

@@ -75,17 +75,6 @@ public class InputStreamResourceTest
 
    }
 
-   public static class StringEntityTypeFactory implements EntityTypeFactory
-   {
-
-      public Class getEntityType(int status,
-                                 MultivaluedMap<String, Object> metadata)
-      {
-         return String.class;
-      }
-
-   }
-
    @BeforeClass
    public static void before() throws Exception
    {

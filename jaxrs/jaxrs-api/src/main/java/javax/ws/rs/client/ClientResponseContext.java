@@ -41,37 +41,84 @@ package javax.ws.rs.client;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 
 /**
- * TODO javadoc.
+ * Client response filter context.
+ *
+ * A mutable class that provides response-specific information for the filter,
+ * such as message headers, message entity or request-scoped properties.
+ * The exposed setters allow modification of the exposed response-specific
+ * information.
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  * @since 2.0
  */
 public interface ClientResponseContext {
-    // mutable, shared with ClientRequestContext
 
-   Map<String, Object> getProperties();
+    /**
+     * Get a mutable map of request-scoped properties that can be used for communication
+     * between different request/response processing components.
+     *
+     * May be empty, but MUST never be {@code null}. In the scope of a single
+     * request/response processing a same property map instance is shared by the
+     * following methods:
+     * <ul>
+     *     <li>{@link javax.ws.rs.client.ClientRequestContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.client.ClientResponseContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
+     * </ul>
+     *
+     * A request-scoped property is an application-defined property that may be
+     * added, removed or modified by any of the components (user, filter,
+     * interceptor etc.) that participate in a given request/response processing
+     * flow.
+     * <p />
+     * On the client side, this property map is initialized by calling
+     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
+     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
+     * on the configuration object associated with the corresponding
+     * {@link javax.ws.rs.client.Invocation request invocation}.
+     * <p />
+     * On the server side, specifying the initial values is implementation-specific.
+     * <p />
+     * If there are no initial properties set, the request-scoped property map is
+     * initialized to an empty map.
+     *
+     * @return a mutable request-scoped property map.
+     * @see javax.ws.rs.client.Configuration
+     */
+    public Map<String, Object> getProperties();
 
+    /**
+     * Get the status code associated with the response.
+     *
+     * @return the response status code or -1 if the status was not set.
+     */
     public int getStatusCode();
 
+    /**
+     * Set a new response status code.
+     *
+     * @param code new status code.
+     */
     public void setStatusCode(int code);
 
-    // mutable response headers map
+    /**
+     * Get the mutable response headers multivalued map.
+     *
+     * @return mutable multivalued map of response headers.
+     */
     public MultivaluedMap<String, String> getHeaders();
 
     /**
@@ -108,7 +155,7 @@ public interface ClientResponseContext {
      * Get the media type of the entity.
      *
      * @return the media type or {@code null} if not specified (e.g. there's no
-     *     request entity).
+     *     response entity).
      */
     public MediaType getMediaType();
 
@@ -175,42 +222,29 @@ public interface ClientResponseContext {
      */
     public Link.Builder getLinkBuilder(String relation);
 
-    // returns true if the entity input stream is not empty, false otherwise.
+    /**
+     * Check if there is a non-empty entity input stream is available in the response
+     * message.
+     *
+     * The method returns {@code true} if the entity is present, returns
+     * {@code false} otherwise.
+     *
+     * @return {@code true} if there is an entity present in the message,
+     *     {@code false} otherwise.
+     */
     public boolean hasEntity();
 
-    // invoking this method DOES NOT invoke handlers or MBR
-    // returns empty stream if no entity
+    /**
+     * Get the entity input stream.
+     *
+     * @return entity input stream.
+     */
     public InputStream getEntityStream();
 
-    // invoking this method DOES NOT invoke handlers or MBW
-    // must not be null
-    public void setEntityStream(final InputStream entityStream);
-
-    // conveniece method for setting new input stream; DOES invoke handlers & MBW
-    // produced input stream is not buffered by default
-    public <T> void writeEntity(
-            final Class<T> type,
-            final Annotation annotations[],
-            final MediaType mediaType,
-            final T entity);
-
-    public <T> void writeEntity(
-            final GenericType<T> genericType,
-            final Annotation annotations[],
-            final MediaType mediaType,
-            final T entity);
-
-    // consumes stream and invokes handlers & MBR to read entity
-    // if entity is buffered, resets the buffering stream afterwards
-    // (allows for multiple readEntity(...) calls on the same buffer})
-    public <T> T readEntity(final Class<T> type) throws MessageProcessingException;
-
-    public <T> T readEntity(final GenericType<T> entityType) throws MessageProcessingException;
-
-    public <T> T readEntity(final Class<T> type, final Annotation[] annotations) throws MessageProcessingException;
-
-    public <T> T readEntity(final GenericType<T> entityType, final Annotation[] annotations) throws MessageProcessingException;
-
-    // buffers the entity input stream locally
-    public void bufferEntity() throws MessageProcessingException;
+    /**
+     * Set a new entity input stream.
+     *
+     * @param input new entity input stream.
+     */
+    public void setEntityStream(InputStream input);
 }

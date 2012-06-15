@@ -42,6 +42,7 @@ package javax.ws.rs.core;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Locale;
+
 import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
@@ -61,10 +62,86 @@ public class Variant {
      * Create a new instance of Variant.
      *
      * @param mediaType the media type of the variant - may be {@code null}.
-     * @param language the language of the variant - may be {@code null}.
-     * @param encoding the content encoding of the variant - may be {@code null}.
-     * @throws java.lang.IllegalArgumentException if all three parameters are
-     *    {@code null}.
+     * @param language  the language of the variant (two-letter ISO-639 code);
+     *                  may be {@code null}.
+     * @param encoding  the content encoding of the variant - may be {@code null}.
+     * @throws java.lang.IllegalArgumentException
+     *          if all three parameters are
+     *          {@code null}.
+     * @since 2.0
+     */
+    public Variant(MediaType mediaType, String language, String encoding) {
+        if (mediaType == null && language == null && encoding == null) {
+            throw new IllegalArgumentException("mediaType, language, encoding all null");
+        }
+        this.encoding = encoding;
+        if (language != null) this.language = new Locale(language);
+        this.mediaType = mediaType;
+    }
+
+    /**
+     * Create a new instance of Variant.
+     *
+     * @param mediaType the media type of the variant - may be {@code null}.
+     * @param language  the language of the variant (two-letter ISO-639 code);
+     *                  may be {@code null}.
+     * @param country   uppercase two-letter ISO-3166 language code of the variant;
+     *                  may be {@code null} provided {@code language} is {@code null} too.
+     * @param encoding  the content encoding of the variant - may be {@code null}.
+     * @throws java.lang.IllegalArgumentException
+     *          if all three parameters are
+     *          {@code null}.
+     * @since 2.0
+     */
+    public Variant(MediaType mediaType, String language, String country, String encoding) {
+        if (mediaType == null && language == null && encoding == null) {
+            throw new IllegalArgumentException("mediaType, language, encoding all null");
+        }
+        this.encoding = encoding;
+        if (language != null)
+        {
+           if (country != null) this.language = new Locale(language, country);
+           else this.language = new Locale(language);
+        }
+        this.mediaType = mediaType;
+    }
+
+    /**
+     * Create a new instance of Variant.
+     *
+     * @param mediaType       the media type of the variant - may be {@code null}.
+     * @param language        the language of the variant (two-letter ISO-639 code);
+     *                        may be {@code null}.
+     * @param country         uppercase two-letter ISO-3166 language code of the variant;
+     *                        may be {@code null} provided {@code language} is {@code null} too.
+     * @param languageVariant vendor and browser specific language code of the variant
+     *                        (see also {@link Locale} class description);
+     *                        may be {@code null} provided {@code language} and
+     *                        {@code country} are {@code null} too.
+     * @param encoding        the content encoding of the variant - may be {@code null}.
+     * @throws java.lang.IllegalArgumentException
+     *          if all three parameters are
+     *          {@code null}.
+     * @since 2.0
+     */
+    public Variant(MediaType mediaType, String language, String country, String languageVariant, String encoding) {
+        if (mediaType == null && language == null && encoding == null) {
+            throw new IllegalArgumentException("mediaType, language, encoding all null");
+        }
+        this.encoding = encoding;
+        if (language != null) this.language = new Locale(language, country, languageVariant);
+        this.mediaType = mediaType;
+    }
+
+    /**
+     * Create a new instance of Variant.
+     *
+     * @param mediaType the media type of the variant - may be {@code null}.
+     * @param language  the language of the variant - may be {@code null}.
+     * @param encoding  the content encoding of the variant - may be {@code null}.
+     * @throws java.lang.IllegalArgumentException
+     *          if all three parameters are
+     *          {@code null}.
      */
     public Variant(MediaType mediaType, Locale language, String encoding) {
         if (mediaType == null && language == null && encoding == null) {
@@ -76,24 +153,39 @@ public class Variant {
     }
 
     /**
-     * Get the language of the variant
-     * @return the language or null if none set
+     * Get the language of the variant.
+     *
+     * @return the language or  {@code null} if none set.
      */
     public Locale getLanguage() {
         return language;
     }
 
     /**
-     * Get the media type of the variant
-     * @return the media type or null if none set
+     * Get the string representation of the variant language,
+     * or {@code null} if no language has been set.
+     *
+     * @return the string representing variant language or {@code null}
+     *         if none set.
+     * @since 2.0
+     */
+    public String getLanguageString() {
+        return language.toString();
+    }
+
+    /**
+     * Get the media type of the variant.
+     *
+     * @return the media type or  {@code null} if none set.
      */
     public MediaType getMediaType() {
         return mediaType;
     }
 
     /**
-     * Get the encoding of the variant
-     * @return the encoding or null if none set
+     * Get the encoding of the variant.
+     *
+     * @return the encoding or  {@code null} if none set.
      */
     public String getEncoding() {
         return encoding;
@@ -102,12 +194,14 @@ public class Variant {
     /**
      * Create a {@link VariantListBuilder} initialized with a set of supported
      * media types.
-     * @param mediaTypes the available mediaTypes. If specific charsets
-     * are supported they should be included as parameters of the respective
-     * media type.
-     * @return the initailized builder
-     * @throws java.lang.IllegalArgumentException if mediaTypes is null or
-     * contains no elements.
+     *
+     * @param mediaTypes the available mediaTypes. If specific char-sets
+     *                   are supported they should be included as parameters of the respective
+     *                   media type.
+     * @return the initialized builder.
+     * @throws java.lang.IllegalArgumentException
+     *          if mediaTypes is null or
+     *          contains no elements.
      */
     public static VariantListBuilder mediaTypes(MediaType... mediaTypes) {
         VariantListBuilder b = VariantListBuilder.newInstance();
@@ -118,10 +212,12 @@ public class Variant {
     /**
      * Create a {@link VariantListBuilder} initialized with a set of supported
      * languages.
+     *
      * @param languages the available languages.
-     * @return the initailized builder
-     * @throws java.lang.IllegalArgumentException if languages is null or
-     * contains no elements.
+     * @return the initialized builder.
+     * @throws java.lang.IllegalArgumentException
+     *          if languages is null or
+     *          contains no elements.
      */
     public static VariantListBuilder languages(Locale... languages) {
         VariantListBuilder b = VariantListBuilder.newInstance();
@@ -132,10 +228,12 @@ public class Variant {
     /**
      * Create a {@link VariantListBuilder} initialized with a set of supported
      * encodings.
+     *
      * @param encodings the available encodings.
-     * @return the initailized builder
-     * @throws java.lang.IllegalArgumentException if encodings is null or
-     * contains no elements.
+     * @return the initialized builder.
+     * @throws java.lang.IllegalArgumentException
+     *          if encodings is null or
+     *          contains no elements.
      */
     public static VariantListBuilder encodings(String... encodings) {
         VariantListBuilder b = VariantListBuilder.newInstance();
@@ -145,7 +243,8 @@ public class Variant {
 
     /**
      * Generate hash code from variant properties.
-     * @return the hash code
+     *
+     * @return the hash code.
      */
     @Override
     public int hashCode() {
@@ -159,7 +258,8 @@ public class Variant {
     /**
      * Compares obj to this variant to see if they are the same
      * considering all property values.
-     * @param obj the object to compare to
+     *
+     * @param obj the object to compare to.
      * @return true if the two variants are the same, false otherwise.
      */
     @Override
@@ -210,7 +310,8 @@ public class Variant {
 
         /**
          * Create a new builder instance.
-         * @return a new Builder
+         *
+         * @return a new builder instance.
          */
         public static VariantListBuilder newInstance() {
             VariantListBuilder b = RuntimeDelegate.getInstance().createVariantListBuilder();
@@ -221,7 +322,8 @@ public class Variant {
          * Build a list of representation variants from the current state of
          * the builder. After this method is called the builder is reset to
          * an empty state.
-         * @return a list of representation variants
+         *
+         * @return a list of representation variants.
          */
         public abstract List<Variant> build();
 
@@ -234,32 +336,36 @@ public class Variant {
          * <p><pre>List<Variant> list = VariantListBuilder.newInstance().languages("en","fr")
          *   .encodings("zip", "identity").add().build()</pre>
          *
-         * @return the updated builder
-         * @throws java.lang.IllegalStateException if there is not at least one
-         * mediaType, language or encoding set for the current variant.
+         * @return the updated builder.
+         * @throws java.lang.IllegalStateException
+         *          if there is not at least one
+         *          mediaType, language or encoding set for the current variant.
          */
         public abstract VariantListBuilder add();
 
         /**
          * Set the language[s] for this variant.
-         * @param languages the available languages
-         * @return the updated builder
+         *
+         * @param languages the available languages.
+         * @return the updated builder.
          */
         public abstract VariantListBuilder languages(Locale... languages);
 
         /**
          * Set the encoding[s] for this variant.
-         * @param encodings the available encodings
-         * @return the updated builder
+         *
+         * @param encodings the available encodings.
+         * @return the updated builder.
          */
         public abstract VariantListBuilder encodings(String... encodings);
 
         /**
          * Set the media type[s] for this variant.
+         *
          * @param mediaTypes the available mediaTypes. If specific charsets
-         * are supported they should be included as parameters of the respective
-         * media type.
-         * @return the updated builder
+         *                   are supported they should be included as parameters of the respective
+         *                   media type.
+         * @return the updated builder.
          */
         public abstract VariantListBuilder mediaTypes(MediaType... mediaTypes);
     }

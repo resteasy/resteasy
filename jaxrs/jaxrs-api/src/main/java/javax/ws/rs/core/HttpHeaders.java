@@ -58,7 +58,7 @@ public interface HttpHeaders {
 
     /**
      * Get the values of a HTTP request header. The returned List is read-only.
-     * This is a shortcut for <code>getRequestHeaders().get(name)</code>.
+     * This is a shortcut for {@code getRequestHeaders().get(name)}.
      *
      * @param name the header name, case insensitive.
      * @return a read-only list of header values.
@@ -68,7 +68,7 @@ public interface HttpHeaders {
 
     /**
      * Get the values of HTTP request headers. The returned Map is case-insensitive
-     * wrt. keys and is read-only.
+     * wrt. keys and is read-only. The method never returns {@code null}.
      *
      * @return a read-only map of header names and values.
      * @throws java.lang.IllegalStateException if called outside the scope of a request.

@@ -90,7 +90,7 @@ public interface MessageBodyReader<T> {
      *     used.
      * @return {@code true} if the type is supported, otherwise {@code false}.
      */
-    boolean isReadable(Class<?> type, Type genericType,
+    public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType);
 
     /**
@@ -118,7 +118,7 @@ public interface MessageBodyReader<T> {
      *     HTTP error response needs to be produced. Only effective if thrown
      *     prior to the response being committed.
      */
-    T readFrom(Class<T> type, Type genericType,
+    public T readFrom(Class<T> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders,
             InputStream entityStream)

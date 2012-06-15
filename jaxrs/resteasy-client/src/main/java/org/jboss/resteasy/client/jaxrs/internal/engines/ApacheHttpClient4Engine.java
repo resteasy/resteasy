@@ -119,12 +119,6 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
             stream = is;
          }
 
-         @Override
-         public boolean bufferEntity() throws MessageProcessingException
-         {
-            throw new NotImplementedYetException();
-         }
-
          public InputStream getInputStream()
          {
             if (stream == null)
@@ -169,7 +163,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
             }
          }
       };
-      response.setProperties(request.getProperties());
+      response.setProperties(request.getMutableProperties());
       response.setStatus(res.getStatusLine().getStatusCode());
       response.setHeaders(extractHeaders(res));
       response.setProviderFactory(request.getProviderFactory());

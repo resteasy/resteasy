@@ -50,15 +50,13 @@ import javax.ws.rs.container.DynamicBinder;
  * runtime. Message body interceptor instances may also be discovered and
  * bound {@link DynamicBinder dynamically} to particular resource methods.
  *
- * @param <T> Java type supported by corresponding message body writer
- *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @author Marek Potociar (marek.potociar at oracle.com)
  * @since 2.0
  * @see MessageBodyWriter
  */
-public interface WriterInterceptor<T> {
+public interface WriterInterceptor {
 
     /**
      * Interceptor method wrapping calls to
@@ -72,6 +70,6 @@ public interface WriterInterceptor<T> {
      * @throws java.io.IOException if an IO error arises.
      * @throws javax.ws.rs.WebApplicationException thrown by wrapped method.
      */
-    void aroundWriteTo(WriterInterceptorContext<T> context)
+    void aroundWriteTo(WriterInterceptorContext context)
             throws java.io.IOException, javax.ws.rs.WebApplicationException;
 }

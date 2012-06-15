@@ -50,13 +50,10 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    private static final Pattern uriPattern = Pattern.compile("([^:]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
-   private static final Pattern pathPattern = Pattern.compile("(/[^?]*)(\\?([^#]+))?(#(.*))?");
+   private static final Pattern sspPattern = Pattern.compile("([^:]+):(.+)");
+   private static final Pattern pathPattern = Pattern.compile("(/[^?]*)?(\\?([^#]+))?(#(.*))?");
 
    /**
-    * Must follow the patter scheme://host:port/path?query#fragment
-    * <p/>
-    * port, path, query and fragment are optional. Scheme and host must be specified.
-    * <p/>
     * You may put path parameters anywhere within the uriTemplate except port
     *
     * @param uriTemplate
@@ -70,10 +67,6 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    /**
-    * Must follow the pattern scheme://host:port/path?query#fragment or /path?query#fragment
-    * <p/>
-    * port, path, query and fragment are optional. Scheme and host must be specified.
-    * <p/>
     * You may put path parameters anywhere within the uriTemplate except port
     *
     * @param uriTemplate
@@ -82,26 +75,51 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder uriTemplate(String uriTemplate)
    {
       Matcher match = uriPattern.matcher(uriTemplate);
-      if (!match.matches())
-      {
-         match = pathPattern.matcher(uriTemplate);
-         if (!match.matches()) throw new RuntimeException("Illegal uri template: " + uriTemplate);
-         if (match.group(1) != null) path(match.group(1));
-         if (match.group(3) != null) replaceQuery(match.group(7));
-         if (match.group(5) != null) fragment(match.group(8));
-      }
-      else
+      if (match.matches())
       {
          scheme(match.group(1));
-         host(match.group(2));
+         String host = match.group(2);
+         if (host != null)
+         {
+            int at = host.indexOf('@');
+            if (at > -1)
+            {
+               String user = host.substring(0, at);
+               host = host.substring(at + 1);
+               userInfo(user);
+            }
+         }
+         host(host);
          if (match.group(4) != null) port(Integer.valueOf(match.group(4)));
          if (match.group(5) != null) path(match.group(5));
          if (match.group(7) != null) replaceQuery(match.group(7));
-         if (match.group(9) != null) fragment(match.group(8));
+         if (match.group(9) != null) fragment(match.group(9));
+         return this;
+      }
+      match = sspPattern.matcher(uriTemplate);
+      if (match.matches())
+      {
+         scheme(match.group(1));
+         schemeSpecificPart(match.group(2));
+         return this;
       }
 
-      return this;
+      match = pathPattern.matcher(uriTemplate);
+      if (match.matches())
+      {
+         if (match.group(1) != null) path(match.group(1));
+         if (match.group(3) != null) replaceQuery(match.group(3));
+         if (match.group(5) != null) fragment(match.group(5));
+         return this;
+      }
+      throw new RuntimeException("Illegal uri template: " + uriTemplate);
 
+   }
+
+   @Override
+   public UriBuilder uri(String uriTemplate) throws IllegalArgumentException
+   {
+      return uriTemplate(uriTemplate);
    }
 
    @Override
@@ -653,27 +671,27 @@ public class UriBuilderImpl extends UriBuilder
     * because
     * <ul>
     * <li> queryParam() supports URI template processing and this method must
-    *      always encode braces (for parameter substitution is not possible for
-    *      {@code @QueryParam} parameters).
-    *
+    * always encode braces (for parameter substitution is not possible for
+    * {@code @QueryParam} parameters).
+    * <p/>
     * <li> queryParam() supports "contextual URI encoding" (i.e., it does not
-    *      encode {@code %} characters that are followed by two hex characters).
-    *      The JavaDoc for {@code @QueryParam.value()} explicitly states that
-    *      the value is specified in decoded format and that "any percent
-    *      encoded literals within the value will not be decoded and will
-    *      instead be treated as literal text". This means that it is an
-    *      explicit bug to perform contextual URI encoding of this method's
-    *      name parameter; hence, we must always encode said parameter. This
-    *      method also foregoes contextual URI encoding on this method's value
-    *      parameter because it represents arbitrary data passed to a
-    *      {@code QueryParam} parameter of a client proxy (since the client
-    *      proxy is nothing more than a transport layer, it should not be
-    *      "interpreting" such data; instead, it should faithfully transmit
-    *      this data over the wire).
+    * encode {@code %} characters that are followed by two hex characters).
+    * The JavaDoc for {@code @QueryParam.value()} explicitly states that
+    * the value is specified in decoded format and that "any percent
+    * encoded literals within the value will not be decoded and will
+    * instead be treated as literal text". This means that it is an
+    * explicit bug to perform contextual URI encoding of this method's
+    * name parameter; hence, we must always encode said parameter. This
+    * method also foregoes contextual URI encoding on this method's value
+    * parameter because it represents arbitrary data passed to a
+    * {@code QueryParam} parameter of a client proxy (since the client
+    * proxy is nothing more than a transport layer, it should not be
+    * "interpreting" such data; instead, it should faithfully transmit
+    * this data over the wire).
     * </ul>
     *
-    * @param name   the name of the query parameter.
-    * @param value  the value of the query parameter.
+    * @param name  the name of the query parameter.
+    * @param value the value of the query parameter.
     * @return Returns this instance to allow call chaining.
     */
    public UriBuilder clientQueryParam(String name, Object value) throws IllegalArgumentException

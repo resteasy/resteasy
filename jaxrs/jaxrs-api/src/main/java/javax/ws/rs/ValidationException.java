@@ -53,14 +53,14 @@ import javax.ws.rs.core.Response;
 public class ValidationException extends WebApplicationException {
 
     private static final long serialVersionUID = 11660103L;
-    private List<String> violations;
+    private List<? extends ValidationError> violations;
 
     /**
      * Construct a new instance with an HTTP status code of 500 and an
      * empty list of violations.
      */
     public ValidationException() {
-        this(Response.Status.INTERNAL_SERVER_ERROR, Collections.<String>emptyList());
+        this(Response.Status.INTERNAL_SERVER_ERROR, Collections.<ValidationError>emptyList());
     }
 
     /**
@@ -70,7 +70,7 @@ public class ValidationException extends WebApplicationException {
      * @param status HTTP status code
      */
     public ValidationException(final int status) {
-        this(status, Collections.<String>emptyList());
+        this(status, Collections.<ValidationError>emptyList());
     }
 
     /**
@@ -81,7 +81,7 @@ public class ValidationException extends WebApplicationException {
      * @throws IllegalArgumentException if status is {@code null}
      */
     public ValidationException(final Response.Status status) throws IllegalArgumentException {
-        this(status, Collections.<String>emptyList());
+        this(status, Collections.<ValidationError>emptyList());
     }
 
     /**
@@ -92,7 +92,7 @@ public class ValidationException extends WebApplicationException {
      * @param violations list of violations
      * @throws IllegalArgumentException if status or violations is {@code null}
      */
-    public ValidationException(final int status, final List<String> violations)
+    public ValidationException(final int status, final List<? extends ValidationError> violations)
             throws IllegalArgumentException {
         super(status);
         if (violations == null) {
@@ -109,7 +109,7 @@ public class ValidationException extends WebApplicationException {
      * @param violations list of violations
      * @throws IllegalArgumentException if status or violations is {@code null}
      */
-    public ValidationException(final Response.Status status, final List<String> violations)
+    public ValidationException(final Response.Status status, final List<? extends ValidationError> violations)
             throws IllegalArgumentException {
         super(status);
         if (violations == null) {
@@ -123,7 +123,7 @@ public class ValidationException extends WebApplicationException {
      *
      * @return list of constraint validations.
      */
-    public List<String> getViolations() {
+    public List<? extends ValidationError> getViolations() {
         return violations;
     }
 }

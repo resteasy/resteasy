@@ -42,6 +42,7 @@ package javax.ws.rs.ext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -51,82 +52,102 @@ import javax.ws.rs.core.MediaType;
  * setters in this context class correspond to the parameters in
  * the aforementioned methods.
  *
- * @param <T> Java type supported by corresponding message body provider
- *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
- * @since 2.0
  * @see ReaderInterceptor
  * @see WriterInterceptor
  * @see ReaderInterceptorContext
  * @see WriterInterceptorContext
+ * @since 2.0
  */
-public interface InterceptorContext<T> {
+public interface InterceptorContext {
 
     /**
      * Get a mutable map of request-scoped properties that can be used for communication
-     * between different request/response processing components. May be empty, but
-     * MUST never be {@code null}. In the scope of a single request/response processing,
-     * a same property map instance is shared by the following methods:
+     * between different request/response processing components.
+     *
+     * May be empty, but MUST never be {@code null}. In the scope of a single
+     * request/response processing a same property map instance is shared by the
+     * following methods:
      * <ul>
-     *     <li>{@link javax.ws.rs.container.ContainerRequestContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.container.ContainerResponseContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.client.ClientRequestContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.client.ClientResponseContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
+     * <li>{@link javax.ws.rs.container.ContainerRequestContext#getProperties() }</li>
+     * <li>{@link javax.ws.rs.container.ContainerResponseContext#getProperties() }</li>
+     * <li>{@link javax.ws.rs.client.ClientRequestContext#getProperties() }</li>
+     * <li>{@link javax.ws.rs.client.ClientResponseContext#getProperties() }</li>
+     * <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
      * </ul>
+     * <p>
      * A request-scoped property is an application-defined property that may be
-     * added, removed or modified by any of the components (user, filter, interceptor etc.)
-     * that participate in a given request/response processing flow.
-     * <p />
+     * added, removed or modified by any of the components (user, filter,
+     * interceptor etc.) that participate in a given request/response processing
+     * flow.
+     * </p>
+     * <p>
      * On the client side, this property map is initialized by calling
      * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
      * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
      * on the configuration object associated with the corresponding
      * {@link javax.ws.rs.client.Invocation request invocation}.
-     * <p />
+     * </p>
+     * <p>
      * On the server side, specifying the initial values is implementation-specific.
-     * <p />
+     * </p>
+     * <p>
      * If there are no initial properties set, the request-scoped property map is
      * initialized to an empty map.
+     * </p>
      *
      * @return a mutable request-scoped property map.
      * @see javax.ws.rs.client.Configuration
      */
-    Map<String, Object> getProperties();
+    public Map<String, Object> getProperties();
 
     /**
-     * Get annotations on the formal declaration of the resource
-     * method parameter that is the target of the message body
-     * conversion. As part of the client API, this method will
-     * return null.
+     * Get an array of the annotations formally declared on the artifact that
+     * initiated the intercepted entity provider invocation.
      *
-     * @return annotations on the resource method parameter
+     * E.g. if the message body is to be converted into a method parameter, this
+     * will be the annotations on that parameter returned by
+     * {@link java.lang.reflect.Method#getParameterAnnotations Method.getParameterAnnotations()};
+     * if the server-side response entity instance is to be converted into an
+     * output stream, this will be the annotations on the matched resource method
+     * returned by {@link java.lang.reflect.Method#getAnnotations() Method.getAnnotations()}.
+     *
+     * This method may return an empty array in case the interceptor is
+     * not invoked in a context of any particular resource method
+     * (e.g. as part of the client API), but will never return {@code null}.
+     *
+     * @return annotations declared on the artifact that initiated the intercepted
+     *         entity provider invocation.
      */
-    Annotation[] getAnnotations();
+    public Annotation[] getAnnotations();
 
     /**
-     * Update annotations on the formal declaration of the resource
-     * method parameter that is the target of the message body conversion.
+     * Update annotations on the formal declaration of the artifact that
+     * initiated the intercepted entity provider invocation.
+     *
      * Calling this method has no effect in the client API.
      *
-     * @param annotations annotations for the resource method parameter
+     * @param annotations updated annotations declarataion of the artifact that
+     *                    initiated the intercepted entity provider invocation.
+     *                    Must not be {@code null}.
+     * @throws NullPointerException in case the input parameter is {@code null}.
      */
-    void setAnnotations(Annotation[] annotations);
+    public void setAnnotations(Annotation[] annotations);
 
     /**
      * Get Java type supported by corresponding message body provider.
      *
      * @return java type supported by provider
      */
-    Class<T> getType();
+    Class<?> getType();
 
     /**
      * Update Java type before calling message body provider.
      *
      * @param type java type for provider
      */
-    void setType(Class<T> type);
+    public void setType(Class<?> type);
 
     /**
      * Get the type of the object to be produced or written.
@@ -140,19 +161,19 @@ public interface InterceptorContext<T> {
      *
      * @param genericType new type for object
      */
-    void setGenericType(Type genericType);
+    public void setGenericType(Type genericType);
 
     /**
      * Get media type of HTTP entity.
      *
      * @return media type of HTTP entity
      */
-    MediaType getMediaType();
+    public MediaType getMediaType();
 
     /**
      * Update media type of HTTP entity.
      *
      * @param mediaType new type for HTTP entity
      */
-    void setMediaType(MediaType mediaType);
+    public void setMediaType(MediaType mediaType);
 }

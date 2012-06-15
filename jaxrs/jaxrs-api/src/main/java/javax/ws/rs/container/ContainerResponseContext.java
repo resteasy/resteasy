@@ -40,7 +40,6 @@
 package javax.ws.rs.container;
 
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Date;
@@ -54,19 +53,59 @@ import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
- * TODO class javadoc.
+ * Container response filter context.
+ *
+ * A mutable class that provides response-specific information for the filter,
+ * such as message headers, message entity or request-scoped properties.
+ * The exposed setters allow modification of the exposed response-specific
+ * information.
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  * @since 2.0
  */
 public interface ContainerResponseContext {
 
-    // mutable, shared with ContainerRequestContext
-    Map<String, Object> getProperties();
+    /**
+     * Get a mutable map of request-scoped properties that can be used for communication
+     * between different request/response processing components.
+     *
+     * May be empty, but MUST never be {@code null}. In the scope of a single
+     * request/response processing a same property map instance is shared by the
+     * following methods:
+     * <ul>
+     *     <li>{@link javax.ws.rs.container.ContainerRequestContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.container.ContainerResponseContext#getProperties() }</li>
+     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
+     * </ul>
+     *
+     * A request-scoped property is an application-defined property that may be
+     * added, removed or modified by any of the components (user, filter,
+     * interceptor etc.) that participate in a given request/response processing
+     * flow.
+     * <p />
+     * On the client side, this property map is initialized by calling
+     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
+     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
+     * on the configuration object associated with the corresponding
+     * {@link javax.ws.rs.client.Invocation request invocation}.
+     * <p />
+     * On the server side, specifying the initial values is implementation-specific.
+     * <p />
+     * If there are no initial properties set, the request-scoped property map is
+     * initialized to an empty map.
+     *
+     * @return a mutable request-scoped property map.
+     */
+    public Map<String, Object> getProperties();
 
-    // mutable response headers map
+    /**
+     * Get the mutable response headers multivalued map.
+     *
+     * @return mutable multivalued map of response headers.
+     */
     public MultivaluedMap<String, Object> getHeaders();
 
     /**
@@ -103,7 +142,7 @@ public interface ContainerResponseContext {
      * Get the media type of the entity.
      *
      * @return the media type or {@code null} if not specified (e.g. there's no
-     *     request entity).
+     *     response entity).
      */
     public MediaType getMediaType();
 
@@ -170,35 +209,86 @@ public interface ContainerResponseContext {
      */
     public Link.Builder getLinkBuilder(String relation);
 
-    // returns true if the getEntity() does not return null
+    /**
+     * Check if there is an entity available in the response.
+     *
+     * The method returns {@code true} if the entity is present, returns
+     * {@code false} otherwise.
+     *
+     * @return {@code true} if there is an entity present in the message,
+     *     {@code false} otherwise.
+     */
     public boolean hasEntity();
 
-    // get the entity or null if no entity was set yet
+    /**
+     * Get the message entity Java instance.
+     *
+     * Returns {@code null} if the message does not contain an entity.
+     *
+     * @return the message entity or {@code null} if message does not contain an
+     *     entity body.
+     */
     public Object getEntity();
 
-    // invoking this method DOES NOT invoke handlers or MBW
-    public OutputStream getEntityStream();
-
-    // invoking this method DOES NOT invoke handlers or MBR
-    // must not be null
-    public void setEntityStream(final OutputStream entityStream);
-
-    // conveniece method for setting new entity
+    /**
+     * Set a new response message entity.
+     *
+     * @param <T> entity Java type.
+     * @param type declared entity class.
+     * @param annotations annotations attached to the entity.
+     * @param mediaType entity media type.
+     * @param entity entity object.
+     *
+     * @see MessageBodyWriter
+     */
     public <T> void setEntity(
             final Class<T> type,
             final Annotation annotations[],
             final MediaType mediaType,
             final T entity);
 
+    /**
+     * Set a new response message entity.
+     *
+     * @param <T> entity Java type.
+     * @param type declared generic entity type.
+     * @param annotations annotations attached to the entity.
+     * @param mediaType entity media type.
+     * @param entity entity object.
+     *
+     * @see MessageBodyWriter
+     */
     public <T> void setEntity(
-            final GenericType<T> genericType,
+            final GenericType<T> type,
             final Annotation annotations[],
             final MediaType mediaType,
             final T entity);
 
-    // get the declared entity type (used by MBW)
+    /**
+     * Get the declared generic message entity type information.
+     *
+     * @return declared generic message entity type.
+     */
     public GenericType<?> getDeclaredEntityType();
 
-    // get the entity annotations (used by MBW)
+    /**
+     * Get the annotations attached to the entity.
+     *
+     * @return entity annotations.
+     */
     public Annotation[] getEntityAnnotations();
+
+    /**
+     * Get the entity output stream.
+     *
+     * @return entity output stream.
+     */
+    public OutputStream getEntityStream();
+
+    /**
+     * Set a new entity output stream.
+     *
+     * @param input new entity output stream.
+     */
+    public void setEntityStream(OutputStream input);
 }

@@ -46,7 +46,7 @@ public class ExceptionMapperInjectionTest extends BaseResourceTest
          System.out.println("Method: " + request.getMethod());
 
          ArrayList<Variant> list = new ArrayList<Variant>();
-         list.add(new Variant(MediaType.APPLICATION_JSON_TYPE, null, null));
+         list.add(new Variant(MediaType.APPLICATION_JSON_TYPE, (String)null, null));
          request.selectVariant(list);
          return Response.status(Response.Status.PRECONDITION_FAILED).build();
       }

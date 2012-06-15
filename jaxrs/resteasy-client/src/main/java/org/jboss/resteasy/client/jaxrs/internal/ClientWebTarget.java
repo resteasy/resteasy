@@ -1,7 +1,9 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -21,12 +23,12 @@ import java.util.concurrent.ExecutorService;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientWebTarget implements WebTarget
+public class ClientWebTarget implements ResteasyWebTarget
 {
    protected ResteasyClient client;
    protected UriBuilder uriBuilder;
    protected ClientConfiguration configuration;
-   protected Map<String, Object> pathParams = new HashMap<String, Object>();
+   protected Map<String, String> pathParams = new HashMap<String, String>();
 
    protected ClientWebTarget(ResteasyClient client, ClientConfiguration configuration)
    {
@@ -52,6 +54,23 @@ public class ClientWebTarget implements WebTarget
       this.uriBuilder = uriBuilder.clone();
    }
 
+   @Override
+   public ResteasyClient getResteasyClient()
+   {
+      return client;
+   }
+
+   @Override
+   public <T> T proxy(Class<T> proxyInterface)
+   {
+      return ProxyBuilder.builder(proxyInterface, this).build();
+   }
+
+   @Override
+   public <T> ProxyBuilder<T> proxyBuilder(Class<T> proxyInterface)
+   {
+      return ProxyBuilder.builder(proxyInterface, this);
+   }
 
    @Override
    public URI getUri()
@@ -68,7 +87,7 @@ public class ClientWebTarget implements WebTarget
    @Override
    public Configuration configuration()
    {
-      throw new NotImplementedYetException();
+      return configuration;
    }
 
    @Override
@@ -82,8 +101,9 @@ public class ClientWebTarget implements WebTarget
    public WebTarget pathParam(String name, Object value) throws IllegalArgumentException, NullPointerException
    {
       UriBuilder copy = uriBuilder.clone();
-      HashMap<String, Object> paramMap = new HashMap<String, Object>();
-      paramMap.put(name, value);
+      HashMap<String, String> paramMap = new HashMap<String, String>();
+      paramMap.putAll(pathParams);
+      paramMap.put(name, client.providerFactory().toString(value));
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
       target.pathParams = paramMap;
       return target;
@@ -94,21 +114,38 @@ public class ClientWebTarget implements WebTarget
    {
       UriBuilder copy = uriBuilder.clone();
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
-      target.pathParams = parameters;
+      HashMap<String, String> paramMap = new HashMap<String, String>();
+      for (Map.Entry<String, Object> entry : parameters.entrySet())
+      {
+         paramMap.put(entry.getKey(), client.providerFactory().toString(entry.getValue()));
+      }
+      target.pathParams = paramMap;
       return target;
    }
 
    @Override
    public WebTarget matrixParam(String name, Object... values) throws NullPointerException
    {
-      UriBuilder copy = uriBuilder.clone().matrixParam(name, values);
+      String[] stringValues = toStringValues(values);
+      UriBuilder copy = uriBuilder.clone().matrixParam(name, stringValues);
       return new ClientWebTarget(client, copy, configuration);
+   }
+
+   private String[] toStringValues(Object[] values)
+   {
+      String[] stringValues = new String[values.length];
+      for (int i = 0; i < stringValues.length; i++)
+      {
+         stringValues[i] = client.providerFactory().toString(values[i]);
+      }
+      return stringValues;
    }
 
    @Override
    public WebTarget queryParam(String name, Object... values) throws NullPointerException
    {
-      UriBuilder copy = uriBuilder.clone().queryParam(name, values);
+      String[] stringValues = toStringValues(values);
+      UriBuilder copy = uriBuilder.clone().queryParam(name, stringValues);
       return new ClientWebTarget(client, copy, configuration);
    }
 
@@ -118,7 +155,8 @@ public class ClientWebTarget implements WebTarget
       UriBuilder copy = uriBuilder.clone();
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {
-         uriBuilder.queryParam(entry.getKey(), entry.getValue().toArray());
+         String[] stringValues = toStringValues(entry.getValue().toArray());
+         uriBuilder.queryParam(entry.getKey(), stringValues);
       }
       return new ClientWebTarget(client, copy, configuration);
    }
@@ -126,7 +164,7 @@ public class ClientWebTarget implements WebTarget
    @Override
    public Invocation.Builder request()
    {
-      return new ClientInvocationBuilder(client, uriBuilder.build(pathParams), configuration);
+      return new ClientInvocationBuilder(client, uriBuilder.buildFromMap(pathParams), configuration);
    }
 
    @Override

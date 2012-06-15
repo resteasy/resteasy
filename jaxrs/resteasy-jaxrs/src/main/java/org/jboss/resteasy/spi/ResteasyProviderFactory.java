@@ -808,6 +808,48 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
+    * Convert an object to a string.  First try StringConverter then, object.ToString()
+    *
+    * @param object
+    * @return
+    */
+   public String toString(Object object)
+   {
+      if (object instanceof String)
+         return (String) object;
+      StringConverter converter = getStringConverter(object
+              .getClass());
+      if (converter != null)
+         return converter.toString(object);
+      else
+         return object.toString();
+
+   }
+
+   /**
+    * COnvert an object to a header string.  First try StringConverter, then HeaderDelegate, then object.toString()
+    *
+    * @param object
+    * @return
+    */
+   public String toHeaderString(Object object)
+   {
+      StringConverter converter = getStringConverter(object
+              .getClass());
+      if (converter != null)
+         return converter.toString(object);
+
+      RuntimeDelegate.HeaderDelegate delegate = createHeaderDelegate(object.getClass());
+      if (delegate != null)
+         return delegate.toString(object);
+      else
+         return object.toString();
+
+   }
+
+
+
+   /**
     * Register a @Provider class.  Can be a MessageBodyReader/Writer or ExceptionMapper.
     *
     * @param provider

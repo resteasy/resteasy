@@ -88,48 +88,45 @@ public abstract class UriBuilder {
 
     /**
      * Creates a new instance of UriBuilder.
-     * @return a new instance of UriBuilder
+     *
+     * @return a new instance of UriBuilder.
      */
     protected static UriBuilder newInstance() {
-        UriBuilder b = RuntimeDelegate.getInstance().createUriBuilder();
-        return b;
+        return RuntimeDelegate.getInstance().createUriBuilder();
     }
 
     /**
      * Create a new instance initialized from an existing URI.
+     *
      * @param uri a URI that will be used to initialize the UriBuilder.
-     * @return a new UriBuilder
-     * @throws IllegalArgumentException if uri is null
+     * @return a new UriBuilder.
+     * @throws IllegalArgumentException if uri is {@code null}.
      */
     public static UriBuilder fromUri(URI uri) throws IllegalArgumentException {
-        UriBuilder b = newInstance();
-        b.uri(uri);
-        return b;
+        return newInstance().uri(uri);
     }
 
     /**
      * Create a new instance initialized from an existing URI.
-     * @param uri a URI that will be used to initialize the UriBuilder, may not
-     * contain URI parameters.
-     * @return a new UriBuilder
-     * @throws IllegalArgumentException if uri is not a valid URI or is null
+     *
+     * @param uriTemplate a URI template that will be used to initialize the UriBuilder, may
+     *                    contain URI parameters.
+     * @return a new UriBuilder.
+     * @throws IllegalArgumentException if {@code uriTemplate} is not a valid URI template or
+     *                                  is {@code null}.
      */
-    public static UriBuilder fromUri(String uri) throws IllegalArgumentException {
-        URI u;
-        try {
-            u = URI.create(uri);
-        } catch (NullPointerException ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
-        }
-        return fromUri(u);
+    public static UriBuilder fromUri(String uriTemplate) throws IllegalArgumentException {
+        return newInstance().uri(uriTemplate);
     }
 
     /**
      * Create a new instance initialized from a Link.
+     *
      * @param link a Link that will be used to initialize the UriBuilder, only
-     * its URI is used and may not contain URI parameters.
+     *             its URI is used.
      * @return a new UriBuilder
-     * @throws IllegalArgumentException if link is null
+     * @throws IllegalArgumentException if link is {@code null}
+     * @since 2.0
      */
     public static UriBuilder fromLink(Link link) throws IllegalArgumentException {
         return UriBuilder.fromUri(link.getUri());
@@ -138,15 +135,14 @@ public abstract class UriBuilder {
     /**
      * Create a new instance representing a relative URI initialized from a
      * URI path.
+     *
      * @param path a URI path that will be used to initialize the UriBuilder,
-     * may contain URI template parameters.
-     * @return a new UriBuilder
-     * @throws IllegalArgumentException if path is null
+     *             may contain URI template parameters.
+     * @return a new UriBuilder.
+     * @throws IllegalArgumentException if path is {@code null}.
      */
     public static UriBuilder fromPath(String path) throws IllegalArgumentException {
-        UriBuilder b = newInstance();
-        b.path(path);
-        return b;
+        return newInstance().path(path);
     }
 
     /**
@@ -154,22 +150,41 @@ public abstract class UriBuilder {
      * root resource class.
      *
      * @param resource a root resource whose {@link javax.ws.rs.Path} value will
-     * be used to initialize the UriBuilder.
-     * @return a new UriBuilder
+     *                 be used to initialize the UriBuilder.
+     * @return a new UriBuilder.
      * @throws IllegalArgumentException if resource is not annotated with
-     * {@link javax.ws.rs.Path} or resource is null.
+     *                                  {@link javax.ws.rs.Path} or resource is {@code null}.
      */
     public static UriBuilder fromResource(Class<?> resource) throws IllegalArgumentException {
-        UriBuilder b = newInstance();
-        b.path(resource);
-        return b;
+        return newInstance().path(resource);
+    }
+
+    /**
+     * Create a new instance representing a relative URI initialized from a
+     * {@link javax.ws.rs.Path}-annotated method.
+     *
+     * This method can only be used in cases where there is a single method with the
+     * specified name that is annotated with {@link javax.ws.rs.Path}.
+     *
+     * @param resource the resource containing the method.
+     * @param method   the name of the method whose {@link javax.ws.rs.Path} value will be
+     *                 used to obtain the path to append.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if resource or method is {@code null},
+     *                                  or there is more than or less than one variant of the method annotated with
+     *                                  {@link javax.ws.rs.Path}.
+     * @since 2.0
+     */
+    public static UriBuilder fromMethod(Class<?> resource, String method) throws IllegalArgumentException {
+        return newInstance().path(resource, method);
     }
 
     /**
      * Create a copy of the UriBuilder preserving its state. This is a more
      * efficient means of creating a copy than constructing a new UriBuilder
      * from a URI returned by the {@link #build(Object...)} method.
-     * @return a copy of the UriBuilder
+     *
+     * @return a copy of the UriBuilder.
      */
     @Override
     public abstract UriBuilder clone();
@@ -177,18 +192,33 @@ public abstract class UriBuilder {
     /**
      * Copies the non-null components of the supplied URI to the UriBuilder replacing
      * any existing values for those components.
-     * @param uri the URI to copy components from
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if the {@code uri} parameter is null
+     *
+     * @param uri the URI to copy components from.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if the {@code uri} parameter is {@code null}.
      */
     public abstract UriBuilder uri(URI uri) throws IllegalArgumentException;
 
     /**
+     * Parses the {@code uriTemplate} string and copies the parsed components of the supplied
+     * URI to the UriBuilder replacing any existing values for those components.
+     *
+     * @param uriTemplate a URI template that will be used to initialize the UriBuilder, may
+     *                    contain URI parameters.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if {@code uriTemplate} is not a valid URI template or
+     *                                  is {@code null}.
+     * @since 2.0
+     */
+    public abstract UriBuilder uri(String uriTemplate) throws IllegalArgumentException;
+
+    /**
      * Set the URI scheme.
+     *
      * @param scheme the URI scheme, may contain URI template parameters.
-     * A null value will unset the URI scheme.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if scheme is invalid
+     *               A {@code null} value will unset the URI scheme.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if scheme is invalid.
      */
     public abstract UriBuilder scheme(String scheme) throws IllegalArgumentException;
 
@@ -196,34 +226,38 @@ public abstract class UriBuilder {
      * Set the URI scheme-specific-part (see {@link java.net.URI}). This
      * method will overwrite any existing
      * values for authority, user-info, host, port and path.
-     * @param ssp the URI scheme-specific-part, may contain URI template parameters
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if ssp cannot be parsed or is null
+     *
+     * @param ssp the URI scheme-specific-part, may contain URI template parameters.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if ssp cannot be parsed or is {@code null}.
      */
     public abstract UriBuilder schemeSpecificPart(String ssp) throws IllegalArgumentException;
 
     /**
      * Set the URI user-info.
+     *
      * @param ui the URI user-info, may contain URI template parameters.
-     * A null value will unset userInfo component of the URI.
-     * @return the updated UriBuilder
+     *           A {@code null} value will unset userInfo component of the URI.
+     * @return the updated UriBuilder.
      */
     public abstract UriBuilder userInfo(String ui);
 
     /**
      * Set the URI host.
-     * @return the updated UriBuilder
+     *
      * @param host the URI host, may contain URI template parameters.
-     * A null value will unset the host component of the URI.
+     *             A {@code null} value will unset the host component of the URI.
+     * @return the updated UriBuilder.
      * @throws IllegalArgumentException if host is invalid.
      */
     public abstract UriBuilder host(String host) throws IllegalArgumentException;
 
     /**
      * Set the URI port.
+     *
      * @param port the URI port, a value of -1 will unset an explicit port.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if port is invalid
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if port is invalid.
      */
     public abstract UriBuilder port(int port) throws IllegalArgumentException;
 
@@ -232,9 +266,10 @@ public abstract class UriBuilder {
      * any existing path and associated matrix parameters.
      * Existing '/' characters are preserved thus a single value can
      * represent multiple URI path segments.
+     *
      * @param path the path, may contain URI template parameters.
-     * A null value will unset the path component of the URI.
-     * @return the updated UriBuilder
+     *             A {@code null} value will unset the path component of the URI.
+     * @return the updated UriBuilder.
      */
     public abstract UriBuilder replacePath(String path);
 
@@ -244,9 +279,10 @@ public abstract class UriBuilder {
      * between the existing path and the supplied path if necessary.
      * Existing '/' characters are preserved thus a single value can
      * represent multiple URI path segments.
-     * @param path the path, may contain URI template parameters
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if path is null
+     *
+     * @param path the path, may contain URI template parameters.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if path is {@code null}.
      */
     public abstract UriBuilder path(String path) throws IllegalArgumentException;
 
@@ -257,12 +293,12 @@ public abstract class UriBuilder {
      * between the existing path and the supplied path if necessary.
      *
      * @param resource a resource whose {@link javax.ws.rs.Path} value will be
-     * used to obtain the path to append.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if resource is null, or
-     * if resource is not annotated with {@link javax.ws.rs.Path}
+     *                 used to obtain the path to append.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if resource is {@code null}, or
+     *                                  if resource is not annotated with {@link javax.ws.rs.Path}.
      */
-    public abstract UriBuilder path(Class resource) throws IllegalArgumentException;
+    public abstract UriBuilder path(Class<?> resource) throws IllegalArgumentException;
 
     /**
      * Append the path from a Path-annotated method to the
@@ -273,15 +309,15 @@ public abstract class UriBuilder {
      * can only be used in cases where there is a single method with the
      * specified name that is annotated with {@link javax.ws.rs.Path}.
      *
-     * @param resource the resource containing the method
-     * @param method the name of the method whose {@link javax.ws.rs.Path} value will be
-     * used to obtain the path to append
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if resource or method is null,
-     * or there is more than or less than one variant of the method annotated with
-     * {@link javax.ws.rs.Path}
+     * @param resource the resource containing the method.
+     * @param method   the name of the method whose {@link javax.ws.rs.Path} value will be
+     *                 used to obtain the path to append.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if resource or method is {@code null},
+     *                                  or there is more than or less than one variant of the method annotated with
+     *                                  {@link javax.ws.rs.Path}.
      */
-    public abstract UriBuilder path(Class resource, String method) throws IllegalArgumentException;
+    public abstract UriBuilder path(Class<?> resource, String method) throws IllegalArgumentException;
 
     /**
      * Append the path from a {@link javax.ws.rs.Path}-annotated method to the
@@ -290,10 +326,10 @@ public abstract class UriBuilder {
      * between the existing path and the supplied path if necessary.
      *
      * @param method a method whose {@link javax.ws.rs.Path} value will be
-     * used to obtain the path to append to the existing path
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if method is null or is
-     * not annotated with a {@link javax.ws.rs.Path}
+     *               used to obtain the path to append to the existing path.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if method is {@code null} or is
+     *                                  not annotated with a {@link javax.ws.rs.Path}.
      */
     public abstract UriBuilder path(Method method) throws IllegalArgumentException;
 
@@ -304,11 +340,12 @@ public abstract class UriBuilder {
      * each supplied segment will also be separated by '/'.
      * Existing '/' characters are encoded thus a single value can
      * only represent a single URI path segment.
+     *
      * @param segments the path segment values, each may contain URI template
-     * parameters
-     * @return the updated UriBuilder
+     *                 parameters.
+     * @return the updated UriBuilder.
      * @throws IllegalArgumentException if segments or any element of segments
-     * is null
+     *                                  is {@code null}.
      */
     public abstract UriBuilder segment(String... segments) throws IllegalArgumentException;
 
@@ -318,11 +355,12 @@ public abstract class UriBuilder {
      * segment of the current URI path. Note that the matrix parameters
      * are tied to a particular path segment; subsequent addition of path segments
      * will not affect their position in the URI path.
+     *
      * @param matrix the matrix parameters, may contain URI template parameters.
-     * A null value will remove all matrix parameters of the current final segment
-     * of the current URI path.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if matrix cannot be parsed
+     *               A {@code null} value will remove all matrix parameters of the current final segment
+     *               of the current URI path.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if matrix cannot be parsed.
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
     public abstract UriBuilder replaceMatrix(String matrix) throws IllegalArgumentException;
@@ -333,12 +371,13 @@ public abstract class UriBuilder {
      * the parameter will be added once per value. Note that the matrix parameters
      * are tied to a particular path segment; subsequent addition of path segments
      * will not affect their position in the URI path.
-     * @param name the matrix parameter name, may contain URI template parameters
-     * @param values the matrix parameter value(s), each object will be converted
-     * to a {@code String} using its {@code toString()} method. Stringified
-     * values may contain URI template parameters.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if name or values is null
+     *
+     * @param name   the matrix parameter name, may contain URI template parameters.
+     * @param values the matrix parameter value(s), each object will be converted.
+     *               to a {@code String} using its {@code toString()} method. Stringified
+     *               values may contain URI template parameters.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if name or values is {@code null}.
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
     public abstract UriBuilder matrixParam(String name, Object... values) throws IllegalArgumentException;
@@ -349,13 +388,14 @@ public abstract class UriBuilder {
      * the parameter will be added once per value. Note that the matrix parameters
      * are tied to a particular path segment; subsequent addition of path segments
      * will not affect their position in the URI path.
-     * @param name the matrix parameter name, may contain URI template parameters
-     * @param values the matrix parameter value(s), each object will be converted
-     * to a {@code String} using its {@code toString()} method. Stringified
-     * values may contain URI template parameters. If {@code values} is empty
-     * or null then all current values of the parameter are removed.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if name is null.
+     *
+     * @param name   the matrix parameter name, may contain URI template parameters.
+     * @param values the matrix parameter value(s), each object will be converted.
+     *               to a {@code String} using its {@code toString()} method. Stringified
+     *               values may contain URI template parameters. If {@code values} is empty
+     *               or {@code null} then all current values of the parameter are removed.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if name is {@code null}.
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
     public abstract UriBuilder replaceMatrixParam(String name, Object... values) throws IllegalArgumentException;
@@ -363,43 +403,47 @@ public abstract class UriBuilder {
     /**
      * Set the URI query string. This method will overwrite any existing query
      * parameters.
+     *
      * @param query the URI query string, may contain URI template parameters.
-     * A null value will remove all query parameters.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if query cannot be parsed
+     *              A {@code null} value will remove all query parameters.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if query cannot be parsed.
      */
     public abstract UriBuilder replaceQuery(String query) throws IllegalArgumentException;
 
     /**
      * Append a query parameter to the existing set of query parameters. If
      * multiple values are supplied the parameter will be added once per value.
-     * @param name the query parameter name, may contain URI template parameters
+     *
+     * @param name   the query parameter name, may contain URI template parameters.
      * @param values the query parameter value(s), each object will be converted
-     * to a {@code String} using its {@code toString()} method. Stringified
-     * values may contain URI template parameters.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if name or values is null
+     *               to a {@code String} using its {@code toString()} method. Stringified
+     *               values may contain URI template parameters.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if name or values is {@code null}.
      */
     public abstract UriBuilder queryParam(String name, Object... values) throws IllegalArgumentException;
 
     /**
      * Replace the existing value(s) of a query parameter. If
      * multiple values are supplied the parameter will be added once per value.
-     * @param name the query parameter name, may contain URI template parameters
+     *
+     * @param name   the query parameter name, may contain URI template parameters.
      * @param values the query parameter value(s), each object will be converted
-     * to a {@code String} using its {@code toString()} method. Stringified
-     * values may contain URI template parameters. If {@code values} is empty
-     * or null then all current values of the parameter are removed.
-     * @return the updated UriBuilder
-     * @throws IllegalArgumentException if name is null
+     *               to a {@code String} using its {@code toString()} method. Stringified
+     *               values may contain URI template parameters. If {@code values} is empty
+     *               or {@code null} then all current values of the parameter are removed.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if name is {@code null}.
      */
     public abstract UriBuilder replaceQueryParam(String name, Object... values) throws IllegalArgumentException;
 
     /**
      * Set the URI fragment.
+     *
      * @param fragment the URI fragment, may contain URI template parameters.
-     * A null value will remove any existing fragment.
-     * @return the updated UriBuilder
+     *                 A {@code null} value will remove any existing fragment.
+     * @return the updated UriBuilder.
      */
     public abstract UriBuilder fragment(String fragment);
 
@@ -411,12 +455,13 @@ public abstract class UriBuilder {
      * in the stringified values will be encoded.
      * The state of the builder is unaffected; this method may be called
      * multiple times on the same builder instance.
-     * @param values a map of URI template parameter names and values
-     * @return the URI built from the UriBuilder
+     *
+     * @param values a map of URI template parameter names and values.
+     * @return the URI built from the UriBuilder.
      * @throws IllegalArgumentException if there are any URI template parameters
-     * without a supplied value, or if a template parameter value is null.
-     * @throws UriBuilderException if a URI cannot be constructed based on the
-     * current state of the builder.
+     *                                  without a supplied value, or if a template parameter value is {@code null}.
+     * @throws UriBuilderException      if a URI cannot be constructed based on the
+     *                                  current state of the builder.
      */
     public abstract URI buildFromMap(Map<String, ? extends Object> values)
             throws IllegalArgumentException, UriBuilderException;
@@ -430,12 +475,13 @@ public abstract class UriBuilder {
      * will be encoded.
      * The state of the builder is unaffected; this method may be called
      * multiple times on the same builder instance.
-     * @param values a map of URI template parameter names and values
-     * @return the URI built from the UriBuilder
+     *
+     * @param values a map of URI template parameter names and values.
+     * @return the URI built from the UriBuilder.
      * @throws IllegalArgumentException if there are any URI template parameters
-     * without a supplied value, or if a template parameter value is null.
-     * @throws UriBuilderException if a URI cannot be constructed based on the
-     * current state of the builder.
+     *                                  without a supplied value, or if a template parameter value is {@code null}.
+     * @throws UriBuilderException      if a URI cannot be constructed based on the
+     *                                  current state of the builder.
      */
     public abstract URI buildFromEncodedMap(Map<String, ? extends Object> values)
             throws IllegalArgumentException, UriBuilderException;
@@ -453,12 +499,13 @@ public abstract class UriBuilder {
      * first instance of the template parameter. e.g. the template "{a}/{b}/{a}"
      * with values {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i>
      * "x/y/z".
-     * @param values a list of URI template parameter values
-     * @return the URI built from the UriBuilder
+     *
+     * @param values a list of URI template parameter values.
+     * @return the URI built from the UriBuilder.
      * @throws IllegalArgumentException if there are any URI template parameters
-     * without a supplied value, or if a value is null.
-     * @throws UriBuilderException if a URI cannot be constructed based on the
-     * current state of the builder.
+     *                                  without a supplied value, or if a value is {@code null}.
+     * @throws UriBuilderException      if a URI cannot be constructed based on the
+     *                                  current state of the builder.
      */
     public abstract URI build(Object... values)
             throws IllegalArgumentException, UriBuilderException;
@@ -478,12 +525,13 @@ public abstract class UriBuilder {
      * first instance of the template parameter. e.g. the template "{a}/{b}/{a}"
      * with values {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i>
      * "x/y/z".
-     * @param values a list of URI template parameter values
-     * @return the URI built from the UriBuilder
+     *
+     * @param values a list of URI template parameter values.
+     * @return the URI built from the UriBuilder.
      * @throws IllegalArgumentException if there are any URI template parameters
-     * without a supplied value, or if a value is null.
-     * @throws UriBuilderException if a URI cannot be constructed based on the
-     * current state of the builder.
+     *                                  without a supplied value, or if a value is {@code null}.
+     * @throws UriBuilderException      if a URI cannot be constructed based on the
+     *                                  current state of the builder.
      */
     public abstract URI buildFromEncoded(Object... values)
             throws IllegalArgumentException, UriBuilderException;

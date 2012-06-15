@@ -53,29 +53,90 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
- * TODO javadoc.
+ * Client request filter context.
+ *
+ * A mutable class that provides request-specific information for the filter,
+ * such as request URI, message headers, message entity or request-scoped
+ * properties. The exposed setters allow modification of the exposed request-specific
+ * information.
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  * @since 2.0
  */
 public interface ClientRequestContext {
 
-    // mutable, shared with ClientResponseContext
-    Map<String, Object> getProperties();
+    /**
+     * Get a mutable map of request-scoped properties that can be used for communication
+     * between different request/response processing components.
+     *
+     * May be empty, but MUST never be {@code null}. In the scope of a single
+     * request/response processing a same property map instance is shared by the
+     * following methods:
+     * <ul>
+     * <li>{@code ClientRequestContext#getProperties() }</li>
+     * <li>{@link javax.ws.rs.client.ClientResponseContext#getProperties() }</li>
+     * <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
+     * </ul>
+     *
+     * A request-scoped property is an application-defined property that may be
+     * added, removed or modified by any of the components (user, filter,
+     * interceptor etc.) that participate in a given request/response processing
+     * flow.
+     * <p />
+     * On the client side, this property map is initialized by calling
+     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
+     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
+     * on the configuration object associated with the corresponding
+     * {@link javax.ws.rs.client.Invocation request invocation}.
+     * <p />
+     * On the server side, specifying the initial values is implementation-specific.
+     * <p />
+     * If there are no initial properties set, the request-scoped property map is
+     * initialized to an empty map.
+     *
+     * @return a mutable request-scoped property map.
+     * @see javax.ws.rs.client.Configuration
+     */
+    public Map<String, Object> getProperties();
 
-    // request URI getter/setter
+    /**
+     * Get the request URI.
+     *
+     * @return request URI.
+     */
     public URI getUri();
 
+    /**
+     * Set a new request URI.
+     *
+     * @param uri new request URI.
+     */
     public void setUri(URI uri);
 
-    // request method getter/setter
+    /**
+     * Get the request method.
+     *
+     * @return the request method.
+     * @see javax.ws.rs.HttpMethod
+     */
     public String getMethod();
 
+    /**
+     * Set the request method.
+     *
+     * @param method new request method.
+     * @see javax.ws.rs.HttpMethod
+     */
     public void setMethod(String method);
 
-    // mutable request headers map
+    /**
+     * Get the mutable request headers multivalued map.
+     *
+     * @return mutable multivalued map of request headers.
+     */
     public MultivaluedMap<String, Object> getHeaders();
 
     /**
@@ -93,18 +154,10 @@ public interface ClientRequestContext {
     public Locale getLanguage();
 
     /**
-     * Get Content-Length value.
-     *
-     * @return Content-Length as integer if present and valid number. In other
-     *     cases returns {@code -1}.
-     */
-    public int getLength();
-
-    /**
      * Get the media type of the entity.
      *
      * @return the media type or {@code null} if not specified (e.g. there's no
-     *     request entity).
+     *         request entity).
      */
     public MediaType getMediaType();
 
@@ -112,7 +165,7 @@ public interface ClientRequestContext {
      * Get a list of media types that are acceptable for the response.
      *
      * @return a read-only list of requested response media types sorted according
-     *     to their q-value, with highest preference first.
+     *         to their q-value, with highest preference first.
      */
     public List<MediaType> getAcceptableMediaTypes();
 
@@ -120,7 +173,7 @@ public interface ClientRequestContext {
      * Get a list of languages that are acceptable for the response.
      *
      * @return a read-only list of acceptable languages sorted according
-     *     to their q-value, with highest preference first.
+     *         to their q-value, with highest preference first.
      */
     public List<Locale> getAcceptableLanguages();
 
@@ -131,43 +184,110 @@ public interface ClientRequestContext {
      */
     public Map<String, Cookie> getCookies();
 
-    // returns true if the entity input stream is not empty, false otherwise.
+    /**
+     * Check if there is an entity available in the request.
+     *
+     * The method returns {@code true} if the entity is present, returns
+     * {@code false} otherwise.
+     *
+     * @return {@code true} if there is an entity present in the message,
+     *         {@code false} otherwise.
+     */
     public boolean hasEntity();
 
-    // invoking this method DOES NOT invoke handlers or MBW
-    public OutputStream getEntityStream();
+    /**
+     * Get the message entity Java instance.
+     *
+     * Returns {@code null} if the message does not contain an entity.
+     *
+     * @return the message entity or {@code null} if message does not contain an
+     *         entity body.
+     */
+    public Object getEntity();
 
-    // invoking this method DOES NOT invoke handlers or MBR
-    public void setEntityStream(final OutputStream entityStream);
-
-    // conveniece method for setting new entity
+    /**
+     * Set a new response message entity.
+     *
+     * @param <T>         entity Java type.
+     * @param type        declared entity class.
+     * @param annotations annotations attached to the entity.
+     * @param mediaType   entity media type.
+     * @param entity      entity object.
+     * @see MessageBodyWriter
+     */
     public <T> void setEntity(
             final Class<T> type,
             final Annotation annotations[],
             final MediaType mediaType,
             final T entity);
 
+    /**
+     * Set a new response message entity.
+     *
+     * @param <T>         entity Java type.
+     * @param type        declared generic entity type.
+     * @param annotations annotations attached to the entity.
+     * @param mediaType   entity media type.
+     * @param entity      entity object.
+     * @see MessageBodyWriter
+     */
     public <T> void setEntity(
-            final GenericType<T> genericType,
+            final GenericType<T> type,
             final Annotation annotations[],
             final MediaType mediaType,
             final T entity);
 
-    // get the entity or null if no entity was set yet
-    public Object getEntity();
-
-    // get the declared entity type (used by MBW)
+    /**
+     * Get the declared generic message entity type information.
+     *
+     * @return declared generic message entity type.
+     */
     public GenericType<?> getDeclaredEntityType();
 
-    // get the entity annotations (used by MBW)
+    /**
+     * Get the annotations attached to the entity.
+     *
+     * @return entity annotations.
+     */
     public Annotation[] getEntityAnnotations();
 
-    // client instance getter
+
+    /**
+     * Get the entity output stream.
+     *
+     * @return entity output stream.
+     */
+    public OutputStream getEntityStream();
+
+    /**
+     * Set a new entity output stream.
+     *
+     * @param input new entity output stream.
+     */
+    public void setEntityStream(OutputStream input);
+
+    /**
+     * Get the client instance associated with the request.
+     *
+     * @return client instance associated with the request.
+     */
     public Client getClient();
 
-    // request configuration getter
+    /**
+     * Get the configuration of the request.
+     *
+     * @return request configuration.
+     */
     public Configuration getConfiguration();
 
-    // abort the request filter chain with a response
+    /**
+     * Abort the filter chain with a response.
+     *
+     * This method breaks the filter chain processing and returns the provided
+     * response back to the client. The provided response goes through the
+     * chain of applicable response filters.
+     *
+     * @param response response to be sent back to the client.
+     */
     public void abortWith(Response response);
 }

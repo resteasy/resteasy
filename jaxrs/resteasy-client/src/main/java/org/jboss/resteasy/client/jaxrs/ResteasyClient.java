@@ -27,7 +27,7 @@ public class ResteasyClient implements Client
    protected volatile ExecutorService asyncInvocationExecutor;
    protected ClientConfiguration configuration = new ClientConfiguration();
 
-   public ResteasyProviderFactory getProviderFactory()
+   public ResteasyProviderFactory providerFactory()
    {
       ResteasyProviderFactory result = providerFactory;
       if (result == null)
@@ -42,7 +42,7 @@ public class ResteasyClient implements Client
       return result;
    }
 
-   public ClientHttpEngine getHttpEngine()
+   public ClientHttpEngine httpEngine()
    {
       ClientHttpEngine result = httpEngine;
       if (result == null)
@@ -59,7 +59,7 @@ public class ResteasyClient implements Client
       return result;
    }
 
-   public ExecutorService getAsyncInvocationExecutor()
+   public ExecutorService asyncInvocationExecutor()
    {
       ExecutorService result = asyncInvocationExecutor;
       if (result == null)
@@ -74,14 +74,16 @@ public class ResteasyClient implements Client
       return result;
    }
 
-   public void setHttpEngine(ClientHttpEngine httpEngine)
+   public ResteasyClient httpEngine(ClientHttpEngine httpEngine)
    {
       this.httpEngine = httpEngine;
+      return this;
    }
 
-   public void setAsyncInvocationExecutor(ExecutorService asyncInvocationExecutor)
+   public ResteasyClient asyncInvocationExecutor(ExecutorService asyncInvocationExecutor)
    {
       this.asyncInvocationExecutor = asyncInvocationExecutor;
+      return this;
    }
 
    @Override

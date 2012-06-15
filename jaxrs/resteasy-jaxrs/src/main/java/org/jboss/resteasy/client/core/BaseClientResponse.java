@@ -25,6 +25,7 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
@@ -508,6 +509,12 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    public int getStatus()
    {
       return status;
+   }
+
+   @Override
+   public StatusType getStatusInfo()
+   {
+      return Status.fromStatusCode(status);
    }
 
    public void checkFailureStatus()

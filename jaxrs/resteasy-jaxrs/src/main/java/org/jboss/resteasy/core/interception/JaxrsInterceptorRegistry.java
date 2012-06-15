@@ -91,7 +91,7 @@ public class JaxrsInterceptorRegistry<T>
          if (!(target instanceof Method)) return null;
          final Method resourceMethod = (Method) target;
          final Class resourceClass = declaring;
-         Object interceptor = binder.getBoundInstance(new ResourceInfo()
+         Object interceptor = binder.getBoundProvider(new ResourceInfo()
          {
             @Override
             public Method getResourceMethod()
