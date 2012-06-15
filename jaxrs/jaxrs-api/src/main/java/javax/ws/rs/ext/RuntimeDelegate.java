@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,7 +77,7 @@ public abstract class RuntimeDelegate {
     }
 
     /**
-     * Obtain a RuntimeDelegate instance. If an instance had not already been
+     * Obtain a {@code RuntimeDelegate} instance. If an instance had not already been
      * created and set via {@link #setInstance(RuntimeDelegate)}, the first
      * invocation will create an instance which will then be cached for future use.
      *
@@ -87,27 +87,26 @@ public abstract class RuntimeDelegate {
      * <p>
      * <ul>
      * <li>
-     *   If a resource with the name of
-     *   <code>META-INF/services/javax.ws.rs.ext.RuntimeDelegate</code>
-     *   exists, then its first line, if present, is used as the UTF-8 encoded
-     *   name of the implementation class.
+     * If a resource with the name of {@code META-INF/services/javax.ws.rs.ext.RuntimeDelegate}
+     * exists, then its first line, if present, is used as the UTF-8 encoded
+     * name of the implementation class.
      * </li>
      * <li>
-     *   If the $java.home/lib/jaxrs.properties file exists and it is readable by
-     *   the <code>java.util.Properties.load(InputStream)</code> method and it contains
-     *   an entry whose key is <code>javax.ws.rs.ext.RuntimeDelegate</code>, then the value of
-     *   that entry is used as the name of the implementation class.
+     * If the $java.home/lib/jaxrs.properties file exists and it is readable by
+     * the {@code java.util.Properties.load(InputStream)} method and it contains
+     * an entry whose key is {@code javax.ws.rs.ext.RuntimeDelegate}, then the value of
+     * that entry is used as the name of the implementation class.
      * </li>
      * <li>
-     *   If a system property with the name <code>javax.ws.rs.ext.RuntimeDelegate</code>
-     *   is defined, then its value is used as the name of the implementation class.
+     * If a system property with the name {@code javax.ws.rs.ext.RuntimeDelegate}
+     * is defined, then its value is used as the name of the implementation class.
      * </li>
      * <li>
-     *   Finally, a default implementation class name is used.
+     * Finally, a default implementation class name is used.
      * </li>
      * </ul>
      *
-     * @return an instance of RuntimeDelegate
+     * @return an instance of {@code RuntimeDelegate}.
      */
     public static RuntimeDelegate getInstance() {
         // Double-check idiom for lazy initialization of fields.
@@ -125,16 +124,16 @@ public abstract class RuntimeDelegate {
     }
 
     /**
-     * Obtain a RuntimeDelegate instance using the method described in
+     * Obtain a {@code RuntimeDelegate} instance using the method described in
      * {@link #getInstance}.
      *
-     * @return an instance of RuntimeDelegate
+     * @return an instance of {@code RuntimeDelegate}.
      */
     private static RuntimeDelegate findDelegate() {
         try {
             Object delegate =
                     FactoryFinder.find(JAXRS_RUNTIME_DELEGATE_PROPERTY,
-                    JAXRS_DEFAULT_RUNTIME_DELEGATE);
+                            JAXRS_DEFAULT_RUNTIME_DELEGATE);
             if (!(delegate instanceof RuntimeDelegate)) {
                 Class pClass = RuntimeDelegate.class;
                 String classnameAsResource = pClass.getName().replace('.', '/') + ".class";
@@ -145,7 +144,7 @@ public abstract class RuntimeDelegate {
                 URL targetTypeURL = loader.getResource(classnameAsResource);
                 throw new LinkageError("ClassCastException: attempting to cast"
                         + delegate.getClass().getClassLoader().getResource(classnameAsResource)
-                        + "to" + targetTypeURL.toString());
+                        + " to " + targetTypeURL);
             }
             return (RuntimeDelegate) delegate;
         } catch (Exception ex) {
@@ -160,7 +159,7 @@ public abstract class RuntimeDelegate {
      *
      * @param rd the runtime delegate instance
      * @throws SecurityException if there is a security manager and the permission
-     * ReflectPermission("suppressAccessChecks") has not been granted.
+     *                           ReflectPermission("suppressAccessChecks") has not been granted.
      */
     public static void setInstance(final RuntimeDelegate rd) throws SecurityException {
         SecurityManager security = System.getSecurityManager();
@@ -174,14 +173,16 @@ public abstract class RuntimeDelegate {
 
     /**
      * Create a new instance of a {@link javax.ws.rs.core.UriBuilder}.
-     * @return new UriBuilder instance
+     *
+     * @return new {@code UriBuilder} instance.
      * @see javax.ws.rs.core.UriBuilder
      */
     public abstract UriBuilder createUriBuilder();
 
     /**
      * Create a new instance of a {@link javax.ws.rs.core.Response.ResponseBuilder}.
-     * @return new ResponseBuilder instance
+     *
+     * @return new {@code ResponseBuilder} instance.
      * @see javax.ws.rs.core.Response.ResponseBuilder
      */
     public abstract ResponseBuilder createResponseBuilder();
@@ -189,7 +190,7 @@ public abstract class RuntimeDelegate {
     /**
      * Create a new instance of a {@link javax.ws.rs.core.Variant.VariantListBuilder}.
      *
-     * @return new VariantListBuilder instance
+     * @return new {@code VariantListBuilder} instance.
      * @see javax.ws.rs.core.Variant.VariantListBuilder
      */
     public abstract VariantListBuilder createVariantListBuilder();
@@ -199,17 +200,18 @@ public abstract class RuntimeDelegate {
      * returned endpoint instance is published is dependent on the type of
      * endpoint.
      *
-     * @param <T> endpoint type.
-     * @param application the application configuration
+     * @param <T>          endpoint type.
+     * @param application  the application configuration.
      * @param endpointType the type of endpoint instance to be created.
      * @return a configured instance of the requested type.
-     * @throws java.lang.IllegalArgumentException if application is null or the
-     * requested endpoint type is not supported.
-     * @throws java.lang.UnsupportedOperationException if the implementation
-     * supports no endpoint types.
+     * @throws java.lang.IllegalArgumentException
+     *          if application is null or the requested endpoint type is
+     *          not supported.
+     * @throws java.lang.UnsupportedOperationException
+     *          if the implementation supports no endpoint types.
      */
-    public abstract <T> T createEndpoint(Application application,
-            Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException;
+    public abstract <T> T createEndpoint(Application application, Class<T> endpointType)
+            throws IllegalArgumentException, UnsupportedOperationException;
 
     /**
      * Obtain an instance of a {@link HeaderDelegate} for the supplied class. An
@@ -218,38 +220,41 @@ public abstract class RuntimeDelegate {
      * {@link javax.ws.rs.core.EntityTag}, {@link javax.ws.rs.core.NewCookie},
      * {@link javax.ws.rs.core.MediaType} and {@code java.util.Date}.
      *
-     * @param <T> header type.
-     * @param type the class of the header
-     * @return an instance of HeaderDelegate for the supplied type
-     * @throws java.lang.IllegalArgumentException if type is null
+     * @param <T>  header type.
+     * @param type the class of the header.
+     * @return an instance of {@code HeaderDelegate} for the supplied type.
+     * @throws java.lang.IllegalArgumentException if type is {@code null).
+     * @see javax.ws.rs.ext.HeaderDelegate
      */
-    public abstract <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type) throws IllegalArgumentException;
+    public abstract <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type)
+            throws IllegalArgumentException;
 
     /**
      * Defines the contract for a delegate that is responsible for
      * converting between the String form of a HTTP header and
-     * the corresponding JAX-RS type <code>T</code>.
+     * the corresponding JAX-RS type {@code T}.
      *
-     * @param <T> a JAX-RS type that corresponds to the value of a HTTP header
+     * @param <T> a JAX-RS type that corresponds to the value of a HTTP header.
      */
     public static interface HeaderDelegate<T> {
 
         /**
-         * Parse the supplied value and create an instance of <code>T</code>.
-         * @param value the string value
-         * @return the newly created instance of <code>T</code>
+         * Parse the supplied value and create an instance of {@code T}.
+         *
+         * @param value the string value.
+         * @return the newly created instance of {@code T}.
          * @throws IllegalArgumentException if the supplied string cannot be
-         * parsed or is null
+         *                                  parsed or is {@code null}.
          */
         public T fromString(String value) throws IllegalArgumentException;
 
         /**
          * Convert the supplied value to a String.
          *
-         * @param value the value of type <code>T</code>
-         * @return a String representation of the value
+         * @param value the value of type {@code T}.
+         * @return a String representation of the value.
          * @throws IllegalArgumentException if the supplied object cannot be
-         * serialized or is null
+         *                                  serialized or is {@code null}.
          */
         public String toString(T value) throws IllegalArgumentException;
     }

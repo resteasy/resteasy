@@ -62,16 +62,18 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * Represents a response entity of a generic type {@code T}.
- *
- * <p>Normally type erasure removes generic type information such that a
+ * Represents a message entity of a generic type {@code T}.
+ * <p>
+ *  Normally type erasure removes generic type information such that a
  * {@link Response} instance that contains, e.g., an entity of type
  * {@code List<String>} appears to contain a raw {@code List<?>} at runtime.
  * When the generic type is required to select a suitable
  * {@link javax.ws.rs.ext.MessageBodyWriter}, this class may be used to wrap the
- * entity and capture its generic type.</p>
- *
- * <p>There are two ways to create an instance:</p>
+ * entity and capture its generic type.
+ * </p>
+ * <p>
+ * There are two ways to create an instance:
+ * </p>
  * <ol>
  * <li>Create a (typically anonymous) subclass of this
  * class which enables retrieval of the type information at runtime despite
@@ -103,6 +105,8 @@ import java.lang.reflect.Type;
  * @author Paul Sandoz
  * @author Marc Hadley
  * @since 1.0
+ *
+ * @see GenericType
  */
 public class GenericEntity<T> {
 
@@ -142,7 +146,7 @@ public class GenericEntity<T> {
      */
     public GenericEntity(final T entity, final Type genericType) throws IllegalArgumentException {
         if (entity == null || genericType == null) {
-            throw new IllegalArgumentException("Arguments must not be null");
+            throw new IllegalArgumentException("Arguments must not be null.");
         }
         this.entity = entity;
         this.rawType = entity.getClass();
@@ -167,7 +171,7 @@ public class GenericEntity<T> {
             checkTypeCompatibility(c.getComponentType(), rt);
             return;
         }
-        throw new IllegalArgumentException("The type is incompatible with the class of the entity");
+        throw new IllegalArgumentException("The type is incompatible with the class of the entity.");
     }
 
     /**

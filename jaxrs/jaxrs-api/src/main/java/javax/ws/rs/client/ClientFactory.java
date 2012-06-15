@@ -62,6 +62,12 @@ public abstract class ClientFactory {
     private static final String JAXRS_DEFAULT_CLIENT_FACTORY =
             "org.glassfish.jersey.client.JerseyClientFactory";
 
+    /**
+     * Allows custom implementations to extend the {@code ClientFactory} class.
+     */
+    protected ClientFactory() {
+    }
+
     private static ClientFactory getFactory() {
         try {
             Object delegate =
@@ -77,7 +83,7 @@ public abstract class ClientFactory {
                 URL targetTypeURL = loader.getResource(classnameAsResource);
                 throw new LinkageError("ClassCastException: attempting to cast"
                         + delegate.getClass().getClassLoader().getResource(classnameAsResource)
-                        + "to" + targetTypeURL.toString());
+                        + " to " + targetTypeURL);
             }
             return (ClientFactory) delegate;
         } catch (Exception ex) {

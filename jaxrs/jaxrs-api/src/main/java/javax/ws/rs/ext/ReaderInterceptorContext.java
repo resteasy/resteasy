@@ -49,15 +49,13 @@ import javax.ws.rs.core.MultivaluedMap;
  * The getters and setters in this context class correspond to the
  * parameters of the intercepted method.
  *
- * @param <T> Java type supported by corresponding message body reader
- *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @since 2.0
  * @see ReaderInterceptor
  * @see MessageBodyReader
  */
-public interface ReaderInterceptorContext<T> extends InterceptorContext<T> {
+public interface ReaderInterceptorContext extends InterceptorContext {
 
     /**
      * Proceed to the next interceptor in the chain. Return the result of the
@@ -69,14 +67,14 @@ public interface ReaderInterceptorContext<T> extends InterceptorContext<T> {
      * @return result of next interceptor invoked
      * @throws IOException if an IO error arises
      */
-    T proceed() throws IOException;
+    public Object proceed() throws IOException;
 
     /**
      * Get the input stream of the object to be read.
      *
      * @return input stream of the object to be read
      */
-    InputStream getInputStream();
+    public InputStream getInputStream();
 
     /**
      * Update the input stream of the object to be read.
@@ -84,12 +82,12 @@ public interface ReaderInterceptorContext<T> extends InterceptorContext<T> {
      *
      * @param is new input stream
      */
-    void setInputStream(InputStream is);
+    public void setInputStream(InputStream is);
 
     /**
      * Get mutable map of HTTP headers.
      *
      * @return map of HTTP headers
      */
-    MultivaluedMap<String, String> getHeaders();
+    public MultivaluedMap<String, String> getHeaders();
 }

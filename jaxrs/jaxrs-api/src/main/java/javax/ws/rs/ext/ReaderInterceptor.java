@@ -50,15 +50,13 @@ import javax.ws.rs.container.DynamicBinder;
  * runtime. Message body interceptor instances may also be discovered and
  * bound {@link DynamicBinder dynamically} to particular resource methods.
  *
- * @param <T> Java type supported by corresponding message body reader
- *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @author Marek Potociar (marek.potociar at oracle.com)
  * @since 2.0
  * @see MessageBodyReader
  */
-public interface ReaderInterceptor<T> {
+public interface ReaderInterceptor {
 
     /**
      * Interceptor method wrapping calls to
@@ -74,6 +72,6 @@ public interface ReaderInterceptor<T> {
      * @throws java.io.IOException if an IO error arises.
      * @throws javax.ws.rs.WebApplicationException thrown by wrapped method.
      */
-    T aroundReadFrom(ReaderInterceptorContext<T> context)
+    public Object aroundReadFrom(ReaderInterceptorContext context)
             throws java.io.IOException, javax.ws.rs.WebApplicationException;
 }

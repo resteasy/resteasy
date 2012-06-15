@@ -39,15 +39,12 @@
  */
 package javax.ws.rs.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * A hash table based implementation of {@link MultivaluedMap} interface.
@@ -119,17 +116,16 @@ import java.util.Set;
  * exception for its correctness: <i>the fail-fast behavior of iterators
  * should be used only to detect bugs.</i>
  *
- * @param <K> the type of keys maintained by this map
- * @param <V> the type of mapped values
+ * @param <K> the type of keys maintained by this map.
+ * @param <V> the type of mapped values.
  *
  * @author Paul Sandoz
  * @author Marek Potociar
  *
  * @since 2.0
  */
-public class MultivaluedHashMap<K, V> implements MultivaluedMap<K, V> {
+public class MultivaluedHashMap<K, V> extends AbstractMultivaluedMap<K, V> implements Serializable {
 
-    private final HashMap<K, List<V>> store;
     private static final long serialVersionUID = -6052320403766368902L;
 
     /**
@@ -137,7 +133,7 @@ public class MultivaluedHashMap<K, V> implements MultivaluedMap<K, V> {
      * ({@code 16}) and the default load factor ({@code 0.75}).
      */
     public MultivaluedHashMap() {
-        store = new HashMap<K, List<V>>();
+        super(new HashMap<K, List<V>>());
     }
 
     /**
@@ -148,7 +144,7 @@ public class MultivaluedHashMap<K, V> implements MultivaluedMap<K, V> {
      * @throws IllegalArgumentException if the initial capacity is negative.
      */
     public MultivaluedHashMap(int initialCapacity) {
-        store = new HashMap<K, List<V>>(initialCapacity);
+        super(new HashMap<K, List<V>>(initialCapacity));
     }
 
     /**
@@ -161,7 +157,7 @@ public class MultivaluedHashMap<K, V> implements MultivaluedMap<K, V> {
      *         or the load factor is nonpositive
      */
     public MultivaluedHashMap(int initialCapacity, float loadFactor) {
-        store = new HashMap<K, List<V>>(initialCapacity, loadFactor);
+        super(new HashMap<K, List<V>>(initialCapacity, loadFactor));
     }
 
     /**
@@ -205,277 +201,5 @@ public class MultivaluedHashMap<K, V> implements MultivaluedMap<K, V> {
         for (Entry<? extends K, ? extends V> e : map.entrySet()) {
             this.putSingle(e.getKey(), e.getValue());
         }
-    }
-
-    /**
-     * Set the value for the key to be a one item list consisting of the supplied
-     * value. Any existing values will be replaced.
-     * <p />
-     * NOTE: This implementation ignores {@code null} values; A supplied value
-     * of {@code null} is ignored and not added to the purged value list.
-     * As a result of such operation, empty value list would  be registered for
-     * the supplied key. Overriding implementations may modify this behavior by
-     * redefining the {@link #addNull(java.util.List)} method.
-     *
-     * @param key the key
-     * @param value the single value of the key. If the value is {@code null} it
-     *     will be ignored.
-     */
-    @Override
-    public final void putSingle(K key, V value) {
-        List<V> values = getValues(key);
-
-        values.clear();
-        if (value != null) {
-            values.add(value);
-        } else {
-            addNull(values);
-        }
-    }
-
-    /**
-     * Define the behavior for adding a {@code null} values to the value list.
-     * <p />
-     * Default implementation is a no-op, i.e. the {@code null} values are ignored.
-     * Overriding implementations may modify this behavior by providing their
-     * own definitions of this method.
-     *
-     * @param values value list where the {@code null} value addition is being
-     *     requested.
-     */
-    protected void addNull(List<V> values) {
-        // do nothing in the default implementation; ignore the null value
-    }
-
-    /**
-     * Define the behavior for adding a {@code null} values to the first position
-     * in the value list.
-     * <p />
-     * Default implementation is a no-op, i.e. the {@code null} values are ignored.
-     * Overriding implementations may modify this behavior by providing their
-     * own definitions of this method.
-     *
-     * @param values value list where the {@code null} value addition is being
-     *     requested.
-     */
-    protected void addFirstNull(List<V> values) {
-        // do nothing in the default implementation; ignore the null value
-    }
-
-    @Override
-    /**
-     * Add a value to the current list of values for the supplied key.
-     * <p />
-     * NOTE: This implementation ignores {@code null} values; A supplied value
-     * of {@code null} is ignored and not added to the value list. Overriding
-     * implementations may modify this behavior by redefining the
-     * {@link #addNull(java.util.List)} method.
-     *
-     * @param key the key
-     * @param value the value to be added.
-     */
-    public final void add(K key, V value) {
-        List<V> values = getValues(key);
-
-        if (value != null) {
-            values.add(value);
-        } else {
-            addNull(values);
-        }
-    }
-
-    /**
-     * Add multiple values to the current list of values for the supplied key. If
-     * the supplied array of new values is empty, method returns immediately.
-     * Method throws a {@code NullPointerException} if the supplied array of values
-     * is {@code null}.
-     * <p />
-     * NOTE: This implementation ignores {@code null} values; Any of the supplied values
-     * of {@code null} is ignored and not added to the value list. Overriding
-     * implementations may modify this behavior by redefining the
-     * {@link #addNull(java.util.List)} method.
-     *
-     * @param key the key.
-     * @param newValues the values to be added.
-     * @throws NullPointerException if the supplied array of new values is {@code null}.
-     */
-    public final void addAll(K key, V... newValues) {
-        if (newValues == null || newValues.length == 0) {
-            return;
-        }
-
-        List<V> values = getValues(key);
-
-        for (V value : newValues) {
-            if (value != null) {
-                values.add(value);
-            } else {
-                addNull(values);
-            }
-        }
-    }
-
-    /**
-     * Add all the values from the supplied value list to the current list of
-     * values for the supplied key. If the supplied value list is empty, method
-     * returns immediately. Method throws a {@code NullPointerException} if the
-     * supplied array of values is {@code null}.
-     * <p />
-     * NOTE: This implementation ignores {@code null} values; Any {@code null} value
-     * in the supplied value list is ignored and not added to the value list. Overriding
-     * implementations may modify this behavior by redefining the
-     * {@link #addNull(java.util.List)} method.
-     *
-     * @param key the key.
-     * @param valueList the list of values to be added.
-     * @throws NullPointerException if the supplied value list is {@code null}.
-     */
-    public final void addAll(K key, List<V> valueList) {
-        if (valueList == null || valueList.isEmpty()) {
-            return;
-        }
-
-        List<V> values = getValues(key);
-
-        for (V value : valueList) {
-            if (value != null) {
-                values.add(value);
-            } else {
-                addNull(values);
-            }
-        }
-    }
-
-    @Override
-    public final V getFirst(K key) {
-        List<V> values = store.get(key);
-        if (values != null && values.size() > 0) {
-            return values.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Add a value to the first position in the current list of values for the
-     * supplied key.
-     * <p />
-     * NOTE: This implementation ignores {@code null} values; A supplied value
-     * of {@code null} is ignored and not added to the purged value list. Overriding
-     * implementations may modify this behavior by redefining the
-     * {@link #addFirstNull(java.util.List)} method.
-     *
-     * @param key the key
-     * @param value the value to be added.
-     */
-    public final void addFirst(K key, V value) {
-        List<V> values = getValues(key);
-
-        if (value != null) {
-            values.add(0, value);
-        } else {
-            addFirstNull(values);
-        }
-    }
-
-    /**
-     * Return a non-null list of values for a given key. The returned list may be
-     * empty.
-     * <p />
-     * If there is no entry for the key in the map, a new empty {@link List}
-     * instance is created, registered within the map to hold the values of
-     * the key and returned from the method.
-     *
-     * @param key the key.
-     * @return value list registered with the key. The method is guaranteed to never
-     *     return {@code null}.
-     */
-    protected final List<V> getValues(K key) {
-        List<V> l = store.get(key);
-        if (l == null) {
-            l = new LinkedList<V>();
-            store.put(key, l);
-        }
-        return l;
-    }
-
-    @Override
-    public String toString() {
-        return store.toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return store.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return store.equals(o);
-    }
-
-    @Override
-    public Collection<List<V>> values() {
-        return store.values();
-    }
-
-    @Override
-    public int size() {
-        return store.size();
-    }
-
-    @Override
-    public List<V> remove(Object key) {
-        return store.remove(key);
-    }
-
-    @Override
-    public void putAll(Map<? extends K, ? extends List<V>> m) {
-        store.putAll(m);
-    }
-
-    @Override
-    public List<V> put(K key, List<V> value) {
-        return store.put(key, value);
-    }
-
-    @Override
-    public Set<K> keySet() {
-        return store.keySet();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return store.isEmpty();
-    }
-
-    @Override
-    public List<V> get(Object key) {
-        return store.get(key);
-    }
-
-    @Override
-    public Set<Entry<K, List<V>>> entrySet() {
-        return store.entrySet();
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return store.containsValue(value);
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return store.containsKey(key);
-    }
-
-    @Override
-    public Object clone() {
-        return store.clone();
-    }
-
-    @Override
-    public void clear() {
-        store.clear();
     }
 }

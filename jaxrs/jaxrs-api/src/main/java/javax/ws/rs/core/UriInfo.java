@@ -214,8 +214,9 @@ public interface UriInfo {
     public MultivaluedMap<String, String> getQueryParameters(boolean decode);
 
     /**
-     * Get a read-only list of URIs for matched resources. Each entry is a
-     * relative URI that matched a resource class, a
+     * Get a read-only list of URIs for matched resources.
+     *
+     * Each entry is a relative URI that matched a resource class, a
      * sub-resource method or a sub-resource locator. All sequences of escaped
      * octets are decoded, equivalent to {@code getMatchedURIs(true)}.
      * Entries do not include query parameters but do include matrix parameters
@@ -264,19 +265,25 @@ public interface UriInfo {
      * </tr>
      * </table>
      *
+     * In case the method is invoked prior to the request matching (e.g. from a
+     * pre-matching filter), the method returns an empty list.
      *
      * @return a read-only list of URI paths for matched resources.
      */
     public List<String> getMatchedURIs();
 
     /**
-     * Get a read-only list of URIs for matched resources. Each entry is a
-     * relative URI that matched a resource class, a sub-resource
+     * Get a read-only list of URIs for matched resources.
+     *
+     * Each entry is a relative URI that matched a resource class, a sub-resource
      * method or a sub-resource locator. Entries do not include query
      * parameters but do include matrix parameters if present in the request URI.
      * Entries are ordered in reverse request URI matching order, with the
      * current resource URI first. See {@link #getMatchedURIs()} for an
      * example.
+     *
+     * In case the method is invoked prior to the request matching (e.g. from a
+     * pre-matching filter), the method returns an empty list.
      *
      * @param decode controls whether sequences of escaped octets are decoded
      *     ({@code true}) or not ({@code false}).
@@ -286,6 +293,7 @@ public interface UriInfo {
 
     /**
      * Get a read-only list of the currently matched resource class instances.
+     *
      * Each entry is a resource class instance that matched the request URI
      * either directly or via a sub-resource method or a sub-resource locator.
      * Entries are ordered according to reverse request URI matching order,
@@ -332,6 +340,9 @@ public interface UriInfo {
      *   <td>BarResource, FooResource</td>
      * </tr>
      * </table>
+     *
+     * In case the method is invoked prior to the request matching (e.g. from a
+     * pre-matching filter), the method returns an empty list.
      *
      * @return a read-only list of matched resource class instances.
      */

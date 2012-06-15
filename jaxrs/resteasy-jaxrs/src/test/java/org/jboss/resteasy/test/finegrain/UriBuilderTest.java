@@ -898,5 +898,14 @@ public class UriBuilderTest
       }
    }
 
+   @Test
+   public void testPathEncoding() throws Exception
+   {
+      UriBuilder builder = UriBuilder.fromUri("http://localhost");
+      builder.path("{d}");
+      System.out.println(builder.build("A/B"));
+      System.out.println(builder.buildFromEncoded("A/B"));
+   }
+
 
 }

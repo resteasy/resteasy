@@ -47,6 +47,12 @@ public class BuiltResponse extends Response
    }
 
    @Override
+   public StatusType getStatusInfo()
+   {
+      return Status.fromStatusCode(status);
+   }
+
+   @Override
    public Object getEntity()
    {
       return entity;

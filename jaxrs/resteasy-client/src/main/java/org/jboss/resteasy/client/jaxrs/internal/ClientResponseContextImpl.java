@@ -151,45 +151,4 @@ public class ClientResponseContextImpl implements ClientResponseContext
       response.setInputStream(entityStream);
    }
 
-   @Override
-   public <T> void writeEntity(Class<T> type, Annotation[] annotations, MediaType mediaType, T entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> void writeEntity(GenericType<T> genericType, Annotation[] annotations, MediaType mediaType, T entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type) throws MessageProcessingException
-   {
-      return response.readEntity(type);
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException
-   {
-      return response.readEntity(entityType);
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
-   {
-      return response.readEntity(type, annotations);
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
-   {
-      return response.readEntity(entityType, annotations);
-   }
-
-   @Override
-   public void bufferEntity() throws MessageProcessingException
-   {
-      response.bufferEntity();
-   }
 }

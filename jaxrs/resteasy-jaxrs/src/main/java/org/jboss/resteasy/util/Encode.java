@@ -270,7 +270,7 @@ public class Encode
       return buf.toString();
    }
 
-   private static boolean savePathParams(String segment, StringBuffer newSegment, List<String> params)
+   public static boolean savePathParams(String segment, StringBuffer newSegment, List<String> params)
    {
       boolean foundParam = false;
       // Regular expressions can have '{' and '}' characters.  Replace them to do match
@@ -420,7 +420,7 @@ public class Encode
       return encoded;
    }
 
-   private static String pathParamReplacement(String segment, List<String> params)
+   public static String pathParamReplacement(String segment, List<String> params)
    {
       StringBuffer newSegment = new StringBuffer();
       Matcher matcher = PARAM_REPLACEMENT.matcher(segment);

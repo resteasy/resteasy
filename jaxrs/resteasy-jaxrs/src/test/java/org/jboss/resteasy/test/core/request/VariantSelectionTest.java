@@ -34,17 +34,17 @@ public class VariantSelectionTest
       Locale locale = Locale.UK;
 
       List<Variant> available = new ArrayList<Variant>();
-      available.add(new Variant(mediaTypeWithCharset, null, null));
+      available.add(new Variant(mediaTypeWithCharset, (String)null, (String)null));
       available.add(new Variant(mediaTypeWithCharset, locale, null));
-      available.add(new Variant(mediaTypeWithCharset, null, encoding));
+      available.add(new Variant(mediaTypeWithCharset, (String)null, encoding));
       available.add(new Variant(mediaTypeWithCharset, locale, encoding));
-      available.add(new Variant(mediaType, null, null));
+      available.add(new Variant(mediaType, (String)null, (String)null));
       available.add(new Variant(mediaType, locale, null));
-      available.add(new Variant(mediaType, null, encoding));
+      available.add(new Variant(mediaType, (String)null, encoding));
       available.add(new Variant(mediaType, locale, encoding));
       available.add(new Variant(null, locale, null));
       available.add(new Variant(null, locale, encoding));
-      available.add(new Variant(null, null, encoding));
+      available.add(new Variant((MediaType)null,(String)null, encoding));
 
       // Assert all acceptable:
       for (Variant variant : available)
@@ -65,10 +65,10 @@ public class VariantSelectionTest
       ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
       negotiation.setAcceptHeaders(Arrays.asList(header));
 
-      Variant o1 = new Variant(MediaType.valueOf("text/html;level=1"), null, null);
-      Variant o2 = new Variant(MediaType.valueOf("text/html"), null, null);
-      Variant o3 = new Variant(MediaType.valueOf("text/*"), null, null);
-      Variant o4 = new Variant(MediaType.valueOf("*/*"), null, null);
+      Variant o1 = new Variant(MediaType.valueOf("text/html;level=1"), (String)null, (String)null);
+      Variant o2 = new Variant(MediaType.valueOf("text/html"), (String)null, null);
+      Variant o3 = new Variant(MediaType.valueOf("text/*"), (String)null, null);
+      Variant o4 = new Variant(MediaType.valueOf("*/*"), (String)null, null);
 
       List<Variant> available = new ArrayList<Variant>();
       available.add(o4);
@@ -91,12 +91,12 @@ public class VariantSelectionTest
       negotiation.setAcceptHeaders(Arrays.asList(header1, header2));
       negotiation.setAcceptLanguageHeaders(Arrays.asList("en"));
 
-      Variant q03 = new Variant(MediaType.valueOf("text/plain"), null, null);
-      Variant q04 = new Variant(MediaType.valueOf("text/html;level=2"), null, null);
-      Variant q05 = new Variant(MediaType.valueOf("image/jpeg"), null, null);
-      Variant q07 = new Variant(MediaType.valueOf("text/html"), null, null);
-      Variant q07plus = new Variant(MediaType.valueOf("text/html;level=3"), null, null);
-      Variant q10 = new Variant(MediaType.valueOf("text/html;level=1"), null, null);
+      Variant q03 = new Variant(MediaType.valueOf("text/plain"), (String)null, null);
+      Variant q04 = new Variant(MediaType.valueOf("text/html;level=2"), (String)null, null);
+      Variant q05 = new Variant(MediaType.valueOf("image/jpeg"), (String)null, null);
+      Variant q07 = new Variant(MediaType.valueOf("text/html"), (String)null, null);
+      Variant q07plus = new Variant(MediaType.valueOf("text/html;level=3"), (String)null, null);
+      Variant q10 = new Variant(MediaType.valueOf("text/html;level=1"), (String)null, null);
 
       List<Variant> available = new ArrayList<Variant>();
       available.add(q03);

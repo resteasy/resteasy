@@ -9,6 +9,7 @@ import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.EntityTag;
@@ -21,6 +22,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -56,7 +60,7 @@ public abstract class ClientResponse extends Response
    protected MediaType contentType;
    protected Map<String, NewCookie> cookies;
    protected EntityTag entityTag;
-
+   protected byte[] bufferedEntity;
 
    public void setHeaders(MultivaluedMap<String, String> headers)
    {
@@ -87,6 +91,12 @@ public abstract class ClientResponse extends Response
    public int getStatus()
    {
       return status;
+   }
+
+   @Override
+   public StatusType getStatusInfo()
+   {
+      return Status.fromStatusCode(status);
    }
 
    public MultivaluedMap<String, String> getHeaders()
@@ -266,6 +276,13 @@ public abstract class ClientResponse extends Response
    }
 
    protected abstract InputStream getInputStream();
+   protected InputStream getEntityStream()
+   {
+      if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
+      if (isClosed) throw new MessageProcessingException("Stream is closed");
+      return getInputStream();
+   }
+
    protected abstract void setInputStream(InputStream is);
    protected abstract void releaseConnection();
 
@@ -274,14 +291,24 @@ public abstract class ClientResponse extends Response
    public MediaType getMediaType()
    {
       String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
-      return mediaType == null ? MediaType.WILDCARD_TYPE : MediaType.valueOf(mediaType);
+      if (mediaType == null) return null;
+      return MediaType.valueOf(mediaType);
    }
 
    public <T2> T2 readEntity(Class<T2> type, Type genericType, Annotation[] anns)
    {
       if (entity != null && !type.isInstance(this.entity))
-         throw new RuntimeException("The entity was already read, and it was of type "
+      {
+         if (bufferedEntity == null)
+         {
+            throw new RuntimeException("The entity was already read, and it was of type "
                  + entity.getClass());
+         }
+         else
+         {
+            entity = null;
+         }
+      }
 
       if (entity == null)
       {
@@ -322,7 +349,7 @@ public abstract class ClientResponse extends Response
 
       try
       {
-         InputStream is = getInputStream();
+         InputStream is = getEntityStream();
          if (is == null)
          {
             throw new MessageProcessingException("Input stream was empty, there is no entity");
@@ -389,7 +416,19 @@ public abstract class ClientResponse extends Response
    @Override
    public boolean bufferEntity() throws MessageProcessingException
    {
-      throw new NotImplementedYetException();
+      if (bufferedEntity != null) return true;
+      if (entity != null) return false;
+      String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
+      if (mediaType == null) return false;
+      try
+      {
+         bufferedEntity = ReadFromStream.readFromStream(1024, getInputStream());
+      }
+      catch (IOException e)
+      {
+         throw new MessageProcessingException(e);
+      }
+      return true;
    }
 
    @Override

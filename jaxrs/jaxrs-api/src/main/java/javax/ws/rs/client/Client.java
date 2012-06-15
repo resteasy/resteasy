@@ -84,9 +84,9 @@ public interface Client {
     /**
      * Build a new web resource target.
      *
-     * @param uri web resource URI.
+     * @param uri web resource URI. May contain template parameters.
      * @return web resource target bound to the provided URI.
-     * @throws IllegalArgumentException in case the supplied string is not a valid URI.
+     * @throws IllegalArgumentException in case the supplied string is not a valid URI template.
      * @throws NullPointerException in case the supplied argument is null.
      */
     WebTarget target(String uri) throws IllegalArgumentException, NullPointerException;

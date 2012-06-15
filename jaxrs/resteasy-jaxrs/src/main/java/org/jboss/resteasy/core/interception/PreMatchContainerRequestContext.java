@@ -13,6 +13,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URI;
@@ -52,25 +53,19 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    }
 
    @Override
-   public URI getBaseUri()
+   public UriInfo getUriInfo()
    {
-      return httpRequest.getUri().getBaseUri();
+      return httpRequest.getUri();
    }
 
    @Override
-   public String getPath()
-   {
-      return httpRequest.getUri().getPath();
-   }
-
-   @Override
-   public void setBaseUri(URI uri)
+   public void setRequestUri(URI requestUri) throws IllegalStateException
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public void setPath(String path)
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
    {
       throw new NotImplementedYetException();
    }
@@ -151,48 +146,6 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    public void setEntityStream(InputStream entityStream)
    {
       httpRequest.setInputStream(entityStream);
-   }
-
-   @Override
-   public <T> void writeEntity(Class<T> type, Annotation[] annotations, MediaType mediaType, T entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> void writeEntity(GenericType<T> genericType, Annotation[] annotations, MediaType mediaType, T entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public void bufferEntity() throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
    }
 
    @Override

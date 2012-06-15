@@ -234,7 +234,7 @@ public class ClientRequestHeaders
       {
          for (Object obj : entry.getValue())
          {
-            map.add(entry.getKey(), HeaderHelper.toHeaderString(obj, providerFactory));
+            map.add(entry.getKey(), providerFactory.toHeaderString(obj));
          }
       }
       return map;
@@ -247,7 +247,7 @@ public class ClientRequestHeaders
       List<String> values = new ArrayList<String>();
       for (Object val : vals)
       {
-         values.add(HeaderHelper.toHeaderString(val, providerFactory));
+         values.add(providerFactory.toHeaderString(val));
       }
       return values;
    }
