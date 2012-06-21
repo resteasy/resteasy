@@ -54,7 +54,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       }
    }
 
-   private List<Module> getModules(final ServletContext context)
+   protected List<Module> getModules(final ServletContext context)
    {
       final List<Module> result = new ArrayList<Module>();
       final String modulesString = context.getInitParameter("resteasy.guice.modules");
