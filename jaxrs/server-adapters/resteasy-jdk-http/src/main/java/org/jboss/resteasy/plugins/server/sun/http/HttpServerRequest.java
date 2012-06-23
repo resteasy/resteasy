@@ -2,8 +2,10 @@ package org.jboss.resteasy.plugins.server.sun.http;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
@@ -105,5 +107,9 @@ public class HttpServerRequest extends BaseHttpRequest
       exchange.setAttribute(name, null);
    }
 
-
+   @Override
+   public ResteasyAsynchronousContext getExecutionContext()
+   {
+      return new SynchronousExecutionContext(dispatcher, this, httpResponse);
+   }
 }

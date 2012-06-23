@@ -9,6 +9,19 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
+    <title>Migrating from 2.x to 3.0</title>
+    <itemizedlist>
+        <listitem>
+            Some SPIs have changed.  This should not effect applications unless you are doing something you aren't supposed
+            to do.
+        </listitem>
+        <listitem>
+            The async tomcat and async jboss web modules have been removed.  If you are not running under Servlet 3.0
+            async HTTP server-side, will be faked and run synchronously in same request thread.
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
     <title>Migrating from 2.3.2 to 2.3.3</title>
     <itemizedlist>
         <listitem>

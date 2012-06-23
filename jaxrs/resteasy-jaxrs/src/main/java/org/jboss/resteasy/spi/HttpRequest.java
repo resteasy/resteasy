@@ -1,5 +1,6 @@
 package org.jboss.resteasy.spi;
 
+import javax.ws.rs.core.ExecutionContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
@@ -64,35 +65,8 @@ public interface HttpRequest
    Map<String, Object> getProperties();
 
 
-   /**
-    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
-    */
+   public ResteasyAsynchronousContext getExecutionContext();
+
    public boolean isInitial();
 
-   /**
-    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
-    */
-   public boolean isSuspended();
-
-   /**
-    * This method will create an asynchronous response and prepare the
-    * request to be issued asynchronously
-    *
-    * @return
-    */
-   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout);
-
-   /**
-    * Returns the AsynchronousResponse created by createAsynchronousResponse
-    *
-    * @return
-    */
-   public AsynchronousResponse getAsynchronousResponse();
-
-   /**
-    * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
-    * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
-    * asychronous HTTP.
-    */
-   public void initialRequestThreadFinished();
 }
