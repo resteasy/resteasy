@@ -300,13 +300,12 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
          throw new ResteasyViolationExceptionExtension(violationsContainer);
       }
 
-      if (request.isSuspended())
+      if (request.getExecutionContext().isSuspended())
       {
-         AbstractAsynchronousResponse asyncResponse = (AbstractAsynchronousResponse) request.getAsynchronousResponse();
-         if (asyncResponse == null) return null;
-         asyncResponse.setAnnotations(method.getAnnotations());
-         asyncResponse.setWriterInterceptors(writerInterceptors);
-         asyncResponse.setResponseFilters(responseFilters);
+         request.getExecutionContext().setAnnotations(method.getAnnotations());
+         request.getExecutionContext().setWriterInterceptors(writerInterceptors);
+         request.getExecutionContext().setResponseFilters(responseFilters);
+         request.getExecutionContext().setMethod(this);
          return null;
       }
       if (rtn == null || method.getReturnType().equals(void.class))

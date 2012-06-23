@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.smoke;
+package org.jboss.resteasy.test.async;
 
 import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.spi.AsynchronousResponse;
@@ -9,19 +9,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 @Path("/")
-public class SimpleResource
+public class MyResource
 {
-
    @GET
-   @Path("basic")
    @Produces("text/plain")
-   public void getBasic(final @Suspend(100000) AsynchronousResponse response) throws Exception
+   public void get(final @Suspend(2000) AsynchronousResponse response)
    {
       Thread t = new Thread()
       {
@@ -31,8 +28,8 @@ public class SimpleResource
             try
             {
                System.out.println("STARTED!!!!");
-               Thread.sleep(5000);
-               Response jaxrs = Response.ok("basic").type(MediaType.TEXT_PLAIN).build();
+               Thread.sleep(100);
+               Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
                response.setResponse(jaxrs);
             }
             catch (Exception e)
@@ -42,13 +39,12 @@ public class SimpleResource
          }
       };
       t.start();
-
    }
 
    @GET
-   @Path("gzip")
+   @Path("timeout")
    @Produces("text/plain")
-   public void getGzip(final @Suspend(100000) AsynchronousResponse response) throws Exception
+   public void timeout(final @Suspend(100) AsynchronousResponse response)
    {
       Thread t = new Thread()
       {
@@ -57,9 +53,9 @@ public class SimpleResource
          {
             try
             {
-               System.out.println("STARTED Gzip !!!!");
-               Thread.sleep(5000);
-               Response jaxrs = Response.ok("HELLO WORLD").type(MediaType.TEXT_PLAIN).header("Content-Encoding", "gzip").build();
+               System.out.println("STARTED!!!!");
+               Thread.sleep(1000);
+               Response jaxrs = Response.ok("goodbye").type(MediaType.TEXT_PLAIN).build();
                response.setResponse(jaxrs);
             }
             catch (Exception e)
@@ -69,17 +65,5 @@ public class SimpleResource
          }
       };
       t.start();
-
    }
-
-
-   @GET
-   @Path("xml")
-   @Produces("application/xml")
-   public Customer getCustomer()
-   {
-      return new Customer("Bill Burke");
-   }
-
-
 }

@@ -2,6 +2,7 @@ package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -101,32 +102,14 @@ public class DelegatingHttpRequest implements HttpRequest
    }
 
    @Override
-   public boolean isSuspended()
-   {
-      return delegate.isSuspended();
-   }
-
-   @Override
-   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
-   {
-      return delegate.createAsynchronousResponse(suspendTimeout);
-   }
-
-   @Override
-   public AsynchronousResponse getAsynchronousResponse()
-   {
-      return delegate.getAsynchronousResponse();
-   }
-
-   @Override
-   public void initialRequestThreadFinished()
-   {
-      delegate.initialRequestThreadFinished();
-   }
-
-   @Override
    public Map<String, Object> getProperties()
    {
       return delegate.getProperties();
+   }
+
+   @Override
+   public ResteasyAsynchronousContext getExecutionContext()
+   {
+      return delegate.getExecutionContext();
    }
 }

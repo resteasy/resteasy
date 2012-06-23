@@ -70,6 +70,6 @@ public interface WriterInterceptor {
      * @throws java.io.IOException if an IO error arises.
      * @throws javax.ws.rs.WebApplicationException thrown by wrapped method.
      */
-    void aroundWriteTo(WriterInterceptorContext context)
+    void aroundWriteTo( WriterInterceptorContext context)
             throws java.io.IOException, javax.ws.rs.WebApplicationException;
 }
