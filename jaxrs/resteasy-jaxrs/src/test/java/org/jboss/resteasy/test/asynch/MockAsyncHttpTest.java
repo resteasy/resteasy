@@ -27,7 +27,33 @@ public class MockAsyncHttpTest extends BaseResourceTest
    {
       @GET
       @Produces("text/plain")
-      public void get(final @Suspend(1000) AsynchronousResponse response)
+      public void get(final @Suspend(2000) AsynchronousResponse response)
+      {
+         Thread t = new Thread()
+         {
+            @Override
+            public void run()
+            {
+               try
+               {
+                  System.out.println("STARTED!!!!");
+                  Thread.sleep(100);
+                  Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
+                  response.setResponse(jaxrs);
+               }
+               catch (Exception e)
+               {
+                  e.printStackTrace();
+               }
+            }
+         };
+         t.start();
+      }
+
+      @GET
+      @Path("timeout")
+      @Produces("text/plain")
+      public void timeout(final @Suspend(100) AsynchronousResponse response)
       {
          Thread t = new Thread()
          {
@@ -49,7 +75,6 @@ public class MockAsyncHttpTest extends BaseResourceTest
          };
          t.start();
       }
-
    }
 
    @Test
@@ -60,5 +85,14 @@ public class MockAsyncHttpTest extends BaseResourceTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("hello", response.getEntity());
+   }
+
+   @Test
+   public void testTimeout() throws Exception
+   {
+      addPerRequestResource(MyResource.class);
+      ClientRequest request = new ClientRequest(generateURL("/timeout"));
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals(503, response.getStatus());
    }
 }

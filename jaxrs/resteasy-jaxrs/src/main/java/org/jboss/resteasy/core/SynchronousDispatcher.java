@@ -534,7 +534,7 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          jaxrsResponse = invoker.invoke(request, response);
-         if (request.isSuspended())
+         if (request.getExecutionContext().isSuspended())
          {
             /**
              * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
@@ -542,7 +542,7 @@ public class SynchronousDispatcher implements Dispatcher
              * asychronous HTTP.
              *
              */
-            request.initialRequestThreadFinished();
+            request.getExecutionContext().initialRequestThreadFinished();
             jaxrsResponse = null; // we're handing response asynchronously
          }
       }

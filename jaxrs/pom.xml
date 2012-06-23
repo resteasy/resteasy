@@ -94,8 +94,9 @@
         <module>eagledns</module>
         <module>security</module>
         <module>resteasy-links</module>
+        <!-- retiring these components
         <module>async-http-jbossweb</module>
-        <module>async-http-tomcat</module>
+        <module>async-http-tomcat</module>  -->
         <module>resteasy-spring</module>
         <module>resteasy-jsapi</module>
         <module>resteasy-cdi</module>

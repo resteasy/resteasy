@@ -1,6 +1,7 @@
 package org.jboss.resteasy.mock;
 
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -9,27 +10,33 @@ import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.WriterInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,6 +52,7 @@ public class MockHttpRequest implements HttpRequest
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
+   protected ResteasyAsynchronousContext asynchronousContext;
 
 
    protected MockHttpRequest()
@@ -142,6 +150,16 @@ public class MockHttpRequest implements HttpRequest
       mock.inputStream = new ByteArrayInputStream(bytes);
       mock.preprocessedPath = request.getPreprocessedPath();
       return mock;
+   }
+
+   public ResteasyAsynchronousContext getAsynchronousContext()
+   {
+      return asynchronousContext;
+   }
+
+   public void setAsynchronousContext(ResteasyAsynchronousContext asynchronousContext)
+   {
+      this.asynchronousContext = asynchronousContext;
    }
 
    public Map<String, Object> getProperties()
@@ -295,44 +313,9 @@ public class MockHttpRequest implements HttpRequest
       preprocessedPath = path;
    }
 
-   public void suspend()
-   {
-      throw new UnsupportedOperationException();
-   }
-
-   public void suspend(long timeout)
-   {
-      throw new UnsupportedOperationException();
-   }
-
-   public void complete()
-   {
-      throw new UnsupportedOperationException();
-   }
-
    public boolean isInitial()
    {
       return true;
-   }
-
-   public boolean isSuspended()
-   {
-      return false;
-   }
-
-   public boolean isTimeout()
-   {
-      return false;
-   }
-
-   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
-   {
-      throw new UnsupportedOperationException("NOT SUPPORTED");
-   }
-
-   public AsynchronousResponse getAsynchronousResponse()
-   {
-      throw new UnsupportedOperationException("NOT SUPPORTED");
    }
 
    public void initialRequestThreadFinished()
@@ -354,4 +337,124 @@ public class MockHttpRequest implements HttpRequest
       attributes.remove(name);
    }
 
+   @Override
+   public ResteasyAsynchronousContext getExecutionContext()
+   {
+      if (asynchronousContext != null) return asynchronousContext;
+      else return  new ResteasyAsynchronousContext()
+      {
+         @Override
+         public void initialRequestThreadFinished()
+         {
+         }
+
+         @Override
+         public ContainerResponseFilter[] getResponseFilters()
+         {
+            return new ContainerResponseFilter[0];
+         }
+
+         @Override
+         public void setResponseFilters(ContainerResponseFilter[] responseFilters)
+         {
+         }
+
+         @Override
+         public WriterInterceptor[] getWriterInterceptors()
+         {
+            return new WriterInterceptor[0];
+         }
+
+         @Override
+         public void setWriterInterceptors(WriterInterceptor[] writerInterceptors)
+         {
+         }
+
+         @Override
+         public Annotation[] getAnnotations()
+         {
+            return new Annotation[0];
+         }
+
+         @Override
+         public void setAnnotations(Annotation[] annotations)
+         {
+         }
+
+         @Override
+         public ResourceMethod getMethod()
+         {
+            return null;
+         }
+
+         @Override
+         public void setMethod(ResourceMethod method)
+         {
+         }
+
+         @Override
+         public void resume(Object response) throws IllegalStateException
+         {
+         }
+
+         @Override
+         public void resume(Exception response) throws IllegalStateException
+         {
+         }
+
+         @Override
+         public void suspend() throws IllegalStateException
+         {
+         }
+
+         @Override
+         public void suspend(long millis) throws IllegalStateException
+         {
+         }
+
+         @Override
+         public void suspend(long time, TimeUnit unit) throws IllegalStateException
+         {
+         }
+
+         @Override
+         public void setSuspendTimeout(long time, TimeUnit unit) throws IllegalStateException
+         {
+         }
+
+         @Override
+         public void cancel()
+         {
+         }
+
+         @Override
+         public boolean isSuspended()
+         {
+            return false;
+         }
+
+         @Override
+         public boolean isCancelled()
+         {
+            return false;
+         }
+
+         @Override
+         public boolean isDone()
+         {
+            return false;
+         }
+
+         @Override
+         public void setResponse(Object response)
+         {
+         }
+
+         @Override
+         public Response getResponse()
+         {
+            return null;
+         }
+      };
+   }
 }
