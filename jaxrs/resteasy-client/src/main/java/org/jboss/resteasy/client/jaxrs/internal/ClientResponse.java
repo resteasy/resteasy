@@ -245,7 +245,7 @@ public abstract class ClientResponse extends Response
    @Override
    public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException
    {
-      return readEntity(entityType.getRawType(), entityType.getType(), null);
+      return readEntity((Class<T>)entityType.getRawType(), entityType.getType(), null);
    }
 
 
@@ -410,7 +410,7 @@ public abstract class ClientResponse extends Response
    @Override
    public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
    {
-      return readEntity(entityType.getRawType(), entityType.getType(), annotations);
+      return readEntity((Class<T>)entityType.getRawType(), entityType.getType(), annotations);
    }
 
    @Override
@@ -535,6 +535,12 @@ public abstract class ClientResponse extends Response
 
    @Override
    public Link.Builder getLinkBuilder(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Set<String> getAllowedMethods()
    {
       throw new NotImplementedYetException();
    }

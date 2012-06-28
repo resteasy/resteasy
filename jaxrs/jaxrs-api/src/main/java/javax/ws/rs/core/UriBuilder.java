@@ -46,7 +46,7 @@ import java.util.Map;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
- * URI template aware utility class for building URIs from their components. See
+ * URI template-aware utility class for building URIs from their components. See
  * {@link javax.ws.rs.Path#value} for an explanation of URI templates.
  *
  * <p>Builder methods perform contextual encoding of characters not permitted in
@@ -186,6 +186,7 @@ public abstract class UriBuilder {
      *
      * @return a copy of the UriBuilder.
      */
+    @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
     @Override
     public abstract UriBuilder clone();
 
@@ -305,7 +306,7 @@ public abstract class UriBuilder {
      * existing path.
      * When constructing the final path, a '/' separator will be inserted
      * between the existing path and the supplied path if necessary.
-     * This method is a convenience shortcut to <code>path(Method)</code>, it
+     * This method is a convenience shortcut to {@code path(Method)}, it
      * can only be used in cases where there is a single method with the
      * specified name that is annotated with {@link javax.ws.rs.Path}.
      *
@@ -448,13 +449,21 @@ public abstract class UriBuilder {
     public abstract UriBuilder fragment(String fragment);
 
     /**
-     * Build a URI, any URI template parameters will be replaced by the value in
-     * the supplied map. Values are converted to <code>String</code> using
-     * their <code>toString</code> method and are then encoded to match the
-     * rules of the URI component to which they pertain.  All '%' characters
+     * Build a URI.
+     *
+     * Any URI template parameters will be replaced by the value in
+     * the supplied map. Values are converted to {@code String} using
+     * their {@code toString()} method and are then encoded to match the
+     * rules of the URI component to which they pertain.  All {@code '%'} characters
      * in the stringified values will be encoded.
      * The state of the builder is unaffected; this method may be called
      * multiple times on the same builder instance.
+     * <p>
+     * NOTE: By default all {@code '/'} characters in the stringified values will be
+     * encoded in path templates, i.e. the result is identical to invoking
+     * {@link #buildFromMap(java.util.Map, boolean) buildFromMap(valueMap, true)}.
+     * To override this behavior use {@code buildFromMap(valueMap, false)} instead.
+     * </p>
      *
      * @param values a map of URI template parameter names and values.
      * @return the URI built from the UriBuilder.
@@ -462,14 +471,55 @@ public abstract class UriBuilder {
      *                                  without a supplied value, or if a template parameter value is {@code null}.
      * @throws UriBuilderException      if a URI cannot be constructed based on the
      *                                  current state of the builder.
+     * @see #buildFromMap(java.util.Map, boolean)
+     * @see #buildFromEncodedMap(java.util.Map)
      */
-    public abstract URI buildFromMap(Map<String, ? extends Object> values)
+    public abstract URI buildFromMap(Map<String, ?> values)
             throws IllegalArgumentException, UriBuilderException;
 
     /**
-     * Build a URI, any URI template parameters will be replaced by the value in
-     * the supplied map. Values are converted to <code>String</code> using
-     * their <code>toString</code> method and are then encoded to match the
+     * Build a URI.
+     *
+     * Any URI template parameters will be replaced by the value in
+     * the supplied map. Values are converted to {@code String} using
+     * their {@code toString()} method and are then encoded to match the
+     * rules of the URI component to which they pertain.  All {@code '%'} characters
+     * in the stringified values will be encoded.
+     * The state of the builder is unaffected; this method may be called
+     * multiple times on the same builder instance.
+     * <p>
+     * The {@code encodeSlashInPath} parameter may be used to override the default
+     * encoding of {@code '/'} characters in the stringified template values
+     * in cases when the template is part of the URI path component when using
+     * the {@link #buildFromMap(java.util.Map)} method. If the {@code encodeSlashInPath}
+     * parameter is set to {@code true} (default), the slash ({@code '/'}) characters in
+     * parameter values will be encoded if the template is placed in the URI path component.
+     * If set to {@code false} the default encoding behavior is overridden an slash characters
+     * in template values will not be encoded when used to substitute path templates.
+     * </p>
+     *
+     * @param values            a map of URI template parameter names and values.
+     * @param encodeSlashInPath if {@code true}, the slash ({@code '/'}) characters
+     *                          in parameter values will be encoded if the template
+     *                          is placed in the URI path component, otherwise the slash
+     *                          characters will not be encoded in path templates.
+     * @return the URI built from the UriBuilder.
+     * @throws IllegalArgumentException if there are any URI template parameters
+     *                                  without a supplied value, or if a template parameter value is {@code null}.
+     * @throws UriBuilderException      if a URI cannot be constructed based on the
+     *                                  current state of the builder.
+     * @see #buildFromMap(java.util.Map)
+     * @see #buildFromEncodedMap(java.util.Map)
+     */
+    public abstract URI buildFromMap(Map<String, ?> values, boolean encodeSlashInPath)
+            throws IllegalArgumentException, UriBuilderException;
+
+    /**
+     * Build a URI.
+     *
+     * Any URI template parameters will be replaced by the value in
+     * the supplied map. Values are converted to {@code String} using
+     * their {@code toString()} method and are then encoded to match the
      * rules of the URI component to which they pertain.  All % characters in
      * the stringified values that are not followed by two hexadecimal numbers
      * will be encoded.
@@ -482,23 +532,33 @@ public abstract class UriBuilder {
      *                                  without a supplied value, or if a template parameter value is {@code null}.
      * @throws UriBuilderException      if a URI cannot be constructed based on the
      *                                  current state of the builder.
+     * @see #buildFromMap(java.util.Map)
+     * @see #buildFromMap(java.util.Map, boolean)
      */
-    public abstract URI buildFromEncodedMap(Map<String, ? extends Object> values)
+    public abstract URI buildFromEncodedMap(Map<String, ?> values)
             throws IllegalArgumentException, UriBuilderException;
 
     /**
      * Build a URI, using the supplied values in order to replace any URI
-     * template parameters. Values are converted to <code>String</code> using
-     * their <code>toString</code> method and are then encoded to match the
+     * template parameters. Values are converted to {@code String} using
+     * their {@code toString()} method and are then encoded to match the
      * rules of the URI component to which they pertain. All '%' characters
      * in the stringified values will be encoded.
      * The state of the builder is unaffected; this method may be called
      * multiple times on the same builder instance.
-     * <p>All instances of the same template parameter
+     * <p>
+     * All instances of the same template parameter
      * will be replaced by the same value that corresponds to the position of the
      * first instance of the template parameter. e.g. the template "{a}/{b}/{a}"
      * with values {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i>
      * "x/y/z".
+     * </p>
+     * <p>
+     * NOTE: By default all {@code '/'} characters in the stringified values will be
+     * encoded in path templates, i.e. the result is identical to invoking
+     * {@link #build(Object[], boolean)} build(values, true)}.
+     * To override this behavior use {@code build(values, false)} instead.
+     * </p>
      *
      * @param values a list of URI template parameter values.
      * @return the URI built from the UriBuilder.
@@ -506,15 +566,59 @@ public abstract class UriBuilder {
      *                                  without a supplied value, or if a value is {@code null}.
      * @throws UriBuilderException      if a URI cannot be constructed based on the
      *                                  current state of the builder.
+     * @see #build(Object[], boolean)
+     * @see #buildFromEncoded(Object...)
      */
     public abstract URI build(Object... values)
             throws IllegalArgumentException, UriBuilderException;
 
     /**
+     * Build a URI, using the supplied values in order to replace any URI
+     * template parameters. Values are converted to {@code String} using
+     * their {@code toString()} method and are then encoded to match the
+     * rules of the URI component to which they pertain. All '%' characters
+     * in the stringified values will be encoded.
+     * The state of the builder is unaffected; this method may be called
+     * multiple times on the same builder instance.
+     * <p>
+     * All instances of the same template parameter
+     * will be replaced by the same value that corresponds to the position of the
+     * first instance of the template parameter. e.g. the template "{a}/{b}/{a}"
+     * with values {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i>
+     * "x/y/z".
+     * </p>
+     * <p>
+     * The {@code encodeSlashInPath} parameter may be used to override the default
+     * encoding of {@code '/'} characters in the stringified template values
+     * in cases when the template is part of the URI path component when using
+     * the {@link #build(Object[])} method. If the {@code encodeSlashInPath}
+     * parameter is set to {@code true} (default), the slash ({@code '/'}) characters in
+     * parameter values will be encoded if the template is placed in the URI path component.
+     * If set to {@code false} the default encoding behavior is overridden an slash characters
+     * in template values will not be encoded when used to substitute path templates.
+     * </p>
+     *
+     * @param values            a list of URI template parameter values.
+     * @param encodeSlashInPath if {@code true}, the slash ({@code '/'}) characters
+     *                          in parameter values will be encoded if the template
+     *                          is placed in the URI path component, otherwise the slash
+     *                          characters will not be encoded in path templates.
+     * @return the URI built from the UriBuilder.
+     * @throws IllegalArgumentException if there are any URI template parameters
+     *                                  without a supplied value, or if a value is {@code null}.
+     * @throws UriBuilderException      if a URI cannot be constructed based on the
+     *                                  current state of the builder.
+     * @see #build(Object[])
+     * @see #buildFromEncoded(Object...)
+     */
+    public abstract URI build(Object[] values, boolean encodeSlashInPath)
+            throws IllegalArgumentException, UriBuilderException;
+
+    /**
      * Build a URI.
      * Any URI templates parameters will be replaced with the supplied values in
-     * order. Values are converted to <code>String</code> using
-     * their <code>toString</code> method and are then encoded to match the
+     * order. Values are converted to {@code String} using
+     * their {@code toString()} method and are then encoded to match the
      * rules of the URI component to which they pertain. All % characters in
      * the stringified values that are not followed by two hexadecimal numbers
      * will be encoded.
@@ -532,6 +636,8 @@ public abstract class UriBuilder {
      *                                  without a supplied value, or if a value is {@code null}.
      * @throws UriBuilderException      if a URI cannot be constructed based on the
      *                                  current state of the builder.
+     * @see #build(Object[])
+     * @see #build(Object[], boolean)
      */
     public abstract URI buildFromEncoded(Object... values)
             throws IllegalArgumentException, UriBuilderException;

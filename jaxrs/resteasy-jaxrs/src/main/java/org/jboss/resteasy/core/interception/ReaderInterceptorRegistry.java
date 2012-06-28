@@ -108,19 +108,19 @@ public class ReaderInterceptorRegistry extends JaxrsInterceptorRegistry<ReaderIn
       @Override
       public Object getAttribute(String attribute)
       {
-         return readerInterceptorContext.getProperties().get(attribute);
+         return readerInterceptorContext.getProperty(attribute);
       }
 
       @Override
       public void setAttribute(String name, Object value)
       {
-         readerInterceptorContext.getProperties().put(name, value);
+         readerInterceptorContext.setProperty(name, value);
       }
 
       @Override
       public void removeAttribute(String name)
       {
-         readerInterceptorContext.getProperties().remove(name);
+         readerInterceptorContext.removeProperty(name);
       }
 
       @Override

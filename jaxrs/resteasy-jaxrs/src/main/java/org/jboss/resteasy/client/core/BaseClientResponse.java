@@ -3,7 +3,7 @@ package org.jboss.resteasy.client.core;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.core.interception.ReaderInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
@@ -11,7 +11,6 @@ import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -25,7 +24,6 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
@@ -440,7 +438,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
          }
 
-         final Object obj = new ReaderInterceptorContextImpl(readerInterceptors, reader1, useType,
+         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, reader1, useType,
                  useGeneric, this.annotations, media, getResponseHeaders(), is, attributes)
                  .proceed();
          if (isMarshalledEntity)
@@ -675,6 +673,12 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
    @Override
    public URI getLocation()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Set<String> getAllowedMethods()
    {
       throw new NotImplementedYetException();
    }

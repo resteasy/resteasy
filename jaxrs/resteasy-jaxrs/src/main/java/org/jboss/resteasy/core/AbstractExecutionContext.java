@@ -112,7 +112,7 @@ public abstract class AbstractExecutionContext implements ResteasyAsynchronousCo
    }
 
    @Override
-   public void resume(Exception exc) throws IllegalStateException
+   public void resume(Throwable exc) throws IllegalStateException
    {
       dispatcher.handleException(request, response, exc);
    }

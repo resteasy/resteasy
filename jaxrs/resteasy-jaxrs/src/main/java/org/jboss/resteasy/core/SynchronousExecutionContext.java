@@ -46,8 +46,10 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       }
    }
 
+
+
    @Override
-   public void resume(Exception exc) throws IllegalStateException
+   public void resume(Throwable exc) throws IllegalStateException
    {
       synchronized (responseLock)
       {

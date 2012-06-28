@@ -33,7 +33,9 @@ import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -160,11 +162,6 @@ public class MockHttpRequest implements HttpRequest
    public void setAsynchronousContext(ResteasyAsynchronousContext asynchronousContext)
    {
       this.asynchronousContext = asynchronousContext;
-   }
-
-   public Map<String, Object> getProperties()
-   {
-      return attributes;
    }
 
    public MockHttpRequest header(String name, String value)
@@ -338,6 +335,27 @@ public class MockHttpRequest implements HttpRequest
    }
 
    @Override
+   public Enumeration<String> getAttributeNames()
+   {
+      Enumeration<String> en = new Enumeration<String>()
+      {
+         private Iterator<String> it = attributes.keySet().iterator();
+         @Override
+         public boolean hasMoreElements()
+         {
+            return it.hasNext();
+         }
+
+         @Override
+         public String nextElement()
+         {
+            return it.next();
+         }
+      };
+      return en;
+   }
+
+   @Override
    public ResteasyAsynchronousContext getExecutionContext()
    {
       if (asynchronousContext != null) return asynchronousContext;
@@ -398,7 +416,7 @@ public class MockHttpRequest implements HttpRequest
          }
 
          @Override
-         public void resume(Exception response) throws IllegalStateException
+         public void resume(Throwable response) throws IllegalStateException
          {
          }
 

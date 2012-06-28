@@ -3,7 +3,7 @@ package org.jboss.resteasy.client;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
-import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.Link;
@@ -467,7 +467,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          throw new RuntimeException("could not find writer for content-type "
                  + bodyContentType + " type: " + bodyType.getName());
       }
-      new WriterInterceptorContextImpl(getWriterInterceptors(), writer, body,
+      new ClientWriterInterceptorContext(getWriterInterceptors(), writer, body,
               bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
               headers, outputStream, attributes).proceed();
    }

@@ -10,7 +10,9 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -23,7 +25,6 @@ public class HttpServerRequest extends BaseHttpRequest
    protected HttpHeaders httpHeaders;
    protected UriInfo uriInfo;
    protected String preProcessedPath;
-   protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
 
 
@@ -35,12 +36,6 @@ public class HttpServerRequest extends BaseHttpRequest
       this.uriInfo = HttpExchangeUtil.extractUriInfo(exchange);
       this.httpHeaders = HttpExchangeUtil.extractHttpHeaders(exchange);
       this.preProcessedPath = uriInfo.getPath(false);
-   }
-
-   @Override
-   public Map<String, Object> getProperties()
-   {
-      return attributes;
    }
 
    @Override
@@ -105,6 +100,27 @@ public class HttpServerRequest extends BaseHttpRequest
    {
       attributes.remove(name);
       exchange.setAttribute(name, null);
+   }
+
+   @Override
+   public Enumeration<String> getAttributeNames()
+   {
+      Enumeration<String> en = new Enumeration<String>()
+      {
+         private Iterator<String> it = attributes.keySet().iterator();
+         @Override
+         public boolean hasMoreElements()
+         {
+            return it.hasNext();
+         }
+
+         @Override
+         public String nextElement()
+         {
+            return it.next();
+         }
+      };
+      return en;
    }
 
    @Override

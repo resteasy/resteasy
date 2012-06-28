@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * An injectable interface that provides access to asynchronous server side
  * request processing.
- * <p/>
+ * <p>
  * The injected execution context instance is bound to the currently processed
  * request and can be used to
  * <ul>
@@ -56,6 +56,7 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  * For an example usage of {@code ExecutionContext} kindly consult the
  * {@link javax.ws.rs.Suspend &#64;Suspend} annotation API documentation.
+ * </p>
  *
  * @author Marek Potociar
  * @see javax.ws.rs.Suspend &#64;Suspend
@@ -77,18 +78,18 @@ public interface ExecutionContext {
      * @throws IllegalStateException in case the request has not been
      *     {@link #isSuspended() suspended}.
      *
-     * @see #resume(java.lang.Exception)
+     * @see #resume(java.lang.Throwable)
      */
     public void resume(Object response) throws IllegalStateException;
 
     /**
      * Resume processing of the request bound to the execution context using
-     * an exception.
+     * a throwable.
      *
-     * For the provided exception same rules apply as for the exception thrown
+     * For the provided throwable same rules apply as for an exception thrown
      * by a {@link javax.ws.rs.HttpMethod JAX-RS resource method}.
-     * The processing of the exception by JAX-RS framework follows the same path as
-     * it would for the exception thrown by a JAX-RS resource method.
+     * The processing of the throwable by JAX-RS framework follows the same path as
+     * it would for any exception thrown by a JAX-RS resource method.
      *
      * @param response an exception to be raised in response to the suspended request.
      * @throws IllegalStateException in case the request has not been
@@ -96,12 +97,12 @@ public interface ExecutionContext {
      *
      * @see #resume(java.lang.Object)
      */
-    public void resume(Exception response) throws IllegalStateException;
+    public void resume(Throwable response) throws IllegalStateException;
 
     /**
      * Programmatically suspend a request processing without explicitly specifying
      * any timeout.
-     *
+     * <p>
      * The method can only be invoked from within the context of a running
      * {@link javax.ws.rs.HttpMethod JAX-RS resource method} that has not been
      * previously {@link #isSuspended() suspended} either programmatically using
@@ -109,12 +110,15 @@ public interface ExecutionContext {
      * or declaratively by placing a {@link javax.ws.rs.Suspend &#64;Suspend}
      * annotation on the JAX-RS resource or sub-resource method associated with
      * the current request processing execution context.
-     * <p/>
+     * </p>
+     * <p>
      * While the execution context is still suspended, the suspend timeout value
      * may be updated using the {@link #setSuspendTimeout(long, TimeUnit) } method.
-     * <p/>
+     * </p>
+     * <p>
      * Any response value returned from the resource method in which the request
      * processing has been suspended is ignored by the framework.
+     * </p>
      *
      * @throws IllegalStateException in case the request has already been
      *     {@link #isSuspended() suspended}, {@link #isDone() resumed} or has
@@ -130,7 +134,7 @@ public interface ExecutionContext {
     /**
      * Programmatically suspend a request processing with explicitly specified
      * suspend timeout value in milliseconds.
-     *
+     * <p>
      * The method can only be invoked from within the context of a running
      * {@link javax.ws.rs.HttpMethod JAX-RS resource method} that has not been
      * previously {@link #isSuspended() suspended} either programmatically using
@@ -138,12 +142,14 @@ public interface ExecutionContext {
      * or declaratively by placing a {@link javax.ws.rs.Suspend &#64;Suspend}
      * annotation on the JAX-RS resource or sub-resource method associated with
      * the current request processing execution context.
-     * <p/>
+     * </p>
+     * <p>
      * The specified timeout value overrides the default
      * {@link javax.ws.rs.Suspend#NEVER no timeout} value. While the execution
      * context is still suspended, the suspend timeout value may be updated using
      * the {@link #setSuspendTimeout(long, TimeUnit) } method.
-     * <p/>
+     * </p>
+     * <p>
      * If the request processing is suspended with a positive timeout value, the
      * processing will be resumed once the specified timeout threshold is reached
      * provided the request processing was not explicitly resumed before the
@@ -153,10 +159,12 @@ public interface ExecutionContext {
      * {@link javax.ws.rs.WebApplicationException} is raised with a HTTP&nbsp;503
      * error status (Service unavailable). Use {@link #setResponse(java.lang.Object)}
      * method to customize the default timeout response.
-     * <p />
+     * </p>
+     * <p>
      * Note that in some concurrent scenarios a call to {@code resume(...)} may
      * occur before the call to {@code suspend(...)}. In which case the call to
      * {@code suspend(...)} is ignored.
+     * </p>
      *
      * @param millis suspend timeout value in milliseconds. Value lower
      *     or equal to 0 causes the context to suspend indefinitely.
@@ -174,7 +182,7 @@ public interface ExecutionContext {
     /**
      * Programmatically suspend a request processing with explicitly specified
      * suspend timeout value and its time unit.
-     *
+     * <p>
      * The method can only be invoked from within the context of a running
      * {@link javax.ws.rs.HttpMethod JAX-RS resource method} that has not been
      * previously {@link #isSuspended() suspended} either programmatically using
@@ -182,12 +190,14 @@ public interface ExecutionContext {
      * or declaratively by placing a {@link javax.ws.rs.Suspend &#64;Suspend}
      * annotation on the JAX-RS resource or sub-resource method associated with
      * the current request processing execution context.
-     * <p/>
+     * </p>
+     * <p>
      * The specified timeout value overrides the default
      * {@link javax.ws.rs.Suspend#NEVER no timeout} value. While the execution
      * context is still suspended, the suspend timeout value may be updated using
      * the {@link #setSuspendTimeout(long, TimeUnit) } method.
-     * <p/>
+     * </p>
+     * <p>
      * If the request processing is suspended with a positive timeout value, the
      * processing will be resumed once the specified timeout threshold is reached
      * provided the request processing was not explicitly resumed before the
@@ -197,10 +207,12 @@ public interface ExecutionContext {
      * {@link javax.ws.rs.WebApplicationException} is raised with a HTTP&nbsp;503
      * error status (Service unavailable). Use {@link #setResponse(java.lang.Object)}
      * method to customize the default timeout response.
-     * <p />
+     * </p>
+     * <p>
      * Note that in some concurrent scenarios a call to {@code resume(...)} may
      * occur before the call to {@code suspend(...)}. In which case the call to
      * {@code suspend(...)} is ignored.
+     * </p>
      *
      * @param time suspend timeout value in the give time {@code unit}. Value lower
      *     or equal to 0 causes the context to suspend indefinitely.
@@ -210,7 +222,6 @@ public interface ExecutionContext {
      *     previously.
      *
      * @see #suspend()
-     * @see #suspend(long, java.util.concurrent.TimeUnit)
      * @see #setSuspendTimeout(long, TimeUnit)
      * @see #setResponse(java.lang.Object)
      */
@@ -233,15 +244,17 @@ public interface ExecutionContext {
 
     /**
      * Cancel the request processing.
-     * <p/>
+     * <p>
      * This method causes that the underlying network connection is closed without
      * any response being sent back to the client. Invoking this method multiple
      * times has the same effect as invoking it only once. Invoking this method
      * on a request that has already been resumed has no effect and the method
      * call is ignored.
-     * <p/>
+     * </p>
+     * <p>
      * Once the request is canceled, any attempts to suspend or resume the execution
      * context will result in an {@link IllegalStateException} being thrown.
+     * </p>
      */
     public void cancel();
 

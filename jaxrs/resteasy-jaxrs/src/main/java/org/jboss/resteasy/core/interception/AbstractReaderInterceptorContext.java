@@ -1,7 +1,5 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -11,13 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ReaderInterceptorContextImpl implements ReaderInterceptorContext
+public abstract class AbstractReaderInterceptorContext implements ReaderInterceptorContext
 {
    protected ReaderInterceptor[] interceptors;
    protected MessageBodyReader reader;
@@ -28,22 +25,17 @@ public class ReaderInterceptorContextImpl implements ReaderInterceptorContext
    protected MultivaluedMap<String, String> headers;
    protected InputStream inputStream;
    protected int index = 0;
-   protected Map<String, Object> properties;
 
-   public ReaderInterceptorContextImpl(ReaderInterceptor[] interceptors, MessageBodyReader reader, Class type,
-                                       Type genericType, Annotation[] annotations, MediaType mediaType,
-                                       MultivaluedMap<String, String> headers, InputStream inputStream,
-                                       Map<String, Object> properties)
+   public AbstractReaderInterceptorContext(MediaType mediaType, MessageBodyReader reader, Annotation[] annotations, ReaderInterceptor[] interceptors, MultivaluedMap<String, String> headers, Type genericType, Class type, InputStream inputStream)
    {
-      this.interceptors = interceptors;
-      this.reader = reader;
-      this.type = type;
-      this.genericType = genericType;
-      this.annotations = annotations;
       this.mediaType = mediaType;
+      this.reader = reader;
+      this.annotations = annotations;
+      this.interceptors = interceptors;
       this.headers = headers;
+      this.genericType = genericType;
+      this.type = type;
       this.inputStream = inputStream;
-      this.properties = properties;
    }
 
    @Override
@@ -77,12 +69,6 @@ public class ReaderInterceptorContextImpl implements ReaderInterceptorContext
    public MultivaluedMap<String, String> getHeaders()
    {
       return headers;
-   }
-
-   @Override
-   public Map<String, Object> getProperties()
-   {
-      return properties;
    }
 
    @Override

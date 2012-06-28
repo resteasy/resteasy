@@ -25,13 +25,9 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseHttpRequest implements HttpRequest
 {
-   protected CountDownLatch latch;
-   protected long suspendTimeout;
    protected SynchronousDispatcher dispatcher;
-   protected boolean suspended;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
-   protected AbstractAsynchronousResponse asynchronousResponse;
    protected HttpResponse httpResponse;
 
    public BaseHttpRequest(SynchronousDispatcher dispatcher)
@@ -67,56 +63,9 @@ public abstract class BaseHttpRequest implements HttpRequest
       return decodedFormParameters;
    }
 
-   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
-   {
-      suspended = true;
-      latch = new CountDownLatch(1);
-      this.suspendTimeout = suspendTimeout;
-      asynchronousResponse = new AbstractAsynchronousResponse()
-      {
-
-
-         public void setResponse(Response response)
-         {
-            try
-            {
-               setupResponse((ServerResponse) response);
-               dispatcher.asynchronousDelivery(BaseHttpRequest.this, httpResponse, response);
-            }
-            finally
-            {
-               latch.countDown();
-            }
-         }
-      };
-      return asynchronousResponse;
-   }
-
-   public AsynchronousResponse getAsynchronousResponse()
-   {
-      return asynchronousResponse;
-   }
-
    public boolean isInitial()
    {
       return true;
    }
 
-   public boolean isSuspended()
-   {
-      return suspended;
-   }
-
-   public void initialRequestThreadFinished()
-   {
-      if (latch == null) return; // only block if createAsynchronousResponse was called.
-      try
-      {
-         latch.await(suspendTimeout + 100, TimeUnit.MILLISECONDS);
-      }
-      catch (InterruptedException e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
 }

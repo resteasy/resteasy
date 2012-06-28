@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,6 @@ public class HttpServletInputMessage implements HttpRequest
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
    protected InputStream overridenStream;
-   protected Map<String, Object> properties = new HashMap<String, Object>();
    protected SynchronousExecutionContext executionContext;
 
 
@@ -60,12 +60,6 @@ public class HttpServletInputMessage implements HttpRequest
       this.uri = uri;
       this.preProcessedPath = uri.getPath(false);
       executionContext = new SynchronousExecutionContext(dispatcher, this, httpResponse);
-   }
-
-   @Override
-   public Map<String, Object> getProperties()
-   {
-      return properties;
    }
 
    public MultivaluedMap<String, String> getPutFormParameters()
@@ -100,23 +94,25 @@ public class HttpServletInputMessage implements HttpRequest
    @Override
    public Object getAttribute(String attribute)
    {
-      Object val = properties.get(attribute);
-      if (val != null) return val;
       return request.getAttribute(attribute);
    }
 
    @Override
    public void setAttribute(String name, Object value)
    {
-      properties.put(name, value);
       request.setAttribute(name, value);
    }
 
    @Override
    public void removeAttribute(String name)
    {
-      properties.remove(name);
       request.removeAttribute(name);
+   }
+
+   @Override
+   public Enumeration<String> getAttributeNames()
+   {
+      return request.getAttributeNames();
    }
 
    @Override

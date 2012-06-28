@@ -41,6 +41,7 @@ package javax.ws.rs.container;
 
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Date;
 import java.util.Locale;
@@ -48,11 +49,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
@@ -69,37 +70,33 @@ import javax.ws.rs.ext.MessageBodyWriter;
 public interface ContainerResponseContext {
 
     /**
-     * Get a mutable map of request-scoped properties that can be used for communication
-     * between different request/response processing components.
+     * Get the status code associated with the response.
      *
-     * May be empty, but MUST never be {@code null}. In the scope of a single
-     * request/response processing a same property map instance is shared by the
-     * following methods:
-     * <ul>
-     *     <li>{@link javax.ws.rs.container.ContainerRequestContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.container.ContainerResponseContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
-     * </ul>
-     *
-     * A request-scoped property is an application-defined property that may be
-     * added, removed or modified by any of the components (user, filter,
-     * interceptor etc.) that participate in a given request/response processing
-     * flow.
-     * <p />
-     * On the client side, this property map is initialized by calling
-     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
-     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
-     * on the configuration object associated with the corresponding
-     * {@link javax.ws.rs.client.Invocation request invocation}.
-     * <p />
-     * On the server side, specifying the initial values is implementation-specific.
-     * <p />
-     * If there are no initial properties set, the request-scoped property map is
-     * initialized to an empty map.
-     *
-     * @return a mutable request-scoped property map.
+     * @return the response status code or -1 if the status was not set.
      */
-    public Map<String, Object> getProperties();
+    public int getStatus();
+
+    /**
+     * Set a new response status code.
+     *
+     * @param code new status code.
+     */
+    public void setStatus(int code);
+
+    /**
+     * Get the complete status information associated with the response.
+     *
+     * @return the response status information or {@code null} if the status was
+     *         not set.
+     */
+    public Response.StatusType getStatusInfo();
+
+    /**
+     * Set the complete status information associated with the response.
+     *
+     * @param statusInfo the response status information.
+     */
+    public void setStatusInfo(Response.StatusType statusInfo);
 
     /**
      * Get the mutable response headers multivalued map.
@@ -112,7 +109,7 @@ public interface ContainerResponseContext {
      * Get the allowed HTTP methods from the Allow HTTP header.
      *
      * @return the allowed HTTP methods, all methods will returned as upper case
-     *     strings.
+     *         strings.
      */
     public Set<String> getAllowedMethods();
 
@@ -134,7 +131,7 @@ public interface ContainerResponseContext {
      * Get Content-Length value.
      *
      * @return Content-Length as integer if present and valid number. In other
-     *     cases returns -1.
+     *         cases returns -1.
      */
     public int getLength();
 
@@ -142,7 +139,7 @@ public interface ContainerResponseContext {
      * Get the media type of the entity.
      *
      * @return the media type or {@code null} if not specified (e.g. there's no
-     *     response entity).
+     *         response entity).
      */
     public MediaType getMediaType();
 
@@ -178,7 +175,7 @@ public interface ContainerResponseContext {
      * Get the links attached to the message as header.
      *
      * @return links, may return empty {@link Set} if no links are present. Never
-     *     returns {@code null}.
+     *         returns {@code null}.
      */
     public Set<Link> getLinks();
 
@@ -187,7 +184,7 @@ public interface ContainerResponseContext {
      *
      * @param relation link relation.
      * @return {@code true} if the for the relation link exists, {@code false}
-     *     otherwise.
+     *         otherwise.
      */
     boolean hasLink(String relation);
 
@@ -205,7 +202,7 @@ public interface ContainerResponseContext {
      *
      * @param relation link relation.
      * @return the link builder for the relation, otherwise {@code null} if not
-     *     present.
+     *         present.
      */
     public Link.Builder getLinkBuilder(String relation);
 
@@ -216,7 +213,7 @@ public interface ContainerResponseContext {
      * {@code false} otherwise.
      *
      * @return {@code true} if there is an entity present in the message,
-     *     {@code false} otherwise.
+     *         {@code false} otherwise.
      */
     public boolean hasEntity();
 
@@ -226,50 +223,40 @@ public interface ContainerResponseContext {
      * Returns {@code null} if the message does not contain an entity.
      *
      * @return the message entity or {@code null} if message does not contain an
-     *     entity body.
+     *         entity body.
      */
     public Object getEntity();
 
     /**
-     * Set a new response message entity.
+     * Get the raw entity type information.
      *
-     * @param <T> entity Java type.
-     * @param type declared entity class.
-     * @param annotations annotations attached to the entity.
-     * @param mediaType entity media type.
-     * @param entity entity object.
-     *
-     * @see MessageBodyWriter
+     * @return raw entity type.
      */
-    public <T> void setEntity(
-            final Class<T> type,
-            final Annotation annotations[],
-            final MediaType mediaType,
-            final T entity);
+    public Class<?> getEntityClass();
+
+    /**
+     * Get the generic entity type information.
+     *
+     * @return declared generic entity type.
+     */
+    public Type getEntityType();
 
     /**
      * Set a new response message entity.
      *
-     * @param <T> entity Java type.
-     * @param type declared generic entity type.
-     * @param annotations annotations attached to the entity.
-     * @param mediaType entity media type.
-     * @param entity entity object.
+     * It is the callers responsibility to wrap the actual entity with
+     * {@link javax.ws.rs.core.GenericEntity} if preservation of its generic
+     * type is required.
      *
+     * @param entity      entity object.
+     * @param annotations annotations attached to the entity.
+     * @param mediaType   entity media type.
      * @see MessageBodyWriter
      */
-    public <T> void setEntity(
-            final GenericType<T> type,
-            final Annotation annotations[],
-            final MediaType mediaType,
-            final T entity);
-
-    /**
-     * Get the declared generic message entity type information.
-     *
-     * @return declared generic message entity type.
-     */
-    public GenericType<?> getDeclaredEntityType();
+    public void setEntity(
+            final Object entity,
+            final Annotation[] annotations,
+            final MediaType mediaType);
 
     /**
      * Get the annotations attached to the entity.
@@ -288,7 +275,7 @@ public interface ContainerResponseContext {
     /**
      * Set a new entity output stream.
      *
-     * @param input new entity output stream.
+     * @param outputStream new entity output stream.
      */
-    public void setEntityStream(OutputStream input);
+    public void setEntityStream(OutputStream outputStream);
 }

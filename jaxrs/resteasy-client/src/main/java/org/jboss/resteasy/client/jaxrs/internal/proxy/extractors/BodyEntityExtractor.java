@@ -51,7 +51,16 @@ public class BodyEntityExtractor implements EntityExtractor
             throw new RuntimeException(
                     "No type information to extract entity with.  You use other getEntity() methods");
          }
-         Object obj = response.readEntity(GenericType.of(method.getReturnType(), method.getGenericReturnType()), method.getAnnotations());
+         GenericType gt = null;
+         if (method.getGenericReturnType() != null)
+         {
+            gt = new GenericType(method.getGenericReturnType());
+         }
+         else
+         {
+            gt = new GenericType(method.getReturnType());
+         }
+         Object obj = response.readEntity(gt, method.getAnnotations());
          if (obj instanceof InputStream)
             releaseConnectionAfter = false;
          return obj;

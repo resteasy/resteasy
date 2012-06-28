@@ -220,4 +220,10 @@ public class BuiltResponse extends Response
    {
       throw new NotImplementedYetException();
    }
+
+   @Override
+   public Set<String> getAllowedMethods()
+   {
+      throw new NotImplementedYetException();
+   }
 }

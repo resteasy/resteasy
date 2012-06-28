@@ -5,6 +5,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Map;
 
 /**
@@ -62,7 +63,7 @@ public interface HttpRequest
 
    void removeAttribute(String name);
 
-   Map<String, Object> getProperties();
+   public Enumeration<String> getAttributeNames();
 
 
    public ResteasyAsynchronousContext getExecutionContext();

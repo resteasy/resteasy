@@ -8,6 +8,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Map;
 
 /**
@@ -96,16 +97,17 @@ public class DelegatingHttpRequest implements HttpRequest
    }
 
    @Override
+   public Enumeration<String> getAttributeNames()
+   {
+      return delegate.getAttributeNames();
+   }
+
+   @Override
    public boolean isInitial()
    {
       return delegate.isInitial();
    }
 
-   @Override
-   public Map<String, Object> getProperties()
-   {
-      return delegate.getProperties();
-   }
 
    @Override
    public ResteasyAsynchronousContext getExecutionContext()

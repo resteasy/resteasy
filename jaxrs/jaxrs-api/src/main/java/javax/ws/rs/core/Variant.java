@@ -66,8 +66,7 @@ public class Variant {
      *                  may be {@code null}.
      * @param encoding  the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException
-     *          if all three parameters are
-     *          {@code null}.
+     *          if all the parameters are {@code null}.
      * @since 2.0
      */
     public Variant(MediaType mediaType, String language, String encoding) {
@@ -75,7 +74,7 @@ public class Variant {
             throw new IllegalArgumentException("mediaType, language, encoding all null");
         }
         this.encoding = encoding;
-        if (language != null) this.language = new Locale(language);
+        this.language = (language == null) ? null : new Locale(language);
         this.mediaType = mediaType;
     }
 
@@ -89,8 +88,7 @@ public class Variant {
      *                  may be {@code null} provided {@code language} is {@code null} too.
      * @param encoding  the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException
-     *          if all three parameters are
-     *          {@code null}.
+     *          if all the parameters are {@code null}.
      * @since 2.0
      */
     public Variant(MediaType mediaType, String language, String country, String encoding) {
@@ -98,11 +96,7 @@ public class Variant {
             throw new IllegalArgumentException("mediaType, language, encoding all null");
         }
         this.encoding = encoding;
-        if (language != null)
-        {
-           if (country != null) this.language = new Locale(language, country);
-           else this.language = new Locale(language);
-        }
+        this.language = (language == null) ? null : new Locale(language, country);
         this.mediaType = mediaType;
     }
 
@@ -120,8 +114,7 @@ public class Variant {
      *                        {@code country} are {@code null} too.
      * @param encoding        the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException
-     *          if all three parameters are
-     *          {@code null}.
+     *          if all the parameters are {@code null}.
      * @since 2.0
      */
     public Variant(MediaType mediaType, String language, String country, String languageVariant, String encoding) {
@@ -129,7 +122,7 @@ public class Variant {
             throw new IllegalArgumentException("mediaType, language, encoding all null");
         }
         this.encoding = encoding;
-        if (language != null) this.language = new Locale(language, country, languageVariant);
+        this.language = (language == null) ? null : new Locale(language, country, languageVariant);
         this.mediaType = mediaType;
     }
 
@@ -140,8 +133,7 @@ public class Variant {
      * @param language  the language of the variant - may be {@code null}.
      * @param encoding  the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException
-     *          if all three parameters are
-     *          {@code null}.
+     *          if all the parameters are {@code null}.
      */
     public Variant(MediaType mediaType, Locale language, String encoding) {
         if (mediaType == null && language == null && encoding == null) {

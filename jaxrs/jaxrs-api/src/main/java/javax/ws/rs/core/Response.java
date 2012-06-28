@@ -357,6 +357,15 @@ public abstract class Response {
     public abstract int getLength();
 
     /**
+     * Get the allowed HTTP methods from the Allow HTTP header.
+     *
+     * @return the allowed HTTP methods, all methods will returned as upper case
+     *         strings.
+     * @since 2.0
+     */
+    public abstract Set<String> getAllowedMethods();
+
+    /**
      * Get any new cookies set on the response message.
      *
      * @return a read-only map of cookie name (String) to Cookie.
@@ -665,6 +674,7 @@ public abstract class Response {
      * @return a new response builder.
      * @throws IllegalArgumentException if tag is {@code null}.
      */
+    @SuppressWarnings("HtmlTagCanBeJavadocTag")
     public static ResponseBuilder notModified(String tag) {
         return notModified().tag(tag);
     }
@@ -851,32 +861,6 @@ public abstract class Response {
         public abstract ResponseBuilder entity(Object entity, Annotation[] annotations);
 
         /**
-         * Set the response entity in the builder.
-         * <p>
-         * Any Java type instance for a response entity, that is supported by the
-         * runtime can be passed. It is the callers responsibility to wrap the
-         * actual entity with {@link GenericEntity} if preservation of its generic
-         * type is required. Note that the entity can be also set as an
-         * {@link java.io.InputStream input stream}.
-         * </p>
-         * A specific entity media type can be set using one of the {@code type(...)}
-         * methods.
-         *
-         * @param <T>          declared entity Java class type.
-         * @param entity       the request entity.
-         * @param declaredType generic declared entity type containing information
-         *                     that will be passed to the {@link MessageBodyWriter}.
-         * @param annotations  annotations that will be passed to the {@link MessageBodyWriter}.
-         * @return updated response builder instance.
-         * @see #entity(java.lang.Object)
-         * @see #type(javax.ws.rs.core.MediaType)
-         * @see #type(java.lang.String)
-         * @since 2.0
-         */
-        public abstract <T> ResponseBuilder entity(
-                T entity, GenericType<? super T> declaredType, Annotation[] annotations);
-
-        /**
          * Set the list of allowed methods for the resource. Any duplicate method
          * names will be truncated to a single entry.
          *
@@ -1061,6 +1045,7 @@ public abstract class Response {
          *            If {@code null} any existing entity tag value will be removed.
          * @return the updated response builder.
          */
+        @SuppressWarnings("HtmlTagCanBeJavadocTag")
         public abstract ResponseBuilder tag(String tag);
 
         /**

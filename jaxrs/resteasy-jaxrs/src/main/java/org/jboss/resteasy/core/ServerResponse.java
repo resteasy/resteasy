@@ -1,8 +1,10 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
-import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
+import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
@@ -49,6 +51,7 @@ public class ServerResponse extends Response implements Serializable
    protected int status = HttpResponseCodes.SC_OK;
    protected Headers<Object> metadata = new Headers<Object>();
    protected Annotation[] annotations;
+   protected Class entityClass;
    protected Type genericType;
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
@@ -159,7 +162,26 @@ public class ServerResponse extends Response implements Serializable
 
    public void setEntity(Object entity)
    {
-      this.entity = entity;
+      if (entity == null)
+      {
+         this.entity = null;
+         this.genericType = null;
+         this.entityClass = null;
+      }
+      else if (entity instanceof GenericEntity)
+      {
+
+         GenericEntity ge = (GenericEntity) entity;
+         this.entity = ge.getEntity();
+         this.genericType = ge.getType();
+         this.entityClass = ge.getRawType();
+      }
+      else
+      {
+         this.entity = entity;
+         this.entityClass = entity.getClass();
+         this.genericType = null;
+      }
    }
 
    public void setStatus(int status)
@@ -207,7 +229,7 @@ public class ServerResponse extends Response implements Serializable
       if (responseFilters != null)
       {
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
-         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(this, response, request.getProperties());
+         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, this);
          for (ContainerResponseFilter filter : responseFilters)
          {
             try
@@ -275,7 +297,7 @@ public class ServerResponse extends Response implements Serializable
          }
          else
          {
-            WriterInterceptorContextImpl writerContext =  new WriterInterceptorContextImpl(writerInterceptors, writer, ent, type, generic, annotations, contentType, getMetadata(), os, request.getProperties());
+            AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors, writer, ent, type, generic, annotations, contentType, getMetadata(), os, request);
             writerContext.proceed();
          }
          callback.commit(); // just in case the output stream is never used
@@ -464,4 +486,11 @@ public class ServerResponse extends Response implements Serializable
    {
       throw new NotImplementedYetException();
    }
+
+   @Override
+   public Set<String> getAllowedMethods()
+   {
+      throw new NotImplementedYetException();
+   }
+
 }

@@ -219,34 +219,31 @@ public interface SyncInvoker {
     /**
      * Invoke HTTP TRACE method for the current request synchronously.
      *
-     * @param entity request entity.
      * @return invocation response.
      * @throws InvocationException in case the invocation failed.
      */
-    Response trace(Entity<?> entity) throws InvocationException;
+    Response trace() throws InvocationException;
 
     /**
      * Invoke HTTP TRACE method for the current request synchronously.
      *
      * @param <T> response entity type.
-     * @param entity request entity.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response.
      * @throws InvocationException in case the invocation failed.
      */
-    <T> T trace(Entity<?> entity, Class<T> responseType) throws InvocationException;
+    <T> T trace(Class<T> responseType) throws InvocationException;
 
     /**
      * Invoke HTTP TRACE method for the current request synchronously.
      *
      * @param <T> generic response entity type.
-     * @param entity request entity.
      * @param responseType representation of a generic Java type the response
      *     entity will be converted to.
      * @return invocation response.
      * @throws InvocationException in case the invocation failed.
      */
-    <T> T trace(Entity<?> entity, GenericType<T> responseType) throws InvocationException;
+    <T> T trace(GenericType<T> responseType) throws InvocationException;
 
     // ARBITRARY METHOD
     /**

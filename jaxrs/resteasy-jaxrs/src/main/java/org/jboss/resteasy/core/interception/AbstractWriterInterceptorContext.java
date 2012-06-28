@@ -1,8 +1,5 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -13,13 +10,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class WriterInterceptorContextImpl implements WriterInterceptorContext
+public abstract class AbstractWriterInterceptorContext implements WriterInterceptorContext
 {
    protected WriterInterceptor[] interceptors;
    protected MessageBodyWriter writer;
@@ -31,29 +27,18 @@ public class WriterInterceptorContextImpl implements WriterInterceptorContext
    protected MultivaluedMap<String, Object> headers;
    protected OutputStream outputStream;
    protected int index = 0;
-   protected Map<String, Object> properties;
 
-   public WriterInterceptorContextImpl(WriterInterceptor[] interceptors, MessageBodyWriter writer,
-                                       Object entity, Class type, Type genericType, Annotation[] annotations,
-                                       MediaType mediaType, MultivaluedMap<String, Object> headers,
-                                       OutputStream outputStream, Map<String, Object> properties)
+   public AbstractWriterInterceptorContext(WriterInterceptor[] interceptors, Annotation[] annotations, Object entity, Type genericType, MediaType mediaType, Class type, OutputStream outputStream, MessageBodyWriter writer, MultivaluedMap<String, Object> headers)
    {
       this.interceptors = interceptors;
-      this.writer = writer;
-      this.entity = entity;
-      this.type = type;
-      this.genericType = genericType;
       this.annotations = annotations;
+      this.entity = entity;
+      this.genericType = genericType;
       this.mediaType = mediaType;
-      this.headers = headers;
+      this.type = type;
       this.outputStream = outputStream;
-      this.properties = properties;
-   }
-
-   @Override
-   public Map<String, Object> getProperties()
-   {
-      return properties;
+      this.writer = writer;
+      this.headers = headers;
    }
 
    public Object getEntity()

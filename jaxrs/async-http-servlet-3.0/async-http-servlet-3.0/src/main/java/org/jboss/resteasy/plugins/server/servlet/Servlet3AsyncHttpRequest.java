@@ -71,7 +71,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       }
 
       @Override
-      public void resume(Exception exc) throws IllegalStateException
+      public void resume(Throwable exc) throws IllegalStateException
       {
          AsyncContext asyncContext = getAsyncContext();
          try

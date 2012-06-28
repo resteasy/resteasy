@@ -276,44 +276,40 @@ public interface AsyncInvoker {
     /**
      * Invoke HTTP TRACE method for the current request asynchronously.
      *
-     * @param entity request entity.
      * @return invocation response {@link Future future}.
      * @throws InvocationException in case the invocation failed.
      */
-    Future<Response> trace(Entity<?> entity) throws InvocationException;
+    Future<Response> trace() throws InvocationException;
 
     /**
      * Invoke HTTP TRACE method for the current request asynchronously.
      *
      * @param <T> response entity type.
-     * @param entity request entity.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
      * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> trace(Entity<?> entity, Class<T> responseType) throws InvocationException;
+    <T> Future<T> trace(Class<T> responseType) throws InvocationException;
 
     /**
      * Invoke HTTP TRACE method for the current request asynchronously.
      *
      * @param <T> generic response entity type.
-     * @param entity request entity.
      * @param responseType representation of a generic Java type the response
      *     entity will be converted to.
      * @return invocation response {@link Future future}.
      * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> trace(Entity<?> entity, GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> trace(GenericType<T> responseType) throws InvocationException;
 
     /**
      * Invoke HTTP TRACE method for the current request asynchronously.
      *
      * @param <T> generic response entity type.
-     * @param entity request entity.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
-    <T> Future<T> trace(Entity<?> entity, InvocationCallback<T> callback);
+    <T> Future<T> trace(InvocationCallback<T> callback);
 
     // ARBITRARY METHOD
     /**

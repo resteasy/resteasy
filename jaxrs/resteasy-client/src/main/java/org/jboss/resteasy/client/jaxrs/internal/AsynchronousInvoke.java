@@ -51,6 +51,34 @@ public class AsynchronousInvoke implements AsyncInvoker
    }
 
    @Override
+   public Future<Response> trace() throws InvocationException
+   {
+      invocation.setMethod(HttpMethod.GET);
+      return invocation.submit();
+   }
+
+   @Override
+   public <T> Future<T> trace(Class<T> responseType) throws InvocationException
+   {
+      invocation.setMethod(HttpMethod.GET);
+      return invocation.submit(responseType);
+   }
+
+   @Override
+   public <T> Future<T> trace(GenericType<T> responseType) throws InvocationException
+   {
+      invocation.setMethod(HttpMethod.GET);
+      return invocation.submit(responseType);
+   }
+
+   @Override
+   public <T> Future<T> trace(InvocationCallback<T> callback)
+   {
+      invocation.setMethod(HttpMethod.GET);
+      return invocation.submit(callback);
+   }
+
+   @Override
    public Future<Response> put(Entity<?> entity) throws InvocationException
    {
       invocation.setMethod(HttpMethod.PUT);
@@ -184,37 +212,6 @@ public class AsynchronousInvoke implements AsyncInvoker
       return invocation.submit(callback);
    }
 
-   @Override
-   public Future<Response> trace(Entity<?> entity) throws InvocationException
-   {
-      invocation.setMethod("TRACE");
-      invocation.setEntity(entity);
-      return invocation.submit();
-   }
-
-   @Override
-   public <T> Future<T> trace(Entity<?> entity, Class<T> responseType) throws InvocationException
-   {
-      invocation.setMethod("TRACE");
-      invocation.setEntity(entity);
-      return invocation.submit(responseType);
-   }
-
-   @Override
-   public <T> Future<T> trace(Entity<?> entity, GenericType<T> responseType) throws InvocationException
-   {
-      invocation.setMethod("TRACE");
-      invocation.setEntity(entity);
-      return invocation.submit(responseType);
-   }
-
-   @Override
-   public <T> Future<T> trace(Entity<?> entity, InvocationCallback<T> callback)
-   {
-      invocation.setMethod("TRACE");
-      invocation.setEntity(entity);
-      return invocation.submit(callback);
-   }
 
    @Override
    public Future<Response> method(String name) throws InvocationException

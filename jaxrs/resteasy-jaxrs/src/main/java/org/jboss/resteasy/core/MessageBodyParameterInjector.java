@@ -1,8 +1,10 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
-import org.jboss.resteasy.core.interception.ReaderInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.ServerReaderInterceptorContext;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -163,9 +165,9 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
                is = new InputStreamToByteArray(is);
 
             }
-            ReaderInterceptorContextImpl messageBodyReaderContext = new ReaderInterceptorContextImpl(interceptors, reader, type,
+            AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, reader, type,
                     genericType, annotations, mediaType, request
-                    .getHttpHeaders().getRequestHeaders(), is, request.getProperties());
+                    .getHttpHeaders().getRequestHeaders(), is, request);
             final Object obj = messageBodyReaderContext.proceed();
             if (isMarshalledEntity)
             {
