@@ -1,12 +1,10 @@
-package org.jboss.resteasy.test.async;
+package org.jboss.resteasy.tests;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -17,7 +15,7 @@ public class AsyncTest
    @Test
    public void testAsync() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8080/");
+      ClientRequest request = new ClientRequest("http://localhost:8080/cdi-test/jaxrs/async");
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("hello", response.getEntity());
@@ -26,7 +24,7 @@ public class AsyncTest
    @Test
    public void testTimeout() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8080/timeout");
+      ClientRequest request = new ClientRequest("http://localhost:8080/cdi-test/jaxrs/async/timeout");
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(503, response.getStatus());
    }

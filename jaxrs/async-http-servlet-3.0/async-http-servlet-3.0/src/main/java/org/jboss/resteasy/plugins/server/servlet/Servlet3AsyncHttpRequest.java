@@ -59,7 +59,6 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          AsyncContext asyncContext = getAsyncContext();
          try
          {
-            System.out.println(" BEFORE RESUME!!!! ");
             super.resume(entity);
          }
          finally
@@ -180,6 +179,9 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       public void onTimeout(AsyncEvent asyncEvent) throws IOException
       {
          canceled = true;
+         response.reset();
+         response.sendError(503);
+         getAsyncContext().complete();
       }
 
       @Override

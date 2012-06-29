@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.async;
+package org.jboss.resteasy.tests;
 
 import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.spi.AsynchronousResponse;
@@ -13,8 +13,8 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Path("/")
-public class MyResource
+@Path("/async")
+public class MyAsyncResource
 {
    @GET
    @Produces("text/plain")
@@ -27,7 +27,7 @@ public class MyResource
          {
             try
             {
-               System.out.println("STARTED!!!!");
+               System.out.println("STARTED Regular!!!!");
                Thread.sleep(100);
                Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
                response.setResponse(jaxrs);
@@ -46,6 +46,8 @@ public class MyResource
    @Produces("text/plain")
    public void timeout(final @Suspend(10) AsynchronousResponse response)
    {
+      System.out.println("**** TIMEOUT CALLED ****");
+
       Thread t = new Thread()
       {
          @Override
@@ -53,7 +55,7 @@ public class MyResource
          {
             try
             {
-               System.out.println("STARTED!!!!");
+               System.out.println("STARTED Timeout!!!!");
                Thread.sleep(100000);
                Response jaxrs = Response.ok("goodbye").type(MediaType.TEXT_PLAIN).build();
                response.setResponse(jaxrs);
