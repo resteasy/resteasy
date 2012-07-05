@@ -73,6 +73,8 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
          }
          else
          {
+            // todo not sure how to propagate aborted responses.  Man i hate this code Solomon!
+            dispatcher.preprocess(httpRequest);
             requestWrapper.setInvoker(getInvoker(httpRequest));
          }
          return new HandlerExecutionChain(requestWrapper, interceptors);
