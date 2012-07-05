@@ -4,11 +4,12 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.AsyncInvoker;
+import javax.ws.rs.client.ClientException;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.InvocationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
@@ -16,7 +17,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -146,151 +146,151 @@ public class ClientInvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public Response get() throws InvocationException
+   public Response get() throws ClientException
    {
       return buildGet().invoke();
    }
 
    @Override
-   public <T> T get(Class<T> responseType) throws InvocationException
+   public <T> T get(Class<T> responseType) throws ClientException, WebApplicationException
    {
       return get().readEntity(responseType);
    }
 
    @Override
-   public <T> T get(GenericType<T> responseType) throws InvocationException
+   public <T> T get(GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       return get().readEntity(responseType);
    }
 
    @Override
-   public Response put(Entity<?> entity) throws InvocationException
+   public Response put(Entity<?> entity) throws ClientException, WebApplicationException
    {
       return buildPut(entity).invoke();
    }
 
    @Override
-   public <T> T put(Entity<?> entity, Class<T> responseType) throws InvocationException
+   public <T> T put(Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
    {
       return put(entity).readEntity(responseType);
    }
 
    @Override
-   public <T> T put(Entity<?> entity, GenericType<T> responseType) throws InvocationException
+   public <T> T put(Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       return put(entity).readEntity(responseType);
    }
 
    @Override
-   public Response post(Entity<?> entity) throws InvocationException
+   public Response post(Entity<?> entity) throws ClientException
    {
       return buildPost(entity).invoke();
    }
 
    @Override
-   public <T> T post(Entity<?> entity, Class<T> responseType) throws InvocationException
+   public <T> T post(Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
    {
       return buildPost(entity).invoke().readEntity(responseType);
    }
 
    @Override
-   public <T> T post(Entity<?> entity, GenericType<T> responseType) throws InvocationException
+   public <T> T post(Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       return buildPost(entity).invoke().readEntity(responseType);
    }
 
    @Override
-   public Response delete() throws InvocationException
+   public Response delete() throws ClientException
    {
       return buildDelete().invoke();
    }
 
    @Override
-   public <T> T delete(Class<T> responseType) throws InvocationException
+   public <T> T delete(Class<T> responseType) throws ClientException, WebApplicationException
    {
       return buildDelete().invoke().readEntity(responseType);
    }
 
    @Override
-   public <T> T delete(GenericType<T> responseType) throws InvocationException
+   public <T> T delete(GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       return buildDelete().invoke().readEntity(responseType);
    }
 
    @Override
-   public Response head() throws InvocationException
+   public Response head() throws ClientException
    {
       return build(HttpMethod.HEAD).invoke();
    }
 
    @Override
-   public Response options() throws InvocationException
+   public Response options() throws ClientException
    {
       return build(HttpMethod.OPTIONS).invoke();
    }
 
    @Override
-   public <T> T options(Class<T> responseType) throws InvocationException
+   public <T> T options(Class<T> responseType) throws ClientException, WebApplicationException
    {
       return options().readEntity(responseType);
    }
 
    @Override
-   public <T> T options(GenericType<T> responseType) throws InvocationException
+   public <T> T options(GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       return options().readEntity(responseType);
    }
 
    @Override
-   public Response trace() throws InvocationException
+   public Response trace() throws ClientException
    {
       return build("TRACE").invoke();
    }
 
    @Override
-   public <T> T trace(Class<T> responseType) throws InvocationException
+   public <T> T trace(Class<T> responseType) throws ClientException, WebApplicationException
    {
       return trace().readEntity(responseType);
    }
 
    @Override
-   public <T> T trace(GenericType<T> responseType) throws InvocationException
+   public <T> T trace(GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       return trace().readEntity(responseType);
    }
 
    @Override
-   public Response method(String name) throws InvocationException
+   public Response method(String name) throws ClientException
    {
       return build(name).invoke();
    }
 
    @Override
-   public <T> T method(String name, Class<T> responseType) throws InvocationException
+   public <T> T method(String name, Class<T> responseType) throws ClientException, WebApplicationException
    {
       return method(name).readEntity(responseType);
    }
 
    @Override
-   public <T> T method(String name, GenericType<T> responseType) throws InvocationException
+   public <T> T method(String name, GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       return method(name).readEntity(responseType);
    }
 
    @Override
-   public Response method(String name, Entity<?> entity) throws InvocationException
+   public Response method(String name, Entity<?> entity) throws ClientException
    {
       return build(name, entity).invoke();
    }
 
    @Override
-   public <T> T method(String name, Entity<?> entity, Class<T> responseType) throws InvocationException
+   public <T> T method(String name, Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
    {
       return method(name, entity).readEntity(responseType);
    }
 
    @Override
-   public <T> T method(String name, Entity<?> entity, GenericType<T> responseType) throws InvocationException
+   public <T> T method(String name, Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       return method(name, entity).readEntity(responseType);
    }

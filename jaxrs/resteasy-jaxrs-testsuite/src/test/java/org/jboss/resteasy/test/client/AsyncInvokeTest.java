@@ -17,7 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.client.ClientException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.InvocationException;
 import javax.ws.rs.core.Response;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -20,6 +21,8 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.ExecutionContext;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -104,23 +107,54 @@ public class SynchronousDispatcher implements Dispatcher
       return unwrappedExceptions;
    }
 
-   protected void preprocess(HttpRequest in)
-   {
-      preprocessExtensions(in);
-   }
-
-   protected void preprocessExtensions(HttpRequest in)
+   /**
+    * Call pre-process ContainerRequestFilters
+    *
+    * @param in
+    * @return
+    */
+   public Response preprocess(HttpRequest in)
    {
       for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors)
       {
          preprocessor.preProcess(in);
       }
+      ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
+      PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(in);
+      for (ContainerRequestFilter filter : requestFilters)
+      {
+         try
+         {
+            filter.filter(requestContext);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         Response response = requestContext.getResponseAbortedWith();
+         if (response != null) return response;
+      }
+      return null;
    }
 
    public void invoke(HttpRequest request, HttpResponse response)
    {
       try
       {
+         Response aborted = preprocess(request);
+         if (aborted != null)
+         {
+            try
+            {
+               writeJaxrsResponse(request, response, aborted);
+            }
+            catch (Exception e)
+            {
+               handleWriteResponseException(request, response, e);
+               return;
+            }
+            return;
+         }
          ResourceInvoker invoker = getInvoker(request);
          invoke(request, response, invoker);
       }
@@ -139,6 +173,28 @@ public class SynchronousDispatcher implements Dispatcher
     */
    public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException
    {
+      try
+      {
+         Response aborted = preprocess(request);
+         if (aborted != null)
+         {
+            try
+            {
+               writeJaxrsResponse(request, response, aborted);
+            }
+            catch (Exception e)
+            {
+               handleWriteResponseException(request, response, e);
+               return;
+            }
+            return;
+         }
+      }
+      catch (Exception e)
+      {
+         handleException(request, response, e);
+         return;
+      }
       ResourceInvoker invoker = null;
       try
       {
@@ -175,7 +231,6 @@ public class SynchronousDispatcher implements Dispatcher
       {
          throw new InternalServerErrorException(request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
       }
-      preprocess(request);
       ResourceInvoker invoker = registry.getResourceInvoker(request);
       if (invoker == null)
       {
@@ -307,6 +362,7 @@ public class SynchronousDispatcher implements Dispatcher
       writeFailure(request, response, mapper.toResponse(exception));
       return true;
    }
+
    /**
     * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found
     *
@@ -463,6 +519,7 @@ public class SynchronousDispatcher implements Dispatcher
       contextDataMap.put(HttpHeaders.class, request.getHttpHeaders());
       contextDataMap.put(UriInfo.class, request.getUri());
       contextDataMap.put(Request.class, new RequestImpl(request));
+      contextDataMap.put(ExecutionContext.class, request.getExecutionContext());
 
       contextDataMap.putAll(defaultContextObjects);
    }

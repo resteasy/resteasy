@@ -7,13 +7,14 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.ClientException;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.InvocationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -243,7 +244,7 @@ public class ClientInvocation implements Invocation
    }
 
    @Override
-   public Response invoke() throws InvocationException
+   public Response invoke() throws ClientException
    {
       ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
       ClientRequestFilter[] requestFilters = getRequestFilters();
@@ -278,9 +279,13 @@ public class ClientInvocation implements Invocation
             {
                filter.filter(requestContext, responseContext);
             }
-            catch (IOException e)
+            catch (ClientException e)
             {
-               throw new RuntimeException(e);
+               throw e;
+            }
+            catch (Throwable e)
+            {
+               throw new ClientException(e);
             }
          }
       }
@@ -288,14 +293,14 @@ public class ClientInvocation implements Invocation
    }
 
    @Override
-   public <T> T invoke(Class<T> responseType) throws InvocationException
+   public <T> T invoke(Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = invoke();
       return response.readEntity(responseType);
    }
 
    @Override
-   public <T> T invoke(GenericType<T> responseType) throws InvocationException
+   public <T> T invoke(GenericType<T> responseType)throws ClientException, WebApplicationException
    {
       Response response = invoke();
       return response.readEntity(responseType);
@@ -450,9 +455,13 @@ public class ClientInvocation implements Invocation
                   cb.completed((T) res);
                   return res;
                }
-               catch (InvocationException e)
+               catch (ClientException e)
                {
                   cb.failed(e);
+               }
+               catch (Throwable e)
+               {
+                  cb.failed(new ClientException("MPE", e));
                }
                return null;
             }
@@ -479,13 +488,13 @@ public class ClientInvocation implements Invocation
                   cb.completed(obj);
                   return obj;
                }
-               catch (InvocationException e)
+               catch (ClientException e)
                {
                   cb.failed(e);
                }
-               catch (MessageProcessingException e)
+               catch (Throwable e)
                {
-                  cb.failed(new InvocationException("MPE", e));
+                  cb.failed(new ClientException("MPE", e));
                }
                return null;
             }
