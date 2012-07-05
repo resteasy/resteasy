@@ -17,12 +17,11 @@ import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.client.ClientException;
 import javax.ws.rs.client.Configuration;
-import javax.ws.rs.client.InvocationException;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -93,7 +92,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    }
 
    @SuppressWarnings("unchecked")
-   public ClientResponse invoke(ClientInvocation request) throws InvocationException
+   public ClientResponse invoke(ClientInvocation request) throws ClientException
    {
       String uri = request.getUri().toString();
       final HttpRequestBase httpMethod = createHttpMethod(uri, request.getMethod());
@@ -106,7 +105,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
       catch (Exception e)
       {
-         throw new InvocationException("Unable to invoke request", e);
+         throw new ClientException("Unable to invoke request", e);
       }
 
       ClientResponse response = new ClientResponse()
