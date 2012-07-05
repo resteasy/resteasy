@@ -40,9 +40,9 @@
 package javax.ws.rs.client;
 
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.Future;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
@@ -101,7 +101,7 @@ public interface Invocation {
      *   Client client = ClientFactory.newClient();
      *   WebTarget resourceTarget = client.target("http://examples.jaxrs.com/");
      *
-     *   // Build and invoke the get request asynchroneously in a single step
+     *   // Build and invoke the get request asynchronously in a single step
      *   Future<String> response = resourceTarget.request("text/plain")
      *           .header("Foo", "bar").async().get(String.class);
      * </pre>
@@ -109,6 +109,7 @@ public interface Invocation {
     public static interface Builder extends SyncInvoker {
 
         // Invocation builder methods
+
         /**
          * Build a request invocation using an arbitrary request method name.
          *
@@ -190,29 +191,19 @@ public interface Invocation {
         public Builder cookie(Cookie cookie);
 
         /**
-         * Set the list of allowed methods for the resource. Any duplicate method
-         * names will be truncated to a single entry.
+         * Add a cookie to be set.
          *
-         * @param methods the methods to be listed as allowed for the resource,
-         *     if {@code null} any existing allowed method list will be removed.
+         * @param name  the name of the cookie.
+         * @param value the value of the cookie.
          * @return the updated builder.
          */
-        public Builder allow(String... methods);
-
-        /**
-         * Set the list of allowed methods for the resource.
-         *
-         * @param methods the methods to be listed as allowed for the resource,
-         *     if {@code null} any existing allowed method list will be removed.
-         * @return the updated builder.
-         */
-        public Builder allow(Set<String> methods);
+        public Builder cookie(String name, String value);
 
         /**
          * Set the cache control data of the message.
          *
          * @param cacheControl the cache control directives, if {@code null}
-         *     any existing cache control directives will be removed.
+         *                     any existing cache control directives will be removed.
          * @return the updated builder.
          */
         public Builder cacheControl(CacheControl cacheControl);
@@ -220,13 +211,13 @@ public interface Invocation {
         /**
          * Add an arbitrary header.
          *
-         * @param name the name of the header
+         * @param name  the name of the header
          * @param value the value of the header, the header will be serialized
-         *     using a {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if
-         *     one is available via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
-         *     for the class of {@code value} or using its {@code toString} method
-         *     if a header delegate is not available. If {@code value} is {@code null}
-         *     then all current headers of the same name will be removed.
+         *              using a {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if
+         *              one is available via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
+         *              for the class of {@code value} or using its {@code toString} method
+         *              if a header delegate is not available. If {@code value} is {@code null}
+         *              then all current headers of the same name will be removed.
          * @return the updated builder.
          */
         public Builder header(String name, Object value);
@@ -235,7 +226,7 @@ public interface Invocation {
          * Replaces all existing headers with the newly supplied headers.
          *
          * @param headers new headers to be set, if {@code null} all existing
-         *     headers will be removed.
+         *                headers will be removed.
          * @return the updated builder.
          */
         public Builder headers(MultivaluedMap<String, Object> headers);
@@ -252,77 +243,116 @@ public interface Invocation {
      * Synchronously invoke the request and receive a response back.
      *
      * @return {@link Response response} object as a result of the request
-     *     invocation.
-     * @throws InvocationException in case the invocation failed.
+     *         invocation.
+     * @throws ClientException in case the invocation processing has failed.
      */
-    public Response invoke() throws InvocationException;
+    public Response invoke() throws ClientException;
 
     /**
      * Synchronously invoke the request and receive a response of the specified
      * type back.
      *
-     * @param <T> response type
+     * @param <T>          response type
      * @param responseType Java type the response should be converted into.
      * @return response object of the specified type as a result of the request
-     *     invocation.
-     * @throws InvocationException in case the invocation failed.
+     *         invocation.
+     * @throws ClientException         in case the invocation processing has failed.
+     * @throws WebApplicationException in case the response status code of the response
+     *                                 returned by the server is not
+     *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                 successful}.
      */
-    public <T> T invoke(Class<T> responseType) throws InvocationException;
+    public <T> T invoke(Class<T> responseType) throws ClientException, WebApplicationException;
 
     /**
      * Synchronously invoke the request and receive a response of the specified
      * generic type back.
      *
-     * @param <T> generic response type
+     * @param <T>          generic response type
      * @param responseType type literal representing a generic Java type the
-     *     response should be converted into.
+     *                     response should be converted into.
      * @return response object of the specified generic type as a result of the
-     *     request invocation.
-     * @throws InvocationException in case the invocation failed.
+     *         request invocation.
+     * @throws ClientException         in case the invocation processing has failed.
+     * @throws WebApplicationException in case the response status code of the response
+     *                                 returned by the server is not
+     *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                 successful}.
      */
-    public <T> T invoke(GenericType<T> responseType) throws InvocationException;
+    public <T> T invoke(GenericType<T> responseType) throws ClientException, WebApplicationException;
 
     /**
      * Submit the request for an asynchronous invocation and receive a future
      * response back.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
      * @return future {@link Response response} object as a result of the request
-     *     invocation.
+     *         invocation.
      */
     public Future<Response> submit();
 
     /**
      * Submit the request for an asynchronous invocation and receive a future
      * response of the specified type back.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> response type
+     * @param <T>          response type
      * @param responseType Java type the response should be converted into.
      * @return future response object of the specified type as a result of the
-     *     request invocation.
+     *         request invocation.
      */
     public <T> Future<T> submit(Class<T> responseType);
 
     /**
      * Submit the request for an asynchronous invocation and receive a future
      * response of the specified generic type back.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response type
+     * @param <T>          generic response type
      * @param responseType type literal representing a generic Java type the
-     *     response should be converted into.
+     *                     response should be converted into.
      * @return future response object of the specified generic type as a result
-     *     of the request invocation.
+     *         of the request invocation.
      */
     public <T> Future<T> submit(GenericType<T> responseType);
 
     /**
      * Submit the request for an asynchronous invocation and register an
      * {@link InvocationCallback} to process the future result of the invocation.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> response type
+     * @param <T>      response type
      * @param callback invocation callback for asynchronous processing of the
-     *     request invocation result.
+     *                 request invocation result.
      * @return future response object of the specified type as a result of the
-     *     request invocation.
+     *         request invocation.
      */
     public <T> Future<T> submit(InvocationCallback<T> callback);
 

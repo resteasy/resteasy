@@ -41,8 +41,6 @@ package javax.ws.rs.client;
 
 import java.io.IOException;
 
-import javax.ws.rs.WebApplicationException;
-
 /**
  * An extension interface implemented by client request filters.
  *
@@ -52,10 +50,8 @@ import javax.ws.rs.WebApplicationException;
  *
  * @author Marek Potociar
  * @author Santiago Pericas-Geertsen
- *
- * @since 2.0
- *
  * @see javax.ws.rs.client.ClientResponseFilter
+ * @since 2.0
  */
 public interface ClientRequestFilter {
 

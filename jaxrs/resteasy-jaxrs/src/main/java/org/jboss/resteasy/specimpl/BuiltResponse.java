@@ -144,12 +144,6 @@ public class BuiltResponse extends Response
    }
 
    @Override
-   public String getHeader(String name)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public MediaType getMediaType()
    {
       throw new NotImplementedYetException();
@@ -217,6 +211,24 @@ public class BuiltResponse extends Response
 
    @Override
    public Link.Builder getLinkBuilder(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Set<String> getAllowedMethods()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public String getHeaderString(String name)
    {
       throw new NotImplementedYetException();
    }

@@ -72,7 +72,7 @@ public abstract class ClientFactory {
         try {
             Object delegate =
                     FactoryFinder.find(JAXRS_DEFAULT_CLIENT_FACTORY_PROPERTY,
-                    JAXRS_DEFAULT_CLIENT_FACTORY);
+                            JAXRS_DEFAULT_CLIENT_FACTORY);
             if (!(delegate instanceof ClientFactory)) {
                 Class pClass = ClientFactory.class;
                 String classnameAsResource = pClass.getName().replace('.', '/') + ".class";
@@ -106,7 +106,7 @@ public abstract class ClientFactory {
      * provided by the JAX-RS implementation provider.
      *
      * @param configuration data used to provide initial configuration for the new
-     *     client instance.
+     *                      client instance.
      * @return new configured client instance.
      */
     public static Client newClient(final Configuration configuration) {
@@ -124,7 +124,7 @@ public abstract class ClientFactory {
      * Get a new pre-configured client instance.
      *
      * @param configuration data used to provide initial configuration for
-     *     the new client instance.
+     *                      the new client instance.
      * @return a new client instance.
      */
     protected abstract Client getClient(final Configuration configuration);

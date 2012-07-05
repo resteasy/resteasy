@@ -41,6 +41,7 @@ package javax.ws.rs.client;
 
 import java.util.concurrent.Future;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
@@ -53,180 +54,309 @@ import javax.ws.rs.core.Response;
 public interface AsyncInvoker {
 
     // GET
-    /**
-     * Invoke HTTP GET method for the current request asynchronously.
-     *
-     * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
-     */
-    Future<Response> get() throws InvocationException;
 
     /**
      * Invoke HTTP GET method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
-     * @param <T> response entity type.
+     * @return invocation response {@link Future future}.
+     */
+    Future<Response> get();
+
+    /**
+     * Invoke HTTP GET method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
+     *
+     * @param <T>          response entity type.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> get(Class<T> responseType) throws InvocationException;
+    <T> Future<T> get(Class<T> responseType);
 
     /**
      * Invoke HTTP GET method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
+     * @param <T>          generic response entity type.
      * @param responseType representation of a generic Java type the response
-     *     entity will be converted to.
+     *                     entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> get(GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> get(GenericType<T> responseType);
 
     /**
      * Invoke HTTP GET method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
+     * @param <T>      generic response entity type.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
     <T> Future<T> get(InvocationCallback<T> callback);
 
     // PUT
-    /**
-     * Invoke HTTP PUT method for the current request asynchronously.
-     *
-     * @param entity request entity.
-     * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
-     */
-    Future<Response> put(Entity<?> entity) throws InvocationException;
 
     /**
      * Invoke HTTP PUT method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
-     * @param <T> response entity type.
      * @param entity request entity.
+     * @return invocation response {@link Future future}.
+     */
+    Future<Response> put(Entity<?> entity);
+
+    /**
+     * Invoke HTTP PUT method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
+     *
+     * @param <T>          response entity type.
+     * @param entity       request entity.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> put(Entity<?> entity, Class<T> responseType) throws InvocationException;
+    <T> Future<T> put(Entity<?> entity, Class<T> responseType);
 
     /**
      * Invoke HTTP PUT method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param entity request entity.
+     * @param <T>          generic response entity type.
+     * @param entity       request entity.
      * @param responseType representation of a generic Java type the response
-     *     entity will be converted to.
+     *                     entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> put(Entity<?> entity, GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> put(Entity<?> entity, GenericType<T> responseType);
 
     /**
      * Invoke HTTP PUT method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param entity request entity.
+     * @param <T>      generic response entity type.
+     * @param entity   request entity.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
     <T> Future<T> put(Entity<?> entity, InvocationCallback<T> callback);
 
     // POST
-    /**
-     * Invoke HTTP POST method for the current request asynchronously.
-     *
-     * @param entity request entity.
-     * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
-     */
-    Future<Response> post(Entity<?> entity) throws InvocationException;
 
     /**
      * Invoke HTTP POST method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
-     * @param <T> response entity type.
      * @param entity request entity.
+     * @return invocation response {@link Future future}.
+     * @throws ClientException in case the invocation processing has failed.
+     */
+    Future<Response> post(Entity<?> entity);
+
+    /**
+     * Invoke HTTP POST method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
+     *
+     * @param <T>          response entity type.
+     * @param entity       request entity.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> post(Entity<?> entity, Class<T> responseType) throws InvocationException;
+    <T> Future<T> post(Entity<?> entity, Class<T> responseType);
 
     /**
      * Invoke HTTP POST method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param entity request entity.
+     * @param <T>          generic response entity type.
+     * @param entity       request entity.
      * @param responseType representation of a generic Java type the response
-     *     entity will be converted to.
+     *                     entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> post(Entity<?> entity, GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> post(Entity<?> entity, GenericType<T> responseType);
 
     /**
      * Invoke HTTP POST method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param entity request entity.
+     * @param <T>      generic response entity type.
+     * @param entity   request entity.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
     <T> Future<T> post(Entity<?> entity, InvocationCallback<T> callback);
 
     // DELETE
-    /**
-     * Invoke HTTP DELETE method for the current request asynchronously.
-     *
-     * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
-     */
-    Future<Response> delete() throws InvocationException;
 
     /**
      * Invoke HTTP DELETE method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
-     * @param <T> response entity type.
+     * @return invocation response {@link Future future}.
+     */
+    Future<Response> delete();
+
+    /**
+     * Invoke HTTP DELETE method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
+     *
+     * @param <T>          response entity type.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> delete(Class<T> responseType) throws InvocationException;
+    <T> Future<T> delete(Class<T> responseType);
 
     /**
      * Invoke HTTP DELETE method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
+     * @param <T>          generic response entity type.
      * @param responseType representation of a generic Java type the response
-     *     entity will be converted to.
+     *                     entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> delete(GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> delete(GenericType<T> responseType);
 
     /**
      * Invoke HTTP DELETE method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
+     * @param <T>      generic response entity type.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
     <T> Future<T> delete(InvocationCallback<T> callback);
 
     // HEAD
-    /**
-     * Invoke HTTP HEAD method for the current request asynchronously.
-     *
-     * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
-     */
-    Future<Response> head() throws InvocationException;
 
     /**
      * Invoke HTTP HEAD method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
+     *
+     * @return invocation response {@link Future future}.
+     */
+    Future<Response> head();
+
+    /**
+     * Invoke HTTP HEAD method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
@@ -234,125 +364,208 @@ public interface AsyncInvoker {
     Future<Response> head(InvocationCallback<Response> callback);
 
     // OPTIONS
-    /**
-     * Invoke HTTP OPTIONS method for the current request asynchronously.
-     *
-     * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
-     */
-    Future<Response> options() throws InvocationException;
 
     /**
      * Invoke HTTP OPTIONS method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
-     * @param <T> response entity type.
+     * @return invocation response {@link Future future}.
+     */
+    Future<Response> options();
+
+    /**
+     * Invoke HTTP OPTIONS method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
+     *
+     * @param <T>          response entity type.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> options(Class<T> responseType) throws InvocationException;
+    <T> Future<T> options(Class<T> responseType);
 
     /**
      * Invoke HTTP OPTIONS method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
+     * @param <T>          generic response entity type.
      * @param responseType representation of a generic Java type the response
-     *     entity will be converted to.
+     *                     entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> options(GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> options(GenericType<T> responseType);
 
     /**
      * Invoke HTTP OPTIONS method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
+     * @param <T>      generic response entity type.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
     <T> Future<T> options(InvocationCallback<T> callback);
 
     // TRACE
-    /**
-     * Invoke HTTP TRACE method for the current request asynchronously.
-     *
-     * @param entity request entity.
-     * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
-     */
-    Future<Response> trace(Entity<?> entity) throws InvocationException;
 
     /**
      * Invoke HTTP TRACE method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
-     * @param <T> response entity type.
-     * @param entity request entity.
+     * @return invocation response {@link Future future}.
+     */
+    Future<Response> trace();
+
+    /**
+     * Invoke HTTP TRACE method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
+     *
+     * @param <T>          response entity type.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> trace(Entity<?> entity, Class<T> responseType) throws InvocationException;
+    <T> Future<T> trace(Class<T> responseType);
 
     /**
      * Invoke HTTP TRACE method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param entity request entity.
+     * @param <T>          generic response entity type.
      * @param responseType representation of a generic Java type the response
-     *     entity will be converted to.
+     *                     entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> trace(Entity<?> entity, GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> trace(GenericType<T> responseType);
 
     /**
      * Invoke HTTP TRACE method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param entity request entity.
+     * @param <T>      generic response entity type.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
-    <T> Future<T> trace(Entity<?> entity, InvocationCallback<T> callback);
+    <T> Future<T> trace(InvocationCallback<T> callback);
 
     // ARBITRARY METHOD
-    /**
-     * Invoke an arbitrary method for the current request asynchronously.
-     *
-     * @param name method name.
-     * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
-     */
-    Future<Response> method(String name) throws InvocationException;
 
     /**
      * Invoke an arbitrary method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
-     * @param <T> response entity type.
      * @param name method name.
+     * @return invocation response {@link Future future}.
+     */
+    Future<Response> method(String name);
+
+    /**
+     * Invoke an arbitrary method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
+     *
+     * @param <T>          response entity type.
+     * @param name         method name.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> method(String name, Class<T> responseType) throws InvocationException;
+    <T> Future<T> method(String name, Class<T> responseType);
 
     /**
      * Invoke an arbitrary method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param name method name.
+     * @param <T>          generic response entity type.
+     * @param name         method name.
      * @param responseType representation of a generic Java type the response
-     *     entity will be converted to.
+     *                     entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> method(String name, GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> method(String name, GenericType<T> responseType);
 
     /**
      * Invoke an arbitrary method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param name method name.
+     * @param <T>      generic response entity type.
+     * @param name     method name.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
@@ -360,45 +573,73 @@ public interface AsyncInvoker {
 
     /**
      * Invoke an arbitrary method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
-     * @param name method name.
+     * @param name   method name.
      * @param entity request entity.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    Future<Response> method(String name, Entity<?> entity) throws InvocationException;
+    Future<Response> method(String name, Entity<?> entity);
 
     /**
      * Invoke an arbitrary method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> response entity type.
-     * @param name method name.
-     * @param entity request entity.
+     * @param <T>          response entity type.
+     * @param name         method name.
+     * @param entity       request entity.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> method(String name, Entity<?> entity, Class<T> responseType) throws InvocationException;
+    <T> Future<T> method(String name, Entity<?> entity, Class<T> responseType);
 
     /**
      * Invoke an arbitrary method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param name method name.
-     * @param entity request entity.
+     * @param <T>          generic response entity type.
+     * @param name         method name.
+     * @param entity       request entity.
      * @param responseType representation of a generic Java type the response
-     *     entity will be converted to.
+     *                     entity will be converted to.
      * @return invocation response {@link Future future}.
-     * @throws InvocationException in case the invocation failed.
      */
-    <T> Future<T> method(String name, Entity<?> entity, GenericType<T> responseType) throws InvocationException;
+    <T> Future<T> method(String name, Entity<?> entity, GenericType<T> responseType);
 
     /**
      * Invoke an arbitrary method for the current request asynchronously.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
-     * @param <T> generic response entity type.
-     * @param name method name.
-     * @param entity request entity.
+     * @param <T>      generic response entity type.
+     * @param name     method name.
+     * @param entity   request entity.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */

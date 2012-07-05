@@ -360,12 +360,6 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    }
 
    @Override
-   public <T> Response.ResponseBuilder entity(T entity, GenericType<? super T> declaredType, Annotation[] annotations)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Response.ResponseBuilder replaceAll(MultivaluedMap<String, Object> headers)
    {
       throw new NotImplementedYetException();

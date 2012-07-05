@@ -89,14 +89,14 @@ final class FactoryFinder {
      * Creates an instance of the specified class using the specified
      * <code>ClassLoader</code> object.
      *
-     * @param className name of the class to be instantiated.
+     * @param className   name of the class to be instantiated.
      * @param classLoader class loader to be used.
      * @return instance of the specified class.
-     * @exception ClassNotFoundException if the given class could not be found
-     *            or could not be instantiated
+     * @throws ClassNotFoundException if the given class could not be found
+     *                                or could not be instantiated
      */
     private static Object newInstance(final String className,
-            final ClassLoader classLoader) throws ClassNotFoundException {
+                                      final ClassLoader classLoader) throws ClassNotFoundException {
         try {
             Class spiClass;
             if (classLoader == null) {
@@ -108,8 +108,8 @@ final class FactoryFinder {
                     LOGGER.log(
                             Level.FINE,
                             "Unable to load provider class " + className
-                            + " using custom classloader " + classLoader.getClass().getName()
-                            + " trying again with current classloader.",
+                                    + " using custom classloader " + classLoader.getClass().getName()
+                                    + " trying again with current classloader.",
                             ex);
                     spiClass = Class.forName(className);
                 }
@@ -131,16 +131,15 @@ final class FactoryFinder {
      * <P>
      * This method is package private so that this code can be shared.
      *
+     * @param factoryId         the name of the factory to find, which is
+     *                          a system property
+     * @param fallbackClassName the implementation class name, which is
+     *                          to be used only if nothing else
+     *                          is found; <code>null</code> to indicate that
+     *                          there is no fallback class name
      * @return the <code>Class</code> object of the specified message factory;
      *         may not be <code>null</code>
-     *
-     * @param factoryId             the name of the factory to find, which is
-     *                              a system property
-     * @param fallbackClassName     the implementation class name, which is
-     *                              to be used only if nothing else
-     *                              is found; <code>null</code> to indicate that
-     *                              there is no fallback class name
-     * @exception WebServiceException if there is an error
+     * @throws WebServiceException if there is an error
      */
     static Object find(final String factoryId, final String fallbackClassName) throws ClassNotFoundException {
         ClassLoader classLoader = getContextClassLoader();

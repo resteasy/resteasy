@@ -209,7 +209,7 @@ public class SynchronousDispatcher implements Dispatcher
       handleException(request, response, e);
    }
 
-   public void handleException(HttpRequest request, HttpResponse response, Exception e)
+   public void handleException(HttpRequest request, HttpResponse response, Throwable e)
    {
       // See if there is an ExceptionMapper for the exact class of the exception instance being thrown
       if (executeExactExceptionMapper(request, response, e)) return;
@@ -542,7 +542,7 @@ public class SynchronousDispatcher implements Dispatcher
              * asychronous HTTP.
              *
              */
-            request.getExecutionContext().initialRequestThreadFinished();
+            request.getExecutionContext().getAsyncResponse().initialRequestThreadFinished();
             jaxrsResponse = null; // we're handing response asynchronously
          }
       }

@@ -40,8 +40,8 @@
 package javax.ws.rs.client;
 
 import java.net.URI;
-
 import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -55,6 +55,7 @@ import javax.ws.rs.core.UriBuilder;
 public interface WebTarget {
 
     // Getters
+
     /**
      * Get the URI identifying the resource.
      *
@@ -93,7 +94,7 @@ public interface WebTarget {
      *
      * @param path the path, may contain URI template parameters.
      * @return a new target instance.
-     * @exception NullPointerException if path is null.
+     * @throws NullPointerException if path is null.
      */
     public WebTarget path(String path) throws NullPointerException;
 
@@ -105,11 +106,11 @@ public interface WebTarget {
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
      *
-     * @param name path parameter template name.
+     * @param name  path parameter template name.
      * @param value value to be used to replace the template.
      * @return a new target instance.
-     * @exception IllegalArgumentException if there is no such path parameter.
-     * @exception NullPointerException if name or value is null.
+     * @throws IllegalArgumentException if there is no such path parameter.
+     * @throws NullPointerException     if name or value is null.
      */
     public WebTarget pathParam(String name, Object value)
             throws IllegalArgumentException, NullPointerException;
@@ -124,8 +125,8 @@ public interface WebTarget {
      *
      * @param parameters a map of URI template parameter names and values.
      * @return a new target instance.
-     * @exception IllegalArgumentException if the supplied map is empty.
-     * @exception NullPointerException if the parameter map or any of the names or values is null.
+     * @throws IllegalArgumentException if the supplied map is empty.
+     * @throws NullPointerException     if the parameter map or any of the names or values is null.
      */
     public WebTarget pathParams(Map<String, Object> parameters)
             throws IllegalArgumentException, NullPointerException;
@@ -143,19 +144,18 @@ public interface WebTarget {
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
      *
-     * @param name the matrix parameter name, may contain URI template parameters.
+     * @param name   the matrix parameter name, may contain URI template parameters.
      * @param values the matrix parameter value(s), each object will be converted
-     * to a {@code String} using its {@code toString()} method. Stringified
-     * values may contain URI template parameters.
+     *               to a {@code String} using its {@code toString()} method. Stringified
+     *               values may contain URI template parameters.
      * @return a new target instance.
-     * @exception NullPointerException if the name or any of the values is null.
+     * @throws NullPointerException if the name or any of the values is null.
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
     public WebTarget matrixParam(String name, Object... values)
             throws NullPointerException;
 
     /**
-     *
      * Create a new {@code WebTarget} instance by adding a query parameter to the URI
      * of the current target instance. If multiple values are supplied the parameter
      * will be added once per value.
@@ -164,12 +164,12 @@ public interface WebTarget {
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
      *
-     * @param name the query parameter name, may contain URI template parameters
+     * @param name   the query parameter name, may contain URI template parameters
      * @param values the query parameter value(s), each object will be converted
-     *     to a {@code String} using its {@code toString()} method. Stringified
-     *     values may contain URI template parameters.
+     *               to a {@code String} using its {@code toString()} method. Stringified
+     *               values may contain URI template parameters.
      * @return a new target instance.
-     * @exception NullPointerException if name or any of the values is {@code null}.
+     * @throws NullPointerException if name or any of the values is {@code null}.
      */
     public WebTarget queryParam(String name, Object... values)
             throws NullPointerException;
@@ -184,8 +184,8 @@ public interface WebTarget {
      *
      * @param parameters a map of query parameter names and values.
      * @return a new target instance.
-     * @exception IllegalArgumentException if the supplied map is empty.
-     * @exception NullPointerException if the parameter map or any of the names or values is null.
+     * @throws IllegalArgumentException if the supplied map is empty.
+     * @throws NullPointerException     if the parameter map or any of the names or values is null.
      */
     public WebTarget queryParams(MultivaluedMap<String, Object> parameters)
             throws IllegalArgumentException, NullPointerException;

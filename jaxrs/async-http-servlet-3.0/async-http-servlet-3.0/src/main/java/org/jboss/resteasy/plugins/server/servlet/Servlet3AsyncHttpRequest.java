@@ -1,10 +1,13 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -12,6 +15,7 @@ import javax.servlet.AsyncListener;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.AsynchronousResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -40,12 +44,13 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       return asynchronousContext;
    }
 
-   private class Servlet3ExecutionContext extends AbstractExecutionContext implements AsyncListener
+   private class Servlet3ExecutionContext extends AbstractExecutionContext
    {
       protected final ServletRequest servletRequest;
       protected boolean done;
       protected boolean canceled;
       protected boolean suspended;
+      protected Servle3AsychronousResponse asynchronousResponse;
 
       public Servlet3ExecutionContext(ServletRequest servletRequest)
       {
@@ -53,76 +58,155 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          this.servletRequest = servletRequest;
       }
 
-      @Override
-      public void resume(Object entity) throws IllegalStateException
+      private class Servle3AsychronousResponse extends AbstractAsynchronousResponse implements AsyncListener
       {
-         AsyncContext asyncContext = getAsyncContext();
-         try
+         private Servle3AsychronousResponse()
          {
-            System.out.println(" BEFORE RESUME!!!! ");
-            super.resume(entity);
+            super(Servlet3ExecutionContext.this.dispatcher, Servlet3ExecutionContext.this.request, Servlet3ExecutionContext.this.response);
          }
-         finally
+
+         @Override
+         public void resume(Object entity) throws IllegalStateException
+         {
+            AsyncContext asyncContext = getAsyncContext();
+            try
+            {
+               super.resume(entity);
+            }
+            finally
+            {
+               done = true;
+               asyncContext.complete();
+            }
+
+         }
+
+         @Override
+         public void resume(Throwable exc) throws IllegalStateException
+         {
+            AsyncContext asyncContext = getAsyncContext();
+            try
+            {
+               super.resume(exc);
+            }
+            finally
+            {
+               done = true;
+               asyncContext.complete();
+            }
+         }
+
+         @Override
+         public void initialRequestThreadFinished()
+         {
+            // done
+         }
+
+         @Override
+         public void setSuspendTimeout(long time, TimeUnit unit) throws IllegalStateException
+         {
+            AsyncContext asyncContext = getAsyncContext();
+            asyncContext.setTimeout(unit.toMillis(time));
+         }
+
+         @Override
+         public void cancel()
+         {
+            throw new NotImplementedYetException();
+         }
+
+         @Override
+         public boolean isCancelled()
+         {
+            return canceled;
+         }
+
+         @Override
+         public boolean isDone()
+         {
+            return done;
+         }
+
+         @Override
+         public void setFallbackResponse(Object response)
+         {
+            throw new NotImplementedYetException();
+         }
+
+         @Override
+         public Response getFallbackResponse()
+         {
+            throw new NotImplementedYetException();
+         }
+
+         @Override
+         public boolean isSuspended()
+         {
+            return suspended && !done && !canceled;
+         }
+
+         @Override
+         public void onComplete(AsyncEvent asyncEvent) throws IOException
          {
             done = true;
-            asyncContext.complete();
          }
 
-      }
-
-      @Override
-      public void resume(Exception exc) throws IllegalStateException
-      {
-         AsyncContext asyncContext = getAsyncContext();
-         try
+         @Override
+         public void onTimeout(AsyncEvent asyncEvent) throws IOException
          {
-            super.resume(exc);
-         }
-         finally
-         {
+            canceled = true;
             done = true;
-            asyncContext.complete();
+            response.reset();
+            response.sendError(503);
+            getAsyncContext().complete();
+         }
+
+         @Override
+         public void onError(AsyncEvent asyncEvent) throws IOException
+         {
+            canceled = true;
+            done = true;
+         }
+
+         @Override
+         public void onStartAsync(AsyncEvent asyncEvent) throws IOException
+         {
          }
       }
 
       @Override
-      public void initialRequestThreadFinished()
+      public ResteasyAsynchronousResponse getAsyncResponse()
       {
-         // done
+         return asynchronousResponse;
       }
 
       @Override
-      public void suspend() throws IllegalStateException
+      public AsynchronousResponse suspend() throws IllegalStateException
       {
-         suspend(-1);
+         return suspend(-1);
       }
 
       @Override
-      public void suspend(long millis) throws IllegalStateException
+      public AsynchronousResponse suspend(long millis) throws IllegalStateException
       {
-         suspend(millis, TimeUnit.MILLISECONDS);
+         return suspend(millis, TimeUnit.MILLISECONDS);
       }
 
       @Override
-      public void suspend(long time, TimeUnit unit) throws IllegalStateException
+      public AsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
       {
          if (servletRequest.isAsyncStarted())
          {
-            getAsyncContext().setTimeout(unit.toMillis(time));
-            return;
+            throw new IllegalStateException("Already suspended");
          }
+         asynchronousResponse = new Servle3AsychronousResponse();
          AsyncContext asyncContext = servletRequest.startAsync();
          asyncContext.setTimeout(unit.toMillis(time));
-         asyncContext.addListener(this);
+         asyncContext.addListener(asynchronousResponse);
          suspended = true;
+         return asynchronousResponse;
       }
 
-      @Override
-      public void setSuspendTimeout(long time, TimeUnit unit) throws IllegalStateException
-      {
-         AsyncContext asyncContext = getAsyncContext();
-         asyncContext.setTimeout(unit.toMillis(time));
-      }
 
       private AsyncContext getAsyncContext()
       {
@@ -135,62 +219,10 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       }
 
       @Override
-      public void cancel()
-      {
-         throw new NotImplementedYetException();
-      }
-
-      @Override
       public boolean isSuspended()
       {
          return suspended;
       }
 
-      @Override
-      public boolean isCancelled()
-      {
-         return canceled;
-      }
-
-      @Override
-      public boolean isDone()
-      {
-         return done;
-      }
-
-      @Override
-      public void setResponse(Object response)
-      {
-         throw new NotImplementedYetException();
-      }
-
-      @Override
-      public Response getResponse()
-      {
-         throw new NotImplementedYetException();
-      }
-
-      @Override
-      public void onComplete(AsyncEvent asyncEvent) throws IOException
-      {
-         done = true;
-      }
-
-      @Override
-      public void onTimeout(AsyncEvent asyncEvent) throws IOException
-      {
-         canceled = true;
-      }
-
-      @Override
-      public void onError(AsyncEvent asyncEvent) throws IOException
-      {
-         canceled = true;
-      }
-
-      @Override
-      public void onStartAsync(AsyncEvent asyncEvent) throws IOException
-      {
-      }
    }
 }

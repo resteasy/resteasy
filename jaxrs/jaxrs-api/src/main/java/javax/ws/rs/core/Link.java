@@ -48,11 +48,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+
 import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -296,7 +298,7 @@ public final class Link {
      * for {@code fromResourceMethod(resource, method, method)}.
      *
      * @param resource resource class
-     * @param method name of resource method
+     * @param method   name of resource method
      * @return link builder to further configure link
      * @throws IllegalArgumentException if any argument is null or no method is found
      * @see Link#fromResourceMethod(java.lang.Class, java.lang.String, java.lang.String)
@@ -316,8 +318,8 @@ public final class Link {
      * as an argument.
      *
      * @param resource resource class
-     * @param method name of resource method
-     * @param rel value of "rel" parameter
+     * @param method   name of resource method
+     * @param rel      value of "rel" parameter
      * @return link builder to further configure link
      * @throws IllegalArgumentException if any argument is null or no method is found
      */
@@ -494,7 +496,7 @@ public final class Link {
          * to use the more specific methods {@link #method} or {@link #title}
          * when setting these single-valued parameters.
          *
-         * @param name the name of the parameter
+         * @param name  the name of the parameter
          * @param value the value set for the parameter
          * @return the updated builder
          * @throws IllegalArgumentException if either the name or value are null

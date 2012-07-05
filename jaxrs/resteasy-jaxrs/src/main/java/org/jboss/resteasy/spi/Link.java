@@ -6,6 +6,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-06">Link Headers v6</a>
@@ -33,6 +34,23 @@ public class Link
       this.type = type;
       this.title = title;
       if (extensions != null) this.extensions = extensions;
+   }
+
+   public javax.ws.rs.core.Link toJaxrsLink()
+   {
+      javax.ws.rs.core.Link.Builder builder = new javax.ws.rs.core.Link.Builder();
+      builder.rel(getRelationship());
+      builder.title(getTitle());
+      builder.type(getType());
+      builder.uri(getHref());
+      for (Map.Entry<String, List<String>> entry : getExtensions().entrySet())
+      {
+         for (String val : entry.getValue())
+         {
+            builder.param(entry.getKey(), val);
+         }
+      }
+      return builder.build();
    }
 
    public String getRelationship()

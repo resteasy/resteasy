@@ -1,5 +1,6 @@
 package org.jboss.resteasy.specimpl;
 
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 
@@ -818,4 +819,9 @@ public class UriBuilderImpl extends UriBuilder
       return this;
    }
 
+   @Override
+   public URI build(Object[] values, boolean encodeSlashInPath) throws IllegalArgumentException, UriBuilderException
+   {
+      throw new NotImplementedYetException();
+   }
 }

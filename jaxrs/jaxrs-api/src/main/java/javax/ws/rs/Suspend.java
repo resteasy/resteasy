@@ -49,76 +49,116 @@ import java.util.concurrent.TimeUnit;
 /**
  * Automatically suspend the request processing {@link javax.ws.rs.core.ExecutionContext
  * executioncontext} for the invoked JAX-RS {@link HttpMethod resource or sub-resource
- * method}.
- *
- * A suspended request processing can be programmatically resumed using an injectable
+ * method}. The annotation is ignored if it is used on any method other than JAX-RS resource
+ * or sub-resource method.
+ * <p>
+ * A suspended request processing can be programmatically suspended or resumed using an injectable
  * {@link javax.ws.rs.core.ExecutionContext} instance bound to request being processed:
+ * </p>
  *
  * <pre>
  * &#64;Path("/messages/next")
  * public class SimpleAsyncEventResource {
- *     private static final BlockingQueue&lt;ExecutionContext&gt; suspended =
- *             new ArrayBlockingQueue&lt;ExecutionContext&gt;(5);
+ *     private static final BlockingQueue&lt;AsynchronousResponse&gt; suspended =
+ *             new ArrayBlockingQueue&lt;AsynchronousResponse&gt;(5);
  *     &#64;Context ExecutionContext ctx;
  *
  *     &#64;GET
- *     &#64;Suspend
  *     public void pickUpMessage() throws InterruptedException {
- *         suspended.put(ctx);
+ *         final AsynchronousResponse ar = ctx.suspend();
+ *         suspended.put(ar);
  *     }
  *
  *     &#64;POST
  *     public String postMessage(final String message) throws InterruptedException {
- *         final ExecutionContext getRequestCtx = suspended.take();
- *         getRequestCtx.resume(message); // resumes the processing of one GET request
+ *         final AsynchronousResponse ar = suspended.take();
+ *         ar.resume(message); // resumes the processing of one GET request
  *         return "Message sent";
  *     }
  * }
  * </pre>
  *
- * Placing {@code @Suspend} annotation on a resource method is equivalent to
- * calling {@link javax.ws.rs.core.ExecutionContext#suspend} as the first step
- * upon entering the method. This also means that any subsequent programmatic
- * invocation of a {@code ExecutionContext.suspend(...)} methods is illegal in
+ * <p>
+ * The same functionality as in the example above can be also achieved by placing
+ * {@code @Suspend} annotation on a resource method (an equivalent to calling
+ * {@link javax.ws.rs.core.ExecutionContext#suspend()} as the first step
+ * upon entering the method). This also means that any subsequent programmatic
+ * invocation of a {@code ExecutionContext.suspend(...)} methods would be illegal in
  * the context of a method suspended via {@code @Suspend} annotation.
- *
- * Typically resource method annotated with {@code @Suspend} annotation declare
- * {@code void} return type, but it is not a hard requirement to do so. Any response
- * value returned from the {@code @Suspend}-annotated resource method is ignored
- * by the framework:
+ * The {@link javax.ws.rs.core.AsynchronousResponse} instance associated with the
+ * suspended request processing can be injected into the suspended method as one of
+ * it's parameters. Following example illustrates the use of {@code @Suspend} annotation
+ * equivalent to the example using the {@code ExecutionContext} above:
+ * </p>
  *
  * <pre>
  * &#64;Path("/messages/next")
  * public class SimpleAsyncEventResource {
+ *     private static final BlockingQueue&lt;AsynchronousResponse&gt; suspended =
+ *             new ArrayBlockingQueue&lt;AsynchronousResponse&gt;(5);
+ *
+ *     &#64;GET
+ *     &#64;Suspend
+ *     public void pickUpMessage(AsynchronousResponse ar) throws InterruptedException {
+ *         suspended.put(ar);
+ *     }
+ *
+ *     &#64;POST
+ *     public String postMessage(final String message) throws InterruptedException {
+ *         final AsynchronousResponse ar = suspended.take();
+ *         ar.resume(message); // resume the processing of one GET request
+ *         return "Message sent";
+ *     }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Typically, a resource method annotated with the {@code @Suspend} annotation declares
+ * a {@code void} return type, but it is not a hard requirement to do so. Users should however
+ * be aware that any response value returned from the {@code @Suspend}-annotated or
+ * programmatically suspended resource method is ignored by the framework:
+ * </p>
+ *
+ * <pre>
+ * &#64;Path("/messages/next")
+ * public class SimpleAsyncEventResource {
+ *     &#64;Context ExecutionContext ctx;
  *     &hellip;
  *     &#64;GET
  *     &#64;Suspend
- *     public String pickUpMessage() throws InterruptedException {
- *         suspended.put(ctx);
+ *     public String suspendedMethodA(AsynchronousResponse ar) throws InterruptedException {
+ *         &hellip;
+ *         return "This response will be ignored.";
+ *     }
+ *     &hellip;
+ *     &#64;GET
+ *     public String suspendedMethodB(AsynchronousResponse ar) throws InterruptedException {
+ *         ctx.suspend();
+ *         &hellip;
  *         return "This response will be ignored.";
  *     }
  *     &hellip;
  * }
  * </pre>
  *
- * By default there is {@link #NEVER no suspend timeout set} and request processing is
- * suspended indefinitely. The suspend timeout can be specified using the annotation
- * values. Declaratively specified timeout can be further programmatically overridden
- * using the {@link javax.ws.rs.core.ExecutionContext#setSuspendTimeout(long, TimeUnit)}
- * method.
- * <p/>
- * If the request processing was suspended with a positive timeout value, and has
- * not been explicitly resumed before the timeout has expired, the processing
- * will be resumed once the specified timeout threshold is reached. The request
- * processing will be resumed using response data returned by the associated
- * {@link javax.ws.rs.core.ExecutionContext#getResponse()} method. Should the method
- * return {@code null}, a {@link WebApplicationException} is raised with a
- * HTTP 503 error status (Service unavailable). Use
- * {@link javax.ws.rs.core.ExecutionContext#setResponse(java.lang.Object)}
- * method to programmatically customize the default timeout response.
- * <p/>
- * The annotation is ignored if it is used on any method other than JAX-RS
- * resource or sub-resource method.
+ * <p>
+ * By default there is {@link #NEVER no suspend timeout set} when suspending a request processing.
+ * In such case the processing is suspended indefinitely. Suspend timeout can be specified either
+ * declaratively using the {@code &#64;Suspend} annotation properties or programmatically using
+ * one of the {@code ExecutionContext.suspend(...)} method. Once suspended, the request processing
+ * suspend timeout can be further updated using the
+ * {@link javax.ws.rs.core.AsynchronousResponse#setSuspendTimeout(long, TimeUnit)} method.
+ * </p>
+ * <p>
+ * In case a request processing is suspended with a positive timeout value, the processing is resumed
+ * when the specified timeout threshold is reached unless explicitly resumed before the timeout has
+ * expired. In case of the suspend timeout the request processing is resumed using the
+ * {@link javax.ws.rs.core.AsynchronousResponse#getFallbackResponse() fall-back response data} if set.
+ * Otherwise, if no fall-back response has been specified, a {@link WebApplicationException} is raised
+ * with a HTTP {@code 503} error status (Service unavailable). Fallback response data can be
+ * programmatically customized using the
+ * {@link javax.ws.rs.core.AsynchronousResponse#setFallbackResponse(java.lang.Object)} method.
+ * </p>
  *
  * @author Marek Potociar
  * @since 2.0

@@ -23,6 +23,24 @@ public class DelegatingMultivaluedMap<K, V> implements MultivaluedMap<K, V>
       this.delegate = delegate;
    }
 
+   @Override
+   public void addAll(K key, V... newValues)
+   {
+      this.delegate.addAll(key, newValues);
+   }
+
+   @Override
+   public void addAll(K key, List<V> valueList)
+   {
+      this.delegate.addAll(key, valueList);
+   }
+
+   @Override
+   public void addFirst(K key, V value)
+   {
+      this.delegate.addFirst(key, value);
+   }
+
    public void putSingle(K key, V value)
    {
       delegate.putSingle(key, value);

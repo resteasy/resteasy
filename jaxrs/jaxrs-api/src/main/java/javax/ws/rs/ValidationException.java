@@ -41,6 +41,7 @@ package javax.ws.rs;
 
 import java.util.Collections;
 import java.util.List;
+
 import javax.ws.rs.core.Response;
 
 /**
@@ -88,7 +89,7 @@ public class ValidationException extends WebApplicationException {
      * Construct a new instance with the specified HTTP status code and
      * a list of violations.
      *
-     * @param status HTTP status code
+     * @param status     HTTP status code
      * @param violations list of violations
      * @throws IllegalArgumentException if status or violations is {@code null}
      */
@@ -105,7 +106,7 @@ public class ValidationException extends WebApplicationException {
      * Construct a new instance with the specified HTTP status code and
      * a list of violations.
      *
-     * @param status HTTP status code
+     * @param status     HTTP status code
      * @param violations list of violations
      * @throws IllegalArgumentException if status or violations is {@code null}
      */

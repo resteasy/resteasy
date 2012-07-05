@@ -39,10 +39,13 @@
  */
 package javax.ws.rs.core;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
+import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
+import java.util.Stack;
 
 /**
  * Represents a generic message entity type {@code T}.
@@ -51,74 +54,86 @@ import java.lang.reflect.WildcardType;
  * actual type parameters. An object that represents any parameterized type may
  * be obtained by sub-classing {@code GenericType}. Alternatively, an object
  * representing a concrete parameterized type can be created using a
- * {@link #of(Class, java.lang.reflect.Type) factory method} and manually specifying
- * the {@link #getRawType() raw class type} and the {@link #getType() actual
- * (parameterized) type}.
- *
+ * {@link #GenericType(java.lang.reflect.Type)} and manually specifying
+ * the {@link #getType() actual (parameterized) type}.
+ * <p>
+ * For example:
+ * </p>
  * <pre>
- *  GenericType&lt;List&lt;String>> stringListType = new GenericType&lt;List&lt;String>>() {};
+ *  GenericType&lt;List&lt;String&gt;&gt; stringListType = new GenericType&lt;List&lt;String&gt;&gt;() {};
+ * </pre>
+ * <p>
+ * Or:
+ * </p>
+ * <pre>
+ *  public class MyGenericType extends GenericType&lt;List&lt;String&gt;&gt; { ... }
+ *
+ *  ...
+ *
+ *  MyGenericType stringListType = new MyGenericType();
+ * </pre>
+ * <p>
+ * Note that due to the Java type erasure limitations the parameterized type information
+ * must be specified on a subclass, not just during the instance creation. For example,
+ * the following case would throw an {@link IllegalArgumentException}:
+ * </p>
+ * <pre>
+ *  public class MyGenericType&lt;T&gt; extends GenericType&lt;T&gt; { ... }
+ *
+ *  ...
+ *
+ *  // The type is only specified on instance, not in a sub-class
+ *  MyGenericType&lt;List&lt;String&gt;&gt; stringListType =
+ *          new MyGenericType&lt;List&lt;String&gt;&gt;();
  * </pre>
  *
  * @param <T> the generic type parameter.
- *
- * @author Jerome Dochez
  * @author Marek Potociar
+ * @author Paul Sandoz
+ * @author Martin Matula
  * @since 2.0
  */
-public abstract class GenericType<T> {
+public class GenericType<T> {
 
     /**
      * Type represented by the generic type instance.
      */
-    private transient Type type;
+    private final Type type;
     /**
      * The actual raw parameter type.
      */
-    private transient Class<T> rawType;
-    /**
-     * The types of the generic type parameters (if any).
-     */
-    private transient Type[] parameterTypes;
-
+    private final Class<?> rawType;
 
     /**
-     * Construct a generic type instance with programmatically set values of type
-     * and raw type.
+     * Constructs a new generic type, deriving the generic type and class from
+     * type parameter. Note that this constructor is protected, users should create
+     * a (usually anonymous) subclass as shown above.
      *
-     * @param <T> Java type.
-     *
-     * @param rawType raw parameter type.
-     * @param type parameter type (possibly generic).
-     * @return programmatically constructed generic type instance.
-     */
-    public static <T> GenericType<T> of(final Class<?> rawType, final Type type) {
-        return new GenericType<T>() {
-
-            @Override
-            @SuppressWarnings("unchecked")
-            Class<T> _rawType() {
-                return (Class<T>) rawType;
-            }
-
-            @Override
-            Type _type() {
-                return type;
-            }
-        };
-    }
-
-    /**
-     * Protected constructor for a generic type of a concrete Java type.
+     * @throws IllegalArgumentException in case the generic type parameter value is not
+     *                                  provided by any of the subclasses.
      */
     protected GenericType() {
+        // Get the type parameter of GenericType<T> (aka the T value)
+        type = getTypeArgument(getClass(), GenericType.class);
+        rawType = getClass(type);
     }
 
-    /*package*/ Type _type() {
-        return type;
-    }
+    /**
+     * Constructs a new generic type, supplying the generic type
+     * information and deriving the class.
+     *
+     * @param genericType the generic type.
+     * @throws IllegalArgumentException if genericType is {@code null} or not an instance of
+     *                                  {@code Class} or {@link ParameterizedType} whose raw
+     *                                  type is an instance of {@code Class}.
+     */
+    public GenericType(Type genericType) {
+        if (genericType == null) {
+            throw new IllegalArgumentException("Type must not be null");
+        }
 
-    /*package*/ Class<T> _rawType() {
-        return rawType;
+        type = genericType;
+        rawType = getClass(type);
     }
 
     /**
@@ -127,47 +142,7 @@ public abstract class GenericType<T> {
      * @return the actual type represented by this generic type instance.
      */
     public final Type getType() {
-        if (type == null) {
-            type = _type();
-            if (type == null) {
-                // Get the class that directly extends GenericType<?>
-                Class<?> typeLiteralSubclass = getTypeLiteralSubclass(this.getClass());
-
-                // Get the type parameter of GenericType<T> (aka the T value)
-                type = getTypeParameter(typeLiteralSubclass);
-                if (type == null) {
-                    throw new RuntimeException(getClass() + " does not specify the type parameter T of TypeLiteral<T>");
-                }
-            }
-        }
         return type;
-    }
-
-    /**
-     * Retrieve an array of {@link Type} objects representing the actual type
-     * arguments to the type represented by this generic type instance.
-     * <p/>
-     * Note that in some cases, the returned array may be empty. This can occur
-     * if the type represented by this generic type is a non-parameterized type.
-     *
-     * @return an array of {@code Type} objects representing the actual type
-     *     arguments to this type.
-     * @exception java.lang.TypeNotPresentException if any of the actual type arguments
-     *     refers to a non-existent type declaration.
-     * @exception java.lang.reflect.MalformedParameterizedTypeException if any of the
-     *     actual type parameters refer to a parameterized type that cannot
-     *     be instantiated for any reason.
-     */
-    public final Type[] getParameterTypes() {
-        if (parameterTypes == null) {
-            Type t = getType();
-            if (t instanceof ParameterizedType) {
-                parameterTypes = ((ParameterizedType) t).getActualTypeArguments();
-            } else {
-                parameterTypes = new Type[0];
-            }
-        }
-        return parameterTypes;
     }
 
     /**
@@ -175,19 +150,9 @@ public abstract class GenericType<T> {
      * the type represented by this generic type instance.
      *
      * @return the class or interface that declared the type represented by this
-     *     generic type instance.
+     *         generic type instance.
      */
-    @SuppressWarnings("unchecked")
-    public final Class<T> getRawType() {
-        if (rawType == null) {
-            rawType = _rawType();
-            if (rawType == null) {
-                // Get the actual type
-                Type t = getType();
-                rawType = (Class<T>) getRawType(t);
-            }
-        }
-
+    public final Class<?> getRawType() {
         return rawType;
     }
 
@@ -198,71 +163,86 @@ public abstract class GenericType<T> {
      * @param type {@code Type} to inspect.
      * @return the class or interface that declared the supplied {@code type}.
      */
-    private static Class<?> getRawType(Type type) {
+    private static Class getClass(Type type) {
         if (type instanceof Class) {
-
-            return (Class<?>) type;
-
+            return (Class) type;
         } else if (type instanceof ParameterizedType) {
-
             ParameterizedType parameterizedType = (ParameterizedType) type;
-            return (Class<?>) parameterizedType.getRawType();
-
+            if (parameterizedType.getRawType() instanceof Class) {
+                return (Class) parameterizedType.getRawType();
+            }
         } else if (type instanceof GenericArrayType) {
-
-            return Object[].class;
-
-        } else if (type instanceof WildcardType) {
-            return null;
-        } else {
-            throw new RuntimeException("Illegal type");
+            GenericArrayType array = (GenericArrayType) type;
+            return getArrayClass((Class) ((ParameterizedType) array.getGenericComponentType()).getRawType());
         }
+        throw new IllegalArgumentException("Type parameter " + type.toString() + " not a class or " +
+                "parameterized type whose raw type is a class");
     }
 
     /**
-     * Return the class that directly extends the {@code GenericType<T>} class
-     * in the superclass hierarchy of the supplied {@code clazz} class.
+     * Get Array class of component class.
      *
-     * @param clazz instance to inspect.
-     * @return the direct descendant of {@code GenericType<T>} in the hierarchy
-     *     of the supplied class.
-     * @exception IllegalArgumentException if the provided class does not extend
-     *     the {@code GenericType<T>}
+     * @param c the component class of the array
+     * @return the array class.
      */
-    private static Class<?> getTypeLiteralSubclass(Class<?> clazz) {
-        // Start with a super class
-        Class<?> superClass = clazz.getSuperclass();
-
-        if (superClass.equals(GenericType.class)) {
-            // Super class is GenericType, return the current class
-            return clazz;
-        } else if (!GenericType.class.isAssignableFrom(clazz)) {
-            // The clazz IS a direct GenericType instance, we should not be here at all...
-            throw new IllegalStateException("No type information has been specified for this TypeLiteral instance.");
-        } else {
-            // Continue processing, one level deeper
-            return (getTypeLiteralSubclass(superClass));
+    private static Class getArrayClass(Class c) {
+        try {
+            Object o = Array.newInstance(c, 0);
+            return o.getClass();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
         }
     }
 
     /**
      * Return the value of the type parameter of {@code GenericType<T>}.
      *
-     * @param typeLiteralSubclass subClass of {@code GenericType<T>} to analyze.
+     * @param clazz     subClass of {@code baseClass} to analyze.
+     * @param baseClass base class having the type parameter the value of which we need to retrieve
      * @return the parameterized type of {@code GenericType<T>} (aka T)
      */
-    private static Type getTypeParameter(Class<?> typeLiteralSubclass) {
-        // Access the typeLiteral<T> super class using generics
-        Type type = typeLiteralSubclass.getGenericSuperclass();
-        if (type instanceof ParameterizedType) {
-            // GenericType is indeed parametrized
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            if (parameterizedType.getActualTypeArguments().length == 1) {
-                // Return the value of the type parameter (aka T)
-                return parameterizedType.getActualTypeArguments()[0];
+    static Type getTypeArgument(Class<?> clazz, Class<?> baseClass) {
+        // collect superclasses
+        Stack<Type> superclasses = new Stack<Type>();
+        Type currentType;
+        Class<?> currentClass = clazz;
+        do {
+            currentType = currentClass.getGenericSuperclass();
+            superclasses.push(currentType);
+            if (currentType instanceof Class) {
+                currentClass = (Class) currentType;
+            } else if (currentType instanceof ParameterizedType) {
+                currentClass = (Class) ((ParameterizedType) currentType).getRawType();
             }
+        } while (!currentClass.equals(baseClass));
+
+        // find which one supplies type argument and return it
+        TypeVariable tv = baseClass.getTypeParameters()[0];
+        while (!superclasses.isEmpty()) {
+            currentType = superclasses.pop();
+
+            if (currentType instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) currentType;
+                Class<?> rawType = (Class) pt.getRawType();
+                int argIndex = Arrays.asList(rawType.getTypeParameters()).indexOf(tv);
+                if (argIndex > -1) {
+                    Type typeArg = pt.getActualTypeArguments()[argIndex];
+                    if (typeArg instanceof TypeVariable) {
+                        // type argument is another type variable - look for the value of that
+                        // variable in subclasses
+                        tv = (TypeVariable) typeArg;
+                        continue;
+                    } else {
+                        // found the value - return it
+                        return typeArg;
+                    }
+                }
+            }
+
+            // needed type argument not supplied - break and throw exception
+            break;
         }
-        return null;
+        throw new IllegalArgumentException(currentType + " does not specify the type parameter T of GenericType<T>");
     }
 
     @Override
@@ -271,18 +251,18 @@ public abstract class GenericType<T> {
         if (!result && obj instanceof GenericType) {
             // Compare inner type for equality
             GenericType<?> that = (GenericType<?>) obj;
-            return this.getType().equals(that.getType());
+            return this.type.equals(that.type);
         }
         return result;
     }
 
     @Override
     public int hashCode() {
-        return getType().hashCode();
+        return type.hashCode();
     }
 
     @Override
     public String toString() {
-        return "GenericType{" + getType().toString() +"}";
+        return "GenericType{" + type.toString() + "}";
     }
 }

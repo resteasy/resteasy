@@ -21,6 +21,38 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
       put(key, list);
    }
 
+   @Override
+   public void addAll(K key, V... newValues)
+   {
+      for (V value : newValues)
+      {
+         add(key, value);
+      }
+   }
+
+   @Override
+   public void addAll(K key, List<V> valueList)
+   {
+      for (V value : valueList)
+      {
+         add(key, value);
+      }
+   }
+
+   @Override
+   public void addFirst(K key, V value)
+   {
+      List<V> list = get(key);
+      if (list == null)
+      {
+         add(key, value);
+         return;
+      }
+      else
+      {
+         list.add(0, value);
+      }
+   }
    public final void add(K key, V value)
    {
       getList(key).add(value);

@@ -61,7 +61,7 @@ public class Form {
     /**
      * Create a new form data instance with a single parameter entry.
      *
-     * @param parameterName form parameter name.
+     * @param parameterName  form parameter name.
      * @param parameterValue form parameter value.
      */
     public Form(final String parameterName, final String parameterValue) {
@@ -83,7 +83,7 @@ public class Form {
     /**
      * Adds a new value to the specified form parameter.
      *
-     * @param name name of the parameter.
+     * @param name  name of the parameter.
      * @param value new parameter value to be added.
      * @return updated {@code Form} instance.
      */

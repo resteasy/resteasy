@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ package javax.ws.rs.core;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -59,11 +60,13 @@ public interface StreamingOutput {
 
     /**
      * Called to write the message body.
+     *
      * @param output the OutputStream to write to.
      * @throws java.io.IOException if an IO error is encountered
-     * @throws javax.ws.rs.WebApplicationException if a specific
-     * HTTP error response needs to be produced. Only effective if thrown prior
-     * to any bytes being written to output.
+     * @throws javax.ws.rs.WebApplicationException
+     *                             if a specific
+     *                             HTTP error response needs to be produced. Only effective if thrown prior
+     *                             to any bytes being written to output.
      */
     void write(OutputStream output) throws IOException, WebApplicationException;
 }

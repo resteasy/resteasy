@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.NotImplementedYetException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.Configuration;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -12,8 +13,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,9 +42,67 @@ public class ClientRequestContextImpl implements ClientRequestContext
    }
 
    @Override
-   public Map<String, Object> getProperties()
+   public Object getProperty(String name)
    {
-      return invocation.getMutableProperties();
+      return invocation.getMutableProperties().get(name);
+   }
+
+   @Override
+   public Enumeration<String> getPropertyNames()
+   {
+      return new Enumeration<String>()
+      {
+         private final Iterator<String> it = invocation.getMutableProperties().keySet().iterator();
+         @Override
+         public boolean hasMoreElements()
+         {
+            return it.hasNext();
+         }
+
+         @Override
+         public String nextElement()
+         {
+            return it.next();
+         }
+      };
+   }
+
+   @Override
+   public void setProperty(String name, Object object)
+   {
+      invocation.getMutableProperties().put(name, object);
+   }
+
+   @Override
+   public void removeProperty(String name)
+   {
+      invocation.getMutableProperties().remove(name);
+   }
+
+   @Override
+   public Class<?> getEntityClass()
+   {
+      return invocation.getEntityClass();
+   }
+
+   @Override
+   public Type getEntityType()
+   {
+      return invocation.getEntityGenericType();
+   }
+
+   @Override
+   public void setEntity(Object entity, Annotation[] annotations, MediaType mediaType)
+   {
+      if (entity instanceof Entity)
+      {
+         invocation.setEntity((Entity)entity);
+      }
+      else
+      {
+         invocation.setEntity(Entity.entity(entity, mediaType));
+      }
+      invocation.setEntityAnnotations(annotations);
    }
 
    @Override
@@ -112,7 +174,7 @@ public class ClientRequestContextImpl implements ClientRequestContext
    @Override
    public boolean hasEntity()
    {
-      throw new NotImplementedYetException();
+      return invocation.getEntity() != null;
    }
 
    @Override
@@ -128,30 +190,9 @@ public class ClientRequestContextImpl implements ClientRequestContext
    }
 
    @Override
-   public <T> void setEntity(Class<T> type, Annotation[] annotations, MediaType mediaType, T entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> void setEntity(GenericType<T> genericType, Annotation[] annotations, MediaType mediaType, T entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Object getEntity()
    {
       return invocation.getEntity();
-   }
-
-   @Override
-   public GenericType<?> getDeclaredEntityType()
-   {
-      if (invocation.getEntity() == null) return null;
-      if (invocation.getEntity() instanceof GenericType) return (GenericType)invocation.getEntity();
-
-      return GenericType.of(invocation.getEntity().getClass(), null);
    }
 
    @Override
@@ -176,5 +217,17 @@ public class ClientRequestContextImpl implements ClientRequestContext
    public void abortWith(Response response)
    {
       abortedWithResponse = response;
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public String getHeaderString(String name)
+   {
+      throw new NotImplementedYetException();
    }
 }

@@ -66,8 +66,7 @@ public class Variant {
      *                  may be {@code null}.
      * @param encoding  the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException
-     *          if all three parameters are
-     *          {@code null}.
+     *          if all the parameters are {@code null}.
      * @since 2.0
      */
     public Variant(MediaType mediaType, String language, String encoding) {
@@ -75,7 +74,7 @@ public class Variant {
             throw new IllegalArgumentException("mediaType, language, encoding all null");
         }
         this.encoding = encoding;
-        if (language != null) this.language = new Locale(language);
+        this.language = (language == null) ? null : new Locale(language);
         this.mediaType = mediaType;
     }
 
@@ -89,8 +88,7 @@ public class Variant {
      *                  may be {@code null} provided {@code language} is {@code null} too.
      * @param encoding  the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException
-     *          if all three parameters are
-     *          {@code null}.
+     *          if all the parameters are {@code null}.
      * @since 2.0
      */
     public Variant(MediaType mediaType, String language, String country, String encoding) {
@@ -98,11 +96,7 @@ public class Variant {
             throw new IllegalArgumentException("mediaType, language, encoding all null");
         }
         this.encoding = encoding;
-        if (language != null)
-        {
-           if (country != null) this.language = new Locale(language, country);
-           else this.language = new Locale(language);
-        }
+        this.language = (language == null) ? null : new Locale(language, country);
         this.mediaType = mediaType;
     }
 
@@ -120,8 +114,7 @@ public class Variant {
      *                        {@code country} are {@code null} too.
      * @param encoding        the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException
-     *          if all three parameters are
-     *          {@code null}.
+     *          if all the parameters are {@code null}.
      * @since 2.0
      */
     public Variant(MediaType mediaType, String language, String country, String languageVariant, String encoding) {
@@ -129,7 +122,7 @@ public class Variant {
             throw new IllegalArgumentException("mediaType, language, encoding all null");
         }
         this.encoding = encoding;
-        if (language != null) this.language = new Locale(language, country, languageVariant);
+        this.language = (language == null) ? null : new Locale(language, country, languageVariant);
         this.mediaType = mediaType;
     }
 
@@ -140,8 +133,7 @@ public class Variant {
      * @param language  the language of the variant - may be {@code null}.
      * @param encoding  the content encoding of the variant - may be {@code null}.
      * @throws java.lang.IllegalArgumentException
-     *          if all three parameters are
-     *          {@code null}.
+     *          if all the parameters are {@code null}.
      */
     public Variant(MediaType mediaType, Locale language, String encoding) {
         if (mediaType == null && language == null && encoding == null) {
@@ -277,10 +269,8 @@ public class Variant {
         if (this.mediaType != other.mediaType && (this.mediaType == null || !this.mediaType.equals(other.mediaType))) {
             return false;
         }
-        if (this.encoding != other.encoding && (this.encoding == null || !this.encoding.equals(other.encoding))) {
-            return false;
-        }
-        return true;
+        //noinspection StringEquality
+        return this.encoding == other.encoding || (this.encoding != null && this.encoding.equals(other.encoding));
     }
 
     @Override
@@ -302,7 +292,7 @@ public class Variant {
     public static abstract class VariantListBuilder {
 
         /**
-         * Protected constructor, use the static <code>newInstance</code>
+         * Protected constructor, use the static {@code newInstance}
          * method to obtain an instance.
          */
         protected VariantListBuilder() {
@@ -314,12 +304,13 @@ public class Variant {
          * @return a new builder instance.
          */
         public static VariantListBuilder newInstance() {
-            VariantListBuilder b = RuntimeDelegate.getInstance().createVariantListBuilder();
-            return b;
+            return RuntimeDelegate.getInstance().createVariantListBuilder();
         }
 
         /**
-         * Build a list of representation variants from the current state of
+         * Add the current combination of metadata to the list of supported variants
+         * (provided the current combination of metadata is not empty) and
+         * build a list of representation variants from the current state of
          * the builder. After this method is called the builder is reset to
          * an empty state.
          *
@@ -330,21 +321,33 @@ public class Variant {
         /**
          * Add the current combination of metadata to the list of supported variants,
          * after this method is called the current combination of metadata is emptied.
+         * <p>
          * If more than one value is supplied for one or more of the variant properties
          * then a variant will be generated for each possible combination. E.g.
-         * in the following <code>list</code> would have four members:
-         * <p><pre>List<Variant> list = VariantListBuilder.newInstance().languages("en","fr")
-         *   .encodings("zip", "identity").add().build()</pre>
+         * in the following {@code list} would have five (4 + 1) members:
+         * </p>
+         * <pre>List<Variant> list = VariantListBuilder.newInstance()
+         *         .languages(Locale.ENGLISH, Locale.FRENCH).encodings("zip", "identity").add()
+         *         .languages(Locale.GERMAN).mediaTypes(MediaType.TEXT_PLAIN_TYPE).add()
+         *         .build()</pre>
+         * <p>
+         * Note that it is not necessary to call the {@code add()} method immediately before
+         * the build method is called. E.g. the resulting list produced in the example above
+         * would be identical to the list produced by the following code:
+         * </p>
+         * <pre>List<Variant> list = VariantListBuilder.newInstance()
+         *         .languages(Locale.ENGLISH, Locale.FRENCH).encodings("zip", "identity").add()
+         *         .languages(Locale.GERMAN).mediaTypes(MediaType.TEXT_PLAIN_TYPE)
+         *         .build()</pre>
          *
          * @return the updated builder.
-         * @throws java.lang.IllegalStateException
-         *          if there is not at least one
-         *          mediaType, language or encoding set for the current variant.
+         * @throws IllegalStateException if there is not at least one
+         *                               mediaType, language or encoding set for the current variant.
          */
         public abstract VariantListBuilder add();
 
         /**
-         * Set the language[s] for this variant.
+         * Set the language(s) for this variant.
          *
          * @param languages the available languages.
          * @return the updated builder.
@@ -352,7 +355,7 @@ public class Variant {
         public abstract VariantListBuilder languages(Locale... languages);
 
         /**
-         * Set the encoding[s] for this variant.
+         * Set the encoding(s) for this variant.
          *
          * @param encodings the available encodings.
          * @return the updated builder.
@@ -360,7 +363,7 @@ public class Variant {
         public abstract VariantListBuilder encodings(String... encodings);
 
         /**
-         * Set the media type[s] for this variant.
+         * Set the media type(s) for this variant.
          *
          * @param mediaTypes the available mediaTypes. If specific charsets
          *                   are supported they should be included as parameters of the respective

@@ -42,5 +42,7 @@
         <module name="org.scannotation.scannotation" />
         <module name="org.slf4j" />
         <module name="javax.servlet.api"/>
+        <module name="javax.validation.api"/>
+        <module name="org.hibernate.validator"/>
     </dependencies>
 </module>

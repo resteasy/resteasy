@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,8 +49,8 @@ import java.lang.annotation.Target;
  * containing the template parameter to a resource method parameter, resource
  * class field, or resource class
  * bean property. The value is URL decoded unless this
- * is disabled using the {@link Encoded} annotation.
- * A default value can be specified using the {@link DefaultValue}
+ * is disabled using the {@link Encoded &#64;Encoded} annotation.
+ * A default value can be specified using the {@link DefaultValue &#64;DefaultValue}
  * annotation.
  *
  * The type of the annotated parameter, field or property must either:
@@ -59,23 +59,24 @@ import java.lang.annotation.Target;
  * segment of the matching part of the path.
  * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
  * path segments.</li>
- * <li>Be {@code List<}{@link javax.ws.rs.core.PathSegment}{@code >}, the
+ * <li>Be {@code List&lt;}{@code javax.ws.rs.core.PathSegment}{@code &gt;}, the
  * value will be a list of {@code PathSegment} corresponding to the path
  * segment(s) that matched the named template parameter.
  * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
  * path segments.</li>
  * <li>Be a primitive type.</li>
  * <li>Have a constructor that accepts a single String argument.</li>
- * <li>Have a static method named <code>valueOf</code> or <code>fromString</code>
+ * <li>Have a static method named {@code valueOf} or {@code fromString}
  * that accepts a single
  * String argument (see, for example, {@link Integer#valueOf(String)}).
  * </ul>
  *
  * <p>The injected value corresponds to the latest use (in terms of scope) of
  * the path parameter. E.g. if a class and a sub-resource method are both
- * annotated with a {@link Path} containing the same URI template parameter, use
- * of {@code PathParam} on a subresource method parameter will bind the value
- * matching URI template parameter in the method's {@link Path} annotation.</p>
+ * annotated with a {@link Path &#64;Path} containing the same URI template
+ * parameter, use of {@code &#64;PathParam} on a sub-resource method parameter
+ * will bind the value matching URI template parameter in the method's
+ * {@code &#64;Path} annotation.</p>
  *
  * <p>Because injection occurs at object creation time, use of this annotation
  * on resource class fields and bean properties is only supported for the
@@ -85,8 +86,8 @@ import java.lang.annotation.Target;
  *
  * @author Paul Sandoz
  * @author Marc Hadley
- * @see Encoded
- * @see DefaultValue
+ * @see Encoded &#64;Encoded
+ * @see DefaultValue &#64;DefaultValue
  * @see javax.ws.rs.core.PathSegment
  * @see javax.ws.rs.core.UriInfo
  * @since 1.0
@@ -101,9 +102,9 @@ public @interface PathParam {
      * property. See {@link Path#value()} for a description of the syntax of
      * template parameters.
      *
-     * <p>E.g. a class annotated with: <code>&#64;Path("widgets/{id}")</code>
+     * <p>E.g. a class annotated with: {@code &#64;Path("widgets/&#123;id&#125;")}
      * can have methods annotated whose arguments are annotated
-     * with <code>&#64;PathParam("id")</code>.
+     * with {@code &#64;PathParam("id")}.
      */
     String value();
 }

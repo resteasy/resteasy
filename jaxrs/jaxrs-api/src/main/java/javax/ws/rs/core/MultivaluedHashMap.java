@@ -118,10 +118,8 @@ import java.util.Map;
  *
  * @param <K> the type of keys maintained by this map.
  * @param <V> the type of mapped values.
- *
  * @author Paul Sandoz
  * @author Marek Potociar
- *
  * @since 2.0
  */
 public class MultivaluedHashMap<K, V> extends AbstractMultivaluedMap<K, V> implements Serializable {
@@ -140,7 +138,7 @@ public class MultivaluedHashMap<K, V> extends AbstractMultivaluedMap<K, V> imple
      * Constructs an empty multivalued hash map with the specified initial
      * capacity and the default load factor ({@code 0.75}).
      *
-     * @param  initialCapacity the initial capacity.
+     * @param initialCapacity the initial capacity.
      * @throws IllegalArgumentException if the initial capacity is negative.
      */
     public MultivaluedHashMap(int initialCapacity) {
@@ -151,10 +149,10 @@ public class MultivaluedHashMap<K, V> extends AbstractMultivaluedMap<K, V> imple
      * Constructs an empty multivalued hash map with the specified initial
      * capacity and load factor.
      *
-     * @param  initialCapacity the initial capacity
-     * @param  loadFactor      the load factor
+     * @param initialCapacity the initial capacity
+     * @param loadFactor      the load factor
      * @throws IllegalArgumentException if the initial capacity is negative
-     *         or the load factor is nonpositive
+     *                                  or the load factor is nonpositive
      */
     public MultivaluedHashMap(int initialCapacity, float loadFactor) {
         super(new HashMap<K, List<V>>(initialCapacity, loadFactor));
@@ -165,8 +163,8 @@ public class MultivaluedHashMap<K, V> extends AbstractMultivaluedMap<K, V> imple
      * specified {@link MultivaluedMap }. The {@link List} instances holding
      * the values of each key are created anew instead of being reused.
      *
-     * @param  map the multivalued map whose mappings are to be placed in this
-     *     multivalued map.
+     * @param map the multivalued map whose mappings are to be placed in this
+     *            multivalued map.
      * @throws NullPointerException if the specified map is {@code null}
      */
     public MultivaluedHashMap(MultivaluedMap<? extends K, ? extends V> map) {
@@ -192,8 +190,8 @@ public class MultivaluedHashMap<K, V> extends AbstractMultivaluedMap<K, V> imple
      * Constructs a new multivalued hash map with the same mappings as the
      * specified single-valued {@link Map }.
      *
-     * @param  map the single-valued map whose mappings are to be placed in this
-     *     multivalued map.
+     * @param map the single-valued map whose mappings are to be placed in this
+     *            multivalued map.
      * @throws NullPointerException if the specified map is {@code null}
      */
     public MultivaluedHashMap(Map<? extends K, ? extends V> map) {

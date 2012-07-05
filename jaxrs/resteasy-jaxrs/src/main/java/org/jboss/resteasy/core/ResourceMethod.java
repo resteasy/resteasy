@@ -302,10 +302,10 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
       if (request.getExecutionContext().isSuspended())
       {
-         request.getExecutionContext().setAnnotations(method.getAnnotations());
-         request.getExecutionContext().setWriterInterceptors(writerInterceptors);
-         request.getExecutionContext().setResponseFilters(responseFilters);
-         request.getExecutionContext().setMethod(this);
+         request.getExecutionContext().getAsyncResponse().setAnnotations(method.getAnnotations());
+         request.getExecutionContext().getAsyncResponse().setWriterInterceptors(writerInterceptors);
+         request.getExecutionContext().getAsyncResponse().setResponseFilters(responseFilters);
+         request.getExecutionContext().getAsyncResponse().setMethod(this);
          return null;
       }
       if (rtn == null || method.getReturnType().equals(void.class))

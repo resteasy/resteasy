@@ -62,16 +62,39 @@ public interface HttpHeaders {
      *
      * @param name the header name, case insensitive.
      * @return a read-only list of header values.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public List<String> getRequestHeader(String name);
+
+    /**
+     * Get a HTTP header as a single string value.
+     * <p/>
+     * Each single header value is converted to String using a
+     * {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if one is available
+     * via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
+     * for the header value class or using its {@code toString} method  if a header
+     * delegate is not available.
+     *
+     * @param name the HTTP header.
+     * @return the HTTP header value. If the HTTP header is not present then
+     *         {@code null} is returned. If the HTTP header is present but has no
+     *         value then the empty string is returned. If the HTTP header is present
+     *         more than once then the values of joined together and separated by a ','
+     *         character.
+     * @see #getRequestHeader(java.lang.String)
+     * @since 2.0
+     */
+    public String getHeaderString(String name);
+
 
     /**
      * Get the values of HTTP request headers. The returned Map is case-insensitive
      * wrt. keys and is read-only. The method never returns {@code null}.
      *
      * @return a read-only map of header names and values.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public MultivaluedMap<String, String> getRequestHeaders();
 
@@ -83,8 +106,9 @@ public interface HttpHeaders {
      * instance is returned.
      *
      * @return a read-only list of requested response media types sorted according
-     *     to their q-value, with highest preference first.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request.
+     *         to their q-value, with highest preference first.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public List<MediaType> getAcceptableMediaTypes();
 
@@ -96,8 +120,9 @@ public interface HttpHeaders {
      * set to "{@code *}") is returned.
      *
      * @return a read-only list of acceptable languages sorted according
-     *     to their q-value, with highest preference first.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request.
+     *         to their q-value, with highest preference first.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public List<Locale> getAcceptableLanguages();
 
@@ -105,7 +130,8 @@ public interface HttpHeaders {
      * Get the media type of the request entity.
      *
      * @return the media type or {@code null} if there is no request entity.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public MediaType getMediaType();
 
@@ -113,14 +139,17 @@ public interface HttpHeaders {
      * Get the language of the request entity.
      *
      * @return the language of the entity or {@code null} if not specified.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public Locale getLanguage();
 
     /**
      * Get any cookies that accompanied the request.
+     *
      * @return a read-only map of cookie name (String) to Cookie.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request
      */
     public Map<String, Cookie> getCookies();
 
@@ -136,10 +165,11 @@ public interface HttpHeaders {
      * Get Content-Length value.
      *
      * @return Content-Length as integer if present and valid number. In other
-     * cases returns -1.
+     *         cases returns -1.
      * @since 2.0
      */
     public int getLength();
+
     /**
      * See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">HTTP/1.1 documentation</a>}.
      */
@@ -156,6 +186,10 @@ public interface HttpHeaders {
      * See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4">HTTP/1.1 documentation</a>}.
      */
     public static final String ACCEPT_LANGUAGE = "Accept-Language";
+    /**
+     * See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.7">HTTP/1.1 documentation</a>}.
+     */
+    public static final String ALLOW = "Allow";
     /**
      * See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8">HTTP/1.1 documentation</a>}.
      */

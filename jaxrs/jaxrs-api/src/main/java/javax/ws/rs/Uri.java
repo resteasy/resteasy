@@ -41,9 +41,7 @@ package javax.ws.rs;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -55,7 +53,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author Marek Potociar
  * @see javax.ws.rs.client.WebTarget
- *
  * @since 2.0
  */
 @java.lang.annotation.Target({PARAMETER, FIELD, METHOD})
@@ -71,7 +68,7 @@ public @interface Uri {
      * a JAX-RS component class. For example:
      * <pre>
      *
-     *public class AuditingFilter implements RequestFilter {
+     * public class AuditingFilter implements RequestFilter {
      *    &#64;Uri("users/{name}/orders")
      *    WebTarget userOrders;
      *
@@ -79,8 +76,11 @@ public @interface Uri {
      *    &#64;Uri("http://mail.acme.com/accounts/{name}")
      *    WebTarget userEmailAccount;
      *
+     *    // An external, template-based resource target
+     *    &#64;Uri("http://{audit-host}:{audit-port}/auditlogs/")
+     *    WebTarget auditLogs;
      *    ...
-     *}
+     * }
      * </pre>
      *
      * If used from within a JAX-RS component class (e.g. resource, filter, provider &hellip;),
@@ -89,7 +89,7 @@ public @interface Uri {
      * as the base URI. For example:
      * <pre>
      *
-     *public class AuditingFilter implements RequestFilter {
+     * public class AuditingFilter implements RequestFilter {
      *    &#64;Uri("audit/logs")
      *    WebTarget applicationLogs;
      *
@@ -97,7 +97,7 @@ public @interface Uri {
      *    WebTarget domainLogs;
      *
      *    ...
-     *}
+     * }
      * </pre>
      *
      * In case the annotation is used from a JAX-RS resource class, an absolute
@@ -107,8 +107,8 @@ public @interface Uri {
      * For example:
      * <pre>
      *
-     *&#64;Path("users/{name}")
-     *public class MyResource {
+     * &#64;Path("users/{name}")
+     * public class MyResource {
      *    &#64;Uri("users/{name}/orders")
      *    WebTarget userOrders;
      *
@@ -116,7 +116,7 @@ public @interface Uri {
      *    WebTarget userEmailAccount;
      *
      *    ...
-     *}
+     * }
      * </pre>
      *
      * @see javax.ws.rs.client.WebTarget
