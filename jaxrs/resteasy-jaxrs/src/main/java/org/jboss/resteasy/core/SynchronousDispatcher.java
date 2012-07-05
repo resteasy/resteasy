@@ -542,7 +542,7 @@ public class SynchronousDispatcher implements Dispatcher
              * asychronous HTTP.
              *
              */
-            request.getExecutionContext().initialRequestThreadFinished();
+            request.getExecutionContext().getAsyncResponse().initialRequestThreadFinished();
             jaxrsResponse = null; // we're handing response asynchronously
          }
       }

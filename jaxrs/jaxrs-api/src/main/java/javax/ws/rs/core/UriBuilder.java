@@ -217,7 +217,8 @@ public abstract class UriBuilder {
      * Set the URI scheme.
      *
      * @param scheme the URI scheme, may contain URI template parameters.
-     *               A {@code null} value will unset the URI scheme.
+     *               A {@code null} value will unset the URI scheme, but will
+     *               not unset the any scheme-specific-part components.
      * @return the updated UriBuilder.
      * @throws IllegalArgumentException if scheme is invalid.
      */
@@ -247,7 +248,9 @@ public abstract class UriBuilder {
      * Set the URI host.
      *
      * @param host the URI host, may contain URI template parameters.
-     *             A {@code null} value will unset the host component of the URI.
+     *             A {@code null} value will unset the host component of the URI, but
+     *             will not unset other authority component parts
+     *             ({@link #userInfo(String) user info} or {@link #port(int) port}).
      * @return the updated UriBuilder.
      * @throws IllegalArgumentException if host is invalid.
      */
@@ -534,6 +537,7 @@ public abstract class UriBuilder {
      *                                  current state of the builder.
      * @see #buildFromMap(java.util.Map)
      * @see #buildFromMap(java.util.Map, boolean)
+     * @since 2.0
      */
     public abstract URI buildFromEncodedMap(Map<String, ?> values)
             throws IllegalArgumentException, UriBuilderException;
@@ -610,6 +614,7 @@ public abstract class UriBuilder {
      *                                  current state of the builder.
      * @see #build(Object[])
      * @see #buildFromEncoded(Object...)
+     * @since 2.0
      */
     public abstract URI build(Object[] values, boolean encodeSlashInPath)
             throws IllegalArgumentException, UriBuilderException;

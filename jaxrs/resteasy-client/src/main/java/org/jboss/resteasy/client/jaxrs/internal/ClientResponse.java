@@ -1,8 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
+import org.jboss.resteasy.spi.LinkHeaders;
 import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
@@ -12,18 +12,17 @@ import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -48,18 +47,12 @@ import static java.lang.String.*;
 public abstract class ClientResponse extends Response
 {
    protected int status;
+   // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
    protected MultivaluedMap<String, String> headers;
    protected Map<String, Object> properties;
    protected Object entity;
    protected ResteasyProviderFactory providerFactory;
    protected boolean isClosed;
-   protected Date date;
-   protected Date lastModified;
-   protected Locale language;
-   protected Integer contentLength;
-   protected MediaType contentType;
-   protected Map<String, NewCookie> cookies;
-   protected EntityTag entityTag;
    protected byte[] bufferedEntity;
 
    public void setHeaders(MultivaluedMap<String, String> headers)
@@ -87,6 +80,8 @@ public abstract class ClientResponse extends Response
       return properties;
    }
 
+
+
    @Override
    public int getStatus()
    {
@@ -99,135 +94,12 @@ public abstract class ClientResponse extends Response
       return Status.fromStatusCode(status);
    }
 
-   public MultivaluedMap<String, String> getHeaders()
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
    {
       return headers;
    }
 
-   /*
-   @Override
-   public ResponseHeaders getHeaders()
-   {
-      return new ResponseHeaders()
-      {
-         protected Set<String> allowedMethods;
-         protected Date date;
-         protected Date lastModified;
-         protected Locale language;
-         protected Integer contentLength;
-         protected MediaType contentType;
-         protected Map<String, NewCookie> cookies;
-         protected EntityTag entityTag;
-
-         @Override
-         public Set<String> getAllowedMethods()
-         {
-            if (allowedMethods != null) return allowedMethods;
-
-            allowedMethods = new HashSet<String>();
-            List<String> allowed = headers.get("Allow");
-            if (allowed == null) return allowedMethods;
-            for (String header : allowed)
-            {
-               StringTokenizer tokenizer = new StringTokenizer(header, ",");
-               while (tokenizer.hasMoreTokens())
-               {
-                  allowedMethods.add(tokenizer.nextToken());
-               }
-            }
-
-            return allowedMethods;
-         }
-
-
-         @Override
-         public String getHeader(String name)
-         {
-            return headers.getFirst(name);
-         }
-
-         @Override
-         public MultivaluedMap<String, String> asMap()
-         {
-            return headers;
-         }
-
-         @Override
-         public List<String> getHeaderValues(String name)
-         {
-            return headers.get(name);
-         }
-
-         @Override
-         public Locale getLanguage()
-         {
-            if (language != null) return language;
-            String lang = headers.getFirst("Language");
-            if (lang == null) return null;
-            language = new LocaleDelegate().fromString(lang);
-            return language;
-         }
-
-         @Override
-         public int getLength()
-         {
-            if (contentLength != null) return contentLength;
-            String cl = headers.getFirst(HttpHeaders.CONTENT_LENGTH);
-            if (cl == null)
-            {
-               contentLength = new Integer(-1);
-            }
-            else
-            {
-               contentLength = Integer.parseInt(cl);
-            }
-            return contentLength;
-         }
-
-         @Override
-         public MediaType getMediaType()
-         {
-            if (contentType != null) return contentType;
-            String ct = headers.getFirst(HttpHeaders.CONTENT_TYPE);
-            if (ct == null) return null;
-            contentType = MediaType.valueOf(ct);
-            return contentType;
-         }
-
-
-
-         @Override
-         public URI getLocation()
-         {
-            throw new NotImplementedYetException();
-         }
-
-         @Override
-         public Set<Link> getLinks()
-         {
-            throw new NotImplementedYetException();
-         }
-
-         @Override
-         public Link getLink(String relation)
-         {
-            throw new NotImplementedYetException();
-         }
-
-         @Override
-         public boolean hasLink(String relation)
-         {
-            throw new NotImplementedYetException();
-         }
-
-         @Override
-         public Link.Builder getLinkBuilder(String relation)
-         {
-            throw new NotImplementedYetException();
-         }
-      };
-   }
-   */
 
    @Override
    public Object getEntity()
@@ -245,14 +117,14 @@ public abstract class ClientResponse extends Response
    @Override
    public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException
    {
-      return readEntity((Class<T>)entityType.getRawType(), entityType.getType(), null);
+      return readEntity((Class<T>) entityType.getRawType(), entityType.getType(), null);
    }
 
 
    @Override
    public boolean hasEntity()
    {
-      return entity != null;
+      return entity != null || getMediaType() != null;
    }
 
    @Override
@@ -276,6 +148,7 @@ public abstract class ClientResponse extends Response
    }
 
    protected abstract InputStream getInputStream();
+
    protected InputStream getEntityStream()
    {
       if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
@@ -284,6 +157,7 @@ public abstract class ClientResponse extends Response
    }
 
    protected abstract void setInputStream(InputStream is);
+
    protected abstract void releaseConnection();
 
 
@@ -302,7 +176,7 @@ public abstract class ClientResponse extends Response
          if (bufferedEntity == null)
          {
             throw new RuntimeException("The entity was already read, and it was of type "
-                 + entity.getClass());
+                    + entity.getClass());
          }
          else
          {
@@ -410,7 +284,7 @@ public abstract class ClientResponse extends Response
    @Override
    public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
    {
-      return readEntity((Class<T>)entityType.getRawType(), entityType.getType(), annotations);
+      return readEntity((Class<T>) entityType.getRawType(), entityType.getType(), annotations);
    }
 
    @Override
@@ -432,42 +306,31 @@ public abstract class ClientResponse extends Response
    }
 
    @Override
-   public String getHeader(String name)
-   {
-      return headers.getFirst(name);
-   }
-
-   @Override
    public Locale getLanguage()
    {
-      if (language != null) return language;
       String lang = headers.getFirst("Language");
       if (lang == null) return null;
-      language = new LocaleDelegate().fromString(lang);
-      return language;
+      return new LocaleDelegate().fromString(lang);
    }
 
    @Override
    public int getLength()
    {
-      if (contentLength != null) return contentLength;
       String cl = headers.getFirst(HttpHeaders.CONTENT_LENGTH);
       if (cl == null)
       {
-         contentLength = new Integer(-1);
+         return -1;
       }
       else
       {
-         contentLength = Integer.parseInt(cl);
+         return Integer.parseInt(cl);
       }
-      return contentLength;
    }
 
    @Override
    public Map<String, NewCookie> getCookies()
    {
-      if (cookies != null) return cookies;
-      cookies = new HashMap<String, NewCookie>();
+      Map<String, NewCookie> cookies = new HashMap<String, NewCookie>();
       List<String> cooks = headers.get(HttpHeaders.SET_COOKIE);
       if (cooks == null) return cookies;
       for (String setCookie : cooks)
@@ -482,66 +345,99 @@ public abstract class ClientResponse extends Response
    @Override
    public Date getDate()
    {
-      if (date != null) return date;
       String d = headers.getFirst(HttpHeaders.DATE);
       if (d == null) return null;
-      date = DateUtil.parseDate(d);
-      return date;
+      return DateUtil.parseDate(d);
    }
 
    @Override
    public EntityTag getEntityTag()
    {
-      if (entityTag != null) return entityTag;
       String tag = headers.getFirst(HttpHeaders.ETAG);
       if (tag == null) return null;
-      entityTag = EntityTag.valueOf(tag);
-      return entityTag;
+      return EntityTag.valueOf(tag);
    }
 
    @Override
    public Date getLastModified()
    {
-      if (lastModified != null) return lastModified;
       String d = headers.getFirst(HttpHeaders.LAST_MODIFIED);
       if (d == null) return null;
-      lastModified = DateUtil.parseDate(d);
-      return lastModified;
+      return DateUtil.parseDate(d);
    }
 
    @Override
    public URI getLocation()
    {
-      throw new NotImplementedYetException();
+      String uri = headers.getFirst(HttpHeaders.LOCATION);
+      if (uri == null) return null;
+      return URI.create(uri);
    }
 
    @Override
    public Set<Link> getLinks()
    {
-      throw new NotImplementedYetException();
+      LinkHeaders linkHeaders = getLinkHeaders();
+      Set<Link> links = new HashSet<Link>();
+      links.addAll(linkHeaders.getLinks());
+      return links;
+   }
+
+   protected LinkHeaders getLinkHeaders()
+   {
+      LinkHeaders linkHeaders = new LinkHeaders();
+      linkHeaders.addLinks(headers);
+      return linkHeaders;
    }
 
    @Override
    public boolean hasLink(String relation)
    {
-      throw new NotImplementedYetException();
+      return getLinkHeaders().getLinkByRelationship(relation) != null;
    }
 
    @Override
    public Link getLink(String relation)
    {
-      throw new NotImplementedYetException();
+      return getLinkHeaders().getLinkByRelationship(relation);
    }
 
    @Override
    public Link.Builder getLinkBuilder(String relation)
    {
-      throw new NotImplementedYetException();
+      Link link = getLinkHeaders().getLinkByRelationship(relation);
+      Link.Builder builder = new Link.Builder();
+      for (Map.Entry<String, List<String>> entry : link.getParams().entrySet())
+      {
+         for (String val : entry.getValue())
+         {
+            builder.param(entry.getKey(), val);
+         }
+      }
+      return builder;
    }
 
    @Override
    public Set<String> getAllowedMethods()
    {
-      throw new NotImplementedYetException();
+      Set<String> allowedMethods = new HashSet<String>();
+      List<String> allowed = headers.get("Allow");
+      if (allowed == null) return allowedMethods;
+      for (String header : allowed)
+      {
+         StringTokenizer tokenizer = new StringTokenizer(header, ",");
+         while (tokenizer.hasMoreTokens())
+         {
+            allowedMethods.add(tokenizer.nextToken());
+         }
+      }
+
+      return allowedMethods;
+   }
+
+   @Override
+   public String getHeaderString(String name)
+   {
+      return headers.getFirst(name);
    }
 }

@@ -59,7 +59,7 @@ public class ClientResponseContextImpl implements ClientResponseContext
    @Override
    public MultivaluedMap<String, String> getHeaders()
    {
-      return response.getHeaders();
+      return response.getStringHeaders();
    }
 
    @Override
@@ -158,4 +158,9 @@ public class ClientResponseContextImpl implements ClientResponseContext
       response.setInputStream(entityStream);
    }
 
+   @Override
+   public String getHeaderString(String name)
+   {
+      return response.getHeaderString(name);
+   }
 }

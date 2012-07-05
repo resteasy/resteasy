@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,7 +65,7 @@ public class NewCookie extends Cookie {
     /**
      * Create a new instance.
      *
-     * @param name the name of the cookie
+     * @param name  the name of the cookie
      * @param value the value of the cookie
      * @throws IllegalArgumentException if name is null
      */
@@ -76,13 +76,13 @@ public class NewCookie extends Cookie {
     /**
      * Create a new instance.
      *
-     * @param name the name of the cookie
-     * @param value the value of the cookie
-     * @param path the URI path for which the cookie is valid
-     * @param domain the host domain for which the cookie is valid
+     * @param name    the name of the cookie
+     * @param value   the value of the cookie
+     * @param path    the URI path for which the cookie is valid
+     * @param domain  the host domain for which the cookie is valid
      * @param comment the comment
-     * @param maxAge the maximum age of the cookie in seconds
-     * @param secure specifies whether the cookie will only be sent over a secure connection
+     * @param maxAge  the maximum age of the cookie in seconds
+     * @param secure  specifies whether the cookie will only be sent over a secure connection
      * @throws IllegalArgumentException if name is null
      */
     public NewCookie(String name, String value, String path, String domain, String comment, int maxAge, boolean secure) {
@@ -95,14 +95,14 @@ public class NewCookie extends Cookie {
     /**
      * Create a new instance.
      *
-     * @param name the name of the cookie
-     * @param value the value of the cookie
-     * @param path the URI path for which the cookie is valid
-     * @param domain the host domain for which the cookie is valid
+     * @param name    the name of the cookie
+     * @param value   the value of the cookie
+     * @param path    the URI path for which the cookie is valid
+     * @param domain  the host domain for which the cookie is valid
      * @param version the version of the specification to which the cookie complies
      * @param comment the comment
-     * @param maxAge the maximum age of the cookie in seconds
-     * @param secure specifies whether the cookie will only be sent over a secure connection
+     * @param maxAge  the maximum age of the cookie in seconds
+     * @param secure  specifies whether the cookie will only be sent over a secure connection
      * @throws IllegalArgumentException if name is null
      */
     public NewCookie(String name, String value, String path, String domain, int version, String comment, int maxAge, boolean secure) {
@@ -129,10 +129,10 @@ public class NewCookie extends Cookie {
     /**
      * Create a new instance supplementing the information in the supplied cookie.
      *
-     * @param cookie the cookie to clone
+     * @param cookie  the cookie to clone
      * @param comment the comment
-     * @param maxAge the maximum age of the cookie in seconds
-     * @param secure specifies whether the cookie will only be sent over a secure connection
+     * @param maxAge  the maximum age of the cookie in seconds
+     * @param secure  specifies whether the cookie will only be sent over a secure connection
      * @throws IllegalArgumentException if cookie is null
      */
     public NewCookie(Cookie cookie, String comment, int maxAge, boolean secure) {
@@ -148,7 +148,7 @@ public class NewCookie extends Cookie {
      * @param value the cookie string
      * @return the newly created NewCookie
      * @throws IllegalArgumentException if the supplied string cannot be parsed
-     * or is null
+     *                                  or is null
      */
     public static NewCookie valueOf(String value) throws IllegalArgumentException {
         return delegate.fromString(value);
@@ -181,7 +181,7 @@ public class NewCookie extends Cookie {
      * to false.
      *
      * @return true if the cookie will only be sent over a secure connection,
-     * false otherwise.
+     *         false otherwise.
      */
     public boolean isSecure() {
         return secure;
@@ -232,7 +232,7 @@ public class NewCookie extends Cookie {
      *
      * @param obj the object to compare to
      * @return true if the object is a {@code NewCookie} with the same value for
-     * all properties, false otherwise.
+     *         all properties, false otherwise.
      */
     @Override
     public boolean equals(Object obj) {

@@ -53,8 +53,8 @@ import javax.ws.rs.container.DynamicBinder;
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @author Marek Potociar (marek.potociar at oracle.com)
- * @since 2.0
  * @see MessageBodyWriter
+ * @since 2.0
  */
 public interface WriterInterceptor {
 
@@ -68,7 +68,8 @@ public interface WriterInterceptor {
      *
      * @param context invocation context.
      * @throws java.io.IOException if an IO error arises.
-     * @throws javax.ws.rs.WebApplicationException thrown by wrapped method.
+     * @throws javax.ws.rs.WebApplicationException
+     *                             thrown by wrapped method.
      */
     void aroundWriteTo(WriterInterceptorContext context)
             throws java.io.IOException, javax.ws.rs.WebApplicationException;

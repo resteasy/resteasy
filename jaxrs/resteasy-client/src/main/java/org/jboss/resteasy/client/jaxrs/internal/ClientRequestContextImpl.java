@@ -174,7 +174,7 @@ public class ClientRequestContextImpl implements ClientRequestContext
    @Override
    public boolean hasEntity()
    {
-      throw new NotImplementedYetException();
+      return invocation.getEntity() != null;
    }
 
    @Override
@@ -217,5 +217,17 @@ public class ClientRequestContextImpl implements ClientRequestContext
    public void abortWith(Response response)
    {
       abortedWithResponse = response;
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public String getHeaderString(String name)
+   {
+      throw new NotImplementedYetException();
    }
 }

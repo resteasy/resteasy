@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,10 +69,10 @@ public class Cookie {
     /**
      * Create a new instance.
      *
-     * @param name the name of the cookie.
-     * @param value the value of the cookie.
-     * @param path the URI path for which the cookie is valid.
-     * @param domain the host domain for which the cookie is valid.
+     * @param name    the name of the cookie.
+     * @param value   the value of the cookie.
+     * @param path    the URI path for which the cookie is valid.
+     * @param domain  the host domain for which the cookie is valid.
      * @param version the version of the specification to which the cookie complies.
      * @throws IllegalArgumentException if name is {@code null}.
      */
@@ -91,9 +91,9 @@ public class Cookie {
     /**
      * Create a new instance.
      *
-     * @param name the name of the cookie.
-     * @param value the value of the cookie.
-     * @param path the URI path for which the cookie is valid.
+     * @param name   the name of the cookie.
+     * @param value  the value of the cookie.
+     * @param path   the URI path for which the cookie is valid.
      * @param domain the host domain for which the cookie is valid.
      * @throws IllegalArgumentException if name is {@code null}.
      */
@@ -105,7 +105,7 @@ public class Cookie {
     /**
      * Create a new instance.
      *
-     * @param name the name of the cookie.
+     * @param name  the name of the cookie.
      * @param value the value of the cookie.
      * @throws IllegalArgumentException if name is {@code null}.
      */
@@ -120,7 +120,7 @@ public class Cookie {
      * @param value the cookie string.
      * @return the newly created {@code Cookie}.
      * @throws IllegalArgumentException if the supplied string cannot be parsed
-     *     or is {@code null}.
+     *                                  or is {@code null}.
      */
     public static Cookie valueOf(final String value) throws IllegalArgumentException {
         return HEADER_DELEGATE.fromString(value);
@@ -203,7 +203,7 @@ public class Cookie {
      *
      * @param obj the object to compare to.
      * @return {@code true}, if the object is a {@code Cookie} with the same
-     *     value for all properties, {@code false} otherwise.
+     *         value for all properties, {@code false} otherwise.
      */
     @Override
     public boolean equals(final Object obj) {

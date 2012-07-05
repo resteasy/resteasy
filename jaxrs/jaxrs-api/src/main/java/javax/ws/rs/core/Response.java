@@ -313,25 +313,6 @@ public abstract class Response {
     public abstract void close() throws MessageProcessingException;
 
     /**
-     * Get a message header as a single string value.
-     *
-     * Each single header value is converted to String using a
-     * {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if one is available
-     * via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
-     * for the header value class or using its {@code toString} method  if a header
-     * delegate is not available.
-     *
-     * @param name the message header.
-     * @return the message header value. If the message header is not present then
-     *         {@code null} is returned. If the message header is present but has no
-     *         value then the empty string is returned. If the message header is present
-     *         more than once then the values of joined together and separated by a ','
-     *         character.
-     * @since 2.0
-     */
-    public abstract String getHeader(String name);
-
-    /**
      * Get the media type of the message entity.
      *
      * @return the media type or {@code null} if there is no response entity.
@@ -419,7 +400,7 @@ public abstract class Response {
      *
      * @param relation link relation.
      * @return {@code true} if the link for the relation is present in the
-     *         {@link #getMetadata() message headers}, {@code false} otherwise.
+     *         {@link #getHeaders() message headers}, {@code false} otherwise.
      * @since 2.0
      */
     public abstract boolean hasLink(String relation);
@@ -444,24 +425,81 @@ public abstract class Response {
     public abstract Link.Builder getLinkBuilder(String relation);
 
     /**
-     * Get metadata (headers) associated with the response as a multivalued map.
+     * See {@link #getHeaders()}.
      *
-     * The returned map is immutable, but the underlying data may be subsequently
-     * modified by the JAX-RS runtime. When the message is sent, the non-string
-     * values will  be serialized using a {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate}
-     * if one is available via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
-     * for the class of the value or using the values {@code toString} method if
-     * a header delegate is not available.
+     * This method is considered deprecated. Users are encouraged to switch their
+     * code to use the {@code getHeaders()} method instead. The method may be annotated
+     * as {@link Deprecated &#64;Deprecated} in a future release of JAX-RS API.
      *
-     * @return response meta-data (headers) as a map.
+     * @return response headers as a multivalued map.
      */
     public abstract MultivaluedMap<String, Object> getMetadata();
+
+    /**
+     * Get view of the response headers and their object values.
+     *
+     * The underlying header data may be subsequently modified by the JAX-RS runtime on the
+     * server side. Changes in the underlying header data are reflected in this view.
+     * <p>
+     * On the server-side, when the message is sent, the non-string values will be serialized
+     * using a {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if one is available via
+     * {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)} for the
+     * class of the value or using the values {@code toString} method if a header delegate is
+     * not available.
+     * </p>
+     * <p>
+     * On the client side, the returned map is identical to the one returned by
+     * {@link #getStringHeaders()}.
+     * </p>
+     *
+     * @return response headers as an object view of header values.
+     * @see #getStringHeaders()
+     * @see #getHeaderString
+     * @since 2.0
+     */
+    public MultivaluedMap<String, Object> getHeaders() {
+        return getMetadata();
+    }
+
+    /**
+     * Get view of the response headers and their string values.
+     *
+     * The underlying header data may be subsequently modified by the JAX-RS runtime on
+     * the server side. Changes in the underlying header data are reflected in this view.
+     *
+     * @return response headers as a string view of header values.
+     * @see #getHeaders()
+     * @see #getHeaderString
+     * @since 2.0
+     */
+    public abstract MultivaluedMap<String, String> getStringHeaders();
+
+    /**
+     * Get a message header as a single string value.
+     *
+     * Each single header value is converted to String using a
+     * {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if one is available
+     * via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
+     * for the header value class or using its {@code toString} method  if a header
+     * delegate is not available.
+     *
+     * @param name the message header.
+     * @return the message header value. If the message header is not present then
+     *         {@code null} is returned. If the message header is present but has no
+     *         value then the empty string is returned. If the message header is present
+     *         more than once then the values of joined together and separated by a ','
+     *         character.
+     * @see #getHeaders()
+     * @see #getStringHeaders()
+     * @since 2.0
+     */
+    public abstract String getHeaderString(String name);
 
     /**
      * Create a new ResponseBuilder by performing a shallow copy of an
      * existing Response.
      *
-     * The returned builder has its own {@link #getMetadata() response headers}
+     * The returned builder has its own {@link #getHeaders() response headers}
      * but the header values are shared with the original {@code Response} instance.
      * The original response entity instance reference is set in the new response
      * builder.
@@ -472,7 +510,7 @@ public abstract class Response {
      * instance before passing it to this method.
      *
      * @param response a Response from which the status code, entity and
-     *                 {@link #getMetadata() response headers} will be copied.
+     *                 {@link #getHeaders() response headers} will be copied.
      * @return a new response builder.
      * @since 2.0
      */
@@ -481,8 +519,8 @@ public abstract class Response {
         if (response.hasEntity()) {
             b.entity(response.getEntity());
         }
-        for (String headerName : response.getMetadata().keySet()) {
-            List<Object> headerValues = response.getMetadata().get(headerName);
+        for (String headerName : response.getHeaders().keySet()) {
+            List<Object> headerValues = response.getHeaders().get(headerName);
             for (Object headerValue : headerValues) {
                 b.header(headerName, headerValue);
             }
@@ -1323,7 +1361,30 @@ public abstract class Response {
          */
         public enum Family {
 
-            INFORMATIONAL, SUCCESSFUL, REDIRECTION, CLIENT_ERROR, SERVER_ERROR, OTHER;
+            /**
+             * {@code 1xx} HTTP status codes.
+             */
+            INFORMATIONAL,
+            /**
+             * {@code 2xx} HTTP status codes.
+             */
+            SUCCESSFUL,
+            /**
+             * {@code 3xx} HTTP status codes.
+             */
+            REDIRECTION,
+            /**
+             * {@code 4xx} HTTP status codes.
+             */
+            CLIENT_ERROR,
+            /**
+             * {@code 5xx} HTTP status codes.
+             */
+            SERVER_ERROR,
+            /**
+             * Other, unrecognized HTTP status codes.
+             */
+            OTHER;
 
             /**
              * Get the response status family for the status code.

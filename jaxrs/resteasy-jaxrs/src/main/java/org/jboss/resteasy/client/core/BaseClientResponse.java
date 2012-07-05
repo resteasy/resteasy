@@ -606,7 +606,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
-   public String getHeader(String name)
+   public String getHeaderString(String name)
    {
       throw new NotImplementedYetException();
    }
@@ -679,6 +679,12 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
    @Override
    public Set<String> getAllowedMethods()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
    {
       throw new NotImplementedYetException();
    }

@@ -215,4 +215,16 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    {
       return serverResponse.getAnnotations();
    }
+
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
+   {
+      return serverResponse.getStringHeaders();
+   }
+
+   @Override
+   public String getHeaderString(String name)
+   {
+      return serverResponse.getHeaderString(name);
+   }
 }

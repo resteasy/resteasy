@@ -49,12 +49,13 @@ import javax.ws.rs.core.Response;
  * HTTP error response needs to be produced. Only effective if thrown prior to
  * the response being committed.
  *
- * @author Paul.Sandoz@Sun.Com
+ * @author Paul Sandoz
+ * @author Marek Potociar
  * @since 1.0
  */
 public class WebApplicationException extends RuntimeException {
 
-    private static final long serialVersionUID = 11660101L;
+    private static final long serialVersionUID = 8273970399584007146L;
     private final Response response;
 
     /**
@@ -68,8 +69,8 @@ public class WebApplicationException extends RuntimeException {
      * Construct a new instance using the supplied response.
      *
      * @param response the response that will be returned to the client, a value
-     * of null will be replaced with an internal server error response (status
-     * code 500).
+     *                 of null will be replaced with an internal server error response (status
+     *                 code 500).
      */
     public WebApplicationException(final Response response) {
         this(null, response);
@@ -107,9 +108,9 @@ public class WebApplicationException extends RuntimeException {
      * Construct a new instance using the supplied response.
      *
      * @param response the response that will be returned to the client,
-     *     a value of null will be replaced with an internal server error
-     *     response (status code 500).
-     * @param cause the underlying cause of the exception.
+     *                 a value of null will be replaced with an internal server error
+     *                 response (status code 500).
+     * @param cause    the underlying cause of the exception.
      */
     public WebApplicationException(final Throwable cause, final Response response) {
         super(cause);
@@ -124,7 +125,7 @@ public class WebApplicationException extends RuntimeException {
      * Construct a new instance with a blank message and specified HTTP status code.
      *
      * @param status the HTTP status code that will be returned to the client.
-     * @param cause the underlying cause of the exception.
+     * @param cause  the underlying cause of the exception.
      */
     public WebApplicationException(final Throwable cause, final int status) {
         this(cause, Response.status(status).build());
@@ -134,7 +135,7 @@ public class WebApplicationException extends RuntimeException {
      * Construct a new instance with a blank message and specified HTTP status code.
      *
      * @param status the HTTP status code that will be returned to the client.
-     * @param cause the underlying cause of the exception.
+     * @param cause  the underlying cause of the exception.
      * @throws IllegalArgumentException if status is {@code null}.
      */
     public WebApplicationException(final Throwable cause, final Response.Status status)
@@ -148,6 +149,45 @@ public class WebApplicationException extends RuntimeException {
      * @return the HTTP response.
      */
     public final Response getResponse() {
+        return response;
+    }
+
+    /**
+     * Validate that a {@link javax.ws.rs.core.Response} object has an expected HTTP response
+     * status code set.
+     *
+     * @param response       response object.
+     * @param expectedStatus expected response status code.
+     * @return validated response object.
+     * @throws IllegalArgumentException if the response validation failed.
+     * @since 2.0
+     */
+    static Response validate(final Response response, Response.Status expectedStatus) throws IllegalArgumentException {
+        if (expectedStatus.getStatusCode() != response.getStatus()) {
+            throw new IllegalArgumentException(String.format("Invalid response status code. Expected [%d], was [%d].",
+                    expectedStatus.getStatusCode(), response.getStatus()));
+        }
+        return response;
+    }
+
+    /**
+     * Validate that a {@link javax.ws.rs.core.Response} object has an expected HTTP response
+     * status code set.
+     *
+     * @param response             response object.
+     * @param expectedStatusFamily expected response status code family.
+     * @return validated response object.
+     * @throws IllegalArgumentException if the response validation failed.
+     * @since 2.0
+     */
+    static Response validate(final Response response, Response.Status.Family expectedStatusFamily)
+            throws IllegalArgumentException {
+
+        if (response.getStatusInfo().getFamily() != expectedStatusFamily) {
+            throw new IllegalArgumentException(String.format(
+                    "Status code of the supplied response [%d] is not from the required status code family \"%s\".",
+                    response.getStatus(), expectedStatusFamily));
+        }
         return response;
     }
 }

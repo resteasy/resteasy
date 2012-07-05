@@ -52,7 +52,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
  * Precondition processing (see the {@code evaluatePreconditions} methods)
  * can result in either a {@code null} return value to indicate that
  * preconditions have been met and that the request should continue, or
- * a non-null return value to indicate that preconditions were not met. In the
+ * a non-{@code null} return value to indicate that preconditions were not met. In the
  * event that preconditions were not met, the returned {@code ResponseBuilder}
  * instance will have an appropriate status and will also include a {@code Vary}
  * header if the {@link #selectVariant(List)} method was called prior to to calling
@@ -85,12 +85,14 @@ public interface Request {
      * is computed from the supplied list and automatically added to the  response.
      * </p>
      *
-     * @param variants a list of Variant that describe all of the
-     * available representation variants.
+     * @param variants a list of Variant that describe all of the available representation
+     *                 variants.
      * @return the variant that best matches the request or {@code null} if there's no match.
+     * @throws java.lang.IllegalArgumentException
+     *          if variants is empty or {@code null}.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      * @see Variant.VariantListBuilder
-     * @throws java.lang.IllegalArgumentException if variants is empty or null
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
      */
     public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException;
 
@@ -98,11 +100,16 @@ public interface Request {
      * Evaluate request preconditions based on the passed in value.
      *
      * @param eTag an ETag for the current state of the resource
-     * @return null if the preconditions are met or a ResponseBuilder set with
-     * the appropriate status if the preconditions are not met. A returned
-     * ResponseBuilder will include an ETag header set with the value of eTag.
-     * @throws java.lang.IllegalArgumentException if eTag is null
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @return {@code null} if the preconditions are met or a {@code ResponseBuilder} set with
+     *         the appropriate status if the preconditions are not met. A returned
+     *         {@code ResponseBuilder} will include an ETag header set with the value of eTag,
+     *         provided none of the precondition evaluation has failed, in which case
+     *         the ETag header would not be included and the status code of the returned
+     *         {@code ResponseBuilder} would be set to {@link Response.Status#PRECONDITION_FAILED}.
+     * @throws java.lang.IllegalArgumentException
+     *          if eTag is {@code null}.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public ResponseBuilder evaluatePreconditions(EntityTag eTag);
 
@@ -110,10 +117,12 @@ public interface Request {
      * Evaluate request preconditions based on the passed in value.
      *
      * @param lastModified a date that specifies the modification date of the resource
-     * @return null if the preconditions are met or a ResponseBuilder set with
-     * the appropriate status if the preconditions are not met.
-     * @throws java.lang.IllegalArgumentException if lastModified is null
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @return {@code null} if the preconditions are met or a {@code ResponseBuilder} set with
+     *         the appropriate status if the preconditions are not met.
+     * @throws java.lang.IllegalArgumentException
+     *          if lastModified is {@code null}.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified);
 
@@ -121,12 +130,17 @@ public interface Request {
      * Evaluate request preconditions based on the passed in value.
      *
      * @param lastModified a date that specifies the modification date of the resource
-     * @param eTag an ETag for the current state of the resource
-     * @return null if the preconditions are met or a ResponseBuilder set with
-     * the appropriate status if the preconditions are not met.  A returned
-     * ResponseBuilder will include an ETag header set with the value of eTag.
-     * @throws java.lang.IllegalArgumentException if lastModified or eTag is null
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @param eTag         an ETag for the current state of the resource
+     * @return {@code null} if the preconditions are met or a {@code ResponseBuilder} set with
+     *         the appropriate status if the preconditions are not met. A returned
+     *         {@code ResponseBuilder} will include an ETag header set with the value of eTag,
+     *         provided none of the precondition evaluation has failed, in which case
+     *         the ETag header would not be included and the status code of the returned
+     *         {@code ResponseBuilder} would be set to {@link Response.Status#PRECONDITION_FAILED}.
+     * @throws java.lang.IllegalArgumentException
+     *          if lastModified or eTag is {@code null}.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request.
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag);
 
@@ -147,10 +161,9 @@ public interface Request {
      * in a 404 response. It would be the responsibility of the application to
      * generate the 404 response.</p>
      *
-     * @return null if the preconditions are met or a ResponseBuilder set with
-     * the appropriate status if the preconditions are not met.
-     * @throws IllegalStateException if called outside the scope of
-     * a request
+     * @return {@code null} if the preconditions are met or a {@code ResponseBuilder} set with
+     *         the appropriate status if the preconditions are not met.
+     * @throws IllegalStateException if called outside the scope of a request.
      * @since 1.1
      */
     public ResponseBuilder evaluatePreconditions();

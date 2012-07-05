@@ -39,7 +39,9 @@
  */
 package javax.ws.rs.client;
 
+import java.lang.annotation.Annotation;
 import java.util.Locale;
+
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -52,15 +54,17 @@ import javax.ws.rs.core.Variant;
  * @author Marek Potociar
  */
 public final class Entity<T> {
+    private static final Annotation[] EMPTY_ANNOTATIONS = new Annotation[0];
 
     private final T entity;
     private final Variant variant;
+    private final Annotation[] annotations;
 
     /**
      * Create an entity using a supplied content media type.
      *
-     * @param <T> entity Java type.
-     * @param entity entity data.
+     * @param <T>       entity Java type.
+     * @param entity    entity data.
      * @param mediaType entity content type.
      * @return entity instance.
      */
@@ -71,12 +75,25 @@ public final class Entity<T> {
     /**
      * Create an entity using a supplied content media type.
      *
-     * @param <T> entity Java type.
-     * @param entity entity data.
+     * @param <T>         entity Java type.
+     * @param entity      entity data.
+     * @param mediaType   entity content type.
+     * @param annotations entity annotations.
+     * @return entity instance.
+     */
+    public static <T> Entity<T> entity(final T entity, final MediaType mediaType, Annotation[] annotations) {
+        return new Entity<T>(entity, mediaType, annotations);
+    }
+
+    /**
+     * Create an entity using a supplied content media type.
+     *
+     * @param <T>       entity Java type.
+     * @param entity    entity data.
      * @param mediaType entity content type.
      * @return entity instance.
      * @throws IllegalArgumentException if the supplied string cannot be parsed
-     *     or is {@code null}.
+     *                                  or is {@code null}.
      */
     public static <T> Entity<T> entity(final T entity, final String mediaType) throws IllegalArgumentException {
         return new Entity<T>(entity, MediaType.valueOf(mediaType));
@@ -85,8 +102,8 @@ public final class Entity<T> {
     /**
      * Create an entity using a supplied content media type.
      *
-     * @param <T> entity Java type.
-     * @param entity entity data.
+     * @param <T>     entity Java type.
+     * @param entity  entity data.
      * @param variant entity {@link Variant variant} information.
      * @return entity instance.
      */
@@ -95,9 +112,22 @@ public final class Entity<T> {
     }
 
     /**
+     * Create an entity using a supplied content media type.
+     *
+     * @param <T>         entity Java type.
+     * @param entity      entity data.
+     * @param variant     entity {@link Variant variant} information.
+     * @param annotations entity annotations.
+     * @return entity instance.
+     */
+    public static <T> Entity<T> entity(final T entity, final Variant variant, Annotation[] annotations) {
+        return new Entity<T>(entity, variant, annotations);
+    }
+
+    /**
      * Create a {@value javax.ws.rs.core.MediaType#TEXT_PLAIN} entity.
      *
-     * @param <T> entity Java type.
+     * @param <T>    entity Java type.
      * @param entity entity data.
      * @return {@value javax.ws.rs.core.MediaType#TEXT_PLAIN} entity instance.
      */
@@ -108,7 +138,7 @@ public final class Entity<T> {
     /**
      * Create an {@value javax.ws.rs.core.MediaType#APPLICATION_XML} entity.
      *
-     * @param <T> entity Java type.
+     * @param <T>    entity Java type.
      * @param entity entity data.
      * @return {@value javax.ws.rs.core.MediaType#APPLICATION_XML} entity instance.
      */
@@ -119,7 +149,7 @@ public final class Entity<T> {
     /**
      * Create an {@value javax.ws.rs.core.MediaType#APPLICATION_JSON} entity.
      *
-     * @param <T> entity Java type.
+     * @param <T>    entity Java type.
      * @param entity entity data.
      * @return {@value javax.ws.rs.core.MediaType#APPLICATION_JSON} entity instance.
      */
@@ -130,7 +160,7 @@ public final class Entity<T> {
     /**
      * Create a {@value javax.ws.rs.core.MediaType#TEXT_HTML} entity.
      *
-     * @param <T> entity Java type.
+     * @param <T>    entity Java type.
      * @param entity entity data.
      * @return {@value javax.ws.rs.core.MediaType#TEXT_HTML} entity instance.
      */
@@ -141,10 +171,10 @@ public final class Entity<T> {
     /**
      * Create an {@value javax.ws.rs.core.MediaType#APPLICATION_XHTML_XML} entity.
      *
-     * @param <T> entity Java type.
+     * @param <T>    entity Java type.
      * @param entity entity data.
      * @return {@value javax.ws.rs.core.MediaType#APPLICATION_XHTML_XML} entity
-     *     instance.
+     *         instance.
      */
     public static <T> Entity<T> xhtml(final T entity) {
         return new Entity<T>(entity, MediaType.APPLICATION_XHTML_XML_TYPE);
@@ -156,7 +186,7 @@ public final class Entity<T> {
      *
      * @param form form data.
      * @return {@value javax.ws.rs.core.MediaType#APPLICATION_FORM_URLENCODED}
-     *     form entity instance.
+     *         form entity instance.
      */
     public static Entity<Form> form(final Form form) {
         return new Entity<Form>(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
@@ -168,20 +198,28 @@ public final class Entity<T> {
      *
      * @param formData multivalued map representing the form data.
      * @return {@value javax.ws.rs.core.MediaType#APPLICATION_FORM_URLENCODED}
-     *     form entity instance.
+     *         form entity instance.
      */
     public static Entity<Form> form(final MultivaluedMap<String, String> formData) {
         return new Entity<Form>(new Form(formData), MediaType.APPLICATION_FORM_URLENCODED_TYPE);
     }
 
     private Entity(final T entity, final MediaType mediaType) {
-        this.entity = entity;
-        this.variant = new Variant(mediaType, (Locale) null, null);
+        this(entity, new Variant(mediaType, (Locale) null, null), EMPTY_ANNOTATIONS);
     }
 
     private Entity(final T entity, final Variant variant) {
+        this(entity, variant, EMPTY_ANNOTATIONS);
+    }
+
+    private Entity(final T entity, final MediaType mediaType, Annotation[] annotations) {
+        this(entity, new Variant(mediaType, (Locale) null, null), annotations);
+    }
+
+    private Entity(final T entity, final Variant variant, Annotation[] annotations) {
         this.entity = entity;
         this.variant = variant;
+        this.annotations = annotations;
     }
 
     /**
@@ -227,5 +265,15 @@ public final class Entity<T> {
      */
     public T getEntity() {
         return entity;
+    }
+
+    /**
+     * Get the entity annotations.
+     *
+     * @return entity annotations if set, an empty annotation array if no
+     *         entity annotations have been specified.
+     */
+    public Annotation[] getAnnotations() {
+        return annotations;
     }
 }

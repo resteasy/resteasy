@@ -1,20 +1,14 @@
 package org.jboss.resteasy.plugins.server;
 
-import org.jboss.resteasy.core.AbstractAsynchronousResponse;
-import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
-import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Helper for creating HttpRequest implementations.  The async code is a fake implementation to work with

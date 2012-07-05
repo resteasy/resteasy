@@ -1,12 +1,9 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.core.AbstractAsynchronousResponse;
-import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
@@ -16,16 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Abstraction for an inbound http request on the server, or a response from a server to a client

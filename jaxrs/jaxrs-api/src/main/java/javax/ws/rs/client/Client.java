@@ -87,7 +87,7 @@ public interface Client {
      * @param uri web resource URI. May contain template parameters.
      * @return web resource target bound to the provided URI.
      * @throws IllegalArgumentException in case the supplied string is not a valid URI template.
-     * @throws NullPointerException in case the supplied argument is null.
+     * @throws NullPointerException     in case the supplied argument is {@code null}.
      */
     WebTarget target(String uri) throws IllegalArgumentException, NullPointerException;
 
@@ -96,7 +96,7 @@ public interface Client {
      *
      * @param uri web resource URI.
      * @return web resource target bound to the provided URI.
-     * @throws NullPointerException in case the supplied argument is null.
+     * @throws NullPointerException in case the supplied argument is {@code null}.
      */
     WebTarget target(URI uri) throws NullPointerException;
 
@@ -105,7 +105,7 @@ public interface Client {
      *
      * @param uriBuilder web resource URI represented as URI builder.
      * @return web resource target bound to the provided URI.
-     * @throws NullPointerException in case the supplied argument is null.
+     * @throws NullPointerException in case the supplied argument is {@code null}.
      */
     WebTarget target(UriBuilder uriBuilder) throws NullPointerException;
 
@@ -114,7 +114,7 @@ public interface Client {
      *
      * @param link link to a web resource.
      * @return web resource target bound to the linked web resource.
-     * @throws NullPointerException in case the supplied argument is null.
+     * @throws NullPointerException in case the supplied argument is {@code null}.
      */
     WebTarget target(Link link) throws NullPointerException;
 
@@ -130,7 +130,7 @@ public interface Client {
      *
      * @param link link to build invocation from.
      * @return newly created invocation.
-     * @throws NullPointerException in case argument is null.
+     * @throws NullPointerException     in case argument is {@code null}.
      * @throws IllegalArgumentException in case link is incomplete to build invocation.
      */
     Invocation invocation(Link link) throws NullPointerException, IllegalArgumentException;
@@ -144,10 +144,10 @@ public interface Client {
      * <p>This method will throw an {@link java.lang.IllegalArgumentException} if there
      * is not enough information to build and invocation (e.g. no HTTP method).</p>
      *
-     * @param link link to build invocation from.
+     * @param link   link to build invocation from.
      * @param entity request entity to be send when the invocation is invoked.
      * @return newly created invocation.
-     * @throws NullPointerException in case argument is null.
+     * @throws NullPointerException     in case argument is {@code null}.
      * @throws IllegalArgumentException in case link is incomplete to build invocation.
      */
     Invocation invocation(Link link, Entity<?> entity) throws NullPointerException, IllegalArgumentException;

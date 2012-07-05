@@ -191,4 +191,9 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
       this.response = response;
    }
 
+   @Override
+   public String getHeaderString(String name)
+   {
+      return httpRequest.getFormParameters().getFirst(name);
+   }
 }

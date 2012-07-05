@@ -228,8 +228,22 @@ public interface ContainerRequestContext {
      * Get the mutable request headers multivalued map.
      *
      * @return mutable multivalued map of request headers.
+     * @see #getHeaderString(String)
      */
     public MultivaluedMap<String, String> getHeaders();
+
+    /**
+     * Get a message header as a single string value.
+     *
+     * @param name the message header.
+     * @return the message header value. If the message header is not present then
+     *         {@code null} is returned. If the message header is present but has no
+     *         value then the empty string is returned. If the message header is present
+     *         more than once then the values of joined together and separated by a ','
+     *         character.
+     * @see #getHeaders()
+     */
+    public String getHeaderString(String name);
 
     /**
      * Get message date.

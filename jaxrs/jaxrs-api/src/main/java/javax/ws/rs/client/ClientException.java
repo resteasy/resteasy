@@ -40,7 +40,20 @@
 package javax.ws.rs.client;
 
 /**
- * Root exception for all JAX-RS client-side specific exceptions.
+ * A client-side processing runtime exception.
+ *
+ * The exception is thrown during HTTP request invocation processing,
+ * to signal a failure to process the HTTP request or response. The exception
+ * message or nested {@link Throwable} cause SHOULD contain additional information
+ * about the reason of the processing failure.
+ * <p>
+ * Note that the exception is used to indicate client-side processing errors. It is
+ * not used to indicate errors received in a response from a server. For the cases
+ * when a response returned by a server does not contain a
+ * {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL successful} response
+ * status code a {@link javax.ws.rs.WebApplicationException} or one of it's sub-classes
+ * is used, depending on the actual value of the returned response status code.
+ * </p>
  *
  * @author Marek Potociar
  * @since 2.0
@@ -56,9 +69,9 @@ public class ClientException extends RuntimeException {
      * This constructor is useful for runtime exceptions that are little more
      * than wrappers for other throwables.
      *
-     * @param  cause the cause (which is saved for later retrieval by the
-     *     {@link #getCause()} method). (A {@code null} value is permitted,
-     *     and indicates that the cause is nonexistent or unknown.)
+     * @param cause the cause (which is saved for later retrieval by the
+     *              {@link #getCause()} method). (A {@code null} value is permitted,
+     *              and indicates that the cause is nonexistent or unknown.)
      */
     public ClientException(final Throwable cause) {
         super(cause);
@@ -71,11 +84,11 @@ public class ClientException extends RuntimeException {
      * Note that the detail message associated with {@code cause} is <i>not</i>
      * automatically incorporated in this runtime exception's detail message.
      *
-     * @param  message the detail message (which is saved for later retrieval
-     *     by the {@link #getMessage()} method).
-     * @param  cause the cause (which is saved for later retrieval by the
-     *     {@link #getCause()} method). (A {@code null} value is permitted,
-     *     and indicates that the cause is nonexistent or unknown.)
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param cause   the cause (which is saved for later retrieval by the
+     *                {@link #getCause()} method). (A {@code null} value is permitted,
+     *                and indicates that the cause is nonexistent or unknown.)
      */
     public ClientException(final String message, final Throwable cause) {
         super(message, cause);
@@ -86,8 +99,8 @@ public class ClientException extends RuntimeException {
      * message. The cause is not initialized, and may subsequently be initialized
      * by a call to {@link #initCause}.
      *
-     * @param  message the detail message (which is saved for later retrieval
-     *     by the {@link #getMessage()} method).
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
      */
     public ClientException(final String message) {
         super(message);

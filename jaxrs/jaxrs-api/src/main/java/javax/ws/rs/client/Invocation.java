@@ -42,6 +42,7 @@ package javax.ws.rs.client;
 import java.util.Locale;
 import java.util.concurrent.Future;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
@@ -100,7 +101,7 @@ public interface Invocation {
      *   Client client = ClientFactory.newClient();
      *   WebTarget resourceTarget = client.target("http://examples.jaxrs.com/");
      *
-     *   // Build and invoke the get request asynchroneously in a single step
+     *   // Build and invoke the get request asynchronously in a single step
      *   Future<String> response = resourceTarget.request("text/plain")
      *           .header("Foo", "bar").async().get(String.class);
      * </pre>
@@ -192,7 +193,7 @@ public interface Invocation {
         /**
          * Add a cookie to be set.
          *
-         * @param name the name of the cookie.
+         * @param name  the name of the cookie.
          * @param value the value of the cookie.
          * @return the updated builder.
          */
@@ -243,9 +244,9 @@ public interface Invocation {
      *
      * @return {@link Response response} object as a result of the request
      *         invocation.
-     * @throws InvocationException in case the invocation failed.
+     * @throws ClientException in case the invocation processing has failed.
      */
-    public Response invoke() throws InvocationException;
+    public Response invoke() throws ClientException;
 
     /**
      * Synchronously invoke the request and receive a response of the specified
@@ -255,9 +256,13 @@ public interface Invocation {
      * @param responseType Java type the response should be converted into.
      * @return response object of the specified type as a result of the request
      *         invocation.
-     * @throws InvocationException in case the invocation failed.
+     * @throws ClientException         in case the invocation processing has failed.
+     * @throws WebApplicationException in case the response status code of the response
+     *                                 returned by the server is not
+     *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                 successful}.
      */
-    public <T> T invoke(Class<T> responseType) throws InvocationException;
+    public <T> T invoke(Class<T> responseType) throws ClientException, WebApplicationException;
 
     /**
      * Synchronously invoke the request and receive a response of the specified
@@ -268,13 +273,23 @@ public interface Invocation {
      *                     response should be converted into.
      * @return response object of the specified generic type as a result of the
      *         request invocation.
-     * @throws InvocationException in case the invocation failed.
+     * @throws ClientException         in case the invocation processing has failed.
+     * @throws WebApplicationException in case the response status code of the response
+     *                                 returned by the server is not
+     *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                 successful}.
      */
-    public <T> T invoke(GenericType<T> responseType) throws InvocationException;
+    public <T> T invoke(GenericType<T> responseType) throws ClientException, WebApplicationException;
 
     /**
      * Submit the request for an asynchronous invocation and receive a future
      * response back.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * failure.
+     * </p>
      *
      * @return future {@link Response response} object as a result of the request
      *         invocation.
@@ -284,6 +299,14 @@ public interface Invocation {
     /**
      * Submit the request for an asynchronous invocation and receive a future
      * response of the specified type back.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
      * @param <T>          response type
      * @param responseType Java type the response should be converted into.
@@ -295,6 +318,14 @@ public interface Invocation {
     /**
      * Submit the request for an asynchronous invocation and receive a future
      * response of the specified generic type back.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * </p>
      *
      * @param <T>          generic response type
      * @param responseType type literal representing a generic Java type the
@@ -307,6 +338,15 @@ public interface Invocation {
     /**
      * Submit the request for an asynchronous invocation and register an
      * {@link InvocationCallback} to process the future result of the invocation.
+     * <p>
+     * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
+     * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
+     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
+     * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     * successful} and the generic type of the supplied response callback is not
+     * {@link javax.ws.rs.core.Response}.
+     * </p>
      *
      * @param <T>      response type
      * @param callback invocation callback for asynchronous processing of the

@@ -10,7 +10,9 @@ import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.LocaleHelper;
@@ -362,114 +364,31 @@ public class MockHttpRequest implements HttpRequest
       else return  new ResteasyAsynchronousContext()
       {
          @Override
-         public void initialRequestThreadFinished()
-         {
-         }
-
-         @Override
-         public ContainerResponseFilter[] getResponseFilters()
-         {
-            return new ContainerResponseFilter[0];
-         }
-
-         @Override
-         public void setResponseFilters(ContainerResponseFilter[] responseFilters)
-         {
-         }
-
-         @Override
-         public WriterInterceptor[] getWriterInterceptors()
-         {
-            return new WriterInterceptor[0];
-         }
-
-         @Override
-         public void setWriterInterceptors(WriterInterceptor[] writerInterceptors)
-         {
-         }
-
-         @Override
-         public Annotation[] getAnnotations()
-         {
-            return new Annotation[0];
-         }
-
-         @Override
-         public void setAnnotations(Annotation[] annotations)
-         {
-         }
-
-         @Override
-         public ResourceMethod getMethod()
-         {
-            return null;
-         }
-
-         @Override
-         public void setMethod(ResourceMethod method)
-         {
-         }
-
-         @Override
-         public void resume(Object response) throws IllegalStateException
-         {
-         }
-
-         @Override
-         public void resume(Throwable response) throws IllegalStateException
-         {
-         }
-
-         @Override
-         public void suspend() throws IllegalStateException
-         {
-         }
-
-         @Override
-         public void suspend(long millis) throws IllegalStateException
-         {
-         }
-
-         @Override
-         public void suspend(long time, TimeUnit unit) throws IllegalStateException
-         {
-         }
-
-         @Override
-         public void setSuspendTimeout(long time, TimeUnit unit) throws IllegalStateException
-         {
-         }
-
-         @Override
-         public void cancel()
-         {
-         }
-
-         @Override
          public boolean isSuspended()
          {
             return false;
          }
 
          @Override
-         public boolean isCancelled()
+         public ResteasyAsynchronousResponse getAsyncResponse()
          {
-            return false;
+            return null;
          }
 
          @Override
-         public boolean isDone()
+         public javax.ws.rs.core.AsynchronousResponse suspend() throws IllegalStateException
          {
-            return false;
+            return null;
          }
 
          @Override
-         public void setResponse(Object response)
+         public javax.ws.rs.core.AsynchronousResponse suspend(long millis) throws IllegalStateException
          {
+            return null;
          }
 
          @Override
-         public Response getResponse()
+         public javax.ws.rs.core.AsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
          {
             return null;
          }

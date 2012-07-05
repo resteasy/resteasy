@@ -50,10 +50,8 @@ import java.io.IOException;
  *
  * @author Marek Potociar
  * @author Santiago Pericas-Geertsen
- *
- * @since 2.0
- *
  * @see javax.ws.rs.client.ClientRequestFilter
+ * @since 2.0
  */
 public interface ClientResponseFilter {
 
@@ -65,7 +63,7 @@ public interface ClientResponseFilter {
      * Filters in the filter chain are ordered according to their binding
      * priority (see {@link javax.ws.rs.BindingPriority}).
      *
-     * @param requestContext request context.
+     * @param requestContext  request context.
      * @param responseContext response context.
      * @throws IOException if an I/O exception occurs.
      */

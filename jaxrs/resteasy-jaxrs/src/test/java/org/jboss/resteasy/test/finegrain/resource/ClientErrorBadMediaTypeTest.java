@@ -94,22 +94,22 @@ public class ClientErrorBadMediaTypeTest
 //      dispatcher = deployment.getDispatcher();
 //      dispatcher.getRegistry().addPerRequestResource(WebResourceUnsupportedMediaType.class);
       
-      delegateField = MediaType.class.getDeclaredField("delegate");
-      delegateField.setAccessible(true);
-      originalModifiers = delegateField.getModifiers();
-      System.out.println("original modifiers: " + originalModifiers);
-      originalDelegate = (MediaTypeHeaderDelegate) delegateField.get(null);
-      modifiersField = Field.class.getDeclaredField("modifiers");
-      modifiersField.setAccessible(true);
-      modifiersField.setInt(delegateField, originalModifiers & ~Modifier.FINAL);
-      System.out.println("new modifiers: " + delegateField.getModifiers());
       try
       {
+         delegateField = MediaType.class.getDeclaredField("delegate");
+         delegateField.setAccessible(true);
+         originalModifiers = delegateField.getModifiers();
+         System.out.println("original modifiers: " + originalModifiers);
+         originalDelegate = (MediaTypeHeaderDelegate) delegateField.get(null);
+         modifiersField = Field.class.getDeclaredField("modifiers");
+         modifiersField.setAccessible(true);
+         modifiersField.setInt(delegateField, originalModifiers & ~Modifier.FINAL);
+         System.out.println("new modifiers: " + delegateField.getModifiers());
          TestMediaTypeHeaderDelegate delegate = new TestMediaTypeHeaderDelegate();
          delegateField.set(null, delegate);
          System.out.println("Set MediaType.delegate field to " + delegate);
       }
-      catch (IllegalAccessException e)
+      catch (Exception e)
       {
          skipTest = true;
          return;

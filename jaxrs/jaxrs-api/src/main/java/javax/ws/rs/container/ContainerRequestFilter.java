@@ -65,11 +65,9 @@ import java.io.IOException;
  *
  * @author Marek Potociar
  * @author Santiago Pericas-Geertsen
- *
- * @since 2.0
- *
  * @see javax.ws.rs.container.PostMatching
  * @see javax.ws.rs.container.ContainerResponseFilter
+ * @since 2.0
  */
 public interface ContainerRequestFilter {
 
@@ -98,7 +96,6 @@ public interface ContainerRequestFilter {
      *
      * @param requestContext request context.
      * @throws IOException if an I/O exception occurs.
-     *
      * @see javax.ws.rs.container.PostMatching
      */
     public void filter(ContainerRequestContext requestContext) throws IOException;

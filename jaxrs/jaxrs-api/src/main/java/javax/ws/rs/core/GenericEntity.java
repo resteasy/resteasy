@@ -64,7 +64,7 @@ import java.lang.reflect.Type;
 /**
  * Represents a message entity of a generic type {@code T}.
  * <p>
- *  Normally type erasure removes generic type information such that a
+ * Normally type erasure removes generic type information such that a
  * {@link Response} instance that contains, e.g., an entity of type
  * {@code List<String>} appears to contain a raw {@code List<?>} at runtime.
  * When the generic type is required to select a suitable
@@ -83,8 +83,8 @@ import java.lang.reflect.Type;
  * {@link javax.ws.rs.ext.MessageBodyWriter}:
  *
  * <pre>List&lt;String&gt; list = new ArrayList&lt;String&gt;();
- *GenericEntity&lt;List&lt;String&gt;&gt; entity = new GenericEntity&lt;List&lt;String&gt;&gt;(list) {};
- *Response response = Response.ok(entity).build();</pre>
+ * GenericEntity&lt;List&lt;String&gt;&gt; entity = new GenericEntity&lt;List&lt;String&gt;&gt;(list) {};
+ * Response response = Response.ok(entity).build();</pre>
  *
  * <p>where <code>list</code> is the instance of <code>List&lt;String&gt</code>
  * that will form the response body and entity is an instance of an anonymous
@@ -93,20 +93,18 @@ import java.lang.reflect.Type;
  * with the entity. For example the following code shows how to create
  * a response containing the result of a method invoked via reflection:
  * <pre>Method method = ...;
- *GenericEntity&lt;Object&gt; entity = new GenericEntity&lt;Object&gt;(
+ * GenericEntity&lt;Object&gt; entity = new GenericEntity&lt;Object&gt;(
  *    method.invoke(...), method.getGenericReturnType());
- *Response response = Response.ok(entity).build();</pre></li>
+ * Response response = Response.ok(entity).build();</pre></li>
  * <p>The above obtains the generic type from the return type of the method,
  * the raw type is the class of entity.</p>
  * </ol>
  *
  * @param <T> response entity instance type
- *
  * @author Paul Sandoz
  * @author Marc Hadley
- * @since 1.0
- *
  * @see GenericType
+ * @since 1.0
  */
 public class GenericEntity<T> {
 
@@ -138,11 +136,12 @@ public class GenericEntity<T> {
      * {@code ArrayList<String>} then {@code genericType} could
      * be the same or a superclass of {@code ArrayList} with the same generic
      * type like {@code List<String>}.
-     * @param entity the entity instance, must not be {@code null}.
+     *
+     * @param entity      the entity instance, must not be {@code null}.
      * @param genericType the generic type, must not be {@code null}.
      * @throws IllegalArgumentException if the entity is not assignable to
-     * a variable of the supplied generic type or if entity or genericType
-     * is null.
+     *                                  a variable of the supplied generic type or if entity or genericType
+     *                                  is null.
      */
     public GenericEntity(final T entity, final Type genericType) throws IllegalArgumentException {
         if (entity == null || genericType == null) {
@@ -224,6 +223,6 @@ public class GenericEntity<T> {
 
     @Override
     public String toString() {
-        return "GenericEntity{" + entity.toString() + ", " + type.toString() +"}";
+        return "GenericEntity{" + entity.toString() + ", " + type.toString() + "}";
     }
 }
