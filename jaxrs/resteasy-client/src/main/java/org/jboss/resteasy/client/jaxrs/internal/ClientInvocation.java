@@ -1,7 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
+import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
@@ -41,6 +42,8 @@ public class ClientInvocation implements Invocation
    protected ClientRequestHeaders headers;
    protected String method;
    protected Object entity;
+   protected Type entityGenericType;
+   protected Class entityClass;
    protected Annotation[] entityAnnotations;
    protected ClientConfiguration configuration;
    protected URI uri;
@@ -94,11 +97,6 @@ public class ClientInvocation implements Invocation
       this.entityAnnotations = entityAnnotations;
    }
 
-   public void setEntityObject(Object entity)
-   {
-      this.entity = entity;
-   }
-
    public String getMethod()
    {
       return method;
@@ -124,6 +122,16 @@ public class ClientInvocation implements Invocation
       return entity;
    }
 
+   public Type getEntityGenericType()
+   {
+      return entityGenericType;
+   }
+
+   public Class getEntityClass()
+   {
+      return entityClass;
+   }
+
    public ClientRequestHeaders getHeaders()
    {
       return headers;
@@ -131,12 +139,38 @@ public class ClientInvocation implements Invocation
 
    public void setEntity(Entity entity)
    {
-      this.entity = entity.getEntity();
-      Variant v = entity.getVariant();
-      headers.setMediaType(v.getMediaType());
-      headers.setLanguage(v.getLanguage());
-      headers.header("Content-Encoding", v.getEncoding());
+      if (entity == null)
+      {
+         this.entity = null;
+         this.entityAnnotations = null;
+         this.entityClass = null;
+         this.entityGenericType = null;
+      }
+      else
+      {
+         Object ent = entity.getEntity();
+         setEntityObject(ent);
+         Variant v = entity.getVariant();
+         headers.setMediaType(v.getMediaType());
+         headers.setLanguage(v.getLanguage());
+         headers.header("Content-Encoding", v.getEncoding());
+      }
 
+   }
+
+   public void setEntityObject(Object ent)
+   {
+      if (this.entity instanceof GenericEntity)
+      {
+         GenericEntity genericEntity = (GenericEntity) ent;
+         entityClass = genericEntity.getRawType();
+         entityGenericType = genericEntity.getType();
+         this.entity = genericEntity.getEntity();
+      }
+      else
+      {
+         this.entity = ent;
+      }
    }
 
    public ResteasyProviderFactory getProviderFactory()
@@ -179,7 +213,7 @@ public class ClientInvocation implements Invocation
       }
       else
       {
-         WriterInterceptorContextImpl ctx = new WriterInterceptorContextImpl(interceptors, writer, obj, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
+         AbstractWriterInterceptorContext ctx = new ClientWriterInterceptorContext(interceptors, writer, obj, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
          ctx.proceed();
       }
    }
@@ -423,7 +457,7 @@ public class ClientInvocation implements Invocation
                return null;
             }
          });
-         return (Future<T>)future;
+         return (Future<T>) future;
 
       }
       else
@@ -438,7 +472,10 @@ public class ClientInvocation implements Invocation
                try
                {
                   Response res = invoke();
-                  T obj = res.readEntity((GenericType<T>) GenericType.of(theType, theGenericType));
+                  GenericType<T> gt = null;
+                  if (theGenericType != null) gt = new GenericType<T>(theGenericType);
+                  else gt = new GenericType<T>(theType);
+                  T obj = res.readEntity(gt);
                   cb.completed(obj);
                   return obj;
                }

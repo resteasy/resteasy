@@ -40,7 +40,6 @@
 package javax.ws.rs.client;
 
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import java.util.Locale;
@@ -52,6 +51,7 @@ import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 
 /**
  * Client response filter context.
@@ -67,65 +67,60 @@ import javax.ws.rs.core.NewCookie;
 public interface ClientResponseContext {
 
     /**
-     * Get a mutable map of request-scoped properties that can be used for communication
-     * between different request/response processing components.
-     *
-     * May be empty, but MUST never be {@code null}. In the scope of a single
-     * request/response processing a same property map instance is shared by the
-     * following methods:
-     * <ul>
-     *     <li>{@link javax.ws.rs.client.ClientRequestContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.client.ClientResponseContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
-     * </ul>
-     *
-     * A request-scoped property is an application-defined property that may be
-     * added, removed or modified by any of the components (user, filter,
-     * interceptor etc.) that participate in a given request/response processing
-     * flow.
-     * <p />
-     * On the client side, this property map is initialized by calling
-     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
-     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
-     * on the configuration object associated with the corresponding
-     * {@link javax.ws.rs.client.Invocation request invocation}.
-     * <p />
-     * On the server side, specifying the initial values is implementation-specific.
-     * <p />
-     * If there are no initial properties set, the request-scoped property map is
-     * initialized to an empty map.
-     *
-     * @return a mutable request-scoped property map.
-     * @see javax.ws.rs.client.Configuration
-     */
-    public Map<String, Object> getProperties();
-
-    /**
      * Get the status code associated with the response.
      *
      * @return the response status code or -1 if the status was not set.
      */
-    public int getStatusCode();
+    public int getStatus();
 
     /**
      * Set a new response status code.
      *
      * @param code new status code.
      */
-    public void setStatusCode(int code);
+    public void setStatus(int code);
+
+    /**
+     * Get the complete status information associated with the response.
+     *
+     * @return the response status information or {@code null} if the status was
+     *         not set.
+     */
+    public Response.StatusType getStatusInfo();
+
+    /**
+     * Set the complete status information associated with the response.
+     *
+     * @param statusInfo the response status information.
+     */
+    public void setStatusInfo(Response.StatusType statusInfo);
 
     /**
      * Get the mutable response headers multivalued map.
      *
      * @return mutable multivalued map of response headers.
+     * @see #getHeaderString(String)
      */
     public MultivaluedMap<String, String> getHeaders();
+
+    /**
+     * Get a message header as a single string value.
+     *
+     * @param name the message header.
+     * @return the message header value. If the message header is not present then
+     *         {@code null} is returned. If the message header is present but has no
+     *         value then the empty string is returned. If the message header is present
+     *         more than once then the values of joined together and separated by a ','
+     *         character.
+     * @see #getHeaders()
+     */
+    public String getHeaderString(String name);
 
     /**
      * Get the allowed HTTP methods from the Allow HTTP header.
      *
      * @return the allowed HTTP methods, all methods will returned as upper case
-     *     strings.
+     *         strings.
      */
     public Set<String> getAllowedMethods();
 
@@ -147,7 +142,7 @@ public interface ClientResponseContext {
      * Get Content-Length value.
      *
      * @return Content-Length as integer if present and valid number. In other
-     *     cases returns -1.
+     *         cases returns -1.
      */
     public int getLength();
 
@@ -155,7 +150,7 @@ public interface ClientResponseContext {
      * Get the media type of the entity.
      *
      * @return the media type or {@code null} if not specified (e.g. there's no
-     *     response entity).
+     *         response entity).
      */
     public MediaType getMediaType();
 
@@ -191,7 +186,7 @@ public interface ClientResponseContext {
      * Get the links attached to the message as header.
      *
      * @return links, may return empty {@link Set} if no links are present. Never
-     *     returns {@code null}.
+     *         returns {@code null}.
      */
     public Set<Link> getLinks();
 
@@ -200,7 +195,7 @@ public interface ClientResponseContext {
      *
      * @param relation link relation.
      * @return {@code true} if the for the relation link exists, {@code false}
-     *     otherwise.
+     *         otherwise.
      */
     boolean hasLink(String relation);
 
@@ -218,7 +213,7 @@ public interface ClientResponseContext {
      *
      * @param relation link relation.
      * @return the link builder for the relation, otherwise {@code null} if not
-     *     present.
+     *         present.
      */
     public Link.Builder getLinkBuilder(String relation);
 
@@ -230,7 +225,7 @@ public interface ClientResponseContext {
      * {@code false} otherwise.
      *
      * @return {@code true} if there is an entity present in the message,
-     *     {@code false} otherwise.
+     *         {@code false} otherwise.
      */
     public boolean hasEntity();
 

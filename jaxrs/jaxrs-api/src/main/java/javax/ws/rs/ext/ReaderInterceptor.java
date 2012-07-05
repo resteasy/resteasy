@@ -53,8 +53,8 @@ import javax.ws.rs.container.DynamicBinder;
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
  * @author Marek Potociar (marek.potociar at oracle.com)
- * @since 2.0
  * @see MessageBodyReader
+ * @since 2.0
  */
 public interface ReaderInterceptor {
 
@@ -70,7 +70,8 @@ public interface ReaderInterceptor {
      * @return result of next interceptor invoked or the wrapped method if
      *         last interceptor in chain.
      * @throws java.io.IOException if an IO error arises.
-     * @throws javax.ws.rs.WebApplicationException thrown by wrapped method.
+     * @throws javax.ws.rs.WebApplicationException
+     *                             thrown by wrapped method.
      */
     public Object aroundReadFrom(ReaderInterceptorContext context)
             throws java.io.IOException, javax.ws.rs.WebApplicationException;

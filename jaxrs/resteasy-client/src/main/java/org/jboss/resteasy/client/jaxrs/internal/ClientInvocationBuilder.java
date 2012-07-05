@@ -69,16 +69,9 @@ public class ClientInvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public Invocation.Builder allow(String... methods)
+   public Invocation.Builder cookie(String name, String value)
    {
-      getHeaders().allow(methods);
-      return this;
-   }
-
-   @Override
-   public Invocation.Builder allow(Set<String> methods)
-   {
-      getHeaders().allow(methods);
+      getHeaders().cookie(new Cookie(name, value));
       return this;
    }
 
@@ -249,21 +242,21 @@ public class ClientInvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public Response trace(Entity<?> entity) throws InvocationException
+   public Response trace() throws InvocationException
    {
-      return build("TRACE", entity).invoke();
+      return build("TRACE").invoke();
    }
 
    @Override
-   public <T> T trace(Entity<?> entity, Class<T> responseType) throws InvocationException
+   public <T> T trace(Class<T> responseType) throws InvocationException
    {
-      return trace(entity).readEntity(responseType);
+      return trace().readEntity(responseType);
    }
 
    @Override
-   public <T> T trace(Entity<?> entity, GenericType<T> responseType) throws InvocationException
+   public <T> T trace(GenericType<T> responseType) throws InvocationException
    {
-      return trace(entity).readEntity(responseType);
+      return trace().readEntity(responseType);
    }
 
    @Override

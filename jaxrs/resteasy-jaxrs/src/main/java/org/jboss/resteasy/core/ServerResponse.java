@@ -1,10 +1,13 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
-import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
+import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LinkHeaders;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.WriterException;
@@ -17,6 +20,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -32,6 +36,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -49,6 +54,7 @@ public class ServerResponse extends Response implements Serializable
    protected int status = HttpResponseCodes.SC_OK;
    protected Headers<Object> metadata = new Headers<Object>();
    protected Annotation[] annotations;
+   protected Class entityClass;
    protected Type genericType;
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
@@ -159,7 +165,26 @@ public class ServerResponse extends Response implements Serializable
 
    public void setEntity(Object entity)
    {
-      this.entity = entity;
+      if (entity == null)
+      {
+         this.entity = null;
+         this.genericType = null;
+         this.entityClass = null;
+      }
+      else if (entity instanceof GenericEntity)
+      {
+
+         GenericEntity ge = (GenericEntity) entity;
+         this.entity = ge.getEntity();
+         this.genericType = ge.getType();
+         this.entityClass = ge.getRawType();
+      }
+      else
+      {
+         this.entity = entity;
+         this.entityClass = entity.getClass();
+         this.genericType = null;
+      }
    }
 
    public void setStatus(int status)
@@ -207,7 +232,7 @@ public class ServerResponse extends Response implements Serializable
       if (responseFilters != null)
       {
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
-         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(this, response, request.getProperties());
+         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, this);
          for (ContainerResponseFilter filter : responseFilters)
          {
             try
@@ -275,7 +300,7 @@ public class ServerResponse extends Response implements Serializable
          }
          else
          {
-            WriterInterceptorContextImpl writerContext =  new WriterInterceptorContextImpl(writerInterceptors, writer, ent, type, generic, annotations, contentType, getMetadata(), os, request.getProperties());
+            AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors, writer, ent, type, generic, annotations, contentType, getMetadata(), os, request);
             writerContext.proceed();
          }
          callback.commit(); // just in case the output stream is never used
@@ -388,12 +413,6 @@ public class ServerResponse extends Response implements Serializable
    }
 
    @Override
-   public String getHeader(String name)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public MediaType getMediaType()
    {
       throw new NotImplementedYetException();
@@ -438,29 +457,70 @@ public class ServerResponse extends Response implements Serializable
    @Override
    public URI getLocation()
    {
+      Object uri = metadata.getFirst(HttpHeaders.LOCATION);
+      if (uri == null) return null;
+      if (uri instanceof URI) return (URI)uri;
+      if (uri instanceof String) return URI.create((String)uri);
+
       throw new NotImplementedYetException();
    }
 
    @Override
    public Set<Link> getLinks()
    {
-      throw new NotImplementedYetException();
+      LinkHeaders linkHeaders = getLinkHeaders();
+      Set<Link> links = new HashSet<Link>();
+      links.addAll(linkHeaders.getLinks());
+      return links;
+   }
+
+   protected LinkHeaders getLinkHeaders()
+   {
+      LinkHeaders linkHeaders = new LinkHeaders();
+      linkHeaders.addLinkObjects(metadata, ResteasyProviderFactory.getInstance());
+      return linkHeaders;
    }
 
    @Override
    public boolean hasLink(String relation)
    {
-      throw new NotImplementedYetException();
+      return getLinkHeaders().getLinkByRelationship(relation) != null;
    }
 
    @Override
    public Link getLink(String relation)
    {
-      throw new NotImplementedYetException();
+      return getLinkHeaders().getLinkByRelationship(relation);
    }
 
    @Override
    public Link.Builder getLinkBuilder(String relation)
+   {
+      Link link = getLinkHeaders().getLinkByRelationship(relation);
+      Link.Builder builder = new Link.Builder();
+      for (Map.Entry<String, List<String>> entry : link.getParams().entrySet())
+      {
+         for (String val : entry.getValue())
+         {
+            builder.param(entry.getKey(), val);
+         }
+      }
+      return builder;
+   }
+   @Override
+   public Set<String> getAllowedMethods()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public String getHeaderString(String name)
    {
       throw new NotImplementedYetException();
    }

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.messagebody;
 
-import org.jboss.resteasy.core.interception.WriterInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
+import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -108,7 +109,7 @@ public abstract class WriterUtility
          throw createWriterNotFound(genericType, mediaType);
 
       final Map<String, Object> attributes = new HashMap<String, Object>();
-      WriterInterceptorContextImpl messageBodyWriterContext = new WriterInterceptorContextImpl(interceptors, writer, toOutput, type,
+      AbstractWriterInterceptorContext messageBodyWriterContext = new ClientWriterInterceptorContext(interceptors, writer, toOutput, type,
               genericType, annotations, mediaType, requestHeaders, outputStream, attributes);
       messageBodyWriterContext
               .proceed();

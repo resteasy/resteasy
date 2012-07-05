@@ -44,7 +44,7 @@ public class MyResource
    @GET
    @Path("timeout")
    @Produces("text/plain")
-   public void timeout(final @Suspend(100) AsynchronousResponse response)
+   public void timeout(final @Suspend(10) AsynchronousResponse response)
    {
       Thread t = new Thread()
       {
@@ -54,7 +54,7 @@ public class MyResource
             try
             {
                System.out.println("STARTED!!!!");
-               Thread.sleep(1000);
+               Thread.sleep(100000);
                Response jaxrs = Response.ok("goodbye").type(MediaType.TEXT_PLAIN).build();
                response.setResponse(jaxrs);
             }

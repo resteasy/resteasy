@@ -30,6 +30,7 @@ public class HttpHeadersImpl implements HttpHeaders
    private Map<String, Cookie> cookies;
    private List<Locale> acceptableLanguages;
 
+   @Override
    public MultivaluedMap<String, String> getRequestHeaders()
    {
       return requestHeaders;
@@ -40,6 +41,7 @@ public class HttpHeadersImpl implements HttpHeaders
       this.requestHeaders = requestHeaders;
    }
 
+   @Override
    public List<MediaType> getAcceptableMediaTypes()
    {
       return acceptableMediaTypes;
@@ -51,6 +53,7 @@ public class HttpHeadersImpl implements HttpHeaders
       if (acceptableMediaTypes != null) MediaTypeHelper.sortByWeight(acceptableMediaTypes);
    }
 
+   @Override
    public MediaType getMediaType()
    {
       return mediaType;
@@ -61,6 +64,7 @@ public class HttpHeadersImpl implements HttpHeaders
       this.mediaType = mediaType;
    }
 
+   @Override
    public Locale getLanguage()
    {
       return language;
@@ -92,6 +96,7 @@ public class HttpHeadersImpl implements HttpHeaders
       }
    }
 
+   @Override
    public Map<String, Cookie> getCookies()
    {
       return cookies;
@@ -102,15 +107,23 @@ public class HttpHeadersImpl implements HttpHeaders
       this.cookies = cookies;
    }
 
+   @Override
    public List<String> getRequestHeader(String name)
    {
       return requestHeaders.get(name);
    }
 
+   @Override
    public List<Locale> getAcceptableLanguages()
    {
       if (acceptableLanguages == null) acceptableLanguages = new ArrayList<Locale>();
       return acceptableLanguages;
+   }
+
+   @Override
+   public String getHeaderString(String name)
+   {
+      return requestHeaders.getFirst(name);
    }
 
    @Override

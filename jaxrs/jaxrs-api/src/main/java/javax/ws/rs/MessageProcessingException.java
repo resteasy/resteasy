@@ -53,9 +53,9 @@ public class MessageProcessingException extends RuntimeException {
      * Constructs a new message processing exception with the specified cause and
      * a detail message of {@code (cause==null ? null : cause.toString())}.
      *
-     * @param  cause the cause (which is saved for later retrieval by the
-     *     {@link #getCause()} method).  (A {@code null} value is permitted, and
-     *     indicates that the cause is nonexistent or unknown.)
+     * @param cause the cause (which is saved for later retrieval by the
+     *              {@link #getCause()} method).  (A {@code null} value is permitted, and
+     *              indicates that the cause is nonexistent or unknown.)
      */
     public MessageProcessingException(Throwable cause) {
         super(cause);
@@ -66,9 +66,9 @@ public class MessageProcessingException extends RuntimeException {
      * a detail message.
      *
      * @param message detailed exception message.
-     * @param  cause the cause (which is saved for later retrieval by the
-     *     {@link #getCause()} method).  (A {@code null} value is permitted, and
-     *     indicates that the cause is nonexistent or unknown.)
+     * @param cause   the cause (which is saved for later retrieval by the
+     *                {@link #getCause()} method).  (A {@code null} value is permitted, and
+     *                indicates that the cause is nonexistent or unknown.)
      */
     public MessageProcessingException(String message, Throwable cause) {
         super(message, cause);

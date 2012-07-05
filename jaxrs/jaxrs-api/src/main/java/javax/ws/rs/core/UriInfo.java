@@ -63,8 +63,9 @@ public interface UriInfo {
      * {@link #getPath(boolean) getPath(true)}.
      *
      * @return the relative URI path.
-     * @throws java.lang.IllegalStateException if called outside the scope of
-     *     a request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of
+     *          a request.
      */
     public String getPath();
 
@@ -72,10 +73,11 @@ public interface UriInfo {
      * Get the path of the current request relative to the base URI as a string.
      *
      * @param decode controls whether sequences of escaped octets are decoded
-     *     ({@code true}) or not ({@code false}).
+     *               ({@code true}) or not ({@code false}).
      * @return the relative URI path
-     * @throws java.lang.IllegalStateException if called outside the scope of
-     *     a request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of
+     *          a request.
      */
     public String getPath(boolean decode);
 
@@ -86,9 +88,11 @@ public interface UriInfo {
      * present in the path. All sequences of escaped octets in path segments
      * and matrix parameter values are decoded,
      * equivalent to <code>getPathSegments(true)</code>.
+     *
      * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
-     * map of each path segment is also unmodifiable.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     *         map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request
      * @see PathSegment
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
@@ -100,10 +104,11 @@ public interface UriInfo {
      * particularly when matrix parameters may be present in the path.
      *
      * @param decode controls whether sequences of escaped octets in path segments
-     *     and matrix parameter values are decoded ({@code true}) or not ({@code false}).
+     *               and matrix parameter values are decoded ({@code true}) or not ({@code false}).
      * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
-     *     map of each path segment is also unmodifiable.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     *         map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request
      * @see PathSegment
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
@@ -111,8 +116,10 @@ public interface UriInfo {
 
     /**
      * Get the absolute request URI including any query parameters.
+     *
      * @return the absolute request URI
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request
      */
     public URI getRequestUri();
 
@@ -120,8 +127,9 @@ public interface UriInfo {
      * Get the absolute request URI in the form of a UriBuilder.
      *
      * @return a UriBuilder initialized with the absolute request URI.
-     * @throws java.lang.IllegalStateException if called outside the scope of a
-     *     request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a
+     *          request.
      */
     public UriBuilder getRequestUriBuilder();
 
@@ -132,8 +140,9 @@ public interface UriInfo {
      * {@code uriInfo.getBaseUri().resolve(uriInfo.getPath()).}
      *
      * @return the absolute path of the request.
-     * @throws java.lang.IllegalStateException if called outside the scope of a
-     *     request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a
+     *          request.
      */
     public URI getAbsolutePath();
 
@@ -143,8 +152,9 @@ public interface UriInfo {
      * query parameters.
      *
      * @return a UriBuilder initialized with the absolute path of the request.
-     * @throws java.lang.IllegalStateException if called outside the scope of a
-     *     request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a
+     *          request.
      */
     public UriBuilder getAbsolutePathBuilder();
 
@@ -169,8 +179,9 @@ public interface UriInfo {
      * {@link #getPathParameters(boolean) getPathParameters(true)}.
      *
      * @return an unmodifiable map of parameter names and values.
-     * @throws java.lang.IllegalStateException if called outside the scope of a
-     *     request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a
+     *          request.
      * @see javax.ws.rs.Path
      * @see javax.ws.rs.PathParam
      */
@@ -180,10 +191,11 @@ public interface UriInfo {
      * Get the values of any embedded URI template parameters.
      *
      * @param decode controls whether sequences of escaped octets are decoded
-     *     ({@code true}) or not ({@code false}).
+     *               ({@code true}) or not ({@code false}).
      * @return an unmodifiable map of parameter names and values
-     * @throws java.lang.IllegalStateException if called outside the scope of a
-     *     request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a
+     *          request.
      * @see javax.ws.rs.Path
      * @see javax.ws.rs.PathParam
      */
@@ -196,8 +208,9 @@ public interface UriInfo {
      * {@link #getQueryParameters(boolean) getQueryParameters(true)}.
      *
      * @return an unmodifiable map of query parameter names and values.
-     * @throws java.lang.IllegalStateException if called outside the scope of a
-     *     request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a
+     *          request.
      */
     public MultivaluedMap<String, String> getQueryParameters();
 
@@ -206,10 +219,11 @@ public interface UriInfo {
      * names of the query parameters with any escaped characters decoded.
      *
      * @param decode controls whether sequences of escaped octets in parameter
-     *     names and values are decoded ({@code true}) or not ({@code false}).
+     *               names and values are decoded ({@code true}) or not ({@code false}).
      * @return an unmodifiable map of query parameter names and values.
-     * @throws java.lang.IllegalStateException if called outside the scope of a
-     *     request.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a
+     *          request.
      */
     public MultivaluedMap<String, String> getQueryParameters(boolean decode);
 
@@ -225,18 +239,18 @@ public interface UriInfo {
      * following resource classes:
      *
      * <pre>&#064;Path("foo")
-     *public class FooResource {
+     * public class FooResource {
      *  &#064;GET
      *  public String getFoo() {...}
      *
      *  &#064;Path("bar")
      *  public BarResource getBarResource() {...}
-     *}
+     * }
      *
-     *public class BarResource {
+     * public class BarResource {
      *  &#064;GET
      *  public String getBar() {...}
-     *}
+     * }
      * </pre>
      *
      * <p>The values returned by this method based on request uri and where
@@ -244,24 +258,24 @@ public interface UriInfo {
      *
      * <table border="1">
      * <tr>
-     *   <th>Request</th>
-     *   <th>Called from</th>
-     *   <th>Value(s)</th>
+     * <th>Request</th>
+     * <th>Called from</th>
+     * <th>Value(s)</th>
      * </tr>
      * <tr>
-     *   <td>GET /foo</td>
-     *   <td>FooResource.getFoo</td>
-     *   <td>foo</td>
+     * <td>GET /foo</td>
+     * <td>FooResource.getFoo</td>
+     * <td>foo</td>
      * </tr>
      * <tr>
-     *   <td>GET /foo/bar</td>
-     *   <td>FooResource.getBarResource</td>
-     *   <td>foo/bar, foo</td>
+     * <td>GET /foo/bar</td>
+     * <td>FooResource.getBarResource</td>
+     * <td>foo/bar, foo</td>
      * </tr>
      * <tr>
-     *   <td>GET /foo/bar</td>
-     *   <td>BarResource.getBar</td>
-     *   <td>foo/bar, foo</td>
+     * <td>GET /foo/bar</td>
+     * <td>BarResource.getBar</td>
+     * <td>foo/bar, foo</td>
      * </tr>
      * </table>
      *
@@ -286,7 +300,7 @@ public interface UriInfo {
      * pre-matching filter), the method returns an empty list.
      *
      * @param decode controls whether sequences of escaped octets are decoded
-     *     ({@code true}) or not ({@code false}).
+     *               ({@code true}) or not ({@code false}).
      * @return a read-only list of URI paths for matched resources.
      */
     public List<String> getMatchedURIs(boolean decode);
@@ -301,18 +315,18 @@ public interface UriInfo {
      * classes:
      *
      * <pre>&#064;Path("foo")
-     *public class FooResource {
+     * public class FooResource {
      *  &#064;GET
      *  public String getFoo() {...}
      *
      *  &#064;Path("bar")
      *  public BarResource getBarResource() {...}
-     *}
+     * }
      *
-     *public class BarResource {
+     * public class BarResource {
      *  &#064;GET
      *  public String getBar() {...}
-     *}
+     * }
      * </pre>
      *
      * <p>The values returned by this method based on request uri and where
@@ -320,24 +334,24 @@ public interface UriInfo {
      *
      * <table border="1">
      * <tr>
-     *   <th>Request</th>
-     *   <th>Called from</th>
-     *   <th>Value(s)</th>
+     * <th>Request</th>
+     * <th>Called from</th>
+     * <th>Value(s)</th>
      * </tr>
      * <tr>
-     *   <td>GET /foo</td>
-     *   <td>FooResource.getFoo</td>
-     *   <td>FooResource</td>
+     * <td>GET /foo</td>
+     * <td>FooResource.getFoo</td>
+     * <td>FooResource</td>
      * </tr>
      * <tr>
-     *   <td>GET /foo/bar</td>
-     *   <td>FooResource.getBarResource</td>
-     *   <td>FooResource</td>
+     * <td>GET /foo/bar</td>
+     * <td>FooResource.getBarResource</td>
+     * <td>FooResource</td>
      * </tr>
      * <tr>
-     *   <td>GET /foo/bar</td>
-     *   <td>BarResource.getBar</td>
-     *   <td>BarResource, FooResource</td>
+     * <td>GET /foo/bar</td>
+     * <td>BarResource.getBar</td>
+     * <td>BarResource, FooResource</td>
      * </tr>
      * </table>
      *

@@ -223,8 +223,9 @@ public abstract class RuntimeDelegate {
      * @param <T>  header type.
      * @param type the class of the header.
      * @return an instance of {@code HeaderDelegate} for the supplied type.
-     * @throws java.lang.IllegalArgumentException if type is {@code null).
-     * @see javax.ws.rs.ext.HeaderDelegate
+     * @throws java.lang.IllegalArgumentException
+     *          if type is {@code null}.
+     * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate
      */
     public abstract <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type)
             throws IllegalArgumentException;

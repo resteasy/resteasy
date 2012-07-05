@@ -98,19 +98,19 @@ public class WriterInterceptorRegistry extends JaxrsInterceptorRegistry<WriterIn
       @Override
       public Object getAttribute(String attribute)
       {
-         return writerInterceptorContext.getProperties().get(attribute);
+         return writerInterceptorContext.getProperty(attribute);
       }
 
       @Override
       public void setAttribute(String name, Object value)
       {
-         writerInterceptorContext.getProperties().put(name, value);
+         writerInterceptorContext.setProperty(name, value);
       }
 
       @Override
       public void removeAttribute(String name)
       {
-         writerInterceptorContext.getProperties().remove(name);
+         writerInterceptorContext.removeProperty(name);
       }
 
       @Override

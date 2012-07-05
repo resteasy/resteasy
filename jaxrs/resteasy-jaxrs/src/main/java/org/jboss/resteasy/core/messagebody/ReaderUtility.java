@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.messagebody;
 
-import org.jboss.resteasy.core.interception.ReaderInterceptorContextImpl;
+import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -111,7 +112,7 @@ public abstract class ReaderUtility
       try
       {
          final Map<String, Object> attributes = new HashMap<String, Object>();
-         ReaderInterceptorContextImpl messageBodyReaderContext = new ReaderInterceptorContextImpl(interceptors, reader, type,
+         AbstractReaderInterceptorContext messageBodyReaderContext = new ClientReaderInterceptorContext(interceptors, reader, type,
                  genericType, annotations, mediaType, requestHeaders, inputStream, attributes);
          return (T) messageBodyReaderContext
                  .proceed();

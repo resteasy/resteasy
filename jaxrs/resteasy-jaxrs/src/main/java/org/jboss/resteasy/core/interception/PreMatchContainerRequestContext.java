@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,9 +48,27 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    }
 
    @Override
-   public Map<String, Object> getProperties()
+   public Object getProperty(String name)
    {
-      return httpRequest.getProperties();
+      return httpRequest.getAttribute(name);
+   }
+
+   @Override
+   public Enumeration<String> getPropertyNames()
+   {
+      return httpRequest.getAttributeNames();
+   }
+
+   @Override
+   public void setProperty(String name, Object object)
+   {
+      httpRequest.setAttribute(name, object);
+   }
+
+   @Override
+   public void removeProperty(String name)
+   {
+      httpRequest.removeAttribute(name);
    }
 
    @Override
@@ -172,4 +191,9 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
       this.response = response;
    }
 
+   @Override
+   public String getHeaderString(String name)
+   {
+      return httpRequest.getFormParameters().getFirst(name);
+   }
 }

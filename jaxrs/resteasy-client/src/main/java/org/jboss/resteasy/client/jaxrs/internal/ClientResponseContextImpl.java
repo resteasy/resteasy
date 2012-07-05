@@ -10,6 +10,7 @@ import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URI;
@@ -32,27 +33,33 @@ public class ClientResponseContextImpl implements ClientResponseContext
    }
 
    @Override
-   public Map<String, Object> getProperties()
-   {
-      return response.getProperties();
-   }
-
-   @Override
-   public int getStatusCode()
+   public int getStatus()
    {
       return response.getStatus();
    }
 
    @Override
-   public void setStatusCode(int code)
+   public void setStatus(int code)
    {
       response.setStatus(code);
    }
 
    @Override
+   public Response.StatusType getStatusInfo()
+   {
+      return response.getStatusInfo();
+   }
+
+   @Override
+   public void setStatusInfo(Response.StatusType statusInfo)
+   {
+      response.setStatus(statusInfo.getStatusCode());
+   }
+
+   @Override
    public MultivaluedMap<String, String> getHeaders()
    {
-      return response.getHeaders();
+      return response.getStringHeaders();
    }
 
    @Override
@@ -151,4 +158,9 @@ public class ClientResponseContextImpl implements ClientResponseContext
       response.setInputStream(entityStream);
    }
 
+   @Override
+   public String getHeaderString(String name)
+   {
+      return response.getHeaderString(name);
+   }
 }

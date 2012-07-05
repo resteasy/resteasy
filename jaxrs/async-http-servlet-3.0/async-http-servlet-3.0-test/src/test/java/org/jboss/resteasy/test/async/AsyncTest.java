@@ -15,7 +15,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class AsyncTest
 {
    @Test
-   public void testMock() throws Exception
+   public void testAsync() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:8080/");
       ClientResponse<String> response = request.get(String.class);
@@ -24,7 +24,6 @@ public class AsyncTest
    }
 
    @Test
-   @Ignore // Jetty retries request???!?!
    public void testTimeout() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:8080/timeout");

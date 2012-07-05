@@ -19,7 +19,7 @@ public class ResponseBuilderTest
    private static final URI REQUEST_URI = URI
            .create("http://localhost/path/to/resource");
 
-   private ResponseBuilderImpl builder;
+   private Response.ResponseBuilder builder;
 
    @Before
    public void before() throws URISyntaxException

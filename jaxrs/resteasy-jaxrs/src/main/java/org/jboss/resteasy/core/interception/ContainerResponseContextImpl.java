@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 
@@ -11,9 +12,11 @@ import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Date;
 import java.util.Locale;
@@ -26,15 +29,15 @@ import java.util.Set;
  */
 public class ContainerResponseContextImpl implements ContainerResponseContext
 {
-   protected final ServerResponse serverResponse;
+   protected final HttpRequest request;
    protected final HttpResponse httpResponse;
-   protected final Map<String, Object> properties;
+   protected final ServerResponse serverResponse;
 
-   public ContainerResponseContextImpl(ServerResponse serverResponse, HttpResponse httpResponse, Map<String, Object> properties)
+   public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, ServerResponse serverResponse)
    {
-      this.serverResponse = serverResponse;
+      this.request = request;
       this.httpResponse = httpResponse;
-      this.properties = properties;
+      this.serverResponse = serverResponse;
    }
 
    public ServerResponse getServerResponse()
@@ -48,9 +51,48 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    }
 
    @Override
-   public Map<String, Object> getProperties()
+   public int getStatus()
    {
-      return properties;
+      return httpResponse.getStatus();
+   }
+
+   @Override
+   public void setStatus(int code)
+   {
+      httpResponse.setStatus(code);
+   }
+
+   @Override
+   public Response.StatusType getStatusInfo()
+   {
+      return Response.Status.fromStatusCode(httpResponse.getStatus());
+   }
+
+   @Override
+   public void setStatusInfo(Response.StatusType statusInfo)
+   {
+      httpResponse.setStatus(statusInfo.getStatusCode());
+   }
+
+   @Override
+   public Class<?> getEntityClass()
+   {
+      if (serverResponse.getEntity() == null) return null;
+      return serverResponse.getEntity().getClass();
+   }
+
+   @Override
+   public Type getEntityType()
+   {
+      return serverResponse.getGenericType();
+   }
+
+   @Override
+   public void setEntity(Object entity, Annotation[] annotations, MediaType mediaType)
+   {
+      serverResponse.setEntity(entity);
+      serverResponse.setAnnotations(annotations);
+      serverResponse.setAnnotations(annotations);
    }
 
    @Override
@@ -169,26 +211,20 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    }
 
    @Override
-   public <T> void setEntity(Class<T> type, Annotation[] annotations, MediaType mediaType, T entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> void setEntity(GenericType<T> genericType, Annotation[] annotations, MediaType mediaType, T entity)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public GenericType<?> getDeclaredEntityType()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Annotation[] getEntityAnnotations()
    {
       return serverResponse.getAnnotations();
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
+   {
+      return serverResponse.getStringHeaders();
+   }
+
+   @Override
+   public String getHeaderString(String name)
+   {
+      return serverResponse.getHeaderString(name);
    }
 }

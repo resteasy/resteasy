@@ -144,8 +144,7 @@ public class InvocationException extends ClientException {
      *
      * @param  message the detail message (which is saved for later retrieval
      *     by the {@link #getMessage()} method).
-     * @param response the client response. The message of the exception is set
-     *     to a value returned by {@code response.toString()}.
+     * @param response the client response.
      */
     public InvocationException(final String message, final Response response) {
         this(message, response, true);
@@ -162,8 +161,7 @@ public class InvocationException extends ClientException {
      *
      * @param  message the detail message (which is saved for later retrieval
      *     by the {@link #getMessage()} method).
-     * @param response the client response. The message of the exception is set
-     *     to a value returned by {@code response.toString()}.
+     * @param response the client response.
      * @param bufferResponseEntity if {@code true} the entity of the referenced
      *      response will be {@link Response#bufferEntity() buffered}.
      */

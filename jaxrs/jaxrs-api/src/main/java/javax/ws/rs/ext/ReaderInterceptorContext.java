@@ -41,6 +41,7 @@ package javax.ws.rs.ext;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
@@ -51,9 +52,9 @@ import javax.ws.rs.core.MultivaluedMap;
  *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
- * @since 2.0
  * @see ReaderInterceptor
  * @see MessageBodyReader
+ * @since 2.0
  */
 public interface ReaderInterceptorContext extends InterceptorContext {
 
