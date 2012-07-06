@@ -80,13 +80,13 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    @Override
    public void setRequestUri(URI requestUri) throws IllegalStateException
    {
-      throw new NotImplementedYetException();
+      httpRequest.setRequestUri(requestUri);
    }
 
    @Override
    public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
    {
-      throw new NotImplementedYetException();
+      httpRequest.setRequestUri(baseUri, requestUri);
    }
 
    @Override

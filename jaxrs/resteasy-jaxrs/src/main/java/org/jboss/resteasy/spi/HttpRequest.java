@@ -1,12 +1,10 @@
 package org.jboss.resteasy.spi;
 
-import javax.ws.rs.core.ExecutionContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Enumeration;
-import java.util.Map;
 
 /**
  * Bridge interface between the base Resteasy JAX-RS implementation and the actual HTTP transport (i.e. a servlet container)
@@ -28,19 +26,13 @@ public interface HttpRequest
     */
    void setInputStream(InputStream stream);
 
-   UriInfo getUri();
+   ResteasyUriInfo getUri();
 
    String getHttpMethod();
+   void setHttpMethod(String method);
 
-   /**
-    * Encoded preprocessed path with extension mappings and matrix parameters removed
-    *
-    * @return
-    */
-   String getPreprocessedPath();
-
-   public void setPreprocessedPath(String path);
-
+   void setRequestUri(URI requestUri) throws IllegalStateException;
+   void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException;
    /**
     * application/x-www-form-urlencoded parameters
     * <p/>

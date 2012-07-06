@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -56,7 +56,7 @@ public class ResourceLocator implements ResourceInvoker
 
    protected Object createResource(HttpRequest request, HttpResponse response, Object locator)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       Object[] args = methodInjector.injectArguments(request, response);
       try
       {
@@ -84,7 +84,7 @@ public class ResourceLocator implements ResourceInvoker
 
    public ServerResponse invoke(HttpRequest request, HttpResponse response)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       try
       {
          Object target = createResource(request, response);
@@ -99,7 +99,7 @@ public class ResourceLocator implements ResourceInvoker
 
    public ServerResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       try
       {
          Object target = createResource(request, response, locator);

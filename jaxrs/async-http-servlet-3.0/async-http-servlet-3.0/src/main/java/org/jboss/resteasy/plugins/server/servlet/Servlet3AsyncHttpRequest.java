@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -31,7 +32,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    protected HttpServletResponse response;
    protected ResteasyAsynchronousContext asynchronousContext;
 
-   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
+   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, HttpResponse httpResponse, HttpHeaders httpHeaders, ResteasyUriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
    {
       super(httpServletRequest, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
       this.response = response;

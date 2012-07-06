@@ -3,11 +3,13 @@ package org.jboss.resteasy.util;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -22,6 +24,30 @@ public class DelegatingHttpRequest implements HttpRequest
    public DelegatingHttpRequest(HttpRequest delegate)
    {
       this.delegate = delegate;
+   }
+
+   @Override
+   public void setHttpMethod(String method)
+   {
+      delegate.setHttpMethod(method);
+   }
+
+   @Override
+   public ResteasyUriInfo getUri()
+   {
+      return delegate.getUri();
+   }
+
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
+   {
+      delegate.setRequestUri(requestUri);
+   }
+
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+   {
+      delegate.setRequestUri(baseUri, requestUri);
    }
 
    @Override
@@ -43,27 +69,9 @@ public class DelegatingHttpRequest implements HttpRequest
    }
 
    @Override
-   public UriInfo getUri()
-   {
-      return delegate.getUri();
-   }
-
-   @Override
    public String getHttpMethod()
    {
       return delegate.getHttpMethod();
-   }
-
-   @Override
-   public String getPreprocessedPath()
-   {
-      return delegate.getPreprocessedPath();
-   }
-
-   @Override
-   public void setPreprocessedPath(String path)
-   {
-      delegate.setPreprocessedPath(path);
    }
 
    @Override

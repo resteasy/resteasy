@@ -369,7 +369,7 @@ public class RootSegment extends Segment
 
    public ResourceInvoker matchRoot(HttpRequest request, int start)
    {
-      String path = request.getPreprocessedPath();
+      String path = request.getUri().getMatchingPath();
       if (start < path.length() && path.charAt(start) == '/') start++;
       return matchChildren(request, path, start);
    }

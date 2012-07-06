@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ public class ResteasyRequestWrapper
    {
       this.httpServletRequest = request;
       HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-      UriInfo uriInfo = ServletUtil.extractUriInfo(request, prefix);
+      ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, prefix);
       // TODO: how are we supposed to get the response to create the
       // wrapper!!!!? The null response will only make it so that the
       // Asynchronous invocations won't work

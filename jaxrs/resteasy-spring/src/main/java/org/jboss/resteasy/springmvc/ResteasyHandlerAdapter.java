@@ -1,10 +1,12 @@
 package org.jboss.resteasy.springmvc;
 
+import com.sun.corba.se.impl.orbutil.concurrent.Sync;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,12 +26,12 @@ import java.io.IOException;
 public class ResteasyHandlerAdapter extends
         ResteasyWebHandlerTemplate<ModelAndView> implements HandlerAdapter
 {
-   protected SynchronousDispatcher dispatcher;
+   protected ResteasyDeployment deployment;
 
-   public ResteasyHandlerAdapter(SynchronousDispatcher dispatcher)
+   public ResteasyHandlerAdapter(ResteasyDeployment deployment)
    {
-      super(dispatcher.getProviderFactory());
-      this.dispatcher = dispatcher;
+      super(deployment.getProviderFactory());
+      this.deployment = deployment;
    }
 
    public long getLastModified(HttpServletRequest request, Object handler)
@@ -48,6 +50,7 @@ public class ResteasyHandlerAdapter extends
    protected ModelAndView handle(ResteasyRequestWrapper requestWrapper,
                                  HttpResponse response) throws IOException
    {
+      SynchronousDispatcher dispatcher = (SynchronousDispatcher)deployment.getDispatcher();
       if (requestWrapper.getErrorCode() != null)
       {
          try
@@ -78,6 +81,7 @@ public class ResteasyHandlerAdapter extends
            ResteasyRequestWrapper requestWrapper, HttpResponse response)
    {
       HttpRequest request = requestWrapper.getHttpRequest();
+      SynchronousDispatcher dispatcher = (SynchronousDispatcher)deployment.getDispatcher();
       dispatcher.pushContextObjects(request, response);
       try
       {
@@ -125,7 +129,7 @@ public class ResteasyHandlerAdapter extends
    protected View createView(ServerResponse serverResponse)
    {
       String contentType = serverResponse.resolveContentType().toString();
-      return new ResteasyView(contentType, dispatcher);
+      return new ResteasyView(contentType, deployment);
    }
 
    public boolean supports(Object handler)

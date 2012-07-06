@@ -53,9 +53,9 @@
     </util:list>
 
 	<bean id="jsonView" class="org.jboss.resteasy.springmvc.ResteasyView"
-		p:contentType="application/json" p:dispatcher-ref="resteasy.dispatcher" />
+		p:contentType="application/json" p:deployment-ref="resteasy.deployment" />
 
 	<bean id="xmlView" class="org.jboss.resteasy.springmvc.ResteasyView"
-		p:contentType="application/xml" p:dispatcher-ref="resteasy.dispatcher" />
+		p:contentType="application/xml" p:deployment-ref="resteasy.deployment" />
 
 </beans>

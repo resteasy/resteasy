@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotFoundException;
@@ -134,7 +134,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
 
    protected void populatePathParams(HttpRequest request, Matcher matcher, String path)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       for (Group group : groups)
       {
          String value = matcher.group(group.group);
@@ -182,7 +182,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
                                                request, String
            path, int start)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       Matcher matcher = pattern.matcher(path);
       matcher.region(start, path.length());
 

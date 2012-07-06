@@ -20,14 +20,6 @@ public interface Dispatcher
 
    Registry getRegistry();
 
-   void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings);
-
-   void setLanguageMappings(Map<String, String> languageMappings);
-
-   Map<String, MediaType> getMediaTypeMappings();
-
-   Map<String, String> getLanguageMappings();
-
    void invoke(HttpRequest in, HttpResponse response);
 
    Response internalInvocation(HttpRequest request, HttpResponse response, Object entity);

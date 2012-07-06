@@ -1,16 +1,13 @@
 package org.jboss.resteasy.mock;
 
 import org.jboss.resteasy.core.Headers;
-import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
-import org.jboss.resteasy.spi.AsynchronousResponse;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.util.Encode;
@@ -18,20 +15,16 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 
-import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.WriterInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -50,9 +43,8 @@ public class MockHttpRequest implements HttpRequest
 {
    protected HttpHeadersImpl httpHeaders;
    protected InputStream inputStream;
-   protected UriInfo uri;
+   protected ResteasyUriInfo uri;
    protected String httpMethod;
-   protected String preprocessedPath;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
@@ -88,10 +80,9 @@ public class MockHttpRequest implements HttpRequest
       URI absolutePath = UriBuilder.fromUri(absoluteUri).replaceQuery(null).build();
       // path must be relative to the application's base uri
 	   URI relativeUri = baseUri.relativize(absoluteUri);
+      relativeUri = UriBuilder.fromUri(relativeUri.getRawPath()).replaceQuery(absoluteUri.getRawQuery()).build();
 		
-      List<PathSegment> encodedPathSegments = PathSegmentImpl.parseSegments(relativeUri.getRawPath(), false);
-      request.uri = new UriInfoImpl(absolutePath, baseUri, "/" + relativeUri.getRawPath(), absoluteUri.getRawQuery(), encodedPathSegments);
-      request.preprocessedPath = request.uri.getPath(false);
+      request.uri = new ResteasyUriInfo(baseUri, relativeUri);
       return request;
    }
 
@@ -152,8 +143,13 @@ public class MockHttpRequest implements HttpRequest
       mock.httpMethod = request.getHttpMethod();
       byte[] bytes = ReadFromStream.readFromStream(1024, request.getInputStream());
       mock.inputStream = new ByteArrayInputStream(bytes);
-      mock.preprocessedPath = request.getPreprocessedPath();
       return mock;
+   }
+
+   @Override
+   public void setHttpMethod(String method)
+   {
+      httpMethod = method;
    }
 
    public ResteasyAsynchronousContext getAsynchronousContext()
@@ -258,7 +254,7 @@ public class MockHttpRequest implements HttpRequest
       this.inputStream = stream;
    }
 
-   public UriInfo getUri()
+   public ResteasyUriInfo getUri()
    {
       return uri;
    }
@@ -302,14 +298,16 @@ public class MockHttpRequest implements HttpRequest
       return decodedFormParameters;
    }
 
-   public String getPreprocessedPath()
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
    {
-      return preprocessedPath;
+      uri = uri.relative(requestUri);
    }
 
-   public void setPreprocessedPath(String path)
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
    {
-      preprocessedPath = path;
+      uri = new ResteasyUriInfo(baseUri, requestUri);
    }
 
    public boolean isInitial()

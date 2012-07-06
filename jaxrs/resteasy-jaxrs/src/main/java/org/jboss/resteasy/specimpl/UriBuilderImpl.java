@@ -50,9 +50,9 @@ public class UriBuilderImpl extends UriBuilder
       return impl;
    }
 
-   private static final Pattern uriPattern = Pattern.compile("([^:]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
-   private static final Pattern sspPattern = Pattern.compile("([^:]+):(.+)");
-   private static final Pattern pathPattern = Pattern.compile("(/[^?]*)?(\\?([^#]+))?(#(.*))?");
+   private static final Pattern uriPattern = Pattern.compile("([a-zA-Z0-9+.-]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
+   private static final Pattern sspPattern = Pattern.compile("([^:/]+):(.+)");
+   private static final Pattern pathPattern = Pattern.compile("([^?]*)?(\\?([^#]+))?(#(.*))?");
 
    /**
     * You may put path parameters anywhere within the uriTemplate except port
