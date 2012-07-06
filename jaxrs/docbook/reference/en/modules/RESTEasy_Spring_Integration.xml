@@ -102,5 +102,38 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 ....
 ]]>
 </programlisting>
+    <para>
+        You can specify resteasy configuration options by overriding the resteasy.deployment bean which is an instance
+        of org.jboss.resteasy.spi.ResteasyDeployment.  Here's an example of adding media type suffix mappings as well
+        as enabling the Resteasy asynchronous job service.
+    </para>
+<programlisting>
+<![CDATA[
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        ">
+
+    <!-- Import basic SpringMVC Resteasy integration -->
+    <import resource="classpath:springmvc-resteasy.xml" />
+
+    <!-- override the bean definition for deployment -->
+    <bean id="resteasy.deployment" class="org.jboss.resteasy.spi.ResteasyDeployment" init-method="start" destroy-method="stop">
+        <property name="asyncJobServiceEnabled" value="true"/>
+        <property name="mediaTypeMappings">
+            <map>
+                <entry key="json" value="application/json" />
+                <entry key="xml" value="application/xml" />
+            </map>
+        </property>
+    </bean>
+...
+
+]]>
+</programlisting>
 </sect2>
 </chapter>

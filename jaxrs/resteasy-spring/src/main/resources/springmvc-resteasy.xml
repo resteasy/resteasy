@@ -20,8 +20,30 @@
 
     <!-- ========== Resteasy setup ================ -->
 
-    <bean id="resteasy.providerFactory" class="org.jboss.resteasy.spi.ResteasyProviderFactory"
-          factory-method="getInstance">
+    <bean id="resteasy.deployment" class="org.jboss.resteasy.spi.ResteasyDeployment" init-method="start" destroy-method="stop">
+        <description>
+            This bean manages configuring your resteasy runtime.
+        </description>
+    </bean>
+
+    <bean id="resteasy.registry" factory-bean="resteasy.deployment"
+          factory-method="getRegistry">
+        <description>
+            Expose the dispatcher's registry as a full-blown Spring
+            bean, so that it can be passed in as a reference.
+        </description>
+    </bean>
+
+    <bean id="resteasy.dispatcher" factory-bean="resteasy.deployment"
+          factory-method="getDispatcher">
+        <description>
+            Expose the dispatcher's registry as a full-blown Spring
+            bean, so that it can be passed in as a reference.
+        </description>
+    </bean>
+
+    <bean id="resteasy.providerFactory" factory-bean="resteasy.deployment"
+          factory-method="getProviderFactory">
         <description>
             This bean manages all of the JAX-RS @Providers.
             @Providers convert from the inputStream to a java object and from a
@@ -31,37 +53,22 @@
         </description>
     </bean>
 
-    <bean id="resteasy.intializer" class="org.jboss.resteasy.springmvc.ResteasyInitializer">
-        <constructor-arg ref="resteasy.providerFactory"/>
-    </bean>
-
-    <bean id="resteasy.dispatcher" class="org.jboss.resteasy.core.SynchronousDispatcher"
-          depends-on="resteasy.intializer">
-        <constructor-arg ref="resteasy.providerFactory"/>
-    </bean>
 
 
-    <bean id="resteasy.registry" factory-bean="resteasy.dispatcher"
-          factory-method="getRegistry">
-        <description>
-            Expose the dispatcher's registry as a full-blown Spring
-            bean, so that it can be passed in as a reference.
-        </description>
-    </bean>
 
     <bean id="resteasy.spring.bean.processor" class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor"
-          depends-on="resteasy.intializer">
+          depends-on="resteasy.deployment">
         <description>
             Add Resources and @Providers to the appropriate places
             in Resteasy's infrastructure
         </description>
-        <constructor-arg ref="resteasy.dispatcher"/>
+        <constructor-arg ref="resteasy.deployment"/>
     </bean>
 
     <!-- ========== Resteasy Spring MVC setup ================ -->
 
     <bean abstract="true" class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping"
-          id="abstract.resteasy.handlerMapping">
+          id="abstract.resteasy.handlerMapping" depends-on="resteasy.deployment">
         <description>
             Tap into the RestEasy registry to find out if any of it's
             Resources handle a specific URL.
@@ -78,7 +85,7 @@
             with the "resteasy.exception.handler"
 
         </description>
-        <constructor-arg ref="resteasy.dispatcher"/>
+        <constructor-arg ref="resteasy.deployment"/>
         <property name="interceptors">
             <description>
                 Look for a list/array bean named "resteasy.dispatcher.interceptors"
@@ -91,14 +98,14 @@
 
     <bean id="resteasy.handlerMapping" parent="abstract.resteasy.handlerMapping"/>
 
-    <bean id="resteasy.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter">
+    <bean id="resteasy.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter" depends-on="resteasy.deployment">
         <description>
             This HandlerAdapter knows how to forward requests to
             Resteasy for the handling of the service functionality, but not the
             rendering, which is handled by a ResteasyView.
         </description>
 
-        <constructor-arg ref="resteasy.dispatcher"/>
+        <constructor-arg ref="resteasy.deployment"/>
     </bean>
 
     <bean id="resteasy.exception.handler"
@@ -112,7 +119,7 @@
 
     <bean id="resteasy.no.resource.found.view"
           class="org.jboss.resteasy.springmvc.ResteasyNoResourceFoundView"
-          p:dispatcher-ref="resteasy.dispatcher"/>
+          p:deployment-ref="resteasy.deployment"/>
 
     <bean id="reateasy.error.view.resolver"
           class="org.springframework.web.servlet.view.BeanNameViewResolver"/>

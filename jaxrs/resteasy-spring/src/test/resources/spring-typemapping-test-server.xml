@@ -10,10 +10,8 @@
     <!-- Import basic SpringMVC Resteasy integration -->
     <import resource="classpath:springmvc-resteasy.xml" />
 
-    <!-- override the bean definition for dispatcher -->
-    <bean id="resteasy.dispatcher" class="org.jboss.resteasy.core.SynchronousDispatcher"
-        depends-on="resteasy.intializer">
-        <constructor-arg ref="resteasy.providerFactory" />
+    <!-- override the bean definition for deployment -->
+    <bean id="resteasy.deployment" class="org.jboss.resteasy.spi.ResteasyDeployment" init-method="start" destroy-method="stop">
         <property name="mediaTypeMappings">
             <map>
                 <entry key="json" value="application/json" />

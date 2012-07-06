@@ -17,6 +17,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.springframework.aop.support.AopUtils;
@@ -166,6 +167,11 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          }
          return isSingleton;
       }
+   }
+
+   public SpringBeanProcessor(ResteasyDeployment deployment)
+   {
+      this(deployment.getDispatcher(), deployment.getRegistry(), deployment.getProviderFactory());
    }
 
    public SpringBeanProcessor(Dispatcher dispatcher)

@@ -4,7 +4,7 @@ import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.PathHelper;
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class ServletUtil
 {
-   public static UriInfoImpl extractUriInfo(HttpServletRequest request, String servletPrefix)
+   public static ResteasyUriInfo extractUriInfo(HttpServletRequest request, String servletPrefix)
    {
       String contextPath = request.getContextPath();
       if (servletPrefix != null && servletPrefix.length() > 0 && !servletPrefix.equals("/"))
@@ -50,7 +50,7 @@ public class ServletUtil
          builder.host(absolute.getHost());
          builder.port(absolute.getPort());
          builder.path(absolute.getPath());
-         builder.replaceQuery(absolute.getQuery());
+         builder.replaceQuery(null);
          absolutePath = builder.build();
       }
       catch (MalformedURLException e)
@@ -59,7 +59,7 @@ public class ServletUtil
       }
 
       String path = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path, false);
+      URI relativeURI = UriBuilder.fromUri(path).replaceQuery(request.getQueryString()).build();
 
       URI baseURI = absolutePath;
       if (!path.trim().equals(""))
@@ -70,7 +70,7 @@ public class ServletUtil
       }
       //System.out.println("path: " + path);
       //System.out.println("query string: " + request.getQueryString());
-      UriInfoImpl uriInfo = new UriInfoImpl(absolutePath, baseURI, path, request.getQueryString(), pathSegments);
+      ResteasyUriInfo uriInfo = new ResteasyUriInfo(baseURI, relativeURI);
       return uriInfo;
    }
 

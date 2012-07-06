@@ -13,6 +13,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServerBean;
 import org.junit.Assert;
 import org.junit.Test;
@@ -61,9 +62,10 @@ public class AsynchSpringTest
    @Autowired
    public void setServer(TJWSEmbeddedSpringMVCServerBean server)
    {
-      dispatcher = (AsynchronousDispatcher) server.getServer()
+      ResteasyDeployment deployment = (ResteasyDeployment)server.getServer()
             .getApplicationContext().getBeansOfType(
-                  AsynchronousDispatcher.class).values().iterator().next();
+                  ResteasyDeployment.class).values().iterator().next();
+      dispatcher = (AsynchronousDispatcher)deployment.getDispatcher();
    }
 
    @Test

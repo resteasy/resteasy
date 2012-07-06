@@ -1,5 +1,7 @@
-package org.jboss.resteasy.specimpl;
+package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -13,13 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * UriInfo implementation with some added extra methods to help process requests
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class UriInfoImpl implements UriInfo
+public class ResteasyUriInfo implements UriInfo
 {
    private String path;
    private String encodedPath;
+   private String matchingPath;
    private MultivaluedMap<String, String> queryParameters;
    private MultivaluedMap<String, String> encodedQueryParameters;
    private MultivaluedMap<String, String> pathParameters;
@@ -30,45 +35,76 @@ public class UriInfoImpl implements UriInfo
    private List<PathSegment> pathSegments;
    private List<PathSegment> encodedPathSegments;
    private URI absolutePath;
-   private URI absolutePathWithQueryString;
+   private URI requestURI;
    private URI baseURI;
    private List<String> matchedUris;
    private List<String> encodedMatchedUris;
    private List<Object> ancestors;
 
 
-   public UriInfoImpl(URI absolutePath, URI baseUri, String encodedPath, String queryString, List<PathSegment> encodedPathSegments)
+   public ResteasyUriInfo(URI base, URI relative)
    {
-      /*
-      logger.info("**** URIINFO encodedPath: " + encodedPath);
-      for (PathSegment segment : encodedPathSegments)
+      String b = base.toString();
+      if (!b.endsWith("/")) b += "/";
+      String r = relative.getRawPath();
+      if (r.startsWith("/"))
       {
-         logger.info("   Segment: " + segment.getPath());
+         encodedPath =  r;
+         path = relative.getPath();
       }
-      */
-      this.encodedPath = encodedPath;
-      this.path = Encode.decodePath(encodedPath);
-      //System.out.println("path: " + path);
-      //System.out.println("encodedPath: " + encodedPath);
-
-      this.absolutePath = absolutePath;
-      this.encodedPathSegments = encodedPathSegments;
-      this.baseURI = baseUri;
-
-      extractParameters(queryString);
+      else
+      {
+         encodedPath = "/" + r;
+         path = "/" + relative.getPath();
+      }
+      requestURI = UriBuilder.fromUri(base).path(relative.getRawPath()).replaceQuery(relative.getRawQuery()).build();
+      baseURI = base;
+      encodedPathSegments = PathSegmentImpl.parseSegments(encodedPath, false);
       this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
       for (PathSegment segment : encodedPathSegments)
       {
          pathSegments.add(new PathSegmentImpl(((PathSegmentImpl) segment).getOriginal(), true));
       }
-      if (queryString == null)
+      extractParameters(requestURI.getRawQuery());
+      extractMatchingPath(encodedPathSegments);
+
+      absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
+   }
+
+   /**
+    * matching path without matrix parameters
+    *
+    * @param encodedPathSegments
+    */
+   protected void extractMatchingPath(List<PathSegment> encodedPathSegments)
+   {
+      StringBuilder preprocessedPath = new StringBuilder();
+      for (PathSegment pathSegment : encodedPathSegments)
       {
-         this.absolutePathWithQueryString = absolutePath;
+         preprocessedPath.append("/").append(pathSegment.getPath());
       }
-      else
-      {
-         this.absolutePathWithQueryString = URI.create(absolutePath.toString() + "?" + queryString);
-      }
+      matchingPath = preprocessedPath.toString();
+   }
+
+   /**
+    * Encoded path without matrix parameters
+    *
+    * @return
+    */
+   public String getMatchingPath()
+   {
+      return matchingPath;
+   }
+
+   /**
+    * Create a UriInfo from the baseURI
+    *
+    * @param relative
+    * @return
+    */
+   public ResteasyUriInfo relative(URI relative)
+   {
+      return new ResteasyUriInfo(baseURI, relative);
    }
 
    public String getPath()
@@ -95,12 +131,12 @@ public class UriInfoImpl implements UriInfo
 
    public URI getRequestUri()
    {
-      return absolutePathWithQueryString;
+      return requestURI;
    }
 
    public UriBuilder getRequestUriBuilder()
    {
-      return UriBuilder.fromUri(absolutePathWithQueryString);
+      return UriBuilder.fromUri(requestURI);
    }
 
    public URI getAbsolutePath()

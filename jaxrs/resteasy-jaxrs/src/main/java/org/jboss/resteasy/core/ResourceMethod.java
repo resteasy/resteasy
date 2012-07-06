@@ -1,21 +1,18 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.Segment;
 import org.jboss.resteasy.plugins.providers.validation.ResteasyViolationExceptionExtension;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.Types;
@@ -232,7 +229,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
    {
       request.setAttribute(ResourceMethod.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       uriInfo.pushCurrentResource(target);
       try
       {
