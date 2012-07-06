@@ -3,13 +3,13 @@ package org.jboss.resteasy.spi;
 import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.AcceptHeaderByFileSuffixFilter;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.PickConstructor;
 
@@ -229,6 +229,7 @@ public class ResteasyDeployment
             dispatcher.addHttpPreprocessor(new AcceptParameterHttpPreprocessor(paramMapping));
          }
 
+         AcceptHeaderByFileSuffixFilter suffixNegotiationFilter = null;
          if (mediaTypeMappings != null)
          {
             Map<String, MediaType> extMap = new HashMap<String, MediaType>();
@@ -237,15 +238,24 @@ public class ResteasyDeployment
                String value = ext.getValue();
                extMap.put(ext.getKey().trim(), MediaType.valueOf(value.trim()));
             }
-            if (dispatcher.getMediaTypeMappings() != null) dispatcher.getMediaTypeMappings().putAll(extMap);
-            else dispatcher.setMediaTypeMappings(extMap);
+
+            if (suffixNegotiationFilter == null)
+            {
+               suffixNegotiationFilter = new AcceptHeaderByFileSuffixFilter();
+               providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
+            }
+            suffixNegotiationFilter.getMediaTypeMappings().putAll(extMap);
          }
 
 
          if (languageExtensions != null)
          {
-            if (dispatcher.getLanguageMappings() != null) dispatcher.getLanguageMappings().putAll(languageExtensions);
-            else dispatcher.setLanguageMappings(languageExtensions);
+            if (suffixNegotiationFilter == null)
+            {
+               suffixNegotiationFilter = new AcceptHeaderByFileSuffixFilter();
+               providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
+            }
+            suffixNegotiationFilter.getLanguageMappings().putAll(languageExtensions);
          }
       }
       finally

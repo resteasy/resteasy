@@ -50,7 +50,6 @@ public class SynchronousDispatcher implements Dispatcher
    protected ResteasyProviderFactory providerFactory;
    protected Registry registry;
    protected List<HttpRequestPreprocessor> requestPreprocessors = new ArrayList<HttpRequestPreprocessor>();
-   protected ExtensionHttpPreprocessor extentionHttpPreprocessor;
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
    protected Set<String> unwrappedExceptions = new HashSet<String>();
 
@@ -60,7 +59,6 @@ public class SynchronousDispatcher implements Dispatcher
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
-      requestPreprocessors.add(extentionHttpPreprocessor = new ExtensionHttpPreprocessor());
       defaultContextObjects.put(Providers.class, providerFactory);
       defaultContextObjects.put(Registry.class, registry);
       defaultContextObjects.put(Dispatcher.class, this);
@@ -77,29 +75,9 @@ public class SynchronousDispatcher implements Dispatcher
       return registry;
    }
 
-   public void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings)
-   {
-      extentionHttpPreprocessor.mediaTypeMappings = mediaTypeMappings;
-   }
-
-   public void setLanguageMappings(Map<String, String> languageMappings)
-   {
-      extentionHttpPreprocessor.languageMappings = languageMappings;
-   }
-
-   public Map<String, MediaType> getMediaTypeMappings()
-   {
-      return extentionHttpPreprocessor.mediaTypeMappings;
-   }
-
    public Map<Class, Object> getDefaultContextObjects()
    {
       return defaultContextObjects;
-   }
-
-   public Map<String, String> getLanguageMappings()
-   {
-      return extentionHttpPreprocessor.languageMappings;
    }
 
    public Set<String> getUnwrappedExceptions()

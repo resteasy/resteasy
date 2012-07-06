@@ -7,6 +7,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -34,16 +36,15 @@ public class HttpServletInputMessage implements HttpRequest
    protected HttpServletRequest request;
    protected SynchronousDispatcher dispatcher;
    protected HttpResponse httpResponse;
-   protected UriInfo uri;
+   protected ResteasyUriInfo uri;
    protected String httpMethod;
-   protected String preProcessedPath;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
    protected InputStream overridenStream;
    protected SynchronousExecutionContext executionContext;
 
 
-   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
+   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
    {
       this.request = request;
       this.dispatcher = dispatcher;
@@ -51,8 +52,19 @@ public class HttpServletInputMessage implements HttpRequest
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
       this.uri = uri;
-      this.preProcessedPath = uri.getPath(false);
       executionContext = new SynchronousExecutionContext(dispatcher, this, httpResponse);
+   }
+
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
+   {
+      uri = uri.relative(requestUri);
+   }
+
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+   {
+      uri = new ResteasyUriInfo(baseUri, requestUri);
    }
 
    public MultivaluedMap<String, String> getPutFormParameters()
@@ -186,7 +198,7 @@ public class HttpServletInputMessage implements HttpRequest
    }
 
    @Override
-   public UriInfo getUri()
+   public ResteasyUriInfo getUri()
    {
       return uri;
    }
@@ -198,15 +210,9 @@ public class HttpServletInputMessage implements HttpRequest
    }
 
    @Override
-   public String getPreprocessedPath()
+   public void setHttpMethod(String method)
    {
-      return preProcessedPath;
-   }
-
-   @Override
-   public void setPreprocessedPath(String path)
-   {
-      preProcessedPath = path;
+      this.httpMethod = method;
    }
 
    @Override

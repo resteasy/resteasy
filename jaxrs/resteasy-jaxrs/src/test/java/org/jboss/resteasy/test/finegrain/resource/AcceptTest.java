@@ -79,14 +79,6 @@ public class AcceptTest
          throw new RuntimeException(e);
       }
 
-      // finally strip out matrix parameters
-
-      StringBuilder preprocessedPath = new StringBuilder();
-      for (PathSegment pathSegment : request.getUri().getPathSegments())
-      {
-         preprocessedPath.append("/").append(pathSegment.getPath());
-      }
-      request.setPreprocessedPath(preprocessedPath.toString());
       return request;
    }
 

@@ -37,17 +37,6 @@ public class TestMediaTypePropertyEditor
    }
 
    @Test
-   public void validateTypeMappingsExistInSpring()
-   {
-      ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-typemapping-test-server.xml");
-      SynchronousDispatcher dispatcher = (SynchronousDispatcher) ctx.getBean("resteasy.dispatcher");
-      Map<String, MediaType> mappings = dispatcher.getMediaTypeMappings();
-      assertEquals(2, mappings.size());
-      assertEquals("application/xml", mappings.get("xml").toString());
-      assertEquals("application/json", mappings.get("json").toString());
-   }
-
-   @Test
    public void testSetAsText()
    {
       propertyEditor.setAsText("application/xml");
