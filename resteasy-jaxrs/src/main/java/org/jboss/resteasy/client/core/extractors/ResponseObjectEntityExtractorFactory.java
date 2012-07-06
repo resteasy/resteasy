@@ -151,7 +151,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
                EntityExtractorFactory extractor = context.getExtractorFactory();
                ResteasyProviderFactory provider = request.getProviderFactory();
                ClientExecutor executor = request.getExecutor();
-               return ProxyFactory.createClientInvoker(method.getClass(), method, uri,
+               return ProxyFactory.createClientInvoker(method.getDeclaringClass(), method, uri,
                        executor, provider, extractor).invoke(args);
             }
          };
