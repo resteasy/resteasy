@@ -49,14 +49,11 @@ public class UriBuilderImpl extends UriBuilder
       return impl;
    }
 
-   private static final Pattern uriPattern = Pattern.compile("([^:]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
-   private static final Pattern pathPattern = Pattern.compile("(/[^?]*)(\\?([^#]+))?(#(.*))?");
+   private static final Pattern uriPattern = Pattern.compile("([a-zA-Z0-9+.-]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
+   private static final Pattern sspPattern = Pattern.compile("([^:/]+):(.+)");
+   private static final Pattern pathPattern = Pattern.compile("([^?]*)?(\\?([^#]+))?(#(.*))?");
 
    /**
-    * Must follow the patter scheme://host:port/path?query#fragment
-    * <p/>
-    * port, path, query and fragment are optional. Scheme and host must be specified.
-    * <p/>
     * You may put path parameters anywhere within the uriTemplate except port
     *
     * @param uriTemplate
@@ -70,10 +67,6 @@ public class UriBuilderImpl extends UriBuilder
    }
 
    /**
-    * Must follow the pattern scheme://host:port/path?query#fragment or /path?query#fragment
-    * <p/>
-    * port, path, query and fragment are optional. Scheme and host must be specified.
-    * <p/>
     * You may put path parameters anywhere within the uriTemplate except port
     *
     * @param uriTemplate
@@ -82,28 +75,46 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder uriTemplate(String uriTemplate)
    {
       Matcher match = uriPattern.matcher(uriTemplate);
-      if (!match.matches())
-      {
-         match = pathPattern.matcher(uriTemplate);
-         if (!match.matches()) throw new RuntimeException("Illegal uri template: " + uriTemplate);
-         if (match.group(1) != null) path(match.group(1));
-         if (match.group(3) != null) replaceQuery(match.group(7));
-         if (match.group(5) != null) fragment(match.group(8));
-      }
-      else
+      if (match.matches())
       {
          scheme(match.group(1));
-         host(match.group(2));
+         String host = match.group(2);
+         if (host != null)
+         {
+            int at = host.indexOf('@');
+            if (at > -1)
+            {
+               String user = host.substring(0, at);
+               host = host.substring(at + 1);
+               userInfo(user);
+            }
+         }
+         host(host);
          if (match.group(4) != null) port(Integer.valueOf(match.group(4)));
          if (match.group(5) != null) path(match.group(5));
          if (match.group(7) != null) replaceQuery(match.group(7));
-         if (match.group(9) != null) fragment(match.group(8));
+         if (match.group(9) != null) fragment(match.group(9));
+         return this;
+      }
+      match = sspPattern.matcher(uriTemplate);
+      if (match.matches())
+      {
+         scheme(match.group(1));
+         schemeSpecificPart(match.group(2));
+         return this;
       }
 
-      return this;
+      match = pathPattern.matcher(uriTemplate);
+      if (match.matches())
+      {
+         if (match.group(1) != null) path(match.group(1));
+         if (match.group(3) != null) replaceQuery(match.group(3));
+         if (match.group(5) != null) fragment(match.group(5));
+         return this;
+      }
+      throw new RuntimeException("Illegal uri template: " + uriTemplate);
 
    }
-
    @Override
    public UriBuilder uri(URI uri) throws IllegalArgumentException
    {
