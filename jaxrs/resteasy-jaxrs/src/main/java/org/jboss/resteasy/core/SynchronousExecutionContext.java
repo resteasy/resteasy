@@ -22,7 +22,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
    protected final CountDownLatch syncLatch = new CountDownLatch(1);
    protected long timeout;
    protected TimeUnit timeoutUnit = TimeUnit.MILLISECONDS;
-   protected boolean suspended;
+   protected boolean wasSuspended;
    protected volatile boolean done;
    protected Object responseLock = new Object();
    protected ResteasyAsynchronousResponse asynchronousResponse;
@@ -47,7 +47,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
    @Override
    public AsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
    {
-      suspended = true;
+      wasSuspended = true;
       asynchronousResponse = new SynchronousAsynchronousResponse(dispatcher, request, response);
       asynchronousResponse.setSuspendTimeout(time, unit);
       return asynchronousResponse;
@@ -62,11 +62,14 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
    @Override
    public boolean isSuspended()
    {
-      return suspended;
+      return wasSuspended;
    }
 
    protected class SynchronousAsynchronousResponse extends AbstractAsynchronousResponse
    {
+      protected boolean cancelled;
+      protected Object fallback;
+
       public SynchronousAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
       {
          super(dispatcher, request, response);
@@ -79,12 +82,14 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
          synchronized (responseLock)
          {
             if (done) throw new IllegalStateException("Response processing is finished");
+            if (cancelled) throw new IllegalStateException("Response processing is cancelled");
             try
             {
                super.resume(entity);
             }
             finally
             {
+               done = true;
                syncLatch.countDown();
             }
          }
@@ -98,12 +103,14 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
          synchronized (responseLock)
          {
             if (done) throw new IllegalStateException("Response processing is finished");
+            if (cancelled) throw new IllegalStateException("Response processing is cancelled");
             try
             {
                super.resume(exc);
             }
             finally
             {
+               done = true;
                syncLatch.countDown();
             }
          }
@@ -112,7 +119,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       @Override
       public void initialRequestThreadFinished()
       {
-         if (!suspended) return;
+         if (!wasSuspended) return;
 
          boolean result = false;
          try
@@ -131,9 +138,9 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
                {
                   try
                   {
-                     response.sendError(503);
+                     sendResponseObject(fallback, 503);
                   }
-                  catch (IOException e)
+                  catch (Exception e)
                   {
                      throw new UnhandledException(e);
                   }
@@ -156,19 +163,25 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       @Override
       public void cancel()
       {
-         throw new NotImplementedYetException();
+         synchronized (responseLock)
+         {
+            if (done || cancelled) return;
+            done = true;
+            cancelled = true;
+            sendResponseObject(fallback, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         }
       }
 
       @Override
       public boolean isSuspended()
       {
-         return suspended;
+         return !done;
       }
 
       @Override
       public boolean isCancelled()
       {
-         throw new NotImplementedYetException();
+         return cancelled;
       }
 
       @Override
@@ -180,7 +193,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       @Override
       public void setFallbackResponse(Object response)
       {
-         throw new NotImplementedYetException();
+         fallback = response;
       }
 
       @Override

@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.AsynchronousResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +34,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    {
       super(httpServletRequest, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
       this.response = response;
-      asynchronousContext = new Servlet3ExecutionContext((ServletRequest)httpServletRequest);
+      asynchronousContext = new Servlet3ExecutionContext((ServletRequest) httpServletRequest);
    }
 
    @Override
@@ -49,8 +47,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    {
       protected final ServletRequest servletRequest;
       protected boolean done;
-      protected boolean canceled;
-      protected boolean suspended;
+      protected boolean cancelled;
+      protected boolean wasSuspended;
       protected Servle3AsychronousResponse asynchronousResponse;
 
       public Servlet3ExecutionContext(ServletRequest servletRequest)
@@ -61,6 +59,9 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 
       private class Servle3AsychronousResponse extends AbstractAsynchronousResponse implements AsyncListener
       {
+         private Object responseLock = new Object();
+         private Object fallback;
+
          private Servle3AsychronousResponse()
          {
             super(Servlet3ExecutionContext.this.dispatcher, Servlet3ExecutionContext.this.request, Servlet3ExecutionContext.this.response);
@@ -69,15 +70,20 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public void resume(Object entity) throws IllegalStateException
          {
-            AsyncContext asyncContext = getAsyncContext();
-            try
+            synchronized (responseLock)
             {
-               super.resume(entity);
-            }
-            finally
-            {
-               done = true;
-               asyncContext.complete();
+               if (done) throw new IllegalStateException("Response processing is finished");
+               if (cancelled) throw new IllegalStateException("Response processing is cancelled");
+               AsyncContext asyncContext = getAsyncContext();
+               try
+               {
+                  super.resume(entity);
+               }
+               finally
+               {
+                  done = true;
+                  asyncContext.complete();
+               }
             }
 
          }
@@ -85,15 +91,20 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public void resume(Throwable exc) throws IllegalStateException
          {
-            AsyncContext asyncContext = getAsyncContext();
-            try
+            synchronized (responseLock)
             {
-               super.resume(exc);
-            }
-            finally
-            {
-               done = true;
-               asyncContext.complete();
+               if (done) throw new IllegalStateException("Response processing is finished");
+               if (cancelled) throw new IllegalStateException("Response processing is cancelled");
+               AsyncContext asyncContext = getAsyncContext();
+               try
+               {
+                  super.resume(exc);
+               }
+               finally
+               {
+                  done = true;
+                  asyncContext.complete();
+               }
             }
          }
 
@@ -113,13 +124,27 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public void cancel()
          {
-            throw new NotImplementedYetException();
+            synchronized (responseLock)
+            {
+               if (done || cancelled) return;
+               done = true;
+               cancelled = true;
+               AsyncContext asyncContext = getAsyncContext();
+               try
+               {
+                  sendResponseObject(fallback, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+               }
+               finally
+               {
+                  asyncContext.complete();
+               }
+            }
          }
 
          @Override
          public boolean isCancelled()
          {
-            return canceled;
+            return cancelled;
          }
 
          @Override
@@ -131,7 +156,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public void setFallbackResponse(Object response)
          {
-            throw new NotImplementedYetException();
+            fallback = response;
          }
 
          @Override
@@ -143,7 +168,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public boolean isSuspended()
          {
-            return suspended && !done && !canceled;
+            return !done && !cancelled;
          }
 
          @Override
@@ -155,17 +180,23 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public void onTimeout(AsyncEvent asyncEvent) throws IOException
          {
-            canceled = true;
+            cancelled = true;
             done = true;
             response.reset();
-            response.sendError(503);
-            getAsyncContext().complete();
+            try
+            {
+               sendResponseObject(fallback, 503);
+            }
+            finally
+            {
+               getAsyncContext().complete();
+            }
          }
 
          @Override
          public void onError(AsyncEvent asyncEvent) throws IOException
          {
-            canceled = true;
+            cancelled = true;
             done = true;
          }
 
@@ -204,7 +235,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          AsyncContext asyncContext = servletRequest.startAsync();
          asyncContext.setTimeout(unit.toMillis(time));
          asyncContext.addListener(asynchronousResponse);
-         suspended = true;
+         wasSuspended = true;
          return asynchronousResponse;
       }
 
@@ -222,7 +253,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       @Override
       public boolean isSuspended()
       {
-         return suspended;
+         return wasSuspended;
       }
 
    }

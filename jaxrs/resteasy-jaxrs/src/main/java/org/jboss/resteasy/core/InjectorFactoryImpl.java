@@ -17,6 +17,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.AsynchronousResponse;
 import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -134,6 +135,10 @@ public class InjectorFactoryImpl implements InjectorFactory
       else if (findAnnotation(annotations, Context.class) != null)
       {
          return new ContextParameterInjector(type, providerFactory);
+      }
+      else if (javax.ws.rs.core.AsynchronousResponse.class.isAssignableFrom(type))
+      {
+         return new AsynchronousResponseInjector(injectTarget);
       }
       else if (useDefault)
       {

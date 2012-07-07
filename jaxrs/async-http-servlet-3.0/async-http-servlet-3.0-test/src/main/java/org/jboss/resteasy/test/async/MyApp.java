@@ -15,8 +15,8 @@ public class MyApp extends Application
 
    public MyApp()
    {
-      System.out.println("************* APP **********");
       singletons.add(new MyResource());
+      singletons.add(new JaxrsResource());
    }
 
    @Override
