@@ -20,7 +20,7 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MockAsyncHttpTest extends BaseResourceTest
+public class LegacySuspendTest extends BaseResourceTest
 {
    @Path("/")
    public static class MyResource
@@ -75,6 +75,7 @@ public class MockAsyncHttpTest extends BaseResourceTest
          };
          t.start();
       }
+
    }
 
    @Test

@@ -23,9 +23,11 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.jboss.resteasy.util.FindAnnotation.*;
 
@@ -37,6 +39,7 @@ import static org.jboss.resteasy.util.FindAnnotation.*;
 public class InjectorFactoryImpl implements InjectorFactory
 {
    private ResteasyProviderFactory providerFactory;
+   private ConcurrentHashMap<Class<?>, Class<?>> contextProxyCache = new ConcurrentHashMap<Class<?>, Class<?>>();
 
 
    public InjectorFactoryImpl(ResteasyProviderFactory factory)
@@ -133,7 +136,21 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if (findAnnotation(annotations, Context.class) != null)
       {
-         return new ContextParameterInjector(type, providerFactory);
+         Class proxy = null;
+         if (type.isInterface())
+         {
+            proxy = contextProxyCache.get(type);
+            if (proxy == null)
+            {
+               proxy = Proxy.getProxyClass(type.getClassLoader(), type);
+               contextProxyCache.putIfAbsent(type, proxy);
+            }
+         }
+         return new ContextParameterInjector(proxy, type, providerFactory);
+      }
+      else if (javax.ws.rs.core.AsynchronousResponse.class.isAssignableFrom(type))
+      {
+         return new AsynchronousResponseInjector(injectTarget);
       }
       else if (useDefault)
       {

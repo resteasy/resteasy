@@ -95,6 +95,25 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       dispatcher.asynchronousDelivery(this.request, this.response, response);
    }
 
+   protected void sendResponseObject(Object entity, int status)
+   {
+      if (entity == null)
+      {
+         sendResponse(Response.status(status).build());
+      }
+      else if (entity instanceof Response)
+      {
+         sendResponse((Response) entity);
+      }
+      else
+      {
+         if (method == null) throw new IllegalStateException("Unknown media type for response entity");
+         MediaType type = method.resolveContentType(request, entity);
+         sendResponse(Response.status(status).entity(entity).type(type).build());
+      }
+
+   }
+
    @Override
    public void resume(Object entity) throws IllegalStateException
    {
