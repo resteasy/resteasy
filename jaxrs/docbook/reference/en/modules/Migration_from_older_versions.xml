@@ -12,11 +12,22 @@
     <title>Migrating from 2.x to 3.0</title>
     <itemizedlist>
         <listitem>
+            Resteasy's proprietary interceptor, client, and async http APIs have been deprecated and may be removed as soon as Resteasy 3.1.
+            JAX-RS 2.0 has standardized these features.
+        </listitem>
+        <listitem>
+            The new JAX-RS 2.0 client-side filters will not be bound and run when you are using Resteasy's old client api.
+        </listitem>
+        <listitem>
+            On server-side, all old Resteasy interceptors can run in parallel with the new JAX-RS 2.0 filter and interceptor
+            interfaces.
+        </listitem>
+        <listitem>
             Some SPIs have changed.  This should not effect applications unless you are doing something you aren't supposed
             to do.
         </listitem>
         <listitem>
-            The async tomcat and async jboss web modules have been removed.  If you are not running under Servlet 3.0
+            The async tomcat and async jboss web modules have been removed.  If you are not running under Servlet 3.0,
             async HTTP server-side, will be faked and run synchronously in same request thread.
         </listitem>
     </itemizedlist>

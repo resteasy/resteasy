@@ -1,15 +1,11 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -24,11 +20,13 @@ import java.lang.reflect.Proxy;
 public class ContextParameterInjector implements ValueInjector
 {
    private Class type;
+   private Class proxy;
    private ResteasyProviderFactory factory;
 
-   public ContextParameterInjector(Class type, ResteasyProviderFactory factory)
+   public ContextParameterInjector(Class proxy, Class type, ResteasyProviderFactory factory)
    {
       this.type = type;
+      this.proxy = proxy;
       this.factory = factory;
    }
 
@@ -41,8 +39,7 @@ public class ContextParameterInjector implements ValueInjector
       {
          return ResteasyProviderFactory.getContextData(type);
       }
-      Class[] intfs = {type};
-      return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+      return createProxy();
    }
 
    private class GenericDelegatingProxy implements InvocationHandler
@@ -81,10 +78,26 @@ public class ContextParameterInjector implements ValueInjector
          throw new RuntimeException("Illegal to inject a non-interface type into a singleton");
       }
 
+      return createProxy();
+   }
 
-      Class[] intfs = {type};
-
-
-      return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+   protected Object createProxy()
+   {
+      if (proxy != null)
+      {
+         try
+         {
+            return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      else
+      {
+         Class[] intfs = {type};
+         return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+      }
    }
 }

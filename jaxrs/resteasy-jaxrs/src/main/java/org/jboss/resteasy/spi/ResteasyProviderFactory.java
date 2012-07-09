@@ -827,6 +827,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public String toHeaderString(Object object)
    {
+      if (object instanceof String) return (String)object;
       StringConverter converter = getStringConverter(object
               .getClass());
       if (converter != null)

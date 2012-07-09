@@ -46,7 +46,8 @@ public class LinkHeaders
          if (val instanceof Link) addLink((Link)val);
          else
          {
-            HeaderHelper.toHeaderString(val, factory);
+            String str = factory.toHeaderString(val);
+            addLink(Link.valueOf(str));
          }
       }
       return this;

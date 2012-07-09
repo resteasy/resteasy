@@ -92,7 +92,8 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Invocation.Builder headers(MultivaluedMap<String, Object> headers)
    {
-      throw new NotImplementedYetException();
+      getHeaders().setHeaders(headers);
+      return this;
    }
    @Override
    public Invocation build(String method)
@@ -142,7 +143,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Configuration configuration()
    {
-      throw new NotImplementedYetException();
+      return invocation.getConfiguration();
    }
 
    @Override
