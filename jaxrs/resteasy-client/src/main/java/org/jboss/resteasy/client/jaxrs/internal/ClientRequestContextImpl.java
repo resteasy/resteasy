@@ -222,12 +222,12 @@ public class ClientRequestContextImpl implements ClientRequestContext
    @Override
    public MultivaluedMap<String, String> getStringHeaders()
    {
-      throw new NotImplementedYetException();
+      return invocation.getHeaders().asMap();
    }
 
    @Override
    public String getHeaderString(String name)
    {
-      throw new NotImplementedYetException();
+      return invocation.getHeaders().getHeader(name);
    }
 }

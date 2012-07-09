@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
@@ -9,7 +8,6 @@ import org.jboss.resteasy.util.HeaderHelper;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,11 +26,6 @@ import java.util.Set;
 public class ClientRequestHeaders
 {
    protected CaseInsensitiveMap<Object> headers = new CaseInsensitiveMap<Object>();
-   protected Locale language;
-   protected MediaType mediaType;
-   protected List<MediaType> accepts = new ArrayList<MediaType>();
-   protected List<Locale> acceptableLanguages = new ArrayList<Locale>();
-   protected Map<String, Cookie> cookies = new HashMap<String, Cookie>();
    protected ResteasyProviderFactory providerFactory;
 
    public ClientRequestHeaders(ResteasyProviderFactory providerFactory)
@@ -43,10 +37,6 @@ public class ClientRequestHeaders
    {
       ClientRequestHeaders copy = new ClientRequestHeaders(providerFactory);
       copy.headers.putAll(headers);
-      copy.language = language;
-      copy.accepts.addAll(accepts);
-      copy.mediaType = mediaType;
-      copy.cookies.putAll(cookies);
       return copy;
    }
 
@@ -55,10 +45,15 @@ public class ClientRequestHeaders
       return headers;
    }
 
+   public void setHeaders(MultivaluedMap<String, Object> newHeaders)
+   {
+      headers.clear();
+      headers.putAll(newHeaders);
+   }
+
    public void setLanguage(Locale language)
    {
-      header("Language", language);
-      this.language = language;
+      header(HttpHeaders.CONTENT_LANGUAGE, language);
    }
 
    public void setLanguage(String language)
@@ -68,14 +63,12 @@ public class ClientRequestHeaders
 
    public void setMediaType(MediaType mediaType)
    {
-      header("Content-Type", mediaType);
-      this.mediaType = mediaType;
+      header(HttpHeaders.CONTENT_TYPE, mediaType);
    }
 
    public void acceptLanguage(Locale... locales)
    {
       headers.remove(HttpHeaders.ACCEPT_LANGUAGE);
-      acceptableLanguages = new ArrayList<Locale>();
       StringBuilder builder = new StringBuilder();
       boolean isFirst = true;
       for (Locale l : locales)
@@ -88,7 +81,6 @@ public class ClientRequestHeaders
          {
             builder.append(", ");
          }
-         acceptableLanguages.add(l);
          builder.append(l.toString());
       }
       headers.putSingle(HttpHeaders.ACCEPT_LANGUAGE, builder.toString());
@@ -97,7 +89,6 @@ public class ClientRequestHeaders
    public void acceptLanguage(String... locales)
    {
       headers.remove(HttpHeaders.ACCEPT_LANGUAGE);
-      acceptableLanguages = new ArrayList<Locale>();
       StringBuilder builder = new StringBuilder();
       boolean isFirst = true;
       for (String l : locales)
@@ -110,7 +101,6 @@ public class ClientRequestHeaders
          {
             builder.append(", ");
          }
-         acceptableLanguages.add(new Locale(l));
          builder.append(l.toString());
       }
       headers.putSingle(HttpHeaders.ACCEPT_LANGUAGE, builder.toString());
@@ -119,7 +109,6 @@ public class ClientRequestHeaders
    public void accept(String... types)
    {
       headers.remove(HttpHeaders.ACCEPT);
-      accepts = new ArrayList<MediaType>();
       StringBuilder builder = new StringBuilder();
       boolean isFirst = true;
       for (String l : types)
@@ -132,7 +121,6 @@ public class ClientRequestHeaders
          {
             builder.append(", ");
          }
-         accepts.add(MediaType.valueOf(l));
          builder.append(l.toString());
       }
       headers.putSingle(HttpHeaders.ACCEPT, builder.toString());
@@ -141,7 +129,6 @@ public class ClientRequestHeaders
    public void accept(MediaType... types)
    {
       headers.remove(HttpHeaders.ACCEPT);
-      accepts = new ArrayList<MediaType>();
       StringBuilder builder = new StringBuilder();
       boolean isFirst = true;
       for (MediaType l : types)
@@ -154,7 +141,6 @@ public class ClientRequestHeaders
          {
             builder.append(", ");
          }
-         accepts.add(l);
          builder.append(l.toString());
       }
       headers.putSingle(HttpHeaders.ACCEPT, builder.toString());
@@ -162,7 +148,6 @@ public class ClientRequestHeaders
 
    public void cookie(Cookie cookie)
    {
-      cookies.put(cookie.getName(), cookie);
       headers.add(HttpHeaders.COOKIE, cookie);
    }
 
@@ -191,26 +176,6 @@ public class ClientRequestHeaders
       headers.add(name, value);
    }
 
-   public Set<Link> getLinks()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   public boolean hasLink(String relation)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   public Link getLink(String relation)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   public Link.Builder getLinkBuilder(String relation)
-   {
-      throw new NotImplementedYetException();
-   }
-
    public Date getDate()
    {
       Object d = headers.getFirst(HttpHeaders.DATE);
@@ -221,10 +186,17 @@ public class ClientRequestHeaders
 
    public String getHeader(String name)
    {
-      Object val = headers.getFirst(name);
-      if (val == null) return null;
-
-      return HeaderHelper.toHeaderString(val, providerFactory);
+      List vals = headers.get(name);
+      if (vals == null) return null;
+      StringBuilder builder = new StringBuilder();
+      boolean first = true;
+      for (Object val : vals)
+      {
+         if (first) first = false;
+         else builder.append(",");
+         builder.append(providerFactory.toHeaderString(val));
+      }
+      return builder.toString();
    }
 
    public MultivaluedMap<String, String> asMap()
@@ -254,7 +226,10 @@ public class ClientRequestHeaders
 
    public Locale getLanguage()
    {
-      return language;
+      Object obj = headers.getFirst(HttpHeaders.CONTENT_LANGUAGE);
+      if (obj instanceof Locale) return (Locale) obj;
+      if (obj == null) return null;
+      return new Locale(obj.toString());
    }
 
    public int getLength()
@@ -264,21 +239,92 @@ public class ClientRequestHeaders
 
    public MediaType getMediaType()
    {
-      return mediaType;
+      Object obj = headers.getFirst(HttpHeaders.CONTENT_TYPE);
+      if (obj instanceof MediaType) return (MediaType) obj;
+      if (obj == null) return null;
+      return MediaType.valueOf(providerFactory.toHeaderString(obj));
    }
 
    public List<MediaType> getAcceptableMediaTypes()
    {
-      return accepts;
+      List<MediaType> list = new ArrayList<MediaType>();
+      List accepts = headers.get(HttpHeaders.ACCEPT);
+      for (Object obj : accepts)
+      {
+         if (obj instanceof MediaType)
+         {
+            list.add((MediaType) obj);
+            continue;
+         }
+         String accept = null;
+         if (obj instanceof String)
+         {
+            accept = (String) obj;
+         }
+         else
+         {
+            accept = providerFactory.toHeaderString(obj);
+
+         }
+         StringTokenizer tokenizer = new StringTokenizer(accept, ",");
+         while (tokenizer.hasMoreElements())
+         {
+            String item = tokenizer.nextToken().trim();
+            list.add(MediaType.valueOf(item));
+         }
+      }
+      return list;
    }
 
    public List<Locale> getAcceptableLanguages()
    {
-      return acceptableLanguages;
+      List<Locale> list = new ArrayList<Locale>();
+      List accepts = headers.get(HttpHeaders.ACCEPT_LANGUAGE);
+      for (Object obj : accepts)
+      {
+         if (obj instanceof Locale)
+         {
+            list.add((Locale) obj);
+            continue;
+         }
+         String accept = null;
+         if (obj instanceof String)
+         {
+            accept = (String) obj;
+         }
+         else
+         {
+            accept = providerFactory.toHeaderString(obj);
+
+         }
+         StringTokenizer tokenizer = new StringTokenizer(accept, ",");
+         while (tokenizer.hasMoreElements())
+         {
+            String item = tokenizer.nextToken().trim();
+            list.add(new Locale(item));
+         }
+      }
+      return list;
    }
 
    public Map<String, Cookie> getCookies()
    {
+      Map<String, Cookie> cookies = new HashMap<String, Cookie>();
+      List list = headers.get(HttpHeaders.COOKIE);
+      for (Object obj : list)
+      {
+         if (obj instanceof Cookie)
+         {
+            Cookie cookie = (Cookie)obj;
+            cookies.put(cookie.getName(), cookie);
+         }
+         else
+         {
+            String str = providerFactory.toHeaderString(obj);
+            Cookie cookie = Cookie.valueOf(str);
+            cookies.put(cookie.getName(), cookie);
+         }
+      }
       return cookies;
    }
 }

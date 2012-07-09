@@ -65,7 +65,7 @@ public class ClientResponseContextImpl implements ClientResponseContext
    @Override
    public Set<String> getAllowedMethods()
    {
-      throw new NotImplementedYetException();
+      return response.getAllowedMethods();
    }
 
    @Override
