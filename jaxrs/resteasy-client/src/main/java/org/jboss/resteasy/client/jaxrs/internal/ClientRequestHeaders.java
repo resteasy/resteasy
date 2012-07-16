@@ -212,23 +212,11 @@ public class ClientRequestHeaders
       return map;
    }
 
-   public List<String> getHeaderValues(String name)
-   {
-      List<Object> vals = headers.get(name);
-      if (vals == null) return new ArrayList<String>();
-      List<String> values = new ArrayList<String>();
-      for (Object val : vals)
-      {
-         values.add(providerFactory.toHeaderString(val));
-      }
-      return values;
-   }
-
    public Locale getLanguage()
    {
       Object obj = headers.getFirst(HttpHeaders.CONTENT_LANGUAGE);
-      if (obj instanceof Locale) return (Locale) obj;
       if (obj == null) return null;
+      if (obj instanceof Locale) return (Locale) obj;
       return new Locale(obj.toString());
    }
 
@@ -240,8 +228,8 @@ public class ClientRequestHeaders
    public MediaType getMediaType()
    {
       Object obj = headers.getFirst(HttpHeaders.CONTENT_TYPE);
-      if (obj instanceof MediaType) return (MediaType) obj;
       if (obj == null) return null;
+      if (obj instanceof MediaType) return (MediaType) obj;
       return MediaType.valueOf(providerFactory.toHeaderString(obj));
    }
 
@@ -249,6 +237,7 @@ public class ClientRequestHeaders
    {
       List<MediaType> list = new ArrayList<MediaType>();
       List accepts = headers.get(HttpHeaders.ACCEPT);
+      if (accepts == null) return list;
       for (Object obj : accepts)
       {
          if (obj instanceof MediaType)
@@ -280,6 +269,7 @@ public class ClientRequestHeaders
    {
       List<Locale> list = new ArrayList<Locale>();
       List accepts = headers.get(HttpHeaders.ACCEPT_LANGUAGE);
+      if (accepts == null) return list;
       for (Object obj : accepts)
       {
          if (obj instanceof Locale)
@@ -311,6 +301,7 @@ public class ClientRequestHeaders
    {
       Map<String, Cookie> cookies = new HashMap<String, Cookie>();
       List list = headers.get(HttpHeaders.COOKIE);
+      if (list == null) return cookies;
       for (Object obj : list)
       {
          if (obj instanceof Cookie)

@@ -31,12 +31,6 @@ public class ClientInvocationBuilder implements Invocation.Builder
       invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(client.providerFactory()), configuration);
    }
 
-   public ClientInvocationBuilder(ClientInvocation invocation)
-   {
-      this.invocation = invocation.clone();
-
-   }
-
    public ClientInvocation getInvocation()
    {
       return invocation;

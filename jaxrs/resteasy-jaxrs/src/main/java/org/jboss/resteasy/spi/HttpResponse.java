@@ -21,6 +21,7 @@ public interface HttpResponse
    MultivaluedMap<String, Object> getOutputHeaders();
 
    OutputStream getOutputStream() throws IOException;
+   void setOutputStream(OutputStream os);
 
    void addNewCookie(NewCookie cookie);
 

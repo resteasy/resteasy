@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.MessageProcessingException;
@@ -49,23 +50,19 @@ public class ClientInvocation implements Invocation
    protected ClientConfiguration configuration;
    protected URI uri;
 
+   // todo need a better solution for this.  Apache Http Client 4 does not let you obtain the OutputStream before executing
+   // this request. is problematic for obtaining and setting
+   // the output stream.  It also does not let you modify the request headers before the output stream is available
+   // Since MessageBodyWriter allows you to modify headers, you're s
+   protected DelegatingOutputStream delegatingOutputStream = new DelegatingOutputStream();
+   protected OutputStream entityStream = delegatingOutputStream;
+
    public ClientInvocation(ResteasyClient client, URI uri, ClientRequestHeaders headers, ClientConfiguration parent)
    {
       this.uri = uri;
       this.client = client;
       this.configuration = new ClientConfiguration(parent);
       this.headers = headers;
-   }
-
-   public ClientInvocation clone()
-   {
-      ClientInvocation copy = new ClientInvocation(client, uri, headers.clone(), configuration);
-      copy.client = client;
-      copy.method = method;
-      copy.entity = entity;
-      copy.entityAnnotations = entityAnnotations;
-      copy.configuration = configuration;
-      return copy;
    }
 
    public ClientConfiguration getConfiguration()
@@ -76,6 +73,26 @@ public class ClientInvocation implements Invocation
    public ResteasyClient getClient()
    {
       return client;
+   }
+
+   public DelegatingOutputStream getDelegatingOutputStream()
+   {
+      return delegatingOutputStream;
+   }
+
+   public void setDelegatingOutputStream(DelegatingOutputStream delegatingOutputStream)
+   {
+      this.delegatingOutputStream = delegatingOutputStream;
+   }
+
+   public OutputStream getEntityStream()
+   {
+      return entityStream;
+   }
+
+   public void setEntityStream(OutputStream entityStream)
+   {
+      this.entityStream = entityStream;
    }
 
    public URI getUri()
@@ -161,7 +178,7 @@ public class ClientInvocation implements Invocation
 
    public void setEntityObject(Object ent)
    {
-      if (this.entity instanceof GenericEntity)
+      if (ent instanceof GenericEntity)
       {
          GenericEntity genericEntity = (GenericEntity) ent;
          entityClass = genericEntity.getRawType();
@@ -171,6 +188,7 @@ public class ClientInvocation implements Invocation
       else
       {
          this.entity = ent;
+         this.entityClass = ent.getClass();
       }
    }
 
@@ -186,50 +204,44 @@ public class ClientInvocation implements Invocation
          return;
       }
 
-      Object obj = entity;
-      Class type = obj.getClass();
-      Type genericType = null;
-
-      if (obj instanceof GenericEntity)
-      {
-         GenericEntity genericEntity = (GenericEntity) obj;
-         type = genericEntity.getRawType();
-         genericType = genericEntity.getType();
-         obj = genericEntity.getEntity();
-      }
-
-
-      MessageBodyWriter writer = client.providerFactory()
-              .getMessageBodyWriter(type, genericType,
-                      entityAnnotations, this.getHeaders().getMediaType());
-      if (writer == null)
-      {
-         throw new RuntimeException("could not find writer for content-type "
-                 + this.getHeaders().getMediaType() + " type: " + type.getName());
-      }
+      MessageBodyWriter writer = getWriter();
       WriterInterceptor[] interceptors = getWriterInterceptors();
       if (interceptors == null || interceptors.length == 0)
       {
-         writer.writeTo(obj, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
+         writer.writeTo(entity, entityClass, entityGenericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
       }
       else
       {
-         AbstractWriterInterceptorContext ctx = new ClientWriterInterceptorContext(interceptors, writer, obj, type, genericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
+         AbstractWriterInterceptorContext ctx = new ClientWriterInterceptorContext(interceptors, writer, entity, entityClass, entityGenericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
          ctx.proceed();
       }
    }
 
-   protected WriterInterceptor[] getWriterInterceptors()
+   public MessageBodyWriter getWriter()
+   {
+      MessageBodyWriter writer = client.providerFactory()
+              .getMessageBodyWriter(entityClass, entityGenericType,
+                      entityAnnotations, this.getHeaders().getMediaType());
+      if (writer == null)
+      {
+         throw new RuntimeException("could not find writer for content-type "
+                 + this.getHeaders().getMediaType() + " type: " + entityClass.getName());
+      }
+      return writer;
+   }
+
+
+   public WriterInterceptor[] getWriterInterceptors()
    {
       return client.providerFactory().getClientWriterInterceptorRegistry().postMatch(null, null);
    }
 
-   protected ClientRequestFilter[] getRequestFilters()
+   public ClientRequestFilter[] getRequestFilters()
    {
       return client.providerFactory().getClientRequestFilters().postMatch(null, null);
    }
 
-   protected ClientResponseFilter[] getResponseFilters()
+   public ClientResponseFilter[] getResponseFilters()
    {
       return client.providerFactory().getClientResponseFilters().postMatch(null, null);
    }

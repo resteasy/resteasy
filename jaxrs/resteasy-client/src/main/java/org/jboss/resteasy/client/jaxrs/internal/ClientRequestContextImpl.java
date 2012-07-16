@@ -180,13 +180,13 @@ public class ClientRequestContextImpl implements ClientRequestContext
    @Override
    public OutputStream getEntityStream()
    {
-      throw new NotImplementedYetException();
+      return invocation.getEntityStream();
    }
 
    @Override
    public void setEntityStream(OutputStream entityStream)
    {
-      throw new NotImplementedYetException();
+      invocation.setEntityStream(entityStream);
    }
 
    @Override

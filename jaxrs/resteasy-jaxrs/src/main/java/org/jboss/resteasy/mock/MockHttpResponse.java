@@ -21,6 +21,7 @@ public class MockHttpResponse implements HttpResponse
 {
    protected int status;
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
+   protected OutputStream os = baos;
    protected CaseInsensitiveMap outputHeaders = new CaseInsensitiveMap();
    protected List<NewCookie> newCookies = new ArrayList<NewCookie>();
    protected String errorMessage;
@@ -47,7 +48,13 @@ public class MockHttpResponse implements HttpResponse
 
    public OutputStream getOutputStream() throws IOException
    {
-      return baos;
+      return os;
+   }
+
+   @Override
+   public void setOutputStream(OutputStream os)
+   {
+      this.os = os;
    }
 
    public byte[] getOutput()
@@ -101,6 +108,7 @@ public class MockHttpResponse implements HttpResponse
    public void reset()
    {
       baos = new ByteArrayOutputStream();
+      os = baos;
       outputHeaders = new CaseInsensitiveMap();
       newCookies = new ArrayList<NewCookie>();
       sentError = false;

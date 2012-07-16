@@ -128,6 +128,12 @@ public class HttpServerResponse implements HttpResponse
       return streamWrapper;
    }
 
+   @Override
+   public void setOutputStream(OutputStream os)
+   {
+      streamWrapper = os;
+   }
+
    public void addNewCookie(NewCookie cookie)
    {
       outputHeaders.add(HttpHeaders.SET_COOKIE, cookie);
