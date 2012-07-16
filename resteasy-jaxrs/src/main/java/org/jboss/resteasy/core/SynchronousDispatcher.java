@@ -121,6 +121,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
+         pushContextObjects(request, response);
          ResourceInvoker invoker = getInvoker(request);
          invoke(request, response, invoker);
       }
@@ -128,6 +129,10 @@ public class SynchronousDispatcher implements Dispatcher
       {
          handleException(request, response, e);
          return;
+      }
+      finally
+      {
+         clearContextData();
       }
    }
 
@@ -139,31 +144,39 @@ public class SynchronousDispatcher implements Dispatcher
     */
    public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException
    {
-      ResourceInvoker invoker = null;
       try
       {
-         invoker = getInvoker(request);
-      }
-      catch (Exception failure)
-      {
-         if (failure instanceof NotFoundException)
+         pushContextObjects(request, response);
+         ResourceInvoker invoker = null;
+         try
          {
-            throw ((NotFoundException) failure);
+            invoker = getInvoker(request);
          }
-         else
+         catch (Exception failure)
          {
-            handleException(request, response, failure);
+            if (failure instanceof NotFoundException)
+            {
+               throw ((NotFoundException) failure);
+            }
+            else
+            {
+               handleException(request, response, failure);
+               return;
+            }
+         }
+         try
+         {
+            invoke(request, response, invoker);
+         }
+         catch (Failure e)
+         {
+            handleException(request, response, e);
             return;
          }
       }
-      try
+      finally
       {
-         invoke(request, response, invoker);
-      }
-      catch (Failure e)
-      {
-         handleException(request, response, e);
-         return;
+         clearContextData();
       }
    }
 
@@ -307,6 +320,7 @@ public class SynchronousDispatcher implements Dispatcher
       writeFailure(request, response, mapper.toResponse(exception));
       return true;
    }
+
    /**
     * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found
     *
@@ -507,23 +521,15 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
+      Response jaxrsResponse = getResponse(request, response, invoker);
+
       try
       {
-         pushContextObjects(request, response);
-         Response jaxrsResponse = getResponse(request, response, invoker);
-
-         try
-         {
-            if (jaxrsResponse != null) writeJaxrsResponse(request, response, jaxrsResponse);
-         }
-         catch (Exception e)
-         {
-            handleWriteResponseException(request, response, e);
-         }
+         if (jaxrsResponse != null) writeJaxrsResponse(request, response, jaxrsResponse);
       }
-      finally
+      catch (Exception e)
       {
-         clearContextData();
+         handleWriteResponseException(request, response, e);
       }
    }
 
