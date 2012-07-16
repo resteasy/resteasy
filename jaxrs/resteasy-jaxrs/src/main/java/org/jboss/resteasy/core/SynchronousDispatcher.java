@@ -119,6 +119,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
+         pushContextObjects(request, response);
          Response aborted = preprocess(request);
          if (aborted != null)
          {
@@ -141,6 +142,10 @@ public class SynchronousDispatcher implements Dispatcher
          handleException(request, response, e);
          return;
       }
+      finally
+      {
+         clearContextData();
+      }
    }
 
    /**
@@ -153,52 +158,61 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
-         Response aborted = preprocess(request);
-         if (aborted != null)
+         pushContextObjects(request, response);
+         try
          {
-            try
+            Response aborted = preprocess(request);
+            if (aborted != null)
             {
-               writeJaxrsResponse(request, response, aborted);
-            }
-            catch (Exception e)
-            {
-               handleWriteResponseException(request, response, e);
+               try
+               {
+                  writeJaxrsResponse(request, response, aborted);
+               }
+               catch (Exception e)
+               {
+                  handleWriteResponseException(request, response, e);
+                  return;
+               }
                return;
             }
+         }
+         catch (Exception e)
+         {
+            handleException(request, response, e);
+            return;
+         }
+         ResourceInvoker invoker = null;
+         try
+         {
+            invoker = getInvoker(request);
+         }
+         catch (Exception failure)
+         {
+            if (failure instanceof NotFoundException)
+            {
+               throw ((NotFoundException) failure);
+            }
+            else
+            {
+               handleException(request, response, failure);
+               return;
+            }
+         }
+         try
+         {
+            invoke(request, response, invoker);
+         }
+         catch (Failure e)
+         {
+            handleException(request, response, e);
             return;
          }
       }
-      catch (Exception e)
+      finally
       {
-         handleException(request, response, e);
-         return;
+         clearContextData();
       }
-      ResourceInvoker invoker = null;
-      try
-      {
-         invoker = getInvoker(request);
-      }
-      catch (Exception failure)
-      {
-         if (failure instanceof NotFoundException)
-         {
-            throw ((NotFoundException) failure);
-         }
-         else
-         {
-            handleException(request, response, failure);
-            return;
-         }
-      }
-      try
-      {
-         invoke(request, response, invoker);
-      }
-      catch (Failure e)
-      {
-         handleException(request, response, e);
-         return;
-      }
+
    }
 
    public ResourceInvoker getInvoker(HttpRequest request)
@@ -542,23 +556,15 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
+      Response jaxrsResponse = getResponse(request, response, invoker);
+
       try
       {
-         pushContextObjects(request, response);
-         Response jaxrsResponse = getResponse(request, response, invoker);
-
-         try
-         {
-            if (jaxrsResponse != null) writeJaxrsResponse(request, response, jaxrsResponse);
-         }
-         catch (Exception e)
-         {
-            handleWriteResponseException(request, response, e);
-         }
+         if (jaxrsResponse != null) writeJaxrsResponse(request, response, jaxrsResponse);
       }
-      finally
+      catch (Exception e)
       {
-         clearContextData();
+         handleWriteResponseException(request, response, e);
       }
    }
 

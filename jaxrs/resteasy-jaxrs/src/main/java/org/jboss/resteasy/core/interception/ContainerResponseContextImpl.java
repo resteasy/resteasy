@@ -104,7 +104,7 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public Set<String> getAllowedMethods()
    {
-      throw new NotImplementedYetException();
+     return serverResponse.getAllowedMethods();
    }
 
    @Override
@@ -207,7 +207,7 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public void setEntityStream(OutputStream entityStream)
    {
-      throw new NotImplementedYetException();
+      httpResponse.setOutputStream(entityStream);
    }
 
    @Override

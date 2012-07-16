@@ -98,7 +98,7 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    @Override
    public void setMethod(String method)
    {
-      throw new NotImplementedYetException();
+      httpRequest.setHttpMethod(method);
    }
 
    @Override
@@ -176,7 +176,7 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    @Override
    public void setSecurityContext(SecurityContext context)
    {
-      throw new NotImplementedYetException();
+      ResteasyProviderFactory.pushContext(SecurityContext.class, context);
    }
 
    @Override
