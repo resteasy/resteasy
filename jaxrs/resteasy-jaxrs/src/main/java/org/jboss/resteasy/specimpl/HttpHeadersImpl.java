@@ -1,6 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.spi.NotImplementedYetException;
+import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedLanguage;
@@ -129,12 +130,16 @@ public class HttpHeadersImpl implements HttpHeaders
    @Override
    public Date getDate()
    {
-      throw new NotImplementedYetException();
+      String date = requestHeaders.getFirst(DATE);
+      if (date == null) return null;
+      return DateUtil.parseDate(date);
    }
 
    @Override
    public int getLength()
    {
-      throw new NotImplementedYetException();
+      String cl = requestHeaders.getFirst(CONTENT_LENGTH);
+      if (cl == null) return -1;
+      return Integer.parseInt(cl);
    }
 }

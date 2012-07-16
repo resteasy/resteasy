@@ -5,6 +5,7 @@ import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
 import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LinkHeaders;
@@ -47,20 +48,13 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ServerResponse extends Response implements Serializable
+public class ServerResponse extends BuiltResponse implements Serializable
 {
    private static final long serialVersionUID = 3458762447649978756L;
-   protected Object entity;
-   protected int status = HttpResponseCodes.SC_OK;
-   protected Headers<Object> metadata = new Headers<Object>();
-   protected Annotation[] annotations;
-   protected Class entityClass;
-   protected Type genericType;
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
    protected Method resourceMethod;
    protected Class resourceClass;
-   protected boolean headersCommitted;
 
    public ServerResponse(Object entity, int status, Headers<Object> metadata)
    {
@@ -137,85 +131,6 @@ public class ServerResponse extends Response implements Serializable
    public void setResponseFilters(ContainerResponseFilter[] responseFilters)
    {
       this.responseFilters = responseFilters;
-   }
-
-   @Override
-   public Object getEntity()
-   {
-      return entity;
-   }
-
-   @Override
-   public int getStatus()
-   {
-      return status;
-   }
-
-   @Override
-   public StatusType getStatusInfo()
-   {
-      return Status.fromStatusCode(status);
-   }
-
-   @Override
-   public MultivaluedMap<String, Object> getMetadata()
-   {
-      return metadata;
-   }
-
-   public void setEntity(Object entity)
-   {
-      if (entity == null)
-      {
-         this.entity = null;
-         this.genericType = null;
-         this.entityClass = null;
-      }
-      else if (entity instanceof GenericEntity)
-      {
-
-         GenericEntity ge = (GenericEntity) entity;
-         this.entity = ge.getEntity();
-         this.genericType = ge.getType();
-         this.entityClass = ge.getRawType();
-      }
-      else
-      {
-         this.entity = entity;
-         this.entityClass = entity.getClass();
-         this.genericType = null;
-      }
-   }
-
-   public void setStatus(int status)
-   {
-      this.status = status;
-   }
-
-   public void setMetadata(MultivaluedMap<String, Object> metadata)
-   {
-      this.metadata.clear();
-      this.metadata.putAll(metadata);
-   }
-
-   public Annotation[] getAnnotations()
-   {
-      return annotations;
-   }
-
-   public void setAnnotations(Annotation[] annotations)
-   {
-      this.annotations = annotations;
-   }
-
-   public Type getGenericType()
-   {
-      return genericType;
-   }
-
-   public void setGenericType(Type genericType)
-   {
-      this.genericType = genericType;
    }
 
    /**
@@ -367,161 +282,4 @@ public class ServerResponse extends Response implements Serializable
       }
    }
 
-   // spec
-
-
-   @Override
-   public <T> T readEntity(Class<T> entityType) throws MessageProcessingException, IllegalStateException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException, IllegalStateException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public boolean hasEntity()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public boolean bufferEntity() throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public void close() throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public MediaType getMediaType()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public Locale getLanguage()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public int getLength()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public Map<String, NewCookie> getCookies()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public EntityTag getEntityTag()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public Date getDate()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public Date getLastModified()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public URI getLocation()
-   {
-      Object uri = metadata.getFirst(HttpHeaders.LOCATION);
-      if (uri == null) return null;
-      if (uri instanceof URI) return (URI)uri;
-      if (uri instanceof String) return URI.create((String)uri);
-
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public Set<Link> getLinks()
-   {
-      LinkHeaders linkHeaders = getLinkHeaders();
-      Set<Link> links = new HashSet<Link>();
-      links.addAll(linkHeaders.getLinks());
-      return links;
-   }
-
-   protected LinkHeaders getLinkHeaders()
-   {
-      LinkHeaders linkHeaders = new LinkHeaders();
-      linkHeaders.addLinkObjects(metadata, ResteasyProviderFactory.getInstance());
-      return linkHeaders;
-   }
-
-   @Override
-   public boolean hasLink(String relation)
-   {
-      return getLinkHeaders().getLinkByRelationship(relation) != null;
-   }
-
-   @Override
-   public Link getLink(String relation)
-   {
-      return getLinkHeaders().getLinkByRelationship(relation);
-   }
-
-   @Override
-   public Link.Builder getLinkBuilder(String relation)
-   {
-      Link link = getLinkHeaders().getLinkByRelationship(relation);
-      Link.Builder builder = new Link.Builder();
-      for (Map.Entry<String, List<String>> entry : link.getParams().entrySet())
-      {
-         for (String val : entry.getValue())
-         {
-            builder.param(entry.getKey(), val);
-         }
-      }
-      return builder;
-   }
-   @Override
-   public Set<String> getAllowedMethods()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public MultivaluedMap<String, String> getStringHeaders()
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public String getHeaderString(String name)
-   {
-      throw new NotImplementedYetException();
-   }
 }

@@ -264,11 +264,12 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
             try
             {
+               pushContextObjects(in, theResponse);
                invokeSuper(in, theResponse, invoker);
             }
             finally
             {
-               ResteasyProviderFactory.clearContextData();
+              clearContextData();
             }
             return theResponse;
          }
@@ -305,6 +306,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
             try
             {
+               pushContextObjects(in, theResponse);
                invokeSuper(in, theResponse, invoker);
             }
             catch (Exception ignored)
@@ -313,7 +315,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
             }
             finally
             {
-               ResteasyProviderFactory.clearContextData();
+               clearContextData();
             }
          }
 
