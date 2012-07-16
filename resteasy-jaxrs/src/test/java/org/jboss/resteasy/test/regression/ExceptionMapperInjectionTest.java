@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.regression;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,6 +12,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -59,6 +61,21 @@ public class ExceptionMapperInjectionTest extends BaseResourceTest
          return null;
       }
    }
+
+   public static class NotFoundExceptionMapper implements
+           ExceptionMapper<NotFoundException>
+   {
+      @Context
+      HttpHeaders httpHeaders;
+
+      public Response toResponse(NotFoundException exception)
+      {
+         System.out.println(httpHeaders.getRequestHeaders());
+         System.out.println("Mapped!");
+         return Response.status(505).build();
+      }
+   }
+
    @Path("/test")
    public static class MyService
    {
@@ -83,9 +100,23 @@ public class ExceptionMapperInjectionTest extends BaseResourceTest
    {
       getProviderFactory().addExceptionMapper(new MyExceptionMapper());
       getProviderFactory().addExceptionMapper(new MyException2Mapper());
+      getProviderFactory().addExceptionMapper(NotFoundExceptionMapper.class);
       addPerRequestResource(MyService.class);
    }
 
+   /**
+    * RESTEASY-396
+    *
+    * @throws Exception
+    */
+   @Test
+   public void testNotFound() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateBaseUrl() + "/test/nonexistent");
+      ClientResponse response = request.get();
+      Assert.assertEquals(505, response.getStatus());
+
+   }
 
    @Test
    public void testMapper() throws Exception
