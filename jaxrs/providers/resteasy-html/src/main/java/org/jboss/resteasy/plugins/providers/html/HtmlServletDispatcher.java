@@ -1,13 +1,12 @@
 package org.jboss.resteasy.plugins.providers.html;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletResponseWrapper;
 import org.jboss.resteasy.spi.HttpResponse;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class HtmlServletDispatcher extends HttpServletDispatcher
 {

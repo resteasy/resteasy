@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.regression;
 
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.ClientProxy;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -14,7 +13,7 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

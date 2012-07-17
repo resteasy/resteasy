@@ -1,10 +1,10 @@
 package org.jboss.resteasy.plugins.validation.hibernate;
 
+import org.jboss.resteasy.spi.validation.ValidatorAdapter;
+
 import javax.validation.Validation;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-
-import org.jboss.resteasy.spi.validation.ValidatorAdapter;
 
 @Provider
 public class HibernateValidatorContextResolver implements

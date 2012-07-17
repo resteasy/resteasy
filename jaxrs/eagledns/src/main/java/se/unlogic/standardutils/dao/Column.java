@@ -7,10 +7,10 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import se.unlogic.standardutils.populators.QueryParameterPopulator;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
-import se.unlogic.standardutils.populators.QueryParameterPopulator;
 
 public interface Column<BeanType,ColumnType> {
 

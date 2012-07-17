@@ -1,15 +1,14 @@
 package org.jboss.resteasy.test.smoke;
 
+import org.jboss.resteasy.auth.oauth.OAuthFilter;
+import org.jboss.resteasy.auth.oauth.OAuthToken;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
-import org.jboss.resteasy.auth.oauth.OAuthFilter;
-import org.jboss.resteasy.auth.oauth.OAuthToken;
 
 public class MyFilter extends OAuthFilter {
 

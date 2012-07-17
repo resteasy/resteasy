@@ -1,5 +1,16 @@
 package se.unlogic.eagledns.zoneproviders.file;
 
+import org.apache.log4j.Logger;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Zone;
+import se.unlogic.eagledns.SecondaryZone;
+import se.unlogic.eagledns.ZoneChangeCallback;
+import se.unlogic.eagledns.ZoneProvider;
+import se.unlogic.eagledns.ZoneProviderUpdatable;
+import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.timer.RunnableTimerTask;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,18 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
-
-import org.apache.log4j.Logger;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Zone;
-
-import se.unlogic.eagledns.SecondaryZone;
-import se.unlogic.eagledns.ZoneChangeCallback;
-import se.unlogic.eagledns.ZoneProvider;
-import se.unlogic.eagledns.ZoneProviderUpdatable;
-import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.timer.RunnableTimerTask;
 
 
 /**

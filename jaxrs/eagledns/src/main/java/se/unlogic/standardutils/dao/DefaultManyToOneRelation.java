@@ -7,20 +7,20 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import se.unlogic.standardutils.annotations.UnsupportedFieldTypeException;
+import se.unlogic.standardutils.dao.annotations.DAOManaged;
+import se.unlogic.standardutils.dao.annotations.ManyToOne;
+import se.unlogic.standardutils.populators.BeanStringPopulator;
+import se.unlogic.standardutils.populators.BeanStringPopulatorRegistery;
+import se.unlogic.standardutils.populators.QueryParameterPopulator;
+import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.string.StringUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import se.unlogic.standardutils.annotations.UnsupportedFieldTypeException;
-import se.unlogic.standardutils.dao.annotations.DAOManaged;
-import se.unlogic.standardutils.dao.annotations.ManyToOne;
-import se.unlogic.standardutils.populators.QueryParameterPopulator;
-import se.unlogic.standardutils.populators.BeanStringPopulator;
-import se.unlogic.standardutils.populators.BeanStringPopulatorRegistery;
-import se.unlogic.standardutils.reflection.ReflectionUtils;
-import se.unlogic.standardutils.string.StringUtils;
 
 public class DefaultManyToOneRelation<LocalType,RemoteType, RemoteKeyType> implements ManyToOneRelation<LocalType, RemoteType, RemoteKeyType>{
 

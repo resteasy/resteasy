@@ -7,10 +7,10 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
+import se.unlogic.standardutils.dao.BeanResultSetPopulator;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import se.unlogic.standardutils.dao.BeanResultSetPopulator;
 
 public class StringPopulator extends BaseStringPopulator<String> implements BeanResultSetPopulator<String>, BeanStringPopulator<String>{
 

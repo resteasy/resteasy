@@ -2,13 +2,7 @@ package org.jboss.resteasy.test.providers.jaxb.regression;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.After;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.junit.Assert.*;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +12,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.junit.Assert.*;
 
 /**
  * Test case for RESTEASY-169

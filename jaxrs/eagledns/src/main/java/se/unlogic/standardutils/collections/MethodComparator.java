@@ -1,10 +1,10 @@
 package se.unlogic.standardutils.collections;
 
+import se.unlogic.standardutils.dao.enums.Order;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
-
-import se.unlogic.standardutils.dao.enums.Order;
 
 
 public class MethodComparator<T> implements Comparator<T> {

@@ -1,19 +1,18 @@
 package org.jboss.resteasy.examples.service;
 
+import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.examples.data.Book;
 import org.jboss.resteasy.examples.data.BookListing;
-import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.plugins.providers.jaxb.json.BadgerContext;
 import org.jboss.resteasy.plugins.providers.jaxb.json.JettisonMappedContext;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.PathParam;
 import javax.xml.bind.Marshaller;
-import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

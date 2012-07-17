@@ -1,12 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.ext.RuntimeDelegate;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -16,6 +9,12 @@ import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+
+import javax.ws.rs.ext.RuntimeDelegate;
+import java.util.List;
+import java.util.Map;
+
+import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 
 
 /**

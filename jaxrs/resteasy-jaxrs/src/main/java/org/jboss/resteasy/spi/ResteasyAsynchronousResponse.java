@@ -3,7 +3,6 @@ package org.jboss.resteasy.spi;
 import org.jboss.resteasy.core.ResourceMethod;
 
 import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.*;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 

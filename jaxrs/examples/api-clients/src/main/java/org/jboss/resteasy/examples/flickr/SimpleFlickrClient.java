@@ -1,20 +1,15 @@
 package org.jboss.resteasy.examples.flickr;
 
-import static org.jboss.resteasy.examples.flickr.FlickrConstants.photoSearchUrl;
-import static org.jboss.resteasy.examples.flickr.FlickrConstants.photoUrlTemplate;
-
-import java.awt.GridLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
 import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.examples.resteasy.ImageIconMessageBodyReader;
 import org.jboss.resteasy.examples.resteasy.LoggingExecutionInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.swing.*;
+import java.awt.*;
+
+import static org.jboss.resteasy.examples.flickr.FlickrConstants.*;
 
 public class SimpleFlickrClient
 {

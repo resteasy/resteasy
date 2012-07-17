@@ -7,7 +7,6 @@ import org.jboss.resteasy.security.smime.EnvelopedInput;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;
 import org.jboss.resteasy.security.smime.SignedInput;
 import org.jboss.resteasy.security.smime.SignedOutput;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

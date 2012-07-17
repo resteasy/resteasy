@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import java.io.IOException;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -28,9 +26,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
+import static org.jboss.resteasy.util.HttpClient4xUtils.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

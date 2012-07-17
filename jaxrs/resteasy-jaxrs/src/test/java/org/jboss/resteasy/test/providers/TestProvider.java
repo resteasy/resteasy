@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.providers;
 
 import junit.framework.Assert;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;

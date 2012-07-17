@@ -7,14 +7,14 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xml;
 
+import se.unlogic.standardutils.string.DummyStringyfier;
+import se.unlogic.standardutils.string.Stringyfier;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import se.unlogic.standardutils.string.DummyStringyfier;
-import se.unlogic.standardutils.string.Stringyfier;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

@@ -1,11 +1,11 @@
 package org.jboss.resteasy.plugins.spring;
 
-import javax.servlet.ServletContext;
-
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+
+import javax.servlet.ServletContext;
 
 /**
  * Provides access to RESTEasy's SpringContextLoader implementation without having

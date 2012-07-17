@@ -3,7 +3,6 @@ package org.jboss.resteasy.security.doseta;
 import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
 
 import java.lang.reflect.Method;
 

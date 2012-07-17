@@ -20,7 +20,6 @@ import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
-import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.HttpServerContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;

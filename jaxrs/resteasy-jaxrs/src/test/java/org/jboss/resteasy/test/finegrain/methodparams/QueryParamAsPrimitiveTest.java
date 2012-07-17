@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
+import static org.jboss.resteasy.util.HttpClient4xUtils.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

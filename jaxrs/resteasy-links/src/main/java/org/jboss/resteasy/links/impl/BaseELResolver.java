@@ -1,11 +1,10 @@
 package org.jboss.resteasy.links.impl;
 
-import java.beans.FeatureDescriptor;
-import java.util.Iterator;
-
 import javax.el.BeanELResolver;
 import javax.el.ELContext;
 import javax.el.ELResolver;
+import java.beans.FeatureDescriptor;
+import java.util.Iterator;
 
 public class BaseELResolver extends ELResolver {
 

@@ -1,12 +1,12 @@
 package se.unlogic.eagledns;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-
-import org.apache.log4j.Logger;
 
 
 public class TCPSocketMonitor extends Thread {

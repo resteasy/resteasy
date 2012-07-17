@@ -1,11 +1,8 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
-import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-
-import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -16,6 +13,9 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
+
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
+import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 
 /**
  * {@link SimpleChannelUpstreamHandler} which handles the requests and dispatch them.

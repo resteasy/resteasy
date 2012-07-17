@@ -1,14 +1,12 @@
 package org.jboss.resteasy.test;
 
+import junit.framework.Assert;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.junit.Test;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-
-import junit.framework.Assert;
-
-import org.jboss.resteasy.client.ProxyFactory;
-import org.junit.Ignore;
-import org.junit.Test;
 
 public class TestAnnotationInheritance extends BaseResourceTest
 {

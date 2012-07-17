@@ -7,14 +7,14 @@
  ******************************************************************************/
 package se.unlogic.standardutils.string;
 
+import se.unlogic.standardutils.reflection.ReflectionUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
-import se.unlogic.standardutils.reflection.ReflectionUtils;
 
 
 public class BeanTagSourceFactory<T> implements TagSourceFactory<T>{

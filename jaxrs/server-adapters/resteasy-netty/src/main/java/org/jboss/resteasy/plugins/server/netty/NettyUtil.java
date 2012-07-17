@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.netty;
 
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
@@ -22,8 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jboss.netty.handler.codec.http.HttpHeaders;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

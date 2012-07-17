@@ -1,7 +1,6 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -12,6 +11,7 @@ import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
 

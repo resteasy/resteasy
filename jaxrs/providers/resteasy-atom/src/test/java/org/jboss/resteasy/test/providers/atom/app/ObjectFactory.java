@@ -14,13 +14,13 @@
  */
 package org.jboss.resteasy.test.providers.atom.app;
 
-import javax.xml.bind.annotation.XmlRegistry;
-
 import org.jboss.resteasy.plugins.providers.atom.app.AppAccept;
 import org.jboss.resteasy.plugins.providers.atom.app.AppCategories;
 import org.jboss.resteasy.plugins.providers.atom.app.AppCollection;
 import org.jboss.resteasy.plugins.providers.atom.app.AppService;
 import org.jboss.resteasy.plugins.providers.atom.app.AppWorkspace;
+
+import javax.xml.bind.annotation.XmlRegistry;
 
 /**
  * This object contains factory methods for each Java content interface and Java

@@ -1,8 +1,8 @@
 package org.jboss.resteasy.links.test;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.jboss.resteasy.links.ResourceIDs;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @ResourceIDs({"namea", "nameb"})

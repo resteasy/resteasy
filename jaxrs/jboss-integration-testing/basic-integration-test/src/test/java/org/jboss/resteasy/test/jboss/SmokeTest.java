@@ -5,26 +5,22 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.smoke.Customer;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.Test;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 
-import javax.ws.rs.Path;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.Consumes;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBContext;
-
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.test.smoke.Customer;
-
 import java.io.StringReader;
 
 

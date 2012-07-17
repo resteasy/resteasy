@@ -1,12 +1,12 @@
 package se.unlogic.standardutils.zip;
 
+import se.unlogic.standardutils.streams.StreamUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import se.unlogic.standardutils.streams.StreamUtils;
 
 
 public class ZipUtils {

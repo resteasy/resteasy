@@ -5,7 +5,6 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
-import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import java.io.InputStream;

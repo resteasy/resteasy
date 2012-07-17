@@ -1,13 +1,12 @@
 package org.jboss.resteasy.spi.validation;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 
 import javax.validation.ConstraintViolation;
 import javax.ws.rs.ValidationException;
-
-import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>

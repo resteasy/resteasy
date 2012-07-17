@@ -1,18 +1,6 @@
 package org.jboss.resteasy.springmvc.test.spring;
 
-import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Type;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -28,6 +16,16 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 public class RequestScopedBeanTest
 {

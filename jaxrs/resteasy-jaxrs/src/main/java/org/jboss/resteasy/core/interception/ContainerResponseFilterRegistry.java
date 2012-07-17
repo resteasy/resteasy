@@ -1,12 +1,9 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 
 import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;

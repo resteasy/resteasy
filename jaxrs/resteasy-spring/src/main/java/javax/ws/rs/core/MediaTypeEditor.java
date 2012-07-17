@@ -8,8 +8,6 @@ package javax.ws.rs.core;
 
 import java.beans.PropertyEditorSupport;
 
-import javax.ws.rs.core.MediaType;
-
 /**
  * A MediaType PropertyEditor. Spring automatically looks for a class
  * "<classname>Editor"

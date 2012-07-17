@@ -15,8 +15,9 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
+import static org.jboss.resteasy.util.HttpClient4xUtils.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

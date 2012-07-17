@@ -7,13 +7,12 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xml;
 
-import java.io.File;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import java.io.File;
 
 public class CachedXSLTFile extends CachedXSLTBase{
 

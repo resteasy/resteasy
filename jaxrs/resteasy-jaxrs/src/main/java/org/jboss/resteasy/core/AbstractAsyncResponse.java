@@ -1,8 +1,6 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.AsynchronousResponse;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.WriterInterceptor;

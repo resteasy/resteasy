@@ -1,10 +1,10 @@
 package org.jboss.resteasy.spring.scanned;
 
-import javax.ws.rs.ext.Provider;
-
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spring.beanprocessor.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class CustomerStringConverter implements StringConverter<Customer>

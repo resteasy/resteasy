@@ -1,11 +1,10 @@
 package org.jboss.resteasy.test;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+
+import java.util.Hashtable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

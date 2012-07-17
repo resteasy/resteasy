@@ -1,9 +1,9 @@
 package org.jboss.resteasy.plugins.spring;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoader;
+
+import javax.servlet.ServletContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

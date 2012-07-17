@@ -1,11 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-
-import java.net.URI;
 
 public class ClientContext
 {

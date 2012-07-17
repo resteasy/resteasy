@@ -1,11 +1,11 @@
 package org.jboss.resteasy.links.test;
 
-import javax.el.ELContext; 
+import org.jboss.resteasy.links.ELProvider;
+
+import javax.el.ELContext;
 import javax.el.ELResolver;
 import javax.el.FunctionMapper;
 import javax.el.VariableMapper;
-
-import org.jboss.resteasy.links.ELProvider;
 
 public class SeamELProvider implements ELProvider {
 

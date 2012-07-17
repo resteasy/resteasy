@@ -6,9 +6,6 @@
  */
 package org.jboss.resteasy.springmvc.test.spring;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.junit.Assert.*;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
@@ -16,6 +13,9 @@ import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.junit.Assert.*;
 
 public class TypeMappingTest
 {

@@ -7,16 +7,16 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import se.unlogic.standardutils.dao.BeanResultSetPopulator;
 import se.unlogic.standardutils.dao.querys.PreparedStatementQuery;
 import se.unlogic.standardutils.enums.EnumUtils;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class EnumPopulator<EnumType extends Enum<EnumType>> extends BaseStringPopulator<EnumType> implements BeanResultSetPopulator<EnumType>, BeanStringPopulator<EnumType>, QueryParameterPopulator<EnumType> {
 

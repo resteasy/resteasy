@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.nextgen.asynch;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Test;

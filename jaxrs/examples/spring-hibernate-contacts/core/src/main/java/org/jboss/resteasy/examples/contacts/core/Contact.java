@@ -1,8 +1,5 @@
 package org.jboss.resteasy.examples.contacts.core;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +18,8 @@ import javax.ws.rs.Produces;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 /**

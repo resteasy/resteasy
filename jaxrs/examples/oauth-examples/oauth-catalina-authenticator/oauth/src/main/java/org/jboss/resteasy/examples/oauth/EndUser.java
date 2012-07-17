@@ -1,5 +1,17 @@
 package org.jboss.resteasy.examples.oauth;
 
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.util.Base64;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.xml.sax.InputSource;
+
+import javax.swing.*;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
@@ -7,19 +19,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.swing.JOptionPane;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.util.Base64;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.xml.sax.InputSource;
 
 
 public class EndUser

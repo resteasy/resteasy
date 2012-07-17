@@ -1,5 +1,9 @@
 package org.jboss.resteasy.plugins.providers.validation;
 
+import org.hibernate.validator.method.MethodConstraintViolation;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Path.Node;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -9,11 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Path.Node;
-
-import org.hibernate.validator.method.MethodConstraintViolation;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>

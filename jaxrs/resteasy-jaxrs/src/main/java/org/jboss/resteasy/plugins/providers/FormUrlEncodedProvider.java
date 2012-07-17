@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.providers;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Encoded;

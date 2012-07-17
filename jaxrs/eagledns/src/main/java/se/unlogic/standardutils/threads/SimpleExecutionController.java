@@ -7,19 +7,18 @@
  ******************************************************************************/
 package se.unlogic.standardutils.threads;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import se.unlogic.standardutils.xml.Elementable;
+import se.unlogic.standardutils.xml.XMLAttribute;
+import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLGenerator;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import se.unlogic.standardutils.xml.Elementable;
-import se.unlogic.standardutils.xml.XMLAttribute;
-import se.unlogic.standardutils.xml.XMLElement;
-import se.unlogic.standardutils.xml.XMLGenerator;
 
 @XMLElement(name="ExecutionController")
 public class SimpleExecutionController<T extends TaskGroup> implements ExecutionController<T>, Elementable{

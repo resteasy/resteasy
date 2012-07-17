@@ -3,7 +3,6 @@ package org.jboss.resteasy.tests;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

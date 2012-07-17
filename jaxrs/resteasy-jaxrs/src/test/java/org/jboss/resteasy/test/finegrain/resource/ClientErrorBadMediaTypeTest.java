@@ -1,16 +1,10 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.finegrain.resource.ClientErrorTest.WebResourceUnsupportedMediaType;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -25,7 +19,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 

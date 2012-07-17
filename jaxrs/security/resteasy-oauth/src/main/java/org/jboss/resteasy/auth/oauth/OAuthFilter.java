@@ -1,7 +1,9 @@
 package org.jboss.resteasy.auth.oauth;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
+import net.oauth.OAuth;
+import net.oauth.OAuthMessage;
+import net.oauth.OAuthProblemException;
+import org.jboss.resteasy.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -12,11 +14,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.oauth.OAuth;
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthProblemException;
-import org.jboss.resteasy.logging.Logger;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 
 /**
  * OAuth Servlet Filter that interprets OAuth Authentication messages to set the Principal and roles

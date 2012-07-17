@@ -1,5 +1,14 @@
 package org.jboss.resteasy.examples.oauth;
 
+import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthMessage;
+import org.jboss.resteasy.auth.oauth.OAuthException;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.util.HttpResponseCodes;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -8,16 +17,6 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthMessage;
-
-import org.jboss.resteasy.auth.oauth.OAuthException;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.util.HttpResponseCodes;
 
 public class OAuthMessageSender implements MessageSender {
 

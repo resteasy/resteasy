@@ -1,20 +1,19 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.apache.james.mime4j.field.ContentDispositionField;
+import org.apache.james.mime4j.field.FieldName;
+import org.apache.james.mime4j.message.BodyPart;
+import org.apache.james.mime4j.parser.Field;
+import org.jboss.resteasy.util.GenericType;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
-
-import org.apache.james.mime4j.field.ContentDispositionField;
-import org.apache.james.mime4j.field.FieldName;
-import org.apache.james.mime4j.message.BodyPart;
-import org.apache.james.mime4j.parser.Field;
-import org.jboss.resteasy.util.GenericType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

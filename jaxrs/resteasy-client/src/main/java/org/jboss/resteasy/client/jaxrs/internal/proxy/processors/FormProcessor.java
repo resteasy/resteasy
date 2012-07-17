@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
-import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

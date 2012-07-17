@@ -1,9 +1,9 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.core.AcceptHeaderByFileSuffixFilter;
 import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.AcceptHeaderByFileSuffixFilter;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;

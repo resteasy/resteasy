@@ -1,16 +1,16 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
+
+import javax.ws.rs.core.HttpHeaders;
 
 /**
  * This {@link OneToOneDecoder} is responsible for decode {@link org.jboss.netty.handler.codec.http.HttpRequest}

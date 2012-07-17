@@ -1,11 +1,11 @@
 package org.jboss.resteasy.tests.scanning;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * TEST  RESTEASY-263 RESTEASY-274

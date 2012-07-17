@@ -6,13 +6,14 @@ package org.jboss.resteasy.test.providers.jaxb;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * A TestJAXBXmlRootElementProvider.

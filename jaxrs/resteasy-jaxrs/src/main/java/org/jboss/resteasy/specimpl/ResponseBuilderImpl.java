@@ -9,7 +9,6 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;

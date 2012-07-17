@@ -1,10 +1,11 @@
 package org.jboss.resteasy.auth.oauth;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
+import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthMessage;
+import net.oauth.OAuthProblemException;
+import org.jboss.resteasy.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -13,13 +14,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthProblemException;
-import org.jboss.resteasy.logging.Logger;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**

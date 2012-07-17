@@ -1,12 +1,5 @@
 package org.jboss.resteasy.links.test;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -34,6 +27,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 @RunWith(Parameterized.class)
 public class TestSecureLinks

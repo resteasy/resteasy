@@ -1,13 +1,5 @@
 package org.jboss.resteasy.plugins.validation.hibernate;
 
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-
 import org.hibernate.validator.method.MethodConstraintViolation;
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.hibernate.validator.method.MethodValidator;
@@ -15,6 +7,13 @@ import org.jboss.resteasy.spi.validation.DoNotValidateRequest;
 import org.jboss.resteasy.spi.validation.ValidateRequest;
 import org.jboss.resteasy.spi.validation.ValidatorAdapter;
 import org.jboss.resteasy.util.FindAnnotation;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 class HibernateValidatorAdapter implements ValidatorAdapter {
 

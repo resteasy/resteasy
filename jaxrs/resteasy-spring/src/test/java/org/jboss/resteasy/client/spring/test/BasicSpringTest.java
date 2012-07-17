@@ -1,7 +1,5 @@
 package org.jboss.resteasy.client.spring.test;
 
-import java.io.IOException;
-
 import org.apache.commons.httpclient.HttpException;
 import org.jboss.resteasy.springmvc.test.client.BasicResource;
 import org.junit.Assert;
@@ -10,6 +8,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.IOException;
 
 /**
  * This test is a shameless copy of

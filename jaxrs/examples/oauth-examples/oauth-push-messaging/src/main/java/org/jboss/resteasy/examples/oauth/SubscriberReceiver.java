@@ -1,6 +1,11 @@
 package org.jboss.resteasy.examples.oauth;
 
-import java.util.Properties;
+import org.jboss.resteasy.auth.oauth.OAuthConsumerRegistration;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.examples.oauth.provider.OAuthDBProvider;
+import org.jboss.resteasy.util.Base64;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -12,13 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.jboss.resteasy.auth.oauth.OAuthConsumerRegistration;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.examples.oauth.provider.OAuthDBProvider;
-import org.jboss.resteasy.util.Base64;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import java.util.Properties;
 
 
 

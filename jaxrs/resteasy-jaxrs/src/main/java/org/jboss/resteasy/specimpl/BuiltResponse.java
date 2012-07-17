@@ -2,14 +2,12 @@ package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.spi.LinkHeaders;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.MessageProcessingException;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
@@ -29,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * A response object not attached to a client or server invocation.

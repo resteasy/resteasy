@@ -1,9 +1,5 @@
 package org.jboss.resteasy.plugins.spring;
 
-import static org.junit.Assert.assertEquals;
-
-import javax.servlet.ServletContext;
-
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
@@ -13,6 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
+
+import javax.servlet.ServletContext;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests that SpringContextLoader does proper validations and adds an application listener.

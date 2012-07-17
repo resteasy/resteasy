@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 
 /**

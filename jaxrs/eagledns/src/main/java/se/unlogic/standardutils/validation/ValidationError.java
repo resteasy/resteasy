@@ -10,7 +10,6 @@ package se.unlogic.standardutils.validation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
 import se.unlogic.standardutils.xml.XMLUtils;
 
 public class ValidationError {

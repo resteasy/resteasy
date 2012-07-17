@@ -1,13 +1,13 @@
 package org.jboss.resteasy.examples.contacts.persistence.hibernate;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.jboss.resteasy.examples.contacts.core.Contact;
 import org.jboss.resteasy.examples.contacts.core.ContactAttrs;
 import org.jboss.resteasy.examples.contacts.persistence.ContactDao;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a> Jun 28, 2008
