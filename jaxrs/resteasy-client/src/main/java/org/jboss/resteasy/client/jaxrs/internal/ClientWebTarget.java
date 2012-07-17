@@ -87,14 +87,14 @@ public class ClientWebTarget implements ResteasyWebTarget
    }
 
    @Override
-   public WebTarget path(String path) throws NullPointerException
+   public ResteasyWebTarget path(String path) throws NullPointerException
    {
       UriBuilder copy = uriBuilder.clone().path(path);
       return new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
-   public WebTarget pathParam(String name, Object value) throws IllegalArgumentException, NullPointerException
+   public ResteasyWebTarget pathParam(String name, Object value) throws IllegalArgumentException, NullPointerException
    {
       UriBuilder copy = uriBuilder.clone();
       HashMap<String, String> paramMap = new HashMap<String, String>();
@@ -106,7 +106,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    }
 
    @Override
-   public WebTarget pathParams(Map<String, Object> parameters) throws IllegalArgumentException, NullPointerException
+   public ResteasyWebTarget pathParams(Map<String, Object> parameters) throws IllegalArgumentException, NullPointerException
    {
       UriBuilder copy = uriBuilder.clone();
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
@@ -120,7 +120,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    }
 
    @Override
-   public WebTarget matrixParam(String name, Object... values) throws NullPointerException
+   public ResteasyWebTarget matrixParam(String name, Object... values) throws NullPointerException
    {
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().matrixParam(name, stringValues);
@@ -138,7 +138,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    }
 
    @Override
-   public WebTarget queryParam(String name, Object... values) throws NullPointerException
+   public ResteasyWebTarget queryParam(String name, Object... values) throws NullPointerException
    {
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().queryParam(name, stringValues);
@@ -146,7 +146,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    }
 
    @Override
-   public WebTarget queryParams(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException
+   public ResteasyWebTarget queryParams(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException
    {
       UriBuilder copy = uriBuilder.clone();
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
