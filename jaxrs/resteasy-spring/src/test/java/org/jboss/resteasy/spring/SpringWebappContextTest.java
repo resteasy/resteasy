@@ -1,23 +1,20 @@
 package org.jboss.resteasy.spring;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.jboss.resteasy.plugins.providers.ProviderHelper;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
+import org.jboss.resteasy.plugins.providers.ProviderHelper;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 public class SpringWebappContextTest
 {

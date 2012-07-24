@@ -7,14 +7,14 @@
  ******************************************************************************/
 package se.unlogic.standardutils.annotations;
 
+import se.unlogic.standardutils.populators.BeanStringPopulator;
+import se.unlogic.standardutils.populators.DummyPopulator;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import se.unlogic.standardutils.populators.BeanStringPopulator;
-import se.unlogic.standardutils.populators.DummyPopulator;
 
 /**
  * This annotation is used to annotate fields that are to be populated by the {@link se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator}.

@@ -1,18 +1,13 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.spi.NotImplementedYetException;
-
-import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Date;
 import java.util.Locale;

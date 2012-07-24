@@ -1,15 +1,15 @@
 package org.jboss.resteasy.cdi.test.intf.ejb;
 
+import org.jboss.resteasy.cdi.ResteasyCdiExtension;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.enterprise.inject.spi.Bean;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Bean;
-
-import org.jboss.resteasy.cdi.ResteasyCdiExtension;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SessionBeanInterfaceTest
 {

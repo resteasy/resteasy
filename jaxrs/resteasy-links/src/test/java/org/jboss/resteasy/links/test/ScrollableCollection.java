@@ -1,18 +1,17 @@
 package org.jboss.resteasy.links.test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.jboss.resteasy.links.RESTServiceDiscovery;
+import org.jboss.resteasy.links.ResourceFacade;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.jboss.resteasy.links.RESTServiceDiscovery;
-import org.jboss.resteasy.links.ResourceFacade;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)

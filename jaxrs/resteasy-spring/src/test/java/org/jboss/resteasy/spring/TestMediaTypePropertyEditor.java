@@ -6,19 +6,15 @@
  */
 package org.jboss.resteasy.spring;
 
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MediaTypeEditor;
-
 import java.beans.PropertyEditor;
-import java.util.Map;
+
+import static org.junit.Assert.*;
 
 public class TestMediaTypePropertyEditor
 {

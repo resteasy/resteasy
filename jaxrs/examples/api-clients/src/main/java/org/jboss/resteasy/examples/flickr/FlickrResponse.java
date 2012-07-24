@@ -1,15 +1,14 @@
 package org.jboss.resteasy.examples.flickr;
 
-import java.util.List;
-import java.util.concurrent.Future;
-
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.List;
+import java.util.concurrent.Future;
 
 @XmlRootElement(name = "rsp")
 public class FlickrResponse {

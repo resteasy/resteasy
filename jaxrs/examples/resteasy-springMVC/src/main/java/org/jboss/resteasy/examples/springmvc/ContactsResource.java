@@ -1,7 +1,9 @@
 package org.jboss.resteasy.examples.springmvc;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.jboss.resteasy.annotations.Form;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,11 +17,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.jboss.resteasy.annotations.Form;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.servlet.ModelAndView;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Controller
 @Path(ContactsResource.CONTACTS_URL)

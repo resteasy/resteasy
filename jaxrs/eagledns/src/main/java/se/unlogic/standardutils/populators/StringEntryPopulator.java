@@ -7,11 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import se.unlogic.standardutils.dao.BeanResultSetPopulator;
 import se.unlogic.standardutils.datatypes.SimpleEntry;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class StringEntryPopulator implements BeanResultSetPopulator<SimpleEntry<String, String>> {
 

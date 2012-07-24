@@ -1,13 +1,7 @@
 package org.jboss.resteasy.examples.contacts.persistence;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.annotation.Resource;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.examples.contacts.core.Contact;
 import org.jboss.resteasy.examples.contacts.core.ContactAttrs;
 import org.junit.After;
@@ -18,6 +12,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a>

@@ -1,11 +1,11 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.jboss.resteasy.util.GenericType;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-
-import org.jboss.resteasy.util.GenericType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

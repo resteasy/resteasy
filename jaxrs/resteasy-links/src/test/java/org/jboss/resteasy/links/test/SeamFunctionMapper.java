@@ -1,14 +1,13 @@
 package org.jboss.resteasy.links.test;
 
+import org.jboss.el.lang.ExtendedFunctionMapper;
+
+import javax.el.FunctionMapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.el.FunctionMapper;
-
-import org.jboss.el.lang.ExtendedFunctionMapper;
 
 /**
  * Resolves Seam Security EL functions, s:hasRole() and s:hasPermission()

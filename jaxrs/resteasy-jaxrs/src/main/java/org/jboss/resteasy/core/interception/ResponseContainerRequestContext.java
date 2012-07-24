@@ -3,7 +3,6 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.core.Response;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

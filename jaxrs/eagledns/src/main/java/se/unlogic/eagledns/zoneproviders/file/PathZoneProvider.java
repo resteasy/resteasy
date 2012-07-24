@@ -1,7 +1,5 @@
 package se.unlogic.eagledns.zoneproviders.file;
 
-import se.unlogic.eagledns.zoneproviders.file.FileZoneProvider;
-
 import java.net.URL;
 
 /**

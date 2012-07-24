@@ -1,11 +1,11 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.jboss.resteasy.logging.Logger;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.UUID;
-
-import org.jboss.resteasy.logging.Logger;
 
 /**
  * Utility class to help generate, convert RFC compliant Content-ID and cid.

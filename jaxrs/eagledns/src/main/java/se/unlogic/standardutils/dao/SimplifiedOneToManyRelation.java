@@ -7,14 +7,6 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -23,10 +15,18 @@ import se.unlogic.standardutils.dao.enums.Order;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.dao.querys.PreparedStatementQuery;
 import se.unlogic.standardutils.dao.querys.UpdateQuery;
-import se.unlogic.standardutils.populators.QueryParameterPopulator;
 import se.unlogic.standardutils.populators.BeanStringPopulator;
+import se.unlogic.standardutils.populators.QueryParameterPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimplifiedOneToManyRelation<LocalType, RemoteType> implements OneToManyRelation<LocalType, RemoteType> {
 

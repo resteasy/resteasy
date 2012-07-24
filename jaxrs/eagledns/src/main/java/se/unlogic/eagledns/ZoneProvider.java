@@ -1,8 +1,8 @@
 package se.unlogic.eagledns;
 
-import java.util.Collection;
-
 import org.xbill.DNS.Zone;
+
+import java.util.Collection;
 
 /**
  * This interface is used to dynamicly load zones from different type of zone providers in runtime

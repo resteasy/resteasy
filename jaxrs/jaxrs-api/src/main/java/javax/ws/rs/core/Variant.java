@@ -39,11 +39,10 @@
  */
 package javax.ws.rs.core;
 
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Locale;
-
-import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Abstraction for a resource representation variant.

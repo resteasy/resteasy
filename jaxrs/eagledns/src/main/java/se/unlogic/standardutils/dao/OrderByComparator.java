@@ -7,9 +7,9 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
-import java.util.Comparator;
-
 import se.unlogic.standardutils.dao.annotations.OrderBy;
+
+import java.util.Comparator;
 
 public class OrderByComparator implements Comparator<OrderBy> {
 

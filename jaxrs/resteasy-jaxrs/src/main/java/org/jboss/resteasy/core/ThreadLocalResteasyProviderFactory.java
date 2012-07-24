@@ -13,10 +13,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
 import javax.ws.rs.client.ClientRequestFilter;

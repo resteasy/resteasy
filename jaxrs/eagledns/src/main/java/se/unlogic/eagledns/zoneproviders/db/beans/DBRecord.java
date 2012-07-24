@@ -1,7 +1,5 @@
 package se.unlogic.eagledns.zoneproviders.db.beans;
 
-import java.io.IOException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xbill.DNS.DClass;
@@ -9,7 +7,6 @@ import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
-
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
@@ -17,6 +14,8 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.xml.Elementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGenerator;
+
+import java.io.IOException;
 
 @XMLElement
 @Table(name="records")

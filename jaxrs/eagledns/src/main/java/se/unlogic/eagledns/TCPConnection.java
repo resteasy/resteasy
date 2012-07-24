@@ -1,13 +1,13 @@
 package se.unlogic.eagledns;
 
+import org.apache.log4j.Logger;
+import org.xbill.DNS.Message;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-
-import org.apache.log4j.Logger;
-import org.xbill.DNS.Message;
 
 
 public class TCPConnection implements Runnable {

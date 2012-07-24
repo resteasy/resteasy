@@ -39,13 +39,12 @@
  */
 package javax.ws.rs.container;
 
+import javax.ws.rs.NameBinding;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import javax.ws.rs.NameBinding;
 
 /**
  * Global binding annotation that can be applied to a {@link ContainerRequestFilter

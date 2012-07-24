@@ -1,13 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-import static org.junit.Assert.assertEquals;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.resteasy.client.ProxyBuilder;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -15,6 +7,14 @@ import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import static org.junit.Assert.*;
 
 public class TestDefaultMediaTypes extends BaseResourceTest
 {

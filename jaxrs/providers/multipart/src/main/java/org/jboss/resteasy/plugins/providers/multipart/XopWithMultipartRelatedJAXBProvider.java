@@ -1,15 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -25,8 +16,16 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.attachment.AttachmentMarshaller;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.transform.stream.StreamSource;
-
-import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A special JAXB Provider. It is not a real provider, it is only used as a

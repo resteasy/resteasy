@@ -1,15 +1,14 @@
 package org.jboss.resteasy.examples.contacts.services;
 
+import org.jboss.resteasy.examples.contacts.core.Contact;
+import org.jboss.resteasy.examples.contacts.core.Contacts;
+import org.jboss.resteasy.examples.contacts.persistence.ContactDao;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
-import org.springframework.transaction.annotation.Transactional;
-
-import org.jboss.resteasy.examples.contacts.core.Contact;
-import org.jboss.resteasy.examples.contacts.core.Contacts;
-import org.jboss.resteasy.examples.contacts.persistence.ContactDao;
 
 /**
  * @author <a href="mailto:obrand@yahoo.com">Olivier Brand</a> Jun 28, 2008

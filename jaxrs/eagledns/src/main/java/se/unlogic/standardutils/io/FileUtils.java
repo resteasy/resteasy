@@ -7,14 +7,14 @@
  ******************************************************************************/
 package se.unlogic.standardutils.io;
 
+import se.unlogic.standardutils.callback.Callback;
+import se.unlogic.standardutils.streams.StreamUtils;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import se.unlogic.standardutils.callback.Callback;
-import se.unlogic.standardutils.streams.StreamUtils;
 
 /**
  * Utility class for handling files and folders

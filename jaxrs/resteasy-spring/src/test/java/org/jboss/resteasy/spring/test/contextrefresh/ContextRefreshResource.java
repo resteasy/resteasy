@@ -1,10 +1,9 @@
 package org.jboss.resteasy.spring.test.contextrefresh;
 
-import javax.ws.rs.GET;
+import org.springframework.stereotype.Component;
+
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-
-import org.springframework.stereotype.Component;
 
 /**
  * RESTEASY-632.

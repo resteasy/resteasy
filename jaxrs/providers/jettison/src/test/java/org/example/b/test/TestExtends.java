@@ -8,11 +8,12 @@
 
 package org.example.b.test;
 
+import org.example.a.testcanonical.TestBase;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import org.example.a.testcanonical.TestBase;
 
 
 /**

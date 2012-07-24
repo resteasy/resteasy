@@ -7,17 +7,16 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao.script;
 
+import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.dao.querys.UpdateQuery;
+
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.List;
-
-import javax.sql.DataSource;
-
-import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.dao.querys.UpdateQuery;
 
 public class MySQLScriptDAO implements ScriptDAO {
 	

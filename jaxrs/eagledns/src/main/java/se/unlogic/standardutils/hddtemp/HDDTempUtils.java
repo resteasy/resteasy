@@ -7,15 +7,15 @@
  ******************************************************************************/
 package se.unlogic.standardutils.hddtemp;
 
+import se.unlogic.standardutils.net.SocketUtils;
+import se.unlogic.standardutils.numbers.NumberUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-
-import se.unlogic.standardutils.net.SocketUtils;
-import se.unlogic.standardutils.numbers.NumberUtils;
 
 public class HDDTempUtils {
 

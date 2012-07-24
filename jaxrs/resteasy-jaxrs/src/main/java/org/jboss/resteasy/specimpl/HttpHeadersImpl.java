@@ -1,6 +1,5 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;

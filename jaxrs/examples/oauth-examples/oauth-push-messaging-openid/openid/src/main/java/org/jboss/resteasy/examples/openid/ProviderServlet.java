@@ -3,6 +3,20 @@
  */
 package org.jboss.resteasy.examples.openid;
 
+import org.openid4java.message.AuthRequest;
+import org.openid4java.message.AuthSuccess;
+import org.openid4java.message.DirectError;
+import org.openid4java.message.Message;
+import org.openid4java.message.ParameterList;
+import org.openid4java.server.InMemoryServerAssociationStore;
+import org.openid4java.server.ServerManager;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
@@ -11,21 +25,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.openid4java.message.AuthRequest;
-import org.openid4java.message.AuthSuccess;
-import org.openid4java.message.DirectError;
-import org.openid4java.message.Message;
-import org.openid4java.message.ParameterList;
-import org.openid4java.server.InMemoryServerAssociationStore;
-import org.openid4java.server.ServerManager;
 
 public class ProviderServlet extends javax.servlet.http.HttpServlet {
 

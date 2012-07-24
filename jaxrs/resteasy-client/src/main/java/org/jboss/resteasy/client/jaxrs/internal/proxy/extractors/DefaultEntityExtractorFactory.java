@@ -1,15 +1,11 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
-import org.jboss.resteasy.annotations.ClientResponseType;
 import org.jboss.resteasy.annotations.ResponseObject;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 /**
  * @author Solomon.Duskis

@@ -1,13 +1,13 @@
 package org.jboss.resteasy.examples.flickr;
 
-import static java.lang.String.format;
+import org.apache.commons.lang.time.StopWatch;
+import org.jboss.resteasy.examples.resteasy.ImageIconMessageBodyReader;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -15,24 +15,6 @@ import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Enumeration;
-
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
-import org.apache.commons.lang.time.StopWatch;
-import org.jboss.resteasy.examples.resteasy.ImageIconMessageBodyReader;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class FlickrClient
 {

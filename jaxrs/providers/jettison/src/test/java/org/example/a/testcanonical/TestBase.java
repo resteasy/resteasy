@@ -8,12 +8,13 @@
 
 package org.example.a.testcanonical;
 
+import org.example.b.test.TestExtends;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-import org.example.b.test.TestExtends;
 
 
 /**

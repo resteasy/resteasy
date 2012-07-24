@@ -1,5 +1,9 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
+import org.w3c.dom.Element;
+
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -13,11 +17,6 @@ import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
-import org.w3c.dom.Element;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;

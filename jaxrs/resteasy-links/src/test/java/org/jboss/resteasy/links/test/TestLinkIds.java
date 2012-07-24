@@ -1,11 +1,5 @@
 package org.jboss.resteasy.links.test;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -18,12 +12,12 @@ import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+
+import java.util.concurrent.TimeUnit;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 public class TestLinkIds
 {

@@ -7,6 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.reflection;
 
+import se.unlogic.standardutils.populators.BeanStringPopulator;
+import se.unlogic.standardutils.populators.BeanStringPopulatorRegistery;
+import se.unlogic.standardutils.populators.UnableToFindSuitablePopulatorException;
+import se.unlogic.standardutils.string.StringUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,11 +21,6 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import se.unlogic.standardutils.populators.BeanStringPopulator;
-import se.unlogic.standardutils.populators.BeanStringPopulatorRegistery;
-import se.unlogic.standardutils.populators.UnableToFindSuitablePopulatorException;
-import se.unlogic.standardutils.string.StringUtils;
 
 public class ReflectionUtils {
 

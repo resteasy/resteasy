@@ -1,18 +1,18 @@
 package org.jboss.resteasy.test.client;
 
-import static org.junit.Assert.assertEquals;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+
+import static org.junit.Assert.*;
 
 public class TestProxyCastingSimple extends BaseResourceTest
 {

@@ -1,14 +1,14 @@
 package org.jboss.resteasy.test.regression;
 
-import static org.junit.Assert.*;
-
-import java.lang.annotation.Annotation;
-import java.sql.Date;
-
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.annotation.Annotation;
+import java.sql.Date;
+
+import static org.junit.Assert.*;
 /**
  * resteasy-584
  *

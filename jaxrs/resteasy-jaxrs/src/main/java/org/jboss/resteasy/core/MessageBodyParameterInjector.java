@@ -1,9 +1,8 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
-import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.ServerReaderInterceptorContext;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;

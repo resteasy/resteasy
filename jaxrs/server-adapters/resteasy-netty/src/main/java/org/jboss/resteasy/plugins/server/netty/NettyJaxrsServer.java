@@ -11,10 +11,9 @@ import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
+import javax.net.ssl.SSLContext;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
-
-import javax.net.ssl.SSLContext;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request

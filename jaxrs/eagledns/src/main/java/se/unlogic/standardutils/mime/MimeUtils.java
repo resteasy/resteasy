@@ -7,6 +7,8 @@
  ******************************************************************************/
 package se.unlogic.standardutils.mime;
 
+import se.unlogic.standardutils.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +16,6 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-
-import se.unlogic.standardutils.io.FileUtils;
 
 public class MimeUtils {
 

@@ -7,9 +7,9 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
-import java.lang.reflect.Method;
-
 import se.unlogic.standardutils.populators.QueryParameterPopulator;
+
+import java.lang.reflect.Method;
 
 public class CustomQueryParameter<T>{
 

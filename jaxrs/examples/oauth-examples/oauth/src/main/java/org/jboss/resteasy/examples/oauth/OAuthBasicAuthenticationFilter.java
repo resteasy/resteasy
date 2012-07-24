@@ -1,11 +1,7 @@
 package org.jboss.resteasy.examples.oauth;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.security.acl.Group;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import org.apache.commons.codec.binary.Base64;
+import org.jboss.security.AuthenticationManager;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -16,9 +12,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.codec.binary.Base64;
-import org.jboss.security.AuthenticationManager;
+import java.io.IOException;
+import java.security.Principal;
+import java.security.acl.Group;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OAuthBasicAuthenticationFilter extends OAuthDBFilter {
 

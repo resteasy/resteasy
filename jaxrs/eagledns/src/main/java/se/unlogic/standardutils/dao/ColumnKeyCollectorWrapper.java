@@ -7,11 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import se.unlogic.standardutils.dao.querys.GeneratedKeyCollector;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-import se.unlogic.standardutils.dao.querys.GeneratedKeyCollector;
 
 
 public class ColumnKeyCollectorWrapper<T> implements GeneratedKeyCollector {

@@ -1,9 +1,9 @@
 package org.jboss.resteasy.examples.contacts.persistence;
 
-import java.util.Collection;
-
 import org.jboss.resteasy.examples.contacts.core.Contact;
 import org.jboss.resteasy.examples.contacts.core.ContactAttrs;
+
+import java.util.Collection;
 
 
 /**

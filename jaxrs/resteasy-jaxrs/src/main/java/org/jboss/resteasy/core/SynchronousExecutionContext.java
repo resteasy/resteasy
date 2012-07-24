@@ -8,7 +8,6 @@ import org.jboss.resteasy.spi.UnhandledException;
 
 import javax.ws.rs.core.AsynchronousResponse;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 

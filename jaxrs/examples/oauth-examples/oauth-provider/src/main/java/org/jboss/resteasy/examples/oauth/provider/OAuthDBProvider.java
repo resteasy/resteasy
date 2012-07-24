@@ -1,5 +1,11 @@
 package org.jboss.resteasy.examples.oauth.provider;
 
+import org.jboss.resteasy.auth.oauth.OAuthConsumer;
+import org.jboss.resteasy.auth.oauth.OAuthException;
+import org.jboss.resteasy.auth.oauth.OAuthProvider;
+import org.jboss.resteasy.auth.oauth.OAuthRequestToken;
+import org.jboss.resteasy.auth.oauth.OAuthToken;
+
 import java.net.HttpURLConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,12 +17,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
-
-import org.jboss.resteasy.auth.oauth.OAuthConsumer;
-import org.jboss.resteasy.auth.oauth.OAuthException;
-import org.jboss.resteasy.auth.oauth.OAuthProvider;
-import org.jboss.resteasy.auth.oauth.OAuthRequestToken;
-import org.jboss.resteasy.auth.oauth.OAuthToken;
 
 /**
  * OAuthDBProvider that keeps all data in DB. 

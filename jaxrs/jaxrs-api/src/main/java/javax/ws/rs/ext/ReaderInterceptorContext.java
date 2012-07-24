@@ -39,10 +39,9 @@
  */
 package javax.ws.rs.ext;
 
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Context class used by {@link javax.ws.rs.ext.ReaderInterceptor}

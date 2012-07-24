@@ -1,8 +1,8 @@
 package org.jboss.resteasy.spi.validation;
 
-import javax.validation.Validator;
-
 import org.hibernate.validator.method.MethodValidator;
+
+import javax.validation.Validator;
 
 /** 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>

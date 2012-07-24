@@ -1,12 +1,11 @@
 package org.jboss.resteasy.springmvc.test.view;
 
-import java.util.Map;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.View;
+import java.util.Map;
 
 @Component
 public class MyCustomView implements View {

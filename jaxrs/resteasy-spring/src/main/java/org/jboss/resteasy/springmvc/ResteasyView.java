@@ -1,7 +1,8 @@
 package org.jboss.resteasy.springmvc;
 
-import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -92,10 +93,10 @@ public class ResteasyView implements View
                {
                   MediaType resolvedContentType = resolveContentType(httpRequest,
                           httpRequest.getHttpHeaders().getMediaType());
-                  ServerResponse responseInvoker = getResponse(model, resolvedContentType);
+                  BuiltResponse responseInvoker = getResponse(model, resolvedContentType);
                   if (responseInvoker != null)
                   {
-                     responseInvoker.writeTo(httpRequest, response, dispatcher.getProviderFactory());
+                     ServerResponseWriter.writeResponse(responseInvoker, httpRequest, response, dispatcher.getProviderFactory());
                   }
                }
                catch (Exception e)
@@ -146,14 +147,14 @@ public class ResteasyView implements View
       return isAcceptable;
    }
 
-   protected ServerResponse getResponse(Map model, MediaType mt)
+   protected BuiltResponse getResponse(Map model, MediaType mt)
    {
       Collection modelValues = model.values();
       for (Object value : modelValues)
       {
-         if (value instanceof ServerResponse)
+         if (value instanceof BuiltResponse)
          {
-            return (ServerResponse) value;
+            return (BuiltResponse) value;
          }
       }
 
@@ -174,9 +175,9 @@ public class ResteasyView implements View
       return null;
    }
 
-   private ServerResponse createResponse(Object value, MediaType contentType)
+   private BuiltResponse createResponse(Object value, MediaType contentType)
    {
-      ServerResponse responseImpl = new ServerResponse();
+      BuiltResponse responseImpl = new BuiltResponse();
       responseImpl.setEntity(value);
       if (contentType != null)
          responseImpl.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, contentType);

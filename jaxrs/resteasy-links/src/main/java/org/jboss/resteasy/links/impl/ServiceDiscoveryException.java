@@ -1,8 +1,8 @@
 package org.jboss.resteasy.links.impl;
 
-import java.lang.reflect.Method;
-
 import org.jboss.resteasy.spi.Failure;
+
+import java.lang.reflect.Method;
 
 public class ServiceDiscoveryException extends Failure {
 

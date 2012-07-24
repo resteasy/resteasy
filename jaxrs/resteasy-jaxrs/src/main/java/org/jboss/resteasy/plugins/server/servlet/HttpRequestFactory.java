@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

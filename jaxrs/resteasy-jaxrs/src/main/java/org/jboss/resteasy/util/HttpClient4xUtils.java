@@ -1,12 +1,12 @@
 package org.jboss.resteasy.util;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.jboss.resteasy.logging.Logger;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * HttpClient4xUtils provides utility methods useful for changes

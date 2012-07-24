@@ -3,18 +3,23 @@ package org.jboss.resteasy.plugins.server.netty;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.spi.AsynchronousResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -31,32 +36,59 @@ import java.util.concurrent.TimeUnit;
 public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
 {
    protected HttpHeaders httpHeaders;
-   protected CountDownLatch latch;
-   protected long suspendTimeout;
    protected SynchronousDispatcher dispatcher;
-   protected boolean suspended;
-   protected UriInfo uri;
+   protected ResteasyUriInfo uriInfo;
    protected String httpMethod;
-   protected String preProcessedPath;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
-   protected AbstractAsynchronousResponse asynchronousResponse;
    protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected NettyHttpResponse httpResponse;
    private final boolean is100ContinueExpected;
 
 
-   public NettyHttpRequest(HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean is100ContinueExpected)
+   public NettyHttpRequest(HttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean is100ContinueExpected)
    {
       this.is100ContinueExpected = is100ContinueExpected;
       this.httpResponse = httpResponse;
       this.dispatcher = dispatcher;
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
-      this.uri = uri;
-      this.preProcessedPath = uri.getPath(false);
+      this.uriInfo = uri;
 
+   }
+
+   @Override
+   public void setHttpMethod(String method)
+   {
+      this.httpMethod = method;
+   }
+
+   @Override
+   public Enumeration<String> getAttributeNames()
+   {
+      Enumeration<String> en = new Enumeration<String>()
+      {
+         private Iterator<String> it = attributes.keySet().iterator();
+         @Override
+         public boolean hasMoreElements()
+         {
+            return it.hasNext();
+         }
+
+         @Override
+         public String nextElement()
+         {
+            return it.next();
+         }
+      };
+      return en;
+   }
+
+   @Override
+   public ResteasyAsynchronousContext getExecutionContext()
+   {
+      return new SynchronousExecutionContext(dispatcher, this, httpResponse);
    }
 
    @Override
@@ -127,9 +159,9 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    }
 
    @Override
-   public UriInfo getUri()
+   public ResteasyUriInfo getUri()
    {
-      return uri;
+      return uriInfo;
    }
 
    @Override
@@ -139,47 +171,17 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    }
 
    @Override
-   public String getPreprocessedPath()
+   public void setRequestUri(URI requestUri) throws IllegalStateException
    {
-      return preProcessedPath;
+      uriInfo = uriInfo.relative(requestUri);
    }
 
    @Override
-   public void setPreprocessedPath(String path)
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
    {
-      preProcessedPath = path;
+      uriInfo = new ResteasyUriInfo(baseUri, requestUri);
    }
 
-   @Override
-   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
-   {
-      suspended = true;
-      latch = new CountDownLatch(1);
-      this.suspendTimeout = suspendTimeout;
-      asynchronousResponse = new AbstractAsynchronousResponse()
-      {
-          @Override
-         public void setResponse(Response response)
-         {
-            try
-            {
-               setupResponse((ServerResponse) response);
-               dispatcher.asynchronousDelivery(NettyHttpRequest.this, httpResponse, response);
-            }
-            finally
-            {
-               latch.countDown();
-            }
-         }
-      };
-      return asynchronousResponse;
-   }
-
-   @Override
-   public AsynchronousResponse getAsynchronousResponse()
-   {
-      return asynchronousResponse;
-   }
 
    @Override
    public boolean isInitial()
@@ -187,29 +189,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       return true;
    }
    
-   @Override
-   public boolean isSuspended()
-   {
-      return suspended;
-   }
-
-
-   @Override
-   public void initialRequestThreadFinished()
-   {
-      if (latch == null) return; // only block if createAsynchronousResponse was called.
-      try
-      {
-         latch.await(suspendTimeout + 100, TimeUnit.MILLISECONDS);
-      }
-      catch (InterruptedException e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
-   
-   
-   public NettyHttpResponse getResponse() 
+   public NettyHttpResponse getResponse()
    {
        return httpResponse;
    }

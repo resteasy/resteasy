@@ -106,25 +106,25 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public WebTarget target(String uri) throws IllegalArgumentException, NullPointerException
+   public ResteasyWebTarget target(String uri) throws IllegalArgumentException, NullPointerException
    {
       return new ClientWebTarget(this, uri, configuration);
    }
 
    @Override
-   public WebTarget target(URI uri) throws NullPointerException
+   public ResteasyWebTarget target(URI uri) throws NullPointerException
    {
       return new ClientWebTarget(this, uri, configuration);
    }
 
    @Override
-   public WebTarget target(UriBuilder uriBuilder) throws NullPointerException
+   public ResteasyWebTarget target(UriBuilder uriBuilder) throws NullPointerException
    {
       return new ClientWebTarget(this, uriBuilder, configuration);
    }
 
    @Override
-   public WebTarget target(Link link) throws NullPointerException
+   public ResteasyWebTarget target(Link link) throws NullPointerException
    {
       URI uri = link.getUri();
       return new ClientWebTarget(this, uri, configuration);

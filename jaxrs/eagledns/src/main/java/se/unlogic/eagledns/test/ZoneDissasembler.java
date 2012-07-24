@@ -1,12 +1,12 @@
 package se.unlogic.eagledns.test;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.xbill.DNS.Master;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
+
+import java.io.File;
+import java.io.IOException;
 
 
 public class ZoneDissasembler {

@@ -21,17 +21,16 @@
  */
 package org.jboss.resteasy.cdi;
 
-import java.lang.reflect.Type;
-import java.util.Map;
-
-import javax.enterprise.inject.spi.BeanManager;
-import javax.ws.rs.WebApplicationException;
-
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
+
+import javax.enterprise.inject.spi.BeanManager;
+import javax.ws.rs.WebApplicationException;
+import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * JAX-RS property injection is performed twice on CDI Beans. Firstly by the JaxrsInjectionTarget

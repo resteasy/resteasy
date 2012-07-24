@@ -1,8 +1,7 @@
 package org.jboss.resteasy.examples.flickr;
 
+import javax.swing.*;
 import java.lang.reflect.Method;
-
-import javax.swing.JOptionPane;
 
 public class BareBonesBrowserLaunch {
 

@@ -7,12 +7,12 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import se.unlogic.standardutils.dao.querys.GeneratedKeyCollector;
+
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import se.unlogic.standardutils.dao.querys.GeneratedKeyCollector;
 
 /**
  * This class represents a SQL query and is used together with the {@link AnnotatedDAO} class.

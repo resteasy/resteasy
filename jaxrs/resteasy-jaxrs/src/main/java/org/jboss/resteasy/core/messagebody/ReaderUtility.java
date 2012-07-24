@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core.messagebody;
 
-import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

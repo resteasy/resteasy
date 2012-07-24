@@ -1,17 +1,16 @@
 package org.jboss.resteasy.links.impl;
 
-import java.lang.annotation.Annotation;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Marshaller.Listener;
-
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.links.AddLinks;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.DecoratorProcessor;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Marshaller.Listener;
+import java.lang.annotation.Annotation;
 
 public class LinkDecorator implements DecoratorProcessor<Marshaller, AddLinks> {
 

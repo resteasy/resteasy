@@ -1,14 +1,13 @@
 package org.jboss.resteasy.examples.oauth;
 
-import java.security.Principal;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.jboss.resteasy.auth.oauth.OAuthConsumer;
 import org.jboss.resteasy.auth.oauth.OAuthFilter;
 import org.jboss.resteasy.auth.oauth.OAuthToken;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.security.Principal;
+import java.util.Set;
 
 public class OAuthPushMessagingFilter extends OAuthFilter {
 

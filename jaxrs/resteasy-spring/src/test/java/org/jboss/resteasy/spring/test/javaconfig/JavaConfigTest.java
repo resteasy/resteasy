@@ -1,18 +1,13 @@
 package org.jboss.resteasy.spring.test.javaconfig;
 
-import static org.junit.Assert.*;
-
-import java.io.InputStream;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
-import com.meterware.servletunit.ServletRunner;
+import static org.junit.Assert.*;
 
 /**
  * This test will verify that the resource invoked by RESTEasy has been

@@ -1,11 +1,5 @@
 package org.jboss.resteasy.test.smoke;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
@@ -14,6 +8,12 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * Simple smoke test

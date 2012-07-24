@@ -1,15 +1,14 @@
 package org.jboss.resteasy.links;
 
+import org.jboss.resteasy.annotations.Decorator;
+import org.jboss.resteasy.links.impl.LinkDecorator;
+
+import javax.xml.bind.Marshaller;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import javax.xml.bind.Marshaller;
-
-import org.jboss.resteasy.annotations.Decorator;
-import org.jboss.resteasy.links.impl.LinkDecorator;
 
 /**
  * Use on any JAX-RS method if you want RESTEasy to inject the RESTServiceDiscovery

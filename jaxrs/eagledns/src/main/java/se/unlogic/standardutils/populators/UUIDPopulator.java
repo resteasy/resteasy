@@ -7,11 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
-import java.sql.SQLException;
-import java.util.UUID;
-
 import se.unlogic.standardutils.dao.querys.PreparedStatementQuery;
 import se.unlogic.standardutils.validation.StringFormatValidator;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 
 public class UUIDPopulator extends BaseStringPopulator<UUID> implements QueryParameterPopulator<UUID> {

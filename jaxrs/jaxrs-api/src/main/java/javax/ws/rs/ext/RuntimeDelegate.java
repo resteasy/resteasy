@@ -39,13 +39,12 @@
  */
 package javax.ws.rs.ext;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.URL;
-
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
+import java.lang.reflect.ReflectPermission;
+import java.net.URL;
 
 /**
  * Implementations of JAX-RS provide a concrete subclass of RuntimeDelegate and

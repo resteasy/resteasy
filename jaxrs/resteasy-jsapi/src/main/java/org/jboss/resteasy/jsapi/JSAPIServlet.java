@@ -1,7 +1,9 @@
 package org.jboss.resteasy.jsapi;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -9,11 +11,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * @author Stéphane Épardaud <stef@epardaud.fr>

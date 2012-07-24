@@ -1,7 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.core.marshallers.Marshaller;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 

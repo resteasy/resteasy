@@ -14,25 +14,23 @@
  */
 package org.jboss.resteasy.test.providers.atom.app;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URI;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
-
-import org.junit.Assert;
-
 import org.jboss.resteasy.plugins.providers.atom.Category;
 import org.jboss.resteasy.plugins.providers.atom.app.AppAccept;
 import org.jboss.resteasy.plugins.providers.atom.app.AppCategories;
 import org.jboss.resteasy.plugins.providers.atom.app.AppCollection;
 import org.jboss.resteasy.plugins.providers.atom.app.AppService;
 import org.jboss.resteasy.plugins.providers.atom.app.AppWorkspace;
+import org.junit.Assert;
 import org.junit.Test;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:kurt.stam@gmail.com">Kurt Stam</a>
