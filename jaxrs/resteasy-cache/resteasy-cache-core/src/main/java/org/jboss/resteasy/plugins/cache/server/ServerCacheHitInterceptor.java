@@ -4,6 +4,7 @@ import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -73,7 +74,7 @@ public class ServerCacheHitInterceptor implements PreProcessInterceptor
             cc.setMaxAge(entry.getExpirationInSeconds());
             if (builder != null)
             {
-               return (ServerResponse) builder.cacheControl(cc).build();
+               return new ServerResponse((BuiltResponse) builder.cacheControl(cc).build());
             }
 
 

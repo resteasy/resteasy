@@ -147,7 +147,7 @@ public class MethodInjectorImpl implements MethodInjector
       }
    }
 
-   public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException, WebApplicationException
+   public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
    {
       Object[] args = injectArguments(request, httpResponse);
       
@@ -178,11 +178,6 @@ public class MethodInjectorImpl implements MethodInjector
       catch (InvocationTargetException e)
       {
          Throwable cause = e.getCause();
-         if (cause instanceof WebApplicationException)
-         {
-            WebApplicationException wae = (WebApplicationException) cause;
-            throw wae;
-         }
          throw new ApplicationException(cause);
       }
       catch (IllegalArgumentException e)

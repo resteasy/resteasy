@@ -225,7 +225,7 @@ public class PropertyInjectorImpl implements PropertyInjector
          }
          catch (InvocationTargetException e)
          {
-            throw new ApplicationException(e);
+            throw new ApplicationException(e.getCause());
          }
       }
    }

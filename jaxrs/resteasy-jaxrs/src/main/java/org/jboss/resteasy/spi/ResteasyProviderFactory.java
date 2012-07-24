@@ -10,7 +10,6 @@ import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
@@ -462,14 +461,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public Response.ResponseBuilder createResponseBuilder()
    {
-      return new ResponseBuilderImpl()
-      {
-         @Override
-         public Response build()
-         {
-            return new ServerResponse(entity, status, metadata);
-         }
-      };
+      return new ResponseBuilderImpl();
    }
 
    public Variant.VariantListBuilder createVariantListBuilder()

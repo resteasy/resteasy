@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -82,7 +83,7 @@ public class ResourceLocator implements ResourceInvoker
       return method;
    }
 
-   public ServerResponse invoke(HttpRequest request, HttpResponse response)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
       ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       try
@@ -97,7 +98,7 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   public ServerResponse invoke(HttpRequest request, HttpResponse response, Object locator)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
       ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       try
@@ -112,7 +113,7 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   protected ServerResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
+   protected BuiltResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
    {
       if (target == null)
       {

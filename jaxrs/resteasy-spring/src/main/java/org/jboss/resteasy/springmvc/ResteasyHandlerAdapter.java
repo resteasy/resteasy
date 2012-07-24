@@ -1,8 +1,9 @@
 package org.jboss.resteasy.springmvc;
 
 import org.jboss.resteasy.core.AsynchronousDispatcher;
-import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -84,10 +85,10 @@ public class ResteasyHandlerAdapter extends
       dispatcher.pushContextObjects(request, response);
       try
       {
-         ServerResponse jaxrsResponse = null;
+         BuiltResponse jaxrsResponse = null;
          try
          {
-            jaxrsResponse = (ServerResponse) requestWrapper.getInvoker().invoke(request, response);
+            jaxrsResponse = (BuiltResponse) requestWrapper.getInvoker().invoke(request, response);
          }
          catch (Exception e)
          {
@@ -102,7 +103,7 @@ public class ResteasyHandlerAdapter extends
             Object entity = jaxrsResponse.getEntity();
             if (entity instanceof ModelAndView)
             {
-               jaxrsResponse.commitHeaders(response);
+               ServerResponseWriter.commitHeaders(jaxrsResponse, response);
                return (ModelAndView) entity;
             }
             return createModelAndView(jaxrsResponse);
@@ -119,15 +120,15 @@ public class ResteasyHandlerAdapter extends
       }
    }
 
-   protected ModelAndView createModelAndView(ServerResponse serverResponse)
+   protected ModelAndView createModelAndView(BuiltResponse serverResponse)
    {
       View view = createView(serverResponse);
       return new ModelAndView(view, "responseInvoker", serverResponse);
    }
 
-   protected View createView(ServerResponse serverResponse)
+   protected View createView(BuiltResponse serverResponse)
    {
-      String contentType = serverResponse.resolveContentType().toString();
+      String contentType = ServerResponseWriter.resolveContentType(serverResponse).toString();
       return new ResteasyView(contentType, deployment);
    }
 

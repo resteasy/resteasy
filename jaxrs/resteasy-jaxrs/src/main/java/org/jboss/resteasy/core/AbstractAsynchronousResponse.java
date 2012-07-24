@@ -80,16 +80,8 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       this.annotations = annotations;
    }
 
-   public void setupResponse(ServerResponse response)
-   {
-      response.setWriterInterceptors(writerInterceptors);
-      response.setResponseFilters(responseFilters);
-      response.setAnnotations(annotations);
-   }
-
    protected void sendResponse(Response response) throws IllegalStateException
    {
-      setupResponse(ServerResponse.convertToServerResponse(response));
       dispatcher.asynchronousDelivery(this.request, this.response, response);
    }
 
