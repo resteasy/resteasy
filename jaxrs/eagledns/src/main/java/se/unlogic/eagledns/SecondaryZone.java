@@ -1,10 +1,10 @@
 package se.unlogic.eagledns;
 
-import java.sql.Timestamp;
-
 import org.xbill.DNS.Name;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Zone;
+
+import java.sql.Timestamp;
 
 /**
  * This class is used to hold data secondary zones when they are loaded from ZoneProviders. The actual Zone field may be left blank if the ZoneProvider has no previously stored copy of the zoneBackup.

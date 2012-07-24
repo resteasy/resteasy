@@ -2,14 +2,12 @@ package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.spi.LinkHeaders;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.MessageProcessingException;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
@@ -29,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * A response object not attached to a client or server invocation.
@@ -56,6 +53,16 @@ public class BuiltResponse extends Response
       this.status = status;
       this.metadata = metadata;
       this.annotations = entityAnnotations;
+   }
+
+   public Class getEntityClass()
+   {
+      return entityClass;
+   }
+
+   public void setEntityClass(Class entityClass)
+   {
+      this.entityClass = entityClass;
    }
 
    public ResteasyProviderFactory getProviderFactory()
@@ -145,25 +152,25 @@ public class BuiltResponse extends Response
    @Override
    public <T> T readEntity(Class<T> entityType) throws MessageProcessingException, IllegalStateException
    {
-      throw new IllegalStateException("Not usable on server side response object");
+      throw new IllegalStateException("Entity is not backed by an input stream");
    }
 
    @Override
    public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException, IllegalStateException
    {
-      throw new IllegalStateException("Not usable on server side response object");
+      throw new IllegalStateException("Entity is not backed by an input stream");
    }
 
    @Override
    public <T> T readEntity(Class<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
    {
-      throw new IllegalStateException("Not usable on server side response object");
+      throw new IllegalStateException("Entity is not backed by an input stream");
    }
 
    @Override
    public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
    {
-      throw new IllegalStateException("Not usable on server side response object");
+      throw new IllegalStateException("Entity is not backed by an input stream");
    }
 
    @Override

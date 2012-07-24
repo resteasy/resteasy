@@ -1,8 +1,8 @@
 package org.jboss.resteasy.links.test;
 
-import javax.ws.rs.core.SecurityContext;
-
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.core.SecurityContext;
 
 public class SecurityFunctions {
 	public static boolean hasPermission(Object target, String permission){

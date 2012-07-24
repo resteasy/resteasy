@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**

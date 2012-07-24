@@ -7,22 +7,6 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
-import javax.sql.DataSource;
-
 import se.unlogic.standardutils.annotations.UnsupportedFieldTypeException;
 import se.unlogic.standardutils.bool.BooleanSignal;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -50,6 +34,21 @@ import se.unlogic.standardutils.populators.QueryParameterPopulatorRegistery;
 import se.unlogic.standardutils.populators.annotated.AnnotatedResultSetPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
+
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class AnnotatedDAO<T> {
 

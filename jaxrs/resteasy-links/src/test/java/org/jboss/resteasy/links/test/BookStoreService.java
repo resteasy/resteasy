@@ -1,11 +1,10 @@
 package org.jboss.resteasy.links.test;
 
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import java.util.List;
 
 @Path("/")
 public interface BookStoreService {

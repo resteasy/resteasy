@@ -7,12 +7,12 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import se.unlogic.standardutils.dao.BeanResultSetPopulator;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.validation.StringFormatValidator;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 public class IntegerPopulator extends BaseStringPopulator<Integer> implements BeanResultSetPopulator<Integer>{

@@ -7,13 +7,12 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao.querys;
 
+import se.unlogic.standardutils.db.DBUtils;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
-import se.unlogic.standardutils.db.DBUtils;
 
 public class BooleanQuery extends PreparedStatementQuery {
 

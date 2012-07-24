@@ -7,9 +7,9 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
-import java.sql.SQLException;
-
 import se.unlogic.standardutils.dao.querys.PreparedStatementQuery;
+
+import java.sql.SQLException;
 
 
 public interface QueryParameterPopulator<T> {

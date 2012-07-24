@@ -7,6 +7,9 @@
  ******************************************************************************/
 package se.unlogic.standardutils.string;
 
+import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.streams.StreamUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -25,9 +28,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
-
-import se.unlogic.standardutils.reflection.ReflectionUtils;
-import se.unlogic.standardutils.streams.StreamUtils;
 
 public class StringUtils {
 

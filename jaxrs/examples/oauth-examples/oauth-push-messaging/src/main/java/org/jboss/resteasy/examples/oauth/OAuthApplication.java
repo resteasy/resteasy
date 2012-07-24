@@ -1,9 +1,8 @@
 package org.jboss.resteasy.examples.oauth;
 
+import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

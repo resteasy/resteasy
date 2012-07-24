@@ -7,10 +7,10 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import se.unlogic.standardutils.collections.CollectionUtils;
+
 import java.util.Collection;
 import java.util.List;
-
-import se.unlogic.standardutils.collections.CollectionUtils;
 
 public class QueryParameterFactory<Bean, Type> {
 

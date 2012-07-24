@@ -1,8 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget;
 
-import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.AbstractCollectionProcessor;
-import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.WebTargetProcessor;
-
 import javax.ws.rs.client.WebTarget;
 
 /**

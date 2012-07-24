@@ -7,11 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
+import se.unlogic.standardutils.dao.BeanResultSetPopulator;
+
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import se.unlogic.standardutils.dao.BeanResultSetPopulator;
 
 public class BlobPopulator implements BeanResultSetPopulator<Blob> {
 

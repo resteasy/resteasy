@@ -1,14 +1,13 @@
 package org.jboss.resteasy.examples.oauth;
 
-import java.util.Map;
-import java.util.Properties;
-
 import net.oauth.OAuth;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.HttpResponseCodes;
+
+import java.util.Map;
+import java.util.Properties;
 
 
 public class Subscriber

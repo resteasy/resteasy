@@ -1,15 +1,14 @@
 package org.jboss.resteasy.examples.oauth;
 
-import java.io.IOException;
-
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.BasicAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.tomcat.util.buf.ByteChunk;
-import org.apache.tomcat.util.buf.CharChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
+
+import java.io.IOException;
 
 
 public class OAuthBasicAuthenticator extends AuthenticatorBase {

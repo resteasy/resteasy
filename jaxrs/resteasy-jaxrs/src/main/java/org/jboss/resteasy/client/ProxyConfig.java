@@ -1,11 +1,10 @@
 package org.jboss.resteasy.client;
 
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.core.MediaType;
+import java.util.Map;
 
 public class ProxyConfig
 {

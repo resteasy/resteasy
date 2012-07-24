@@ -1,6 +1,8 @@
 package org.jboss.resteasy.springmvc.test.resources;
 
-import java.util.Date;
+import org.jboss.resteasy.springmvc.test.jaxb.BasicJaxbObject;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -8,10 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
-
-import org.jboss.resteasy.springmvc.test.jaxb.BasicJaxbObject;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.ModelAndView;
+import java.util.Date;
 
 @Path("/basic")
 @Component

@@ -7,10 +7,10 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import se.unlogic.standardutils.populators.BeanStringPopulator;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import se.unlogic.standardutils.populators.BeanStringPopulator;
 
 
 public class TypeBasedResultSetPopulator<Type> implements BeanResultSetPopulator<Type> {

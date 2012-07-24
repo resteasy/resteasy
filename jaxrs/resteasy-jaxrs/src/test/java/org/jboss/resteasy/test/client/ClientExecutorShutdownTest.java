@@ -1,11 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.junit.Assert.fail;
-
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -19,6 +13,12 @@ import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for https://issues.jboss.org/browse/RESTEASY-621.

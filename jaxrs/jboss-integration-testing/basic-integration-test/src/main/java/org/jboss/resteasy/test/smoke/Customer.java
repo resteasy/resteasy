@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.smoke;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

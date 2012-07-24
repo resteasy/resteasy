@@ -1,10 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
@@ -12,6 +7,11 @@ import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * Unit test for https://issues.jboss.org/browse/RESTEASY-623.

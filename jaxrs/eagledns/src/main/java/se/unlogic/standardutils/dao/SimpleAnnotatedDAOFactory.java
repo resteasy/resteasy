@@ -7,14 +7,13 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
-import java.util.HashMap;
-import java.util.List;
+import se.unlogic.standardutils.populators.BeanStringPopulator;
+import se.unlogic.standardutils.populators.QueryParameterPopulator;
+import se.unlogic.standardutils.populators.annotated.AnnotatedResultSetPopulator;
 
 import javax.sql.DataSource;
-
-import se.unlogic.standardutils.populators.QueryParameterPopulator;
-import se.unlogic.standardutils.populators.BeanStringPopulator;
-import se.unlogic.standardutils.populators.annotated.AnnotatedResultSetPopulator;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class SimpleAnnotatedDAOFactory implements AnnotatedDAOFactory{

@@ -1,14 +1,14 @@
 package org.jboss.resteasy.plugins.providers.validation;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
-
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.method.MethodValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
+
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
 /**
  * 

@@ -39,10 +39,9 @@
  */
 package javax.ws.rs.client;
 
-import java.net.URI;
-
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
 
 /**
  * Client is the main entry point to the fluent API used to build and execute client

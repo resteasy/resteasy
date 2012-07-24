@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**

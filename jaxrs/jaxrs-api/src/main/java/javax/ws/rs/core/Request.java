@@ -39,10 +39,9 @@
  */
 package javax.ws.rs.core;
 
+import javax.ws.rs.core.Response.ResponseBuilder;
 import java.util.Date;
 import java.util.List;
-
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * An injectable helper for request processing, all methods throw an

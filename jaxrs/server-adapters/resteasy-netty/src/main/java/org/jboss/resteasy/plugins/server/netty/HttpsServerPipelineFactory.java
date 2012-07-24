@@ -1,11 +1,11 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 /**
  * {@link HttpServerPipelineFactory} subclass which enable the use of HTTPS

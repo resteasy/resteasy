@@ -7,13 +7,6 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Map.Entry;
-
-import javax.sql.DataSource;
-
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.dao.querys.BooleanQuery;
 import se.unlogic.standardutils.dao.querys.HashMapQuery;
@@ -21,6 +14,12 @@ import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.dao.querys.PreparedStatementQuery;
 import se.unlogic.standardutils.dao.querys.UpdateQuery;
 import se.unlogic.standardutils.db.DBUtils;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Map.Entry;
 
 public class TransactionHandler {
 

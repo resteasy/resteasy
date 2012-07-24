@@ -1,5 +1,8 @@
 package se.unlogic.standardutils.crypto;
 
+import se.unlogic.standardutils.operation.ProgressMeter;
+import se.unlogic.standardutils.streams.StreamUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,9 +12,6 @@ import java.nio.charset.Charset;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import se.unlogic.standardutils.operation.ProgressMeter;
-import se.unlogic.standardutils.streams.StreamUtils;
 
 
 public class EncryptionUtils {

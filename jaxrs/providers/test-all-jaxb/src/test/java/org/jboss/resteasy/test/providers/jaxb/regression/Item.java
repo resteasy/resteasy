@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Map;
 
 @XmlRootElement(name="item")
 public class Item {

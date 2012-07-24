@@ -6,13 +6,15 @@ import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.Segment;
 import org.jboss.resteasy.plugins.providers.validation.ResteasyViolationExceptionExtension;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.Types;
@@ -20,7 +22,6 @@ import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.GenericEntity;
@@ -28,8 +29,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.WriterInterceptor;
-
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -189,9 +190,34 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       return stats;
    }
 
+   public ContainerRequestFilter[] getRequestFilters()
+   {
+      return requestFilters;
+   }
+
+   public ContainerResponseFilter[] getResponseFilters()
+   {
+      return responseFilters;
+   }
+
+   public WriterInterceptor[] getWriterInterceptors()
+   {
+      return writerInterceptors;
+   }
+
+   public Type getGenericReturnType()
+   {
+      return genericReturnType;
+   }
+
    public Class<?> getResourceClass()
    {
       return resourceClass;
+   }
+
+   public Annotation[] getMethodAnnotations()
+   {
+      return method.getAnnotations();
    }
 
    /**
@@ -219,13 +245,13 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       return method;
    }
 
-   public ServerResponse invoke(HttpRequest request, HttpResponse response)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
       Object target = resource.createResource(request, response, injector);
       return invoke(request, response, target);
    }
 
-   public ServerResponse invoke(HttpRequest request, HttpResponse response, Object target)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
       request.setAttribute(ResourceMethod.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
@@ -233,7 +259,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       uriInfo.pushCurrentResource(target);
       try
       {
-         ServerResponse jaxrsResponse = invokeOnTarget(request, response, target);
+         BuiltResponse jaxrsResponse = invokeOnTarget(request, response, target);
 
          if (jaxrsResponse != null && jaxrsResponse.getEntity() != null)
          {
@@ -254,7 +280,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       }
    }
 
-   protected ServerResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
+   protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
       if (validator != null)
       {
@@ -272,26 +298,17 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
          }
          catch (IOException e)
          {
-            throw new RuntimeException(e);
+            throw new ApplicationException(e);
          }
-         ServerResponse serverResponse = (ServerResponse)requestContext.getResponseAbortedWith();
+         BuiltResponse serverResponse = (BuiltResponse)requestContext.getResponseAbortedWith();
          if (serverResponse != null)
          {
-            return prepareResponse(serverResponse);
+            return serverResponse;
          }
       }
 
-      Object rtn = null;
-      try
-      {
-         rtn = methodInjector.invoke(request, response, target);
-      }
-      catch (WebApplicationException wae)
-      {
-         prepareResponse(ServerResponse.convertToServerResponse(wae.getResponse()));
-         throw wae;
-      }
-      
+      Object rtn = methodInjector.invoke(request, response, target);
+
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationExceptionExtension(violationsContainer);
@@ -307,28 +324,23 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       }
       if (rtn == null || method.getReturnType().equals(void.class))
       {
-         return prepareResponse((ServerResponse) Response.noContent().build());
+         BuiltResponse build = (BuiltResponse) Response.noContent().build();
+         build.setAnnotations(method.getAnnotations());
+         return build;
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
-         return prepareResponse(ServerResponse.convertToServerResponse((Response) rtn));
+         BuiltResponse rtn1 = (BuiltResponse) rtn;
+         rtn1.setAnnotations(method.getAnnotations());
+         return rtn1;
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);
       builder.type(resolveContentType(request, rtn));
-      ServerResponse jaxrsResponse = (ServerResponse) builder.build();
+      BuiltResponse jaxrsResponse = (BuiltResponse)builder.build();
       jaxrsResponse.setGenericType(genericReturnType);
-      return prepareResponse(jaxrsResponse);
-   }
-
-   protected ServerResponse prepareResponse(ServerResponse serverResponse)
-   {
-      serverResponse.setAnnotations(method.getAnnotations());
-      serverResponse.setWriterInterceptors(writerInterceptors);
-      serverResponse.setResponseFilters(responseFilters);
-      serverResponse.setResourceMethod(method);
-      serverResponse.setResourceClass(resourceClass);
-      return serverResponse;
+      jaxrsResponse.setAnnotations(method.getAnnotations());
+      return jaxrsResponse;
    }
 
    public boolean doesProduce(List<? extends MediaType> accepts)

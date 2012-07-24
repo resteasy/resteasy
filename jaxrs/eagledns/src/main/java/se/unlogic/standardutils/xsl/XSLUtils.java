@@ -7,6 +7,10 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xsl;
 
+import org.xml.sax.SAXException;
+import se.unlogic.standardutils.settings.XMLSettingNode;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashSet;
@@ -14,12 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
-
-import se.unlogic.standardutils.settings.XMLSettingNode;
 
 public class XSLUtils {
 

@@ -7,15 +7,15 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
+import se.unlogic.standardutils.dao.BeanResultSetPopulator;
+import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.validation.StringFormatValidator;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
-
-import se.unlogic.standardutils.dao.BeanResultSetPopulator;
-import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.validation.StringFormatValidator;
 
 public class TimeStampPopulator extends BaseStringPopulator<Timestamp> implements BeanResultSetPopulator<Timestamp> {
 

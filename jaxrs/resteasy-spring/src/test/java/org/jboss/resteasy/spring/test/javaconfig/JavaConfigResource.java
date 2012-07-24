@@ -1,11 +1,11 @@
 package org.jboss.resteasy.spring.test.javaconfig;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class provides a web-based facade for an injected service.

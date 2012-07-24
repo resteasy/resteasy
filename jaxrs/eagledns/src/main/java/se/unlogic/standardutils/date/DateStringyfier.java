@@ -1,9 +1,8 @@
 package se.unlogic.standardutils.date;
 
-import java.sql.Date;
-
-import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.string.Stringyfier;
+
+import java.sql.Date;
 
 
 public class DateStringyfier implements Stringyfier {

@@ -1,18 +1,17 @@
 package org.jboss.resteasy.links.impl;
 
+import org.jboss.resteasy.links.ParentResource;
+import org.jboss.resteasy.links.ResourceID;
+import org.jboss.resteasy.links.ResourceIDs;
+
+import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlID;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlID;
-
-import org.jboss.resteasy.links.ParentResource;
-import org.jboss.resteasy.links.ResourceID;
-import org.jboss.resteasy.links.ResourceIDs;
 
 public class BeanUtils {
 

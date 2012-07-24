@@ -7,12 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import javax.sql.DataSource;
 
 
 public class SimpleDataSource implements DataSource {

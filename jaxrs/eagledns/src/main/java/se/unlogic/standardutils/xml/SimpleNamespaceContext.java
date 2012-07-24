@@ -7,10 +7,9 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xml;
 
+import javax.xml.namespace.NamespaceContext;
 import java.util.Collections;
 import java.util.Iterator;
-
-import javax.xml.namespace.NamespaceContext;
 
 
 public class SimpleNamespaceContext implements NamespaceContext {

@@ -1,14 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -20,6 +11,14 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import static org.jboss.netty.handler.codec.http.HttpVersion.*;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -27,7 +26,8 @@ import org.jboss.resteasy.spi.HttpResponse;
 public class NettyHttpResponse implements HttpResponse
 {
    private int status = 200;
-   private ChannelBufferOutputStream os;
+   private ChannelBufferOutputStream underlyingOutputStream;
+   private OutputStream os;
    private MultivaluedMap<String, Object> outputHeaders;
    private final Channel channel;
    private boolean committed;
@@ -36,14 +36,20 @@ public class NettyHttpResponse implements HttpResponse
    public NettyHttpResponse(Channel channel, boolean keepAlive)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
-      os = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer());
+      os = underlyingOutputStream = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer());
       this.channel = channel;
       this.keepAlive = keepAlive;
    }
 
+   @Override
+   public void setOutputStream(OutputStream os)
+   {
+      this.os = os;
+   }
+
    public ChannelBuffer getBuffer()
    {
-      return os.buffer();
+      return underlyingOutputStream.buffer();
    }
 
    @Override
@@ -124,7 +130,7 @@ public class NettyHttpResponse implements HttpResponse
           throw new IllegalStateException("Already committed");
       }
       outputHeaders.clear();
-      os.buffer().clear();
+      underlyingOutputStream.buffer().clear();
       outputHeaders.clear();
    }
    

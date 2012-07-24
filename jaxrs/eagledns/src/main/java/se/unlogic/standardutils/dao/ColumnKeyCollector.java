@@ -7,12 +7,12 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import se.unlogic.standardutils.populators.annotated.AnnotatedResultSetPopulator;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import se.unlogic.standardutils.populators.annotated.AnnotatedResultSetPopulator;
 
 
 public class ColumnKeyCollector<T> {

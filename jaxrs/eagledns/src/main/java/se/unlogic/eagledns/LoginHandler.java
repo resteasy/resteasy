@@ -1,9 +1,9 @@
 package se.unlogic.eagledns;
 
+import org.apache.log4j.Logger;
+
 import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
-
-import org.apache.log4j.Logger;
 
 
 public class LoginHandler implements EagleLogin {

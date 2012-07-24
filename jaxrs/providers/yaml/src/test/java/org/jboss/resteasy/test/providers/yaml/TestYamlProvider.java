@@ -1,14 +1,14 @@
 package org.jboss.resteasy.test.providers.yaml;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import junit.framework.Assert;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 public class TestYamlProvider extends BaseResourceTest {
 

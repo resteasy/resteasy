@@ -2,12 +2,8 @@ package org.jboss.resteasy.security.smime;
 
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.SignerInfoGenerator;
-import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
-import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -17,7 +13,6 @@ import org.jboss.resteasy.util.Base64;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -31,7 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.security.cert.CertificateEncodingException;
 import java.util.List;
 import java.util.Map;
 

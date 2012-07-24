@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -617,7 +618,6 @@ public class SynchronousDispatcher implements Dispatcher
    protected void writeJaxrsResponse(HttpRequest request, HttpResponse response, Response jaxrsResponse)
            throws WriterException
    {
-      ServerResponse serverResponse = (ServerResponse) jaxrsResponse;
       Object type = jaxrsResponse.getMetadata().getFirst(
               HttpHeaderNames.CONTENT_TYPE);
       if (type == null && jaxrsResponse.getEntity() != null)
@@ -634,7 +634,7 @@ public class SynchronousDispatcher implements Dispatcher
          }
       }
 
-      serverResponse.writeTo(request, response, providerFactory);
+      ServerResponseWriter.writeResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory);
    }
 
    protected MediaType resolveContentTypeByAccept(List<MediaType> accepts, Object entity)

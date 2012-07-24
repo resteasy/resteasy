@@ -103,4 +103,9 @@ public class Failure extends RuntimeException
    {
       return response;
    }
+
+   public void setResponse(Response response)
+   {
+      this.response = response;
+   }
 }

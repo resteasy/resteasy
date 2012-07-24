@@ -1,7 +1,6 @@
 package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
-import org.jboss.resteasy.util.HeaderHelper;
 
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MultivaluedMap;

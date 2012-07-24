@@ -7,16 +7,15 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao.querys;
 
+import se.unlogic.standardutils.dao.BeanResultSetPopulator;
+import se.unlogic.standardutils.db.DBUtils;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-import javax.sql.DataSource;
-
-import se.unlogic.standardutils.dao.BeanResultSetPopulator;
-import se.unlogic.standardutils.db.DBUtils;
 
 public class ArrayListQuery<ReturnType> extends PopulatedQuery<ReturnType> {
 

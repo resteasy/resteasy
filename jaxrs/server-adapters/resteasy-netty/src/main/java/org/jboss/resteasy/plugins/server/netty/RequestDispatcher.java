@@ -1,11 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.List;
-
-import javax.ws.rs.core.SecurityContext;
-
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
@@ -15,6 +9,11 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
+
+import javax.ws.rs.core.SecurityContext;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
 
 /**
  * Helper/delegate class to unify Servlet and Filter dispatcher implementations

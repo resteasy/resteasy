@@ -1,16 +1,15 @@
 package org.jboss.resteasy.plugins.providers.validation;
 
-import java.lang.reflect.Method;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.metadata.BeanDescriptor;
-
 import org.hibernate.validator.method.MethodConstraintViolation;
 import org.hibernate.validator.method.MethodValidator;
 import org.hibernate.validator.method.metadata.TypeDescriptor;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.metadata.BeanDescriptor;
+import java.lang.reflect.Method;
+import java.util.Set;
 
 /** 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>

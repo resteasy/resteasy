@@ -35,7 +35,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-
 import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;

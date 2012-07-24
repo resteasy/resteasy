@@ -1,13 +1,11 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -31,18 +29,18 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
 {
    protected final HttpRequest request;
    protected final HttpResponse httpResponse;
-   protected final ServerResponse serverResponse;
+   protected final BuiltResponse jaxrsResposne;
 
-   public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, ServerResponse serverResponse)
+   public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse)
    {
       this.request = request;
       this.httpResponse = httpResponse;
-      this.serverResponse = serverResponse;
+      this.jaxrsResposne = serverResponse;
    }
 
-   public ServerResponse getServerResponse()
+   public BuiltResponse getJaxrsResposne()
    {
-      return serverResponse;
+      return jaxrsResposne;
    }
 
    public HttpResponse getHttpResponse()
@@ -77,118 +75,118 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public Class<?> getEntityClass()
    {
-      if (serverResponse.getEntity() == null) return null;
-      return serverResponse.getEntity().getClass();
+      if (jaxrsResposne.getEntity() == null) return null;
+      return jaxrsResposne.getEntity().getClass();
    }
 
    @Override
    public Type getEntityType()
    {
-      return serverResponse.getGenericType();
+      return jaxrsResposne.getGenericType();
    }
 
    @Override
    public void setEntity(Object entity, Annotation[] annotations, MediaType mediaType)
    {
-      serverResponse.setEntity(entity);
-      serverResponse.setAnnotations(annotations);
-      serverResponse.setAnnotations(annotations);
+      jaxrsResposne.setEntity(entity);
+      jaxrsResposne.setAnnotations(annotations);
+      jaxrsResposne.setAnnotations(annotations);
    }
 
    @Override
    public MultivaluedMap<String, Object> getHeaders()
    {
-      return serverResponse.getMetadata();
+      return jaxrsResposne.getMetadata();
    }
 
    @Override
    public Set<String> getAllowedMethods()
    {
-     return serverResponse.getAllowedMethods();
+     return jaxrsResposne.getAllowedMethods();
    }
 
    @Override
    public Date getDate()
    {
-      return serverResponse.getDate();
+      return jaxrsResposne.getDate();
    }
 
    @Override
    public Locale getLanguage()
    {
-      return serverResponse.getLanguage();
+      return jaxrsResposne.getLanguage();
    }
 
    @Override
    public int getLength()
    {
-      return serverResponse.getLength();
+      return jaxrsResposne.getLength();
    }
 
    @Override
    public MediaType getMediaType()
    {
-      return serverResponse.getMediaType();
+      return jaxrsResposne.getMediaType();
    }
 
    @Override
    public Map<String, NewCookie> getCookies()
    {
-      return serverResponse.getCookies();
+      return jaxrsResposne.getCookies();
    }
 
    @Override
    public EntityTag getEntityTag()
    {
-      return serverResponse.getEntityTag();
+      return jaxrsResposne.getEntityTag();
    }
 
    @Override
    public Date getLastModified()
    {
-      return serverResponse.getLastModified();
+      return jaxrsResposne.getLastModified();
    }
 
    @Override
    public URI getLocation()
    {
-      return serverResponse.getLocation();
+      return jaxrsResposne.getLocation();
    }
 
    @Override
    public Set<Link> getLinks()
    {
-      return serverResponse.getLinks();
+      return jaxrsResposne.getLinks();
    }
 
    @Override
    public boolean hasLink(String relation)
    {
-      return serverResponse.hasLink(relation);
+      return jaxrsResposne.hasLink(relation);
    }
 
    @Override
    public Link getLink(String relation)
    {
-      return serverResponse.getLink(relation);
+      return jaxrsResposne.getLink(relation);
    }
 
    @Override
    public Link.Builder getLinkBuilder(String relation)
    {
-      return serverResponse.getLinkBuilder(relation);
+      return jaxrsResposne.getLinkBuilder(relation);
    }
 
    @Override
    public boolean hasEntity()
    {
-      return serverResponse.hasEntity();
+      return jaxrsResposne.hasEntity();
    }
 
    @Override
    public Object getEntity()
    {
-      return serverResponse.getEntity();
+      return jaxrsResposne.getEntity();
    }
 
    @Override
@@ -213,18 +211,18 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public Annotation[] getEntityAnnotations()
    {
-      return serverResponse.getAnnotations();
+      return jaxrsResposne.getAnnotations();
    }
 
    @Override
    public MultivaluedMap<String, String> getStringHeaders()
    {
-      return serverResponse.getStringHeaders();
+      return jaxrsResposne.getStringHeaders();
    }
 
    @Override
    public String getHeaderString(String name)
    {
-      return serverResponse.getHeaderString(name);
+      return jaxrsResposne.getHeaderString(name);
    }
 }

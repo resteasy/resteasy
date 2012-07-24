@@ -1,12 +1,6 @@
 package se.unlogic.eagledns.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.sql.DataSource;
-
 import org.xbill.DNS.Zone;
-
 import se.unlogic.eagledns.zoneproviders.db.beans.DBRecord;
 import se.unlogic.eagledns.zoneproviders.db.beans.DBZone;
 import se.unlogic.eagledns.zoneproviders.file.FileZoneProvider;
@@ -14,6 +8,10 @@ import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.SimpleDataSource;
 import se.unlogic.standardutils.dao.TransactionHandler;
+
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 public class PrimaryZones2DB {

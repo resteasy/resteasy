@@ -1,11 +1,10 @@
 package org.jboss.resteasy.jsapi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
@@ -17,12 +16,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-
-import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.core.ResourceMethod;
-import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.util.FindAnnotation;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class MethodMetaData
 {

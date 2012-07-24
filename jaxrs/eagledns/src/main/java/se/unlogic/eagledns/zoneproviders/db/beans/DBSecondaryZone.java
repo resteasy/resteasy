@@ -1,7 +1,6 @@
 package se.unlogic.eagledns.zoneproviders.db.beans;
 
 import org.xbill.DNS.TextParseException;
-
 import se.unlogic.eagledns.SecondaryZone;
 
 

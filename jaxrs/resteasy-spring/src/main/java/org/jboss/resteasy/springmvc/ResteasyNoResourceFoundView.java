@@ -1,6 +1,5 @@
 package org.jboss.resteasy.springmvc;
 
-import com.sun.corba.se.impl.orbutil.concurrent.Sync;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpResponse;

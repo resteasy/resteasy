@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.ResteasyUriInfo;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 
 /**

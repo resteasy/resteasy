@@ -1,8 +1,6 @@
 package org.jboss.resteasy.client.core;
 
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;

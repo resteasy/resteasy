@@ -1,16 +1,15 @@
 package org.jboss.resteasy.links.test.el;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.jboss.resteasy.links.AddLinks;
+import org.jboss.resteasy.links.LinkResource;
+import org.jboss.resteasy.links.test.Book;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
-import org.jboss.resteasy.links.AddLinks;
-import org.jboss.resteasy.links.LinkResource;
-import org.jboss.resteasy.links.test.Book;
+import java.util.HashMap;
+import java.util.Map;
 
 @Path("/")
 public class BookStoreInvalidEL {

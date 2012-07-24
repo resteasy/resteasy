@@ -1,12 +1,11 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 
 import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
@@ -39,7 +38,22 @@ public class ContainerResponseFilterRegistry extends JaxrsInterceptorRegistry<Co
       public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException
       {
          ContainerResponseContextImpl ctx = (ContainerResponseContextImpl)responseContext;
-         interceptor.postProcess(ctx.getServerResponse());
+         BuiltResponse jaxrsResposne = ctx.getJaxrsResposne();
+         ServerResponse serverResponse = new ServerResponse(jaxrsResposne);
+         try
+         {
+            interceptor.postProcess(serverResponse);
+         }
+         finally
+         {
+            jaxrsResposne.setStatus(serverResponse.getStatus());
+            jaxrsResposne.setAnnotations(serverResponse.getAnnotations());
+            jaxrsResposne.setEntity(serverResponse.getEntity());
+            jaxrsResposne.setMetadata(serverResponse.getMetadata());
+            jaxrsResposne.setEntityClass(serverResponse.getEntityClass());
+            jaxrsResposne.setGenericType(serverResponse.getGenericType());
+         }
+
       }
    }
 

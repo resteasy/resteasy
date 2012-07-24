@@ -7,11 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao;
 
+import se.unlogic.standardutils.dao.querys.PreparedStatementQuery;
+
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.util.HashMap;
-
-import se.unlogic.standardutils.dao.querys.PreparedStatementQuery;
 
 
 /**
