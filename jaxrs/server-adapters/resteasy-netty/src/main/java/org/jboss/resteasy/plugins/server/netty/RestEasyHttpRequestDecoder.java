@@ -7,8 +7,8 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -64,7 +64,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
         NettyHttpResponse response = new NettyHttpResponse(channel, keepAlive);
 
         HttpHeaders headers = null;
-        UriInfoImpl uriInfo = null;
+        ResteasyUriInfo uriInfo = null;
         try
         {
            headers = NettyUtil.extractHttpHeaders(request);

@@ -4,9 +4,7 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
-import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.PathHelper;
@@ -14,11 +12,8 @@ import org.jboss.resteasy.util.PathHelper;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,43 +25,34 @@ import java.util.Map;
  */
 public class NettyUtil
 {
-   public static UriInfoImpl extractUriInfo(HttpRequest request, String contextPath, String protocol)
+   public static ResteasyUriInfo extractUriInfo(HttpRequest request, String contextPath, String protocol)
    {
       String host = HttpHeaders.getHost(request, "unknown");
       String uri = request.getUri();
 
+      URI absoluteURI = URI.create(protocol + "://" + host + uri);
 
-      URI absolutePath = null;
-      try // extract without query param
+      String path = PathHelper.getEncodedPathInfo(absoluteURI.getRawPath(), contextPath);
+      if (!path.startsWith("/"))
       {
-         URL absolute = new URL(protocol + "://" + host + uri);
-
-         UriBuilderImpl builder = new UriBuilderImpl();
-         builder.scheme(absolute.getProtocol());
-         builder.host(absolute.getHost());
-         builder.port(absolute.getPort());
-         builder.path(absolute.getPath());
-         builder.replaceQuery(absolute.getQuery());
-         absolutePath = builder.build();
-      }
-      catch (MalformedURLException e)
-      {
-         throw new RuntimeException(e);
+         path = "/" + path;
       }
 
-      String path = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
-      List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path, false);
-
-      URI baseURI = absolutePath;
+      URI baseURI = absoluteURI;
       if (!path.trim().equals(""))
       {
          String tmpContextPath = contextPath;
          if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
-         baseURI = UriBuilder.fromUri(absolutePath).replacePath(tmpContextPath).build();
+         baseURI = UriBuilder.fromUri(absoluteURI).replacePath(tmpContextPath).replaceQuery(null).build();
       }
+      else
+      {
+         baseURI = UriBuilder.fromUri(absoluteURI).replaceQuery(null).build();
+      }
+      URI relativeURI = UriBuilder.fromUri(path).replaceQuery(absoluteURI.getRawQuery()).build();
       //System.out.println("path: " + path);
       //System.out.println("query string: " + request.getQueryString());
-      UriInfoImpl uriInfo = new UriInfoImpl(absolutePath, baseURI, path, absolutePath.getRawQuery(), pathSegments);
+      ResteasyUriInfo uriInfo = new ResteasyUriInfo(baseURI, relativeURI);
       return uriInfo;
    }
 

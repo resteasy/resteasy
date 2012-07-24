@@ -26,7 +26,8 @@ import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 public class NettyHttpResponse implements HttpResponse
 {
    private int status = 200;
-   private ChannelBufferOutputStream os;
+   private ChannelBufferOutputStream underlyingOutputStream;
+   private OutputStream os;
    private MultivaluedMap<String, Object> outputHeaders;
    private final Channel channel;
    private boolean committed;
@@ -35,14 +36,20 @@ public class NettyHttpResponse implements HttpResponse
    public NettyHttpResponse(Channel channel, boolean keepAlive)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
-      os = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer());
+      os = underlyingOutputStream = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer());
       this.channel = channel;
       this.keepAlive = keepAlive;
    }
 
+   @Override
+   public void setOutputStream(OutputStream os)
+   {
+      this.os = os;
+   }
+
    public ChannelBuffer getBuffer()
    {
-      return os.buffer();
+      return underlyingOutputStream.buffer();
    }
 
    @Override
@@ -123,7 +130,7 @@ public class NettyHttpResponse implements HttpResponse
           throw new IllegalStateException("Already committed");
       }
       outputHeaders.clear();
-      os.buffer().clear();
+      underlyingOutputStream.buffer().clear();
       outputHeaders.clear();
    }
    
