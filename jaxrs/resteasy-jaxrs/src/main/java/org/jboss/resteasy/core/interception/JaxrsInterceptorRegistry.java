@@ -355,6 +355,13 @@ public class JaxrsInterceptorRegistry<T>
       this.intf = intf;
    }
 
+   public JaxrsInterceptorRegistry<T> clone(ResteasyProviderFactory factory)
+   {
+      JaxrsInterceptorRegistry<T> clone = new JaxrsInterceptorRegistry(factory, intf);
+      clone.interceptors.addAll(interceptors);
+      return clone;
+   }
+
    public Class<T> getIntf()
    {
       return intf;

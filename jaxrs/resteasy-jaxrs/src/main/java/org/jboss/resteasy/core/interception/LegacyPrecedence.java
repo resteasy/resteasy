@@ -19,6 +19,14 @@ public class LegacyPrecedence
    protected Map<String, Integer> precedenceOrder = new HashMap<String, Integer>();
    protected List<String> precedenceList = new ArrayList<String>();
 
+   public LegacyPrecedence clone()
+   {
+      LegacyPrecedence precedence = new LegacyPrecedence();
+      precedence.precedenceList.addAll(precedenceList);
+      precedence.precedenceOrder.putAll(precedenceOrder);
+      return precedence;
+   }
+
    public int calculateOrder(Class<?> clazz)
    {
       Precedence precedence = (Precedence)clazz.getAnnotation(Precedence.class);

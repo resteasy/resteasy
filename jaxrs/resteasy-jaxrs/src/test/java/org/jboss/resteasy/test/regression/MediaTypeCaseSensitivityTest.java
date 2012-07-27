@@ -76,7 +76,7 @@ public class MediaTypeCaseSensitivityTest extends BaseResourceTest
    public void setUp() throws Exception
    {
       addPerRequestResource(StuffResource.class);
-      getProviderFactory().addMessageBodyReader(new StuffProvider());
+      getProviderFactory().registerProviderInstance(new StuffProvider());
    }
 
 

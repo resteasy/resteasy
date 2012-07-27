@@ -69,9 +69,11 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -114,29 +116,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          // check the super class for the generic type 1st
          template = Types.getTemplateParameterOfInterface(readerClass, intf);
          isGeneric = template == null || Object.class.equals(template);
-         /*
-         Type impl = readerClass.getGenericSuperclass();
-         // if it's null or object, check the interfaces
-         // TODO: we may need more refinement here.
-         if (impl == null || impl == Object.class)
-         {
-            Type[] impls = readerClass.getGenericInterfaces();
-            if (impls.length > 0)
-            {
-               impl = impls[0];
-            }
-         }
-
-         if (impl != null && (impl instanceof ParameterizedType))
-         {
-            ParameterizedType param = (ParameterizedType) impl;
-            if (param.getActualTypeArguments()[0].equals(Object.class)) isGeneric = true;
-         }
-         else
-         {
-            isGeneric = true;
-         }
-         */
       }
 
       public int compareTo(SortedKey<T> tMessageBodyKey)
@@ -160,41 +139,217 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
-   protected MediaTypeMap<SortedKey<MessageBodyReader>> messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
-   protected MediaTypeMap<SortedKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
-   protected Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
-   protected Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
-   protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
-   protected Map<Class<?>, StringConverter> stringConverters = new HashMap<Class<?>, StringConverter>();
-   protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
-
-   protected Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
-
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
    protected static int maxForwards = 20;
    protected static volatile ResteasyProviderFactory instance;
-
    public static boolean registerBuiltinByDefault = true;
 
-   LegacyPrecedence precedence = new LegacyPrecedence();
-   protected ReaderInterceptorRegistry serverReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
-   protected WriterInterceptorRegistry serverWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
-   protected ContainerRequestFilterRegistry containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this, precedence);
-   protected ContainerResponseFilterRegistry containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this, precedence);
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> messageBodyReaders;
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> messageBodyWriters;
+   protected Map<Class<?>, ExceptionMapper> exceptionMappers;
+   protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
+   protected Map<Class<?>, StringConverter> stringConverters;
+   protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers;
+   protected Set<Class<?>> providerClasses;
+   protected Set<Object> providerInstances;
 
-   protected JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilters = new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class);
-   protected JaxrsInterceptorRegistry<ClientResponseFilter> clientResponseFilters = new JaxrsInterceptorRegistry<ClientResponseFilter>(this, ClientResponseFilter.class);
-   protected ReaderInterceptorRegistry clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
-   protected WriterInterceptorRegistry clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
-   protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
+   protected Map<Class<?>, HeaderDelegate> headerDelegates;
 
-   protected List<ClientErrorInterceptor> clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
+   protected LegacyPrecedence precedence;
+   protected ReaderInterceptorRegistry serverReaderInterceptorRegistry;
+   protected WriterInterceptorRegistry serverWriterInterceptorRegistry;
+   protected ContainerRequestFilterRegistry containerRequestFilterRegistry;
+   protected ContainerResponseFilterRegistry containerResponseFilterRegistry;
+
+   protected JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilters;
+   protected JaxrsInterceptorRegistry<ClientResponseFilter> clientResponseFilters;
+   protected ReaderInterceptorRegistry clientReaderInterceptorRegistry;
+   protected WriterInterceptorRegistry clientWriterInterceptorRegistry;
+   protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry;
+
+   protected List<ClientErrorInterceptor> clientErrorInterceptors;
 
    protected boolean builtinsRegistered = false;
    protected boolean registerBuiltins = true;
 
-   protected InjectorFactory injectorFactory = new InjectorFactoryImpl(this);
+   protected InjectorFactory injectorFactory;
+   protected ResteasyProviderFactory parent;
+
+   public ResteasyProviderFactory()
+   {
+      // NOTE!!! It is important to put all initialization into initialize() as ThreadLocalResteasyProviderFactory
+      // subclasses and delegates to this class.
+      initialize();
+   }
+
+   protected void initialize()
+   {
+      providerClasses = new HashSet<Class<?>>();
+      providerInstances = new HashSet<Object>();
+      messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
+      messageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
+      exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
+      contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+      stringConverters = new HashMap<Class<?>, StringConverter>();
+      stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
+
+      headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
+
+      precedence = new LegacyPrecedence();
+      serverReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
+      serverWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
+      containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this, precedence);
+      containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this, precedence);
+
+      clientRequestFilters = new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class);
+      clientResponseFilters = new JaxrsInterceptorRegistry<ClientResponseFilter>(this, ClientResponseFilter.class);
+      clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
+      clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
+      clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
+
+      clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
+
+      builtinsRegistered = false;
+      registerBuiltins = true;
+
+      injectorFactory = new InjectorFactoryImpl(this);
+      registerDefaultInterceptorPrecedences();
+      addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
+      addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
+      addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
+      addHeaderDelegate(URI.class, new UriHeaderDelegate());
+      addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
+      addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
+      addHeaderDelegate(Locale.class, new LocaleDelegate());
+      addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
+      addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
+   }
+
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> getMessageBodyReaders()
+   {
+      if (messageBodyReaders == null && parent != null) return parent.getMessageBodyReaders();
+      return messageBodyReaders;
+   }
+
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> getMessageBodyWriters()
+   {
+      if (messageBodyWriters == null && parent != null) return parent.getMessageBodyWriters();
+      return messageBodyWriters;
+   }
+
+   protected Map<Class<?>, ExceptionMapper> getExceptionMappers()
+   {
+      if (exceptionMappers == null && parent != null) return parent.getExceptionMappers();
+      return exceptionMappers;
+   }
+
+   protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers()
+   {
+      if (contextResolvers == null && parent != null) return parent.getContextResolvers();
+      return contextResolvers;
+   }
+
+   protected Map<Class<?>, StringConverter> getStringConverters()
+   {
+      if (stringConverters == null && parent != null) return parent.getStringConverters();
+      return stringConverters;
+   }
+
+   protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> getStringParameterUnmarshallers()
+   {
+      if (stringParameterUnmarshallers == null && parent != null) return parent.getStringParameterUnmarshallers();
+      return stringParameterUnmarshallers;
+   }
+
+   /**
+    * Copy
+    *
+    * @return
+    */
+   public Set<Class<?>> getProviderClasses()
+   {
+      if (providerClasses == null && parent != null) return parent.getProviderClasses();
+      Set<Class<?>> set = new HashSet<Class<?>>();
+      if (parent != null) set.addAll(parent.getProviderClasses());
+      set.addAll(providerClasses);
+      return providerClasses;
+   }
+
+   /**
+    * Copy
+    *
+    * @return
+    */
+   public Set<Object> getProviderInstances()
+   {
+      if (providerInstances == null && parent != null) return parent.getProviderInstances();
+      Set<Object> set = new HashSet<Object>();
+      if (parent != null) set.addAll(parent.getProviderInstances());
+      set.addAll(providerInstances);
+      return providerInstances;
+   }
+
+   protected LegacyPrecedence getPrecedence()
+   {
+      if (precedence == null && parent != null) return parent.getPrecedence();
+      return precedence;
+   }
+
+   public ResteasyProviderFactory getParent()
+   {
+      return parent;
+   }
+
+   protected void copyParent()
+   {
+      providerClasses = new HashSet<Class<?>>();
+      providerClasses.addAll(parent.getProviderClasses());
+
+      providerInstances = new HashSet<Object>();
+      providerInstances.addAll(parent.getProviderInstances());
+
+      messageBodyReaders = parent.getMessageBodyReaders().clone();
+      messageBodyWriters = parent.getMessageBodyWriters().clone();
+
+      exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
+      exceptionMappers.putAll(parent.getExceptionMappers());
+
+      contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+      for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers().entrySet())
+      {
+         contextResolvers.put(entry.getKey(), entry.getValue().clone());
+      }
+
+      stringConverters = new HashMap<Class<?>, StringConverter>();
+      stringConverters.putAll(parent.getStringConverters());
+
+      stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
+      stringParameterUnmarshallers.putAll(parent.getStringParameterUnmarshallers());
+
+      headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
+      headerDelegates.putAll(parent.getHeaderDelegates());
+
+      precedence = parent.getPrecedence().clone();
+      serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+      serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+      containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+      containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+
+      clientRequestFilters = parent.getClientRequestFilters().clone(this);
+      clientResponseFilters = parent.getClientResponseFilters().clone(this);
+      clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+      clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+      clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+
+      clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
+      clientErrorInterceptors.addAll(parent.getClientErrorInterceptors());
+
+      builtinsRegistered = false;
+      registerBuiltins = true;
+
+      injectorFactory = parent.getInjectorFactory();
+   }
 
    protected void registerDefaultInterceptorPrecedences(InterceptorRegistry registry)
    {
@@ -225,9 +380,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void appendInterceptorPrecedence(String precedence)
    {
+      if (this.precedence == null)
+      {
+         this.precedence = parent.getPrecedence().clone();
+      }
+      if (clientExecutionInterceptorRegistry == null)
+      {
+         clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+      }
       this.precedence.appendPrecedence(precedence);
-
-      getClientExecutionInterceptorRegistry().appendPrecedence(precedence);
+      clientExecutionInterceptorRegistry.appendPrecedence(precedence);
    }
 
    /**
@@ -236,6 +398,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
    {
+      if (this.precedence == null)
+      {
+         this.precedence = parent.getPrecedence().clone();
+      }
+      if (clientExecutionInterceptorRegistry == null)
+      {
+         clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+      }
       this.precedence.insertPrecedenceAfter(after, newPrecedence);
 
       getClientExecutionInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
@@ -247,6 +417,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
    {
+      if (this.precedence == null)
+      {
+         this.precedence = parent.getPrecedence().clone();
+      }
+      if (clientExecutionInterceptorRegistry == null)
+      {
+         clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+      }
       this.precedence.insertPrecedenceBefore(before, newPrecedence);
 
       getClientExecutionInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
@@ -358,26 +536,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       ResteasyProviderFactory.registerBuiltinByDefault = registerBuiltinByDefault;
    }
 
-   public ResteasyProviderFactory()
-   {
-      // NOTE!!! It is important to put all initialization into initialize() as ThreadLocalResteasyProviderFactory
-      // subclasses and delegates to this class.  
-      initialize();
-   }
-
-   protected void initialize()
-   {
-      registerDefaultInterceptorPrecedences();
-      addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
-      addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
-      addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
-      addHeaderDelegate(URI.class, new UriHeaderDelegate());
-      addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
-      addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
-      addHeaderDelegate(Locale.class, new LocaleDelegate());
-      addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
-      addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
-   }
 
    public boolean isRegisterBuiltins()
    {
@@ -391,6 +549,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public InjectorFactory getInjectorFactory()
    {
+      if (injectorFactory == null && parent != null) return parent.getInjectorFactory();
       return injectorFactory;
    }
 
@@ -401,46 +560,55 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public InterceptorRegistry<ClientExecutionInterceptor> getClientExecutionInterceptorRegistry()
    {
+      if (clientExecutionInterceptorRegistry == null && parent != null) return parent.getClientExecutionInterceptorRegistry();
       return clientExecutionInterceptorRegistry;
    }
 
    public ReaderInterceptorRegistry getServerReaderInterceptorRegistry()
    {
+      if (serverReaderInterceptorRegistry == null && parent != null) return parent.getServerReaderInterceptorRegistry();
       return serverReaderInterceptorRegistry;
    }
 
    public WriterInterceptorRegistry getServerWriterInterceptorRegistry()
    {
+      if (serverWriterInterceptorRegistry == null && parent != null) return parent.getServerWriterInterceptorRegistry();
       return serverWriterInterceptorRegistry;
    }
 
    public ContainerRequestFilterRegistry getContainerRequestFilterRegistry()
    {
+      if (containerRequestFilterRegistry == null && parent != null) return parent.getContainerRequestFilterRegistry();
       return containerRequestFilterRegistry;
    }
 
    public ContainerResponseFilterRegistry getContainerResponseFilterRegistry()
    {
+      if (containerResponseFilterRegistry == null && parent != null) return parent.getContainerResponseFilterRegistry();
       return containerResponseFilterRegistry;
    }
 
    public ReaderInterceptorRegistry getClientReaderInterceptorRegistry()
    {
+      if (clientReaderInterceptorRegistry == null && parent != null) return parent.getClientReaderInterceptorRegistry();
       return clientReaderInterceptorRegistry;
    }
 
    public WriterInterceptorRegistry getClientWriterInterceptorRegistry()
    {
+      if (clientWriterInterceptorRegistry == null && parent != null) return parent.getClientWriterInterceptorRegistry();
       return clientWriterInterceptorRegistry;
    }
 
    public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
    {
+      if (clientRequestFilters == null && parent != null) return parent.getClientRequestFilters();
       return clientRequestFilters;
    }
 
    public JaxrsInterceptorRegistry<ClientResponseFilter> getClientResponseFilters()
    {
+      if (clientResponseFilters == null && parent != null) return parent.getClientResponseFilters();
       return clientResponseFilters;
    }
 
@@ -471,36 +639,38 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> tClass)
    {
+      if (headerDelegates == null && parent != null) return parent.createHeaderDelegate(tClass);
       return headerDelegates.get(tClass);
+   }
+
+   protected Map<Class<?>, HeaderDelegate> getHeaderDelegates()
+   {
+      if (headerDelegates == null && parent != null) return parent.getHeaderDelegates();
+      return headerDelegates;
    }
 
    public void addHeaderDelegate(Class clazz, HeaderDelegate header)
    {
+      if (headerDelegates == null)
+      {
+         headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
+         headerDelegates.putAll(parent.getHeaderDelegates());
+      }
       headerDelegates.put(clazz, header);
    }
 
-   public void addMessageBodyReader(Class<? extends MessageBodyReader> provider)
-   {
-      addMessageBodyReader(provider, false);
-   }
-
-   public void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
+   protected void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
    {
       MessageBodyReader reader = getProviderInstance(provider);
       addMessageBodyReader(reader, provider, isBuiltin);
    }
 
-   public void addMessageBodyReader(MessageBodyReader provider)
+   protected void addMessageBodyReader(MessageBodyReader provider)
    {
       addMessageBodyReader(provider, false);
    }
 
-   public void addBuiltInMessageBodyReader(MessageBodyReader provider)
-   {
-      addMessageBodyReader(provider, true);
-   }
-
-   public void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
+   protected void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
    {
       addMessageBodyReader(provider, provider.getClass(), isBuiltin);
    }
@@ -514,12 +684,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param isBuiltin
     */
 
-   public void addMessageBodyReader(MessageBodyReader provider, Class providerClass, boolean isBuiltin)
+   protected void addMessageBodyReader(MessageBodyReader provider, Class providerClass, boolean isBuiltin)
    {
       SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider, providerClass, isBuiltin);
       injectProperties(provider);
-      providers.put(provider.getClass(), provider);
       Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
+      if (messageBodyReaders == null)
+      {
+         messageBodyReaders = parent.getMessageBodyReaders().clone();
+      }
       if (consumeMime != null)
       {
          for (String consume : consumeMime.value())
@@ -534,30 +707,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
-   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider)
-   {
-      addMessageBodyWriter(provider, false);
-   }
-
-   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
+   protected void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
    {
       MessageBodyWriter writer = getProviderInstance(provider);
       addMessageBodyWriter(writer, provider, isBuiltin);
    }
 
-   public void addMessageBodyWriter(MessageBodyWriter provider)
+   protected void addMessageBodyWriter(MessageBodyWriter provider)
    {
       addMessageBodyWriter(provider, provider.getClass(), false);
-   }
-
-   public void addBuiltInMessageBodyWriter(MessageBodyWriter provider)
-   {
-      addMessageBodyWriter(provider, provider.getClass(), true);
-   }
-
-   public void addMessageBodyWriter(MessageBodyWriter provider, boolean isBuiltin)
-   {
-      addMessageBodyWriter(provider, provider.getClass(), isBuiltin);
    }
 
    /**
@@ -568,12 +726,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param providerClass
     * @param isBuiltin
     */
-   public void addMessageBodyWriter(MessageBodyWriter provider, Class providerClass, boolean isBuiltin)
+   protected void addMessageBodyWriter(MessageBodyWriter provider, Class providerClass, boolean isBuiltin)
    {
-      providers.put(provider.getClass(), provider);
       injectProperties(provider);
       Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
       SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider, providerClass, isBuiltin);
+      if (messageBodyWriters == null)
+      {
+         messageBodyWriters = parent.getMessageBodyWriters().clone();
+      }
       if (consumeMime != null)
       {
          for (String consume : consumeMime.value())
@@ -590,7 +751,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<SortedKey<MessageBodyReader>> readers = messageBodyReaders.getPossible(mediaType, type);
+      List<SortedKey<MessageBodyReader>> readers = getMessageBodyReaders().getPossible(mediaType, type);
 
       for (SortedKey<MessageBodyReader> reader : readers)
       {
@@ -602,33 +763,37 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return null;
    }
 
-   public void addExceptionMapper(Class<? extends ExceptionMapper> providerClass)
+   protected void addExceptionMapper(Class<? extends ExceptionMapper> providerClass)
    {
       ExceptionMapper provider = getProviderInstance(providerClass);
       addExceptionMapper(provider, providerClass);
    }
 
-   public void addExceptionMapper(ExceptionMapper provider)
+   protected void addExceptionMapper(ExceptionMapper provider)
    {
       addExceptionMapper(provider, provider.getClass());
    }
 
-   public void addExceptionMapper(ExceptionMapper provider, Class providerClass)
+   protected void addExceptionMapper(ExceptionMapper provider, Class providerClass)
    {
       Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ExceptionMapper.class)[0];
       addExceptionMapper(provider, exceptionType);
    }
 
 
-   public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
+   protected void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
    {
-      providers.put(provider.getClass(), provider);
       injectProperties(provider);
 
       Class<?> exceptionClass = Types.getRawType(exceptionType);
       if (!Throwable.class.isAssignableFrom(exceptionClass))
       {
          throw new RuntimeException("Incorrect type parameter. ExceptionMapper requires a subclass of java.lang.Throwable as its type parameter.");
+      }
+      if (exceptionMappers == null)
+      {
+         exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
+         exceptionMappers.putAll(parent.getExceptionMappers());
       }
       exceptionMappers.put(exceptionClass, provider);
    }
@@ -639,6 +804,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void addClientErrorInterceptor(ClientErrorInterceptor handler)
    {
+      if (clientErrorInterceptors == null)
+      {
+         clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
+         clientErrorInterceptors.addAll(parent.getClientErrorInterceptors());
+      }
       if (!clientErrorInterceptors.contains(handler))
       {
          clientErrorInterceptors.add(handler);
@@ -651,49 +821,43 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public List<ClientErrorInterceptor> getClientErrorInterceptors()
    {
+      if (clientErrorInterceptors == null && parent != null) return parent.getClientErrorInterceptors();
       return clientErrorInterceptors;
    }
 
-   public void addContextResolver(Class<? extends ContextResolver> resolver)
-   {
-      addContextResolver(resolver, false);
-   }
-
-   public void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
+   protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
    {
       ContextResolver writer = getProviderInstance(resolver);
       addContextResolver(writer, resolver, builtin);
    }
 
-   public void addContextResolver(ContextResolver provider)
+   protected void addContextResolver(ContextResolver provider)
    {
       addContextResolver(provider, false);
    }
-   public void addContextResolver(ContextResolver provider, boolean builtin)
+   protected void addContextResolver(ContextResolver provider, boolean builtin)
    {
       addContextResolver(provider, provider.getClass(), builtin);
    }
 
-   public void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
+   protected void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
    {
       Type parameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextResolver.class)[0];
       addContextResolver(provider, parameter, providerClass, builtin);
    }
 
-   public void addContextResolver(ContextResolver provider, Type typeParameter)
+   protected void addContextResolver(ContextResolver provider, Type typeParameter, Class providerClass, boolean builtin)
    {
-      addContextResolver(provider, typeParameter, provider.getClass(), false);
-   }
-
-   public void addContextResolver(ContextResolver provider, Type typeParameter, boolean builtin)
-   {
-      addContextResolver(provider, typeParameter, provider.getClass(), builtin);
-   }
-   public void addContextResolver(ContextResolver provider, Type typeParameter, Class providerClass, boolean builtin)
-   {
-      providers.put(provider.getClass(), provider);
       injectProperties(provider);
       Class<?> parameterClass = Types.getRawType(typeParameter);
+      if (contextResolvers == null)
+      {
+         contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+         for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers().entrySet())
+         {
+            contextResolvers.put(entry.getKey(), entry.getValue().clone());
+         }
+      }
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(parameterClass);
       if (resolvers == null)
       {
@@ -721,34 +885,43 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       injectorFactory.createPropertyInjector(o.getClass()).inject(o);
    }
 
-   public void addStringConverter(Class<? extends StringConverter> resolver)
+   protected void addStringConverter(Class<? extends StringConverter> resolver)
    {
       StringConverter writer = getProviderInstance(resolver);
       addStringConverter(writer, resolver);
    }
 
-   public void addStringConverter(StringConverter provider)
+   protected void addStringConverter(StringConverter provider)
    {
       addStringConverter(provider, provider.getClass());
    }
 
-   public void addStringConverter(StringConverter provider, Class providerClass)
+   protected void addStringConverter(StringConverter provider, Class providerClass)
    {
       Type parameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, StringConverter.class)[0];
       addStringConverter(provider, parameter);
    }
 
-   public void addStringConverter(StringConverter provider, Type typeParameter)
+   protected void addStringConverter(StringConverter provider, Type typeParameter)
    {
-      providers.put(provider.getClass(), provider);
       injectProperties(provider);
       Class<?> parameterClass = Types.getRawType(typeParameter);
+      if (stringConverters == null)
+      {
+         stringConverters = new HashMap<Class<?>, StringConverter>();
+         stringConverters.putAll(parent.getStringConverters());
+      }
       stringConverters.put(parameterClass, provider);
    }
 
 
    public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> provider)
    {
+      if (stringParameterUnmarshallers == null)
+      {
+         stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
+         stringParameterUnmarshallers.putAll(parent.getStringParameterUnmarshallers());
+      }
       Type[] intfs = provider.getGenericInterfaces();
       for (Type type : intfs)
       {
@@ -766,7 +939,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
    {
-      MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(clazz);
+      MediaTypeMap<SortedKey<ContextResolver>> resolvers = getContextResolvers().get(clazz);
       if (resolvers == null) return null;
       List<ContextResolver> rtn = new ArrayList<ContextResolver>();
 
@@ -780,14 +953,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public StringConverter getStringConverter(Class<?> clazz)
    {
-      if (stringConverters.size() == 0) return null;
-      return stringConverters.get(clazz);
+      if (getStringConverters().size() == 0) return null;
+      return getStringConverters().get(clazz);
    }
 
    public <T> StringParameterUnmarshaller<T> createStringParameterUnmarshaller(Class<T> clazz)
    {
-      if (stringParameterUnmarshallers.size() == 0) return null;
-      Class<? extends StringParameterUnmarshaller> un = stringParameterUnmarshallers.get(clazz);
+      if (getStringParameterUnmarshallers().size() == 0) return null;
+      Class<? extends StringParameterUnmarshaller> un = getStringParameterUnmarshallers().get(clazz);
       if (un == null) return null;
       StringParameterUnmarshaller<T> provider = getProviderInstance(un);
       injectProperties(provider);
@@ -885,29 +1058,57 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (ClientExecutionInterceptor.class.isAssignableFrom(provider))
       {
+         if (clientExecutionInterceptorRegistry == null)
+         {
+            clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+         }
          clientExecutionInterceptorRegistry.register(provider);
       }
       if (PreProcessInterceptor.class.isAssignableFrom(provider))
       {
+         if (containerRequestFilterRegistry == null)
+         {
+            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+         }
          containerRequestFilterRegistry.registerLegacy(provider);
       }
       if (PostProcessInterceptor.class.isAssignableFrom(provider))
       {
+         if (containerResponseFilterRegistry == null)
+         {
+            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+         }
          containerResponseFilterRegistry.registerLegacy(provider);
       }
       if (ReaderInterceptor.class.isAssignableFrom(provider))
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
+            if (serverReaderInterceptorRegistry == null)
+            {
+               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+            }
             serverReaderInterceptorRegistry.registerClass(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
+            if (clientReaderInterceptorRegistry == null)
+            {
+               clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+            }
             clientReaderInterceptorRegistry.registerClass(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
+            if (serverReaderInterceptorRegistry == null)
+            {
+               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+            }
             serverReaderInterceptorRegistry.registerClass(provider);
+            if (clientReaderInterceptorRegistry == null)
+            {
+               clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+            }
             clientReaderInterceptorRegistry.registerClass(provider);
          }
       }
@@ -915,15 +1116,31 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
+            if (serverWriterInterceptorRegistry == null)
+            {
+               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+            }
             serverWriterInterceptorRegistry.registerClass(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
+            if (clientWriterInterceptorRegistry == null)
+            {
+               clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+            }
             clientWriterInterceptorRegistry.registerClass(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
+            if (serverWriterInterceptorRegistry == null)
+            {
+               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+            }
             serverWriterInterceptorRegistry.registerClass(provider);
+            if (clientWriterInterceptorRegistry == null)
+            {
+               clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+            }
             clientWriterInterceptorRegistry.registerClass(provider);
          }
       }
@@ -931,10 +1148,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
+            if (serverWriterInterceptorRegistry == null)
+            {
+               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+            }
             serverWriterInterceptorRegistry.registerLegacy(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
+            if (clientWriterInterceptorRegistry == null)
+            {
+               clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+            }
             clientWriterInterceptorRegistry.registerLegacy(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
@@ -947,10 +1172,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.isAnnotationPresent(ServerInterceptor.class))
          {
+            if (serverReaderInterceptorRegistry == null)
+            {
+               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+            }
             serverReaderInterceptorRegistry.registerLegacy(provider);
          }
          if (provider.isAnnotationPresent(ClientInterceptor.class))
          {
+            if (clientReaderInterceptorRegistry == null)
+            {
+               clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+            }
             clientReaderInterceptorRegistry.registerLegacy(provider);
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
@@ -990,6 +1223,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException(e);
          }
       }
+      providerClasses.add(provider);
    }
 
    /**
@@ -1045,29 +1279,57 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (provider instanceof ClientExecutionInterceptor)
       {
+         if (clientExecutionInterceptorRegistry == null)
+         {
+            clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+         }
          clientExecutionInterceptorRegistry.register((ClientExecutionInterceptor) provider);
       }
       if (provider instanceof PreProcessInterceptor)
       {
+         if (containerRequestFilterRegistry == null)
+         {
+            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+         }
          containerRequestFilterRegistry.registerLegacy((PreProcessInterceptor) provider);
       }
       if (provider instanceof PostProcessInterceptor)
       {
+         if (containerResponseFilterRegistry == null)
+         {
+            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+         }
          containerResponseFilterRegistry.registerLegacy((PostProcessInterceptor) provider);
       }
       if (provider instanceof ReaderInterceptor)
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
+            if (serverReaderInterceptorRegistry == null)
+            {
+               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+            }
             serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
+            if (clientReaderInterceptorRegistry == null)
+            {
+               clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+            }
             clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
+            if (serverReaderInterceptorRegistry == null)
+            {
+               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+            }
             serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider);
+            if (clientReaderInterceptorRegistry == null)
+            {
+               clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+            }
             clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider);
          }
       }
@@ -1075,15 +1337,31 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
+            if (serverWriterInterceptorRegistry == null)
+            {
+               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+            }
             serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
+            if (clientWriterInterceptorRegistry == null)
+            {
+               clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+            }
             clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
+            if (serverWriterInterceptorRegistry == null)
+            {
+               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+            }
             serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider);
+            if (clientWriterInterceptorRegistry == null)
+            {
+               clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+            }
             clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider);
          }
       }
@@ -1091,10 +1369,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
+            if (serverWriterInterceptorRegistry == null)
+            {
+               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+            }
             serverWriterInterceptorRegistry.registerLegacy((MessageBodyWriterInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
+            if (clientWriterInterceptorRegistry == null)
+            {
+               clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+            }
             clientWriterInterceptorRegistry.registerLegacy((MessageBodyWriterInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
@@ -1107,11 +1393,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
          {
+            if (serverReaderInterceptorRegistry == null)
+            {
+               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+            }
             serverReaderInterceptorRegistry.registerLegacy((MessageBodyReaderInterceptor) provider);
          }
          if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            serverReaderInterceptorRegistry.registerLegacy((MessageBodyReaderInterceptor) provider);
+            if (clientReaderInterceptorRegistry == null)
+            {
+               clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+            }
+            clientReaderInterceptorRegistry.registerLegacy((MessageBodyReaderInterceptor) provider);
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
@@ -1127,25 +1421,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          this.injectorFactory = (InjectorFactory) provider;
       }
-   }
-
-   /**
-    * Obtain a registered @Provider instance keyed by class.  This can get you access to any @Provider:
-    * MessageBodyReader/Writer or ExceptionMapper
-    */
-   public <T> T getProvider(Class<T> providerClass)
-   {
-      return (T) providers.get(providerClass);
+      providerInstances.add(provider);
    }
 
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
-      return exceptionMappers.get(type);
+      return getExceptionMappers().get(type);
    }
 
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<SortedKey<MessageBodyWriter>> writers = messageBodyWriters.getPossible(mediaType, type);
+      List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);
       for (SortedKey<MessageBodyWriter> writer : writers)
       {
          //System.out.println("matching: " + writer.obj.getClass());

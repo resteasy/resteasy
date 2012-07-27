@@ -80,78 +80,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void addExceptionMapper(ExceptionMapper provider, Class providerClass)
-   {
-      getDelegate().addExceptionMapper(provider, providerClass);
-   }
-
-   @Override
-   public void addStringConverter(StringConverter provider, Class providerClass)
-   {
-      getDelegate().addStringConverter(provider, providerClass);
-   }
-
-   @Override
-   public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
-   {
-      getDelegate().addExceptionMapper(provider, exceptionType);
-   }
-
-   @Override
-   public void addMessageBodyReader(MessageBodyReader provider, Class providerClass, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyReader(provider, providerClass, isBuiltin);
-   }
-
-   @Override
-   public void addMessageBodyWriter(MessageBodyWriter provider, Class providerClass, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyWriter(provider, providerClass, isBuiltin);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
-   {
-      getDelegate().addContextResolver(provider, providerClass, builtin);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, Type typeParameter, Class providerClass, boolean builtin)
-   {
-      getDelegate().addContextResolver(provider, typeParameter, providerClass, builtin);
-   }
-
-   @Override
-   public void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
-   {
-      getDelegate().addContextResolver(resolver, builtin);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, boolean builtin)
-   {
-      getDelegate().addContextResolver(provider, builtin);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, Type typeParameter)
-   {
-      getDelegate().addContextResolver(provider, typeParameter);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, Type typeParameter, boolean builtin)
-   {
-      getDelegate().addContextResolver(provider, typeParameter, builtin);
-   }
-
-   @Override
-   public void addStringConverter(StringConverter provider, Type typeParameter)
-   {
-      getDelegate().addStringConverter(provider, typeParameter);
-   }
-
-   @Override
    public boolean isRegisterBuiltins()
    {
       return getDelegate().isRegisterBuiltins();
@@ -215,18 +143,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public void setBuiltinsRegistered(boolean builtinsRegistered)
    {
       getDelegate().setBuiltinsRegistered(builtinsRegistered);
-   }
-
-   @Override
-   public void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyReader(provider, isBuiltin);
-   }
-
-   @Override
-   public void addMessageBodyWriter(MessageBodyWriter provider, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyWriter(provider, isBuiltin);
    }
 
    @Override
@@ -318,81 +234,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void addMessageBodyReader(Class<? extends MessageBodyReader> provider)
-   {
-      getDelegate().addMessageBodyReader(provider);
-   }
-
-   @Override
-   public void addMessageBodyReader(MessageBodyReader provider)
-   {
-      getDelegate().addMessageBodyReader(provider);
-   }
-
-   @Override
-   public void addBuiltInMessageBodyReader(MessageBodyReader provider)
-   {
-      getDelegate().addBuiltInMessageBodyReader(provider);
-   }
-
-   @Override
-   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider)
-   {
-      getDelegate().addMessageBodyWriter(provider);
-   }
-
-   @Override
-   public void addMessageBodyWriter(MessageBodyWriter provider)
-   {
-      getDelegate().addMessageBodyWriter(provider);
-   }
-
-   @Override
-   public void addBuiltInMessageBodyWriter(MessageBodyWriter provider)
-   {
-      getDelegate().addBuiltInMessageBodyWriter(provider);
-   }
-
-   @Override
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return getDelegate().getMessageBodyReader(type, genericType, annotations, mediaType);
-   }
-
-   @Override
-   public void addExceptionMapper(Class<? extends ExceptionMapper> provider)
-   {
-      getDelegate().addExceptionMapper(provider);
-   }
-
-   @Override
-   public void addExceptionMapper(ExceptionMapper provider)
-   {
-      getDelegate().addExceptionMapper(provider);
-   }
-
-   @Override
-   public void addContextResolver(Class<? extends ContextResolver> resolver)
-   {
-      getDelegate().addContextResolver(resolver);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider)
-   {
-      getDelegate().addContextResolver(provider);
-   }
-
-   @Override
-   public void addStringConverter(Class<? extends StringConverter> resolver)
-   {
-      getDelegate().addStringConverter(resolver);
-   }
-
-   @Override
-   public void addStringConverter(StringConverter provider)
-   {
-      getDelegate().addStringConverter(provider);
    }
 
    @Override
@@ -420,12 +264,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public <T> T getProvider(Class<T> providerClass)
-   {
-      return getDelegate().getProvider(providerClass);
-   }
-
-   @Override
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
       return getDelegate().getExceptionMapper(type);
@@ -448,18 +286,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)
    {
       return getDelegate().getContextResolver(contextType, mediaType);
-   }
-
-   @Override
-   public void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyReader(provider, isBuiltin);
-   }
-
-   @Override
-   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyWriter(provider, isBuiltin);
    }
 
    @Override

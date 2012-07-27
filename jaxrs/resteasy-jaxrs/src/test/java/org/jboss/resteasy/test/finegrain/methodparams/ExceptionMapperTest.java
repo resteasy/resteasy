@@ -91,8 +91,8 @@ public class ExceptionMapperTest
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(Throwme.class);
-      ResteasyProviderFactory.getInstance().addExceptionMapper(MyExceptionMapper.class);
-      ResteasyProviderFactory.getInstance().addExceptionMapper(NotFoundMapper.class);
+      ResteasyProviderFactory.getInstance().registerProvider(MyExceptionMapper.class);
+      ResteasyProviderFactory.getInstance().registerProvider(NotFoundMapper.class);
    }
 
    @AfterClass

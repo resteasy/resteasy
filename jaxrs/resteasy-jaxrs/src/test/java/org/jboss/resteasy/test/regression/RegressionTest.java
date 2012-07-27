@@ -175,7 +175,7 @@ public class RegressionTest
    public void test144() throws Exception
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
-      dispatcher.getProviderFactory().addMessageBodyWriter(CustomerWriter.class);
+      dispatcher.getProviderFactory().registerProvider(CustomerWriter.class);
       dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
       ClientResponse<?> response = null;
       try
@@ -245,9 +245,9 @@ public class RegressionTest
       ResteasyDeployment deployment = new ResteasyDeployment();
       deployment.setRegisterBuiltin(false);
       ResteasyProviderFactory factory = new ResteasyProviderFactory();
-      factory.addMessageBodyWriter(new DefaultTextPlain());
-      factory.addMessageBodyWriter(new TestReaderWriter());
-      factory.addMessageBodyReader(new TestReaderWriter());
+      factory.registerProviderInstance(new DefaultTextPlain());
+      factory.registerProviderInstance(new TestReaderWriter());
+      factory.registerProviderInstance(new TestReaderWriter());
       deployment.setProviderFactory(factory);
       EmbeddedContainer.start(deployment);
       dispatcher = deployment.getDispatcher();      

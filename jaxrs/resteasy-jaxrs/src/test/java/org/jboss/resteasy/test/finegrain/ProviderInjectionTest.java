@@ -54,7 +54,7 @@ public class ProviderInjectionTest
    public void testCacheControl()
    {
       MyProviderReader reader = new MyProviderReader();
-      ResteasyProviderFactory.getInstance().addMessageBodyReader(reader);
+      ResteasyProviderFactory.getInstance().registerProviderInstance(reader);
 
       Assert.assertNotNull(reader.headers);
       Assert.assertNotNull(reader.workers);

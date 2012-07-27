@@ -5,6 +5,7 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import javax.ws.rs.core.MediaType;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -130,6 +131,32 @@ public class MediaTypeMap<T>
       private List<Entry<T>> wildcards = new ArrayList<Entry<T>>();
       private List<Entry<T>> all = new ArrayList<Entry<T>>();
 
+      public SubtypeMap<T> clone()
+      {
+         SubtypeMap<T> clone = new SubtypeMap<T>();
+         for (Map.Entry<String, List<Entry<T>>> entry : index.entrySet())
+         {
+            ArrayList<Entry<T>> newList = new ArrayList<Entry<T>>();
+            newList.addAll(entry.getValue());
+            clone.index.put(entry.getKey(), newList);
+         }
+         for (Map.Entry<String, List<Entry<T>>> entry : compositeIndex.entrySet())
+         {
+            ArrayList<Entry<T>> newList = new ArrayList<Entry<T>>();
+            newList.addAll(entry.getValue());
+            clone.compositeIndex.put(entry.getKey(), newList);
+         }
+         for (Map.Entry<String, List<Entry<T>>> entry : wildCompositeIndex.entrySet())
+         {
+            ArrayList<Entry<T>> newList = new ArrayList<Entry<T>>();
+            newList.addAll(entry.getValue());
+            clone.wildCompositeIndex.put(entry.getKey(), newList);
+         }
+         clone.wildcards.addAll(wildcards);
+         clone.all.addAll(all);
+         return clone;
+      }
+
 
       public void add(MediaType type, T obj)
       {
@@ -210,10 +237,26 @@ public class MediaTypeMap<T>
    private List<T> everything = new ArrayList<T>();
    private Map<CachedMediaTypeAndClass, List<T>> classCache = new ConcurrentHashMap<CachedMediaTypeAndClass, List<T>>();
 
+   public MediaTypeMap<T> clone()
+   {
+      MediaTypeMap<T> clone = new MediaTypeMap<T>();
+      for (Map.Entry<String, SubtypeMap<T>> entry : index.entrySet())
+      {
+         clone.index.put(entry.getKey(), entry.getValue().clone());
+      }
+      clone.wildcards.addAll(wildcards);
+      clone.all.addAll(all);
+      clone.everything.addAll(everything);
+      // don't clone class cache
+      return clone;
+   }
+
    public Map<CachedMediaTypeAndClass, List<T>> getClassCache()
    {
       return classCache;
    }
+
+
 
    public static class CachedMediaTypeAndClass
    {

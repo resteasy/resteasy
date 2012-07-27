@@ -29,6 +29,13 @@ public class ReaderInterceptorRegistry extends JaxrsInterceptorRegistry<ReaderIn
       this.precedence = precedence;
    }
 
+   public ReaderInterceptorRegistry clone(ResteasyProviderFactory factory)
+   {
+      ReaderInterceptorRegistry clone = new ReaderInterceptorRegistry(factory, precedence);
+      clone.interceptors.addAll(interceptors);
+      return clone;
+   }
+
    private static class MessageBodyReaderContextFacade implements MessageBodyReaderContext
    {
       protected final ReaderInterceptorContext readerInterceptorContext;

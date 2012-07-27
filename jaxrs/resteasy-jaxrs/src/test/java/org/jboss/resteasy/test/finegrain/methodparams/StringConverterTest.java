@@ -87,7 +87,7 @@ public class StringConverterTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      deployment.getProviderFactory().addStringConverter(POJOConverter.class);
+      deployment.getProviderFactory().registerProvider(POJOConverter.class);
       deployment.getRegistry().addPerRequestResource(MyResource.class);
       deployment.getRegistry().addPerRequestResource(MyDefaultResource.class);
    }

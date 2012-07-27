@@ -157,6 +157,15 @@ public class InterceptorRegistry<T>
    protected List<String> precedenceList = new ArrayList<String>();
    protected List<InterceptorRegistryListener> listeners = new ArrayList<InterceptorRegistryListener>();
 
+   public InterceptorRegistry<T> cloneTo(ResteasyProviderFactory factory)
+   {
+      InterceptorRegistry<T> clone = new InterceptorRegistry<T>(intf, factory);
+      clone.interceptors.addAll(interceptors);
+      clone.precedenceOrder.putAll(precedenceOrder);
+      precedenceList.addAll(precedenceList);
+      return clone;
+   }
+
    public class PrecedenceComparator implements Comparator<InterceptorFactory>
    {
       public int compare(InterceptorFactory factory, InterceptorFactory factory2)
