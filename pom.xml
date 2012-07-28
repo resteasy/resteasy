@@ -91,7 +91,7 @@
         <module>resteasy-cache</module>
         <module>resteasy-guice</module>
         <!--module>eagledns</module>-->
-        <module>security</module>
+        <!--<module>security</module>-->
         <module>resteasy-links</module>
         <module>async-http-jbossweb</module>
         <module>async-http-tomcat</module>
