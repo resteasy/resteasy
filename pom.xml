@@ -90,8 +90,8 @@
         <module>resteasy-bom</module>
         <module>resteasy-cache</module>
         <module>resteasy-guice</module>
-        <module>eagledns</module>
-        <module>security</module>
+        <!--module>eagledns</module>-->
+        <!--<module>security</module>-->
         <module>resteasy-links</module>
         <module>async-http-jbossweb</module>
         <module>async-http-tomcat</module>
@@ -100,11 +100,11 @@
         <module>resteasy-cdi</module>
         <module>server-adapters</module>
         <!-- <module>interface-description</module> -->
-        <module>war-tests</module>
+        <!--<module>war-tests</module>
         <module>examples</module>
         <module>async-http-servlet-3.0</module>
         <module>profiling-tests</module>
-        <module>jboss-modules</module>
+        <module>jboss-modules</module>-->
         <!-- <module>as7-integration-testing</module> -->
     </modules>
 
