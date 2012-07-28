@@ -33,7 +33,7 @@
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jdk-http</artifactId>
-      <version>2.3.4.Final</version>
+      <version>2.3.4.Final.HCA</version>
   </dependency>
 ]]></programlisting>
 
@@ -51,7 +51,7 @@ RESTeasy integrates with the TJWS Embeddable Servlet container.  It comes with t
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>tjws</artifactId>
-      <version>2.3.4.Final</version>
+      <version>2.3.4.Final.HCA</version>
   </dependency>
 
   <dependency>
