@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy;
 
 import org.jboss.resteasy.client.jaxrs.ProxyConfig;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
@@ -41,18 +42,18 @@ public class ClientInvoker implements MethodInvoker
 
    public ClientInvoker(ResteasyWebTarget parent, Class declaring, Method method, ProxyConfig config)
    {
-      this.declaring = declaring;
-      this.method = method;
-      this.processors = ProcessorFactory.createProcessors(declaring, method, parent.getResteasyClient().providerFactory(), config.getDefaultConsumes());
-      accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
-      entityExtractorFactory = new DefaultEntityExtractorFactory();
-      this.extractor = entityExtractorFactory.createExtractor(method);
       UriBuilder builder = parent.getUriBuilder();
       if (method.isAnnotationPresent(Path.class))
       {
          builder.path(method);
       }
-      this.webTarget = (ResteasyWebTarget)parent.getResteasyClient().target(builder);
+      this.webTarget = parent.getResteasyClient().target(builder);
+      this.declaring = declaring;
+      this.method = method;
+      this.processors = ProcessorFactory.createProcessors(declaring, method, (ClientConfiguration)this.webTarget.configuration(), config.getDefaultConsumes());
+      accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
+      entityExtractorFactory = new DefaultEntityExtractorFactory();
+      this.extractor = entityExtractorFactory.createExtractor(method);
    }
 
    public MediaType getAccepts()
@@ -73,7 +74,7 @@ public class ClientInvoker implements MethodInvoker
    public Object invoke(Object[] args)
    {
       boolean isProvidersSet = ResteasyProviderFactory.getContextData(Providers.class) != null;
-      if (!isProvidersSet) ResteasyProviderFactory.pushContext(Providers.class, webTarget.getResteasyClient().providerFactory());
+      if (!isProvidersSet) ResteasyProviderFactory.pushContext(Providers.class, (ClientConfiguration)this.webTarget.configuration());
 
       try
       {

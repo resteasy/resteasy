@@ -183,6 +183,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       initialize();
    }
 
+   /**
+    * Copies a specific component registry when a new
+    * provider is added. Otherwise delegates to the parent.
+    *
+    * @param parent
+    */
+   public ResteasyProviderFactory(ResteasyProviderFactory parent)
+   {
+      this.parent = parent;
+   }
+
    protected void initialize()
    {
       providerClasses = new HashSet<Class<?>>();
@@ -661,7 +672,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
    {
-      MessageBodyReader reader = getProviderInstance(provider);
+      MessageBodyReader reader = createProviderInstance(provider);
       addMessageBodyReader(reader, provider, isBuiltin);
    }
 
@@ -709,7 +720,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
    {
-      MessageBodyWriter writer = getProviderInstance(provider);
+      MessageBodyWriter writer = createProviderInstance(provider);
       addMessageBodyWriter(writer, provider, isBuiltin);
    }
 
@@ -765,7 +776,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addExceptionMapper(Class<? extends ExceptionMapper> providerClass)
    {
-      ExceptionMapper provider = getProviderInstance(providerClass);
+      ExceptionMapper provider = createProviderInstance(providerClass);
       addExceptionMapper(provider, providerClass);
    }
 
@@ -827,7 +838,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
    {
-      ContextResolver writer = getProviderInstance(resolver);
+      ContextResolver writer = createProviderInstance(resolver);
       addContextResolver(writer, resolver, builtin);
    }
 
@@ -887,7 +898,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addStringConverter(Class<? extends StringConverter> resolver)
    {
-      StringConverter writer = getProviderInstance(resolver);
+      StringConverter writer = createProviderInstance(resolver);
       addStringConverter(writer, resolver);
    }
 
@@ -962,7 +973,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (getStringParameterUnmarshallers().size() == 0) return null;
       Class<? extends StringParameterUnmarshaller> un = getStringParameterUnmarshallers().get(clazz);
       if (un == null) return null;
-      StringParameterUnmarshaller<T> provider = getProviderInstance(un);
+      StringParameterUnmarshaller<T> provider = createProviderInstance(un);
       injectProperties(provider);
       return provider;
 
@@ -993,7 +1004,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * COnvert an object to a header string.  First try StringConverter, then HeaderDelegate, then object.toString()
+    * Convert an object to a header string.  First try StringConverter, then HeaderDelegate, then object.toString()
     *
     * @param object
     * @return
@@ -1013,8 +1024,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          return object.toString();
 
    }
-
-
 
    /**
     * Register a @Provider class.  Can be a MessageBodyReader/Writer or ExceptionMapper.
@@ -1477,7 +1486,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       };
    }
 
-   protected <T> T getProviderInstance(Class<? extends T> clazz)
+   /**
+    * Create an instance of a class using provider allocation rules of the specification as well as the InjectorFactory
+    *
+    * @param clazz
+    * @param <T>
+    * @return
+    */
+   public <T> T createProviderInstance(Class<? extends T> clazz)
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)

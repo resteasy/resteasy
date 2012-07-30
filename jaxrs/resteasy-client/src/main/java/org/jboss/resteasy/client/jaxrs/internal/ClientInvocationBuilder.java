@@ -36,7 +36,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
 
    public ClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
    {
-      invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(client.providerFactory()), configuration);
+      invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(configuration), configuration);
    }
 
    public ClientInvocation getInvocation()

@@ -51,7 +51,7 @@ public abstract class ClientResponse extends Response
    protected MultivaluedMap<String, String> headers;
    protected Map<String, Object> properties;
    protected Object entity;
-   protected ResteasyProviderFactory providerFactory;
+   protected ClientConfiguration configuration;
    protected boolean isClosed;
    protected byte[] bufferedEntity;
 
@@ -70,17 +70,15 @@ public abstract class ClientResponse extends Response
       this.status = status;
    }
 
-   public void setProviderFactory(ResteasyProviderFactory providerFactory)
-   {
-      this.providerFactory = providerFactory;
-   }
-
    public Map<String, Object> getProperties()
    {
       return properties;
    }
 
-
+   public void setConfiguration(ClientConfiguration configuration)
+   {
+      this.configuration = configuration;
+   }
 
    @Override
    public int getStatus()
@@ -212,7 +210,7 @@ public abstract class ClientResponse extends Response
       }
 
 
-      MessageBodyReader reader1 = providerFactory.getMessageBodyReader(useType,
+      MessageBodyReader reader1 = configuration.getMessageBodyReader(useType,
               useGeneric, annotations, media);
       if (reader1 == null)
       {

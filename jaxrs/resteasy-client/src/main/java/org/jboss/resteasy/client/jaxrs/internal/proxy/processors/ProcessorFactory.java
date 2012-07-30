@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientURI;
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation.CookieParamProcessor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation.FormParamProcessor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation.HeaderParamProcessor;
@@ -32,12 +33,12 @@ import java.lang.reflect.Type;
 public class ProcessorFactory
 {
 
-	public static Object[] createProcessors(Class declaringClass, Method method, ResteasyProviderFactory providerFactory)
+	public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration)
 	{
-		return createProcessors(declaringClass, method, providerFactory, null);
+		return createProcessors(declaringClass, method, configuration, null);
 	}
 	
-	public static Object[] createProcessors(Class declaringClass, Method method, ResteasyProviderFactory providerFactory, MediaType defaultConsumes)
+	public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration, MediaType defaultConsumes)
 	{
       Object[] params = new Object[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
@@ -46,21 +47,21 @@ public class ProcessorFactory
          Annotation[] annotations = method.getParameterAnnotations()[i];
          Type genericType = method.getGenericParameterTypes()[i];
          AccessibleObject target = method;
-         params[i] = ProcessorFactory.createProcessor(declaringClass, providerFactory, type, annotations, genericType, target, defaultConsumes, false);
+         params[i] = ProcessorFactory.createProcessor(declaringClass, configuration, type, annotations, genericType, target, defaultConsumes, false);
       }
       return params;
    }
 
 	   public static Object createProcessor(Class<?> declaring,
-                                               ResteasyProviderFactory providerFactory, Class<?> type,
+                                               ClientConfiguration configuration, Class<?> type,
                                                Annotation[] annotations, Type genericType, AccessibleObject target,
                                                boolean ignoreBody)
 	   {
-		   return createProcessor(declaring, providerFactory, type, annotations, genericType, target, null, ignoreBody);
+		   return createProcessor(declaring, configuration, type, annotations, genericType, target, null, ignoreBody);
 	   }
 	   
 	   public static Object createProcessor(Class<?> declaring,
-                                               ResteasyProviderFactory providerFactory, Class<?> type,
+                                               ClientConfiguration configuration, Class<?> type,
                                                Annotation[] annotations, Type genericType, AccessibleObject target, MediaType defaultConsumes,
                                                boolean ignoreBody)
    {
@@ -109,7 +110,7 @@ public class ProcessorFactory
       else if ((/* form = */FindAnnotation.findAnnotation(annotations,
               Form.class)) != null)
       {
-         processor = new FormProcessor(type, providerFactory);
+         processor = new FormProcessor(type, configuration);
       }
       else if ((FindAnnotation.findAnnotation(annotations,
               Context.class)) != null)

@@ -98,7 +98,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       UriBuilder copy = uriBuilder.clone();
       HashMap<String, String> paramMap = new HashMap<String, String>();
       paramMap.putAll(pathParams);
-      paramMap.put(name, client.providerFactory().toString(value));
+      paramMap.put(name, configuration.toString(value));
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
       target.pathParams = paramMap;
       return target;
@@ -112,7 +112,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       HashMap<String, String> paramMap = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : parameters.entrySet())
       {
-         paramMap.put(entry.getKey(), client.providerFactory().toString(entry.getValue()));
+         paramMap.put(entry.getKey(), configuration.toString(entry.getValue()));
       }
       target.pathParams = paramMap;
       return target;
@@ -131,7 +131,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       String[] stringValues = new String[values.length];
       for (int i = 0; i < stringValues.length; i++)
       {
-         stringValues[i] = client.providerFactory().toString(values[i]);
+         stringValues[i] = configuration.toString(values[i]);
       }
       return stringValues;
    }

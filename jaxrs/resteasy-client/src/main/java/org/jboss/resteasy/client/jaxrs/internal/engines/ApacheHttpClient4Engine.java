@@ -165,7 +165,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       response.setProperties(request.getMutableProperties());
       response.setStatus(res.getStatusLine().getStatusCode());
       response.setHeaders(extractHeaders(res));
-      response.setProviderFactory(request.getProviderFactory());
+      response.setConfiguration(request.getConfiguration());
       return response;
    }
 

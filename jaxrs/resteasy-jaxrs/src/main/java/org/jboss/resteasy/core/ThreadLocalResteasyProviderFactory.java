@@ -29,6 +29,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Allow applications to push/pop provider factories onto the stack
@@ -53,6 +54,26 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       ResteasyProviderFactory factory = delegate.get();
       if (factory == null) return defaultFactory;
       return factory;
+   }
+
+
+
+   @Override
+   public Set<Class<?>> getProviderClasses()
+   {
+      return getDelegate().getProviderClasses();
+   }
+
+   @Override
+   public Set<Object> getProviderInstances()
+   {
+      return getDelegate().getProviderInstances();
+   }
+
+   @Override
+   public ResteasyProviderFactory getParent()
+   {
+      return getDelegate().getParent();
    }
 
    @Override
@@ -286,6 +307,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)
    {
       return getDelegate().getContextResolver(contextType, mediaType);
+   }
+
+   @Override
+   public <T> T createProviderInstance(Class<? extends T> clazz)
+   {
+      return getDelegate().createProviderInstance(clazz);
    }
 
    @Override
