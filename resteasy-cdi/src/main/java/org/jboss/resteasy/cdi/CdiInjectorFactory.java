@@ -35,9 +35,9 @@ public class CdiInjectorFactory implements InjectorFactory
    private ResteasyCdiExtension extension;
    private Map<Class<?>, Type> sessionBeanInterface;
 
-   public CdiInjectorFactory()
+   public CdiInjectorFactory(InjectorFactory injectorFactory)
    {
-      this.delegate = ResteasyProviderFactory.getInstance().getInjectorFactory();
+      this.delegate = injectorFactory;
       this.manager = lookupBeanManager();
       this.extension = lookupResteasyCdiExtension();
       sessionBeanInterface = extension.getSessionBeanInterface();
