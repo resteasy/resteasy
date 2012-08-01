@@ -132,14 +132,25 @@ public class ResteasyDeployment
          if (injectorFactoryClass != null)
          {
             InjectorFactory injectorFactory;
+            Class<?> clazz;
             try
             {
-               Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
-               injectorFactory = (InjectorFactory) clazz.newInstance();
+               clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
             }
             catch (ClassNotFoundException cnfe)
             {
                throw new RuntimeException("Unable to find InjectorFactory implementation.", cnfe);
+            }
+
+            try
+            {
+                Constructor<?> constructor = clazz.getConstructor(InjectorFactory.class);
+                injectorFactory = createInjectorFactory(constructor);
+            }
+            catch (NoSuchMethodException e)
+            {
+                // Fallback to use plain constructor without InjectorFactory argument
+                injectorFactory = createInjectorFactory(clazz);
             }
             catch (Exception e)
             {
@@ -251,6 +262,30 @@ public class ResteasyDeployment
       finally
       {
          ResteasyProviderFactory.removeContextDataLevel();
+      }
+   }
+
+   private InjectorFactory createInjectorFactory(Constructor<?> constructor)
+   {
+      try
+      {
+          return (InjectorFactory) constructor.newInstance(providerFactory.getInjectorFactory());
+      }
+      catch (Exception e)
+      {
+          throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
+      }
+   }
+
+    private InjectorFactory createInjectorFactory(Class<?> clazz)
+   {
+       try
+       {
+           return (InjectorFactory) clazz.newInstance();
+       }
+       catch (Exception e)
+       {
+           throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
       }
    }
 
