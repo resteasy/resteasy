@@ -264,7 +264,8 @@ public class ClientInvocation implements Invocation
                filter.filter(requestContext);
                if (requestContext.getAbortedWithResponse() != null)
                {
-                  new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
+                  if (requestContext.getAbortedWithResponse() instanceof ClientResponse) return requestContext.getAbortedWithResponse();
+                  else return new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
                }
             }
             catch (IOException e)
