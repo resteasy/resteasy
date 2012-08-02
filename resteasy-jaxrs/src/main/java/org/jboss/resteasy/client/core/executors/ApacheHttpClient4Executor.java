@@ -23,13 +23,18 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
+import org.jboss.resteasy.client.exception.mapper.ApacheHttpClient4ExceptionMapper;
+import org.jboss.resteasy.spi.ClientExceptionMapper;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,21 +50,33 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    protected HttpContext httpContext;
    protected boolean closed;
 
+   static synchronized private void checkClientExceptionMapper()
+   {  
+      if (ResteasyProviderFactory.getInstance().getClientExceptionMapper(Exception.class) == null)
+      {
+         Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(ApacheHttpClient4ExceptionMapper.class, ClientExceptionMapper.class)[0];
+         ResteasyProviderFactory.getInstance().addClientExceptionMapper(new ApacheHttpClient4ExceptionMapper(), exceptionType);
+      }
+   }
+   
    public ApacheHttpClient4Executor()
    {
       this.httpClient = new DefaultHttpClient();
       this.createdHttpClient  = true;
+      checkClientExceptionMapper();
    }
 
    public ApacheHttpClient4Executor(HttpClient httpClient)
    {
       this.httpClient = httpClient;
+      checkClientExceptionMapper();
    }
 
    public ApacheHttpClient4Executor(HttpClient httpClient, HttpContext httpContext)
    {
       this.httpClient = httpClient;
       this.httpContext = httpContext;
+      checkClientExceptionMapper();
    }
    
    public HttpClient getHttpClient()

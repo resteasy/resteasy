@@ -151,6 +151,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected MediaTypeMap<SortedKey<MessageBodyReader>> messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
    protected MediaTypeMap<SortedKey<MessageBodyWriter>> messageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
    protected Map<Class<?>, ExceptionMapper> exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
+   protected Map<Class<?>, ClientExceptionMapper> clientExceptionMappers = new HashMap<Class<?>, ClientExceptionMapper>();
    protected Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
    protected Map<Class<?>, StringConverter> stringConverters = new HashMap<Class<?>, StringConverter>();
@@ -621,6 +622,36 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       exceptionMappers.put(exceptionClass, provider);
    }
 
+   public void addClientExceptionMapper(Class<? extends ClientExceptionMapper<?>> providerClass)
+   {
+      ClientExceptionMapper<?> provider = getProviderInstance(providerClass);
+      addClientExceptionMapper(provider, providerClass);
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider)
+   {
+      addClientExceptionMapper(provider, provider.getClass());
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Class<?> providerClass)
+   {
+      Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ClientExceptionMapper.class)[0];
+      addClientExceptionMapper(provider, exceptionType);
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Type exceptionType)
+   {
+      providers.put(provider.getClass(), provider);
+      injectProperties(provider);
+
+      Class<?> exceptionClass = Types.getRawType(exceptionType);
+      if (!Throwable.class.isAssignableFrom(exceptionClass))
+      {
+         throw new RuntimeException("Incorrect type parameter. ExceptionMapper requires a subclass of java.lang.Throwable as its type parameter.");
+      }
+      clientExceptionMappers.put(exceptionClass, provider);
+   }
+   
    /**
     * Add a {@link ClientErrorInterceptor} to this provider factory instance.
     * Duplicate handlers are ignored. (For Client Proxy API only)
@@ -828,6 +859,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
          }
       }
+      if (ClientExceptionMapper.class.isAssignableFrom(provider))
+      {
+         try
+         {
+            addClientExceptionMapper(provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate ClientExceptionMapper", e);
+         }
+      }
       if (ClientExecutionInterceptor.class.isAssignableFrom(provider))
       {
          clientExecutionInterceptorRegistry.register(provider);
@@ -945,6 +987,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
          }
       }
+      if (provider instanceof ClientExceptionMapper)
+      {
+         try
+         {
+            addClientExceptionMapper((ClientExceptionMapper) provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+         }
+      }
       if (provider instanceof ContextResolver)
       {
          try
@@ -1022,6 +1075,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
       return exceptionMappers.get(type);
+   }
+   
+   public <T extends Throwable> ClientExceptionMapper<T> getClientExceptionMapper(Class<T> type)
+   {
+      return clientExceptionMappers.get(type);
    }
 
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
