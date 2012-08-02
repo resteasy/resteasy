@@ -111,6 +111,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       ClientResponse response = new ClientResponse()
       {
          InputStream stream;
+         InputStream hc4Stream;
 
          @Override
          protected void setInputStream(InputStream is)
@@ -126,7 +127,8 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
                if (entity == null) return null;
                try
                {
-                  stream = new SelfExpandingBufferredInputStream(entity.getContent());
+                  hc4Stream = entity.getContent();
+                  stream = new SelfExpandingBufferredInputStream(hc4Stream);
                }
                catch (IOException e)
                {
@@ -155,6 +157,12 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
                   {
                      is.close();
                   }
+               }
+               if (hc4Stream != null)
+               {
+                  // just in case the input stream was entirely replaced and not wrapped, we need
+                  // to close the apache client input stream.
+                  hc4Stream.close();
                }
             }
             catch (Exception ignore)

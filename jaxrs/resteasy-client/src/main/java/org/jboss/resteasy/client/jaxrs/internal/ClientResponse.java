@@ -4,7 +4,6 @@ import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.spi.LinkHeaders;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -107,6 +106,18 @@ public abstract class ClientResponse extends Response
    }
 
    @Override
+   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   {
+      return readEntity(type, null, annotations);
+   }
+
+   @Override
+   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   {
+      return readEntity((Class<T>) entityType.getRawType(), entityType.getType(), annotations);
+   }
+
+   @Override
    public <T> T readEntity(Class<T> type)
    {
       return readEntity(type, null, null);
@@ -187,10 +198,16 @@ public abstract class ClientResponse extends Response
          if (status == HttpResponseCodes.SC_NO_CONTENT)
             return null;
 
-         entity = readFrom(type, genericType, getMediaType(), anns);
-         // only release connection if we actually unmarshalled something and if the object is *NOT* an InputStream
-         // If it is an input stream, the user may be doing their own stream processing.
-         if (entity != null && !InputStream.class.isInstance(entity)) close();
+         try
+         {
+            entity = readFrom(type, genericType, getMediaType(), anns);
+         }
+         finally
+         {
+            // only release connection if we actually unmarshalled something and if the object is *NOT* an InputStream
+            // If it is an input stream, the user may be doing their own stream processing.
+            if (entity != null && !InputStream.class.isInstance(entity)) close();
+         }
       }
       return (T2) entity;
    }
@@ -271,18 +288,6 @@ public abstract class ClientResponse extends Response
             throw new ReaderException(e);
          }
       }
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
-   {
-      return readEntity(type, null, annotations);
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
-   {
-      return readEntity((Class<T>) entityType.getRawType(), entityType.getType(), annotations);
    }
 
    @Override

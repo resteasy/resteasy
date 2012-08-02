@@ -160,9 +160,20 @@ public class ClientInvocationBuilder implements Invocation.Builder
       int status = response.getStatus();
       if (status == 200)
       {
-         return response.readEntity(responseType);
+         try
+         {
+            return response.readEntity(responseType);
+         }
+         finally
+         {
+            response.close();
+         }
       }
-      if (status >= 201 && status < 300) return null;
+      if (status >= 201 && status < 300)
+      {
+         response.close();
+         return null;
+      }
       if (status >= 300 && status < 400) throw new RedirectionException(response);
 
       switch (status)
