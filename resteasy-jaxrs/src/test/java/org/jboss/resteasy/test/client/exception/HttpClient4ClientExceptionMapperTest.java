@@ -53,6 +53,7 @@ import org.jboss.resteasy.client.exception.ResteasyConnectionClosedException;
 import org.jboss.resteasy.client.exception.ResteasyConnectionPoolTimeoutException;
 import org.jboss.resteasy.client.exception.ResteasyCookieRestrictionViolationException;
 import org.jboss.resteasy.client.exception.ResteasyHttpException;
+import org.jboss.resteasy.client.exception.ResteasyHttpHostConnectException;
 import org.jboss.resteasy.client.exception.ResteasyIOException;
 import org.jboss.resteasy.client.exception.ResteasyInvalidCredentialsException;
 import org.jboss.resteasy.client.exception.ResteasyMalformedChallengeException;
@@ -298,6 +299,12 @@ public class HttpClient4ClientExceptionMapperTest
       doTest(new ResteasyHttpException(), new HttpException());
    }
 
+   @Test
+   public void testHttpHostConnectException() throws Exception
+   {
+      doTest(new ResteasyHttpHostConnectException(), new HttpHostConnectException(null, null));
+   }
+   
    @Test
    public void testInvalidCredentialsException() throws Exception
    {

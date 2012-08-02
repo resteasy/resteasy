@@ -20,6 +20,7 @@ import org.apache.http.client.NonRepeatableRequestException;
 import org.apache.http.client.RedirectException;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.cookie.CookieRestrictionViolationException;
 import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.impl.auth.NTLMEngineException;
@@ -33,6 +34,7 @@ import org.jboss.resteasy.client.exception.ResteasyConnectionClosedException;
 import org.jboss.resteasy.client.exception.ResteasyConnectionPoolTimeoutException;
 import org.jboss.resteasy.client.exception.ResteasyCookieRestrictionViolationException;
 import org.jboss.resteasy.client.exception.ResteasyHttpException;
+import org.jboss.resteasy.client.exception.ResteasyHttpHostConnectException;
 import org.jboss.resteasy.client.exception.ResteasyIOException;
 import org.jboss.resteasy.client.exception.ResteasyInvalidCredentialsException;
 import org.jboss.resteasy.client.exception.ResteasyMalformedChallengeException;
@@ -89,6 +91,10 @@ public class ApacheHttpClient4ExceptionMapper implements ClientExceptionMapper<E
       if (ConnectTimeoutException.class.equals(e.getClass()))
       {
          return new ResteasyConnectTimeoutException(e);
+      }
+      if (HttpHostConnectException.class.equals(e.getClass()))
+      {
+         return new ResteasyHttpHostConnectException(e);
       }
       if (MalformedChunkCodingException.class.equals(e.getClass()))
       {
