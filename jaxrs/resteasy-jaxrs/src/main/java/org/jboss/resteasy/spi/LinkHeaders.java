@@ -36,7 +36,7 @@ public class LinkHeaders
       return this;
    }
 
-   public LinkHeaders addLinkObjects(MultivaluedMap<String, Object> headers, ResteasyProviderFactory factory)
+   public LinkHeaders addLinkObjects(MultivaluedMap<String, Object> headers, HeaderValueProcessor factory)
    {
       List<Object> values = headers.get("Link");
       if (values == null) return this;

@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -29,7 +30,7 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientConfiguration implements Configuration, Providers
+public class ClientConfiguration implements Configuration, Providers, HeaderValueProcessor
 {
    protected HashMap<String, Object> properties = new HashMap<String, Object>();
    protected ResteasyProviderFactory providerFactory;

@@ -108,7 +108,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
          throw new ClientException("Unable to invoke request", e);
       }
 
-      ClientResponse response = new ClientResponse()
+      ClientResponse response = new ClientResponse(request.getConfiguration())
       {
          InputStream stream;
          InputStream hc4Stream;

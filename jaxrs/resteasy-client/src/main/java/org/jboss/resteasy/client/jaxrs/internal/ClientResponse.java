@@ -1,6 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.LinkHeaders;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
@@ -12,6 +14,7 @@ import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -43,30 +46,28 @@ import static java.lang.String.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public abstract class ClientResponse extends Response
+public abstract class ClientResponse extends BuiltResponse
 {
-   protected int status;
    // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
-   protected MultivaluedMap<String, String> headers;
    protected Map<String, Object> properties;
-   protected Object entity;
    protected ClientConfiguration configuration;
    protected boolean isClosed;
    protected byte[] bufferedEntity;
 
+   protected ClientResponse(ClientConfiguration configuration)
+   {
+      setConfiguration(configuration);
+   }
+
    public void setHeaders(MultivaluedMap<String, String> headers)
    {
-      this.headers = headers;
+      this.metadata = new Headers<Object>();
+      this.metadata.putAll(headers);
    }
 
    public void setProperties(Map<String, Object> properties)
    {
       this.properties = properties;
-   }
-
-   public void setStatus(int status)
-   {
-      this.status = status;
    }
 
    public Map<String, Object> getProperties()
@@ -77,69 +78,13 @@ public abstract class ClientResponse extends Response
    public void setConfiguration(ClientConfiguration configuration)
    {
       this.configuration = configuration;
+      this.processor = configuration;
    }
-
-   @Override
-   public int getStatus()
-   {
-      return status;
-   }
-
-   @Override
-   public StatusType getStatusInfo()
-   {
-      return Status.fromStatusCode(status);
-   }
-
-   @Override
-   public MultivaluedMap<String, String> getStringHeaders()
-   {
-      return headers;
-   }
-
-
-   @Override
-   public Object getEntity()
-   {
-      if (entity != null) return entity;
-      return entity;
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
-   {
-      return readEntity(type, null, annotations);
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
-   {
-      return readEntity((Class<T>) entityType.getRawType(), entityType.getType(), annotations);
-   }
-
-   @Override
-   public <T> T readEntity(Class<T> type)
-   {
-      return readEntity(type, null, null);
-   }
-
-   @Override
-   public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException
-   {
-      return readEntity((Class<T>) entityType.getRawType(), entityType.getType(), null);
-   }
-
 
    @Override
    public boolean hasEntity()
    {
       return entity != null || getMediaType() != null;
-   }
-
-   @Override
-   public MultivaluedMap<String, Object> getMetadata()
-   {
-      return (MultivaluedMap) headers;
    }
 
    @Override
@@ -170,22 +115,23 @@ public abstract class ClientResponse extends Response
    protected abstract void releaseConnection();
 
 
-   @Override
-   public MediaType getMediaType()
+   public <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
    {
-      String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
-      if (mediaType == null) return null;
-      return MediaType.valueOf(mediaType);
-   }
-
-   public <T2> T2 readEntity(Class<T2> type, Type genericType, Annotation[] anns)
-   {
-      if (entity != null && !type.isInstance(this.entity))
+      if (entity != null)
       {
-         if (bufferedEntity == null)
+         if (type.isInstance((this.entity)))
+         {
+            return (T)entity;
+         }
+         else if (bufferedEntity == null)
          {
             throw new RuntimeException("The entity was already read, and it was of type "
                     + entity.getClass());
+         }
+         else if (entity instanceof InputStream)
+         {
+            setInputStream((InputStream)entity);
+            entity = null;
          }
          else
          {
@@ -201,18 +147,18 @@ public abstract class ClientResponse extends Response
          try
          {
             entity = readFrom(type, genericType, getMediaType(), anns);
-         }
-         finally
-         {
-            // only release connection if we actually unmarshalled something and if the object is *NOT* an InputStream
-            // If it is an input stream, the user may be doing their own stream processing.
             if (entity != null && !InputStream.class.isInstance(entity)) close();
          }
+         catch (RuntimeException e)
+         {
+            close();
+            throw e;
+         }
       }
-      return (T2) entity;
+      return (T) entity;
    }
 
-   protected <T2> Object readFrom(Class<T2> type, Type genericType,
+   protected <T> Object readFrom(Class<T> type, Type genericType,
                                   MediaType media, Annotation[] annotations)
    {
       Type useGeneric = genericType == null ? type : genericType;
@@ -250,7 +196,7 @@ public abstract class ClientResponse extends Response
          }
 
          // todo put in reader interception
-         final Object obj = reader1.readFrom(type, genericType, annotations, media, headers, is);
+         final Object obj = reader1.readFrom(type, genericType, annotations, media, getStringHeaders(), is);
 
          if (isMarshalledEntity)
          {
@@ -273,7 +219,7 @@ public abstract class ClientResponse extends Response
          }
          else
          {
-            return (T2) obj;
+            return (T) obj;
          }
 
       }
@@ -295,8 +241,7 @@ public abstract class ClientResponse extends Response
    {
       if (bufferedEntity != null) return true;
       if (entity != null) return false;
-      String mediaType = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
-      if (mediaType == null) return false;
+      if (metadata.getFirst(HttpHeaderNames.CONTENT_TYPE) == null) return false;
       try
       {
          bufferedEntity = ReadFromStream.readFromStream(1024, getInputStream());
@@ -308,139 +253,4 @@ public abstract class ClientResponse extends Response
       return true;
    }
 
-   @Override
-   public Locale getLanguage()
-   {
-      String lang = headers.getFirst("Language");
-      if (lang == null) return null;
-      return new LocaleDelegate().fromString(lang);
-   }
-
-   @Override
-   public int getLength()
-   {
-      String cl = headers.getFirst(HttpHeaders.CONTENT_LENGTH);
-      if (cl == null)
-      {
-         return -1;
-      }
-      else
-      {
-         return Integer.parseInt(cl);
-      }
-   }
-
-   @Override
-   public Map<String, NewCookie> getCookies()
-   {
-      Map<String, NewCookie> cookies = new HashMap<String, NewCookie>();
-      List<String> cooks = headers.get(HttpHeaders.SET_COOKIE);
-      if (cooks == null) return cookies;
-      for (String setCookie : cooks)
-      {
-         NewCookie cookie = NewCookie.valueOf(setCookie);
-         cookies.put(cookie.getName(), cookie);
-      }
-
-      return cookies;
-   }
-
-   @Override
-   public Date getDate()
-   {
-      String d = headers.getFirst(HttpHeaders.DATE);
-      if (d == null) return null;
-      return DateUtil.parseDate(d);
-   }
-
-   @Override
-   public EntityTag getEntityTag()
-   {
-      String tag = headers.getFirst(HttpHeaders.ETAG);
-      if (tag == null) return null;
-      return EntityTag.valueOf(tag);
-   }
-
-   @Override
-   public Date getLastModified()
-   {
-      String d = headers.getFirst(HttpHeaders.LAST_MODIFIED);
-      if (d == null) return null;
-      return DateUtil.parseDate(d);
-   }
-
-   @Override
-   public URI getLocation()
-   {
-      String uri = headers.getFirst(HttpHeaders.LOCATION);
-      if (uri == null) return null;
-      return URI.create(uri);
-   }
-
-   @Override
-   public Set<Link> getLinks()
-   {
-      LinkHeaders linkHeaders = getLinkHeaders();
-      Set<Link> links = new HashSet<Link>();
-      links.addAll(linkHeaders.getLinks());
-      return links;
-   }
-
-   protected LinkHeaders getLinkHeaders()
-   {
-      LinkHeaders linkHeaders = new LinkHeaders();
-      linkHeaders.addLinks(headers);
-      return linkHeaders;
-   }
-
-   @Override
-   public boolean hasLink(String relation)
-   {
-      return getLinkHeaders().getLinkByRelationship(relation) != null;
-   }
-
-   @Override
-   public Link getLink(String relation)
-   {
-      return getLinkHeaders().getLinkByRelationship(relation);
-   }
-
-   @Override
-   public Link.Builder getLinkBuilder(String relation)
-   {
-      Link link = getLinkHeaders().getLinkByRelationship(relation);
-      Link.Builder builder = new Link.Builder();
-      for (Map.Entry<String, List<String>> entry : link.getParams().entrySet())
-      {
-         for (String val : entry.getValue())
-         {
-            builder.param(entry.getKey(), val);
-         }
-      }
-      return builder;
-   }
-
-   @Override
-   public Set<String> getAllowedMethods()
-   {
-      Set<String> allowedMethods = new HashSet<String>();
-      List<String> allowed = headers.get("Allow");
-      if (allowed == null) return allowedMethods;
-      for (String header : allowed)
-      {
-         StringTokenizer tokenizer = new StringTokenizer(header, ",");
-         while (tokenizer.hasMoreTokens())
-         {
-            allowedMethods.add(tokenizer.nextToken());
-         }
-      }
-
-      return allowedMethods;
-   }
-
-   @Override
-   public String getHeaderString(String name)
-   {
-      return headers.getFirst(name);
-   }
 }

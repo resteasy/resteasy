@@ -81,7 +81,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class ResteasyProviderFactory extends RuntimeDelegate implements Providers
+public class ResteasyProviderFactory extends RuntimeDelegate implements Providers, HeaderValueProcessor
 {
    /**
     * Allow us to sort message body implementations that are more specific for their types
@@ -1003,12 +1003,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    }
 
-   /**
-    * Convert an object to a header string.  First try StringConverter, then HeaderDelegate, then object.toString()
-    *
-    * @param object
-    * @return
-    */
+   @Override
    public String toHeaderString(Object object)
    {
       if (object instanceof String) return (String)object;
