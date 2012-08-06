@@ -192,6 +192,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public ResteasyProviderFactory(ResteasyProviderFactory parent)
    {
       this.parent = parent;
+      providerClasses = new HashSet<Class<?>>();
+      providerInstances = new HashSet<Object>();
    }
 
    protected void initialize()

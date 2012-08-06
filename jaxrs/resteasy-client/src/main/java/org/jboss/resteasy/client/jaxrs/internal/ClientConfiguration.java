@@ -49,6 +49,7 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
       }
       this.providerFactory = new ResteasyProviderFactory(factory);
       injectorFactory = new InjectorFactoryImpl(this.providerFactory);
+      this.providerFactory.setInjectorFactory(injectorFactory);
    }
 
    public ClientConfiguration(ClientConfiguration parent)
