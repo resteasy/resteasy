@@ -9,6 +9,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +90,20 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget path(String path) throws NullPointerException
    {
       UriBuilder copy = uriBuilder.clone().path(path);
+      return new ClientWebTarget(client, copy, configuration);
+   }
+
+   @Override
+   public ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException
+   {
+      UriBuilder copy = uriBuilder.clone().path(resource);
+      return new ClientWebTarget(client, copy, configuration);
+   }
+
+   @Override
+   public ResteasyWebTarget path(Method method) throws IllegalArgumentException
+   {
+      UriBuilder copy = uriBuilder.clone().path(method);
       return new ClientWebTarget(client, copy, configuration);
    }
 

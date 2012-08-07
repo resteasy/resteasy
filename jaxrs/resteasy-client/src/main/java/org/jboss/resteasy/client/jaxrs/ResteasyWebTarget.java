@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedMap;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -36,4 +37,8 @@ public interface ResteasyWebTarget extends WebTarget
 
    @Override
    ResteasyWebTarget queryParams(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException;
+
+   ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException;
+
+   ResteasyWebTarget path(Method method) throws IllegalArgumentException;
 }

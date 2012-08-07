@@ -123,15 +123,15 @@ public abstract class ClientResponse extends BuiltResponse
          {
             return (T)entity;
          }
-         else if (bufferedEntity == null)
-         {
-            throw new RuntimeException("The entity was already read, and it was of type "
-                    + entity.getClass());
-         }
          else if (entity instanceof InputStream)
          {
             setInputStream((InputStream)entity);
             entity = null;
+         }
+         else if (bufferedEntity == null)
+         {
+            throw new RuntimeException("The entity was already read, and it was of type "
+                    + entity.getClass());
          }
          else
          {

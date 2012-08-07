@@ -42,12 +42,11 @@ public class ClientInvoker implements MethodInvoker
 
    public ClientInvoker(ResteasyWebTarget parent, Class declaring, Method method, ProxyConfig config)
    {
-      UriBuilder builder = parent.getUriBuilder();
+      this.webTarget = parent;
       if (method.isAnnotationPresent(Path.class))
       {
-         builder.path(method);
+         this.webTarget = this.webTarget.path(method);
       }
-      this.webTarget = parent.getResteasyClient().target(builder);
       this.declaring = declaring;
       this.method = method;
       this.processors = ProcessorFactory.createProcessors(declaring, method, (ClientConfiguration)this.webTarget.configuration(), config.getDefaultConsumes());

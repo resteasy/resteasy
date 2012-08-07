@@ -1062,6 +1062,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
          }
       }
+      if (ClientRequestFilter.class.isAssignableFrom(provider))
+      {
+         if (clientRequestFilters == null)
+         {
+            clientRequestFilters = parent.getClientRequestFilters().clone(this);
+         }
+         clientRequestFilters.registerClass(provider);
+      }
+      if (ClientResponseFilter.class.isAssignableFrom(provider))
+      {
+         if (clientResponseFilters == null)
+         {
+            clientResponseFilters = parent.getClientResponseFilters().clone(this);
+         }
+         clientResponseFilters.registerClass(provider);
+      }
       if (ClientExecutionInterceptor.class.isAssignableFrom(provider))
       {
          if (clientExecutionInterceptorRegistry == null)
@@ -1282,6 +1298,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             throw new RuntimeException("Unable to instantiate ContextResolver", e);
          }
+      }
+      if (provider instanceof ClientRequestFilter)
+      {
+         if (clientRequestFilters == null)
+         {
+            clientRequestFilters = parent.getClientRequestFilters().clone(this);
+         }
+         clientRequestFilters.registerSingleton((ClientRequestFilter)provider);
+      }
+      if (provider instanceof ClientResponseFilter)
+      {
+         if (clientResponseFilters == null)
+         {
+            clientResponseFilters = parent.getClientResponseFilters().clone(this);
+         }
+         clientResponseFilters.registerSingleton((ClientResponseFilter)provider);
       }
       if (provider instanceof ClientExecutionInterceptor)
       {
