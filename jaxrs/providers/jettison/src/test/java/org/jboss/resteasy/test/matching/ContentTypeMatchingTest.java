@@ -95,7 +95,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
    public static void setup()
    {
       addPerRequestResource(MapperResource.class);
-      deployment.getProviderFactory().addExceptionMapper(MyErrorExceptinMapper.class);
+      deployment.getProviderFactory().registerProvider(MyErrorExceptinMapper.class);
 
    }
 

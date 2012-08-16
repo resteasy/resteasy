@@ -67,9 +67,13 @@ public @interface Consumes {
 
     /**
      * A list of media types. Each entry may specify a single type or consist
-     * of a comma separated list of types. E.g. {"image/jpeg,image/gif",
-     * "image/png"}. Use of the comma-separated form allows definition of a
-     * common string constant for use on multiple targets.
+     * of a comma separated list of types, with any leading or trailing white-spaces
+     * in a single type entry being ignored. For example:
+     * <pre>
+     *  {"image/jpeg, image/gif ", " image/png"}
+     * </pre>
+     * Use of the comma-separated form allows definition of a common string constant
+     * for use on multiple targets.
      */
     String[] value() default "*/*";
 }

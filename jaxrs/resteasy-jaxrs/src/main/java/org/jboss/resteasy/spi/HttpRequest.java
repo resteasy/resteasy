@@ -58,7 +58,7 @@ public interface HttpRequest
    public Enumeration<String> getAttributeNames();
 
 
-   public ResteasyAsynchronousContext getExecutionContext();
+   public ResteasyAsynchronousContext getAsyncContext();
 
    public boolean isInitial();
 

@@ -23,6 +23,13 @@ public class ContainerRequestFilterRegistry extends JaxrsInterceptorRegistry<Con
       this.precedence = precedence;
    }
 
+   public ContainerRequestFilterRegistry clone(ResteasyProviderFactory factory)
+   {
+      ContainerRequestFilterRegistry clone = new ContainerRequestFilterRegistry(factory, precedence);
+      clone.interceptors.addAll(interceptors);
+      return clone;
+   }
+
    private static class ContainerRequestFilterFacade implements ContainerRequestFilter
    {
       protected final PreProcessInterceptor interceptor;

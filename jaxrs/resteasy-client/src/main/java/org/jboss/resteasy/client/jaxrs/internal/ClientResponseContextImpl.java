@@ -54,7 +54,8 @@ public class ClientResponseContextImpl implements ClientResponseContext
    @Override
    public MultivaluedMap<String, String> getHeaders()
    {
-      return response.getStringHeaders();
+      Object obj = response.getHeaders();
+      return (MultivaluedMap<String, String>)obj;
    }
 
    @Override

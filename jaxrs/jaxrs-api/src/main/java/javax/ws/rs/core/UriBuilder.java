@@ -39,10 +39,11 @@
  */
 package javax.ws.rs.core;
 
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
+
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * URI template-aware utility class for building URIs from their components. See
@@ -128,6 +129,9 @@ public abstract class UriBuilder {
      * @since 2.0
      */
     public static UriBuilder fromLink(Link link) throws IllegalArgumentException {
+        if (link == null) {
+            throw new IllegalArgumentException("The provider 'link' parameter value is 'null'.");
+        }
         return UriBuilder.fromUri(link.getUri());
     }
 
@@ -645,4 +649,12 @@ public abstract class UriBuilder {
      */
     public abstract URI buildFromEncoded(Object... values)
             throws IllegalArgumentException, UriBuilderException;
+
+    /**
+     * Get the URI template string represented by this URI builder.
+     *
+     * @return the URI template string for this URI builder.
+     * @since 2.0
+     */
+    public abstract String toTemplate();
 }

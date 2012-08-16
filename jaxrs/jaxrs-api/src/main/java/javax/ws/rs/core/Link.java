@@ -39,24 +39,28 @@
  */
 package javax.ws.rs.core;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
-import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.namespace.QName;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.namespace.QName;
 
 /**
  * <p>Class representing hypermedia links. A hypermedia link may include additional
@@ -65,7 +69,7 @@ import java.util.Map.Entry;
  * {@link javax.ws.rs.client.Invocation} in order to follow links.</p>
  *
  * <p>The methods {@link #toString} and {@link #valueOf} can be used to serialize
- * and deserialize a link into a link header (RFC 5988).</p>
+ * and de-serialize a link into a link header (RFC 5988).</p>
  *
  * @author Marek Potociar
  * @author Santiago Pericas-Geertsen
@@ -80,14 +84,17 @@ public final class Link {
     public static final String TITLE = "title";
     public static final String REL = "rel";
     public static final String TYPE = "type";
+
     /**
      * The underlying link URI.
      */
     private URI uri;
+
     /**
      * A map for all the link parameters such as "rel", "type", "method", etc.
      */
-    private MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
+    private MultivaluedHashMap<String, String> map = new MultivaluedHashMap<String, String>();
+
     /**
      * Underlying implementation delegate to serialize as link header.
      */
@@ -97,7 +104,7 @@ public final class Link {
     /**
      * Returns the underlying URI associated with this link.
      *
-     * @return underlying URI
+     * @return underlying URI.
      */
     public URI getUri() {
         return uri;
@@ -107,7 +114,7 @@ public final class Link {
      * Convenience method that returns a {@link javax.ws.rs.core.UriBuilder}
      * initialized with this link's underlying URI.
      *
-     * @return UriBuilder initialized using underlying URI
+     * @return UriBuilder initialized using underlying URI.
      */
     public UriBuilder getUriBuilder() {
         return UriBuilder.fromUri(uri);
@@ -118,7 +125,7 @@ public final class Link {
      * on this link via the "rel" parameter. If no relation types are
      * defined, this method returns an empty list.
      *
-     * @return list of relation types
+     * @return list of relation types.
      */
     public List<String> getRel() {
         List<String> l = map.get(REL);
@@ -127,9 +134,9 @@ public final class Link {
 
     /**
      * Returns the value associated with the link "title" param, or
-     * null if this param is not specified.
+     * {@code null} if this param is not specified.
      *
-     * @return value of "title" parameter or null
+     * @return value of "title" parameter or {@code null}.
      */
     public String getTitle() {
         return map.getFirst(TITLE);
@@ -137,9 +144,9 @@ public final class Link {
 
     /**
      * Returns the value associated with the link "type" param, or
-     * null if this param is not specified.
+     * {@code null} if this param is not specified.
      *
-     * @return value of "type" parameter or null
+     * @return value of "type" parameter or {@code null}.
      */
     public String getType() {
         return map.getFirst(TYPE);
@@ -147,9 +154,9 @@ public final class Link {
 
     /**
      * Returns the value associated with the link "method" param, or
-     * null if this param is not specified.
+     * {@code null} if this param is not specified.
      *
-     * @return value of "method" parameter or null
+     * @return value of "method" parameter or {@code null}.
      */
     public String getMethod() {
         return map.getFirst(METHOD);
@@ -160,7 +167,7 @@ public final class Link {
      * this link via the "produces" parameter. If no produces types are
      * defined, this method returns an empty list.
      *
-     * @return list of produces types
+     * @return list of produces types.
      */
     public List<String> getProduces() {
         List<String> l = map.get(PRODUCES);
@@ -172,7 +179,7 @@ public final class Link {
      * this link via the "consumes" parameter. If no consumes types are
      * defined, this method returns an empty list.
      *
-     * @return list of consumes types
+     * @return list of consumes types.
      */
     public List<String> getConsumes() {
         List<String> l = map.get(CONSUMES);
@@ -184,7 +191,7 @@ public final class Link {
      * defined on this link. If defined, this map will include entries
      * for "rel", "title" and "type".
      *
-     * @return Immutable map of link parameters
+     * @return Immutable map of link parameters.
      */
     public MultivaluedMap<String, String> getParams() {
         return new MultivaluedHashMap<String, String>(map);
@@ -193,8 +200,8 @@ public final class Link {
     /**
      * Equality test for links.
      *
-     * @param other Object to compare against
-     * @return True if equal, false otherwise
+     * @param other Object to compare against.
+     * @return {@code true} if equal, {@code false} otherwise.
      */
     @Override
     public boolean equals(Object other) {
@@ -202,8 +209,8 @@ public final class Link {
             return true;
         }
         if (other instanceof Link) {
-            final Link olink = (Link) other;
-            return uri.equals(olink.uri) && map.equals(olink.map);
+            final Link otherLink = (Link) other;
+            return uri.equals(otherLink.uri) && map.equalsIgnoreValueOrder(otherLink.map);
         }
         return false;
     }
@@ -211,7 +218,7 @@ public final class Link {
     /**
      * Hash code computation for links.
      *
-     * @return Hash code for this link
+     * @return Hash code for this link.
      */
     @Override
     public int hashCode() {
@@ -228,7 +235,7 @@ public final class Link {
      *
      * <http://foo.bar/employee/john>; title="employee"; rel="manager friend"
      *
-     * @return string link header representation for this link
+     * @return string link header representation for this link.
      */
     @Override
     public String toString() {
@@ -237,15 +244,16 @@ public final class Link {
 
     /**
      * Simple parser to convert link header string representations into a link.
-     *
+     * <pre>
      * link ::= '<' uri '>' (';' link-param)*
      * link-param ::= name '=' quoted-string
+     * </pre>
      *
      * The resulting language is similar to that defined in RFC 5988.
      *
-     * @param value String representation
-     * @return newly parsed link
-     * @throws IllegalArgumentException if a syntax error is found
+     * @param value String representation.
+     * @return newly parsed link.
+     * @throws IllegalArgumentException if a syntax error is found.
      */
     public static Link valueOf(String value) throws IllegalArgumentException {
         return delegate.fromString(value);
@@ -255,8 +263,8 @@ public final class Link {
      * Create a new instance initialized from an existing URI.
      *
      * @param uri a URI that will be used to initialize the Builder.
-     * @return a new builder
-     * @throws IllegalArgumentException if uri is null
+     * @return a new builder.
+     * @throws IllegalArgumentException if uri is {@code null}.
      */
     public static Builder fromUri(URI uri) throws IllegalArgumentException {
         Builder b = new Builder();
@@ -268,8 +276,8 @@ public final class Link {
      * Create a new instance initialized from an existing URI.
      *
      * @param uri a URI that will be used to initialize the Builder.
-     * @return a new builder
-     * @throws IllegalArgumentException if uri is null
+     * @return a new builder.
+     * @throws IllegalArgumentException if uri is {@code null}.
      */
     public static Builder fromUri(String uri) throws IllegalArgumentException {
         Builder b = new Builder();
@@ -280,8 +288,8 @@ public final class Link {
     /**
      * Create a new instance initialized from another link.
      *
-     * @param link other link used for initialization
-     * @return a new builder
+     * @param link other link used for initialization.
+     * @return a new builder.
      * @since 2.0
      */
     public static Builder fromLink(Link link) {
@@ -295,10 +303,10 @@ public final class Link {
      * Generate a link by introspecting a resource method. This method is a shorthand
      * for {@code fromResourceMethod(resource, method, method)}.
      *
-     * @param resource resource class
-     * @param method   name of resource method
-     * @return link builder to further configure link
-     * @throws IllegalArgumentException if any argument is null or no method is found
+     * @param resource resource class.
+     * @param method   name of resource method.
+     * @return link builder to further configure link.
+     * @throws IllegalArgumentException if any argument is {@code null} or no method is found.
      * @see Link#fromResourceMethod(java.lang.Class, java.lang.String, java.lang.String)
      */
     public static Builder fromResourceMethod(Class<?> resource, String method)
@@ -315,11 +323,11 @@ public final class Link {
      * only when the HTTP method is POST or PUT. The value of "rel" must be specified
      * as an argument.
      *
-     * @param resource resource class
-     * @param method   name of resource method
-     * @param rel      value of "rel" parameter
-     * @return link builder to further configure link
-     * @throws IllegalArgumentException if any argument is null or no method is found
+     * @param resource resource class.
+     * @param method   name of resource method.
+     * @param rel      value of {@code "rel"} parameter.
+     * @return link builder to further configure link.
+     * @throws IllegalArgumentException if any argument is {@code null} or no method is found.
      */
     public static Builder fromResourceMethod(Class<?> resource, String method, String rel)
             throws IllegalArgumentException {
@@ -344,6 +352,10 @@ public final class Link {
                 }
                 if (httpMethod == null) {
                     throw new IllegalArgumentException("Unable to find HTTP method annotation in " + method);
+                }
+                Path path = m.getAnnotation(Path.class);
+                if (path != null) {
+                    lb.path(m);
                 }
                 Produces ps = m.getAnnotation(Produces.class);
                 if (ps == null) {
@@ -373,8 +385,6 @@ public final class Link {
     /**
      * Builder class for hypermedia links.
      *
-     * @author Marek Potociar
-     * @author Santiago Pericas-Geertsen (Santiago.PericasGeertsen at oracle.com)
      * @see Link
      * @since 2.0
      */
@@ -384,6 +394,7 @@ public final class Link {
          * Link being built by the builder.
          */
         private Link link = new Link();
+
         /**
          * Underlying builder for link's URI.
          */
@@ -393,8 +404,7 @@ public final class Link {
          * Set underlying URI template for the link being constructed.
          *
          * @param uri underlying URI for link
-         * @return the updated builder
-         * @since 2.0
+         * @return the updated builder.
          */
         public Builder uri(URI uri) {
             uriBuilder = UriBuilder.fromUri(uri);
@@ -405,10 +415,9 @@ public final class Link {
          * Set underlying string representing URI template for the link being
          * constructed.
          *
-         * @param uri underlying URI for link
-         * @return the updated builder
-         * @throws IllegalArgumentException if string representation of URI is invalid
-         * @since 2.0
+         * @param uri underlying URI for link.
+         * @return the updated builder.
+         * @throws IllegalArgumentException if string representation of URI is invalid.
          */
         public Builder uri(String uri) throws IllegalArgumentException {
             uriBuilder = UriBuilder.fromUri(uri);
@@ -417,13 +426,13 @@ public final class Link {
 
         /**
          * Convenience method to set a link relation. More than one rel value can
-         * be specified using this method.
+         * be specified by using one or more whitespace characters as delimiters.
          *
-         * @param name relation name
-         * @return the updated builder
+         * @param name relation name.
+         * @return the updated builder.
          */
         public Builder rel(String name) {
-            link.map.add(REL, name);
+            link.map.addAll(REL, toValueList(name));
             return this;
         }
 
@@ -431,8 +440,8 @@ public final class Link {
          * Convenience method to set a title on this link. If called more than once,
          * the previous value of title is overwritten.
          *
-         * @param title title parameter of this link
-         * @return the updated builder
+         * @param title title parameter of this link.
+         * @return the updated builder.
          */
         public Builder title(String title) {
             link.map.putSingle(TITLE, title);
@@ -441,14 +450,14 @@ public final class Link {
         }
 
         /**
-         * Convenience method to set a type on this link. More than one
-         * type value can be specified using this method.
+         * Convenience method to set a on this link. If called more than once,
+         * the previous value of title is overwritten.
          *
-         * @param type link type as string
-         * @return the updated builder
+         * @param type type parameter of this link.
+         * @return the updated builder.
          */
         public Builder type(String type) {
-            link.map.add(TYPE, type);
+            link.map.putSingle(TYPE, type);
             return this;
         }
 
@@ -456,8 +465,8 @@ public final class Link {
          * Convenience method to set a type on this link. If called more than once,
          * the previous value of method is overwritten.
          *
-         * @param method HTTP method name
-         * @return the updated builder
+         * @param method HTTP method name.
+         * @return the updated builder.
          */
         public Builder method(String method) {
             link.map.putSingle(METHOD, method);
@@ -466,44 +475,46 @@ public final class Link {
 
         /**
          * Convenience method to set a produces type on this link. More than one
-         * type value can be specified using this method.
+         * value can be specified by using one or more whitespace characters as
+         * delimiters.
          *
-         * @param type link type as string
-         * @return the updated builder
+         * @param type link type as string.
+         * @return the updated builder.
          */
         public Builder produces(String type) {
-            link.map.add(PRODUCES, type);
+            link.map.addAll(PRODUCES, toValueList(type));
             return this;
         }
 
         /**
-         * Convenience method to set a consumes type on this link. More than one
-         * type value can be specified using this method.
+         * Convenience method to set a produces type on this link. More than one
+         * value can be specified by using one or more whitespace characters as
+         * delimiters.
          *
-         * @param type link type as string
-         * @return the updated builder
+         * @param type link type as string.
+         * @return the updated builder.
          */
         public Builder consumes(String type) {
-            link.map.add(CONSUMES, type);
+            link.map.addAll(CONSUMES, toValueList(type));
             return this;
         }
 
         /**
          * Set an arbitrary parameter on this link. This method supports adding
-         * more than one parameter value for each parameter. It is recommended
-         * to use the more specific methods {@link #method} or {@link #title}
-         * when setting these single-valued parameters.
+         * more than one value for each parameter using one or more whitespace delimiters.
+         * It is recommended to use the more specific methods {@link #method} or
+         * {@link #title} when setting these single-valued parameters.
          *
-         * @param name  the name of the parameter
-         * @param value the value set for the parameter
-         * @return the updated builder
-         * @throws IllegalArgumentException if either the name or value are null
+         * @param name  the name of the parameter.
+         * @param value the value set for the parameter.
+         * @return the updated builder.
+         * @throws IllegalArgumentException if either the name or value are {@code null}.
          */
         public Builder param(String name, String value) throws IllegalArgumentException {
             if (name == null || value == null) {
                 throw new IllegalArgumentException("Link parameter name or value is null");
             }
-            link.map.add(name, value);
+            link.map.addAll(name, toValueList(value));
             return this;
         }
 
@@ -511,6 +522,10 @@ public final class Link {
          * Finish building this link and return the instance.
          *
          * @return newly built link.
+         * @throws IllegalArgumentException if there are any URI template parameters
+         *                                  without a supplied value.
+         * @throws UriBuilderException      if a URI cannot be constructed based on the
+         *                                  current state of the builder.
          */
         public Link build() {
             link.uri = uriBuilder.build();
@@ -520,13 +535,45 @@ public final class Link {
         /**
          * Finish building this link using the supplied values as URI parameters.
          *
-         * @param values parameters used to build underlying URI
-         * @return the updated builder
-         * @throws UriBuilderException maybe thrown when building underlying URI
+         * @param values parameters used to build underlying URI.
+         * @return the updated builder.
+         * @throws IllegalArgumentException if there are any URI template parameters
+         *                                  without a supplied value, or if a value is {@code null}.
+         * @throws UriBuilderException      if a URI cannot be constructed based on the
+         *                                  current state of the underlying URI builder.
          */
         public Link build(Object... values) throws UriBuilderException {
             link.uri = uriBuilder.build(values);
             return link;
+        }
+
+        /**
+         * Adds a path to the existing URI builder. For internal use only.
+         *
+         * @param method method from which to get path.
+         * @return the updated builder.
+         */
+        private Builder path(Method method) {
+            uriBuilder.path(method);
+            return this;
+        }
+
+        /**
+         * Split a string value using one or more whitespace chars as separators.
+         *
+         * @param value values representation as string.
+         * @return list of strings.
+         */
+        public static List<String> toValueList(String value) {
+            if (value == null) {
+                throw new IllegalArgumentException("Link parameter value is null");
+            }
+            final String[] vs = value.split("\\s+");
+            for (int i = 0; i < vs.length; i++) {
+                vs[i] = vs[i].trim();
+            }
+
+            return Arrays.asList(vs);
         }
     }
 
@@ -534,7 +581,6 @@ public final class Link {
      * Value type for {@link javax.ws.rs.core.Link} that can be marshalled and
      * unmarshalled by JAXB.
      *
-     * @author Santiago Pericas-Geertsen
      * @see javax.ws.rs.core.Link.JaxbAdapter
      * @since 2.0
      */
@@ -576,7 +622,6 @@ public final class Link {
      *
      * <p>All link parameters are treated as multi valued except for "title" and "method".</p>
      *
-     * @author Santiago Pericas-Geertsen
      * @see javax.ws.rs.core.Link.JaxbLink
      * @since 2.0
      */

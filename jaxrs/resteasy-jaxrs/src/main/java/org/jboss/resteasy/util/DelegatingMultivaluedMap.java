@@ -137,4 +137,9 @@ public class DelegatingMultivaluedMap<K, V> implements MultivaluedMap<K, V>
    {
       return delegate.hashCode();
    }
+
+   public boolean equalsIgnoreValueOrder(MultivaluedMap<K, V> otherMap)
+   {
+      return delegate.equalsIgnoreValueOrder(otherMap);
+   }
 }

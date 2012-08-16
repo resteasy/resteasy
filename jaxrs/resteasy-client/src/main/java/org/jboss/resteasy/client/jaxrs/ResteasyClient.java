@@ -22,24 +22,18 @@ import java.util.concurrent.Executors;
  */
 public class ResteasyClient implements Client
 {
-   protected volatile ResteasyProviderFactory providerFactory;
    protected volatile ClientHttpEngine httpEngine;
    protected volatile ExecutorService asyncInvocationExecutor;
-   protected ClientConfiguration configuration = new ClientConfiguration();
+   protected ClientConfiguration configuration;
 
-   public ResteasyProviderFactory providerFactory()
+   public ResteasyClient()
    {
-      ResteasyProviderFactory result = providerFactory;
-      if (result == null)
-      { // First check (no locking)
-         synchronized (this)
-         {
-            result = providerFactory;
-            if (result == null) // Second check (with locking)
-               providerFactory = result = ResteasyProviderFactory.getInstance();
-         }
-      }
-      return result;
+      configuration = new ClientConfiguration(ResteasyProviderFactory.getInstance());
+   }
+
+   public ResteasyClient(ResteasyProviderFactory providerFactory)
+   {
+      configuration = new ClientConfiguration(providerFactory);
    }
 
    public ClientHttpEngine httpEngine()

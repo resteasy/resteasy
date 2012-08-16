@@ -47,7 +47,7 @@ import java.util.List;
  * URI information. Relative URIs are relative to the base URI of the
  * application, see {@link #getBaseUri}.
  *
- * <p>All methods throw <code>java.lang.IllegalStateException</code>
+ * <p>All methods throw {@code java.lang.IllegalStateException}
  * if called outside the scope of a request (e.g. from a provider constructor).</p>
  *
  * @author Paul Sandoz
@@ -87,12 +87,11 @@ public interface UriInfo {
      * path needs to be parsed, particularly when matrix parameters may be
      * present in the path. All sequences of escaped octets in path segments
      * and matrix parameter values are decoded,
-     * equivalent to <code>getPathSegments(true)</code>.
+     * equivalent to {@code getPathSegments(true)}.
      *
      * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
      *         map of each path segment is also unmodifiable.
-     * @throws java.lang.IllegalStateException
-     *          if called outside the scope of a request
+     * @throws IllegalStateException if called outside the scope of a request
      * @see PathSegment
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
@@ -136,8 +135,7 @@ public interface UriInfo {
     /**
      * Get the absolute path of the request. This includes everything preceding
      * the path (host, port etc) but excludes query parameters.
-     * This is a shortcut for
-     * {@code uriInfo.getBaseUri().resolve(uriInfo.getPath()).}
+     * This is a shortcut for {@code uriInfo.getBaseUri().resolve(uriInfo.getPath(false))}.
      *
      * @return the absolute path of the request.
      * @throws java.lang.IllegalStateException

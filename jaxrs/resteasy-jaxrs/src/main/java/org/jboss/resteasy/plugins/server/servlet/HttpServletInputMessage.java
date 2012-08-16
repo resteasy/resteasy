@@ -215,7 +215,7 @@ public class HttpServletInputMessage implements HttpRequest
    }
 
    @Override
-   public ResteasyAsynchronousContext getExecutionContext()
+   public ResteasyAsynchronousContext getAsyncContext()
    {
       return executionContext;
    }

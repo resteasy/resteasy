@@ -99,9 +99,9 @@ public class ExceptionMapperInjectionTest extends BaseResourceTest
    @Before
    public void init() throws Exception
    {
-      getProviderFactory().addExceptionMapper(new MyExceptionMapper());
-      getProviderFactory().addExceptionMapper(new MyException2Mapper());
-      getProviderFactory().addExceptionMapper(NotFoundExceptionMapper.class);
+      getProviderFactory().registerProviderInstance(new MyExceptionMapper());
+      getProviderFactory().registerProviderInstance(new MyException2Mapper());
+      getProviderFactory().registerProvider(NotFoundExceptionMapper.class);
       addPerRequestResource(MyService.class);
    }
 

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -44,11 +45,11 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
    protected HashMap<Long, Method> getterHashes = new HashMap<Long, Method>();
    protected Class clazz;
 
-   public FormProcessor(Class clazz, ResteasyProviderFactory factory)
+   public FormProcessor(Class clazz, ClientConfiguration configuration)
    {
       this.clazz = clazz;
 
-      populateMap(clazz, factory);
+      populateMap(clazz, configuration);
    }
 
    public static long methodHash(Method method)
@@ -128,7 +129,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
       }
    }
 
-   protected void populateMap(Class clazz, ResteasyProviderFactory factory)
+   protected void populateMap(Class clazz, ClientConfiguration configuration)
    {
       for (Field field : clazz.getDeclaredFields())
       {
@@ -138,7 +139,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
          Type genericType = field.getGenericType();
 
          Object processor = ProcessorFactory.createProcessor(
-                 clazz, factory, type, annotations, genericType, field, true);
+                 clazz, configuration, type, annotations, genericType, field, true);
          if (processor != null)
          {
             if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
@@ -158,7 +159,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
          Type genericType = method.getGenericReturnType();
 
          Object processor = ProcessorFactory
-                 .createProcessor(clazz, factory, type, annotations,
+                 .createProcessor(clazz, configuration, type, annotations,
                          genericType, method, true);
          if (processor != null)
          {
@@ -184,7 +185,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
 
       }
       if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class))
-         populateMap(clazz.getSuperclass(), factory);
+         populateMap(clazz.getSuperclass(), configuration);
 
 
    }

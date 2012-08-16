@@ -6,4 +6,12 @@ package org.jboss.resteasy.spi;
  */
 public class NotImplementedYetException extends RuntimeException
 {
+   public NotImplementedYetException()
+   {
+   }
+
+   public NotImplementedYetException(String s)
+   {
+      super(s);
+   }
 }

@@ -38,7 +38,7 @@ public class FormParamProcessor extends AbstractInvocationCollectionProcessor
          form = new Form();
          target.getInvocation().setEntity(Entity.form(form));
       }
-      form.param(paramName, target.getInvocation().getClient().providerFactory().toString(object));
+      form.param(paramName, target.getInvocation().getConfiguration().toString(object));
       return target;
    }
 

@@ -5,6 +5,7 @@ import org.jboss.resteasy.util.LocaleHelper;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.ext.Provider;
@@ -18,6 +19,7 @@ import java.util.Map;
  * Modifies Accept and Accept-Language headers by looking at path file suffix i.e. .xml means Accept application/xml
  */
 @Provider
+@PreMatching
 public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
 {
    public Map<String, MediaType> mediaTypeMappings = new HashMap<String, MediaType>();

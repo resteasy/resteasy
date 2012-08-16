@@ -115,8 +115,8 @@ public class DelegatingHttpRequest implements HttpRequest
 
 
    @Override
-   public ResteasyAsynchronousContext getExecutionContext()
+   public ResteasyAsynchronousContext getAsyncContext()
    {
-      return delegate.getExecutionContext();
+      return delegate.getAsyncContext();
    }
 }

@@ -1,9 +1,30 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.core.InjectorFactoryImpl;
+import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.spi.HeaderValueProcessor;
+import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Configuration;
-import javax.ws.rs.client.Feature;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.WriterInterceptor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,82 +32,217 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ClientConfiguration implements Configuration
+public class ClientConfiguration implements Configuration, Providers, HeaderValueProcessor
 {
-   protected HashMap<String, Object> properties = new HashMap<String, Object>();
+   protected ResteasyProviderFactory providerFactory;
 
-   public ClientConfiguration()
+   // We have our own injectorFactory because InjectorFactory currently holds a providerFactory member and
+   // there is no SPI to change it.  I'm not sure it is wise to re-use the one provided anyways as its possible
+   // for a Client to be shared between multiple threads.
+   protected InjectorFactory injectorFactory;
+
+   public ClientConfiguration(ResteasyProviderFactory factory)
    {
+      if (factory instanceof ThreadLocalResteasyProviderFactory)
+      {
+         factory = ((ThreadLocalResteasyProviderFactory)factory).getDelegate();
+      }
+      this.providerFactory = new ResteasyProviderFactory(factory);
+      injectorFactory = new InjectorFactoryImpl(this.providerFactory);
+      this.providerFactory.setInjectorFactory(injectorFactory);
    }
 
    public ClientConfiguration(ClientConfiguration parent)
    {
-      properties.putAll(parent.properties);
+      this(parent.getProviderFactory());
+      setProperties(parent.getProperties());
+   }
+
+   protected ResteasyProviderFactory getProviderFactory()
+   {
+      return providerFactory;
    }
 
    public Map<String, Object> getMutableProperties()
    {
-      return properties;
+      return providerFactory.getMutableProperties();
    }
+
+   /**
+    * Convert an object to a header string.  First try StringConverter, then HeaderDelegate, then object.toString()
+    *
+    * @param object
+    * @return
+    */
+   public String toHeaderString(Object object)
+   {
+      return providerFactory.toHeaderString(object);
+   }
+
+   public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return providerFactory.getMessageBodyWriter(type, genericType, annotations, mediaType);
+   }
+
+   public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return providerFactory.getMessageBodyReader(type, genericType, annotations, mediaType);
+   }
+
+   public WriterInterceptor[] getWriterInterceptors(Class declaring, AccessibleObject target)
+   {
+      return providerFactory.getClientWriterInterceptorRegistry().postMatch(declaring, target);
+   }
+
+   public ClientRequestFilter[] getRequestFilters(Class declaring, AccessibleObject target)
+   {
+      return providerFactory.getClientRequestFilters().postMatch(declaring, target);
+   }
+
+   public ClientResponseFilter[] getResponseFilters(Class declaring, AccessibleObject target)
+   {
+      return providerFactory.getClientResponseFilters().postMatch(declaring, target);
+   }
+
+   public String toString(Object object)
+   {
+      return providerFactory.toString(object);
+   }
+
+
+
+
+   // interface implementation
+
+   // Providers
+
+   @Override
+   public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
+   {
+      return providerFactory.getExceptionMapper(type);
+   }
+
+   @Override
+   public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)
+   {
+      return providerFactory.getContextResolver(contextType, mediaType);
+   }
+
+   // Configuration
 
    @Override
    public Map<String, Object> getProperties()
    {
-      return Collections.unmodifiableMap(properties);
+      return providerFactory.getProperties();
    }
 
    @Override
    public Object getProperty(String name)
    {
-      return properties.get(name);
+      return providerFactory.getProperty(name);
    }
 
    @Override
-   public Set<Feature> getFeatures()
+   public Collection<Feature> getFeatures()
    {
-      return null;
+      return providerFactory.getFeatures();
    }
 
    @Override
    public Set<Class<?>> getProviderClasses()
    {
-      return null;
+      return providerFactory.getProviderClasses();
    }
 
    @Override
    public Set<Object> getProviderInstances()
    {
-      return null;
+      return providerFactory.getProviderInstances();
    }
 
    @Override
-   public Configuration update(Configuration configuration)
+   public Configuration updateFrom(Configurable configuration)
    {
-      return null;
+      providerFactory = new ResteasyProviderFactory();
+      setProperties(configuration.getProperties());
+      for (Class c : configuration.getProviderClasses())
+      {
+         register(c);
+      }
+      for (Object obj : configuration.getProviderInstances())
+      {
+         register(obj);
+      }
+      return this;
    }
 
    @Override
    public Configuration register(Class<?> providerClass)
    {
-      return null;
+      providerFactory.register(providerClass);
+      return this;
    }
 
    @Override
    public Configuration register(Object provider)
    {
-      return null;
+      providerFactory.register(provider);
+      return this;
+   }
+
+   @Override
+   public Configuration register(Class<?> providerClass, int bindingPriority)
+   {
+      providerFactory.register(providerClass, bindingPriority);
+      return this;
+   }
+
+   @Override
+   public <T> Configuration register(Class<T> providerClass, Class<? super T>... contracts)
+   {
+      providerFactory.register(providerClass, contracts);
+      return this;
+   }
+
+   @Override
+   public <T> Configuration register(Class<T> providerClass, int bindingPriority, Class<? super T>... contracts)
+   {
+      providerFactory.register(providerClass, bindingPriority, contracts);
+      return this;
+   }
+
+   @Override
+   public Configuration register(Object provider, int bindingPriority)
+   {
+      providerFactory.register(provider, bindingPriority);
+      return this;
+   }
+
+   @Override
+   public <T> Configuration register(Object provider, Class<? super T>... contracts)
+   {
+      providerFactory.register(provider, contracts);
+      return this;
+   }
+
+   @Override
+   public <T> Configuration register(Object provider, int bindingPriority, Class<? super T>... contracts)
+   {
+      providerFactory.register(provider, bindingPriority, contracts);
+      return this;
    }
 
    @Override
    public Configuration setProperties(Map<String, ? extends Object> properties)
    {
-      return null;
+      providerFactory.setProperties(properties);
+      return this;
    }
 
    @Override
    public Configuration setProperty(String name, Object value)
    {
-      properties.put(name, value);
+      providerFactory.setProperty(name, value);
       return this;
    }
 }

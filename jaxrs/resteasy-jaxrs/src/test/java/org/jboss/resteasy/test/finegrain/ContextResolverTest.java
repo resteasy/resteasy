@@ -21,12 +21,12 @@ public class ContextResolverTest
    {
       ResteasyProviderFactory.setInstance(new ResteasyProviderFactory());
       ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-      factory.addContextResolver(Resolver1.class);
-      factory.addContextResolver(Resolver2.class);
-      factory.addContextResolver(Resolver3.class);
-      factory.addContextResolver(Resolver4.class);
-      factory.addContextResolver(Resolver5.class);
-      factory.addContextResolver(Resolver6.class);
+      factory.registerProvider(Resolver1.class);
+      factory.registerProvider(Resolver2.class);
+      factory.registerProvider(Resolver3.class);
+      factory.registerProvider(Resolver4.class);
+      factory.registerProvider(Resolver5.class);
+      factory.registerProvider(Resolver6.class);
    }
 
    @Provider

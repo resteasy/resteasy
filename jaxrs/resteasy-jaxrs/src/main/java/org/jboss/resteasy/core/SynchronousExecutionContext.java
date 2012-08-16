@@ -6,8 +6,10 @@ import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.UnhandledException;
 
-import javax.ws.rs.core.AsynchronousResponse;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -32,23 +34,23 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
    }
 
    @Override
-   public AsynchronousResponse suspend() throws IllegalStateException
+   public AsyncResponse suspend() throws IllegalStateException
    {
       return suspend(-1);
    }
 
    @Override
-   public AsynchronousResponse suspend(long millis) throws IllegalStateException
+   public AsyncResponse suspend(long millis) throws IllegalStateException
    {
       return suspend(millis, TimeUnit.MILLISECONDS);
    }
 
    @Override
-   public AsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
+   public AsyncResponse suspend(long time, TimeUnit unit) throws IllegalStateException
    {
       wasSuspended = true;
       asynchronousResponse = new SynchronousAsynchronousResponse(dispatcher, request, response);
-      asynchronousResponse.setSuspendTimeout(time, unit);
+      asynchronousResponse.setTimeout(time, unit);
       return asynchronousResponse;
    }
 
@@ -67,12 +69,12 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
    protected class SynchronousAsynchronousResponse extends AbstractAsynchronousResponse
    {
       protected boolean cancelled;
-      protected Object fallback;
 
       public SynchronousAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
       {
          super(dispatcher, request, response);
       }
+
 
 
       @Override
@@ -93,7 +95,6 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             }
          }
       }
-
 
 
       @Override
@@ -135,17 +136,24 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             {
                if (!done)
                {
-                  try
+                  if (timeoutHandler != null)
                   {
-                     sendResponseObject(fallback, 503);
+                     timeoutHandler.handleTimeout(this);
                   }
-                  catch (Exception e)
+                  if (!done)
                   {
-                     throw new UnhandledException(e);
-                  }
-                  finally
-                  {
-                     done = true;
+                     try
+                     {
+                        sendResponse(Response.status(503).build());
+                     }
+                     catch (Exception e)
+                     {
+                        throw new UnhandledException(e);
+                     }
+                     finally
+                     {
+                        done = true;
+                     }
                   }
                }
             }
@@ -153,7 +161,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       }
 
       @Override
-      public void setSuspendTimeout(long time, TimeUnit unit) throws IllegalStateException
+      public void setTimeout(long time, TimeUnit unit) throws IllegalStateException
       {
          timeout = time;
          timeoutUnit = unit;
@@ -167,8 +175,32 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             if (done || cancelled) return;
             done = true;
             cancelled = true;
-            sendResponseObject(fallback, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
          }
+         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+      }
+
+      @Override
+      public void cancel(int retryAfter)
+      {
+         synchronized (responseLock)
+         {
+            if (done || cancelled) return;
+            done = true;
+            cancelled = true;
+         }
+         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+      }
+
+      @Override
+      public void cancel(Date retryAfter)
+      {
+         synchronized (responseLock)
+         {
+            if (done || cancelled) return;
+            done = true;
+            cancelled = true;
+         }
+         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
       }
 
       @Override
@@ -189,19 +221,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
          return done;
       }
 
-      @Override
-      public void setFallbackResponse(Object response)
-      {
-         fallback = response;
-      }
-
-      @Override
-      public Response getFallbackResponse()
-      {
-         throw new NotImplementedYetException();
-      }
    }
-
 
 
 }

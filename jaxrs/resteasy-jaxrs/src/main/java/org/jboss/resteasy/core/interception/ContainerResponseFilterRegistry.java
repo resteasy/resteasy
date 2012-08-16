@@ -57,6 +57,14 @@ public class ContainerResponseFilterRegistry extends JaxrsInterceptorRegistry<Co
       }
    }
 
+   public ContainerResponseFilterRegistry clone(ResteasyProviderFactory factory)
+   {
+      ContainerResponseFilterRegistry clone = new ContainerResponseFilterRegistry(factory, precedence);
+      clone.interceptors.addAll(interceptors);
+      return clone;
+   }
+
+
 
    public void registerLegacy(Class<? extends PostProcessInterceptor> decl)
    {

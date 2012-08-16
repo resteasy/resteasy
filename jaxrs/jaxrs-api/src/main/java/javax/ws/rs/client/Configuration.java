@@ -39,15 +39,15 @@
  */
 package javax.ws.rs.client;
 
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
+
+import javax.ws.rs.core.Configurable;
 
 /**
  * Represents inheritable configuration of the main client-side JAX-RS components,
  * such as {@link Client}, {@link WebTarget}, {@link Invocation.Builder Invocation Builder}
  * or {@link Invocation}.
- * <p />
+ * <p>
  * Configuration is inherited from a parent component to a child component.
  * When creating new {@link WebTarget resource targets} using a {@link Client} instance,
  * the configuration of the {@code Client} instance is inherited by the child target
@@ -55,85 +55,46 @@ import java.util.Set;
  * {@code Invocation.Builder invocation builders} or derived resource targets
  * using a parent target instance, the configuration of the parent target is
  * inherited by the child instances being created.
- * <p/>
+ * <p>
+ * </p>
  * The inherited configuration on a child instance reflects the state of the parent
  * configuration at the time of the child instance creation. Once the child instance
  * is created its configuration is detached from the parent configuration. This means
  * that any subsequent changes in the parent configuration do not affect
  * the configuration of previously created child instances.
- * <p />
+ * <p>
+ * </p>
  * Once the child instance is created, it's configuration can be further customized
  * using the provided set of instance configuration mutator methods. A change
  * made in the configuration of a child instance does not affect the configuration
  * of its parent, for example:
  * <pre>
- *   Client client = ClientFactory.newClient();
- *   client.configuration().setProperty("FOO_PROPERTY", "FOO_VALUE");
+ * Client client = ClientFactory.newClient();
+ * client.configuration().setProperty("FOO_PROPERTY", "FOO_VALUE");
  *
- *   // inherits the configured "FOO_PROPERTY" from the client instance
- *   WebTarget resourceTarget = client.target("http://examples.jaxrs.com/");
+ * // inherits the configured "FOO_PROPERTY" from the client instance
+ * WebTarget resourceTarget = client.target("http://examples.jaxrs.com/");
  *
- *   // does not modify the client instance configuration
- *   resourceTarget.configuration().enable(new BarFeature());
+ * // does not modify the client instance configuration
+ * resourceTarget.configuration().register(new BarFeature());
  * </pre>
+ * </p>
+ * <p>
+ * For a discussion on registering providers or narrowing down the scope of the
+ * contracts registered for each provider, see {@link javax.ws.rs.core.Configurable
+ * configurable context documentation}.
+ * </p>
  *
  * @author Marek Potociar
  * @since 2.0
  */
-public interface Configuration {
+public interface Configuration extends Configurable {
 
-    /**
-     * Get the immutable bag of configuration properties.
-     *
-     * @return the immutable view of configuration properties.
-     * @see Configuration
-     */
-    Map<String, Object> getProperties();
+    @Override
+    public Configuration setProperties(Map<String, ?> properties);
 
-    /**
-     * Get the value for the property with a given name.
-     *
-     * @param name property name.
-     * @return the property value for the specified property name or {@code null}
-     *         if the property with such name is not configured.
-     * @see Configuration
-     */
-    Object getProperty(String name);
-
-    /**
-     * Get the immutable set of enabled features.
-     *
-     * @return the enabled feature set. The returned value shall never be {@code null}.
-     */
-    Collection<Feature> getFeatures();
-
-    /**
-     * Get the immutable set of registered provider classes to be instantiated,
-     * injected and utilized in the scope of the configured instance.
-     * <p />
-     * A provider class is a Java class with a {@link javax.ws.rs.ext.Provider}
-     * annotation declared on the class that implements a specific service
-     * interface.
-     *
-     * @return the immutable set of registered provider classes. The returned
-     *         value shall never be {@code null}.
-     * @see #getProviderInstances()
-     */
-    Set<Class<?>> getProviderClasses();
-
-    /**
-     * Get the immutable set of registered provider instances to be utilized by
-     * the configured instance.
-     * <p />
-     * When the configured instance is initialized the set of provider instances
-     * will be combined and take precedence over the instantiated registered provider
-     * classes.
-     *
-     * @return the immutable set of registered provider instances. The returned
-     *         value shall never be {@code null}.
-     * @see #getProviderClasses()
-     */
-    Set<Object> getProviderInstances();
+    @Override
+    public Configuration setProperty(String name, Object value);
 
     /**
      * Replace the existing configuration state with the configuration state of
@@ -142,87 +103,29 @@ public interface Configuration {
      * @param configuration configuration to be used to update the instance.
      * @return the updated configuration.
      */
-    Configuration update(Configuration configuration);
+    public Configuration updateFrom(Configurable configuration);
 
-    /**
-     * Register a {@link Feature feature} or a provider class to be instantiated
-     * and used in the scope of the configured instance.
-     * <p>
-     * As opposed to the providers registered by the
-     * {@link #register(java.lang.Object) provider instances}, providers
-     * registered using this method are instantiated and properly injected
-     * by the JAX-RS implementation provider. In case of a conflict between
-     * a registered provider instance and instantiated registered provider class,
-     * the registered provider instance takes precedence and the registered provider
-     * class will not be instantiated in such case.
-     * </p>
-     * <p>
-     * In case the registered provider is a client-side {@link Feature feature},
-     * this {@code Configuration} object instantiates the feature and invokes the
-     * {@link Feature#onEnable(javax.ws.rs.client.Configuration)} method and
-     * lets the feature update it's internal configuration state. If the invocation
-     * of {@link Feature#onEnable(javax.ws.rs.client.Configuration)} returns {@code true}
-     * the feature is added to the {@link #getFeatures() collection of enabled features},
-     * otherwise the feature instance is discarded.
-     * </p>
-     *
-     * @param providerClass provider class to be instantiated and used in the scope
-     *                      of the configured instance.
-     * @return the updated configuration.
-     * @see #getProviderClasses()
-     */
-    Configuration register(Class<?> providerClass);
+    @Override
+    public Configuration register(Class<?> providerClass);
 
-    /**
-     * Register a {@link Feature feature} or a provider ("singleton") instance to be used
-     * in the scope of the configured instance.
-     * <p>
-     * As opposed to the providers registered by the
-     * {@link #register(java.lang.Class) provider classes}, provider instances
-     * registered using this method are used "as is, i.e. are not managed or
-     * injected by the JAX-RS implementation provider. In case of a conflict
-     * between a registered provider instance and instantiated registered provider
-     * class, the registered provider instance takes precedence and the registered
-     * provider class will not be instantiated in such case.
-     * </p>
-     * <p>
-     * In case the registered provider is a client-side {@link Feature feature},
-     * this {@code Configuration} object invokes the
-     * {@link Feature#onEnable(javax.ws.rs.client.Configuration)} method and
-     * lets the feature update it's internal configuration state. If the invocation
-     * of {@link Feature#onEnable(javax.ws.rs.client.Configuration)} returns {@code true}
-     * the feature is added to the {@link #getFeatures() collection of enabled features},
-     * otherwise the feature instance is discarded.
-     * </p>
-     *
-     * @param provider a provider instance to be registered in the scope of the configured
-     *                 instance.
-     * @return the updated configuration.
-     * @see #getProviderInstances()
-     */
-    Configuration register(Object provider);
+    @Override
+    public Configuration register(Class<?> providerClass, int bindingPriority);
 
-    /**
-     * Set new configuration properties replacing all previously set properties.
-     *
-     * @param properties new set of configuration properties. The content of
-     *                   the map will replace any existing properties set on the configurable
-     *                   instance.
-     * @return the updated configuration.
-     * @see Configuration
-     */
-    Configuration setProperties(Map<String, ? extends Object> properties);
+    @Override
+    public <T> Configuration register(Class<T> providerClass, Class<? super T>... contracts);
 
-    /**
-     * Set the new configuration property, if already set, the existing value of
-     * the property will be updated. Setting a {@code null} value into a property
-     * effectively removes the property from the property bag.
-     *
-     * @param name  property name.
-     * @param value (new) property value. {@code null} value removes the property
-     *              with the given name.
-     * @return the updated configuration.
-     * @see Configuration
-     */
-    Configuration setProperty(String name, Object value);
+    @Override
+    public <T> Configuration register(Class<T> providerClass, int bindingPriority, Class<? super T>... contracts);
+
+    @Override
+    public Configuration register(Object provider);
+
+    @Override
+    public Configuration register(Object provider, int bindingPriority);
+
+    @Override
+    public <T> Configuration register(Object provider, Class<? super T>... contracts);
+
+    @Override
+    public <T> Configuration register(Object provider, int bindingPriority, Class<? super T>... contracts);
 }

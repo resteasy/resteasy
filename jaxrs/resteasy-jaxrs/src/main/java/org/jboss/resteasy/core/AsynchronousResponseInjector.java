@@ -3,9 +3,8 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 
-import javax.ws.rs.Suspend;
-import javax.ws.rs.core.AsynchronousResponse;
-import java.lang.reflect.AccessibleObject;
+import javax.ws.rs.container.Suspended;
+import javax.ws.rs.container.AsyncResponse;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,14 +16,8 @@ public class AsynchronousResponseInjector implements ValueInjector
    long timeout = -1;
    TimeUnit unit = null;
 
-   public AsynchronousResponseInjector(AccessibleObject target)
+   public AsynchronousResponseInjector(Suspended suspend)
    {
-      Suspend suspend = target.getAnnotation(Suspend.class);
-      if (suspend != null)
-      {
-         this.timeout = suspend.timeOut();
-         this.unit = suspend.timeUnit();
-      }
    }
 
    @Override
@@ -36,14 +29,14 @@ public class AsynchronousResponseInjector implements ValueInjector
    @Override
    public Object inject(HttpRequest request, HttpResponse response)
    {
-      AsynchronousResponse asynchronousResponse = null;
+      AsyncResponse asynchronousResponse = null;
       if (timeout == -1)
       {
-         asynchronousResponse = request.getExecutionContext().suspend();
+         asynchronousResponse = request.getAsyncContext().suspend();
       }
       else
       {
-         asynchronousResponse = request.getExecutionContext().suspend(timeout, unit);
+         asynchronousResponse = request.getAsyncContext().suspend(timeout, unit);
       }
       return asynchronousResponse;
    }

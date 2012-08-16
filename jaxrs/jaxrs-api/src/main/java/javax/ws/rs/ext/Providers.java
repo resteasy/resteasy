@@ -39,9 +39,10 @@
  */
 package javax.ws.rs.ext;
 
-import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import javax.ws.rs.core.MediaType;
 
 /**
  * An injectable interface providing runtime lookup of provider instances.
