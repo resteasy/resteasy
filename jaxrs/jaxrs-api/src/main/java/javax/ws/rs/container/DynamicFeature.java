@@ -39,15 +39,16 @@
  */
 package javax.ws.rs.container;
 
+import javax.ws.rs.core.Configurable;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
 
 /**
- * A dynamic ({@link PostMatching post-matching}) filter or interceptor binding
- * provider.
+ * A JAX-RS provider for dynamic registration of <i>post-matching</i> providers
+ * during a JAX-RS application setup at deployment time.
  *
- * Dynamic binding provider is used by JAX-RS runtime to provide a the filter or
- * interceptor that shall be applied to a particular resource class and method and
+ * Dynamic feature provider is used by JAX-RS runtime to register providers
+ * that shall be applied to a particular resource class and method and
  * overrides any annotation-based binding definitions defined on the returned
  * resource filter or interceptor instance.
  * <p>
@@ -63,15 +64,16 @@ import javax.ws.rs.ext.WriterInterceptor;
  * @see javax.ws.rs.NameBinding
  * @since 2.0
  */
-// TODO should the binding priority defined here or on the returned filter?
-// TODO should we allow BindingPriority to be set on the method (a class implementing more filter interfaces)?
-public interface DynamicBinder {
+public interface DynamicFeature {
 
     /**
-     * Get the filter or interceptor instances or classes that should be bound to the
-     * particular resource method. May return {@code null}.
+     * A callback method called by the JAX-RS runtime during the application
+     * deployment to register provider instances or classes in a
+     * {@link Configurable configurable} scope of a particular {@link javax.ws.rs.HttpMethod
+     * resource or sub-resource method}; i.e. the providers that should be dynamically bound
+     * to the method.
      * <p>
-     * The returned provider instances or classes is expected to be implementing one
+     * The registered provider instances or classes are expected to be implementing one
      * or more of the following interfaces:
      * </p>
      * <ul>
@@ -80,33 +82,27 @@ public interface DynamicBinder {
      * <li>{@link ReaderInterceptor}</li>
      * <li>{@link WriterInterceptor}</li>
      * </ul>
+     * <p>
      * A provider instance or class that does not implement any of the interfaces
-     * above is ignored and a {@link java.util.logging.Level#WARNING warning}
-     * message is logged.
-     * <p />
-     * <p>
-     * If any of the returned objects is a {@link Class Class&lt;P&gt;}, the JAX-RS
-     * runtime will resolve the class to an instance of type {@code P} by first looking
-     * at the already registered provider instances.
-     * If there is already a provider instance of the class registered, the JAX-RS
-     * runtime will use it, otherwise a new provider instance of the class will be
-     * instantiated, injected and registered by the JAX-RS runtime.
+     * above may be ignored by the JAX-RS implementation. In such case a
+     * {@link java.util.logging.Level#WARNING warning} message must be logged.
+     * JAX-RS implementations may support additional provider contracts that
+     * can be registered using a dynamic feature concept.
      * </p>
      * <p>
-     * In case resolving of a provider class returned in the result to an instance fails
-     * for any reason, the dynamically bound provider class is ignored and
-     * a {@link java.util.logging.Level#WARNING warning} message is logged.
-     * </p>
-     * <p>
-     * The method is called during a (sub)resource method discovery phase (typically
-     * once per each discovered (sub)resource method) to return provider instances
-     * or classes that should be bound to a particular (sub)resource method identified
-     * by the supplied {@link ResourceInfo resource information}.
+     * Conceptually, this callback method is called during a {@link javax.ws.rs.HttpMethod
+     * resource or sub-resource method} discovery phase (typically once per each discovered
+     * resource or sub-resource method) to register provider instances or classes in a
+     * {@code configurable} scope of each particular method identified by the supplied
+     * {@link ResourceInfo resource information}.
+     * The responsibility of the feature is to properly update the supplied {@code configurable}
+     * context.
      * </p>
      *
      * @param resourceInfo resource class and method information.
-     * @return filter or interceptor instances or classes that should be dynamically bound
-     *         to the (sub)resource method or {@code null} otherwise.
+     * @param configurable a resource or sub-resource method-level configurable context
+     *                     associated with the {@code resourceInfo} in which the feature
+     *                     should be enabled.
      */
-    public Iterable<?> getBoundProvider(ResourceInfo resourceInfo);
+    public void configure(ResourceInfo resourceInfo, Configurable configurable);
 }

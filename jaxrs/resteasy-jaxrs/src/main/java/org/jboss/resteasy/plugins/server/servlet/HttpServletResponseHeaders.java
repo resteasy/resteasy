@@ -182,4 +182,10 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
    {
       return cachedHeaders.hashCode();
    }
+
+   @Override
+   public boolean equalsIgnoreValueOrder(MultivaluedMap<String, Object> otherMap)
+   {
+      return cachedHeaders.equalsIgnoreValueOrder(otherMap);
+   }
 }

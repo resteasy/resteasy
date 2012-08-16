@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,34 +39,35 @@
  */
 package javax.ws.rs.core;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.ws.rs.WebApplicationException;
-
 /**
- * A type that may be used as a resource method return value or as the entity
- * in a {@link Response} when the application wishes to stream the output.
- * This is a lightweight alternative to a
- * {@link javax.ws.rs.ext.MessageBodyWriter}.
+ * A feature extension.
+ * <p>
+ * Typically encapsulates concepts that involve multiple providers
+ * (e.g. filters or interceptors) and/or configuration properties.
+ * </p>
  *
- * @author Paul Sandoz
- * @author Marc Hadley
- * @see javax.ws.rs.ext.MessageBodyWriter
- * @see javax.ws.rs.core.Response
- * @since 1.0
+ * @author Marek Potociar (marek.potociar at oracle.com)
+ * @since 2.0
  */
-public interface StreamingOutput {
+public interface Feature {
 
     /**
-     * Called to write the message body.
+     * A call-back method called when the feature is to be enabled in a given
+     * configurable scope.
      *
-     * @param output the OutputStream to write to.
-     * @throws java.io.IOException if an IO error is encountered
-     * @throws javax.ws.rs.WebApplicationException
-     *                             if a specific
-     *                             HTTP error response needs to be produced. Only effective if thrown prior
-     *                             to any bytes being written to output.
+     * The responsibility of the feature is to properly update the supplied configurable context
+     * and return {@code true} if the feature was successfully enabled or {@code false} otherwise.
+     * <p>
+     * Note that under some circumstances the feature may decide not to enable itself, which
+     * is indicated by returning {@code false}. In such case the configurable context does
+     * not internally register the feature in the {@link javax.ws.rs.core.Configurable#getFeatures()
+     * collection of enabled features} and the attempt to enable the feature is ignored.
+     * </p>
+     *
+     *
+     * @param configurable configurable context in which the feature should be enabled.
+     * @return {@code true} if the feature was successfully enabled, {@code false}
+     *         otherwise.
      */
-    void write(OutputStream output) throws IOException, WebApplicationException;
+    public boolean configure(Configurable configurable);
 }

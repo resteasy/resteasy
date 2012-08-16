@@ -15,6 +15,7 @@ import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
@@ -23,7 +24,6 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.ExecutionContext;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -512,7 +512,7 @@ public class SynchronousDispatcher implements Dispatcher
       contextDataMap.put(HttpHeaders.class, request.getHttpHeaders());
       contextDataMap.put(UriInfo.class, request.getUri());
       contextDataMap.put(Request.class, new RequestImpl(request));
-      contextDataMap.put(ExecutionContext.class, request.getExecutionContext());
+      contextDataMap.put(ResteasyAsynchronousContext.class, request.getAsyncContext());
 
       contextDataMap.putAll(defaultContextObjects);
    }
@@ -576,7 +576,7 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          jaxrsResponse = invoker.invoke(request, response);
-         if (request.getExecutionContext().isSuspended())
+         if (request.getAsyncContext().isSuspended())
          {
             /**
              * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
@@ -584,7 +584,7 @@ public class SynchronousDispatcher implements Dispatcher
              * asychronous HTTP.
              *
              */
-            request.getExecutionContext().getAsyncResponse().initialRequestThreadFinished();
+            request.getAsyncContext().getAsyncResponse().initialRequestThreadFinished();
             jaxrsResponse = null; // we're handing response asynchronously
          }
       }

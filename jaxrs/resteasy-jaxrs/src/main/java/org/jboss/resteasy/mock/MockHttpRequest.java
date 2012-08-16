@@ -14,6 +14,7 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -353,7 +354,7 @@ public class MockHttpRequest implements HttpRequest
    }
 
    @Override
-   public ResteasyAsynchronousContext getExecutionContext()
+   public ResteasyAsynchronousContext getAsyncContext()
    {
       if (asynchronousContext != null) return asynchronousContext;
       else return  new ResteasyAsynchronousContext()
@@ -371,19 +372,19 @@ public class MockHttpRequest implements HttpRequest
          }
 
          @Override
-         public javax.ws.rs.core.AsynchronousResponse suspend() throws IllegalStateException
+         public AsyncResponse suspend() throws IllegalStateException
          {
             return null;
          }
 
          @Override
-         public javax.ws.rs.core.AsynchronousResponse suspend(long millis) throws IllegalStateException
+         public AsyncResponse suspend(long millis) throws IllegalStateException
          {
             return null;
          }
 
          @Override
-         public javax.ws.rs.core.AsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
+         public AsyncResponse suspend(long time, TimeUnit unit) throws IllegalStateException
          {
             return null;
          }

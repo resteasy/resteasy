@@ -43,30 +43,41 @@ import java.io.IOException;
 
 /**
  * An extension interface implemented by container response filters.
- *
+ * <p>
  * By default, i.e. if no {@link javax.ws.rs.NameBinding name binding} is applied
- * to the filter implementation class, the {@code filter(...)} method is called
- * globally for all responses, i.e. even in case an actual resource matching
- * failed or has not been performed at all.
+ * to the filter implementation class, the filter instance is applied globally,
+ * however only for the responses for which the incoming request has been matched
+ * to a particular resource by JAX-RS runtime.
  * If there is a {@link javax.ws.rs.NameBinding &#64;NameBinding} annotation
- * applied to the filter, the filter will be executed only for responses
- * created for requests that were successfully matched to a resource method.
- * <p />
- * Implement a name-bound response filter in cases when you want limit the filter
- * functionality to a particular resource or resource method or if you depend on
- * a matched resource information in your filter processing. In other cases,
+ * applied to the filter, the filter will also be executed at the <i>post-match</i>
+ * response extension point, but only in case the matched {@link javax.ws.rs.HttpMethod
+ * resource or sub-resource method} is bound to the same name-binding annotation.
+ * </p>
+ * <p>
+ * In case the filter should be applied at the <i>pre-match</i> response extension point,
+ * i.e. globaly for any response, regardless of whether the originating request has been
+ * matched to a particular {@link javax.ws.rs.HttpMethod resource or sub-resource method}
+ * or not, the filter MUST be annotated with a {@link PreMatching &#64;PreMatching}
+ * annotation.
+ * </p>
+ * <p>
+ * Implement a name-bound or global response filter in cases when you want limit
+ * the filter functionality to a particular resource or resource method or if you
+ * depend on a matched resource information in your filter processing. In other cases,
  * when the filter should be applied globally to all responses, even in those
- * cases when a request has not been matched to a resource implement an unbound
+ * cases when a request has not been matched to a resource implement a pre-matching
  * response filter.
- * <p />
+ * </p>
+ * <p>
  * Filters implementing this interface must be annotated with
  * {@link javax.ws.rs.ext.Provider &#64;Provider} to be discovered by the JAX-RS
  * runtime. Container response filter instances may also be discovered and
- * bound {@link DynamicBinder dynamically} to particular resource methods.
+ * bound {@link DynamicFeature dynamically} to particular resource methods.
+ * </p>
  *
  * @author Marek Potociar
  * @author Santiago Pericas-Geertsen
- * @see javax.ws.rs.container.PostMatching
+ * @see PreMatching
  * @see javax.ws.rs.container.ContainerRequestFilter
  * @since 2.0
  */
@@ -76,22 +87,15 @@ public interface ContainerResponseFilter {
      * Filter method called after a response has been provided for a request
      * (either by a {@link ContainerRequestFilter request filter} or by a
      * matched resource method.
-     *
-     * By default, i.e. if no {@link javax.ws.rs.NameBinding name binding} is applied
-     * to the filter implementation class, the {@code filter(...)} method is called
-     * globally for all responses, i.e. even in case an actual resource matching
-     * failed or has not been performed at all.
-     * If there is a {@link javax.ws.rs.NameBinding &#64;NameBinding} annotation
-     * applied to the filter, the filter will be executed only for responses
-     * created for requests that were successfully matched to a resource method.
-     * <p />
+     * <p>
      * Filters in the filter chain are ordered according to their binding
      * priority (see {@link javax.ws.rs.BindingPriority}).
+     * </p>
      *
      * @param requestContext  request context.
      * @param responseContext response context.
      * @throws IOException if an I/O exception occurs.
-     * @see javax.ws.rs.container.PostMatching
+     * @see PreMatching
      */
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
             throws IOException;

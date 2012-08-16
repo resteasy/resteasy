@@ -39,8 +39,6 @@
  */
 package javax.ws.rs.ext;
 
-import javax.ws.rs.container.DynamicBinder;
-
 /**
  * Interface for message body reader interceptors that wrap around calls
  * to {@link javax.ws.rs.ext.MessageBodyReader#readFrom}.
@@ -48,7 +46,7 @@ import javax.ws.rs.container.DynamicBinder;
  * Message body interceptors implementing this interface must be annotated with
  * {@link javax.ws.rs.ext.Provider &#64;Provider} to be discovered by the JAX-RS
  * runtime. Message body interceptor instances may also be discovered and
- * bound {@link DynamicBinder dynamically} to particular resource methods.
+ * bound {@link javax.ws.rs.container.DynamicFeature dynamically} to particular resource methods.
  *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke

@@ -7,9 +7,7 @@ import org.jboss.resteasy.util.PickConstructor;
 
 import javax.ws.rs.BindingPriority;
 import javax.ws.rs.NameBinding;
-import javax.ws.rs.container.DynamicBinder;
-import javax.ws.rs.container.PostMatching;
-import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.container.PreMatching;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -69,50 +67,6 @@ public class JaxrsInterceptorRegistry<T>
       return BindingPriority.USER;
    }
 
-   public class DynamicBinderInterceptorFactory implements InterceptorFactory
-   {
-      protected final DynamicBinder binder;
-
-      public DynamicBinderInterceptorFactory(DynamicBinder binder)
-      {
-         this.binder = binder;
-      }
-
-      @Override
-      public Match preMatch()
-      {
-         return null;
-      }
-
-      @Override
-      public Match postMatch(Class declaring, AccessibleObject target)
-      {
-         if (declaring == null || target == null) return null;
-         if (!(target instanceof Method)) return null;
-         final Method resourceMethod = (Method) target;
-         final Class resourceClass = declaring;
-         Object interceptor = binder.getBoundProvider(new ResourceInfo()
-         {
-            @Override
-            public Method getResourceMethod()
-            {
-               return resourceMethod;
-            }
-
-            @Override
-            public Class<?> getResourceClass()
-            {
-               return resourceClass;
-            }
-         });
-         if (interceptor == null) return null;
-         Class<?> interceptorClass = interceptor.getClass();
-         if (!intf.isAssignableFrom(interceptorClass)) return null;
-         int order = getBindingPriority(interceptorClass);
-         return new Match(interceptor, order);
-      }
-   }
-
    public abstract class AbstractInterceptorFactory implements InterceptorFactory
    {
       protected final Class declaring;
@@ -148,20 +102,24 @@ public class JaxrsInterceptorRegistry<T>
          }
       }
 
+      public void setOrder(int order)
+      {
+         this.order = order;
+      }
 
       @Override
       public Match preMatch()
       {
-         if (declaring.isAnnotationPresent(PostMatching.class) || nameBound.size() > 0) return null;
-         return new Match(getInterceptor(), order);
+         if (declaring.isAnnotationPresent(PreMatching.class)) return new Match(getInterceptor(), order);
+         return null;
       }
 
       @Override
       public Match postMatch(Class targetClass, AccessibleObject target)
       {
+         if (declaring.isAnnotationPresent(PreMatching.class)) return null;
          if (targetClass != null && target != null)
          {
-            if (!declaring.isAnnotationPresent(PostMatching.class) && nameBound.size() == 0) return null;
             if (nameBound.size() > 0)
             {
                for (Class<? extends Annotation> annotation : nameBound)
@@ -429,14 +387,16 @@ public class JaxrsInterceptorRegistry<T>
       }
    }
 
-   public void registerBinder(DynamicBinder binder)
-   {
-      register(new DynamicBinderInterceptorFactory(binder));
-   }
-
    public void registerClass(Class<? extends T> declaring)
    {
       register(new OnDemandInterceptorFactory(declaring));
+   }
+
+   public void registerClass(Class<? extends T> declaring, int bindingPriority)
+   {
+      OnDemandInterceptorFactory factory = new OnDemandInterceptorFactory(declaring);
+      if (bindingPriority > Integer.MIN_VALUE) factory.setOrder(bindingPriority);
+      register(factory);
    }
 
    public void registerSingleton(T interceptor)
@@ -444,4 +404,10 @@ public class JaxrsInterceptorRegistry<T>
       register(new SingletonInterceptorFactory(interceptor.getClass(), interceptor));
    }
 
+   public void registerSingleton(T interceptor, int bindingPriority)
+   {
+      SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
+      if (bindingPriority > Integer.MIN_VALUE) factory.setOrder(bindingPriority);
+      register(factory);
+   }
 }

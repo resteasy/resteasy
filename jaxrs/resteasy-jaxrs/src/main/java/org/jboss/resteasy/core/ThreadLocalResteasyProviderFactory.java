@@ -18,6 +18,8 @@ import org.jboss.resteasy.util.ThreadLocalStack;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -28,7 +30,9 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -128,6 +132,90 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public void injectProperties(Object o)
    {
       getDelegate().injectProperties(o);
+   }
+
+   @Override
+   public Map<String, Object> getMutableProperties()
+   {
+      return getDelegate().getMutableProperties();
+   }
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      return getDelegate().getProperties();
+   }
+
+   @Override
+   public Object getProperty(String name)
+   {
+      return getDelegate().getProperty(name);
+   }
+
+   @Override
+   public Configurable setProperties(Map<String, ?> properties)
+   {
+      return getDelegate().setProperties(properties);
+   }
+
+   @Override
+   public Configurable setProperty(String name, Object value)
+   {
+      return getDelegate().setProperty(name, value);
+   }
+
+   @Override
+   public Collection<Feature> getFeatures()
+   {
+      return getDelegate().getFeatures();
+   }
+
+   @Override
+   public Configurable register(Class<?> providerClass)
+   {
+      return getDelegate().register(providerClass);
+   }
+
+   @Override
+   public Configurable register(Class<?> providerClass, int bindingPriority)
+   {
+      return getDelegate().register(providerClass, bindingPriority);
+   }
+
+   @Override
+   public <T> Configurable register(Class<T> providerClass, Class<? super T>... contracts)
+   {
+      return getDelegate().register(providerClass, contracts);
+   }
+
+   @Override
+   public <T> Configurable register(Class<T> providerClass, int bindingPriority, Class<? super T>... contracts)
+   {
+      return getDelegate().register(providerClass, bindingPriority, contracts);
+   }
+
+   @Override
+   public Configurable register(Object provider)
+   {
+      return getDelegate().register(provider);
+   }
+
+   @Override
+   public Configurable register(Object provider, int bindingPriority)
+   {
+      return getDelegate().register(provider, bindingPriority);
+   }
+
+   @Override
+   public <T> Configurable register(Object provider, Class<? super T>... contracts)
+   {
+      return getDelegate().register(provider, contracts);
+   }
+
+   @Override
+   public <T> Configurable register(Object provider, int bindingPriority, Class<? super T>... contracts)
+   {
+      return getDelegate().register(provider, bindingPriority, contracts);
    }
 
    @Override
@@ -285,6 +373,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public void registerProviderInstance(Object provider, int bindingPriority, Class<?>... contracts)
+   {
+      getDelegate().registerProviderInstance(provider, bindingPriority, contracts);
+   }
+
+   @Override
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
       return getDelegate().getExceptionMapper(type);
@@ -316,9 +410,27 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public <T> T injectedInstance(Class<? extends T> clazz)
+   {
+      return getDelegate().injectedInstance(clazz);
+   }
+
+   @Override
+   public void injectProperties(Class declaring, Object obj)
+   {
+      getDelegate().injectProperties(declaring, obj);
+   }
+
+   @Override
    public void registerProvider(Class provider, boolean isBuiltin)
    {
       getDelegate().registerProvider(provider, isBuiltin);
+   }
+
+   @Override
+   public void registerProvider(Class provider, boolean isBuiltin, int bindingPriority, Class<?>... contracts)
+   {
+      getDelegate().registerProvider(provider, isBuiltin, bindingPriority, contracts);
    }
 
    @Override
@@ -338,4 +450,7 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    {
       getDelegate().insertInterceptorPrecedenceBefore(before, newPrecedence);
    }
+
+
+
 }

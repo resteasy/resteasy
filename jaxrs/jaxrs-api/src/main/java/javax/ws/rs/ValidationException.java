@@ -39,9 +39,10 @@
  */
 package javax.ws.rs;
 
-import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
+
+import javax.ws.rs.core.Response;
 
 /**
  * Exception class used by JAX-RS implementations to report constraint

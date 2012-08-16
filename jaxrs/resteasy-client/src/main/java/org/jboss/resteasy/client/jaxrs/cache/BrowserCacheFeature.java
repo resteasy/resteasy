@@ -1,7 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.cache;
 
 import javax.ws.rs.client.Configuration;
-import javax.ws.rs.client.Feature;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Feature;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -22,7 +23,7 @@ public class BrowserCacheFeature implements Feature
    }
 
    @Override
-   public boolean onEnable(Configuration configuration)
+   public boolean configure(Configurable configuration)
    {
       if (cache == null) cache = new LightweightBrowserCache();
       configuration.setProperty(BrowserCache.class.getName(), cache);

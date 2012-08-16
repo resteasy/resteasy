@@ -9,7 +9,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Configuration;
-import javax.ws.rs.client.Feature;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -20,6 +21,7 @@ import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,9 +34,7 @@ import java.util.Set;
  */
 public class ClientConfiguration implements Configuration, Providers, HeaderValueProcessor
 {
-   protected HashMap<String, Object> properties = new HashMap<String, Object>();
    protected ResteasyProviderFactory providerFactory;
-   protected Set<Feature> features = new HashSet<Feature>();
 
    // We have our own injectorFactory because InjectorFactory currently holds a providerFactory member and
    // there is no SPI to change it.  I'm not sure it is wise to re-use the one provided anyways as its possible
@@ -55,7 +55,7 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
    public ClientConfiguration(ClientConfiguration parent)
    {
       this(parent.getProviderFactory());
-      properties.putAll(parent.properties);
+      setProperties(parent.getProperties());
    }
 
    protected ResteasyProviderFactory getProviderFactory()
@@ -65,7 +65,7 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
 
    public Map<String, Object> getMutableProperties()
    {
-      return properties;
+      return providerFactory.getMutableProperties();
    }
 
    /**
@@ -133,19 +133,19 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
    @Override
    public Map<String, Object> getProperties()
    {
-      return Collections.unmodifiableMap(properties);
+      return providerFactory.getProperties();
    }
 
    @Override
    public Object getProperty(String name)
    {
-      return properties.get(name);
+      return providerFactory.getProperty(name);
    }
 
    @Override
-   public Set<Feature> getFeatures()
+   public Collection<Feature> getFeatures()
    {
-      return Collections.unmodifiableSet(features);
+      return providerFactory.getFeatures();
    }
 
    @Override
@@ -161,7 +161,7 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
    }
 
    @Override
-   public Configuration update(Configuration configuration)
+   public Configuration updateFrom(Configurable configuration)
    {
       providerFactory = new ResteasyProviderFactory();
       setProperties(configuration.getProperties());
@@ -179,61 +179,70 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
    @Override
    public Configuration register(Class<?> providerClass)
    {
-      if (Feature.class.isAssignableFrom(providerClass))
-      {
-         Feature feature = providerFactory.createProviderInstance((Class<? extends Feature>)providerClass);
-         if (feature.onEnable(this))
-         {
-            features.add(feature);
-         }
-      }
-      else
-      {
-         providerFactory.registerProvider(providerClass);
-      }
+      providerFactory.register(providerClass);
       return this;
    }
 
    @Override
    public Configuration register(Object provider)
    {
-      if (provider instanceof Feature)
-      {
-         Feature feature = (Feature)provider;
-         if (feature.onEnable(this))
-         {
-            features.add(feature);
-         }
-      }
-      else
-      {
-         providerFactory.registerProviderInstance(provider);
-      }
+      providerFactory.register(provider);
+      return this;
+   }
+
+   @Override
+   public Configuration register(Class<?> providerClass, int bindingPriority)
+   {
+      providerFactory.register(providerClass, bindingPriority);
+      return this;
+   }
+
+   @Override
+   public <T> Configuration register(Class<T> providerClass, Class<? super T>... contracts)
+   {
+      providerFactory.register(providerClass, contracts);
+      return this;
+   }
+
+   @Override
+   public <T> Configuration register(Class<T> providerClass, int bindingPriority, Class<? super T>... contracts)
+   {
+      providerFactory.register(providerClass, bindingPriority, contracts);
+      return this;
+   }
+
+   @Override
+   public Configuration register(Object provider, int bindingPriority)
+   {
+      providerFactory.register(provider, bindingPriority);
+      return this;
+   }
+
+   @Override
+   public <T> Configuration register(Object provider, Class<? super T>... contracts)
+   {
+      providerFactory.register(provider, contracts);
+      return this;
+   }
+
+   @Override
+   public <T> Configuration register(Object provider, int bindingPriority, Class<? super T>... contracts)
+   {
+      providerFactory.register(provider, bindingPriority, contracts);
       return this;
    }
 
    @Override
    public Configuration setProperties(Map<String, ? extends Object> properties)
    {
-      if (properties == null)
-      {
-         this.properties = new HashMap<String, Object>();
-         return this;
-      }
-      this.properties = new HashMap<String, Object>();
-      this.properties.putAll(properties);
+      providerFactory.setProperties(properties);
       return this;
    }
 
    @Override
    public Configuration setProperty(String name, Object value)
    {
-      if (value == null)
-      {
-         properties.remove(name);
-         return this;
-      }
-      properties.put(name, value);
+      providerFactory.setProperty(name, value);
       return this;
    }
 }
