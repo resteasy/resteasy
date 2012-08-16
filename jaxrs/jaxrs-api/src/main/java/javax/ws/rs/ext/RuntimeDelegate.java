@@ -39,12 +39,13 @@
  */
 package javax.ws.rs.ext;
 
+import java.lang.reflect.ReflectPermission;
+import java.net.URL;
+
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
-import java.lang.reflect.ReflectPermission;
-import java.net.URL;
 
 /**
  * Implementations of JAX-RS provide a concrete subclass of RuntimeDelegate and
@@ -64,7 +65,7 @@ public abstract class RuntimeDelegate {
      * to be returned from {@link RuntimeDelegate#getInstance()}.
      */
     public static final String JAXRS_RUNTIME_DELEGATE_PROPERTY = "javax.ws.rs.ext.RuntimeDelegate";
-    private static final String JAXRS_DEFAULT_RUNTIME_DELEGATE = "com.sun.ws.rs.ext.RuntimeDelegateImpl";
+    private static final String JAXRS_DEFAULT_RUNTIME_DELEGATE = "org.glassfish.jersey.internal.RuntimeDelegateImpl";
     private static final Object RD_LOCK = new Object();
     private static ReflectPermission suppressAccessChecksPermission = new ReflectPermission("suppressAccessChecks");
     private static volatile RuntimeDelegate cachedDelegate;
@@ -83,7 +84,7 @@ public abstract class RuntimeDelegate {
      * <p>
      * The algorithm used to locate the RuntimeDelegate subclass to use consists
      * of the following steps:
-     * <p>
+     * </p>
      * <ul>
      * <li>
      * If a resource with the name of {@code META-INF/services/javax.ws.rs.ext.RuntimeDelegate}

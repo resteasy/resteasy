@@ -46,7 +46,7 @@ import java.lang.reflect.Method;
  * matched by the current request. Methods in this class MAY return
  * <code>null</code> if a resource class and method have not been matched,
  * e.g. in a standalone, pre-matching {@link ContainerRequestFilter} that was
- * not provided by a post-matching {@link PostMatching}.
+ * not provided by a post-matching {@link PreMatching}.
  *
  * @author Santiago Pericas-Geertsen
  * @since 2.0

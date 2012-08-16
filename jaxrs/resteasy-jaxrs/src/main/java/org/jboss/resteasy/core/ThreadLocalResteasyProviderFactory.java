@@ -18,6 +18,8 @@ import org.jboss.resteasy.util.ThreadLocalStack;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -28,7 +30,10 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Allow applications to push/pop provider factories onto the stack
@@ -55,6 +60,26 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       return factory;
    }
 
+
+
+   @Override
+   public Set<Class<?>> getProviderClasses()
+   {
+      return getDelegate().getProviderClasses();
+   }
+
+   @Override
+   public Set<Object> getProviderInstances()
+   {
+      return getDelegate().getProviderInstances();
+   }
+
+   @Override
+   public ResteasyProviderFactory getParent()
+   {
+      return getDelegate().getParent();
+   }
+
    @Override
    public String toString(Object object)
    {
@@ -77,78 +102,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public JaxrsInterceptorRegistry<ClientResponseFilter> getClientResponseFilters()
    {
       return getDelegate().getClientResponseFilters();
-   }
-
-   @Override
-   public void addExceptionMapper(ExceptionMapper provider, Class providerClass)
-   {
-      getDelegate().addExceptionMapper(provider, providerClass);
-   }
-
-   @Override
-   public void addStringConverter(StringConverter provider, Class providerClass)
-   {
-      getDelegate().addStringConverter(provider, providerClass);
-   }
-
-   @Override
-   public void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
-   {
-      getDelegate().addExceptionMapper(provider, exceptionType);
-   }
-
-   @Override
-   public void addMessageBodyReader(MessageBodyReader provider, Class providerClass, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyReader(provider, providerClass, isBuiltin);
-   }
-
-   @Override
-   public void addMessageBodyWriter(MessageBodyWriter provider, Class providerClass, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyWriter(provider, providerClass, isBuiltin);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
-   {
-      getDelegate().addContextResolver(provider, providerClass, builtin);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, Type typeParameter, Class providerClass, boolean builtin)
-   {
-      getDelegate().addContextResolver(provider, typeParameter, providerClass, builtin);
-   }
-
-   @Override
-   public void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
-   {
-      getDelegate().addContextResolver(resolver, builtin);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, boolean builtin)
-   {
-      getDelegate().addContextResolver(provider, builtin);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, Type typeParameter)
-   {
-      getDelegate().addContextResolver(provider, typeParameter);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider, Type typeParameter, boolean builtin)
-   {
-      getDelegate().addContextResolver(provider, typeParameter, builtin);
-   }
-
-   @Override
-   public void addStringConverter(StringConverter provider, Type typeParameter)
-   {
-      getDelegate().addStringConverter(provider, typeParameter);
    }
 
    @Override
@@ -179,6 +132,90 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public void injectProperties(Object o)
    {
       getDelegate().injectProperties(o);
+   }
+
+   @Override
+   public Map<String, Object> getMutableProperties()
+   {
+      return getDelegate().getMutableProperties();
+   }
+
+   @Override
+   public Map<String, Object> getProperties()
+   {
+      return getDelegate().getProperties();
+   }
+
+   @Override
+   public Object getProperty(String name)
+   {
+      return getDelegate().getProperty(name);
+   }
+
+   @Override
+   public Configurable setProperties(Map<String, ?> properties)
+   {
+      return getDelegate().setProperties(properties);
+   }
+
+   @Override
+   public Configurable setProperty(String name, Object value)
+   {
+      return getDelegate().setProperty(name, value);
+   }
+
+   @Override
+   public Collection<Feature> getFeatures()
+   {
+      return getDelegate().getFeatures();
+   }
+
+   @Override
+   public Configurable register(Class<?> providerClass)
+   {
+      return getDelegate().register(providerClass);
+   }
+
+   @Override
+   public Configurable register(Class<?> providerClass, int bindingPriority)
+   {
+      return getDelegate().register(providerClass, bindingPriority);
+   }
+
+   @Override
+   public <T> Configurable register(Class<T> providerClass, Class<? super T>... contracts)
+   {
+      return getDelegate().register(providerClass, contracts);
+   }
+
+   @Override
+   public <T> Configurable register(Class<T> providerClass, int bindingPriority, Class<? super T>... contracts)
+   {
+      return getDelegate().register(providerClass, bindingPriority, contracts);
+   }
+
+   @Override
+   public Configurable register(Object provider)
+   {
+      return getDelegate().register(provider);
+   }
+
+   @Override
+   public Configurable register(Object provider, int bindingPriority)
+   {
+      return getDelegate().register(provider, bindingPriority);
+   }
+
+   @Override
+   public <T> Configurable register(Object provider, Class<? super T>... contracts)
+   {
+      return getDelegate().register(provider, contracts);
+   }
+
+   @Override
+   public <T> Configurable register(Object provider, int bindingPriority, Class<? super T>... contracts)
+   {
+      return getDelegate().register(provider, bindingPriority, contracts);
    }
 
    @Override
@@ -215,18 +252,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public void setBuiltinsRegistered(boolean builtinsRegistered)
    {
       getDelegate().setBuiltinsRegistered(builtinsRegistered);
-   }
-
-   @Override
-   public void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyReader(provider, isBuiltin);
-   }
-
-   @Override
-   public void addMessageBodyWriter(MessageBodyWriter provider, boolean isBuiltin)
-   {
-      getDelegate().addMessageBodyWriter(provider, isBuiltin);
    }
 
    @Override
@@ -318,81 +343,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void addMessageBodyReader(Class<? extends MessageBodyReader> provider)
-   {
-      getDelegate().addMessageBodyReader(provider);
-   }
-
-   @Override
-   public void addMessageBodyReader(MessageBodyReader provider)
-   {
-      getDelegate().addMessageBodyReader(provider);
-   }
-
-   @Override
-   public void addBuiltInMessageBodyReader(MessageBodyReader provider)
-   {
-      getDelegate().addBuiltInMessageBodyReader(provider);
-   }
-
-   @Override
-   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider)
-   {
-      getDelegate().addMessageBodyWriter(provider);
-   }
-
-   @Override
-   public void addMessageBodyWriter(MessageBodyWriter provider)
-   {
-      getDelegate().addMessageBodyWriter(provider);
-   }
-
-   @Override
-   public void addBuiltInMessageBodyWriter(MessageBodyWriter provider)
-   {
-      getDelegate().addBuiltInMessageBodyWriter(provider);
-   }
-
-   @Override
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return getDelegate().getMessageBodyReader(type, genericType, annotations, mediaType);
-   }
-
-   @Override
-   public void addExceptionMapper(Class<? extends ExceptionMapper> provider)
-   {
-      getDelegate().addExceptionMapper(provider);
-   }
-
-   @Override
-   public void addExceptionMapper(ExceptionMapper provider)
-   {
-      getDelegate().addExceptionMapper(provider);
-   }
-
-   @Override
-   public void addContextResolver(Class<? extends ContextResolver> resolver)
-   {
-      getDelegate().addContextResolver(resolver);
-   }
-
-   @Override
-   public void addContextResolver(ContextResolver provider)
-   {
-      getDelegate().addContextResolver(provider);
-   }
-
-   @Override
-   public void addStringConverter(Class<? extends StringConverter> resolver)
-   {
-      getDelegate().addStringConverter(resolver);
-   }
-
-   @Override
-   public void addStringConverter(StringConverter provider)
-   {
-      getDelegate().addStringConverter(provider);
    }
 
    @Override
@@ -420,9 +373,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public <T> T getProvider(Class<T> providerClass)
+   public void registerProviderInstance(Object provider, int bindingPriority, Class<?>... contracts)
    {
-      return getDelegate().getProvider(providerClass);
+      getDelegate().registerProviderInstance(provider, bindingPriority, contracts);
    }
 
    @Override
@@ -451,21 +404,33 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
+   public <T> T createProviderInstance(Class<? extends T> clazz)
    {
-      getDelegate().addMessageBodyReader(provider, isBuiltin);
+      return getDelegate().createProviderInstance(clazz);
    }
 
    @Override
-   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
+   public <T> T injectedInstance(Class<? extends T> clazz)
    {
-      getDelegate().addMessageBodyWriter(provider, isBuiltin);
+      return getDelegate().injectedInstance(clazz);
+   }
+
+   @Override
+   public void injectProperties(Class declaring, Object obj)
+   {
+      getDelegate().injectProperties(declaring, obj);
    }
 
    @Override
    public void registerProvider(Class provider, boolean isBuiltin)
    {
       getDelegate().registerProvider(provider, isBuiltin);
+   }
+
+   @Override
+   public void registerProvider(Class provider, boolean isBuiltin, int bindingPriority, Class<?>... contracts)
+   {
+      getDelegate().registerProvider(provider, isBuiltin, bindingPriority, contracts);
    }
 
    @Override
@@ -485,4 +450,7 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    {
       getDelegate().insertInterceptorPrecedenceBefore(before, newPrecedence);
    }
+
+
+
 }

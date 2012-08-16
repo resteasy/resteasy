@@ -12,7 +12,10 @@
     <title>Migrating from 2.x to 3.0</title>
     <itemizedlist>
         <listitem>
-            Resteasy's proprietary interceptor, client, and async http APIs have been deprecated and may be removed as soon as Resteasy 3.1.
+            Most add() methods have been removed or made protected in ResteasyProviderFactory.  Use registerProvider() and registerProviderInstance() methods.
+        </listitem>
+        <listitem>
+            Resteasy's odl proprietary interceptor, client, and async http APIs have been deprecated and may be removed as soon as Resteasy 3.1.
             JAX-RS 2.0 has standardized these features.
         </listitem>
         <listitem>

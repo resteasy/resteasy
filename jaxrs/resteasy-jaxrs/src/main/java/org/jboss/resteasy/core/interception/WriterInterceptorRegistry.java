@@ -29,6 +29,13 @@ public class WriterInterceptorRegistry extends JaxrsInterceptorRegistry<WriterIn
       this.precedence = precedence;
    }
 
+   public WriterInterceptorRegistry clone(ResteasyProviderFactory factory)
+   {
+      WriterInterceptorRegistry clone = new WriterInterceptorRegistry(factory, precedence);
+      clone.interceptors.addAll(interceptors);
+      return clone;
+   }
+
    private static class MessageBodyWriterContextFacade implements MessageBodyWriterContext
    {
       protected final WriterInterceptorContext writerInterceptorContext;

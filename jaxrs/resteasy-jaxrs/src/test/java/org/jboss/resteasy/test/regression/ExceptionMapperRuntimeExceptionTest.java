@@ -57,8 +57,8 @@ public class ExceptionMapperRuntimeExceptionTest extends BaseResourceTest
    @Before
    public void init() throws Exception
    {
-      getProviderFactory().addExceptionMapper(new MyExceptionMapper());
-      getProviderFactory().addExceptionMapper(new RuntimeExceptionMapper());
+      getProviderFactory().registerProviderInstance(new MyExceptionMapper());
+      getProviderFactory().registerProviderInstance(new RuntimeExceptionMapper());
       addPerRequestResource(MyService.class);
    }
 

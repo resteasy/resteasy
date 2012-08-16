@@ -90,9 +90,10 @@ public class PemUtils
 
    private static String removeBeginEnd(String pem)
    {
-      pem = pem.replaceAll("-----BEGIN (.*)-----\n", "");
-      pem = pem.replaceAll("-----END (.*)----\n", "");
-      return pem;
+      pem = pem.replaceAll("-----BEGIN (.*)-----", "");
+      pem = pem.replaceAll("-----END (.*)----", "");
+      pem = pem.replaceAll("\r\n", "\n");
+      return pem.trim();
    }
 
 

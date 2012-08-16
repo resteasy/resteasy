@@ -4,6 +4,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HeaderHelper;
+import org.jboss.resteasy.util.MediaTypeHelper;
+import org.jboss.resteasy.util.WeightedLanguage;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
@@ -11,6 +13,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,18 +29,12 @@ import java.util.StringTokenizer;
 public class ClientRequestHeaders
 {
    protected CaseInsensitiveMap<Object> headers = new CaseInsensitiveMap<Object>();
-   protected ResteasyProviderFactory providerFactory;
+   protected ClientConfiguration configuration;
 
-   public ClientRequestHeaders(ResteasyProviderFactory providerFactory)
-   {
-      this.providerFactory = providerFactory;
-   }
 
-   public ClientRequestHeaders clone()
+   public ClientRequestHeaders(ClientConfiguration configuration)
    {
-      ClientRequestHeaders copy = new ClientRequestHeaders(providerFactory);
-      copy.headers.putAll(headers);
-      return copy;
+      this.configuration = configuration;
    }
 
    public CaseInsensitiveMap<Object> getHeaders()
@@ -194,7 +191,7 @@ public class ClientRequestHeaders
       {
          if (first) first = false;
          else builder.append(",");
-         builder.append(providerFactory.toHeaderString(val));
+         builder.append(configuration.toHeaderString(val));
       }
       return builder.toString();
    }
@@ -206,7 +203,7 @@ public class ClientRequestHeaders
       {
          for (Object obj : entry.getValue())
          {
-            map.add(entry.getKey(), providerFactory.toHeaderString(obj));
+            map.add(entry.getKey(), configuration.toHeaderString(obj));
          }
       }
       return map;
@@ -230,7 +227,7 @@ public class ClientRequestHeaders
       Object obj = headers.getFirst(HttpHeaders.CONTENT_TYPE);
       if (obj == null) return null;
       if (obj instanceof MediaType) return (MediaType) obj;
-      return MediaType.valueOf(providerFactory.toHeaderString(obj));
+      return MediaType.valueOf(configuration.toHeaderString(obj));
    }
 
    public List<MediaType> getAcceptableMediaTypes()
@@ -252,7 +249,7 @@ public class ClientRequestHeaders
          }
          else
          {
-            accept = providerFactory.toHeaderString(obj);
+            accept = configuration.toHeaderString(obj);
 
          }
          StringTokenizer tokenizer = new StringTokenizer(accept, ",");
@@ -262,6 +259,7 @@ public class ClientRequestHeaders
             list.add(MediaType.valueOf(item));
          }
       }
+      MediaTypeHelper.sortByWeight(list);
       return list;
    }
 
@@ -270,30 +268,24 @@ public class ClientRequestHeaders
       List<Locale> list = new ArrayList<Locale>();
       List accepts = headers.get(HttpHeaders.ACCEPT_LANGUAGE);
       if (accepts == null) return list;
+      List<WeightedLanguage> languages = new ArrayList<WeightedLanguage>();
       for (Object obj : accepts)
       {
          if (obj instanceof Locale)
          {
-            list.add((Locale) obj);
+            languages.add(new WeightedLanguage((Locale)obj, 1.0F));
             continue;
          }
-         String accept = null;
-         if (obj instanceof String)
-         {
-            accept = (String) obj;
-         }
-         else
-         {
-            accept = providerFactory.toHeaderString(obj);
-
-         }
+         String accept = configuration.toHeaderString(obj);
          StringTokenizer tokenizer = new StringTokenizer(accept, ",");
          while (tokenizer.hasMoreElements())
          {
             String item = tokenizer.nextToken().trim();
-            list.add(new Locale(item));
+            languages.add(WeightedLanguage.parse(item));
          }
       }
+      Collections.sort(languages);
+      for (WeightedLanguage language : languages) list.add(language.getLocale());
       return list;
    }
 
@@ -311,7 +303,7 @@ public class ClientRequestHeaders
          }
          else
          {
-            String str = providerFactory.toHeaderString(obj);
+            String str = configuration.toHeaderString(obj);
             Cookie cookie = Cookie.valueOf(str);
             cookies.put(cookie.getName(), cookie);
          }

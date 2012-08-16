@@ -17,6 +17,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -83,6 +84,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       FormParam formParam;
       Form form;
       Suspend suspend;
+      Suspended suspended;
 
 
       if ((query = findAnnotation(annotations, QueryParam.class)) != null)
@@ -148,9 +150,13 @@ public class InjectorFactoryImpl implements InjectorFactory
          }
          return new ContextParameterInjector(proxy, type, providerFactory);
       }
-      else if (javax.ws.rs.core.AsynchronousResponse.class.isAssignableFrom(type))
+      else if ((suspended = findAnnotation(annotations, Suspended.class)) != null)
       {
-         return new AsynchronousResponseInjector(injectTarget);
+         return new AsynchronousResponseInjector(suspended);
+      }
+      else if (javax.ws.rs.container.AsyncResponse.class.isAssignableFrom(type))
+      {
+         return new AsynchronousResponseInjector(suspended);
       }
       else if (useDefault)
       {

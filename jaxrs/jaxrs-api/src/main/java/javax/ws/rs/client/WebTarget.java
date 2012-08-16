@@ -39,11 +39,12 @@
  */
 package javax.ws.rs.client;
 
+import java.net.URI;
+import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
-import java.util.Map;
 
 /**
  * A resource target identified by the resource URI.
@@ -52,8 +53,6 @@ import java.util.Map;
  * @since 2.0
  */
 public interface WebTarget {
-
-    // Getters
 
     /**
      * Get the URI identifying the resource.
@@ -82,112 +81,141 @@ public interface WebTarget {
     /**
      * Create a new {@code WebTarget} instance by appending path to the URI of
      * the current target instance.
-     * <p />
+     * <p>
      * When constructing the final path, a '/' separator will be inserted between
      * the existing path and the supplied path if necessary. Existing '/' characters
      * are preserved thus a single value can represent multiple URI path segments.
-     * <p />
+     * </p>
+     * <p>
      * A snapshot of the present configuration of the current (parent) target
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
+     * </p>
      *
      * @param path the path, may contain URI template parameters.
      * @return a new target instance.
-     * @throws NullPointerException if path is null.
+     * @throws NullPointerException if path is {@code null}.
      */
     public WebTarget path(String path) throws NullPointerException;
 
     /**
      * Create a new {@code WebTarget} instance by replacing existing path parameter
      * in the URI of the current target instance with a supplied value.
-     * <p />
+     *
+     * In case a {@code null} value is entered, a value for a parameter with that name
+     * is removed (if present) from the map of path parameters and their respective values
+     * inherited from the current target.
+     * <p>
      * A snapshot of the present configuration of the current (parent) target
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
+     * </p>
      *
      * @param name  path parameter template name.
      * @param value value to be used to replace the template.
      * @return a new target instance.
-     * @throws IllegalArgumentException if there is no such path parameter.
-     * @throws NullPointerException     if name or value is null.
+     * @throws NullPointerException if the parameter name is {@code null}.
      */
-    public WebTarget pathParam(String name, Object value)
-            throws IllegalArgumentException, NullPointerException;
+    public WebTarget pathParam(String name, Object value) throws NullPointerException;
 
     /**
      * Create a new {@code WebTarget} instance by replacing one or more existing path parameters
      * in the URI of the current target instance with supplied values.
-     * <p />
+     *
+     * Existing values of any parameter with a name for which the map contains a {@code null} value
+     * are removed (if present) from the map of path parameters and their respective values inherited
+     * from the current target. A call to the method with an empty parameter map is ignored, i.e.
+     * same {@code WebTarget} instance is returned.
+     * <p>
      * A snapshot of the present configuration of the current (parent) target
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
+     * </p>
      *
      * @param parameters a map of URI template parameter names and values.
-     * @return a new target instance.
-     * @throws IllegalArgumentException if the supplied map is empty.
-     * @throws NullPointerException     if the parameter map or any of the names or values is null.
+     * @return a new target instance or the same target instance in case the input parameter map
+     *         is empty.
+     * @throws NullPointerException if the parameter map or any of the names is {@code null}.
      */
-    public WebTarget pathParams(Map<String, Object> parameters)
-            throws IllegalArgumentException, NullPointerException;
+    public WebTarget pathParams(Map<String, Object> parameters) throws NullPointerException;
 
     /**
      * Create a new {@code WebTarget} instance by appending a matrix parameter to
      * the existing set of matrix parameters of the current final segment of the
-     * URI of the current target instance. If multiple values are supplied
-     * the parameter will be added once per value. Note that the matrix parameters
-     * are tied to a particular path segment; appending a value to an existing
-     * matrix parameter name  will not affect the position of the matrix parameter
-     * in the URI path.
-     * <p />
+     * URI of the current target instance.
+     *
+     * If multiple values are supplied the parameter will be added once per value. In case a single
+     * {@code null} value is entered, all parameters with that name in the current final path segment
+     * are removed (if present) from the collection of last segment matrix parameters inherited from
+     * the current target.
+     * <p>
+     * Note that the matrix parameters are tied to a particular path segment; appending
+     * a value to an existing matrix parameter name will not affect the position of
+     * the matrix parameter in the URI path.
+     * </p>
+     * <p>
      * A snapshot of the present configuration of the current (parent) target
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
+     * </p>
      *
      * @param name   the matrix parameter name, may contain URI template parameters.
      * @param values the matrix parameter value(s), each object will be converted
      *               to a {@code String} using its {@code toString()} method. Stringified
      *               values may contain URI template parameters.
      * @return a new target instance.
-     * @throws NullPointerException if the name or any of the values is null.
+     * @throws NullPointerException if the parameter name is {@code null} or if there are multiple
+     *                              values present and any of those values is {@code null}.
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs</a>
      */
-    public WebTarget matrixParam(String name, Object... values)
-            throws NullPointerException;
+    public WebTarget matrixParam(String name, Object... values) throws NullPointerException;
 
     /**
-     * Create a new {@code WebTarget} instance by adding a query parameter to the URI
-     * of the current target instance. If multiple values are supplied the parameter
-     * will be added once per value.
-     * <p />
+     * Create a new {@code WebTarget} instance by configuring a query parameter on the URI
+     * of the current target instance.
+     *
+     * If multiple values are supplied the parameter will be added once per value. In case a single
+     * {@code null} value is entered, all parameters with that name are removed (if present) from
+     * the collection of query parameters inherited from the current target.
+     * <p>
      * A snapshot of the present configuration of the current (parent) target
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
+     * </p>
      *
      * @param name   the query parameter name, may contain URI template parameters
      * @param values the query parameter value(s), each object will be converted
      *               to a {@code String} using its {@code toString()} method. Stringified
      *               values may contain URI template parameters.
      * @return a new target instance.
-     * @throws NullPointerException if name or any of the values is {@code null}.
+     * @throws NullPointerException if the parameter name is {@code null} or if there are multiple
+     *                              values present and any of those values is {@code null}.
      */
-    public WebTarget queryParam(String name, Object... values)
-            throws NullPointerException;
+    public WebTarget queryParam(String name, Object... values) throws NullPointerException;
 
     /**
-     * Create a new {@code WebTarget} instance by adding one or more query parameters and
-     * respective values to the URI of the current target instance.
-     * <p />
+     * Create a new {@code WebTarget} instance by configuring one or more query parameters and
+     * respective values on the URI of the current target instance.
+     *
+     * If multiple values are supplied for a single parameter name, a new query parameter will be added
+     * once per value. All parameters with a name for which the map contains a single {@code null} value
+     * are removed (if present) from the collection of query parameters inherited from the current
+     * target. A call to the method with an empty parameter map is ignored, i.e. same {@code WebTarget} instance
+     * is returned.
+     * <p>
      * A snapshot of the present configuration of the current (parent) target
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
+     * </p>
      *
      * @param parameters a map of query parameter names and values.
-     * @return a new target instance.
-     * @throws IllegalArgumentException if the supplied map is empty.
-     * @throws NullPointerException     if the parameter map or any of the names or values is null.
+     * @return a new target instance or the same target instance in case the input parameter map
+     *         is empty.
+     * @throws NullPointerException if the parameter map is {@code null}, any of the parameter names
+     *                              is {@code null} or in case there are multiple values present for
+     *                              a single parameter name and any of those values is {@code null}.
      */
-    public WebTarget queryParams(MultivaluedMap<String, Object> parameters)
-            throws IllegalArgumentException, NullPointerException;
+    public WebTarget queryParams(MultivaluedMap<String, Object> parameters) throws NullPointerException;
 
     /**
      * Start building a request to the targeted web resource.

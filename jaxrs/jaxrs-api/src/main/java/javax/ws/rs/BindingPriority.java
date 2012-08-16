@@ -68,25 +68,25 @@ import java.lang.annotation.Target;
 public @interface BindingPriority {
 
     /**
-     * Security filter/interceptor priority.
+     * Security authentication filter/interceptor priority.
      */
-    public static final int SECURITY = 100;
+    public static final int AUTHENTICATION = 2000;
+    /**
+     * Security authorization filter/interceptor priority.
+     */
+    public static final int AUTHORIZATION = 3000;
     /**
      * Header decorator filter/interceptor priority.
      */
-    public static final int HEADER_DECORATOR = 200;
+    public static final int HEADER_DECORATOR = 5000;
     /**
-     * Message decoder filter/interceptor priority.
+     * Message encoder or decoder filter/interceptor priority.
      */
-    public static final int DECODER = 300;
-    /**
-     * Message encoder filter/interceptor priority.
-     */
-    public static final int ENCODER = 400;
+    public static final int ENTITY_CODER = 6000;
     /**
      * User-level filter/interceptor priority.
      */
-    public static final int USER = 500;
+    public static final int USER = 7000;
 
     /**
      * Priority defined for a filter or interceptor.

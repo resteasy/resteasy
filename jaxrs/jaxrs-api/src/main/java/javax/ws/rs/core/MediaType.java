@@ -39,11 +39,12 @@
  */
 package javax.ws.rs.core;
 
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
+
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * An abstraction for a media type. Instances are immutable.
@@ -186,12 +187,11 @@ public class MediaType {
                 return o1.compareToIgnoreCase(o2);
             }
         });
-       if (initialValues != null)
-       {
-        for (Map.Entry<String, String> e : initialValues.entrySet()) {
-            map.put(e.getKey().toLowerCase(), e.getValue());
+        if (initialValues != null) {
+            for (Map.Entry<String, String> e : initialValues.entrySet()) {
+                map.put(e.getKey().toLowerCase(), e.getValue());
+            }
         }
-       }
         return map;
     }
 

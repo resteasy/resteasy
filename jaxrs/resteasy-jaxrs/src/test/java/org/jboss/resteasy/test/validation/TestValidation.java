@@ -710,8 +710,8 @@ public class TestValidation
    public static void beforeFoo(Class<?> resourceClass) throws Exception
    {
       before(resourceClass);
-      deployment.getProviderFactory().addMessageBodyReader(FooReaderWriter.class);
-      deployment.getProviderFactory().addMessageBodyWriter(FooReaderWriter.class);
+      deployment.getProviderFactory().registerProvider(FooReaderWriter.class);
+      deployment.getProviderFactory().registerProvider(FooReaderWriter.class);
    }
    
    public static void beforeFooAsynch(Class<?> resourceClass) throws Exception
@@ -721,8 +721,8 @@ public class TestValidation
       EmbeddedContainer.start(deployment);
       dispatcher = deployment.getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(resourceClass);
-      deployment.getProviderFactory().addMessageBodyReader(FooReaderWriter.class);
-      deployment.getProviderFactory().addMessageBodyWriter(FooReaderWriter.class);
+      deployment.getProviderFactory().registerProvider(FooReaderWriter.class);
+      deployment.getProviderFactory().registerProvider(FooReaderWriter.class);
    }
 
    public static void after() throws Exception

@@ -108,9 +108,10 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
          throw new ClientException("Unable to invoke request", e);
       }
 
-      ClientResponse response = new ClientResponse()
+      ClientResponse response = new ClientResponse(request.getConfiguration())
       {
          InputStream stream;
+         InputStream hc4Stream;
 
          @Override
          protected void setInputStream(InputStream is)
@@ -126,7 +127,8 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
                if (entity == null) return null;
                try
                {
-                  stream = new SelfExpandingBufferredInputStream(entity.getContent());
+                  hc4Stream = entity.getContent();
+                  stream = new SelfExpandingBufferredInputStream(hc4Stream);
                }
                catch (IOException e)
                {
@@ -156,6 +158,12 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
                      is.close();
                   }
                }
+               if (hc4Stream != null)
+               {
+                  // just in case the input stream was entirely replaced and not wrapped, we need
+                  // to close the apache client input stream.
+                  hc4Stream.close();
+               }
             }
             catch (Exception ignore)
             {
@@ -165,7 +173,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       response.setProperties(request.getMutableProperties());
       response.setStatus(res.getStatusLine().getStatusCode());
       response.setHeaders(extractHeaders(res));
-      response.setProviderFactory(request.getProviderFactory());
+      response.setConfiguration(request.getConfiguration());
       return response;
    }
 

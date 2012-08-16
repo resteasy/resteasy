@@ -167,7 +167,10 @@ public abstract class AbstractMultivaluedMap<K, V> implements MultivaluedMap<K, 
      */
     @Override
     public final void addAll(K key, V... newValues) {
-        if (newValues == null || newValues.length == 0) {
+        if (newValues == null) {
+            throw new NullPointerException("Supplied array of values must not be null.");
+        }
+        if (newValues.length == 0) {
             return;
         }
 
@@ -199,7 +202,10 @@ public abstract class AbstractMultivaluedMap<K, V> implements MultivaluedMap<K, 
      */
     @Override
     public final void addAll(K key, List<V> valueList) {
-        if (valueList == null || valueList.isEmpty()) {
+        if (valueList == null) {
+            throw new NullPointerException("Supplied list of values must not be null.");
+        }
+        if (valueList.isEmpty()) {
             return;
         }
 
@@ -359,5 +365,27 @@ public abstract class AbstractMultivaluedMap<K, V> implements MultivaluedMap<K, 
     @Override
     public void clear() {
         store.clear();
+    }
+
+    @Override
+    public boolean equalsIgnoreValueOrder(MultivaluedMap<K, V> omap) {
+        if (this == omap) {
+            return true;
+        }
+        if (!keySet().equals(omap.keySet())) {
+            return false;
+        }
+        for (Entry<K, List<V>> e : entrySet()) {
+            List<V> olist = omap.get(e.getKey());
+            if (e.getValue().size() != olist.size()) {
+                return false;
+            }
+            for (V v : e.getValue()) {
+                if (!olist.contains(v)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

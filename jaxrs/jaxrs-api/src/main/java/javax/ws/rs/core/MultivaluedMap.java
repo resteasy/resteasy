@@ -115,4 +115,16 @@ public interface MultivaluedMap<K, V> extends Map<K, List<V>> {
      * @since 2.0
      */
     void addFirst(K key, V value);
+
+    /**
+     * Compare the specified map with this map for equality modulo the order
+     * of values for each key. Specifically, the values associated with
+     * each key are compared as if they were ordered lists.
+     *
+     * @param otherMap map to be compared to this one.
+     * @return true if the maps are equal modulo value ordering.
+     * @since 2.0
+     */
+    boolean equalsIgnoreValueOrder(MultivaluedMap<K, V> otherMap);
+
 }

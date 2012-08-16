@@ -86,7 +86,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    }
 
    @Override
-   public ResteasyAsynchronousContext getExecutionContext()
+   public ResteasyAsynchronousContext getAsyncContext()
    {
       return new SynchronousExecutionContext(dispatcher, this, httpResponse);
    }

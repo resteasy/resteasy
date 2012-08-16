@@ -38,7 +38,7 @@ public class ExceptionMapperTest extends BaseResourceTest
    @BeforeClass
    public static void setup()
    {
-      deployment.getProviderFactory().addExceptionMapper(JAXBMapper.class);
+      deployment.getProviderFactory().registerProvider(JAXBMapper.class);
       addPerRequestResource(TestService.class);
    }
 

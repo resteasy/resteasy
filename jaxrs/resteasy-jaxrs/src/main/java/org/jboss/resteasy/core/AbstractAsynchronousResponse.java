@@ -4,11 +4,16 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.ResumeCallback;
+import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -23,6 +28,8 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
    protected Annotation[] annotations;
+   protected TimeoutHandler timeoutHandler;
+   protected List<ResumeCallback> resumeCallbacks = new ArrayList<ResumeCallback>();
 
    protected AbstractAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
    {
@@ -31,6 +38,56 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       this.response = response;
    }
 
+   @Override
+   public boolean register(Class<?> callback) throws NullPointerException
+   {
+      if (callback == null) throw new NullPointerException("Callback was null");
+      Object cb = dispatcher.getProviderFactory().createProviderInstance(callback);
+      return register(cb);
+   }
+
+   @Override
+   public boolean register(Object callback) throws NullPointerException
+   {
+      if (callback == null) throw new NullPointerException("Callback was null");
+      boolean registered = false;
+      if (callback instanceof ResumeCallback)
+      {
+         registered = true;
+         resumeCallbacks.add((ResumeCallback)callback);
+      }
+      return registered;
+   }
+
+   @Override
+   public boolean[] register(Class<?> callback, Class<?>... callbacks) throws NullPointerException
+   {
+      boolean[] results = new boolean[1 + callbacks.length];
+      results[0] = register(callback);
+      for (int i = 0; i < callbacks.length; i++)
+      {
+         results[i + 1] = register(callbacks[i]);
+      }
+      return results;
+   }
+
+   @Override
+   public boolean[] register(Object callback, Object... callbacks) throws NullPointerException
+   {
+      boolean[] results = new boolean[1 + callbacks.length];
+      results[0] = register(callback);
+      for (int i = 0; i < callbacks.length; i++)
+      {
+         results[i + 1] = register(callbacks[i]);
+      }
+      return results;
+   }
+
+   @Override
+   public void setTimeoutHandler(TimeoutHandler handler)
+   {
+      this.timeoutHandler = handler;
+   }
 
    @Override
    public ResourceMethod getMethod()
@@ -128,6 +185,10 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    {
       dispatcher.handleException(request, response, exc);
    }
+
+
+
+
 
 
 }

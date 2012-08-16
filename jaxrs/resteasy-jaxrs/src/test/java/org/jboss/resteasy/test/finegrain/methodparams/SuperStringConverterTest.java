@@ -109,8 +109,8 @@ public class SuperStringConverterTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      deployment.getProviderFactory().addStringConverter(PersonConverter.class);
-      deployment.getProviderFactory().addStringConverter(CompanyConverter.class);
+      deployment.getProviderFactory().registerProvider(PersonConverter.class);
+      deployment.getProviderFactory().registerProvider(CompanyConverter.class);
       deployment.getRegistry().addPerRequestResource(MyResource.class);
    }
 

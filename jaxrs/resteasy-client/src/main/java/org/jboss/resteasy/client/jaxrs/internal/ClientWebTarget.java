@@ -9,6 +9,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -93,12 +94,26 @@ public class ClientWebTarget implements ResteasyWebTarget
    }
 
    @Override
+   public ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException
+   {
+      UriBuilder copy = uriBuilder.clone().path(resource);
+      return new ClientWebTarget(client, copy, configuration);
+   }
+
+   @Override
+   public ResteasyWebTarget path(Method method) throws IllegalArgumentException
+   {
+      UriBuilder copy = uriBuilder.clone().path(method);
+      return new ClientWebTarget(client, copy, configuration);
+   }
+
+   @Override
    public ResteasyWebTarget pathParam(String name, Object value) throws IllegalArgumentException, NullPointerException
    {
       UriBuilder copy = uriBuilder.clone();
       HashMap<String, String> paramMap = new HashMap<String, String>();
       paramMap.putAll(pathParams);
-      paramMap.put(name, client.providerFactory().toString(value));
+      paramMap.put(name, configuration.toString(value));
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
       target.pathParams = paramMap;
       return target;
@@ -112,7 +127,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       HashMap<String, String> paramMap = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : parameters.entrySet())
       {
-         paramMap.put(entry.getKey(), client.providerFactory().toString(entry.getValue()));
+         paramMap.put(entry.getKey(), configuration.toString(entry.getValue()));
       }
       target.pathParams = paramMap;
       return target;
@@ -131,7 +146,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       String[] stringValues = new String[values.length];
       for (int i = 0; i < stringValues.length; i++)
       {
-         stringValues[i] = client.providerFactory().toString(values[i]);
+         stringValues[i] = configuration.toString(values[i]);
       }
       return stringValues;
    }

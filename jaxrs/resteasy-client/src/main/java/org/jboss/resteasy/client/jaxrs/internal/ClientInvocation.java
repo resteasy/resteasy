@@ -192,11 +192,6 @@ public class ClientInvocation implements Invocation
       }
    }
 
-   public ResteasyProviderFactory getProviderFactory()
-   {
-      return client.providerFactory();
-   }
-
    public void writeRequestBody(OutputStream outputStream) throws IOException
    {
       if (entity == null)
@@ -219,7 +214,7 @@ public class ClientInvocation implements Invocation
 
    public MessageBodyWriter getWriter()
    {
-      MessageBodyWriter writer = client.providerFactory()
+      MessageBodyWriter writer = configuration
               .getMessageBodyWriter(entityClass, entityGenericType,
                       entityAnnotations, this.getHeaders().getMediaType());
       if (writer == null)
@@ -233,17 +228,17 @@ public class ClientInvocation implements Invocation
 
    public WriterInterceptor[] getWriterInterceptors()
    {
-      return client.providerFactory().getClientWriterInterceptorRegistry().postMatch(null, null);
+      return configuration.getWriterInterceptors(null, null);
    }
 
    public ClientRequestFilter[] getRequestFilters()
    {
-      return client.providerFactory().getClientRequestFilters().postMatch(null, null);
+      return configuration.getRequestFilters(null, null);
    }
 
    public ClientResponseFilter[] getResponseFilters()
    {
-      return client.providerFactory().getClientResponseFilters().postMatch(null, null);
+      return configuration.getResponseFilters(null, null);
    }
 
    // Invocation methods
@@ -269,7 +264,8 @@ public class ClientInvocation implements Invocation
                filter.filter(requestContext);
                if (requestContext.getAbortedWithResponse() != null)
                {
-                  return requestContext.getAbortedWithResponse();
+                  if (requestContext.getAbortedWithResponse() instanceof ClientResponse) return requestContext.getAbortedWithResponse();
+                  else return new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
                }
             }
             catch (IOException e)

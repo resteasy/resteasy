@@ -134,7 +134,7 @@ public class HttpServerRequest extends BaseHttpRequest
    }
 
    @Override
-   public ResteasyAsynchronousContext getExecutionContext()
+   public ResteasyAsynchronousContext getAsyncContext()
    {
       return new SynchronousExecutionContext(dispatcher, this, httpResponse);
    }

@@ -490,4 +490,27 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
          list.add(0, value);
       }
    }
+
+   @Override
+   public boolean equalsIgnoreValueOrder(MultivaluedMap<String, V> omap)
+   {
+      if (this == omap) {
+         return true;
+      }
+      if (!keySet().equals(omap.keySet())) {
+         return false;
+      }
+      for (Map.Entry<String, List<V>> e : entrySet()) {
+         List<V> olist = omap.get(e.getKey());
+         if (e.getValue().size() != olist.size()) {
+            return false;
+         }
+         for (V v : e.getValue()) {
+            if (!olist.contains(v)) {
+               return false;
+            }
+         }
+      }
+      return true;
+   }
 }

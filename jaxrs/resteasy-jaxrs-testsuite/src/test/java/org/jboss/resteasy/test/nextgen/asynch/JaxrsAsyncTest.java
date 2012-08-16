@@ -7,12 +7,14 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.Suspend;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientFactory;
-import javax.ws.rs.core.AsynchronousResponse;
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
@@ -27,9 +29,9 @@ public class JaxrsAsyncTest extends BaseResourceTest
    {
       @GET
       @Produces("text/plain")
-      @Suspend(timeOut = 2000)
-      public void get(final AsynchronousResponse response)
+      public void get(@Suspended final AsyncResponse response)
       {
+         response.setTimeout(2000, TimeUnit.MILLISECONDS);
          Thread t = new Thread()
          {
             @Override
@@ -54,37 +56,9 @@ public class JaxrsAsyncTest extends BaseResourceTest
       @GET
       @Path("timeout")
       @Produces("text/plain")
-      @Suspend(timeOut = 100)
-      public void timeout(final AsynchronousResponse response)
+      public void timeout(@Suspended final AsyncResponse response)
       {
-         Thread t = new Thread()
-         {
-            @Override
-            public void run()
-            {
-               try
-               {
-                  System.out.println("STARTED!!!!");
-                  Thread.sleep(1000);
-                  Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
-                  response.resume(jaxrs);
-               }
-               catch (Exception e)
-               {
-                  e.printStackTrace();
-               }
-            }
-         };
-         t.start();
-      }
-
-      @GET
-      @Path("timeout/fallback")
-      @Produces("text/plain")
-      @Suspend(timeOut = 100)
-      public void timeoutFallback(final AsynchronousResponse response)
-      {
-         response.setFallbackResponse(Response.status(400).build());
+         response.setTimeout(100, TimeUnit.MILLISECONDS);
          Thread t = new Thread()
          {
             @Override
@@ -131,15 +105,4 @@ public class JaxrsAsyncTest extends BaseResourceTest
       client.close();
    }
 
-   @Test
-   public void testTimeoutFallback() throws Exception
-   {
-      addPerRequestResource(MyResource.class);
-
-      Client client = ClientFactory.newClient();
-      Response response = client.target(generateURL("/timeout/fallback")).request().get();
-      Assert.assertEquals(400, response.getStatus());
-      response.close();
-      client.close();
-   }
 }

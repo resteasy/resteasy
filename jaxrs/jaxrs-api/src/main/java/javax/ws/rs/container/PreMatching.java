@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,33 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs.client;
+package javax.ws.rs.container;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A configurable feature.
- * <p />
- * Typically encapsulates concepts that involve multiple filters, interceptors
- * and/or configuration properties.
+ * Global binding annotation that can be applied to a {@link ContainerRequestFilter
+ * container request filter} to indicate that such filter should be applied globally
+ * on all resources in the application before the actual resource matching occurs.
+ * <p>
+ * The JAX-RS runtime will apply the filters marked with the {@code &#64;PreMatching}
+ * annotation globally to all resources, before the incoming request has been matched
+ * to a particular resource method.
+ * </p>
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-public interface Feature {
-
-    /**
-     * Called when the feature is to be enabled.
-     *
-     * The responsibility of the feature is to properly update the supplied configuration
-     * and return {@code true} if the feature was enabled or {@code false} otherwise.
-     * <p>
-     * Note that under some circumstances the feature can decide not to enable itself, which
-     * is indicated by the returned {@code false} value. In such case the configuration does
-     * not internally register the feature in the {@link javax.ws.rs.client.Configuration#getFeatures()
-     * collection of enabled features} and the attempt to enable the feature is ignored.
-     * </p>
-     *
-     * @param configuration configuration where the feature should be enabled.
-     * @return {@code true} if the feature was successfully enabled, {@code false}
-     *         otherwise.
-     */
-    public boolean onEnable(Configuration configuration);
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface PreMatching {
 }

@@ -35,21 +35,11 @@ public class JaxrsAsyncTest
    }
 
    @Test
-   public void testTimeoutFallback() throws Exception
-   {
-      Client client = ClientFactory.newClient();
-      Response response = client.target("http://localhost:8080/jaxrs/timeout/fallback").request().get();
-      Assert.assertEquals(400, response.getStatus());
-      response.close();
-      client.close();
-   }
-
-   @Test
    public void testCancel() throws Exception
    {
       Client client = ClientFactory.newClient();
       Response response = client.target("http://localhost:8080/jaxrs/cancel").request().get();
-      Assert.assertEquals(500, response.getStatus());
+      Assert.assertEquals(503, response.getStatus());
       response.close();
       response = client.target("http://localhost:8080/jaxrs/cancelled").request().get();
       Assert.assertEquals(204, response.getStatus());

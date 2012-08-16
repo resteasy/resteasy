@@ -39,9 +39,10 @@
  */
 package javax.ws.rs.core;
 
-import javax.ws.rs.WebApplicationException;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import javax.ws.rs.WebApplicationException;
 
 /**
  * A type that may be used as a resource method return value or as the entity

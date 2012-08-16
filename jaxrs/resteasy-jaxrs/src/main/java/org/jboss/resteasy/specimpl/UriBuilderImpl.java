@@ -824,4 +824,10 @@ public class UriBuilderImpl extends UriBuilder
    {
       throw new NotImplementedYetException();
    }
+
+   @Override
+   public String toTemplate()
+   {
+      throw new NotImplementedYetException();
+   }
 }

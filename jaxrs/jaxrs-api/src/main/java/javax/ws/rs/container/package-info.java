@@ -39,6 +39,6 @@
  */
 
 /**
- * TODO javadoc.
+ * Container-specific JAX-RS API.
  */
 package javax.ws.rs.container;

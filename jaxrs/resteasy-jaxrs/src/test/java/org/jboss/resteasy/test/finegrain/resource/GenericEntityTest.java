@@ -147,8 +147,8 @@ public class GenericEntityTest
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(GenericResource.class);
-      ResteasyProviderFactory.getInstance().addMessageBodyWriter(DoubleWriter.class);
-      ResteasyProviderFactory.getInstance().addMessageBodyWriter(FloatWriter.class);
+      ResteasyProviderFactory.getInstance().registerProvider(DoubleWriter.class);
+      ResteasyProviderFactory.getInstance().registerProvider(FloatWriter.class);
    }
 
    @AfterClass

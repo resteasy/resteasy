@@ -39,31 +39,53 @@
  */
 package javax.ws.rs.container;
 
-import javax.ws.rs.NameBinding;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.ws.rs.core.Response;
 
 /**
- * Global binding annotation that can be applied to a {@link ContainerRequestFilter
- * container request filter} to indicate that such filter should be applied globally
- * on all resources in the application but depends on a matched resource information
- * being available.
+ * Asynchronous request processing lifecycle callback that receives suspended
+ * {@link AsyncResponse asynchronous response} resume events.
  * <p>
- * The JAX-RS runtime will apply the filters marked with the {@code @PostMatching}
- * annotation globally to all resources, but only in case the incoming request
- * has been matched to a particular resource method. In case the request has not
- * been matched, the filter implementations annotated with the {@code @PostMatching}
- * annotation will not be applied.
+ * A resume callback may receive resume events (from an asynchronous response
+ * the callback was registered with) as a result of one of the following
+ * actions:
+ * <ul>
+ * <li>asynchronous response has been resumed directly, by calling
+ * {@link AsyncResponse#resume(Object)} or {@link AsyncResponse#resume(Throwable)}
+ * method</li>
+ * <li>asynchronous response processing was cancelled resulting in an asynchronous response
+ * instance being resumed with a generated error response</li>
+ * <li>an {@link TimeoutHandler unhandled} suspend time-out event has occurred
+ * resulting in an asynchronous response instance being resumed with a default
+ * time-out exception</li>
+ * </ul>
+ * In all of the cases above, a resume event will be generated for the suspended asynchronous
+ * response and all callbacks associated with the asynchronous response that implement
+ * {@code ResumeCallback} interface will be invoked.
  * </p>
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@NameBinding
-public @interface PostMatching {
+public interface ResumeCallback {
+    /**
+     * A resume callback notification method that will be invoked in case the asynchronous
+     * response is being resumed by a response instance.
+     * <p>
+     * Callback implementations may use check whether resuming asynchronous response
+     * {@link AsyncResponse#isCancelled() has been cancelled}
+     * or not.
+     * </p>
+     *
+     * @param resuming asynchronous response to be resumed.
+     * @param response response used to resume the asynchronous response.
+     */
+    public void onResume(AsyncResponse resuming, Response response);
+
+    /**
+     * A resume callback notification method that will be invoked in case the asynchronous
+     * response is being resumed by an error (e.g. in case of a time-out event).
+     *
+     * @param resuming asynchronous response to be resumed.
+     * @param error error used to resume the asynchronous response.
+     */
+    public void onResume(AsyncResponse resuming, Throwable error);
 }
