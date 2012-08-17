@@ -241,7 +241,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       builtinsRegistered = false;
       registerBuiltins = true;
 
-      injectorFactory = new InjectorFactoryImpl(this);
+      injectorFactory = new InjectorFactoryImpl();
       registerDefaultInterceptorPrecedences();
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
       addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
@@ -327,56 +327,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public ResteasyProviderFactory getParent()
    {
       return parent;
-   }
-
-   protected void copyParent()
-   {
-      providerClasses = new HashSet<Class<?>>();
-      providerClasses.addAll(parent.getProviderClasses());
-
-      providerInstances = new HashSet<Object>();
-      providerInstances.addAll(parent.getProviderInstances());
-
-      messageBodyReaders = parent.getMessageBodyReaders().clone();
-      messageBodyWriters = parent.getMessageBodyWriters().clone();
-
-      exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
-      exceptionMappers.putAll(parent.getExceptionMappers());
-
-      contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
-      for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers().entrySet())
-      {
-         contextResolvers.put(entry.getKey(), entry.getValue().clone());
-      }
-
-      stringConverters = new HashMap<Class<?>, StringConverter>();
-      stringConverters.putAll(parent.getStringConverters());
-
-      stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
-      stringParameterUnmarshallers.putAll(parent.getStringParameterUnmarshallers());
-
-      headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
-      headerDelegates.putAll(parent.getHeaderDelegates());
-
-      precedence = parent.getPrecedence().clone();
-      serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
-      serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
-      containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
-      containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
-
-      clientRequestFilters = parent.getClientRequestFilters().clone(this);
-      clientResponseFilters = parent.getClientResponseFilters().clone(this);
-      clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
-      clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
-      clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
-
-      clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
-      clientErrorInterceptors.addAll(parent.getClientErrorInterceptors());
-
-      builtinsRegistered = false;
-      registerBuiltins = true;
-
-      injectorFactory = parent.getInjectorFactory();
    }
 
    protected void registerDefaultInterceptorPrecedences(InterceptorRegistry registry)
@@ -1270,8 +1220,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            Constructor constructor = provider.getConstructor(ResteasyProviderFactory.class);
-            this.injectorFactory = (InjectorFactory) constructor.newInstance(this);
+            this.injectorFactory = (InjectorFactory) provider.newInstance();
          }
          catch (Exception e)
          {
@@ -1590,15 +1539,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public <T> T createProviderInstance(Class<? extends T> clazz)
    {
+      ConstructorInjector constructorInjector = createConstructorInjector(clazz);
+
+      T provider = (T) constructorInjector.construct();
+      return provider;
+   }
+
+   public <T> ConstructorInjector createConstructorInjector(Class<? extends T> clazz)
+   {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)
       {
          throw new RuntimeException("Unable to find a public constructor for provider class " + clazz.getName());
       }
-      ConstructorInjector constructorInjector = injectorFactory.createConstructor(constructor);
-
-      T provider = (T) constructorInjector.construct();
-      return provider;
+      return getInjectorFactory().createConstructor(constructor, this);
    }
 
    /**
@@ -1615,8 +1569,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          throw new RuntimeException("Unable to find a public constructor for class " + clazz.getName());
       }
-      ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor);
-      PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz);
+      ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
+      PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
       Object obj = constructorInjector.construct();
       propertyInjector.inject(obj);
@@ -1625,12 +1579,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void injectProperties(Class declaring, Object obj)
    {
-      injectorFactory.createPropertyInjector(declaring).inject(obj);
+      getInjectorFactory().createPropertyInjector(declaring, this).inject(obj);
    }
 
    public void injectProperties(Object obj)
    {
-      injectorFactory.createPropertyInjector(obj.getClass()).inject(obj);
+      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(obj);
    }
    // Configurable
 

@@ -36,11 +36,6 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
 {
    protected ResteasyProviderFactory providerFactory;
 
-   // We have our own injectorFactory because InjectorFactory currently holds a providerFactory member and
-   // there is no SPI to change it.  I'm not sure it is wise to re-use the one provided anyways as its possible
-   // for a Client to be shared between multiple threads.
-   protected InjectorFactory injectorFactory;
-
    public ClientConfiguration(ResteasyProviderFactory factory)
    {
       if (factory instanceof ThreadLocalResteasyProviderFactory)
@@ -48,8 +43,6 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
          factory = ((ThreadLocalResteasyProviderFactory)factory).getDelegate();
       }
       this.providerFactory = new ResteasyProviderFactory(factory);
-      injectorFactory = new InjectorFactoryImpl(this.providerFactory);
-      this.providerFactory.setInjectorFactory(injectorFactory);
    }
 
    public ClientConfiguration(ClientConfiguration parent)

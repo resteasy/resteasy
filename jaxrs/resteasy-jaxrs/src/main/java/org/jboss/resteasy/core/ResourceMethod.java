@@ -78,7 +78,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       this.httpMethods = httpMethods;
       this.resourceClass = clazz;
       this.method = method;
-      this.methodInjector = injector.createMethodInjector(clazz, method);
+      this.methodInjector = injector.createMethodInjector(clazz, method, providerFactory);
 
       Produces p = method.getAnnotation(Produces.class);
       if (p == null) p = clazz.getAnnotation(Produces.class);
@@ -247,7 +247,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
-      Object target = resource.createResource(request, response, injector);
+      Object target = resource.createResource(request, response, providerFactory);
       return invoke(request, response, target);
    }
 

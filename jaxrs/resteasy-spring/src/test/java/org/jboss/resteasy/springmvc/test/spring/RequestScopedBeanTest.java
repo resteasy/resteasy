@@ -35,21 +35,16 @@ public class RequestScopedBeanTest
    {
       BeanFactory beanFactory;
 
-      public QualifierInjectorFactoryImpl(ResteasyProviderFactory factory)
-      {
-         super(factory);
-      }
-
       @SuppressWarnings("rawtypes")
       @Override
       public ValueInjector createParameterExtractor(Class injectTargetClass,
-            AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
+            AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
       {
          final Qualifier qualifier = FindAnnotation.findAnnotation(annotations, Qualifier.class);
          if (qualifier == null)
          {
             return super.createParameterExtractor(injectTargetClass, injectTarget, type,
-                  genericType, annotations);
+                  genericType, annotations, factory);
          }
          else
          {

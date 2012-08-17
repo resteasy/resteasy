@@ -69,19 +69,14 @@ public class CustomValueInjectorTest
 
    public static class MyInjectorFactoryImpl extends InjectorFactoryImpl
    {
-      public MyInjectorFactoryImpl(ResteasyProviderFactory factory)
-      {
-         super(factory);
-      }
-
       @Override
       public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
-                                                    Type genericType, Annotation[] annotations)
+                                                    Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
       {
          final Hello hello = FindAnnotation.findAnnotation(annotations, Hello.class);
          if (hello == null)
          {
-            return super.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
+            return super.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, factory);
          }
          else
          {

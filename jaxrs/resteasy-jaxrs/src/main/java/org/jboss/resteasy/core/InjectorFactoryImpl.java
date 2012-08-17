@@ -39,37 +39,31 @@ import static org.jboss.resteasy.util.FindAnnotation.*;
 @SuppressWarnings("unchecked")
 public class InjectorFactoryImpl implements InjectorFactory
 {
-   private ResteasyProviderFactory providerFactory;
    private ConcurrentHashMap<Class<?>, Class<?>> contextProxyCache = new ConcurrentHashMap<Class<?>, Class<?>>();
 
 
-   public InjectorFactoryImpl(ResteasyProviderFactory factory)
-   {
-      this.providerFactory = factory;
-   }
-
-   public ConstructorInjector createConstructor(Constructor constructor)
+   public ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory providerFactory)
    {
       return new ConstructorInjectorImpl(constructor, providerFactory);
    }
 
-   public PropertyInjector createPropertyInjector(Class resourceClass)
+   public PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory providerFactory)
    {
       return new PropertyInjectorImpl(resourceClass, providerFactory);
    }
 
-   public MethodInjector createMethodInjector(Class root, Method method)
+   public MethodInjector createMethodInjector(Class root, Method method, ResteasyProviderFactory providerFactory)
    {
       return new MethodInjectorImpl(root, method, providerFactory);
    }
 
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
-                                                 Type genericType, Annotation[] annotations)
+                                                 Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
    {
-      return createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, true);
+      return createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, true, providerFactory);
    }
 
-   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault)
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
    {
       DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
       boolean encode = findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);

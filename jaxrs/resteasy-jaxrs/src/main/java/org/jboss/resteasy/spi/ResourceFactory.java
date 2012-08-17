@@ -20,7 +20,7 @@ public interface ResourceFactory
     *
     * @param factory allows singleton factories to pre-inject things like @Context references into the singleton instance
     */
-   void registered(InjectorFactory factory);
+   void registered(ResteasyProviderFactory factory);
 
    /**
     * Called per request to obtain a resource instance to invoke http request on.
@@ -30,7 +30,7 @@ public interface ResourceFactory
     * @param factory
     * @return
     */
-   Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory);
+   Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory);
 
 
    /**

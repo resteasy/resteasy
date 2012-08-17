@@ -73,21 +73,16 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
 
    public static class ParamInjectorFactoryImpl extends InjectorFactoryImpl
    {
-      public ParamInjectorFactoryImpl(ResteasyProviderFactory factory)
-      {
-         super(factory);
-      }
-
       @SuppressWarnings("unchecked")
       @Override
       public ValueInjector createParameterExtractor(Class injectTargetClass,
-                                                    AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
+                                                    AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
       {
          final ClassicParam param = FindAnnotation.findAnnotation(annotations, ClassicParam.class);
          if (param == null)
          {
             return super.createParameterExtractor(injectTargetClass, injectTarget, type,
-                    genericType, annotations);
+                    genericType, annotations, factory);
          }
          else
          {
