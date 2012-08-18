@@ -20,8 +20,8 @@ import org.jboss.resteasy.client.core.extractors.EntityExtractor;
 import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
 import org.jboss.resteasy.client.core.marshallers.ClientMarshallerFactory;
 import org.jboss.resteasy.client.core.marshallers.Marshaller;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.spi.ClientExceptionMapper;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
 

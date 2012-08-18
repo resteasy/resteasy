@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
-import org.jboss.resteasy.spi.ClientExceptionMapper;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

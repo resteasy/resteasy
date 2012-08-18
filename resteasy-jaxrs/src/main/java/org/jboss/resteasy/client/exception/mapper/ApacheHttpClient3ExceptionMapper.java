@@ -40,7 +40,6 @@ import org.jboss.resteasy.client.exception.ResteasyNoHttpResponseException;
 import org.jboss.resteasy.client.exception.ResteasyProtocolException;
 import org.jboss.resteasy.client.exception.ResteasyRedirectException;
 import org.jboss.resteasy.client.exception.ResteasyURIException;
-import org.jboss.resteasy.spi.ClientExceptionMapper;
 
 /**
  * 
@@ -84,7 +83,6 @@ public class ApacheHttpClient3ExceptionMapper implements ClientExceptionMapper<E
       return new ResteasyIOException("IOException", e);
    }
    
-   @SuppressWarnings("deprecation")
    private ResteasyClientException mapHttpException(HttpException e)
    {
       if (AuthChallengeException.class.equals(e.getClass()))

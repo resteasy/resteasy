@@ -48,7 +48,6 @@ import org.jboss.resteasy.client.exception.ResteasyProtocolException;
 import org.jboss.resteasy.client.exception.ResteasyRedirectException;
 import org.jboss.resteasy.client.exception.ResteasyTunnelRefusedException;
 import org.jboss.resteasy.client.exception.ResteasyUnsupportedHttpVersionException;
-import org.jboss.resteasy.spi.ClientExceptionMapper;
 
 /**
  * 

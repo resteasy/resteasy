@@ -14,6 +14,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -44,6 +45,7 @@ import org.apache.http.impl.client.TunnelRefusedException;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyBuilder;
 import org.jboss.resteasy.client.exception.ResteasyAuthenticationException;
 import org.jboss.resteasy.client.exception.ResteasyCircularRedirectException;
@@ -68,8 +70,8 @@ import org.jboss.resteasy.client.exception.ResteasyRedirectException;
 import org.jboss.resteasy.client.exception.ResteasyTunnelRefusedException;
 import org.jboss.resteasy.client.exception.ResteasyUnsupportedHttpVersionException;
 import org.jboss.resteasy.client.exception.mapper.ApacheHttpClient4ExceptionMapper;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.ClientExceptionMapper;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -97,10 +99,14 @@ public class HttpClient4ClientExceptionMapperTest
       @PUT
       @Path("foo")
       String setFoo(String value);
+      
+      @POST
+      @Path("error")
+      String error();
    }
 
    @Path("foo")
-   public static class FooImpl implements Foo
+   public static class TestResource implements Foo
    {
       @Context
       HttpRequest request;
@@ -116,15 +122,11 @@ public class HttpClient4ClientExceptionMapperTest
       {
          return request.getHttpHeaders().getMediaType().toString();
       }
-   }
 
-   @Path("/")
-   public static class TestResource
-   {
-      @POST
-      public String doPost()
+      @Override
+      public String error()
       {
-         return "abc";
+         throw new WebApplicationException(500);
       }
    }
 
@@ -211,6 +213,38 @@ public class HttpClient4ClientExceptionMapperTest
       deployment = null;
    }
 
+   /**
+    * Verify that ClientResponseFailure is thrown if the request successfully invokes a
+    * resource method, and the resource method returns a status code >= 400.  That is,
+    * verify that the default error handling mechanism still works.
+    */
+   @Test
+   public void testClientResponseFailure() throws Exception
+   {
+      before();
+      boolean ok = false;
+      try
+      {
+         Foo foo = ProxyBuilder.build(Foo.class, "http://localhost:8081/foo/").serverMediaType(MediaType.TEXT_PLAIN_TYPE).now();
+         String answer = foo.error();
+         System.out.println("answer: " + answer);
+      }
+      catch (ClientResponseFailure e)
+      {
+         ok = true;
+      }
+      catch (Throwable t)
+      {
+         traverseException(t);
+         fail("Expected ClientResponseFailure, got " + t);
+      }
+      finally
+      {
+         after();
+      }
+      assertTrue("Expected ClientResponseFailure, got no Exception", ok);
+   }
+   
    @Test
    public void testApacheHttpClient4Executor() throws Exception
    {

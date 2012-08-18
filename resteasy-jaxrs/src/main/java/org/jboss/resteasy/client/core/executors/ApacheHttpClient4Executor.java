@@ -24,7 +24,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.client.exception.mapper.ApacheHttpClient4ExceptionMapper;
-import org.jboss.resteasy.spi.ClientExceptionMapper;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.Types;

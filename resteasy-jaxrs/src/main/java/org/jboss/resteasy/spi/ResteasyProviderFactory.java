@@ -8,6 +8,7 @@ import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
 import org.jboss.resteasy.annotations.interception.SecurityPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
