@@ -122,7 +122,7 @@ public class ResourceMethodRegistry implements Registry
     */
    public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
    {
-      if (ref != null) ref.registered(providerFactory.getInjectorFactory());
+      if (ref != null) ref.registered(providerFactory);
       for (Method method : clazz.getMethods())
       {
     	  if(!method.isSynthetic())

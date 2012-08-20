@@ -7,17 +7,16 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
+import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
 import org.jboss.resteasy.util.GetRestful;
-import org.jboss.resteasy.util.PickConstructor;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +77,8 @@ public class ResteasyDeployment
 
       if (deploymentSensitiveFactoryEnabled)
       {
-         // the ThreadLocalResteasyProviderFactory pushes and pops this deployments providerFactory
-         // on a ThreadLocal stack.  This allows each application/WAR to have their own providerFactory
+         // the ThreadLocalResteasyProviderFactory pushes and pops this deployments parentProviderFactory
+         // on a ThreadLocal stack.  This allows each application/WAR to have their own parentProviderFactory
          // and still be able to call ResteasyProviderFactory.getInstance()
          if (!(providerFactory instanceof ThreadLocalResteasyProviderFactory))
          {
@@ -118,6 +117,7 @@ public class ResteasyDeployment
 
 
       dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
+      dispatcher.getDefaultContextObjects().put(Configurable.class, providerFactory);
       dispatcher.getDefaultContextObjects().put(Providers.class, providerFactory);
       dispatcher.getDefaultContextObjects().put(Registry.class, registry);
       dispatcher.getDefaultContextObjects().put(Dispatcher.class, dispatcher);
@@ -201,7 +201,7 @@ public class ResteasyDeployment
 
          if (securityEnabled)
          {
-            providerFactory.getContainerRequestFilterRegistry().registerLegacy(SecurityInterceptor.class);
+            providerFactory.register(RoleBasedSecurityFeature.class);
          }
 
 
@@ -281,16 +281,8 @@ public class ResteasyDeployment
          throw new RuntimeException(e);
       }
 
-      Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-      if (constructor == null)
-      {
-         throw new RuntimeException("Unable to find a public constructor for class " + clazz.getName());
-      }
-      ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(constructor);
-      PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz);
+      Object obj = providerFactory.injectedInstance(clazz);
 
-      Object obj = constructorInjector.construct();
-      propertyInjector.inject(obj);
       return obj;
    }
 

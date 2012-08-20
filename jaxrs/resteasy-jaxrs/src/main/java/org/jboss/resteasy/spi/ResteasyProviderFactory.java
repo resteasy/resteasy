@@ -45,6 +45,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Configurable;
@@ -179,7 +182,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected InjectorFactory injectorFactory;
    protected ResteasyProviderFactory parent;
 
-
+   protected Set<DynamicFeature> dynamicFeatures;
    protected Set<Feature> features;
    protected Map<String, Object> properties;
    protected Set<Class<?>> providerClasses;
@@ -211,6 +214,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void initialize()
    {
+      dynamicFeatures = new HashSet<DynamicFeature>();
       features = new HashSet<Feature>();
       properties = Collections.synchronizedMap(new HashMap<String, Object>());
       providerClasses = new HashSet<Class<?>>();
@@ -241,7 +245,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       builtinsRegistered = false;
       registerBuiltins = true;
 
-      injectorFactory = new InjectorFactoryImpl(this);
+      injectorFactory = new InjectorFactoryImpl();
       registerDefaultInterceptorPrecedences();
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
       addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
@@ -253,6 +257,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
       addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
    }
+
+   public Set<DynamicFeature> getDynamicFeatures()
+   {
+      if (dynamicFeatures == null && parent != null) return parent.getDynamicFeatures();
+      return dynamicFeatures;
+   }
+
 
    protected MediaTypeMap<SortedKey<MessageBodyReader>> getMessageBodyReaders()
    {
@@ -327,56 +338,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public ResteasyProviderFactory getParent()
    {
       return parent;
-   }
-
-   protected void copyParent()
-   {
-      providerClasses = new HashSet<Class<?>>();
-      providerClasses.addAll(parent.getProviderClasses());
-
-      providerInstances = new HashSet<Object>();
-      providerInstances.addAll(parent.getProviderInstances());
-
-      messageBodyReaders = parent.getMessageBodyReaders().clone();
-      messageBodyWriters = parent.getMessageBodyWriters().clone();
-
-      exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
-      exceptionMappers.putAll(parent.getExceptionMappers());
-
-      contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
-      for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers().entrySet())
-      {
-         contextResolvers.put(entry.getKey(), entry.getValue().clone());
-      }
-
-      stringConverters = new HashMap<Class<?>, StringConverter>();
-      stringConverters.putAll(parent.getStringConverters());
-
-      stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
-      stringParameterUnmarshallers.putAll(parent.getStringParameterUnmarshallers());
-
-      headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
-      headerDelegates.putAll(parent.getHeaderDelegates());
-
-      precedence = parent.getPrecedence().clone();
-      serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
-      serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
-      containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
-      containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
-
-      clientRequestFilters = parent.getClientRequestFilters().clone(this);
-      clientResponseFilters = parent.getClientResponseFilters().clone(this);
-      clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
-      clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
-      clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
-
-      clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
-      clientErrorInterceptors.addAll(parent.getClientErrorInterceptors());
-
-      builtinsRegistered = false;
-      registerBuiltins = true;
-
-      injectorFactory = parent.getInjectorFactory();
    }
 
    protected void registerDefaultInterceptorPrecedences(InterceptorRegistry registry)
@@ -1133,6 +1094,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          containerResponseFilterRegistry.registerLegacy(provider);
       }
+      if (isA(provider, ContainerRequestFilter.class, contracts))
+      {
+         if (containerRequestFilterRegistry == null)
+         {
+            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+         }
+         containerRequestFilterRegistry.registerClass(provider);
+      }
+      if (isA(provider, ContainerResponseFilter.class, contracts))
+      {
+         if (containerResponseFilterRegistry == null)
+         {
+            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+         }
+         containerResponseFilterRegistry.registerClass(provider);
+      }
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo)provider.getAnnotation(ConstrainedTo.class);
@@ -1270,13 +1247,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            Constructor constructor = provider.getConstructor(ResteasyProviderFactory.class);
-            this.injectorFactory = (InjectorFactory) constructor.newInstance(this);
+            this.injectorFactory = (InjectorFactory) provider.newInstance();
          }
          catch (Exception e)
          {
             throw new RuntimeException(e);
          }
+      }
+      if (isA(provider, DynamicFeature.class, contracts))
+      {
+         if (dynamicFeatures == null)
+         {
+            dynamicFeatures = new HashSet<DynamicFeature>();
+            dynamicFeatures.addAll(parent.getDynamicFeatures());
+         }
+         dynamicFeatures.add((DynamicFeature) injectedInstance(provider));
       }
       if (isA(provider, Feature.class, contracts))
       {
@@ -1380,6 +1365,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          containerRequestFilterRegistry.registerLegacy((PreProcessInterceptor) provider);
       }
+      if (isA(provider, ContainerRequestFilter.class, contracts))
+      {
+         if (containerRequestFilterRegistry == null)
+         {
+            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+         }
+         containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider);
+      }
       if (isA(provider, PostProcessInterceptor.class, contracts))
       {
          if (containerResponseFilterRegistry == null)
@@ -1387,6 +1380,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
          containerResponseFilterRegistry.registerLegacy((PostProcessInterceptor) provider);
+      }
+      if (isA(provider, ContainerResponseFilter.class, contracts))
+      {
+         if (containerResponseFilterRegistry == null)
+         {
+            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+         }
+         containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider);
       }
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
@@ -1510,6 +1511,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          this.injectorFactory = (InjectorFactory) provider;
       }
+      if (isA(provider, DynamicFeature.class, contracts))
+      {
+         if (dynamicFeatures == null)
+         {
+            dynamicFeatures = new HashSet<DynamicFeature>();
+            dynamicFeatures.addAll(parent.getDynamicFeatures());
+         }
+         dynamicFeatures.add((DynamicFeature)provider);
+      }
       if (isA(provider, Feature.class, contracts))
       {
          Feature feature = (Feature)provider;
@@ -1590,15 +1600,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public <T> T createProviderInstance(Class<? extends T> clazz)
    {
+      ConstructorInjector constructorInjector = createConstructorInjector(clazz);
+
+      T provider = (T) constructorInjector.construct();
+      return provider;
+   }
+
+   public <T> ConstructorInjector createConstructorInjector(Class<? extends T> clazz)
+   {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)
       {
          throw new RuntimeException("Unable to find a public constructor for provider class " + clazz.getName());
       }
-      ConstructorInjector constructorInjector = injectorFactory.createConstructor(constructor);
-
-      T provider = (T) constructorInjector.construct();
-      return provider;
+      return getInjectorFactory().createConstructor(constructor, this);
    }
 
    /**
@@ -1615,8 +1630,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          throw new RuntimeException("Unable to find a public constructor for class " + clazz.getName());
       }
-      ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor);
-      PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz);
+      ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
+      PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
       Object obj = constructorInjector.construct();
       propertyInjector.inject(obj);
@@ -1625,12 +1640,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void injectProperties(Class declaring, Object obj)
    {
-      injectorFactory.createPropertyInjector(declaring).inject(obj);
+      getInjectorFactory().createPropertyInjector(declaring, this).inject(obj);
    }
 
    public void injectProperties(Object obj)
    {
-      injectorFactory.createPropertyInjector(obj.getClass()).inject(obj);
+      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(obj);
    }
    // Configurable
 

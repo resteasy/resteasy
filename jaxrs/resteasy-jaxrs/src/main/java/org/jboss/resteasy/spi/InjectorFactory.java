@@ -14,9 +14,9 @@ import java.lang.reflect.Type;
  */
 public interface InjectorFactory
 {
-   ConstructorInjector createConstructor(Constructor constructor);
-   PropertyInjector createPropertyInjector(Class resourceClass);
-   MethodInjector createMethodInjector(Class root, Method method);
-   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations);
-   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault);
+   ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory factory);
+   PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory factory);
+   MethodInjector createMethodInjector(Class root, Method method, ResteasyProviderFactory factory);
+   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory);
+   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory factory);
 }

@@ -45,12 +45,12 @@ public class ResourceLocator implements ResourceInvoker
       this.injector = injector;
       this.providerFactory = providerFactory;
       this.method = method;
-      this.methodInjector = injector.createMethodInjector(root, method);
+      this.methodInjector = injector.createMethodInjector(root, method, providerFactory);
    }
 
    protected Object createResource(HttpRequest request, HttpResponse response)
    {
-      Object resource = this.resource.createResource(request, response, injector);
+      Object resource = this.resource.createResource(request, response, providerFactory);
       return createResource(request, response, resource);
 
    }

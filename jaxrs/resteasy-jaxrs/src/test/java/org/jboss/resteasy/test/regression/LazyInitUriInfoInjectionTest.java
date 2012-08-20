@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -53,7 +54,6 @@ public class LazyInitUriInfoInjectionTest extends BaseResourceTest
    public static class LazySingletonResource implements ResourceFactory
    {
       private Class clazz;
-      private InjectorFactory factory;
       private Object obj;
 
       public LazySingletonResource(Class clazz)
@@ -61,12 +61,13 @@ public class LazyInitUriInfoInjectionTest extends BaseResourceTest
          this.clazz = clazz;
       }
 
-      public void registered(InjectorFactory factory)
+      @Override
+      public void registered(ResteasyProviderFactory factory)
       {
-         this.factory = factory;
+
       }
 
-      public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
+      public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
       {
          if (obj == null)
          {
@@ -82,7 +83,7 @@ public class LazyInitUriInfoInjectionTest extends BaseResourceTest
             {
                throw new RuntimeException(e);
             }
-            this.factory.createPropertyInjector(clazz).inject(obj);
+            factory.getInjectorFactory().createPropertyInjector(clazz, factory).inject(obj);
          }
          return obj;
       }

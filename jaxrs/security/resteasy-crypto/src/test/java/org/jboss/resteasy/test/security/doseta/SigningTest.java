@@ -460,7 +460,14 @@ public class SigningTest extends BaseResourceTest
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
-      String output = response.getEntity();
+      try
+      {
+         String output = response.getEntity();
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
 
 
    }

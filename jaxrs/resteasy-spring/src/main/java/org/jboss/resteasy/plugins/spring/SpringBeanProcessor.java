@@ -131,7 +131,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
 
       public PropertyInjector getInjector(Class<?> clazz)
       {
-         return providerFactory.getInjectorFactory().createPropertyInjector(clazz);
+         return providerFactory.getInjectorFactory().createPropertyInjector(clazz, providerFactory);
       }
 
       public void inject(String beanName, Object bean, PropertyInjector propertyInjector)

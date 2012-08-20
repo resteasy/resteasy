@@ -149,13 +149,7 @@ public class JaxrsInterceptorRegistry<T>
 
       protected Object createInterceptor()
       {
-         Constructor<?> constructor = PickConstructor.pickSingletonConstructor(declaring);
-         if (constructor == null)
-         {
-            throw new RuntimeException("Unable to find a public constructor for interceptor class " + declaring.getName());
-         }
-         ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(constructor);
-         return constructorInjector.construct();
+         return providerFactory.injectedInstance(declaring);
       }
    }
 

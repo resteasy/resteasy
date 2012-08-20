@@ -11,7 +11,6 @@
     <import resource="classpath:springmvc-resteasy.xml" />
 
     <bean id="injectorFactory" class="org.jboss.resteasy.springmvc.test.spring.RequestScopedBeanTest$QualifierInjectorFactoryImpl">
-    	<constructor-arg ref="resteasy.providerFactory"/>
     </bean>
 
     <bean id="testBean" class="org.jboss.resteasy.springmvc.test.spring.RequestScopedBeanTest$TestBean" scope="request">
