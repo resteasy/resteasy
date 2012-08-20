@@ -45,6 +45,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Configurable;
@@ -179,7 +182,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected InjectorFactory injectorFactory;
    protected ResteasyProviderFactory parent;
 
-
+   protected Set<DynamicFeature> dynamicFeatures;
    protected Set<Feature> features;
    protected Map<String, Object> properties;
    protected Set<Class<?>> providerClasses;
@@ -211,6 +214,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void initialize()
    {
+      dynamicFeatures = new HashSet<DynamicFeature>();
       features = new HashSet<Feature>();
       properties = Collections.synchronizedMap(new HashMap<String, Object>());
       providerClasses = new HashSet<Class<?>>();
@@ -253,6 +257,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
       addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
    }
+
+   public Set<DynamicFeature> getDynamicFeatures()
+   {
+      if (dynamicFeatures == null && parent != null) return parent.getDynamicFeatures();
+      return dynamicFeatures;
+   }
+
 
    protected MediaTypeMap<SortedKey<MessageBodyReader>> getMessageBodyReaders()
    {
@@ -1083,6 +1094,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          containerResponseFilterRegistry.registerLegacy(provider);
       }
+      if (isA(provider, ContainerRequestFilter.class, contracts))
+      {
+         if (containerRequestFilterRegistry == null)
+         {
+            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+         }
+         containerRequestFilterRegistry.registerClass(provider);
+      }
+      if (isA(provider, ContainerResponseFilter.class, contracts))
+      {
+         if (containerResponseFilterRegistry == null)
+         {
+            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+         }
+         containerResponseFilterRegistry.registerClass(provider);
+      }
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo)provider.getAnnotation(ConstrainedTo.class);
@@ -1227,6 +1254,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException(e);
          }
       }
+      if (isA(provider, DynamicFeature.class, contracts))
+      {
+         if (dynamicFeatures == null)
+         {
+            dynamicFeatures = new HashSet<DynamicFeature>();
+            dynamicFeatures.addAll(parent.getDynamicFeatures());
+         }
+         dynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+      }
       if (isA(provider, Feature.class, contracts))
       {
          Feature feature = injectedInstance((Class<? extends Feature>)provider);
@@ -1329,6 +1365,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          containerRequestFilterRegistry.registerLegacy((PreProcessInterceptor) provider);
       }
+      if (isA(provider, ContainerRequestFilter.class, contracts))
+      {
+         if (containerRequestFilterRegistry == null)
+         {
+            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+         }
+         containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider);
+      }
       if (isA(provider, PostProcessInterceptor.class, contracts))
       {
          if (containerResponseFilterRegistry == null)
@@ -1336,6 +1380,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
          containerResponseFilterRegistry.registerLegacy((PostProcessInterceptor) provider);
+      }
+      if (isA(provider, ContainerResponseFilter.class, contracts))
+      {
+         if (containerResponseFilterRegistry == null)
+         {
+            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+         }
+         containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider);
       }
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
@@ -1458,6 +1510,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, InjectorFactory.class, contracts))
       {
          this.injectorFactory = (InjectorFactory) provider;
+      }
+      if (isA(provider, DynamicFeature.class, contracts))
+      {
+         if (dynamicFeatures == null)
+         {
+            dynamicFeatures = new HashSet<DynamicFeature>();
+            dynamicFeatures.addAll(parent.getDynamicFeatures());
+         }
+         dynamicFeatures.add((DynamicFeature)provider);
       }
       if (isA(provider, Feature.class, contracts))
       {

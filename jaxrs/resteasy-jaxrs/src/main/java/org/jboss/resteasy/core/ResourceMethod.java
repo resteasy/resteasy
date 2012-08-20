@@ -24,6 +24,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -58,7 +60,8 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
    protected MethodInjector methodInjector;
    protected InjectorFactory injector;
    protected ResourceFactory resource;
-   protected ResteasyProviderFactory providerFactory;
+   protected ResteasyProviderFactory parentProviderFactory;
+   protected ResteasyProviderFactory resourceMethodProviderFactory;
    protected Method method;
    protected Class<?> resourceClass;
    protected ContainerRequestFilter[] requestFilters;
@@ -68,17 +71,40 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
    protected Type genericReturnType;
    protected GeneralValidator validator;
    protected ViolationsContainer<?> violationsContainer;
+   protected ResourceInfo resourceInfo;
 
 
    public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods)
    {
       this.injector = injector;
       this.resource = resource;
-      this.providerFactory = providerFactory;
+      this.parentProviderFactory = providerFactory;
       this.httpMethods = httpMethods;
       this.resourceClass = clazz;
       this.method = method;
-      this.methodInjector = injector.createMethodInjector(clazz, method, providerFactory);
+
+      resourceInfo = new ResourceInfo()
+      {
+         @Override
+         public Method getResourceMethod()
+         {
+            return ResourceMethod.this.method;
+         }
+
+         @Override
+         public Class<?> getResourceClass()
+         {
+            return ResourceMethod.this.resourceClass;
+         }
+      };
+
+      this.resourceMethodProviderFactory = new ResteasyProviderFactory(providerFactory);
+      for (DynamicFeature feature : providerFactory.getDynamicFeatures())
+      {
+         feature.configure(resourceInfo, resourceMethodProviderFactory);
+      }
+
+      this.methodInjector = injector.createMethodInjector(clazz, method, resourceMethodProviderFactory);
 
       Produces p = method.getAnnotation(Produces.class);
       if (p == null) p = clazz.getAnnotation(Produces.class);
@@ -110,10 +136,12 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
 
-      requestFilters = providerFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
-      responseFilters = providerFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
-      writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
+      requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
+      responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
+      writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
 
+
+      // we register with parent to lisen for redeploy evens
       providerFactory.getContainerRequestFilterRegistry().getListeners().add(this);
       providerFactory.getContainerResponseFilterRegistry().getListeners().add(this);
       providerFactory.getServerWriterInterceptorRegistry().getListeners().add(this);
@@ -139,31 +167,36 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
    public void cleanup()
    {
-      providerFactory.getContainerRequestFilterRegistry().getListeners().remove(this);
-      providerFactory.getContainerResponseFilterRegistry().getListeners().remove(this);
-      providerFactory.getServerWriterInterceptorRegistry().getListeners().remove(this);
+      parentProviderFactory.getContainerRequestFilterRegistry().getListeners().remove(this);
+      parentProviderFactory.getContainerResponseFilterRegistry().getListeners().remove(this);
+      parentProviderFactory.getServerWriterInterceptorRegistry().getListeners().remove(this);
       for (ValueInjector param : methodInjector.getParams())
       {
          if (param instanceof MessageBodyParameterInjector)
          {
-            providerFactory.getServerReaderInterceptorRegistry().getListeners().remove(param);
+            parentProviderFactory.getServerReaderInterceptorRegistry().getListeners().remove(param);
          }
       }
    }
 
    public void registryUpdated(JaxrsInterceptorRegistry registry)
    {
+      this.resourceMethodProviderFactory = new ResteasyProviderFactory(parentProviderFactory);
+      for (DynamicFeature feature : parentProviderFactory.getDynamicFeatures())
+      {
+         feature.configure(resourceInfo, resourceMethodProviderFactory);
+      }
       if (registry.getIntf().equals(WriterInterceptor.class))
       {
-         writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
+         writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
       }
       else if (registry.getIntf().equals(ContainerRequestFilter.class))
       {
-         requestFilters = providerFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
+         requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
       }
       else if (registry.getIntf().equals(ContainerResponseFilter.class))
       {
-         responseFilters = providerFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
+         responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
       }
    }
 
@@ -247,7 +280,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
-      Object target = resource.createResource(request, response, providerFactory);
+      Object target = resource.createResource(request, response, resourceMethodProviderFactory);
       return invoke(request, response, target);
    }
 
@@ -455,7 +488,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       }
       for (MediaType accept : accepts)
       {
-         if (providerFactory.getMessageBodyWriter(clazz, type, method.getAnnotations(), accept) != null)
+         if (resourceMethodProviderFactory.getMessageBodyWriter(clazz, type, method.getAnnotations(), accept) != null)
          {
             return accept;
          }
