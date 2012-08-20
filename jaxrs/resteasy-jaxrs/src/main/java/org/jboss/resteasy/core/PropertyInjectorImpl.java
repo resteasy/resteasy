@@ -196,7 +196,7 @@ public class PropertyInjectorImpl implements PropertyInjector
    {
       boolean extractBody = (FindAnnotation.findAnnotation(annotations, Body.class) != null);
       ValueInjector injector = factory.getInjectorFactory().createParameterExtractor(clazz, accessibleObject, type, genericType,
-              annotations, extractBody);
+              annotations, extractBody, factory);
       return injector;
    }
 

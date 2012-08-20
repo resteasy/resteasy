@@ -32,8 +32,8 @@ public class FormInjector implements ValueInjector
          throw new RuntimeException("Unable to instantiate @Form class. No no-arg constructor.");
       }
 
-      constructorInjector = factory.getInjectorFactory().createConstructor(constructor);
-      propertyInjector = factory.getInjectorFactory().createPropertyInjector(type);
+      constructorInjector = factory.getInjectorFactory().createConstructor(constructor, factory);
+      propertyInjector = factory.getInjectorFactory().createPropertyInjector(type, factory);
 
    }
 

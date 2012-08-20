@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class GuiceResourceFactory implements ResourceFactory
 {
@@ -25,12 +26,12 @@ public class GuiceResourceFactory implements ResourceFactory
       return scannableClass;
    }
 
-   public void registered(final InjectorFactory factory)
+   public void registered(ResteasyProviderFactory factory)
    {
-      propertyInjector = factory.createPropertyInjector(scannableClass);
+      propertyInjector = factory.getInjectorFactory().createPropertyInjector(scannableClass, factory);
    }
 
-   public Object createResource(final HttpRequest request, final HttpResponse response, final InjectorFactory factory)
+   public Object createResource(final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory factory)
    {
       final Object resource = provider.get();
       propertyInjector.inject(request, response, resource);

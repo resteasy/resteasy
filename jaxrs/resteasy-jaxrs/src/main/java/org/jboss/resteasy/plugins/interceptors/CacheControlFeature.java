@@ -3,13 +3,12 @@ package org.jboss.resteasy.plugins.interceptors;
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
-import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.spi.interception.AcceptedByMethod;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Configurable;
 import java.lang.reflect.Method;
 
 /**
@@ -17,44 +16,49 @@ import java.lang.reflect.Method;
  * @version $Revision: 1 $
  */
 @HeaderDecoratorPrecedence
-public class CacheControlInterceptor implements PostProcessInterceptor, AcceptedByMethod
+public class CacheControlFeature implements DynamicFeature
 {
-   protected CacheControl cacheControl;
-
-   public boolean accept(Class declaring, Method method)
+   @Override
+   public void configure(ResourceInfo resourceInfo, Configurable configurable)
    {
-      if (declaring == null || method == null) return false;
+      final Class<?> declaring = resourceInfo.getResourceClass();
+      final Method method = resourceInfo.getResourceMethod();
 
-      if (!method.isAnnotationPresent(GET.class)) return false;
-      Cache cache = (Cache) declaring.getAnnotation(Cache.class);
-      NoCache nocache = (NoCache) declaring.getAnnotation(NoCache.class);
+      if (declaring == null || method == null) return;
+      if (!method.isAnnotationPresent(GET.class)) return;
+
+      Cache cache = declaring.getAnnotation(Cache.class);
+      NoCache nocache = declaring.getAnnotation(NoCache.class);
       Cache methodCached = method.getAnnotation(Cache.class);
       NoCache noMethodCache = method.getAnnotation(NoCache.class);
 
+      CacheControl cacheControl = null;
       if (methodCached != null)
       {
-         initCacheControl(methodCached);
+         cacheControl= initCacheControl(methodCached);
       }
       else if (noMethodCache != null)
       {
-         initCacheControl(noMethodCache);
+         cacheControl = initCacheControl(noMethodCache);
       }
       else if (cache != null)
       {
-         initCacheControl(cache);
+         cacheControl = initCacheControl(cache);
       }
       else if (nocache != null)
       {
-         initCacheControl(nocache);
-         
+         cacheControl = initCacheControl(nocache);
       }
 
-      return cacheControl != null;
+      if (cacheControl != null)
+      {
+         configurable.register(new CacheControlFilter(cacheControl));
+      }
    }
 
-   protected void initCacheControl(Cache methodCached)
+   protected CacheControl initCacheControl(Cache methodCached)
    {
-      cacheControl = new CacheControl();
+      CacheControl cacheControl = new CacheControl();
       if (methodCached.isPrivate())
       {
          cacheControl.setPrivate(true);
@@ -71,21 +75,15 @@ public class CacheControlInterceptor implements PostProcessInterceptor, Accepted
       cacheControl.setNoStore((methodCached.noStore()));
       cacheControl.setNoTransform((methodCached.noTransform()));
       cacheControl.setProxyRevalidate(methodCached.proxyRevalidate());
+      return cacheControl;
    }
    
-   protected void initCacheControl(NoCache value)
+   protected CacheControl initCacheControl(NoCache value)
    {
-       cacheControl = new CacheControl();
+      CacheControl cacheControl = new CacheControl();
        cacheControl.setNoCache(true);
        cacheControl.setNoTransform(false);
        for (String field : value.fields()) cacheControl.getNoCacheFields().add(field);
-   }
-
-   public void postProcess(ServerResponse response)
-   {
-      if (response != null && response.getStatus() == 200)
-      {
-         response.getMetadata().putSingle(HttpHeaders.CACHE_CONTROL, cacheControl);
-      }
+      return cacheControl;
    }
 }

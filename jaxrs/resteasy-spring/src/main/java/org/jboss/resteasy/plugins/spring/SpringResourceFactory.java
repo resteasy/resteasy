@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
@@ -36,7 +37,7 @@ public class SpringResourceFactory implements ResourceFactory
    }
 
    public Object createResource(HttpRequest request, HttpResponse response,
-                                InjectorFactory factory)
+                                ResteasyProviderFactory factory)
    {
       return beanFactory.getBean(beanName);
    }
@@ -46,9 +47,9 @@ public class SpringResourceFactory implements ResourceFactory
       return scannableClass;
    }
 
-   public void registered(InjectorFactory factory)
+   public void registered(ResteasyProviderFactory factory)
    {
-      this.propertyInjector = factory.createPropertyInjector(getScannableClass());
+      this.propertyInjector = factory.getInjectorFactory().createPropertyInjector(getScannableClass(), factory);
    }
 
    public void requestFinished(HttpRequest request, HttpResponse response,

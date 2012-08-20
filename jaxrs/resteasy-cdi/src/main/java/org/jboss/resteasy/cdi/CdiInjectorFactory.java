@@ -1,5 +1,6 @@
 package org.jboss.resteasy.cdi;
 
+import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ConstructorInjector;
@@ -30,21 +31,20 @@ public class CdiInjectorFactory implements InjectorFactory
 {
    private static final Logger log = Logger.getLogger(CdiInjectorFactory.class);
    public static final String BEAN_MANAGER_ATTRIBUTE_PREFIX = "org.jboss.weld.environment.servlet.";
-   private InjectorFactory delegate;
    private BeanManager manager;
+   private InjectorFactory delegate = new InjectorFactoryImpl();
    private ResteasyCdiExtension extension;
    private Map<Class<?>, Type> sessionBeanInterface;
 
    public CdiInjectorFactory()
    {
-      this.delegate = ResteasyProviderFactory.getInstance().getInjectorFactory();
       this.manager = lookupBeanManager();
       this.extension = lookupResteasyCdiExtension();
       sessionBeanInterface = extension.getSessionBeanInterface();
    }
 
-
-   public ConstructorInjector createConstructor(Constructor constructor)
+   @Override
+   public ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory factory)
    {
       Class<?> clazz = constructor.getDeclaringClass();
 
@@ -62,28 +62,28 @@ public class CdiInjectorFactory implements InjectorFactory
       }
 
       log.debug("No CDI beans found for {0}. Using default ConstructorInjector.", clazz);
-      return delegate.createConstructor(constructor);
+      return delegate.createConstructor(constructor, factory);
    }
 
-   public MethodInjector createMethodInjector(Class root, Method method)
+   public MethodInjector createMethodInjector(Class root, Method method, ResteasyProviderFactory factory)
    {
-      return delegate.createMethodInjector(root, method);
+      return delegate.createMethodInjector(root, method, factory);
    }
 
-   public PropertyInjector createPropertyInjector(Class resourceClass)
+   public PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory factory)
    {
-      return new CdiPropertyInjector(delegate.createPropertyInjector(resourceClass), resourceClass, sessionBeanInterface, manager);
+      return new CdiPropertyInjector(delegate.createPropertyInjector(resourceClass, factory), resourceClass, sessionBeanInterface, manager);
    }
 
-   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
-      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations);
+      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, factory);
    }
 
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
-                                                 Type genericType, Annotation[] annotations, boolean useDefault)
+                                                 Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory factory)
    {
-      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, useDefault);
+      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, useDefault, factory);
    }
 
    /**
