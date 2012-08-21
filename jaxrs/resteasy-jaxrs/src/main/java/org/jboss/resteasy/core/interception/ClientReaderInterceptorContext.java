@@ -65,14 +65,4 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
    {
       properties.remove(name);
    }
-
-
-   public static class Foo<T> {
-
-   }
-
-   public static void main(String[] args) throws Exception
-   {
-      Foo<String> f = new Foo<String>(){};
-   }
 }
