@@ -18,18 +18,32 @@ import java.util.List;
  */
 public class MatrixParamInjector extends StringParameterInjector implements ValueInjector
 {
-   public MatrixParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, Annotation[] annotations, ResteasyProviderFactory factory)
+   private boolean encode;
+   
+   public MatrixParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       super(type, genericType, paramName, MatrixParam.class, defaultValue, target, annotations, factory);
+      this.encode = encode;
    }
 
    public Object inject(HttpRequest request, HttpResponse response)
    {
       ArrayList<String> values = new ArrayList<String>();
-      for (PathSegment segment : request.getUri().getPathSegments())
+      if (encode)
       {
-         List<String> list = segment.getMatrixParameters().get(paramName);
-         if (list != null) values.addAll(list);
+         for (PathSegment segment : request.getUri().getPathSegments(false))
+         {
+            List<String> list = segment.getMatrixParameters().get(paramName);
+            if (list != null) values.addAll(list);
+         }
+      }
+      else
+      {
+         for (PathSegment segment : request.getUri().getPathSegments())
+         {
+            List<String> list = segment.getMatrixParameters().get(paramName);
+            if (list != null) values.addAll(list);
+         }
       }
       if (values.size() == 0) return extractValues(null);
       else return extractValues(values);
