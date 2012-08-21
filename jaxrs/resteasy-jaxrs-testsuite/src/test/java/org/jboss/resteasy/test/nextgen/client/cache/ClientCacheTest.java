@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.nextgen.cache;
+package org.jboss.resteasy.test.nextgen.client.cache;
 
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;

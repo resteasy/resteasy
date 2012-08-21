@@ -167,7 +167,7 @@ public class JaxrsInterceptorRegistry<T>
       @Override
       protected void initialize()
       {
-         createInterceptor();
+         interceptor = createInterceptor();
          providerFactory.injectProperties(interceptor);
       }
 

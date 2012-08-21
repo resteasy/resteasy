@@ -17,6 +17,8 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Providers;
@@ -38,18 +40,44 @@ public class ClientInvoker implements MethodInvoker
    protected boolean followRedirects;
    protected EntityExtractor extractor;
    protected DefaultEntityExtractorFactory entityExtractorFactory;
+   protected ClientConfiguration invokerConfig;
 
 
    public ClientInvoker(ResteasyWebTarget parent, Class declaring, Method method, ProxyConfig config)
    {
-      this.webTarget = parent;
+      // webTarget must be a clone so that it has a cloned ClientConfiguration so we can apply DynamicFeature
       if (method.isAnnotationPresent(Path.class))
       {
-         this.webTarget = this.webTarget.path(method);
+         this.webTarget = parent.path(method);
+      }
+      else
+      {
+         this.webTarget = parent.clone();
       }
       this.declaring = declaring;
       this.method = method;
-      this.processors = ProcessorFactory.createProcessors(declaring, method, (ClientConfiguration)this.webTarget.configuration(), config.getDefaultConsumes());
+      invokerConfig = (ClientConfiguration) this.webTarget.configuration();
+      ResourceInfo info = new ResourceInfo()
+      {
+         @Override
+         public Method getResourceMethod()
+         {
+            return ClientInvoker.this.method;
+         }
+
+         @Override
+         public Class<?> getResourceClass()
+         {
+            return ClientInvoker.this.declaring;
+         }
+      };
+      for (DynamicFeature feature : invokerConfig.getDynamicFeatures())
+      {
+         feature.configure(info, invokerConfig);
+      }
+
+
+      this.processors = ProcessorFactory.createProcessors(declaring, method, invokerConfig, config.getDefaultConsumes());
       accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
       entityExtractorFactory = new DefaultEntityExtractorFactory();
       this.extractor = entityExtractorFactory.createExtractor(method);
@@ -73,7 +101,7 @@ public class ClientInvoker implements MethodInvoker
    public Object invoke(Object[] args)
    {
       boolean isProvidersSet = ResteasyProviderFactory.getContextData(Providers.class) != null;
-      if (!isProvidersSet) ResteasyProviderFactory.pushContext(Providers.class, (ClientConfiguration)this.webTarget.configuration());
+      if (!isProvidersSet) ResteasyProviderFactory.pushContext(Providers.class, invokerConfig);
 
       try
       {

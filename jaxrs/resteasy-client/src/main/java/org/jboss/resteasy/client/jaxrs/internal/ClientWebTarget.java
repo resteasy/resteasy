@@ -51,6 +51,13 @@ public class ClientWebTarget implements ResteasyWebTarget
    }
 
    @Override
+   public ResteasyWebTarget clone()
+   {
+      UriBuilder copy = uriBuilder.clone();
+      return new ClientWebTarget(client, copy, configuration);
+   }
+
+   @Override
    public ResteasyClient getResteasyClient()
    {
       return client;

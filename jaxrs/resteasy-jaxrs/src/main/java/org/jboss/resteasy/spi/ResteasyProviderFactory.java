@@ -182,7 +182,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected InjectorFactory injectorFactory;
    protected ResteasyProviderFactory parent;
 
-   protected Set<DynamicFeature> dynamicFeatures;
+   protected Set<DynamicFeature> serverDynamicFeatures;
+   protected Set<DynamicFeature> clientDynamicFeatures;
    protected Set<Feature> features;
    protected Map<String, Object> properties;
    protected Set<Class<?>> providerClasses;
@@ -214,7 +215,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void initialize()
    {
-      dynamicFeatures = new HashSet<DynamicFeature>();
+      serverDynamicFeatures = new HashSet<DynamicFeature>();
+      clientDynamicFeatures = new HashSet<DynamicFeature>();
       features = new HashSet<Feature>();
       properties = Collections.synchronizedMap(new HashMap<String, Object>());
       providerClasses = new HashSet<Class<?>>();
@@ -258,10 +260,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
    }
 
-   public Set<DynamicFeature> getDynamicFeatures()
+   public Set<DynamicFeature> getServerDynamicFeatures()
    {
-      if (dynamicFeatures == null && parent != null) return parent.getDynamicFeatures();
-      return dynamicFeatures;
+      if (serverDynamicFeatures == null && parent != null) return parent.getServerDynamicFeatures();
+      return serverDynamicFeatures;
+   }
+
+   public Set<DynamicFeature> getClientDynamicFeatures()
+   {
+      if (clientDynamicFeatures == null && parent != null) return parent.getClientDynamicFeatures();
+      return clientDynamicFeatures;
    }
 
 
@@ -1256,12 +1264,40 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, DynamicFeature.class, contracts))
       {
-         if (dynamicFeatures == null)
+         ConstrainedTo constrainedTo = (ConstrainedTo)provider.getAnnotation(ConstrainedTo.class);
+         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
          {
-            dynamicFeatures = new HashSet<DynamicFeature>();
-            dynamicFeatures.addAll(parent.getDynamicFeatures());
+            if (serverDynamicFeatures == null)
+            {
+               serverDynamicFeatures = new HashSet<DynamicFeature>();
+               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
-         dynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         {
+            if (clientDynamicFeatures == null)
+            {
+               clientDynamicFeatures = new HashSet<DynamicFeature>();
+               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+         }
+         if (constrainedTo == null)
+         {
+            if (serverDynamicFeatures == null)
+            {
+               serverDynamicFeatures = new HashSet<DynamicFeature>();
+               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+            if (clientDynamicFeatures == null)
+            {
+               clientDynamicFeatures = new HashSet<DynamicFeature>();
+               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+         }
       }
       if (isA(provider, Feature.class, contracts))
       {
@@ -1513,12 +1549,40 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, DynamicFeature.class, contracts))
       {
-         if (dynamicFeatures == null)
+         ConstrainedTo constrainedTo = (ConstrainedTo)provider.getClass().getAnnotation(ConstrainedTo.class);
+         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
          {
-            dynamicFeatures = new HashSet<DynamicFeature>();
-            dynamicFeatures.addAll(parent.getDynamicFeatures());
+            if (serverDynamicFeatures == null)
+            {
+               serverDynamicFeatures = new HashSet<DynamicFeature>();
+               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) provider);
          }
-         dynamicFeatures.add((DynamicFeature)provider);
+         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         {
+            if (clientDynamicFeatures == null)
+            {
+               clientDynamicFeatures = new HashSet<DynamicFeature>();
+               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) provider);
+         }
+         if (constrainedTo == null)
+         {
+            if (serverDynamicFeatures == null)
+            {
+               serverDynamicFeatures = new HashSet<DynamicFeature>();
+               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) provider);
+            if (clientDynamicFeatures == null)
+            {
+               clientDynamicFeatures = new HashSet<DynamicFeature>();
+               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) provider);
+         }
       }
       if (isA(provider, Feature.class, contracts))
       {
