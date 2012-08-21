@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.LinkHeaders;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -182,6 +184,9 @@ public abstract class ClientResponse extends BuiltResponse
                  media, genericType));
       }
 
+
+
+
       try
       {
          InputStream is = getEntityStream();
@@ -195,9 +200,11 @@ public abstract class ClientResponse extends BuiltResponse
 
          }
 
-         // todo put in reader interception
-         final Object obj = reader1.readFrom(type, genericType, annotations, media, getStringHeaders(), is);
+         ReaderInterceptor[] readerInterceptors = configuration.getReaderInterceptors(null, null);
 
+         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, reader1, useType,
+                 useGeneric, this.annotations, media, getStringHeaders(), is, properties)
+                 .proceed();
          if (isMarshalledEntity)
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;

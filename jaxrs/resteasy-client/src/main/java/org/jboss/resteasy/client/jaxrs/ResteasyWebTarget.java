@@ -41,4 +41,6 @@ public interface ResteasyWebTarget extends WebTarget
    ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException;
 
    ResteasyWebTarget path(Method method) throws IllegalArgumentException;
+
+   ResteasyWebTarget clone();
 }

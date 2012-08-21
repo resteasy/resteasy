@@ -1,14 +1,13 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
-import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Configuration;
+import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.MediaType;
@@ -17,14 +16,12 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -87,6 +84,11 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
       return providerFactory.getClientWriterInterceptorRegistry().postMatch(declaring, target);
    }
 
+   public ReaderInterceptor[] getReaderInterceptors(Class declaring, AccessibleObject target)
+   {
+      return providerFactory.getClientReaderInterceptorRegistry().postMatch(declaring, target);
+   }
+
    public ClientRequestFilter[] getRequestFilters(Class declaring, AccessibleObject target)
    {
       return providerFactory.getClientRequestFilters().postMatch(declaring, target);
@@ -95,6 +97,11 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
    public ClientResponseFilter[] getResponseFilters(Class declaring, AccessibleObject target)
    {
       return providerFactory.getClientResponseFilters().postMatch(declaring, target);
+   }
+
+   public Set<DynamicFeature> getDynamicFeatures()
+   {
+      return providerFactory.getClientDynamicFeatures();
    }
 
    public String toString(Object object)
