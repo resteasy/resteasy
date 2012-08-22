@@ -2,27 +2,14 @@ package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
-import org.jboss.resteasy.spi.interception.AcceptedByMethod;
-
-import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public abstract class DigitalSigningHeaderDecorator implements AcceptedByMethod
+public class AbstractDigitalSigningHeaderDecorator
 {
    protected Signed signed;
-
-   public boolean accept(Class declaring, Method method)
-   {
-      signed = method.getAnnotation(Signed.class);
-      if (signed == null)
-      {
-         signed = (Signed) declaring.getAnnotation(Signed.class);
-      }
-      return signed != null;
-   }
 
    protected DKIMSignature createHeader(KeyRepository repository)
    {
