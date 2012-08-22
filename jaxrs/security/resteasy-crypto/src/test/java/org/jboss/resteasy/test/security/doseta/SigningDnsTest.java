@@ -58,12 +58,6 @@ public class SigningDnsTest extends BaseResourceTest
 
 
       dispatcher.getDefaultContextObjects().put(KeyRepository.class, serverRepository);
-      /*
-      deployment.getProviderFactory().registerProvider(DigitalSigningInterceptor.class);
-      deployment.getProviderFactory().registerProvider(DigitalSigningHeaderDecorator.class);
-      deployment.getProviderFactory().registerProvider(DigitalVerificationInterceptor.class);
-      deployment.getProviderFactory().registerProvider(DigitalVerificationHeaderDecorator.class);
-      */
       addPerRequestResource(SignedResource.class);
       configureDNS();
    }
