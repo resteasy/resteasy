@@ -59,5 +59,6 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
       {
          entityStream.write(c);
       }
+      inputStream.close();
    }
 }
