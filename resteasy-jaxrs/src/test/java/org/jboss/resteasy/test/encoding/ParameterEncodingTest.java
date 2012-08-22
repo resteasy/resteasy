@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * RESTEASY-734
+ * RESTEASY-737
  * 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
