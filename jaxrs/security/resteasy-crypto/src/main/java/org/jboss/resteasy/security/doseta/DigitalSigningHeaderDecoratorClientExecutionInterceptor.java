@@ -1,12 +1,15 @@
 package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
+import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 
 import javax.ws.rs.ext.Provider;
+import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,8 +17,18 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 @HeaderDecoratorPrecedence
-public class ClientDigitalSigningHeaderDecorator extends DigitalSigningHeaderDecorator implements ClientExecutionInterceptor
+public class DigitalSigningHeaderDecoratorClientExecutionInterceptor extends AbstractDigitalSigningHeaderDecorator implements ClientExecutionInterceptor, AcceptedByMethod
 {
+
+   public boolean accept(Class declaring, Method method)
+   {
+      signed = method.getAnnotation(Signed.class);
+      if (signed == null)
+      {
+         signed = (Signed) declaring.getAnnotation(Signed.class);
+      }
+      return signed != null;
+   }
 
    @Override
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception

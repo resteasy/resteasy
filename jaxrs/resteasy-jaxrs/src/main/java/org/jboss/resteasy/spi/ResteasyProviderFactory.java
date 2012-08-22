@@ -1377,7 +1377,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          clientRequestFilters.registerSingleton((ClientRequestFilter)provider, bindingPriority);
       }
-      if (isA(provider, ClientRequestFilter.class, contracts))
+      if (isA(provider, ClientResponseFilter.class, contracts))
       {
          if (clientResponseFilters == null)
          {
