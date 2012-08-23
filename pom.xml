@@ -12,7 +12,7 @@
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
-        <dep.jaxb-impl.version>2.2.4</dep.jaxb-impl.version>
+        <dep.jaxb-impl.version>2.2.5-2</dep.jaxb-impl.version>
         <dep.jettison.version>1.3.1</dep.jettison.version>
     </properties>
 
@@ -97,6 +97,7 @@
         <module>async-http-tomcat</module>
         <module>resteasy-spring</module>
         <module>resteasy-jsapi</module>
+        <module>resteasy-jsapi-testing</module>
         <module>resteasy-cdi</module>
         <module>server-adapters</module>
         <!-- <module>interface-description</module> -->
