@@ -16,11 +16,17 @@ public class SmokeTestResource {
     }
 
     @POST
-    public String testFormParm(@FormParam("key") String[] values) {
+    public String testFormParam(@FormParam("key") String[] values) {
         String val = "";
         for (String _val : values) {
             val += _val + "::";
         }
+        return val;
+    }
+
+    @Path("/post2")
+    @POST
+    public String testFormParam2(@FormParam("key") String val) {
         return val;
     }
 
@@ -35,7 +41,7 @@ public class SmokeTestResource {
 
     @Path("/cookie")
     @GET
-    public String testCookieParam(@CookieParam("test-cookie") String key) {
+    public String testCookieParam(@CookieParam("username") String key) {
         return key;
     }
 
@@ -47,5 +53,11 @@ public class SmokeTestResource {
             val += _val + "::";
         }
         return val;
+    }
+
+    @GET
+    @Path("/header")
+    public String testHeaderParam(@HeaderParam("Referer") String referer) {
+        return referer;
     }
 }

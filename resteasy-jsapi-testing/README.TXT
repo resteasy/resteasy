@@ -1,21 +1,7 @@
-Example of using RestEasy with JS-API:
+# Running RESTEasy-JSAPI Testing
 
-System Requirements:
-====================
-- Maven 2.0.9 or higher
-
-Building the project:
-====================
-
-mvn clean install
-
-Running the project and manually testing it:
-===========================================
-
-mvn jetty:run
-
-Open a browser at the following URL:
-
-http://127.0.0.1:8080/examples-jsapi/
-
-
+0. Make sure you have Firefox installed on your computer
+1. Download Selenium Server from http://seleniumhq.org/download/
+2. Start Selenium Server: java -jar selenium-server-standalone-2.25.0.jar
+3. Start jetty server in this test project: mvn jetty:run
+4. Do the testing: mvn test

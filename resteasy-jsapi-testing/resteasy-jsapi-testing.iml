@@ -24,6 +24,7 @@
       <excludeFolder url="file://$MODULE_DIR$/target/examples-jsapi" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
       <excludeFolder url="file://$MODULE_DIR$/target/surefire" />
+      <excludeFolder url="file://$MODULE_DIR$/target/surefire-reports" />
       <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
       <excludeFolder url="file://$MODULE_DIR$/target/work" />
     </content>
@@ -43,6 +44,36 @@
     <orderEntry type="library" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
     <orderEntry type="module" module-name="resteasy-jsapi" />
     <orderEntry type="library" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-java:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-android-driver:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-remote-driver:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: cglib:cglib-nodep:2.1_3" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20080701" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-api:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:r09" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-chrome-driver:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-htmlunit-driver:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.htmlunit:htmlunit:2.8" level="project" />
+    <orderEntry type="library" name="Maven: xalan:xalan:2.7.1" level="project" />
+    <orderEntry type="library" name="Maven: xalan:serializer:2.7.1" level="project" />
+    <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.3.04" level="project" />
+    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpmime:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.james:apache-mime4j:0.6" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.htmlunit:htmlunit-core-js:2.8" level="project" />
+    <orderEntry type="library" name="Maven: xerces:xercesImpl:2.9.1" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.nekohtml:nekohtml:1.9.14" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.cssparser:cssparser:0.9.5" level="project" />
+    <orderEntry type="library" name="Maven: org.w3c.css:sac:1.3" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-firefox-driver:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-ie-driver:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-iphone-driver:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-support:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium.client-drivers:selenium-java-client-driver:1.0" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:4.1" level="project" />
   </component>
 </module>
 

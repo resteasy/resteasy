@@ -5,7 +5,7 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>2.3.5.Final</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.jboss.resteasy</groupId>
@@ -31,9 +31,23 @@
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium.client-drivers</groupId>
+            <artifactId>selenium-java-client-driver</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
     </dependencies>
     <build>
-        <finalName>examples-jsapi</finalName>
+        <finalName>resteasy-jsapi-testing</finalName>
         <plugins>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
