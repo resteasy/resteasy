@@ -15,6 +15,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.FormParam;
@@ -109,6 +110,11 @@ public class ProcessorFactory
       }
       else if ((/* form = */FindAnnotation.findAnnotation(annotations,
               Form.class)) != null)
+      {
+         processor = new FormProcessor(type, configuration);
+      }
+      else if ((/* form = */FindAnnotation.findAnnotation(annotations,
+              BeanParam.class)) != null)
       {
          processor = new FormProcessor(type, configuration);
       }
