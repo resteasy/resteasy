@@ -12,6 +12,9 @@
     <title>Migrating from 2.x to 3.0</title>
     <itemizedlist>
         <listitem>
+            Server-side cache setup has been changed. Please see documentation for more details.
+        </listitem>
+        <listitem>
             Most add() methods have been removed or made protected in ResteasyProviderFactory.  Use registerProvider() and registerProviderInstance() methods.
         </listitem>
         <listitem>

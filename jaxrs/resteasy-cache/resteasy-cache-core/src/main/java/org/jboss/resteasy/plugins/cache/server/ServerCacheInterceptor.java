@@ -1,11 +1,9 @@
 package org.jboss.resteasy.plugins.cache.server;
 
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
+import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
@@ -13,6 +11,8 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.WriterInterceptor;
+import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,8 +23,8 @@ import java.security.NoSuchAlgorithmException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@ServerInterceptor
-public class ServerCacheInterceptor implements MessageBodyWriterInterceptor
+@ConstrainedTo(ConstrainedTo.Type.SERVER)
+public class ServerCacheInterceptor implements WriterInterceptor
 {
    protected ServerCache cache;
 
@@ -84,9 +84,10 @@ public class ServerCacheInterceptor implements MessageBodyWriterInterceptor
       }
    }
 
-   public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
-      if (!request.getHttpMethod().equalsIgnoreCase("GET") || request.getAttribute(ServerCacheHitInterceptor.DO_NOT_CACHE_RESPONSE) != null)
+      if (!request.getHttpMethod().equalsIgnoreCase("GET") || request.getAttribute(ServerCacheHitFilter.DO_NOT_CACHE_RESPONSE) != null)
       {
          context.proceed();
          return;

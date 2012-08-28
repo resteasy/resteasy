@@ -97,21 +97,21 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget path(String path) throws NullPointerException
    {
       UriBuilder copy = uriBuilder.clone().path(path);
-      return new ClientWebTarget(client, copy, configuration);
+      return copyPathParams(copy);
    }
 
    @Override
    public ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException
    {
       UriBuilder copy = uriBuilder.clone().path(resource);
-      return new ClientWebTarget(client, copy, configuration);
+      return copyPathParams(copy);
    }
 
    @Override
    public ResteasyWebTarget path(Method method) throws IllegalArgumentException
    {
       UriBuilder copy = uriBuilder.clone().path(method);
-      return new ClientWebTarget(client, copy, configuration);
+      return copyPathParams(copy);
    }
 
    @Override
@@ -145,7 +145,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().matrixParam(name, stringValues);
-      return new ClientWebTarget(client, copy, configuration);
+      return copyPathParams(copy);
    }
 
    private String[] toStringValues(Object[] values)
@@ -163,7 +163,16 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().queryParam(name, stringValues);
-      return new ClientWebTarget(client, copy, configuration);
+      return copyPathParams(copy);
+   }
+
+   protected ResteasyWebTarget copyPathParams(UriBuilder copy)
+   {
+      HashMap<String, String> paramMap = new HashMap<String, String>();
+      paramMap.putAll(pathParams);
+      ClientWebTarget target =  new ClientWebTarget(client, copy, configuration);
+      target.pathParams = paramMap;
+      return target;
    }
 
    @Override
@@ -175,7 +184,7 @@ public class ClientWebTarget implements ResteasyWebTarget
          String[] stringValues = toStringValues(entry.getValue().toArray());
          uriBuilder.queryParam(entry.getKey(), stringValues);
       }
-      return new ClientWebTarget(client, copy, configuration);
+      return copyPathParams(copy);
    }
 
    @Override
@@ -187,7 +196,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public Invocation.Builder request(String... acceptedResponseTypes)
    {
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(pathParams), configuration);
+      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.buildFromMap(pathParams), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       return builder;
    }
@@ -195,7 +204,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public Invocation.Builder request(MediaType... acceptedResponseTypes)
    {
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(pathParams), configuration);
+      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.buildFromMap(pathParams), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       return builder;
    }

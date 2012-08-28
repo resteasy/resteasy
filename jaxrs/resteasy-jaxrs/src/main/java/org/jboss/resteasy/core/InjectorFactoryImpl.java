@@ -9,6 +9,7 @@ import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
@@ -120,6 +121,10 @@ public class InjectorFactoryImpl implements InjectorFactory
             }
             return new PrefixedFormInjector(type, prefix, providerFactory);
          }
+         return new FormInjector(type, providerFactory);
+      }
+      else if (findAnnotation(annotations, BeanParam.class) != null)
+      {
          return new FormInjector(type, providerFactory);
       }
       else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null)
