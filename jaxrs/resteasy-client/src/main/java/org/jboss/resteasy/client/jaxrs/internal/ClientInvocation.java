@@ -269,9 +269,9 @@ public class ClientInvocation implements Invocation
                   else return new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
                }
             }
-            catch (IOException e)
+            catch (Throwable e)
             {
-               throw new RuntimeException(e);
+               throw new ClientException(e);
             }
          }
       }
