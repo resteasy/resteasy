@@ -216,8 +216,8 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
          @Override
          public Object process(Object target, Object value, Object processor)
          {
-            process((ClientInvocationBuilder)target, value, processor);
-            return null;
+            processParam((ClientInvocationBuilder)target, value, processor);
+            return target;
          }
       }, invocation, param);
    }
@@ -225,6 +225,8 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
 
    protected Object process(Process process, Object target, Object param)
    {
+      if (param == null) return target;
+
       for (Map.Entry<Field, Object> entry : fieldMap.entrySet())
       {
 
@@ -270,7 +272,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
       return target;
    }
 
-   private void process(ClientInvocationBuilder invocation, Object val, Object proc)
+   private void processParam(ClientInvocationBuilder invocation, Object val, Object proc)
    {
       if (proc instanceof InvocationProcessor)
       {
