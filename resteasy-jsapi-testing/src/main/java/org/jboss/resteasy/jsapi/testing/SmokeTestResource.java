@@ -60,4 +60,16 @@ public class SmokeTestResource {
     public String testHeaderParam(@HeaderParam("Referer") String referer) {
         return referer;
     }
+
+    @POST
+    @Path("/RESTEASY-731/false")
+    public String testRESTEasy731False(@FormParam("false") boolean bool) {
+        return ("RESTEASY-731-" + String.valueOf(bool));
+    }
+
+    @POST
+    @Path("/RESTEASY-731/zero")
+    public String testRESTEasy731Zero(@FormParam("zero") int zero) {
+        return ("RESTEASY-731-" + String.valueOf(zero));
+    }
 }

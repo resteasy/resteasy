@@ -10,6 +10,9 @@
     <input type='button' onclick='testCookieParam();' value='Test Cookie Param'/>
     <input type='button' onclick='testMatrixParam();' value='Test Matrix Param'/>
     <input type='button' onclick='testHeaderParam();' value='Test Header Param'/>
+    <input type='button' onclick='testRESTEasy731False();' value='RESTEASY-731-false'/>
+    <input type='button' onclick='testRESTEasy731Zero();' value='RESTEASY-731-zero'/>
+
 </form>
 
 <div id="path_result"></div>
@@ -19,6 +22,8 @@
 <div id="cookie_result"></div>
 <div id="matrix_result"></div>
 <div id="header_result"></div>
+<div id="testRESTEasy731FalseResult"></div>
+<div id="testRESTEasy731ZeroResult"></div>
 
 <%
     javax.servlet.http.Cookie cookie = new Cookie("username", "Weinan");
@@ -62,6 +67,18 @@
         document.getElementById('header_result').innerHTML =
                 SmokeTestResource.testHeaderParam();
     }
+
+    function testRESTEasy731False() {
+        document.getElementById('testRESTEasy731FalseResult').innerHTML =
+                SmokeTestResource.testRESTEasy731False(false);
+    }
+
+    function testRESTEasy731Zero() {
+        document.getElementById('testRESTEasy731ZeroResult').innerHTML =
+                SmokeTestResource.testRESTEasy731Zero(0);
+    }
+
+
 </script>
 </body>
 </html>

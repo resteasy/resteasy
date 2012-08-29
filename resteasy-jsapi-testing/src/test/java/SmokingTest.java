@@ -2,6 +2,7 @@ import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -19,6 +20,7 @@ public class SmokingTest {
         selenium.start();
     }
 
+    @Ignore
     @Test
     public void smokeTest() throws Exception {
         selenium.open("/resteasy-jsapi-testing/");
@@ -29,6 +31,8 @@ public class SmokingTest {
         selenium.click("//input[@value='Test Cookie Param']");
         selenium.click("//input[@value='Test Matrix Param']");
         selenium.click("//input[@value='Test Header Param']");
+        selenium.click("//input[@value='RESTEASY-731-false']");
+        selenium.click("//input[@value='RESTEASY-731-zero']");
 
         assertTrue(selenium.isTextPresent("0"));
         assertTrue(selenium.isTextPresent("exact:a::b::c::"));
@@ -37,6 +41,8 @@ public class SmokingTest {
         assertTrue(selenium.isTextPresent("Weinan"));
         assertTrue(selenium.isTextPresent("exact:g::h::i::"));
         assertTrue(selenium.isTextPresent("/resteasy-jsapi-testing/"));
+        assertTrue(selenium.isTextPresent("RESTEASY-731-false"));
+        assertTrue(selenium.isTextPresent("RESTEASY-731-0"));
     }
 
     @After
