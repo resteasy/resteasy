@@ -92,7 +92,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if ((formParam = findAnnotation(annotations, FormParam.class)) != null)
       {
-         return new FormParamInjector(type, genericType, injectTarget, formParam.value(), defaultVal, annotations, providerFactory);
+         return new FormParamInjector(type, genericType, injectTarget, formParam.value(), defaultVal, encode, annotations, providerFactory);
       }
       else if ((cookie = findAnnotation(annotations, CookieParam.class)) != null)
       {
@@ -125,7 +125,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null)
       {
-         return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, annotations, providerFactory);
+         return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, encode, annotations, providerFactory);
       }
       else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
       {
