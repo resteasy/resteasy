@@ -3,11 +3,14 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.FormParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -16,15 +19,30 @@ import java.util.List;
  */
 public class FormParamInjector extends StringParameterInjector implements ValueInjector
 {
-
-   public FormParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue, Annotation[] annotations, ResteasyProviderFactory factory)
+   private boolean encode;
+   
+   public FormParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       super(type, genericType, header, FormParam.class, defaultValue, target, annotations, factory);
+      this.encode = encode;
    }
 
    public Object inject(HttpRequest request, HttpResponse response)
    {
       List<String> list = request.getDecodedFormParameters().get(paramName);
+      if (list == null)
+      {
+         list = new ArrayList<String>();
+      }
+      else if (encode)
+      {
+         List<String> encodedList = new ArrayList<String>();
+         for (String s : list)
+         {
+            encodedList.add(Encode.encodePath(s));
+         }
+         list = encodedList;
+      }
       return extractValues(list);
    }
 
