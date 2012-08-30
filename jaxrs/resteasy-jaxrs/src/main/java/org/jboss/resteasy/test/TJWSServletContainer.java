@@ -54,6 +54,19 @@ public class TJWSServletContainer
    {
       ResteasyDeployment deployment = new ResteasyDeployment();
       deployment.setSecurityEnabled(true);
+      String applicationClass = null;
+      if (contextParams != null)
+      {
+         applicationClass = contextParams.get("javax.ws.rs.Application");
+      }
+      if (applicationClass == null && initParams != null)
+      {
+         applicationClass = initParams.get("javax.ws.rs.Application"); 
+      }
+      if (applicationClass != null)
+      {
+         deployment.setApplicationClass(applicationClass);
+      }
       return start(bindPath, domain, deployment, initParams, contextParams);
    }
 
