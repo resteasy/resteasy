@@ -8,6 +8,7 @@ import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
 import org.jboss.resteasy.annotations.interception.SecurityPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
@@ -156,6 +157,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected MediaTypeMap<SortedKey<MessageBodyReader>> messageBodyReaders;
    protected MediaTypeMap<SortedKey<MessageBodyWriter>> messageBodyWriters;
    protected Map<Class<?>, ExceptionMapper> exceptionMappers;
+   protected Map<Class<?>, ClientExceptionMapper> clientExceptionMappers;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
    protected Map<Class<?>, StringConverter> stringConverters;
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers;
@@ -222,6 +224,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
       messageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
       exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
+      clientExceptionMappers = new HashMap<Class<?>, ClientExceptionMapper>();
       contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
       stringConverters = new HashMap<Class<?>, StringConverter>();
       stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
@@ -281,6 +284,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (exceptionMappers == null && parent != null) return parent.getExceptionMappers();
       return exceptionMappers;
+   }
+   
+   protected Map<Class<?>, ClientExceptionMapper> getClientExceptionMappers()
+   {
+      if (clientExceptionMappers == null && parent != null) return parent.getClientExceptionMappers();
+      return clientExceptionMappers;
    }
 
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers()
@@ -787,6 +796,41 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       exceptionMappers.put(exceptionClass, provider);
    }
 
+
+   public void addClientExceptionMapper(Class<? extends ClientExceptionMapper<?>> providerClass)
+   {
+      ClientExceptionMapper<?> provider = createProviderInstance(providerClass);
+      addClientExceptionMapper(provider, providerClass);
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider)
+   {
+      addClientExceptionMapper(provider, provider.getClass());
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Class<?> providerClass)
+   {
+      Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ClientExceptionMapper.class)[0];
+      addClientExceptionMapper(provider, exceptionType);
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Type exceptionType)
+   {
+      injectProperties(provider.getClass());
+
+      Class<?> exceptionClass = Types.getRawType(exceptionType);
+      if (!Throwable.class.isAssignableFrom(exceptionClass))
+      {
+         throw new RuntimeException("Incorrect type parameter. ClientExceptionMapper requires a subclass of java.lang.Throwable as its type parameter.");
+      }
+      if (clientExceptionMappers == null)
+      {
+    	  clientExceptionMappers = new HashMap<Class<?>, ClientExceptionMapper>();
+    	  clientExceptionMappers.putAll(parent.getClientExceptionMappers());
+      }
+      clientExceptionMappers.put(exceptionClass, provider);
+   }
+   
    /**
     * Add a {@link ClientErrorInterceptor} to this provider factory instance.
     * Duplicate handlers are ignored. (For Client Proxy API only)
@@ -1052,6 +1096,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          catch (Exception e)
          {
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+         }
+      }
+      if (isA(provider, ClientExceptionMapper.class, contracts))
+      {
+         try
+         {
+            addClientExceptionMapper(provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate ClientExceptionMapper", e);
          }
       }
       if (isA(provider, ClientRequestFilter.class, contracts))
@@ -1322,6 +1377,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
          }
       }
+      if (isA(provider, ClientExceptionMapper.class, contracts))
+      {
+         try
+         {
+            addClientExceptionMapper((ClientExceptionMapper) provider);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+         }
+      }
       if (isA(provider, ContextResolver.class, contracts))
       {
          try
@@ -1540,7 +1606,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       return getExceptionMappers().get(type);
    }
-
+   
+   public <T extends Throwable> ClientExceptionMapper<T> getClientExceptionMapper(Class<T> type)
+   {
+      return getClientExceptionMappers().get(type);
+   }
+   
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
@@ -382,6 +383,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
       return getDelegate().getExceptionMapper(type);
+   }
+   
+   @Override
+   public <T extends Throwable> ClientExceptionMapper<T> getClientExceptionMapper(Class<T> type)
+   {
+      return getDelegate().getClientExceptionMapper(type);
    }
 
    @Override
