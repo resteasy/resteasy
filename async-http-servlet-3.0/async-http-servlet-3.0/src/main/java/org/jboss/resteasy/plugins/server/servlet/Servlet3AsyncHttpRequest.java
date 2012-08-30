@@ -37,6 +37,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    {
       suspended = true;
       final AsyncContext context = request.startAsync(request, response);
+      context.setTimeout(l);
+      context.addListener(new TimeoutListener());
       asynchronousResponse = new AbstractAsynchronousResponse()
       {
          public void setResponse(Response response)

@@ -78,6 +78,7 @@ public class Encode
       System.arraycopy(pathEncoding, 0, matrixParameterEncoding, 0, pathEncoding.length);
       matrixParameterEncoding[';'] = "%3B";
       matrixParameterEncoding['='] = "%3D";
+      matrixParameterEncoding['/'] = "%2F"; // RESTEASY-729
       System.arraycopy(pathEncoding, 0, pathSegmentEncoding, 0, pathEncoding.length);
       pathSegmentEncoding['/'] = "%2F";
       /*

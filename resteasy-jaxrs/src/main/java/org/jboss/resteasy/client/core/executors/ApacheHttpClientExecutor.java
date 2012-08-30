@@ -15,7 +15,11 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
+import org.jboss.resteasy.client.exception.mapper.ApacheHttpClient3ExceptionMapper;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -24,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -40,15 +45,26 @@ public class ApacheHttpClientExecutor implements ClientExecutor
    protected boolean createdHttpClient;
    protected boolean closed;
    
+   static synchronized private void checkClientExceptionMapper()
+   {  
+      if (ResteasyProviderFactory.getInstance().getClientExceptionMapper(Exception.class) == null)
+      {
+         Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(ApacheHttpClient3ExceptionMapper.class, ClientExceptionMapper.class)[0];
+         ResteasyProviderFactory.getInstance().addClientExceptionMapper(new ApacheHttpClient3ExceptionMapper(), exceptionType);
+      }
+   }
+   
    public ApacheHttpClientExecutor()
    {
       this.httpClient = new HttpClient();
       createdHttpClient = true;
+      checkClientExceptionMapper();
    }
 
    public ApacheHttpClientExecutor(HttpClient httpClient)
    {
       this.httpClient = httpClient;
+      checkClientExceptionMapper();
    }
 
    public HttpClient getHttpClient()

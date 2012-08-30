@@ -20,6 +20,7 @@ import org.jboss.resteasy.client.core.extractors.EntityExtractor;
 import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
 import org.jboss.resteasy.client.core.marshallers.ClientMarshallerFactory;
 import org.jboss.resteasy.client.core.marshallers.Marshaller;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -111,6 +112,11 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
          }
          catch (Exception e)
          {
+            ClientExceptionMapper<Exception> mapper = providerFactory.getClientExceptionMapper(Exception.class);
+            if (mapper != null)
+            {
+               throw mapper.toException(e);
+            }
             throw new RuntimeException(e);
          }
          ClientErrorHandler errorHandler = new ClientErrorHandler(providerFactory.getClientErrorInterceptors());
