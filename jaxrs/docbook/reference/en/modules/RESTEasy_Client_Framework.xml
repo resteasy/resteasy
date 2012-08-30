@@ -291,8 +291,7 @@ List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>()
 
             If you are using the Client Framework and your proxy methods return something other than a
             ClientResponse, then the default client error handling comes into play. Any response code that is greater
-            tha
-            399 will automatically cause a org.jboss.resteasy.client.ClientResponseFailure exception
+            than 399 will automatically cause a org.jboss.resteasy.client.ClientResponseFailure exception
         </para>
         <para>
 
@@ -613,6 +612,86 @@ request.getExecutor().close();
          <methodname>delete()</methodname> invocation.  The call to
          <methodname>ClientRequest.getExecutor().close()</methodname>
          closes the underlying connection.
+     </para>
+   </sect1>
+   
+   <sect1 id="transport_layer_exception_handling">
+     <title>Transport Layer Exception Handling</title>
+     
+     <para>
+         The exception mechanism described in <xref linkend="Client_error_handling"/>
+         handles server responses that return with an error status.  In the case that
+         an error occurs in the transport layer, a client proxy must throw a
+         <classname>RuntimeException</classname> because its interface may or may
+         not declare an appropriate throws clause.  In order to allow fine grained
+         exception handling, Resteasy has a rich tree of exceptions, derived from
+         <classname>RuntimeException</classname>, into which the structure of
+         exceptions thrown by HttpClient 3 and the structure of exceptions thrown
+         by HttpClient 4 can be mapped isomorphically.  That tree lives in package
+         <classname>org.jboss.resteasy.client.exception</classname> and is rooted at
+         <classname>org.jboss.resteasy.client.exception.ResteasyClientException</classname>:
+     </para>
+     
+     <programlisting>
+java.lang.RuntimeException
+   |ResteasyClientException
+   |  |ResteasyHttpException
+   |  |  |ResteasyHttpContentTooLargeException
+   |  |  |ResteasyHttpRecoverableException
+   |  |  |ResteasyMethodNotSupportedException
+   |  |  |ResteasyProtocolException
+   |  |  |  |ResteasyAuthenticationException
+   |  |  |  |  |ResteasyAuthChallengeException
+   |  |  |  |  |ResteasyCredentialsNotAvailableException
+   |  |  |  |  |ResteasyInvalidCredentialsException
+   |  |  |  |  |ResteasyNTLMEngineException
+   |  |  |  |ResteasyMalformedChallengeException
+   |  |  |  |ResteasyMalformedCookieException
+   |  |  |  |  |ResteasyCookieRestrictionViolationException
+   |  |  |  |ResteasyNonRepeatableRequestException
+   |  |  |  |  |ResteasyRedirectException
+   |  |  |  |  |  |ResteasyCircularRedirectException
+   |  |  |  |  |  |ResteasyInvalidRedirectLocationException
+   |  |  |  |ResteasyTunnelRefusedException
+   |  |  |  |ResteasyUnsupportedHttpVersionException
+   |  |  |ResteasyURIException
+   |  |ResteasyIOException
+   |  |  |ResteasyClientProtocolException
+   |  |  |ResteasyConnectionClosedException
+   |  |  |ResteasyConnectTimeoutException
+   |  |     |ResteasyConnectionPoolTimeoutException
+   |  |  |ResteasyHttpHostConnectException
+   |  |  |ResteasyMalformedChunkCodingException
+   |  |  |ResteasyNoHttpResponseException
+     </programlisting>
+     
+     <para>
+         According to Section 1.3 "HTTP exception handling" of the HttpClient 4 documentation
+         (<ulink url="http://hc.apache.org/httpcomponents-core-ga/tutorial/html/fundamentals.html">
+         http://hc.apache.org/httpcomponents-core-ga/tutorial/html/fundamentals.html</ulink>)
+     </para>
+     
+     <blockquote>
+All HttpCore components potentially throw two types of exceptions: IOException in case of an I/O
+failure such as socket timeout or an socket reset and HttpException that signals an HTTP failure
+such as a violation of the HTTP protocol. Usually I/O errors are considered non-fatal and recoverable,
+whereas HTTP protocol errors are considered fatal and cannot be automatically recovered from.
+     </blockquote>
+     
+     <para>
+         The tree of <classname>IOException</classname>s thrown by HttpClient 4 maps into the tree
+         rooted at <classname>org.jboss.resteasy.client.exception.ResteasyIOException</classname>,
+         and the tree of <classname>HttpException</classname>s maps into the tree rooted at
+         <classname>org.jboss.resteasy.client.exception.ResteasyHttpException</classname>.
+     </para>
+     
+     <para>
+         In HttpClient 3, all exceptions, including 
+         <classname>org.apache.commons.httpclient.HttpException</classname> are derived from
+         <classname>java.io.IOException</classname>, and they are mapped into a tree rooted at
+         <classname>org.jboss.resteasy.client.exception.ResteasyIOException</classname>.  See
+         <ulink url="http://hc.apache.org/httpclient-3.x/exception-handling.html">
+         http://hc.apache.org/httpclient-3.x/exception-handling.html</ulink> for the details.
      </para>
    </sect1>
 </chapter>
