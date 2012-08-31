@@ -143,23 +143,23 @@ REST.Request.prototype = {
 		},
 		addCookie : function(name, value){
 			REST.log("addCookie("+name+"="+value+")");
-			this.cookies.push([name, value]);
+            REST._addToArray(this.cookies, name, value);
 		},
 		addQueryParameter : function(name, value){
 			REST.log("addQueryParameter("+name+"="+value+")");
-			this.queryParameters.push([name, value]);
+            REST._addToArray(this.queryParameters, name, value);
 		},
 		addMatrixParameter : function(name, value){
 			REST.log("addMatrixParameter("+name+"="+value+")");
-			this.matrixParameters.push([name, value]);
+            REST._addToArray(this.matrixParameters, name, value);
 		},
 		addFormParameter : function(name, value){
 			REST.log("addFormParameter("+name+"="+value+")");
-			this.formParameters.push([name, value]);
+            REST._addToArray(this.formParameters, name, value);
 		},
 		addHeader : function(name, value){
 			REST.log("addHeader("+name+"="+value+")");
-			this.headers.push([name, value]);
+            REST._addToArray(this.headers, name, value);
 		}
 }
 
@@ -167,6 +167,17 @@ REST.log = function(string){
 	if(REST.loglevel > 0)
 		print(string);
 }
+
+REST._addToArray = function (array, name, value) {
+    if (value instanceof Array) {
+        for (var i = 0; i < value.length; i++) {
+            array.push([name, value[i]]);
+        }
+    } else {
+        array.push([name, value]);
+    }
+}
+
 
 REST._complete = function(request, callback){
 	REST.log("Request ready state: "+request.readyState);
