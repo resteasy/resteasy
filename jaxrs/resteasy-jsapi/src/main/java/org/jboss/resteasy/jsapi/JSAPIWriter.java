@@ -183,7 +183,7 @@ public class JSAPIWriter
 			String type)
 	{
 		String paramName = metaData.getParamName();
-		writer.println(String.format(" if(params.%s)\n  request.add%s('%s', params.%s);", paramName, type, paramName, paramName));
+		writer.println(String.format(" if(Object.prototype.hasOwnProperty.call(params, '%s'))\n  request.add%s('%s', params.%s);", paramName, type, paramName, paramName));
 	}
 
 
