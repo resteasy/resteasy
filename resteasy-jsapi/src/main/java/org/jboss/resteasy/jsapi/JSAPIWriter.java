@@ -1,5 +1,8 @@
 package org.jboss.resteasy.jsapi;
 
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.util.PathHelper;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -8,9 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
-
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.util.PathHelper;
 
 /**
  * @author Stéphane Épardaud <stef@epardaud.fr>
@@ -183,7 +183,7 @@ public class JSAPIWriter
 			String type)
 	{
 		String paramName = metaData.getParamName();
-		writer.println(String.format(" if(params.%s)\n  request.add%s('%s', params.%s);", paramName, type, paramName, paramName));
+		writer.println(String.format(" if(Object.prototype.hasOwnProperty.call(params, '%s'))\n  request.add%s('%s', params.%s);", paramName, type, paramName, paramName));
 	}
 
 
