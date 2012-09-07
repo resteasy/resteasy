@@ -41,13 +41,11 @@ public class SubResourceInvoker implements MethodInvoker
             }
          }
       }
-
-      UriBuilder builder = parent.getUriBuilder();
       if (method.isAnnotationPresent(Path.class))
       {
-         builder.path(method);
+         parent = parent.path(method.getAnnotation(Path.class).value());
       }
-      this.parent = (ResteasyWebTarget)parent.getResteasyClient().target(builder);
+      this.parent = parent;
 
    }
 
