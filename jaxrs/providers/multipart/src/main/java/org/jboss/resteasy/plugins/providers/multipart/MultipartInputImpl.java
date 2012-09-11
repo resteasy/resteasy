@@ -1,14 +1,11 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.apache.james.mime4j.field.ContentTypeField;
-import org.apache.james.mime4j.message.BinaryBody;
-import org.apache.james.mime4j.message.Body;
-import org.apache.james.mime4j.message.BodyPart;
-import org.apache.james.mime4j.message.Message;
-import org.apache.james.mime4j.message.Multipart;
-import org.apache.james.mime4j.message.TextBody;
-import org.apache.james.mime4j.parser.Field;
-import org.apache.james.mime4j.util.CharsetUtil;
+import org.apache.james.mime4j.MimeException;
+import org.apache.james.mime4j.MimeIOException;
+import org.apache.james.mime4j.dom.*;
+import org.apache.james.mime4j.dom.field.ContentTypeField;
+import org.apache.james.mime4j.message.DefaultMessageBuilder;
+import org.apache.james.mime4j.stream.Field;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -19,14 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.SequenceInputStream;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -73,11 +63,20 @@ public class MultipartInputImpl implements MultipartInput
 
    public void parse(InputStream is) throws IOException
    {
-      mimeMessage = new Message(addHeaderToHeadlessStream(is));
-      extractParts();
+
+       MessageBuilder builder = new DefaultMessageBuilder();
+            try {
+                mimeMessage = builder.parseMessage(addHeaderToHeadlessStream(is));
+                extractParts();
+            } catch (MimeException e) {
+                throw new MimeIOException(e);
+            }
+
+
    }
 
-   protected InputStream addHeaderToHeadlessStream(InputStream is)
+
+    protected InputStream addHeaderToHeadlessStream(InputStream is)
            throws UnsupportedEncodingException
    {
       return new SequenceInputStream(createHeaderInputStream(), is);
@@ -104,11 +103,11 @@ public class MultipartInputImpl implements MultipartInput
    protected void extractParts() throws IOException
    {
       Multipart multipart = (Multipart) mimeMessage.getBody();
-      for (BodyPart bodyPart : multipart.getBodyParts())
+      for (Entity bodyPart : multipart.getBodyParts())
          parts.add(extractPart(bodyPart));
    }
 
-   protected InputPart extractPart(BodyPart bodyPart) throws IOException
+   protected InputPart extractPart(Entity bodyPart) throws IOException
    {
       return new PartImpl(bodyPart);
    }
@@ -116,12 +115,12 @@ public class MultipartInputImpl implements MultipartInput
    public class PartImpl implements InputPart
    {
 
-      private BodyPart bodyPart;
+      private Entity bodyPart;
       private MediaType contentType;
       private MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
       private boolean contentTypeFromMessage;
 
-      public PartImpl(BodyPart bodyPart)
+      public PartImpl(Entity bodyPart)
       {
          this.bodyPart = bodyPart;
          for (Field field : bodyPart.getHeader())
@@ -197,8 +196,8 @@ public class MultipartInputImpl implements MultipartInput
             try
             {
                String charset = contentType.getParameters().get("charset");
-               if (charset != null)
-                  charset = CharsetUtil.toJavaCharset(charset);
+//               if (charset != null)
+//                  charset = CharsetUtil.toJavaCharset(charset);
                inputStreamReader = charset == null ? new InputStreamReader(
                        inputStream)
                        : new InputStreamReader(inputStream, charset);
@@ -262,7 +261,9 @@ public class MultipartInputImpl implements MultipartInput
 
    public static void main(String[] args) throws Exception
    {
-      String input = "URLSTR: file:/Users/billburke/jboss/resteasy-jaxrs/resteasy-jaxrs/src/test/test-data/data.txt\r\n"
+
+      String input =
+              "URLSTR: file:/Users/billburke/jboss/resteasy-jaxrs/resteasy-jaxrs/src/test/test-data/data.txt\r\n"
               + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
               + "Content-Disposition: form-data; name=\"part1\"\r\n"
               + "Content-Type: text/plain; charset=US-ASCII\r\n"

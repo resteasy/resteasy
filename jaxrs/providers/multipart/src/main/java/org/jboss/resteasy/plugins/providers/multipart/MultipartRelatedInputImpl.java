@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.apache.james.mime4j.field.ContentTypeField;
-import org.apache.james.mime4j.field.FieldName;
-import org.apache.james.mime4j.message.BodyPart;
+import org.apache.james.mime4j.dom.Entity;
+import org.apache.james.mime4j.dom.field.ContentTypeField;
+import org.apache.james.mime4j.dom.field.FieldName;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Providers;
@@ -42,7 +42,7 @@ public class MultipartRelatedInputImpl extends MultipartInputImpl implements
 	}
 
 	@Override
-	protected InputPart extractPart(BodyPart bodyPart) throws IOException {
+	protected InputPart extractPart(Entity bodyPart) throws IOException {
 		InputPart inputPart = super.extractPart(bodyPart);
 		relatedMap
 				.put(inputPart.getHeaders().getFirst("Content-ID"), inputPart);
