@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -418,33 +419,45 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
    public ClientResponse execute() throws Exception
    {
-      if (linkHeader != null) header("Link", linkHeader);
+      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
+      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
+      try
+      {
 
-      if (getReaderInterceptorList().isEmpty())
-      {
-         setReaderInterceptors(providerFactory.getClientReaderInterceptorRegistry().postMatch(null, null));
-      }
+         if (linkHeader != null) header("Link", linkHeader);
 
-      if (getExecutionInterceptorList().isEmpty())
-      {
-         setExecutionInterceptors(providerFactory
-                 .getClientExecutionInterceptorRegistry().bindForList(null, null));
-      }
+         if (getReaderInterceptorList().isEmpty())
+         {
+            setReaderInterceptors(providerFactory.getClientReaderInterceptorRegistry().postMatch(null, null));
+         }
 
-      BaseClientResponse response = null;
-      if (getExecutionInterceptorList().isEmpty())
-      {
-         response = (BaseClientResponse) executor.execute(this);
+         if (getExecutionInterceptorList().isEmpty())
+         {
+            setExecutionInterceptors(providerFactory
+                    .getClientExecutionInterceptorRegistry().bindForList(null, null));
+         }
+
+         BaseClientResponse response = null;
+         if (getExecutionInterceptorList().isEmpty())
+         {
+            response = (BaseClientResponse) executor.execute(this);
+         }
+         else
+         {
+            ClientExecutionContextImpl ctx = new ClientExecutionContextImpl(
+                    getExecutionInterceptorList(), executor, this);
+            response = (BaseClientResponse) ctx.proceed();
+         }
+         response.setAttributes(attributes);
+         response.setReaderInterceptors(getReaderInterceptors());
+         return response;
       }
-      else
+      finally
       {
-         ClientExecutionContextImpl ctx = new ClientExecutionContextImpl(
-                 getExecutionInterceptorList(), executor, this);
-         response = (BaseClientResponse) ctx.proceed();
+         ResteasyProviderFactory.popContextData(Providers.class);
+         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+
       }
-      response.setAttributes(attributes);
-      response.setReaderInterceptors(getReaderInterceptors());
-      return response;
    }
 
    public void writeRequestBody(MultivaluedMap<String, Object> headers,

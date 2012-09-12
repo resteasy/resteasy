@@ -100,20 +100,10 @@ public class ClientInvoker implements MethodInvoker
 
    public Object invoke(Object[] args)
    {
-      boolean isProvidersSet = ResteasyProviderFactory.getContextData(Providers.class) != null;
-      if (!isProvidersSet) ResteasyProviderFactory.pushContext(Providers.class, invokerConfig);
-
-      try
-      {
-         ClientInvocation request = createRequest(args);
-         ClientResponse response = (ClientResponse)request.invoke();
-         ClientContext context = new ClientContext(request, response, entityExtractorFactory);
-         return extractor.extractEntity(context, null);
-      }
-      finally
-      {
-         if (!isProvidersSet) ResteasyProviderFactory.popContextData(Providers.class);
-      }
+      ClientInvocation request = createRequest(args);
+      ClientResponse response = (ClientResponse)request.invoke();
+      ClientContext context = new ClientContext(request, response, entityExtractorFactory);
+      return extractor.extractEntity(context, null);
    }
 
    protected ClientInvocation createRequest(Object[] args)

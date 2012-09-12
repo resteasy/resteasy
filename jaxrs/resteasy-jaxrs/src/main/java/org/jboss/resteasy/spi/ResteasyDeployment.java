@@ -66,6 +66,7 @@ public class ResteasyDeployment
    protected ResteasyProviderFactory providerFactory;
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    protected String paramMapping;
+
    private final static Logger logger = Logger.getLogger(ResteasyDeployment.class);
 
    public void start()

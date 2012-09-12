@@ -2,11 +2,13 @@ package org.jboss.resteasy.security.smime;
 
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
+import javax.validation.bootstrap.ProviderSpecificBootstrap;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -34,9 +36,6 @@ public class SignedReader implements MessageBodyReader<SignedInput>
       BouncyIntegration.init();
    }
 
-   @Context
-   Providers providers;
-
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return SignedInput.class.isAssignableFrom(type);
@@ -62,6 +61,8 @@ public class SignedReader implements MessageBodyReader<SignedInput>
          input.setGenericType(baseGenericType);
          input.setAnnotations(annotations);
          input.setBody(mm);
+
+         Providers providers = ResteasyProviderFactory.getContextData(Providers.class);
          input.setProviders(providers);
          return input;
       }
