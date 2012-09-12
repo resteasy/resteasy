@@ -70,7 +70,7 @@ public class ContextParameterInjector implements ValueInjector
 
    public Object inject()
    {
-      if (type.equals(Providers.class)) return factory;
+      //if (type.equals(Providers.class)) return factory;
       if (!type.isInterface())
       {
          Object delegate = ResteasyProviderFactory.getContextData(type);

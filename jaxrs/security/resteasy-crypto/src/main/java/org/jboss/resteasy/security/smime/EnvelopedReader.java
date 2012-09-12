@@ -2,6 +2,7 @@ package org.jboss.resteasy.security.smime;
 
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
 import javax.mail.MessagingException;
@@ -34,9 +35,6 @@ public class EnvelopedReader implements MessageBodyReader<EnvelopedInput>
    {
       BouncyIntegration.init();
    }
-
-   @Context
-   protected Providers providers;
 
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -82,6 +80,7 @@ public class EnvelopedReader implements MessageBodyReader<EnvelopedInput>
       {
          throw new ReaderException(e);
       }
+      Providers providers = ResteasyProviderFactory.getContextData(Providers.class);
       input.setProviders(providers);
       input.setAnnotations(annotations);
       input.setBody(body);
