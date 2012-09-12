@@ -1,7 +1,8 @@
-package org.jboss.resteasy.skeleton.key.server;
+package org.jboss.resteasy.skeleton.key.cli;
 
 import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;
+import org.jboss.resteasy.skeleton.key.server.Loader;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

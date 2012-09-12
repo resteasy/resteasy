@@ -1,9 +1,21 @@
 package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
+import org.bouncycastle.cms.CMSEnvelopedData;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessable;
+import org.bouncycastle.cms.CMSProcessableByteArray;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.CMSSignedDataGenerator;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationVerifier;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.security.KeyTools;
 import org.jboss.resteasy.skeleton.key.client.SkeletonKeyAdminClient;
 import org.jboss.resteasy.skeleton.key.client.SkeletonKeyClientBuilder;
+import org.jboss.resteasy.skeleton.key.keystone.model.Authentication;
 import org.jboss.resteasy.skeleton.key.keystone.model.Project;
 import org.jboss.resteasy.skeleton.key.keystone.model.Projects;
 import org.jboss.resteasy.skeleton.key.keystone.model.Role;
@@ -12,19 +24,42 @@ import org.jboss.resteasy.skeleton.key.keystone.model.User;
 import org.jboss.resteasy.skeleton.key.server.Loader;
 import org.jboss.resteasy.skeleton.key.server.SkeletonKeyApplication;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.util.Base64;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
+import java.security.cert.CertStore;
+import java.security.cert.CertStoreException;
+import java.security.cert.CollectionCertStoreParameters;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -37,15 +72,33 @@ public class TokenTest
 {
    private static ResteasyDeployment deployment;
 
+   public static class SApp extends Application
+   {
+      SkeletonKeyApplication app;
+
+      public SApp(@Context Configurable confgurable)
+      {
+         this.app = new SkeletonKeyApplication(confgurable);
+      }
+
+
+
+      @Override
+      public Set<Object> getSingletons()
+      {
+         return app.getSingletons();
+      }
+   }
+
    @BeforeClass
    public static void before() throws Exception
    {
       deployment = new ResteasyDeployment();
       deployment.setSecurityEnabled(true);
-      deployment.setApplicationClass(SkeletonKeyApplication.class.getName());
+      deployment.setApplicationClass(SApp.class.getName());
 
       EmbeddedContainer.start(deployment);
-      SkeletonKeyApplication app = (SkeletonKeyApplication)deployment.getApplication();
+      SkeletonKeyApplication app = ((SApp)deployment.getApplication()).app;
 
       StoredUser admin = new StoredUser();
       admin.setName("Bill");
@@ -93,7 +146,10 @@ public class TokenTest
    @Test
    public void testAuth() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      // Use our own providerFactory to test json context provider
+      ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
+      RegisterBuiltin.register(providerFactory);
+      ResteasyClient client = new ResteasyClient(providerFactory);
       WebTarget target = client.target(generateBaseUrl());
       SkeletonKeyAdminClient admin = new SkeletonKeyClientBuilder().username("wburke").password("geheim").idp(target).admin();
 
@@ -147,5 +203,49 @@ public class TokenTest
          response.close();
       }
    }
+
+   @Test
+   public void testCMD() throws Exception
+   {
+      Authentication auth = new SkeletonKeyClientBuilder().username("wburke").password("geheim").authentication("Skeleton Key");
+      ResteasyClient client = new ResteasyClient();
+      WebTarget target = client.target(generateBaseUrl());
+      String tiny = target.path("tokens").path("url").request().post(Entity.json(auth), String.class);
+      System.out.println(tiny);
+      System.out.println("tiny.size: " + tiny.length());
+      Security.addProvider(new BouncyCastleProvider());
+
+
+      KeyPair keyPair = KeyPairGenerator.getInstance("RSA", "BC").generateKeyPair();
+      PrivateKey privateKey = keyPair.getPrivate();
+      X509Certificate cert = KeyTools.generateTestCertificate(keyPair);
+
+      byte[] signed = p7s(privateKey, cert, null, tiny.getBytes());
+
+
+      CMSSignedData data = new CMSSignedData(signed);
+      byte[] bytes = (byte[])data.getSignedContent().getContent();
+      System.out.println("BYTES: " + new String(bytes));
+      System.out.println("size:" + signed.length);
+      System.out.println("Base64.size: " + Base64.encodeBytes(signed).length());
+
+      SignerInformation signer = (SignerInformation)data.getSignerInfos().getSigners().iterator().next();
+      System.out.println("valid: " + signer.verify(cert, "BC"));
+
+
+   }
+
+
+   private static byte[] p7s(PrivateKey priv, X509Certificate storecert, CertStore certs, byte[] contentbytes) throws CertStoreException, CMSException, NoSuchAlgorithmException, NoSuchProviderException, IOException
+   {
+      CMSSignedDataGenerator signGen = new CMSSignedDataGenerator();
+      signGen.addSigner(priv, (X509Certificate)storecert, CMSSignedDataGenerator.DIGEST_SHA512);
+      //signGen.addCertificatesAndCRLs(certs);
+      CMSProcessable content = new CMSProcessableByteArray(contentbytes);
+
+      CMSSignedData signedData = signGen.generate(content, true, "BC");
+      return signedData.getEncoded();
+   }
+
 
 }

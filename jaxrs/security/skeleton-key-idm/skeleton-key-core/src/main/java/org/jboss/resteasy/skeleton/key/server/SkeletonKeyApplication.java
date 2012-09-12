@@ -10,6 +10,8 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.skeleton.key.keystone.model.Mappers;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -26,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SkeletonKeyApplication extends Application
+public class SkeletonKeyApplication
 {
    public static final String SKELETON_KEY_INFINISPAN_CONFIG_FILE = "skeleton.key.infinispan.config.file";
    public static final String SKELETON_KEY_INFINISPAN_CACHE_NAME = "skeleton.key.infinispan.cache.name";
@@ -38,6 +40,7 @@ public class SkeletonKeyApplication extends Application
    protected UsersService users;
    protected TokenService tokenService;
    protected Cache cache;
+   protected Logger logger = Logger.getLogger(SkeletonKeyApplication.class);
 
    public SkeletonKeyApplication(@Context Configurable confgurable)
    {
@@ -46,30 +49,7 @@ public class SkeletonKeyApplication extends Application
       String unit = getConfigProperty("skeleton.key.token.expiration.unit");
       long expiration = (exp == null) ? 30 : Long.parseLong(exp);
 
-      final ObjectMapper DEFAULT_MAPPER = new ObjectMapper();
-
-      DEFAULT_MAPPER.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-      DEFAULT_MAPPER.enable(SerializationConfig.Feature.INDENT_OUTPUT);
-      DEFAULT_MAPPER.enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-
-      final ObjectMapper WRAPPED_MAPPER = new ObjectMapper();
-
-      WRAPPED_MAPPER.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-      WRAPPED_MAPPER.enable(SerializationConfig.Feature.INDENT_OUTPUT);
-      WRAPPED_MAPPER.enable(SerializationConfig.Feature.WRAP_ROOT_VALUE);
-      WRAPPED_MAPPER.enable(DeserializationConfig.Feature.UNWRAP_ROOT_VALUE);
-      WRAPPED_MAPPER.enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-
-
-      configurable.register(new ContextResolver<ObjectMapper>()
-      {
-
-         public ObjectMapper getContext(Class<?> type)
-         {
-            return type.getAnnotation(JsonRootName.class) == null ? DEFAULT_MAPPER : WRAPPED_MAPPER;
-         }
-
-      });
+      Mappers.registerContextResolver(confgurable);
 
       cache = findCache();
       users = new UsersService(cache);
@@ -106,7 +86,6 @@ public class SkeletonKeyApplication extends Application
       return tokenService;
    }
 
-   @Override
    public Set<Object> getSingletons()
    {
       return singletons;

@@ -47,7 +47,7 @@ public class TokenAuthFilter implements ContainerRequestFilter
          return;  // do nothing
       }
       if (token == null) return; // do nothing
-      if (token.getToken().isExpired()) return; // todo maybe throw 401 with an error stating token is expired?
+      if (token.getToken().expired()) return; // todo maybe throw 401 with an error stating token is expired?
 
       final UserPrincipal principal = new UserPrincipal(token.getUser());
       final Set<String> roleSet = new HashSet<String>();

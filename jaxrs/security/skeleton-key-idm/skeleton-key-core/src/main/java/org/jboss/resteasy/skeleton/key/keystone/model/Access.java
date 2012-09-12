@@ -48,7 +48,7 @@ public class Access implements Serializable {
 			return expires;
 		}
 
-      public boolean isExpired()
+      public boolean expired()
       {
          return expires.getTime().getTime() < System.currentTimeMillis();
       }

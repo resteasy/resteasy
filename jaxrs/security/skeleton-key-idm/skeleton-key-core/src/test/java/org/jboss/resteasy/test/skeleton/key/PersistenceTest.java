@@ -22,12 +22,16 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -87,18 +91,36 @@ public class PersistenceTest
       EmbeddedContainer.stop();
    }
 
+   public static class SApp extends Application
+   {
+      SkeletonKeyApplication app;
+
+      public SApp(@Context Configurable confgurable)
+      {
+         this.app = new SkeletonKeyApplication(confgurable);
+      }
+
+
+
+      @Override
+      public Set<Object> getSingletons()
+      {
+         return app.getSingletons();
+      }
+   }
+
    private static void startDeployment() throws Exception
    {
       deployment = new ResteasyDeployment();
       deployment.setSecurityEnabled(true);
-      deployment.setApplicationClass(SkeletonKeyApplication.class.getName());
+      deployment.setApplicationClass(SApp.class.getName());
       ResteasyProviderFactory factory = new ResteasyProviderFactory();
       deployment.setProviderFactory(factory);
       factory.setProperty(SkeletonKeyApplication.SKELETON_KEY_INFINISPAN_CONFIG_FILE, "cache.xml");
       factory.setProperty(SkeletonKeyApplication.SKELETON_KEY_INFINISPAN_CACHE_NAME, "identity-store");
 
       EmbeddedContainer.start(deployment);
-      app = (SkeletonKeyApplication)deployment.getApplication();
+      app = ((SApp)deployment.getApplication()).app;
    }
 
    @Test

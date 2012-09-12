@@ -7,6 +7,7 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.LinkHeaders;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -187,6 +189,8 @@ public abstract class ClientResponse extends BuiltResponse
 
 
 
+      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
+      ResteasyProviderFactory.pushContext(Providers.class, configuration);
       try
       {
          InputStream is = getEntityStream();
@@ -240,6 +244,12 @@ public abstract class ClientResponse extends BuiltResponse
          {
             throw new ReaderException(e);
          }
+      }
+      finally
+      {
+         ResteasyProviderFactory.popContextData(Providers.class);
+         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+
       }
    }
 

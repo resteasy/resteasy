@@ -4,10 +4,10 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
 import org.jboss.resteasy.skeleton.key.keystone.model.Authentication;
+import org.jboss.resteasy.skeleton.key.keystone.model.Mappers;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import java.io.IOException;
 
@@ -37,7 +37,9 @@ public class SkeletonKeyClientBuilder
    public SkeletonKeyClientBuilder idp(WebTarget uri)
    {
       admin = (ResteasyWebTarget)uri;
-      tokenFactory = ProxyBuilder.builder(TokenFactory.class, uri.path("tokens")).build();
+      WebTarget target = uri.path("tokens");
+      Mappers.registerContextResolver(target.configuration());
+      tokenFactory = ProxyBuilder.builder(TokenFactory.class, target).build();
       return this;
    }
 
@@ -49,17 +51,24 @@ public class SkeletonKeyClientBuilder
 
       final Access access = obtainToken(projectName);
       ClientRequestFilter tokenFilter = new ClientRequestFilter() {
-         Access token = access;
+         volatile Access token = access;
 
          @Override
          public void filter(ClientRequestContext requestContext) throws IOException
          {
-            if (token.getToken().isExpired())
+            Access tmp = token;
+            if (tmp.getToken().expired())
             {
-               System.out.println("EXPIRED TOKEN!!!!");
-               token = obtainToken(projectName);
+               synchronized (this)
+               {
+                  tmp = token;
+                  if (tmp.getToken().expired())
+                  {
+                     token = tmp = obtainToken(projectName);
+                  }
+               }
             }
-            requestContext.getHeaders().putSingle("X-Auth-Token", token.getToken().getId());
+            requestContext.getHeaders().putSingle("X-Auth-Token", tmp.getToken().getId());
          }
       };
 
@@ -69,18 +78,25 @@ public class SkeletonKeyClientBuilder
 
    protected Access obtainToken(String projectName)
    {
+      Authentication auth = authentication(projectName);
+      return tokenFactory.create(auth);
+   }
+
+   public Authentication authentication(String projectName)
+   {
       Authentication auth = new Authentication();
       Authentication.PasswordCredentials creds = new Authentication.PasswordCredentials();
       creds.setUsername(username);
       creds.setPassword(password);
       auth.setProjectName(projectName);
       auth.setPasswordCredentials(creds);
-      return tokenFactory.create(auth);
+      return auth;
    }
 
    public SkeletonKeyAdminClient admin()
    {
       ResteasyWebTarget clone = admin.clone();
+      Mappers.registerContextResolver(clone.configuration());
       authenticate("Skeleton Key", clone);
       return clone.proxy(SkeletonKeyAdminClient.class);
    }
