@@ -8,10 +8,8 @@ import org.jboss.resteasy.util.Types;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
-import javax.validation.bootstrap.ProviderSpecificBootstrap;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -28,8 +26,8 @@ import java.lang.reflect.Type;
  * @version $Revision: 1 $
  */
 @Provider
-@Consumes("*/*")
-public class SignedReader implements MessageBodyReader<SignedInput>
+@Consumes("multipart/signed")
+public class MultipartSignedReader implements MessageBodyReader<SignedInput>
 {
    static
    {
@@ -56,7 +54,7 @@ public class SignedReader implements MessageBodyReader<SignedInput>
       {
          ByteArrayDataSource ds = new ByteArrayDataSource(entityStream, mediaType.toString());
          MimeMultipart mm = new MimeMultipart(ds);
-         SignedInputImpl input = new SignedInputImpl();
+         MultipartSignedInputImpl input = new MultipartSignedInputImpl();
          input.setType(baseType);
          input.setGenericType(baseGenericType);
          input.setAnnotations(annotations);

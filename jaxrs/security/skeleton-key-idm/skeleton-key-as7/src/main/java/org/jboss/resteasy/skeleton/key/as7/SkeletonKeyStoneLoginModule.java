@@ -44,6 +44,7 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
    static volatile SkeletonKeyAdminClient admin;
 
    private static final Logger log = Logger.getLogger(SkeletonKeyStoneLoginModule.class);
+
    static
    {
       ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
@@ -51,16 +52,12 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
       Thread.currentThread().setContextClassLoader(SkeletonKeyStoneLoginModule.class.getClassLoader());
       try
       {
-      RegisterBuiltin.register(providerFactory);
+         RegisterBuiltin.register(providerFactory);
       }
       finally
       {
          Thread.currentThread().setContextClassLoader(old);
       }
-      log.error("-------------- CAN WE FIND JACKSON PROVIDER from static{} block?????");
-      logServices();
-
-      ResteasyJacksonProvider p = new ResteasyJacksonProvider();
       client = new ResteasyClient(providerFactory);
       ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
       cm.setMaxTotal(100);
@@ -69,55 +66,19 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
       client.httpEngine(new ApacheHttpClient4Engine(httpClient));
    }
 
-   private static void logServices()
-   {
-      try
-      {
-         log.error("META-INF/services/" + Providers.class.getName());
-         Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
-         LinkedHashSet<String> set = new LinkedHashSet<String>();
-         while (en.hasMoreElements())
-         {
-            URL url = en.nextElement();
-            log.error("URL: " + url);
-         }
-      }
-      catch (IOException e)
-      {
-
-      }
-
-      try
-      {
-         log.error("with .class classloader META-INF/services/" + Providers.class.getName());
-         Enumeration<URL> en = SkeletonKeyStoneLoginModule.class.getClassLoader().getResources("META-INF/services/" + Providers.class.getName());
-         LinkedHashSet<String> set = new LinkedHashSet<String>();
-         while (en.hasMoreElements())
-         {
-            URL url = en.nextElement();
-            log.error("URL: " + url);
-         }
-      }
-      catch (IOException e)
-      {
-
-      }
-
-   }
-
    static void initAdmin(Map<String, ?> options)
    {
       SkeletonKeyAdminClient tmp = admin;
       if (tmp == null)
       {
-         synchronized(client)
+         synchronized (client)
          {
             tmp = admin;
             if (tmp == null)
             {
-               String adminUrl = (String)options.get("skeleton.key.url");
-               String username = (String)options.get("admin.username");
-               String password = (String)options.get("admin.password");
+               String adminUrl = (String) options.get("skeleton.key.url");
+               String username = (String) options.get("admin.username");
+               String password = (String) options.get("admin.password");
                WebTarget adminTarget = client.target(adminUrl);
                tmp = admin = new SkeletonKeyClientBuilder().username(username).password(password).idp(adminTarget).admin();
             }
@@ -135,7 +96,7 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
       super.initialize(subject, callbackHandler, sharedState, options);
 
       initAdmin(options);
-      projectId = (String)options.get("projectId");
+      projectId = (String) options.get("projectId");
    }
 
    @Override

@@ -1,12 +1,15 @@
 package org.jboss.resteasy.security.smime;
 
-import org.bouncycastle.cms.SignerInfoGenerator;
-import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
-import org.bouncycastle.mail.smime.SMIMESignedGenerator;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessable;
+import org.bouncycastle.cms.CMSProcessableByteArray;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.jboss.resteasy.security.BouncyIntegration;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.WriterException;
+import org.jboss.resteasy.util.Base64;
 
-import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -15,18 +18,22 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.cert.X509Certificate;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 @Provider
-@Produces("*/*")
-public class SignedWriter implements MessageBodyWriter<SignedOutput>
+@Produces("text/plain")
+public class PKCS7SignatureTextWriter implements MessageBodyWriter<SignedOutput>
 {
    static
    {
@@ -53,19 +60,13 @@ public class SignedWriter implements MessageBodyWriter<SignedOutput>
    {
       try
       {
-         SMIMESignedGenerator gen = new SMIMESignedGenerator();
-         SignerInfoGenerator signer = new JcaSimpleSignerInfoGeneratorBuilder().setProvider("BC").build("SHA1WITHRSA", out.getPrivateKey(), out.getCertificate());
-         gen.addSignerInfoGenerator(signer);
-
-         MimeMultipart mp = gen.generate(EnvelopedWriter.createBodyPart(providers, out));
-         String contentType = mp.getContentType();
-         contentType = contentType.replace("\r\n", "").replace("\t", " ");
-         headers.putSingle("Content-Type", contentType);
-         mp.writeTo(os);
+         byte[] encoded = PKCS7SignatureWriter.sign(providers, out);
+         os.write(Base64.encodeBytes(encoded).getBytes("UTF-8"));
       }
       catch (Exception e)
       {
          throw new WriterException(e);
       }
    }
+
 }
