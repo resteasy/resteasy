@@ -18,7 +18,7 @@ public class EchoTest
       ResteasyClient client = new ResteasyClient();
       WebTarget skeletonKeyServer = client.target("http://localhost:8080/skeleton-key-server");
       WebTarget appTarget = client.target("http://localhost:8080/skeleton-app");
-      new SkeletonKeyClientBuilder().username("someuser").password("geheim").idp(skeletonKeyServer).authenticate("Skeleton App", appTarget);
+      new SkeletonKeyClientBuilder().username("someuser").password("geheim").idp(skeletonKeyServer).authenticateTarget("Skeleton App", appTarget);
 
       String message = appTarget.path("user/users.txt").request().get(String.class);
       Assert.assertEquals("Hello User", message);

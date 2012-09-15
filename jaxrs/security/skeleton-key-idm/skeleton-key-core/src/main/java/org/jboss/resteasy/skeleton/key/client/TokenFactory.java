@@ -5,6 +5,7 @@ import org.jboss.resteasy.skeleton.key.keystone.model.Authentication;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 /**
@@ -17,4 +18,10 @@ public interface TokenFactory
    @Consumes("application/json")
    @Produces("application/json")
    Access create(Authentication auth);
+
+   @POST
+   @Path("signed")
+   @Consumes("application/json")
+   @Produces("text/plain")
+   String createSigned(Authentication auth);
 }

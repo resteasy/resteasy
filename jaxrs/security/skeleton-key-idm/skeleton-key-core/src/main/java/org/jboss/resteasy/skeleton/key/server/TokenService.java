@@ -2,6 +2,7 @@ package org.jboss.resteasy.skeleton.key.server;
 
 import org.infinispan.Cache;
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.security.smime.SignedOutput;
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
 import org.jboss.resteasy.skeleton.key.keystone.model.Authentication;
 import org.jboss.resteasy.skeleton.key.keystone.model.Project;
@@ -21,6 +22,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import java.security.MessageDigest;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +40,8 @@ public class TokenService
    private Cache cache;
    private long expiration;
    private TimeUnit expirationUnit;
+   private PrivateKey privateKey;
+   private X509Certificate certificate;
 
    private ProjectsService projects;
    private UsersService users;
@@ -49,6 +54,34 @@ public class TokenService
       this.expirationUnit = expirationUnit;
       this.projects = projects;
       this.users = users;
+   }
+
+   public void setPrivateKey(PrivateKey privateKey)
+   {
+      this.privateKey = privateKey;
+   }
+
+   public void setCertificate(X509Certificate certificate)
+   {
+      this.certificate = certificate;
+   }
+
+   @Path("signed")
+   @Produces("text/plain")
+   @Consumes("application/json")
+   @POST
+   public SignedOutput createSigned(Authentication auth) throws Exception
+   {
+      if (privateKey == null || certificate == null)
+      {
+         log.warn("privateKey or certificate not set for this operation");
+         throw new WebApplicationException(500);
+      }
+      Access access = create(auth);
+      SignedOutput signed = new SignedOutput(access, "application/json");
+      signed.setPrivateKey(privateKey);
+      signed.setCertificate(certificate);
+      return signed;
    }
 
    @POST
