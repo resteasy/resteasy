@@ -18,7 +18,7 @@ import java.security.cert.X509Certificate;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SignedInputImpl implements SignedInput
+public class MultipartSignedInputImpl implements SignedInput
 {
    private PublicKey publicKey;
    private X509Certificate certificate;

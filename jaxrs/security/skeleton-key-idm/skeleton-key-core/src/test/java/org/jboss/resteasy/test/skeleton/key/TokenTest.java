@@ -1,18 +1,17 @@
 package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
-import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.security.KeyTools;
+import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.skeleton.key.client.SkeletonKeyAdminClient;
 import org.jboss.resteasy.skeleton.key.client.SkeletonKeyClientBuilder;
 import org.jboss.resteasy.skeleton.key.keystone.model.Authentication;
@@ -40,23 +39,16 @@ import javax.ws.rs.core.Response;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.CertStore;
 import java.security.cert.CertStoreException;
-import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -71,6 +63,8 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class TokenTest
 {
    private static ResteasyDeployment deployment;
+   private static PrivateKey privateKey;
+   private static X509Certificate certificate;
 
    public static class SApp extends Application
    {
@@ -99,6 +93,12 @@ public class TokenTest
 
       EmbeddedContainer.start(deployment);
       SkeletonKeyApplication app = ((SApp)deployment.getApplication()).app;
+
+      KeyPair keyPair = KeyPairGenerator.getInstance("RSA", "BC").generateKeyPair();
+      privateKey = keyPair.getPrivate();
+      certificate = KeyTools.generateTestCertificate(keyPair);
+      app.getTokenService().setCertificate(certificate);
+      app.getTokenService().setPrivateKey(privateKey);
 
       StoredUser admin = new StoredUser();
       admin.setName("Bill");
@@ -171,10 +171,40 @@ public class TokenTest
       admin = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).admin();
       response = admin.roles().create("error");
       Assert.assertEquals(401, response.getStatus());
-
-
-
    }
+
+   @Test
+   public void testSignedAuth() throws Exception
+   {
+      // Use our own providerFactory to test json context provider
+      ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
+      RegisterBuiltin.register(providerFactory);
+      ResteasyClient client = new ResteasyClient(providerFactory);
+      WebTarget target = client.target(generateBaseUrl());
+      SkeletonKeyAdminClient admin = new SkeletonKeyClientBuilder().username("wburke").password("geheim").idp(target).admin();
+
+      StoredUser newUser = new StoredUser();
+      newUser.setName("John Smith");
+      newUser.setUsername("jsmith");
+      newUser.setEnabled(true);
+      Map creds = new HashMap();
+      creds.put("password", "foobar");
+      newUser.setCredentials(creds);
+      Response response = admin.users().create(newUser);
+      User user = response.readEntity(User.class);
+      response = admin.roles().create("user");
+      Role role = response.readEntity(Role.class);
+      Projects projects = admin.projects().query("Skeleton Key");
+      Project project = projects.getList().get(0);
+      admin.projects().addUserRole(project.getId(), user.getId(), role.getId());
+
+      String signed = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).objectSignedToken("Skeleton Key");
+      System.out.println(signed);
+      PKCS7SignatureInput input = new PKCS7SignatureInput(signed);
+      input.setCertificate(certificate);
+      Assert.assertTrue(input.verify());
+   }
+
 
    @Test
    public void testNotAuthenticated()
