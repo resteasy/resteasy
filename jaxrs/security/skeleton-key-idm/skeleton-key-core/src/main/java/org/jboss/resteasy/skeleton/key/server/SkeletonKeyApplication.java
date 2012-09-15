@@ -20,6 +20,8 @@ import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 import java.io.IOException;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +37,8 @@ public class SkeletonKeyApplication
    Configurable configurable;
    protected Set<Object> singletons = new HashSet<Object>();
 
+   protected PrivateKey privateKey;
+   protected X509Certificate certificate;
    protected RolesService roles;
    protected ProjectsService projects;
    protected UsersService users;
@@ -52,6 +56,7 @@ public class SkeletonKeyApplication
       Mappers.registerContextResolver(confgurable);
 
       cache = findCache();
+
       users = new UsersService(cache);
       singletons.add(users);
       roles = new RolesService(cache);

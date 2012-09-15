@@ -12,6 +12,10 @@
     <title>Migrating from 2.x to 3.0</title>
     <itemizedlist>
         <listitem>
+            resteasy-crypto: SignedInput and SignedOutput must have a multipart/signed content type set either through
+            the request or response object, or by annotation @Consumes/@Produces
+        </listitem>
+        <listitem>
             Server-side cache setup has been changed. Please see documentation for more details.
         </listitem>
         <listitem>

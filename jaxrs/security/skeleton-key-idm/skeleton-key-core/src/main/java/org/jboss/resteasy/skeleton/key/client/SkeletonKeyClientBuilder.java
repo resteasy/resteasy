@@ -43,7 +43,7 @@ public class SkeletonKeyClientBuilder
       return this;
    }
 
-   public Access authenticate(final String projectName, WebTarget target)
+   public Access authenticateTarget(final String projectName, WebTarget target)
    {
       if (username == null) throw new NullPointerException("username is null");
       if (password == null) throw new NullPointerException("password is null");
@@ -76,10 +76,17 @@ public class SkeletonKeyClientBuilder
       return access;
    }
 
-   protected Access obtainToken(String projectName)
+   public  Access obtainToken(String projectName)
    {
       Authentication auth = authentication(projectName);
       return tokenFactory.create(auth);
+   }
+
+   public String objectSignedToken(String projectName)
+   {
+      Authentication auth = authentication(projectName);
+      return tokenFactory.createSigned(auth);
+
    }
 
    public Authentication authentication(String projectName)
@@ -97,7 +104,7 @@ public class SkeletonKeyClientBuilder
    {
       ResteasyWebTarget clone = admin.clone();
       Mappers.registerContextResolver(clone.configuration());
-      authenticate("Skeleton Key", clone);
+      authenticateTarget("Skeleton Key", clone);
       return clone.proxy(SkeletonKeyAdminClient.class);
    }
 

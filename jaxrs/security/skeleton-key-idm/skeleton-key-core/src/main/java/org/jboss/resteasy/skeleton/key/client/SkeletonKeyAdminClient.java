@@ -19,5 +19,5 @@ public interface SkeletonKeyAdminClient
    public UsersResource users();
 
    @Path("/tokens")
-   public  TokensResource tokens();
+   public TokensResource tokens();
 }
