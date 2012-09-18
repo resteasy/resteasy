@@ -131,11 +131,19 @@ public class ResteasyDeployment
       {
          if (injectorFactoryClass != null)
          {
-            InjectorFactory injectorFactory;
+            InjectorFactory injectorFactory = null;
             try
             {
                Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
-               injectorFactory = (InjectorFactory) clazz.newInstance();
+               try
+               {
+                  Constructor constructor = clazz.getConstructor(ResteasyProviderFactory.class);
+                  injectorFactory = (InjectorFactory)constructor.newInstance(providerFactory);
+               }
+               catch (Exception e)
+               {
+               }
+               if (injectorFactory == null) injectorFactory = (InjectorFactory) clazz.newInstance();
             }
             catch (ClassNotFoundException cnfe)
             {

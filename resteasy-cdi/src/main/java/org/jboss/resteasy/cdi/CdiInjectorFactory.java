@@ -30,14 +30,16 @@ public class CdiInjectorFactory implements InjectorFactory
 {
    private static final Logger log = Logger.getLogger(CdiInjectorFactory.class);
    public static final String BEAN_MANAGER_ATTRIBUTE_PREFIX = "org.jboss.weld.environment.servlet.";
+   private ResteasyProviderFactory providerFactory;
    private InjectorFactory delegate;
    private BeanManager manager;
    private ResteasyCdiExtension extension;
    private Map<Class<?>, Type> sessionBeanInterface;
 
-   public CdiInjectorFactory()
+   public CdiInjectorFactory(ResteasyProviderFactory providerFactory)
    {
-      this.delegate = ResteasyProviderFactory.getInstance().getInjectorFactory();
+      this.providerFactory = providerFactory;
+      this.delegate = providerFactory.getInjectorFactory();
       this.manager = lookupBeanManager();
       this.extension = lookupResteasyCdiExtension();
       sessionBeanInterface = extension.getSessionBeanInterface();
