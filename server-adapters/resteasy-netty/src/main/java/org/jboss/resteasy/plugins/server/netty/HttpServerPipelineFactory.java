@@ -54,10 +54,9 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       ChannelPipeline pipeline = pipeline();
 
       pipeline.addLast("decoder", new HttpRequestDecoder());
-      pipeline.addLast("resteasyDecoder", resteasyDecoder);
-      
       pipeline.addLast("aggregator", new HttpChunkAggregator(maxRequestSize));
-      
+      pipeline.addLast("resteasyDecoder", resteasyDecoder);
+
       pipeline.addLast("encoder", new HttpResponseEncoder());
       pipeline.addLast("resteasyEncoder", resteasyEncoder);
 
