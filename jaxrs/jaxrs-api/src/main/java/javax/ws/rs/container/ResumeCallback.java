@@ -60,19 +60,25 @@ import javax.ws.rs.core.Response;
  * </ul>
  * In all of the cases above, a resume event will be generated for the suspended asynchronous
  * response and all callbacks associated with the asynchronous response that implement
- * {@code ResumeCallback} interface will be invoked.
+ * {@code ResumeCallback} interface will be invoked before any response processing is started,
+ * e.g. before any exception mapping or response filtering occurs.
  * </p>
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
+ * @since 2.0
  */
 public interface ResumeCallback {
     /**
-     * A resume callback notification method that will be invoked in case the asynchronous
-     * response is being resumed by a response instance.
+     * A resume callback notification method that will be invoked when the asynchronous
+     * response is about to be resumed with a JAX-RS response instance.
+     *
+     * This means the method is invoked BEFORE any response processing (e.g. response filters
+     * execution) starts.
      * <p>
      * Callback implementations may use check whether resuming asynchronous response
-     * {@link AsyncResponse#isCancelled() has been cancelled}
-     * or not.
+     * {@link AsyncResponse#isCancelled() has been cancelled} or not. In case of cancellation,
+     * the JAX-RS response will be the request cancellation response sent back to the client
+     * (see {@link javax.ws.rs.container.AsyncResponse#cancel()}).
      * </p>
      *
      * @param resuming asynchronous response to be resumed.
@@ -83,6 +89,9 @@ public interface ResumeCallback {
     /**
      * A resume callback notification method that will be invoked in case the asynchronous
      * response is being resumed by an error (e.g. in case of a time-out event).
+     *
+     * This means the method is invoked BEFORE any response processing (e.g. exception mapping or
+     * response filters execution) starts.
      *
      * @param resuming asynchronous response to be resumed.
      * @param error error used to resume the asynchronous response.

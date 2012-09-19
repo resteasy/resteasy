@@ -1,4 +1,4 @@
-package org.jboss.resteasy.skeleton.key.server;
+package org.jboss.resteasy.skeleton.key.core;
 
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
 

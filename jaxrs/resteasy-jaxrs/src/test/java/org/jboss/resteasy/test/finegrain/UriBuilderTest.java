@@ -27,6 +27,29 @@ public class UriBuilderTest
    }
 
    @Test
+   public void testTemplate() throws Exception
+   {
+      UriBuilder builder = UriBuilder.fromUri("http://{host}/x/y/{path}?{q}={qval}");
+      String template = builder.toTemplate();
+      Assert.assertEquals(template, "http://{host}/x/y/{path}?{q}={qval}");
+      builder = builder.resolveTemplate("host", "localhost");
+      template = builder.toTemplate();
+      Assert.assertEquals(template, "http://localhost/x/y/{path}?{q}={qval}");
+
+      builder = builder.resolveTemplate("q", "name");
+      template = builder.toTemplate();
+      Assert.assertEquals(template, "http://localhost/x/y/{path}?name={qval}");
+      Map<String, Object> values = new HashMap<String, Object>();
+      values.put("path", "z");
+      values.put("qval", new Integer(42));
+      builder = builder.resolveTemplates(values);
+      template = builder.toTemplate();
+      Assert.assertEquals(template, "http://localhost/x/y/z?name=42");
+
+
+   }
+
+   @Test
    public void test587() throws Exception
    {
       System.out.println(UriBuilder.fromPath("/{p}").build("$a"));

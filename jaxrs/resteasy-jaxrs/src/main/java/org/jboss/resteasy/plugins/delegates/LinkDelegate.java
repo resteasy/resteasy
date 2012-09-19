@@ -4,6 +4,8 @@ import org.jboss.resteasy.spi.LinkHeader;
 
 import javax.ws.rs.core.Link;
 import javax.ws.rs.ext.RuntimeDelegate;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -26,7 +28,18 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
 
       org.jboss.resteasy.spi.Link link = new org.jboss.resteasy.spi.Link();
       link.setHref(value.getUri().toString());
-      link.getExtensions().putAll(value.getParams());
+      link.setRelationship(value.getRel());
+      link.setTitle(value.getTitle());
+      link.setType(value.getType());
+      HashMap<String, String> copy = new HashMap<String, String>();
+      copy.putAll(value.getParams());
+      copy.remove(Link.REL);
+      copy.remove(Link.TITLE);
+      copy.remove(Link.TYPE);
+      for (Map.Entry<String, String> entry : copy.entrySet())
+      {
+         link.getExtensions().add(entry.getKey(), entry.getValue());
+      }
       header.addLink(link);
       return header.toString();
    }

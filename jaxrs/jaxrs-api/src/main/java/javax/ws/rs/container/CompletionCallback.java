@@ -39,26 +39,37 @@
  */
 package javax.ws.rs.container;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Global binding annotation that can be applied to a {@link ContainerRequestFilter
- * container request filter} to indicate that such filter should be applied globally
- * on all resources in the application before the actual resource matching occurs.
+ * A request processing callback that receives request processing completion events.
  * <p>
- * The JAX-RS runtime will apply the filters marked with the {@code &#64;PreMatching}
- * annotation globally to all resources, before the incoming request has been matched
- * to a particular resource method.
+ * A completion callback is invoked when the whole request processing is over, i.e.
+ * once a response for the request has been processed and sent back to the client
+ * or in when an unmapped exception or error is being propagated to the container.
  * </p>
  *
  * @author Marek Potociar
+ * @since 2.0
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface PreMatching {
+public interface CompletionCallback {
+    /**
+     * A completion callback notification method that will be invoked when the request
+     * processing is finished, after a response is processed and is sent back to the
+     * client.
+     */
+    public void onComplete();
+
+    /**
+     * Invoked in case an {@link javax.ws.rs.ext.ExceptionMapper exception mapper} for an
+     * exception or error thrown during request/response processing was not found and the
+     * unmapped exception or error is being propagated to the hosting I/O container.
+     * <p>
+     * The {@code throwable} passed to the method is the actual unmapped exception thrown,
+     * during the request/response processing, i.e. not wrapped into a container-specific
+     * exception.
+     * </p>
+     *
+     * @param throwable unmapped exception or error thrown during the request/response processing
+     *                  that is being propagated to the hosting I/O container.
+     */
+    public void onError(Throwable throwable);
 }

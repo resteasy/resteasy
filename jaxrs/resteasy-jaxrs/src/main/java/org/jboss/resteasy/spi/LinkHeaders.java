@@ -55,7 +55,7 @@ public class LinkHeaders
    public LinkHeaders addLink(final Link link)
    {
       links.add(link);
-      for (String rel : link.getRel())
+      for (String rel : link.getRels())
       {
          linksByRelationship.put(rel, link);
       }

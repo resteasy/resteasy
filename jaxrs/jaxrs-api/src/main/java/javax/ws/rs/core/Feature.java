@@ -46,7 +46,7 @@ package javax.ws.rs.core;
  * (e.g. filters or interceptors) and/or configuration properties.
  * </p>
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @since 2.0
  */
 public interface Feature {

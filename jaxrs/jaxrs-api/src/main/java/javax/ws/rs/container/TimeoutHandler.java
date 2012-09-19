@@ -73,7 +73,7 @@ package javax.ws.rs.container;
  * <pre>
  * public class MyTimeoutHandler implements TimeoutHandler {
  *     &hellip;
- *     public void handleTimeout(AsynchronousResponse ar) {
+ *     public void handleTimeout(AsyncResponse ar) {
  *         if (keepSuspended) {
  *             ar.setTimeout(10, SECONDS);
  *         } else if (cancel) {
@@ -89,7 +89,7 @@ package javax.ws.rs.container;
  * public class MessagingResource {
  *     &hellip;
  *     &#64;GET
- *     public void readMessage(&#64;Suspend AsynchronousResponse ar) {
+ *     public void readMessage(&#64;Suspended AsyncResponse ar) {
  *         ar.setTimeoutHandler(new MyTimeoutHandler());
  *         suspended.put(ar);
  *     }
@@ -97,7 +97,7 @@ package javax.ws.rs.container;
  * }
  * </pre>
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @since 2.0
  */
 public interface TimeoutHandler {
