@@ -176,16 +176,6 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
          };
       }
 
-      if (returnType.equals(Invocation.class))
-      {
-         return new EntityExtractor<Invocation>()
-         {
-            public Invocation extractEntity(ClientContext context, Object... args)
-            {
-               return context.getInvocation().getClient().invocation(getLink(link, context));
-            }
-         };
-      }
       if (returnType.equals(WebTarget.class))
       {
          return new EntityExtractor<WebTarget>()

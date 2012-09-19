@@ -20,6 +20,6 @@ public class PathParamProcessor implements WebTargetProcessor
    @Override
    public WebTarget build(WebTarget target, Object param)
    {
-      return target.pathParam(paramName, param);
+      return target.resolveTemplate(paramName, param);
    }
 }

@@ -24,7 +24,6 @@ public class ClientWebTarget implements ResteasyWebTarget
    protected ResteasyClient client;
    protected UriBuilder uriBuilder;
    protected ClientConfiguration configuration;
-   protected Map<String, String> pathParams = new HashMap<String, String>();
 
    protected ClientWebTarget(ResteasyClient client, ClientConfiguration configuration)
    {
@@ -97,46 +96,43 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget path(String path) throws NullPointerException
    {
       UriBuilder copy = uriBuilder.clone().path(path);
-      return copyPathParams(copy);
+      return  new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
    public ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException
    {
       UriBuilder copy = uriBuilder.clone().path(resource);
-      return copyPathParams(copy);
+      return  new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
    public ResteasyWebTarget path(Method method) throws IllegalArgumentException
    {
       UriBuilder copy = uriBuilder.clone().path(method);
-      return copyPathParams(copy);
+      return  new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
-   public ResteasyWebTarget pathParam(String name, Object value) throws IllegalArgumentException, NullPointerException
+   public ResteasyWebTarget resolveTemplate(String name, Object value) throws NullPointerException
    {
-      UriBuilder copy = uriBuilder.clone();
-      HashMap<String, String> paramMap = new HashMap<String, String>();
-      paramMap.putAll(pathParams);
-      paramMap.put(name, configuration.toString(value));
+      String val = configuration.toString(value);
+      UriBuilder copy = uriBuilder.resolveTemplate(name, val);
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
-      target.pathParams = paramMap;
       return target;
    }
 
    @Override
-   public ResteasyWebTarget pathParams(Map<String, Object> parameters) throws IllegalArgumentException, NullPointerException
+   public ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues) throws NullPointerException
    {
-      UriBuilder copy = uriBuilder.clone();
-      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
-      HashMap<String, String> paramMap = new HashMap<String, String>();
-      for (Map.Entry<String, Object> entry : parameters.entrySet())
+      Map vals = new HashMap<String, String>();
+      for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
-         paramMap.put(entry.getKey(), configuration.toString(entry.getValue()));
+         String val = configuration.toString(entry.getValue());
+         vals.put(entry.getKey(), val);
       }
-      target.pathParams = paramMap;
+      UriBuilder copy = uriBuilder.resolveTemplates(vals);
+      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
       return target;
    }
 
@@ -145,7 +141,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().matrixParam(name, stringValues);
-      return copyPathParams(copy);
+      return  new ClientWebTarget(client, copy, configuration);
    }
 
    private String[] toStringValues(Object[] values)
@@ -163,16 +159,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().queryParam(name, stringValues);
-      return copyPathParams(copy);
-   }
-
-   protected ResteasyWebTarget copyPathParams(UriBuilder copy)
-   {
-      HashMap<String, String> paramMap = new HashMap<String, String>();
-      paramMap.putAll(pathParams);
-      ClientWebTarget target =  new ClientWebTarget(client, copy, configuration);
-      target.pathParams = paramMap;
-      return target;
+      return  new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
@@ -184,19 +171,19 @@ public class ClientWebTarget implements ResteasyWebTarget
          String[] stringValues = toStringValues(entry.getValue().toArray());
          uriBuilder.queryParam(entry.getKey(), stringValues);
       }
-      return copyPathParams(copy);
+      return  new ClientWebTarget(client, copy, configuration);
    }
 
    @Override
    public Invocation.Builder request()
    {
-      return new ClientInvocationBuilder(client, uriBuilder.buildFromMap(pathParams), configuration);
+      return new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
    }
 
    @Override
    public Invocation.Builder request(String... acceptedResponseTypes)
    {
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.buildFromMap(pathParams), configuration);
+      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       return builder;
    }
@@ -204,7 +191,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public Invocation.Builder request(MediaType... acceptedResponseTypes)
    {
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.buildFromMap(pathParams), configuration);
+      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       return builder;
    }

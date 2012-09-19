@@ -71,7 +71,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified response type is not
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T get(Class<T> responseType) throws ClientException, WebApplicationException;
 
@@ -86,7 +87,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified generic response type does not represent
+     *                                 {@link javax.ws.rs.core.Response}
      */
     <T> T get(GenericType<T> responseType) throws ClientException, WebApplicationException;
 
@@ -112,7 +114,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified response type is not
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T put(Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException;
 
@@ -128,7 +131,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified generic response type does not represent
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T put(Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException;
 
@@ -154,7 +158,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified response type is not
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T post(Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException;
 
@@ -170,7 +175,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified generic response type does not represent
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T post(Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException;
 
@@ -194,7 +200,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified response type is not
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T delete(Class<T> responseType) throws ClientException, WebApplicationException;
 
@@ -209,7 +216,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified generic response type does not represent
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T delete(GenericType<T> responseType) throws ClientException, WebApplicationException;
 
@@ -243,7 +251,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified response type is not
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T options(Class<T> responseType) throws ClientException, WebApplicationException;
 
@@ -258,7 +267,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified generic response type does not represent
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T options(GenericType<T> responseType) throws ClientException, WebApplicationException;
 
@@ -282,7 +292,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified response type is not
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T trace(Class<T> responseType) throws ClientException, WebApplicationException;
 
@@ -297,7 +308,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified generic response type does not represent
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T trace(GenericType<T> responseType) throws ClientException, WebApplicationException;
 
@@ -323,7 +335,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified response type is not
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T method(String name, Class<T> responseType) throws ClientException, WebApplicationException;
 
@@ -339,7 +352,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified generic response type does not represent
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T method(String name, GenericType<T> responseType) throws ClientException, WebApplicationException;
 
@@ -365,7 +379,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified response type is not
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T method(String name, Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException;
 
@@ -382,7 +397,8 @@ public interface SyncInvoker {
      * @throws WebApplicationException in case the response status code of the response
      *                                 returned by the server is not
      *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     *                                 successful} and the specified generic response type does not represent
+     *                                 {@link javax.ws.rs.core.Response}.
      */
     <T> T method(String name, Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException;
 }

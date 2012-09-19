@@ -8,12 +8,11 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.internal.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.plugins.providers.jackson.ResteasyJacksonProvider;
 import org.jboss.resteasy.skeleton.key.client.SkeletonKeyAdminClient;
 import org.jboss.resteasy.skeleton.key.client.SkeletonKeyClientBuilder;
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
 import org.jboss.resteasy.skeleton.key.keystone.model.Role;
-import org.jboss.resteasy.skeleton.key.server.UserPrincipal;
+import org.jboss.resteasy.skeleton.key.core.UserPrincipal;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.SimplePrincipal;
@@ -23,13 +22,8 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.ext.Providers;
-import java.io.IOException;
-import java.net.URL;
 import java.security.Principal;
 import java.security.acl.Group;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**

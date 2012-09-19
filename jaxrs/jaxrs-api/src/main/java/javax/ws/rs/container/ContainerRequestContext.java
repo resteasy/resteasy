@@ -63,7 +63,7 @@ import javax.ws.rs.core.UriInfo;
  * properties. The exposed setters allow modification of the exposed request-specific
  * information.
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @since 2.0
  */
 public interface ContainerRequestContext {
@@ -171,7 +171,8 @@ public interface ContainerRequestContext {
      * </p>
      *
      * @param requestUri new URI of the request.
-     * @throws IllegalStateException in case the method is invoked from a (post-matching)
+     * @throws IllegalStateException in case the method is not invoked from a {@link PreMatching pre-matching}
+     *                               request filter.
      * @see #setRequestUri(java.net.URI, java.net.URI)
      */
     public void setRequestUri(URI requestUri) throws IllegalStateException;
@@ -188,8 +189,8 @@ public interface ContainerRequestContext {
      * @param baseUri    base URI that will be used to resolve the application-specific
      *                   part of the request URI.
      * @param requestUri new URI of the request.
-     * @throws IllegalStateException in case the method is invoked from a (post-matching)
-     *                               resource filter.
+     * @throws IllegalStateException in case the method is not invoked from a {@link PreMatching pre-matching}
+     *                               request filter.
      * @see #setRequestUri(java.net.URI)
      */
     public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException;
@@ -218,8 +219,8 @@ public interface ContainerRequestContext {
      * </p>
      *
      * @param method new request method.
-     * @throws IllegalStateException in case the method is invoked from a (post-matching)
-     *                               resource filter.
+     * @throws IllegalStateException in case the method is not invoked from a {@link PreMatching pre-matching}
+     *                               request filter.
      * @see javax.ws.rs.HttpMethod
      */
     public void setMethod(String method) throws IllegalStateException;
@@ -321,8 +322,9 @@ public interface ContainerRequestContext {
      * Set a new entity input stream.
      *
      * @param input new entity input stream.
+     * @throws IllegalStateException in case the method is invoked from a response filter.
      */
-    public void setEntityStream(InputStream input);
+    public void setEntityStream(InputStream input) throws IllegalStateException;
 
     /**
      * Get the injectable security context information for the current request.
@@ -341,8 +343,9 @@ public interface ContainerRequestContext {
      * if the current request has not been authenticated.
      *
      * @param context new injectable request security context information.
+     * @throws IllegalStateException in case the method is invoked from a response filter.
      */
-    public void setSecurityContext(SecurityContext context);
+    public void setSecurityContext(SecurityContext context) throws IllegalStateException;
 
     /**
      * Abort the filter chain with a response.
@@ -352,6 +355,7 @@ public interface ContainerRequestContext {
      * chain of applicable response filters.
      *
      * @param response response to be sent back to the client.
+     * @throws IllegalStateException in case the method is invoked from a response filter.
      */
-    public void abortWith(Response response);
+    public void abortWith(Response response) throws IllegalStateException;
 }

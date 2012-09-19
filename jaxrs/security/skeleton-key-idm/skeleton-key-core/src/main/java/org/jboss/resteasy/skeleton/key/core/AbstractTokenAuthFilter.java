@@ -1,17 +1,18 @@
-package org.jboss.resteasy.skeleton.key.server;
+package org.jboss.resteasy.skeleton.key.core;
 
+import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
 import org.jboss.resteasy.skeleton.key.keystone.model.Role;
 
-import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.security.Principal;
+import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,32 +20,58 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@PreMatching
-@Provider
-public class TokenAuthFilter implements ContainerRequestFilter
+public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
 {
-   protected TokenService tokenService;
+   protected X509Certificate certificate;
 
-   public TokenAuthFilter(TokenService tokenService)
+   protected AbstractTokenAuthFilter(X509Certificate certificate)
    {
-      this.tokenService = tokenService;
+      this.certificate = certificate;
    }
 
-   @Context SecurityContext securityContext;
+   @Context
+   SecurityContext securityContext;
+
+   protected Access signed(String header)
+   {
+      PKCS7SignatureInput input = null;
+      boolean verify = false;
+      try
+      {
+         input = new PKCS7SignatureInput(header);
+         verify = input.verify(certificate);
+      }
+      catch (Exception e)
+      {
+         throw new WebApplicationException(403);
+      }
+      if (!verify) throw new WebApplicationException(403);
+      try
+      {
+         return (Access)input.getEntity(Access.class, MediaType.APPLICATION_JSON_TYPE);
+      }
+      catch (Exception e)
+      {
+         throw new WebApplicationException(403);
+      }
+   }
+
+   protected abstract Access getTokenFromServer(String header);
 
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      String tokenHeader = requestContext.getHeaderString("X-Auth-Token");
-      if (tokenHeader == null) return;
+      String xAuthToken = requestContext.getHeaderString("X-Auth-Token");
+      String xAuthSignedToken = requestContext.getHeaderString("X-Auth-Signed-Token");
       Access token = null;
-      try
+      if (xAuthToken == null && xAuthSignedToken == null) return;
+      else if (xAuthSignedToken != null && certificate != null)
       {
-         token = tokenService.get(tokenHeader);
+         token = signed(xAuthSignedToken);
       }
-      catch (NotFoundException e)
+      else if (xAuthToken != null)
       {
-         return;  // do nothing
+         token = getTokenFromServer(xAuthToken);
       }
       if (token == null) return; // do nothing
       if (token.getToken().expired()) return; // todo maybe throw 401 with an error stating token is expired?

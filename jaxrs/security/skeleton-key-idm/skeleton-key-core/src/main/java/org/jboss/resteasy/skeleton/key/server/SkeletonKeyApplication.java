@@ -1,10 +1,5 @@
 package org.jboss.resteasy.skeleton.key.server;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
@@ -15,10 +10,8 @@ import org.jboss.resteasy.skeleton.key.keystone.model.Mappers;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.ContextResolver;
 import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -67,7 +60,7 @@ public class SkeletonKeyApplication
       tokenService = new TokenService(cache, expiration, timeUnit, projects, users);
       singletons.add(tokenService);
 
-      singletons.add(new TokenAuthFilter(tokenService));
+      singletons.add(new ServerTokenAuthFilter(tokenService));
 
    }
 

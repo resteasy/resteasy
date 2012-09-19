@@ -56,6 +56,11 @@ public class TokenService
       this.users = users;
    }
 
+   public X509Certificate getCertificate()
+   {
+      return certificate;
+   }
+
    public void setPrivateKey(PrivateKey privateKey)
    {
       this.privateKey = privateKey;

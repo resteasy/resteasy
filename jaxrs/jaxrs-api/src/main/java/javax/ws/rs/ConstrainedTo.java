@@ -89,7 +89,7 @@ import java.lang.annotation.Target;
  *  }
  * </pre>
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @since 2.0
  */
 @Target(ElementType.TYPE)

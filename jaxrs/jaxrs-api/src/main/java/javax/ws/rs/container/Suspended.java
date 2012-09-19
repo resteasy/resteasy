@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  * Inject a suspended {@link AsyncResponse} into a parameter of an invoked
  * JAX-RS {@link javax.ws.rs.HttpMethod resource or sub-resource method}.
  *
- * The injected {@code AsynchronousResponse} instance is bound to the processing
+ * The injected {@code AsyncResponse} instance is bound to the processing
  * of the active request and can be used to resume the request processing when
  * a response is available.
  * <p>
@@ -67,7 +67,7 @@ import java.util.concurrent.TimeUnit;
  *    &hellip;
  *    &#64;GET
  *    &#64;Asynchronous
- *    public void longRunningOperation(&#64;Suspended AsynchronousResponse ar) {
+ *    public void longRunningOperation(&#64;Suspended AsyncResponse ar) {
  *      ar.setTimeoutHandler(customHandler);
  *      ar.setTimeout(10, TimeUnit.SECONDS);
  *      final String result = executeLongRunningOperation();
@@ -79,7 +79,7 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  * <p>
  * A resource or sub-resource method that injects a suspended instance of an
- * {@code AsynchronousResponse} using the {@code &#64;Suspended} annotation is expected
+ * {@code AsyncResponse} using the {@code &#64;Suspended} annotation is expected
  * be declared to return {@code void} type. Methods that inject asynchronous
  * response instance using the {@code &#64;Suspended} annotation and declare a
  * return type other than {@code void} MUST be detected by the JAX-RS runtime and
@@ -91,7 +91,7 @@ import java.util.concurrent.TimeUnit;
  * public class MessagingResource {
  *     &hellip;
  *     &#64;GET
- *     public String readMessage(&#64;Suspended AsynchronousResponse ar) {
+ *     public String readMessage(&#64;Suspended AsyncResponse ar) {
  *         suspended.put(ar);
  *         return "This response will be ignored.";
  *     }

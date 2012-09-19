@@ -37,28 +37,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs.container;
+package javax.ws.rs.ext;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
- * Global binding annotation that can be applied to a {@link ContainerRequestFilter
- * container request filter} to indicate that such filter should be applied globally
- * on all resources in the application before the actual resource matching occurs.
+ * Contract for a provider of {@link ParamConverter} instances.
  * <p>
- * The JAX-RS runtime will apply the filters marked with the {@code &#64;PreMatching}
- * annotation globally to all resources, before the incoming request has been matched
- * to a particular resource method.
+ * Providers implementing {@code ParamConverterProvider} contract must be either programmatically
+ * registered in a JAX-RS runtime or must be annotated with
+ * {@link javax.ws.rs.ext.Provider &#64;Provider} annotation to be automatically discovered
+ * by the JAX-RS runtime during a provider scanning phase.
  * </p>
  *
  * @author Marek Potociar
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface PreMatching {
+public interface ParamConverterProvider {
+
+    /**
+     * Obtain a {@link ParamConverter} that can provide from/to string conversion
+     * for an instance of a particular Java type.
+     *
+     * @param <T>         the supported Java type convertible to/from a {@code String} format.
+     * @param rawType     the raw type of the object to be converted.
+     * @param genericType the type of object to be converted. E.g. if an String value
+     *                    representing the injected request parameter
+     *                    is to be converted into a method parameter, this will be the
+     *                    formal type of the method parameter as returned by {@code Class.getGenericParameterTypes}.
+     * @param annotations an array of the annotations associated with the convertible
+     *                    parameter instance. E.g. if a string value is to be converted into a method parameter,
+     *                    this would be the annotations on that parameter as returned by
+     *                    {@link java.lang.reflect.Method#getParameterAnnotations}.
+     * @return the string converter, otherwise {@code null}.
+     */
+    public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation annotations[]);
 }
