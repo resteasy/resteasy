@@ -63,7 +63,7 @@ public class SubResourceInvoker implements MethodInvoker
                params.put(pathParams[i], args[i]);
             }
          }
-         target = parent.pathParams(params);
+         target = parent.resolveTemplates(params);
       }
       return ProxyBuilder.proxy(iface, target, config);
    }

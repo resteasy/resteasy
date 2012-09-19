@@ -367,13 +367,10 @@ public class BuiltResponse extends Response
    {
       Link link = getLinkHeaders().getLinkByRelationship(relation);
       Link.Builder builder = new Link.Builder();
-      for (Map.Entry<String, List<String>> entry : link.getParams().entrySet())
+      for (Map.Entry<String, String> entry : link.getParams().entrySet())
       {
-         for (String val : entry.getValue())
-         {
-            builder.param(entry.getKey(), val);
-         }
-      }
+         builder.param(entry.getKey(), entry.getValue());
+     }
       return builder;
    }
 

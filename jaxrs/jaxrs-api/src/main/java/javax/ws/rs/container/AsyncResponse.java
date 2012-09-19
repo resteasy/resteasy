@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  * An injectable JAX-RS asynchronous response that provides means for asynchronous server side
  * response processing.
  * <p>
- * A new instance of {@code AsynchronousResponse} may be injected into a
+ * A new instance of {@code AsyncResponse} may be injected into a
  * {@link javax.ws.rs.HttpMethod resource or sub-resource method} parameter using
  * the {@link Suspended &#64;Suspend} annotation.
  * </p>
@@ -60,24 +60,24 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  * </p>
  * <p>
- * Following example demonstrates the use of the {@code AsynchronousResponse} for asynchronous
+ * Following example demonstrates the use of the {@code AsyncResponse} for asynchronous
  * HTTP request processing:
  * </p>
  * <pre>
  * &#64;Path("/messages/next")
  * public class MessagingResource {
- *     private static final BlockingQueue&lt;AsynchronousResponse&gt; suspended =
- *             new ArrayBlockingQueue&lt;AsynchronousResponse&gt;(5);
+ *     private static final BlockingQueue&lt;AsyncResponse&gt; suspended =
+ *             new ArrayBlockingQueue&lt;AsyncResponse&gt;(5);
  *
  *     &#64;GET
- *     public void readMessage(&#64;Suspend AsynchronousResponse ar) throws InterruptedException {
+ *     public void readMessage(&#64;Suspended AsyncResponse ar) throws InterruptedException {
  *         suspended.put(ar);
  *         return ar;
  *     }
  *
  *     &#64;POST
  *     public String postMessage(final String message) throws InterruptedException {
- *         final AsynchronousResponse ar = suspended.take();
+ *         final AsyncResponse ar = suspended.take();
  *         ar.resume(message); // resumes the processing of one GET request
  *         return "Message sent";
  *     }
@@ -96,7 +96,7 @@ import java.util.concurrent.TimeUnit;
  * {@link AsyncResponse#setTimeoutHandler(TimeoutHandler) setting} a custom {@link TimeoutHandler time-out handler}.
  * </p>
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @since 2.0
  */
 public interface AsyncResponse {
@@ -324,7 +324,7 @@ public interface AsyncResponse {
      *                 interfaces.
      * @return {@code true} if the callback class was recognized and registered, {@code false}
      *         otherwise.
-     * @throws NullPointerException     in case the callback instance is {@code null}.
+     * @throws NullPointerException in case the callback instance is {@code null}.
      * @see ResumeCallback
      */
     public boolean register(Object callback) throws NullPointerException;

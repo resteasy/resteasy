@@ -39,26 +39,24 @@
  */
 package javax.ws.rs.container;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Global binding annotation that can be applied to a {@link ContainerRequestFilter
- * container request filter} to indicate that such filter should be applied globally
- * on all resources in the application before the actual resource matching occurs.
+ * Asynchronous request processing lifecycle callback that receives connection
+ * related {@link AsyncResponse asynchronous response} lifecycle events.
  * <p>
- * The JAX-RS runtime will apply the filters marked with the {@code &#64;PreMatching}
- * annotation globally to all resources, before the incoming request has been matched
- * to a particular resource method.
+ * Support for this type of callback by JAX-RS runtime is OPTIONAL.
  * </p>
  *
  * @author Marek Potociar
+ * @since 2.0
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface PreMatching {
+public interface ConnectionCallback {
+    /**
+     * This callback notification method is invoked in case the container detects
+     * that the remote client connection associated with the asynchronous response
+     * has been disconnected.
+     *
+     * @param disconnected asynchronous response for which the remote client connection
+     *                     has been lost.
+     */
+    public void onDisconnect(AsyncResponse disconnected);
 }

@@ -162,13 +162,13 @@ public class Variant {
      * @since 2.0
      */
     public String getLanguageString() {
-        return language.toString();
+        return (language == null) ? null : language.toString();
     }
 
     /**
      * Get the media type of the variant.
      *
-     * @return the media type or  {@code null} if none set.
+     * @return the media type or {@code null} if none set.
      */
     public MediaType getMediaType() {
         return mediaType;
@@ -177,7 +177,7 @@ public class Variant {
     /**
      * Get the encoding of the variant.
      *
-     * @return the encoding or  {@code null} if none set.
+     * @return the encoding or {@code null} if none set.
      */
     public String getEncoding() {
         return encoding;
