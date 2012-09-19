@@ -26,13 +26,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
 
    public ClientResponse<?> execute(ClientRequest request) throws Exception
    {
-      String uri = request.getUri();
-      String httpMethod = request.getHttpMethod();
-
-      HttpURLConnection connection = (HttpURLConnection) new URL(uri)
-              .openConnection();
-      connection.setRequestMethod(httpMethod);
-      setupRequest(request, connection);
+	  HttpURLConnection connection = createConnection(request);
       return execute(request, connection);
    }
 
@@ -87,6 +81,15 @@ public class URLConnectionClientExecutor implements ClientExecutor
       return new ClientRequest(uriBuilder, this);
    }
 
+   protected HttpURLConnection createConnection(ClientRequest request) throws Exception
+   {
+	  String uri = request.getUri();
+	  String httpMethod = request.getHttpMethod();
+
+	  HttpURLConnection connection = (HttpURLConnection) new URL(uri).openConnection();
+	  connection.setRequestMethod(httpMethod);
+	  return connection;
+   }
 
    private <T> ClientResponse<T> execute(ClientRequest request, final HttpURLConnection connection) throws IOException
    {
