@@ -65,6 +65,8 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.RuntimeDelegate;
@@ -160,6 +162,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, ClientExceptionMapper> clientExceptionMappers;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
    protected Map<Class<?>, StringConverter> stringConverters;
+   protected List<ParamConverterProvider> paramConverterProviders;
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers;
 
    protected Map<Class<?>, HeaderDelegate> headerDelegates;
@@ -228,6 +231,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
       clientExceptionMappers = new HashMap<Class<?>, ClientExceptionMapper>();
       contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+      paramConverterProviders = new ArrayList<ParamConverterProvider>();
       stringConverters = new HashMap<Class<?>, StringConverter>();
       stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
@@ -311,6 +315,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (stringConverters == null && parent != null) return parent.getStringConverters();
       return stringConverters;
    }
+
+   protected List<ParamConverterProvider> getParamConverterProviders()
+   {
+      if (paramConverterProviders == null && parent != null) return parent.getParamConverterProviders();
+      return paramConverterProviders;
+   }
+
 
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> getStringParameterUnmarshallers()
    {
@@ -987,6 +998,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return rtn;
    }
 
+   public ParamConverter getParamConverter(Class clazz, Type genericType, Annotation[] annotations)
+   {
+      for (ParamConverterProvider provider : getParamConverterProviders())
+      {
+         ParamConverter converter = provider.getConverter(clazz, genericType, annotations);
+         if (converter != null) return converter;
+      }
+      return null;
+   }
+
    public StringConverter getStringConverter(Class<?> clazz)
    {
       if (getStringConverters().size() == 0) return null;
@@ -1014,10 +1035,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param object
     * @return
     */
-   public String toString(Object object)
+   public String toString(Object object, Class clazz, Type genericType, Annotation[] annotations)
    {
       if (object instanceof String)
          return (String) object;
+      ParamConverter paramConverter = getParamConverter(clazz, genericType, annotations);
+      if (paramConverter != null)
+      {
+         return paramConverter.toString(object);
+      }
       StringConverter converter = getStringConverter(object
               .getClass());
       if (converter != null)
@@ -1031,6 +1057,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public String toHeaderString(Object object)
    {
       if (object instanceof String) return (String)object;
+      ParamConverter paramConverter = getParamConverter(object.getClass(), null, null);
+      if (paramConverter != null)
+      {
+         return paramConverter.toString(object);
+      }
       StringConverter converter = getStringConverter(object
               .getClass());
       if (converter != null)
@@ -1073,6 +1104,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProvider(Class provider, boolean isBuiltin, int bindingPriority, Class<?>... contracts)
    {
+      if (isA(provider, ParamConverterProvider.class, contracts))
+      {
+         ParamConverterProvider paramConverterProvider = (ParamConverterProvider)injectedInstance(provider);
+         injectProperties(provider);
+         if (paramConverterProviders == null)
+         {
+            paramConverterProviders = new ArrayList<ParamConverterProvider>();
+            paramConverterProviders.addAll(parent.getParamConverterProviders());
+         }
+         paramConverterProviders.add(paramConverterProvider);
+      }
       if (isA(provider, MessageBodyReader.class, contracts))
       {
          try
@@ -1380,6 +1422,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
    public void registerProviderInstance(Object provider, int bindingPriority, Class<?>... contracts)
    {
+      if (isA(provider, ParamConverterProvider.class, contracts))
+      {
+         injectProperties(provider);
+         if (paramConverterProviders == null)
+         {
+            paramConverterProviders = new ArrayList<ParamConverterProvider>();
+            paramConverterProviders.addAll(parent.getParamConverterProviders());
+         }
+         paramConverterProviders.add((ParamConverterProvider)provider);
+      }
       if (isA(provider, MessageBodyReader.class, contracts))
       {
          try
