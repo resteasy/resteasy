@@ -83,7 +83,7 @@ public class BasicAuthTest
          if (!ctx.isUserInRole("admin"))
          {
             System.out.println("NOT IN ROLE!!!!");
-            throw new WebApplicationException(401);
+            throw new WebApplicationException(403);
          }
          return "hello";
       }
@@ -114,7 +114,7 @@ public class BasicAuthTest
          if (!ctx.isUserInRole("admin"))
          {
             System.out.println("NOT IN ROLE!!!!");
-            throw new WebApplicationException(401);
+            throw new WebApplicationException(403);
          }
          return "hello";
       }
@@ -203,7 +203,7 @@ public class BasicAuthTest
       {
          ClientRequest request = new ClientRequest(generateURL("/secured/deny"), executor);
          ClientResponse<String> response = request.get(String.class);
-         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());        
+         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
       }
    }
 
@@ -255,7 +255,7 @@ public class BasicAuthTest
          client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
          ClientRequest request = new ClientRequest(generateURL("/secured/authorized"), executor);
          ClientResponse<?> response = request.get();
-         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
          response.releaseConnection();
       }
    }

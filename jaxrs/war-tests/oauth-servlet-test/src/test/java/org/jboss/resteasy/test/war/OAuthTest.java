@@ -137,7 +137,7 @@ public class OAuthTest
 	@Test
 	public void testProtectedResourceUserRole() throws Exception
 	{
-		testProtectedURL("/userRole", HttpResponseCodes.SC_UNAUTHORIZED);
+		testProtectedURL("/userRole", HttpResponseCodes.SC_FORBIDDEN);
 	}
 
 	@Test

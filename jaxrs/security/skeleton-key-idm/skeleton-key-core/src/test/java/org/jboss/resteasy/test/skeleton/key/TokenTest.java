@@ -170,7 +170,7 @@ public class TokenTest
 
       admin = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).admin();
       response = admin.roles().create("error");
-      Assert.assertEquals(401, response.getStatus());
+      Assert.assertEquals(403, response.getStatus());
    }
 
    @Test
@@ -214,14 +214,14 @@ public class TokenTest
          String newUser = "{ \"user\" : { \"username\" : \"wburke\", \"name\" : \"Bill Burke\", \"email\" : \"bburke@redhat.com\", \"enabled\" : true, \"credentials\" : { \"password\" : \"geheim\" }} }";
          ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
          Response response = client.target(generateURL("/users")).request().post(Entity.json(newUser));
-         Assert.assertEquals(response.getStatus(), 401);
+         Assert.assertEquals(response.getStatus(), 403);
          response.close();
       }
       {
          String newRole = "{ \"role\" : { \"name\" : \"admin\"} }";
          ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
          Response response = client.target(generateURL("/roles")).request().post(Entity.json(newRole));
-         Assert.assertEquals(response.getStatus(), 401);
+         Assert.assertEquals(response.getStatus(), 403);
          response.close();
 
       }
@@ -229,7 +229,7 @@ public class TokenTest
          String newProject = "{ \"project\" : { \"id\" : \"5\", \"name\" : \"Resteasy\", \"description\" : \"The Best of REST\", \"enabled\" : true } }";
          ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
          Response response = client.target(generateURL("/projects")).request().post(Entity.json(newProject));
-         Assert.assertEquals(response.getStatus(), 401);
+         Assert.assertEquals(response.getStatus(), 403);
          response.close();
       }
    }
