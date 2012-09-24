@@ -9,10 +9,15 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.skeleton.key.keystone.model.Mappers;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.security.JSSESecurityDomain;
+import org.jboss.security.SecurityConstants;
 
+import javax.naming.InitialContext;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
@@ -59,9 +64,48 @@ public class SkeletonKeyApplication
       TimeUnit timeUnit = (unit == null) ? TimeUnit.MINUTES : TimeUnit.valueOf(unit);
       tokenService = new TokenService(cache, expiration, timeUnit, projects, users);
       singletons.add(tokenService);
+      initKeyPair();
 
       singletons.add(new ServerTokenAuthFilter(tokenService));
 
+   }
+
+   protected void initKeyPair()
+   {
+      try
+      {
+         String keyStoreFile = getConfigProperty("skeleton.key.keyStoreFile");
+         String keyStorePassword = getConfigProperty("skeleton.key.keyStorePassword");
+         String alias = getConfigProperty("skeleton.key.alias");
+         KeyStore keyStore = null;
+         if (keyStoreFile == null)
+         {
+            String securityDomain = getConfigProperty("skeleton.key.security.domain");
+            if (securityDomain == null)
+            {
+               logger.error("*********** security domain null");
+               return;
+            }
+            JSSESecurityDomain jsse = (JSSESecurityDomain)(new InitialContext().lookup(SecurityConstants.JAAS_CONTEXT_ROOT + securityDomain + "/jsse"));
+            keyStore = jsse.getKeyStore();
+         }
+         else
+         {
+            keyStore = KeyStore.getInstance("jks");
+            keyStore.load(new FileInputStream(keyStoreFile), keyStorePassword.toCharArray());
+         }
+
+         privateKey = (PrivateKey)keyStore.getKey(alias, keyStorePassword.toCharArray());
+         if (privateKey == null) throw new RuntimeException("Private Key is null");
+         certificate = (X509Certificate)keyStore.getCertificate(alias);
+         if (certificate == null) throw new RuntimeException("Certificate is null");
+         tokenService.setPrivateKey(privateKey);
+         tokenService.setCertificate(certificate);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    public RolesService getRoles()

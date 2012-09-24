@@ -39,13 +39,12 @@
  */
 package javax.ws.rs.ext;
 
+import javax.ws.rs.DefaultValue;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import javax.ws.rs.DefaultValue;
 
 /**
  * Defines a contract for a delegate responsible for converting between a

@@ -1,12 +1,5 @@
 package org.jboss.resteasy.test.encoding;
 
-import javax.ws.rs.Encoded;
-import javax.ws.rs.GET;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.UriBuilder;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
@@ -16,6 +9,13 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.Encoded;
+import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * RESTEASY-729

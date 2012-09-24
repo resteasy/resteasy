@@ -8,7 +8,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Enumeration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * RESTEASY-632.

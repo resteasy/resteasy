@@ -28,8 +28,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.jboss.resteasy.util.HttpClient4xUtils.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

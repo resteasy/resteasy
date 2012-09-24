@@ -31,8 +31,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.jboss.resteasy.util.HttpClient4xUtils.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
 
 /**
  * A basket of JIRA regression tests

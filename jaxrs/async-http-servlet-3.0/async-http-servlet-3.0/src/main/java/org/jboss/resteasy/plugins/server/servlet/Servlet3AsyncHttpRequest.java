@@ -4,7 +4,6 @@ import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;

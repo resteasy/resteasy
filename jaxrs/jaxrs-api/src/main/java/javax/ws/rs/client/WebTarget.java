@@ -39,12 +39,11 @@
  */
 package javax.ws.rs.client;
 
-import java.net.URI;
-import java.util.Map;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+import java.util.Map;
 
 /**
  * A resource target identified by the resource URI.

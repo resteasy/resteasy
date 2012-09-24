@@ -16,11 +16,8 @@ import org.jboss.resteasy.skeleton.key.server.SkeletonKeyApplication;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
@@ -34,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -152,7 +148,7 @@ public class PersistenceTest
 
       admin = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).admin();
       response = admin.roles().create("error");
-      Assert.assertEquals(401, response.getStatus());
+      Assert.assertEquals(403, response.getStatus());
       stopDeployment();
    }
 
@@ -198,7 +194,7 @@ public class PersistenceTest
 
       admin = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).admin();
       response = admin.roles().create("error");
-      Assert.assertEquals(401, response.getStatus());
+      Assert.assertEquals(403, response.getStatus());
       stopDeployment();
    }
 

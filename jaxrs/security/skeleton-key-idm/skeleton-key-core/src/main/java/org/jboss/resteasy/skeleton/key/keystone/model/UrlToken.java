@@ -1,14 +1,10 @@
 package org.jboss.resteasy.skeleton.key.keystone.model;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
 
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class UrlToken implements Serializable {

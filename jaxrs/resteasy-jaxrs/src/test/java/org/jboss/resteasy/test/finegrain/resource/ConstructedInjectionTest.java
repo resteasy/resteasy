@@ -17,7 +17,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.createURI;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * Test POJO constructor/field injection.

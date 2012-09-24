@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static javax.ws.rs.core.MediaType.*;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 
 @Path("/kundenverwaltung")

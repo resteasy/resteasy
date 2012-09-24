@@ -9,7 +9,6 @@ import org.jboss.resteasy.util.StringToPrimitive;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;

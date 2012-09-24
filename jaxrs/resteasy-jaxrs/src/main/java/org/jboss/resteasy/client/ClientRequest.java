@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.jboss.resteasy.util.HttpHeaderNames.*;
+import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
 
 /**
  * Create a hand coded request to send to the server.  You call methods like accept(), body(), pathParameter()

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * Simple smoke test

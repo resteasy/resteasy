@@ -39,9 +39,8 @@
  */
 package javax.ws.rs.client;
 
-import java.net.URL;
-
 import javax.ws.rs.core.Configurable;
+import java.net.URL;
 
 /**
  * Main entry point to the client API used to bootstrap {@link javax.ws.rs.client.Client}

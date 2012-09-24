@@ -9,8 +9,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import static junit.framework.Assert.*;
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * This test verifies that Providers instance can be injected into a Provider

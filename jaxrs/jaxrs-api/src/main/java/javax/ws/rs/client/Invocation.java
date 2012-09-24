@@ -39,15 +39,14 @@
  */
 package javax.ws.rs.client;
 
-import java.util.Locale;
-import java.util.concurrent.Future;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.util.Locale;
+import java.util.concurrent.Future;
 
 /**
  * A client request invocation.

@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.lang.annotation.Annotation;
 import java.sql.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 /**
  * resteasy-584
  *

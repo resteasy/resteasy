@@ -76,13 +76,34 @@ public class SkeletonKeyClientBuilder
       return access;
    }
 
+   public String signed(final String projectName, WebTarget target)
+   {
+      if (username == null) throw new NullPointerException("username is null");
+      if (password == null) throw new NullPointerException("password is null");
+      if (tokenFactory == null) throw new NullPointerException("idp is null");
+
+      final String access = obtainSignedToken(projectName);
+      ClientRequestFilter tokenFilter = new ClientRequestFilter() {
+
+         @Override
+         public void filter(ClientRequestContext requestContext) throws IOException
+         {
+            requestContext.getHeaders().putSingle("X-Auth-Signed-Token", access);
+         }
+      };
+
+      target.configuration().register(tokenFilter);
+      return access;
+   }
+
+
    public  Access obtainToken(String projectName)
    {
       Authentication auth = authentication(projectName);
       return tokenFactory.create(auth);
    }
 
-   public String objectSignedToken(String projectName)
+   public String obtainSignedToken(String projectName)
    {
       Authentication auth = authentication(projectName);
       return tokenFactory.createSigned(auth);

@@ -14,8 +14,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.junit.Assert.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.junit.Assert.assertEquals;
 
 public class TypeMappingTest
 {

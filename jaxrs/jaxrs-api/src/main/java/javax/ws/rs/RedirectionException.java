@@ -39,9 +39,8 @@
  */
 package javax.ws.rs;
 
-import java.net.URI;
-
 import javax.ws.rs.core.Response;
+import java.net.URI;
 
 /**
  * A runtime application exception indicating a request redirection

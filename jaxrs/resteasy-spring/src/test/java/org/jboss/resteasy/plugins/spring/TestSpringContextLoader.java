@@ -12,7 +12,7 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import javax.servlet.ServletContext;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests that SpringContextLoader does proper validations and adds an application listener.

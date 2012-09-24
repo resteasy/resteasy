@@ -3,8 +3,8 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 
-import javax.ws.rs.container.Suspended;
 import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import java.util.concurrent.TimeUnit;
 
 /**

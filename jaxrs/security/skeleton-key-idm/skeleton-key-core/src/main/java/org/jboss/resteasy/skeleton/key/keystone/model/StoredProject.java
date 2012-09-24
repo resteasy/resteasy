@@ -1,7 +1,5 @@
 package org.jboss.resteasy.skeleton.key.keystone.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;

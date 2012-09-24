@@ -11,7 +11,6 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation.URIP
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget.MatrixParamProcessor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget.PathParamProcessor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget.QueryParamProcessor;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.MediaTypeHelper;
 

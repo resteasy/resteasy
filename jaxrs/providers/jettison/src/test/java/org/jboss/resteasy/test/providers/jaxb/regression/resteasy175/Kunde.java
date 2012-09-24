@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import static java.util.Calendar.*;
-import static javax.xml.bind.annotation.XmlAccessType.*;
+import static java.util.Calendar.YEAR;
+import static javax.xml.bind.annotation.XmlAccessType.FIELD;
 
 
 @XmlRootElement
