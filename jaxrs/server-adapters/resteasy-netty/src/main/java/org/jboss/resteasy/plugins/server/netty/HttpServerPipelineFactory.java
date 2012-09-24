@@ -10,7 +10,7 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol;
 
-import static org.jboss.netty.channel.Channels.*;
+import static org.jboss.netty.channel.Channels.pipeline;
 
 /**
  * The {@link ChannelPipelineFactory} which is used to serve HTTP Traffic.

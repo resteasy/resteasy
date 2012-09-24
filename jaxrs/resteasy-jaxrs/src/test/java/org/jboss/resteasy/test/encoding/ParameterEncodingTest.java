@@ -1,6 +1,13 @@
 package org.jboss.resteasy.test.encoding;
 
-import java.util.Iterator;
+import junit.framework.Assert;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Encoded;
@@ -15,16 +22,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
-
-import junit.framework.Assert;
-
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.Iterator;
 
 /**
  * RESTEASY-737

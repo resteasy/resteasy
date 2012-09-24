@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

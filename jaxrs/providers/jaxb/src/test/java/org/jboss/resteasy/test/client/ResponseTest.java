@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.HttpURLConnection;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * RESTEASY-306

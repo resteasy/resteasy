@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
-import static org.jboss.resteasy.spi.ResteasyProviderFactory.*;
+import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
 
 /**
  * <p>

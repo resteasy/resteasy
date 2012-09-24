@@ -10,9 +10,9 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.skeleton.key.client.SkeletonKeyAdminClient;
 import org.jboss.resteasy.skeleton.key.client.SkeletonKeyClientBuilder;
+import org.jboss.resteasy.skeleton.key.core.UserPrincipal;
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
 import org.jboss.resteasy.skeleton.key.keystone.model.Role;
-import org.jboss.resteasy.skeleton.key.core.UserPrincipal;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.SimplePrincipal;
@@ -97,7 +97,7 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {
       String tokenHeader = request.getHeader("X-Auth-Token");
-      if (tokenHeader == null) throw new LoginException("No X-Auth-Token");
+      if (tokenHeader == null) return false; //throw new LoginException("No X-Auth-Token");
 
       access = admin.tokens().get(tokenHeader);
       if (access.getToken().expired())

@@ -1,9 +1,5 @@
 package org.jboss.resteasy.client.exception.mapper;
 
-import java.io.IOException;
-
-import javax.ws.rs.ext.Provider;
-
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpException;
 import org.apache.http.MalformedChunkCodingException;
@@ -48,6 +44,9 @@ import org.jboss.resteasy.client.exception.ResteasyProtocolException;
 import org.jboss.resteasy.client.exception.ResteasyRedirectException;
 import org.jboss.resteasy.client.exception.ResteasyTunnelRefusedException;
 import org.jboss.resteasy.client.exception.ResteasyUnsupportedHttpVersionException;
+
+import javax.ws.rs.ext.Provider;
+import java.io.IOException;
 
 /**
  * 

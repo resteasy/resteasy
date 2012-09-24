@@ -36,7 +36,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -198,7 +197,7 @@ public class TokenTest
       Project project = projects.getList().get(0);
       admin.projects().addUserRole(project.getId(), user.getId(), role.getId());
 
-      String signed = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).objectSignedToken("Skeleton Key");
+      String signed = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).obtainSignedToken("Skeleton Key");
       System.out.println(signed);
       PKCS7SignatureInput input = new PKCS7SignatureInput(signed);
       input.setCertificate(certificate);

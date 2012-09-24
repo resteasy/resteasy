@@ -1,6 +1,5 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.annotations.security.doseta.Verifications;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 
@@ -13,7 +12,6 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

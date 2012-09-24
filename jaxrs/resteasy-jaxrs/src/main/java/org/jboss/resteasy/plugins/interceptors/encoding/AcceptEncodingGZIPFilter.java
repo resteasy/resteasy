@@ -1,11 +1,5 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
-import org.jboss.resteasy.annotations.interception.ClientInterceptor;
-import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.interception.ClientExecutionContext;
-import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
-
 import javax.ws.rs.BindingPriority;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;

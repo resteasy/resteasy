@@ -6,7 +6,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 public class ProxiedSubresourceTest
 {

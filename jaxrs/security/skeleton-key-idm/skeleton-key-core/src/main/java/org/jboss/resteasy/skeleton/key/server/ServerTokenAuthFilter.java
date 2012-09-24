@@ -1,21 +1,11 @@
 package org.jboss.resteasy.skeleton.key.server;
 
 import org.jboss.resteasy.skeleton.key.core.AbstractTokenAuthFilter;
-import org.jboss.resteasy.skeleton.key.core.UserPrincipal;
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
-import org.jboss.resteasy.skeleton.key.keystone.model.Role;
 
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Used only by skeleton key server server

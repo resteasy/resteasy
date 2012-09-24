@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import javax.ws.rs.core.CacheControl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

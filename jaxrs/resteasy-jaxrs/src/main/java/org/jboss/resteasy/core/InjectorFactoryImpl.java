@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.jboss.resteasy.util.FindAnnotation.*;
+import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

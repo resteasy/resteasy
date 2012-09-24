@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

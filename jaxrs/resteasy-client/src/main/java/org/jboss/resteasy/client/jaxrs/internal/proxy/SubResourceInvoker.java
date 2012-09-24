@@ -7,7 +7,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;

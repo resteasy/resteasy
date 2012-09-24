@@ -14,7 +14,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
 import java.util.Map;
 
-import static org.jboss.netty.handler.codec.http.HttpVersion.*;
+import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 
 /**

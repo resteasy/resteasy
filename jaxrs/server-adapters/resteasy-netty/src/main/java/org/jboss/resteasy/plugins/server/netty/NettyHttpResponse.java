@@ -17,7 +17,7 @@ import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.jboss.netty.handler.codec.http.HttpVersion.*;
+import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

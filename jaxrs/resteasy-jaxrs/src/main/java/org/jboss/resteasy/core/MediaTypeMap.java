@@ -5,7 +5,6 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import javax.ws.rs.core.MediaType;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

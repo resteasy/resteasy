@@ -16,7 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.ext.Provider;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

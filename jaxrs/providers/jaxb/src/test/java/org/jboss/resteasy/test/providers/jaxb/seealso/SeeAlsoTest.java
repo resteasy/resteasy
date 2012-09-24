@@ -16,7 +16,7 @@ import javax.xml.bind.JAXBContext;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

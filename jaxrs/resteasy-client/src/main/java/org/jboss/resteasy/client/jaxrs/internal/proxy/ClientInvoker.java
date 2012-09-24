@@ -12,7 +12,6 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.EntityExtractor
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.ProcessorFactory;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.WebTargetProcessor;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.Path;
@@ -20,8 +19,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.ext.Providers;
 import java.lang.reflect.Method;
 
 /**

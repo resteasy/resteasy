@@ -1,13 +1,13 @@
 package org.jboss.resteasy.resteasy736;
 
+import org.jboss.resteasy.annotations.Suspend;
+import org.jboss.resteasy.spi.AsynchronousResponse;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.jboss.resteasy.annotations.Suspend;
-import org.jboss.resteasy.spi.AsynchronousResponse;
 
 /**
  *

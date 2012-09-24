@@ -39,6 +39,14 @@
  */
 package javax.ws.rs.core;
 
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.namespace.QName;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Arrays;
@@ -47,16 +55,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
-
-import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.namespace.QName;
 
 /**
  * <p>Class representing hypermedia links. A hypermedia link may include additional

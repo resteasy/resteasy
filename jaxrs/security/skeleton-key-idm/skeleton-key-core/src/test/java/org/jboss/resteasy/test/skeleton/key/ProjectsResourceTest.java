@@ -4,7 +4,6 @@ import junit.framework.Assert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.skeleton.key.keystone.model.Project;
-import org.jboss.resteasy.skeleton.key.keystone.model.User;
 import org.jboss.resteasy.skeleton.key.server.SkeletonKeyApplication;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -17,7 +16,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
 import java.util.Set;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;

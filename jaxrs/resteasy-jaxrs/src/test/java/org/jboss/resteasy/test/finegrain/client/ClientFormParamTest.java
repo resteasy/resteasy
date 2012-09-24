@@ -10,7 +10,8 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 public class ClientFormParamTest
 {

@@ -1,12 +1,6 @@
 package org.jboss.resteasy.security.smime;
 
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
-import org.bouncycastle.cms.CMSProcessableByteArray;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.jboss.resteasy.security.BouncyIntegration;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.Base64;
 
@@ -18,14 +12,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.cert.X509Certificate;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

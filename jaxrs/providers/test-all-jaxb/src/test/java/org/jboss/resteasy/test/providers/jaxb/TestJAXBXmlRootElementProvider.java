@@ -13,7 +13,7 @@ import org.junit.Test;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * A TestJAXBXmlRootElementProvider.

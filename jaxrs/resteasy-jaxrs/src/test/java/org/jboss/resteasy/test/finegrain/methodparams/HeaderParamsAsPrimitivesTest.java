@@ -25,8 +25,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.junit.Assert.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

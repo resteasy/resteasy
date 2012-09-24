@@ -40,7 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -610,7 +610,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    @Override
    public void close() throws MessageProcessingException
    {
-      throw new NotImplementedYetException();
+      releaseConnection();
    }
 
    @Override

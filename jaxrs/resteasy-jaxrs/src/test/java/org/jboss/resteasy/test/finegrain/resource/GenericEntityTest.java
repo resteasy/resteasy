@@ -29,7 +29,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
