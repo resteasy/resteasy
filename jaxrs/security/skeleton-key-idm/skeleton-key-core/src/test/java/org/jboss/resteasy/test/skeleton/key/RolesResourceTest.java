@@ -1,11 +1,9 @@
 package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
-import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.skeleton.key.keystone.model.Role;
-import org.jboss.resteasy.skeleton.key.keystone.model.User;
 import org.jboss.resteasy.skeleton.key.server.SkeletonKeyApplication;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -13,15 +11,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
 import java.util.Set;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;

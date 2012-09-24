@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
 
-import static org.jboss.resteasy.util.HttpHeaderNames.*;
+import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_TYPE;
 
 @SuppressWarnings("unchecked")
 public class URLConnectionClientExecutor implements ClientExecutor

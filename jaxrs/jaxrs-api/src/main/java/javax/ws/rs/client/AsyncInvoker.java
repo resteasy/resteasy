@@ -39,11 +39,10 @@
  */
 package javax.ws.rs.client;
 
-import java.util.concurrent.Future;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import java.util.concurrent.Future;
 
 /**
  * Uniform interface for asynchronous invocation of HTTP methods.

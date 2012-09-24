@@ -39,11 +39,10 @@
  */
 package javax.ws.rs.core;
 
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
-
-import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * URI template-aware utility class for building URIs from their components. See

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Date;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

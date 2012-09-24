@@ -36,7 +36,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -170,7 +169,7 @@ public class TokenTest
 
       admin = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).admin();
       response = admin.roles().create("error");
-      Assert.assertEquals(401, response.getStatus());
+      Assert.assertEquals(403, response.getStatus());
    }
 
    @Test
@@ -198,7 +197,7 @@ public class TokenTest
       Project project = projects.getList().get(0);
       admin.projects().addUserRole(project.getId(), user.getId(), role.getId());
 
-      String signed = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).objectSignedToken("Skeleton Key");
+      String signed = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).obtainSignedToken("Skeleton Key");
       System.out.println(signed);
       PKCS7SignatureInput input = new PKCS7SignatureInput(signed);
       input.setCertificate(certificate);
@@ -214,14 +213,14 @@ public class TokenTest
          String newUser = "{ \"user\" : { \"username\" : \"wburke\", \"name\" : \"Bill Burke\", \"email\" : \"bburke@redhat.com\", \"enabled\" : true, \"credentials\" : { \"password\" : \"geheim\" }} }";
          ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
          Response response = client.target(generateURL("/users")).request().post(Entity.json(newUser));
-         Assert.assertEquals(response.getStatus(), 401);
+         Assert.assertEquals(response.getStatus(), 403);
          response.close();
       }
       {
          String newRole = "{ \"role\" : { \"name\" : \"admin\"} }";
          ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
          Response response = client.target(generateURL("/roles")).request().post(Entity.json(newRole));
-         Assert.assertEquals(response.getStatus(), 401);
+         Assert.assertEquals(response.getStatus(), 403);
          response.close();
 
       }
@@ -229,7 +228,7 @@ public class TokenTest
          String newProject = "{ \"project\" : { \"id\" : \"5\", \"name\" : \"Resteasy\", \"description\" : \"The Best of REST\", \"enabled\" : true } }";
          ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
          Response response = client.target(generateURL("/projects")).request().post(Entity.json(newProject));
-         Assert.assertEquals(response.getStatus(), 401);
+         Assert.assertEquals(response.getStatus(), 403);
          response.close();
       }
    }

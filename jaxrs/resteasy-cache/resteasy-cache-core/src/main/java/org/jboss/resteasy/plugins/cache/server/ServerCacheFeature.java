@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Feature;
 import java.io.IOException;
 

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.security;
 
 import org.jboss.resteasy.spi.NotImplementedYetException;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Base64;
 
 import javax.ws.rs.core.UriBuilder;

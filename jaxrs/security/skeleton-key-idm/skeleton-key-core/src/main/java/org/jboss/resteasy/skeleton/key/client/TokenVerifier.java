@@ -2,9 +2,7 @@ package org.jboss.resteasy.skeleton.key.client;
 
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;

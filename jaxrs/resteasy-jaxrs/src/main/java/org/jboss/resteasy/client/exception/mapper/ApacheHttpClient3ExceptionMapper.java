@@ -1,9 +1,5 @@
 package org.jboss.resteasy.client.exception.mapper;
 
-import java.io.IOException;
-
-import javax.ws.rs.ext.Provider;
-
 import org.apache.commons.httpclient.CircularRedirectException;
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.ConnectionPoolTimeoutException;
@@ -40,6 +36,9 @@ import org.jboss.resteasy.client.exception.ResteasyNoHttpResponseException;
 import org.jboss.resteasy.client.exception.ResteasyProtocolException;
 import org.jboss.resteasy.client.exception.ResteasyRedirectException;
 import org.jboss.resteasy.client.exception.ResteasyURIException;
+
+import javax.ws.rs.ext.Provider;
+import java.io.IOException;
 
 /**
  * 

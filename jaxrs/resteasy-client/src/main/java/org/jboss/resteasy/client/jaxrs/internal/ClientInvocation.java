@@ -16,7 +16,6 @@ import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;

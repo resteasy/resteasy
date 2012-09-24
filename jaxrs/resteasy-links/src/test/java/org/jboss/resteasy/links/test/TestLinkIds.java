@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 public class TestLinkIds
 {

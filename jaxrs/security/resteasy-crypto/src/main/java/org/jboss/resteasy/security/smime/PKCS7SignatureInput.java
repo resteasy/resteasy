@@ -3,16 +3,10 @@ package org.jboss.resteasy.security.smime;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.mail.smime.SMIMESigned;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.GenericType;
-import sun.nio.cs.ext.TIS_620;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
@@ -171,7 +165,7 @@ public class PKCS7SignatureInput<T>
 
    public <T2> T2 getEntity(Class<T2> type, MediaType mediaType)
    {
-      return getEntity(type, null, annotations, mediaType);
+      return getEntity(type, type, annotations, mediaType);
    }
 
    public <T2> T2  getEntity(GenericType<T2> gt, MediaType mediaType)

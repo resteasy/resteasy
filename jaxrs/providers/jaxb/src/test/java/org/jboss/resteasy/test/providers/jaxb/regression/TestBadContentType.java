@@ -13,8 +13,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.junit.Assert.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test case for RESTEASY-169

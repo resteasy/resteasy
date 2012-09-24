@@ -17,8 +17,8 @@ import org.junit.Test;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.junit.Assert.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for https://issues.jboss.org/browse/RESTEASY-621.

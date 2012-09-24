@@ -24,5 +24,6 @@
         <module>skeleton-key-idm/example/skeleton-key-server</module>
         <module>skeleton-key-idm/example/some-app</module>
         -->
+
     </modules>
 </project>

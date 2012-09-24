@@ -4,16 +4,10 @@ import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.annotations.security.doseta.Verifications;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.ResourceMethod;
-import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.spi.Failure;
-import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Method;
 

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.skeleton.key.core;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.skeleton.key.keystone.model.Access;
 import org.jboss.resteasy.skeleton.key.keystone.model.Role;
@@ -10,6 +11,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
@@ -24,6 +26,7 @@ public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
 {
    protected X509Certificate certificate;
 
+   protected Logger logger = Logger.getLogger(AbstractTokenAuthFilter.class);
    protected AbstractTokenAuthFilter(X509Certificate certificate)
    {
       this.certificate = certificate;
@@ -32,6 +35,9 @@ public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
    @Context
    SecurityContext securityContext;
 
+   @Context
+   Providers providers;
+
    protected Access signed(String header)
    {
       PKCS7SignatureInput input = null;
@@ -39,6 +45,7 @@ public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
       try
       {
          input = new PKCS7SignatureInput(header);
+         input.setProviders(providers);
          verify = input.verify(certificate);
       }
       catch (Exception e)
@@ -52,6 +59,7 @@ public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
       }
       catch (Exception e)
       {
+         logger.error("Failed to unmarshall", e);
          throw new WebApplicationException(403);
       }
    }

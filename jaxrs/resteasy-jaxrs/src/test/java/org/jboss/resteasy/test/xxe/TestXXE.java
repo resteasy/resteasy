@@ -17,7 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.Hashtable;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>

@@ -14,8 +14,8 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
 
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
-import static org.jboss.netty.handler.codec.http.HttpVersion.*;
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
+import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * {@link SimpleChannelUpstreamHandler} which handles the requests and dispatch them.

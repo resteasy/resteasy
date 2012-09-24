@@ -20,7 +20,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
 import java.util.Set;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;

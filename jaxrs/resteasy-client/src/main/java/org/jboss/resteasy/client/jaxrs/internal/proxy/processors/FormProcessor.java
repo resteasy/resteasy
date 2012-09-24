@@ -3,7 +3,6 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.spi.LoggableFailure;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.client.WebTarget;
 import java.io.ByteArrayOutputStream;
