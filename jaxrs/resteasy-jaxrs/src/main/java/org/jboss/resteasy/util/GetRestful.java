@@ -4,6 +4,9 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -52,22 +55,24 @@ public class GetRestful
     * @param clazz
     * @return list of class and interfaces that have jax-rs annotations
     */
-   public static Class getSubResourceClass(Class clazz)
+   public static Class[] getSubResourceClass(Class clazz)
    {
+      List<Class> classes = new ArrayList<Class>();
+
       // check class & superclasses for JAX-RS annotations
       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
       {
          if (hasJAXRSAnnotations(actualClass))
-            return actualClass;
+            classes.add(actualClass);
       }
 
       // ok, no @Path or @HttpMethods so look in interfaces.
       for (Class intf : clazz.getInterfaces())
       {
          if (hasJAXRSAnnotations(intf))
-            return intf;
+            classes.add(intf);
       }
-      return null;
+      return (Class[]) classes.toArray();
    }
 
    private static boolean isTopObject(Class<?> actualClass)
