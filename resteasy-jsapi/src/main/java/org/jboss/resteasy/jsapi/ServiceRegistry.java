@@ -80,7 +80,8 @@ public class ServiceRegistry
 					ResourceLocator locator = (ResourceLocator) invoker;
 					Method method = locator.getMethod();
 					Class<?> locatorType = method.getReturnType();
-					Class<?> locatorResourceType = GetRestful.getSubResourceClass(locatorType);
+					Class<?>[] locatorResourceTypes = GetRestful.getSubResourceClass(locatorType);
+                    for (Class<?> locatorResourceType : locatorResourceTypes) {
 					if (locatorResourceType == null)
 					{
 						// FIXME: we could generate an error for the client, which would be more informative than
@@ -96,6 +97,7 @@ public class ServiceRegistry
 					ResourceMethodRegistry locatorRegistry = new ResourceMethodRegistry(providerFactory);
 					locatorRegistry.addResourceFactory(null, null, locatorResourceType);
 					locators.add(new ServiceRegistry(this, locatorRegistry, providerFactory, locator));
+				}
 				}
 			}
 		}
