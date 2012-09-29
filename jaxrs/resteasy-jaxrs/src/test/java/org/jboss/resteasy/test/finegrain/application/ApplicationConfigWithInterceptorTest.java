@@ -24,7 +24,7 @@ import javax.ws.rs.ext.Provider;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

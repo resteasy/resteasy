@@ -39,6 +39,11 @@
  */
 package javax.ws.rs.client;
 
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -49,12 +54,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyWriter;
-
 /**
  * Client request filter context.
  *
@@ -63,7 +62,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * properties. The exposed setters allow modification of the exposed request-specific
  * information.
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @since 2.0
  */
 public interface ClientRequestContext {
@@ -176,8 +175,7 @@ public interface ClientRequestContext {
      * Get a string view of header values associated with the message.
      *
      * Changes in the underlying {@link #getHeaders() headers map} are reflected
-     * in this view. Conversely, this view supports removal operations, and these
-     * are reflected in the underlying headers map.
+     * in this view.
      * <p>
      * The method converts the non-string header values to strings using a
      * {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if one is available via

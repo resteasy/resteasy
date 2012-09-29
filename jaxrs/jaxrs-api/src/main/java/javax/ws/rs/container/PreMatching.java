@@ -55,7 +55,7 @@ import java.lang.annotation.Target;
  * to a particular resource method.
  * </p>
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

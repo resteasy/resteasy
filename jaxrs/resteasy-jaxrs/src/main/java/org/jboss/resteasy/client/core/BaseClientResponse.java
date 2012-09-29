@@ -25,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -39,7 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -425,6 +426,8 @@ public class BaseClientResponse<T> extends ClientResponse<T>
                  media, genericType));
       }
 
+      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
+      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
       try
       {
          InputStream is = streamFactory.getInputStream();
@@ -476,6 +479,11 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          {
             throw new ReaderException(e);
          }
+      }
+      finally
+      {
+         ResteasyProviderFactory.popContextData(Providers.class);
+         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
       }
    }
 
@@ -602,7 +610,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    @Override
    public void close() throws MessageProcessingException
    {
-      throw new NotImplementedYetException();
+      releaseConnection();
    }
 
    @Override

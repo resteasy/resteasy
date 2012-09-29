@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -7,7 +7,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Configuration;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Link;
@@ -125,18 +124,9 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public Invocation invocation(Link link) throws NullPointerException, IllegalArgumentException
+   public Invocation.Builder invocation(Link link) throws NullPointerException, IllegalArgumentException
    {
-      if (link.getMethod() == null) throw new IllegalArgumentException("Link must have a method attribute in order to build an Invocation");
       WebTarget target = target(link);
-      return target.request(link.getProduces().toArray(new String[link.getProduces().size()])).build(link.getMethod());
-   }
-
-   @Override
-   public Invocation invocation(Link link, Entity<?> entity) throws NullPointerException, IllegalArgumentException
-   {
-      if (link.getMethod() == null) throw new IllegalArgumentException("Link must have a method attribute in order to build an Invocation");
-      WebTarget target = target(link);
-      return target.request(link.getProduces().toArray(new String[link.getProduces().size()])).build(link.getMethod(), entity);
+      return target.request(link.getType());
    }
 }

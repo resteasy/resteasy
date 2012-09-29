@@ -39,10 +39,9 @@
  */
 package javax.ws.rs.client;
 
-import java.net.URI;
-
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
 
 /**
  * Client is the main entry point to the fluent API used to build and execute client
@@ -119,40 +118,14 @@ public interface Client {
     WebTarget target(Link link) throws NullPointerException;
 
     /**
-     * <p>Build an invocation from a link. The method and URI are obtained from the
-     * link. The HTTP Accept header is initialized to the value of the "produces"
-     * parameter in the link. If the operation requires an entity, use the overloaded
-     * form of this method.</p>
-     *
-     * <p>This method will throw an {@link java.lang.IllegalArgumentException} if there
-     * is not enough information to build an invocation (e.g. no HTTP method or entity
-     * when required).</p>
+     * <p>Build an invocation builder from a link. It uses the URI and the type
+     * of the link to initialize the invocation builder. The type is used as the
+     * initial value for the HTTP Accept header, if present.</p>
      *
      * @param link link to build invocation from. Must not be {@code null}.
-     * @return newly created invocation.
+     * @return newly created invocation builder.
      * @throws NullPointerException     in case link is {@code null}.
-     * @throws IllegalArgumentException in case link is incomplete to build invocation.
      */
-    Invocation invocation(Link link) throws NullPointerException, IllegalArgumentException;
+    Invocation.Builder invocation(Link link) throws NullPointerException;
 
-    /**
-     * <p>Build an invocation from a link. The method and URI are obtained from the
-     * link. The HTTP Accept header is initialized to the value of the "produces"
-     * parameter in the link. If the operation does not require an entity, use the
-     * overloaded form of this method.</p>
-     *
-     * <p>This method will throw an {@link java.lang.IllegalArgumentException} if there
-     * is not enough information to build and invocation (e.g. no HTTP method) or if
-     * the entity media type is not compatible with the value of the "consumes" parameter
-     * in the link.</p>
-     *
-     * @param link   link to build invocation from. Must not be {@code null}.
-     * @param entity request entity to be send when the invocation is invoked. Must not be {@code null}.
-     * @return newly created invocation.
-     * @throws NullPointerException     in case any of the arguments is {@code null}.
-     * @throws IllegalArgumentException in case link is incomplete to build an invocation or
-     *                                  if the entity media type is not compatible with the value
-     *                                  of the "consumes" parameter in the link.
-     */
-    Invocation invocation(Link link, Entity<?> entity) throws NullPointerException, IllegalArgumentException;
 }

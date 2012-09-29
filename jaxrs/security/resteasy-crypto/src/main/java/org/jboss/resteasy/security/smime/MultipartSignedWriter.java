@@ -25,8 +25,8 @@ import java.lang.reflect.Type;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces("*/*")
-public class SignedWriter implements MessageBodyWriter<SignedOutput>
+@Produces("multipart/signed")
+public class MultipartSignedWriter implements MessageBodyWriter<SignedOutput>
 {
    static
    {

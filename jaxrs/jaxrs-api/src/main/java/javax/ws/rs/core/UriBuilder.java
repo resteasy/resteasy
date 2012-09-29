@@ -39,11 +39,10 @@
  */
 package javax.ws.rs.core;
 
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
-
-import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * URI template-aware utility class for building URIs from their components. See
@@ -453,6 +452,33 @@ public abstract class UriBuilder {
      * @return the updated UriBuilder.
      */
     public abstract UriBuilder fragment(String fragment);
+
+    /**
+     * Resolve a URI template with a given {@code name} in this {@code UriBuilder} instance
+     * using a supplied value.
+     *
+     * In case a {@code null} template name or value is entered a {@link IllegalArgumentException}
+     * is thrown.
+     *
+     * @param name  name of the URI template.
+     * @param value value to be used to resolve the template.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if the resolved template name or value is {@code null}.
+     */
+    public abstract UriBuilder resolveTemplate(String name, Object value) throws IllegalArgumentException;
+
+    /**
+     * Resolve one or more URI templates in this {@code UriBuilder} instance using supplied
+     * name-value pairs.
+     *
+     * A call to the method with an empty parameter map is ignored.
+     *
+     * @param templateValues a map of URI template names and their values.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if the name-value map or any of the names or values
+     *                                  in the map is {@code null}.
+     */
+    public abstract UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException;
 
     /**
      * Build a URI.

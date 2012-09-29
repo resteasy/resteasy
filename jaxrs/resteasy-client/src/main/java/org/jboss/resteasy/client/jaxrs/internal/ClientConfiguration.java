@@ -106,7 +106,7 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
 
    public String toString(Object object)
    {
-      return providerFactory.toString(object);
+      return providerFactory.toString(object, object.getClass(), null, null);
    }
 
 

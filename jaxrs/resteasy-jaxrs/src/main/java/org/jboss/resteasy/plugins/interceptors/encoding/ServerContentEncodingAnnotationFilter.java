@@ -1,10 +1,6 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
-import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.interception.AcceptedByMethod;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.util.AcceptParser;
 
 import javax.ws.rs.BindingPriority;
@@ -12,11 +8,9 @@ import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 

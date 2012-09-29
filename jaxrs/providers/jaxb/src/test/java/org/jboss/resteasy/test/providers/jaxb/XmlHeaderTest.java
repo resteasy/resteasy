@@ -19,7 +19,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.annotation.Annotation;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * This tests decorators in general as well as the @XmlHeader and @Stylesheet annotations

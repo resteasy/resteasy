@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.junit.Assert.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.junit.Assert.assertEquals;
 
 public class TypeMappingTest
 {

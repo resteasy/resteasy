@@ -42,15 +42,18 @@ package javax.ws.rs.ext;
 /**
  * Interface for message body reader interceptors that wrap around calls
  * to {@link javax.ws.rs.ext.MessageBodyReader#readFrom}.
- *
- * Message body interceptors implementing this interface must be annotated with
- * {@link javax.ws.rs.ext.Provider &#64;Provider} to be discovered by the JAX-RS
- * runtime. Message body interceptor instances may also be discovered and
+ * <p>
+ * Providers implementing {@code ReaderInterceptor} contract must be either programmatically
+ * registered in a JAX-RS runtime or must be annotated with
+ * {@link javax.ws.rs.ext.Provider &#64;Provider} annotation to be automatically discovered
+ * by the JAX-RS runtime during a provider scanning phase.
+ * Message body interceptor instances may also be discovered and
  * bound {@link javax.ws.rs.container.DynamicFeature dynamically} to particular resource methods.
+ * </p>
  *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @see MessageBodyReader
  * @since 2.0
  */

@@ -58,7 +58,6 @@ public class ProviderInjectionTest
 
       Assert.assertNotNull(reader.headers);
       Assert.assertNotNull(reader.workers);
-      Assert.assertEquals(reader.workers.getClass(), ResteasyProviderFactory.class);
    }
 
 }

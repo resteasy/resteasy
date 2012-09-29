@@ -15,7 +15,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import static java.util.Calendar.*;
+import static java.util.Calendar.YEAR;
 
 @XmlRootElement
 @XmlSeeAlso({

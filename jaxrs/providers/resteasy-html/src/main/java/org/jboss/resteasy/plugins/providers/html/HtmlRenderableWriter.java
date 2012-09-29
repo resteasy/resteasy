@@ -14,7 +14,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import static org.jboss.resteasy.spi.ResteasyProviderFactory.*;
+import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
 
 /**
  * 

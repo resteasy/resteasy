@@ -39,13 +39,12 @@
  */
 package javax.ws.rs.client;
 
-import java.lang.annotation.Annotation;
-import java.util.Locale;
-
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Variant;
+import java.lang.annotation.Annotation;
+import java.util.Locale;
 
 /**
  * Encapsulates message entity including the associated variant information.

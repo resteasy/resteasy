@@ -1,5 +1,6 @@
 package org.jboss.resteasy.security.doseta;
 
+import org.jboss.resteasy.security.SigningAlgorithm;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.ParameterParser;

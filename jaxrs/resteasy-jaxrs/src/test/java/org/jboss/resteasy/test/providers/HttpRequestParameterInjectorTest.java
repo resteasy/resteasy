@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
 
 public class HttpRequestParameterInjectorTest extends BaseResourceTest
 {

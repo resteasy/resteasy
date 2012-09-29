@@ -88,7 +88,7 @@ import java.lang.annotation.Target;
  * on resource method parameters.
  * </p>
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @since 2.0
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})

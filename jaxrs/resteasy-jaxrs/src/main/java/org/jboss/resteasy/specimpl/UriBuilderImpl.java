@@ -382,9 +382,22 @@ public class UriBuilderImpl extends UriBuilder
 
    public URI buildFromMap(Map<String, ? extends Object> paramMap, boolean fromEncodedMap) throws IllegalArgumentException, UriBuilderException
    {
+      String buf = buildString(paramMap, fromEncodedMap, false);
+      try
+      {
+         return URI.create(buf);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException("Failed to create URI: " + buf, e);
+      }
+   }
+
+   private String buildString(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate)
+   {
       StringBuffer buffer = new StringBuffer();
 
-      if (scheme != null) replaceParameter(paramMap, fromEncodedMap, scheme, buffer).append(":");
+      if (scheme != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, scheme, buffer).append(":");
       if (ssp != null)
       {
          buffer.append(ssp);
@@ -392,14 +405,14 @@ public class UriBuilderImpl extends UriBuilder
       else if (userInfo != null || host != null || port != -1)
       {
          buffer.append("//");
-         if (userInfo != null) replaceParameter(paramMap, fromEncodedMap, userInfo, buffer).append("@");
-         if (host != null) replaceParameter(paramMap, fromEncodedMap, host, buffer);
+         if (userInfo != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, userInfo, buffer).append("@");
+         if (host != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, host, buffer);
          if (port != -1) buffer.append(":").append(Integer.toString(port));
       }
       if (path != null)
       {
          StringBuffer tmp = new StringBuffer();
-         replaceParameter(paramMap, fromEncodedMap, path, tmp);
+         replaceParameter(paramMap, fromEncodedMap, isTemplate, path, tmp);
          String tmpPath = tmp.toString();
          if (userInfo != null || host != null)
          {
@@ -410,22 +423,14 @@ public class UriBuilderImpl extends UriBuilder
       if (query != null)
       {
          buffer.append("?");
-         replaceQueryStringParameter(paramMap, fromEncodedMap, query, buffer);
+         replaceQueryStringParameter(paramMap, fromEncodedMap, isTemplate, query, buffer);
       }
       if (fragment != null)
       {
          buffer.append("#");
-         replaceParameter(paramMap, fromEncodedMap, fragment, buffer);
+         replaceParameter(paramMap, fromEncodedMap, isTemplate, fragment, buffer);
       }
-      String buf = buffer.toString();
-      try
-      {
-         return URI.create(buf);
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException("Failed to create URI: " + buf, e);
-      }
+      return buffer.toString();
    }
 
    protected StringBuffer replacePathParameter(String name, String value, boolean isEncoded, String string, StringBuffer buffer)
@@ -457,16 +462,21 @@ public class UriBuilderImpl extends UriBuilder
       return matcher;
    }
 
-   protected StringBuffer replaceParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, String string, StringBuffer buffer)
+   protected StringBuffer replaceParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, String string, StringBuffer buffer)
    {
       Matcher matcher = createUriParamMatcher(string);
       while (matcher.find())
       {
          String param = matcher.group(1);
          Object valObj = paramMap.get(param);
-         if (valObj == null)
+         if (valObj == null  && !isTemplate)
          {
             throw new IllegalArgumentException("NULL value for template parameter: " + param);
+         }
+         else if (valObj == null && isTemplate)
+         {
+            matcher.appendReplacement(buffer, matcher.group());
+            continue;
          }
          String value = valObj.toString();
          if (value != null)
@@ -490,13 +500,23 @@ public class UriBuilderImpl extends UriBuilder
       return buffer;
    }
 
-   protected StringBuffer replaceQueryStringParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, String string, StringBuffer buffer)
+   protected StringBuffer replaceQueryStringParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, String string, StringBuffer buffer)
    {
       Matcher matcher = createUriParamMatcher(string);
       while (matcher.find())
       {
          String param = matcher.group(1);
-         String value = paramMap.get(param).toString();
+         Object valObj = paramMap.get(param);
+         if (valObj == null  && !isTemplate)
+         {
+            throw new IllegalArgumentException("NULL value for template parameter: " + param);
+         }
+         else if (valObj == null && isTemplate)
+         {
+            matcher.appendReplacement(buffer, matcher.group());
+            continue;
+         }
+         String value = valObj.toString();
          if (value != null)
          {
             if (!fromEncodedMap)
@@ -828,6 +848,21 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public String toTemplate()
    {
-      throw new NotImplementedYetException();
+      return buildString(new HashMap<String, Object>(), true, true);
+   }
+
+   @Override
+   public UriBuilder resolveTemplate(String name, Object value) throws IllegalArgumentException
+   {
+      HashMap<String, Object> vals = new HashMap<String, Object>();
+      vals.put(name, value);
+      return resolveTemplates(vals);
+   }
+
+   @Override
+   public UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException
+   {
+      String str = buildString(templateValues, false, true);
+      return fromTemplate(str);
    }
 }

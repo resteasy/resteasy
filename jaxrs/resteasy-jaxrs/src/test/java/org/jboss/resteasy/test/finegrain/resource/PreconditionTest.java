@@ -20,7 +20,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.util.GregorianCalendar;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

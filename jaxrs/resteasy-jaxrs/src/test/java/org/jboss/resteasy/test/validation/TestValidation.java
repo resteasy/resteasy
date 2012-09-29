@@ -58,8 +58,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * 

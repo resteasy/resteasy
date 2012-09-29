@@ -39,12 +39,11 @@
  */
 package javax.ws.rs.client;
 
-import java.net.URI;
-import java.util.Map;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+import java.util.Map;
 
 /**
  * A resource target identified by the resource URI.
@@ -99,45 +98,43 @@ public interface WebTarget {
     public WebTarget path(String path) throws NullPointerException;
 
     /**
-     * Create a new {@code WebTarget} instance by replacing existing path parameter
-     * in the URI of the current target instance with a supplied value.
+     * Create a new {@code WebTarget} instance by resolving a URI template with a given {@code name}
+     * in the URI of the current target instance using a supplied value.
      *
-     * In case a {@code null} value is entered, a value for a parameter with that name
-     * is removed (if present) from the map of path parameters and their respective values
-     * inherited from the current target.
+     * In case a {@code null} template name or value is entered a {@link NullPointerException}
+     * is thrown.
      * <p>
      * A snapshot of the present configuration of the current (parent) target
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
      * </p>
      *
-     * @param name  path parameter template name.
-     * @param value value to be used to replace the template.
+     * @param name  name of the URI template.
+     * @param value value to be used to resolve the template.
      * @return a new target instance.
-     * @throws NullPointerException if the parameter name is {@code null}.
+     * @throws NullPointerException if the resolved template name or value is {@code null}.
      */
-    public WebTarget pathParam(String name, Object value) throws NullPointerException;
+    public WebTarget resolveTemplate(String name, Object value) throws NullPointerException;
 
     /**
-     * Create a new {@code WebTarget} instance by replacing one or more existing path parameters
-     * in the URI of the current target instance with supplied values.
+     * Create a new {@code WebTarget} instance by resolving one or more URI templates
+     * in the URI of the current target instance using supplied name-value pairs.
      *
-     * Existing values of any parameter with a name for which the map contains a {@code null} value
-     * are removed (if present) from the map of path parameters and their respective values inherited
-     * from the current target. A call to the method with an empty parameter map is ignored, i.e.
-     * same {@code WebTarget} instance is returned.
+     * A call to the method with an empty parameter map is ignored, i.e. same {@code WebTarget}
+     * instance is returned.
      * <p>
      * A snapshot of the present configuration of the current (parent) target
      * instance is taken and is inherited by the newly constructed (child) target
      * instance.
      * </p>
      *
-     * @param parameters a map of URI template parameter names and values.
-     * @return a new target instance or the same target instance in case the input parameter map
+     * @param templateValues a map of URI template names and their values.
+     * @return a new target instance or the same target instance in case the input name-value map
      *         is empty.
-     * @throws NullPointerException if the parameter map or any of the names is {@code null}.
+     * @throws NullPointerException if the name-value map or any of the names or values in the map
+     *                              is {@code null}.
      */
-    public WebTarget pathParams(Map<String, Object> parameters) throws NullPointerException;
+    public WebTarget resolveTemplates(Map<String, Object> templateValues) throws NullPointerException;
 
     /**
      * Create a new {@code WebTarget} instance by appending a matrix parameter to

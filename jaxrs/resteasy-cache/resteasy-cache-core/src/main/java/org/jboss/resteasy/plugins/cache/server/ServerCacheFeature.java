@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Feature;
 import java.io.IOException;
 
@@ -30,6 +29,16 @@ public class ServerCacheFeature implements Feature
       this.cache = cache;
    }
 
+   @Override
+   public boolean configure(Configurable configurable)
+   {
+      ServerCache cache = getCache(configurable);
+      if (cache == null) return false;
+      configurable.register(new ServerCacheHitFilter(cache));
+      configurable.register(new ServerCacheInterceptor(cache));
+      return true;
+   }
+
    protected ResteasyConfiguration getResteasyConfiguration()
    {
       return ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
@@ -43,22 +52,13 @@ public class ServerCacheFeature implements Feature
 
    }
 
-   @Override
-   public boolean configure(Configurable configurable)
-   {
-      ServerCache cache = getCache(configurable);
-      if (cache == null) return false;
-      configurable.register(new ServerCacheHitFilter(cache));
-      configurable.register(new ServerCacheInterceptor(cache));
-      return true;
-   }
-
    protected ServerCache getCache(Configurable configurable)
    {
       if (this.cache != null) return this.cache;
       ServerCache cache = (ServerCache)configurable.getProperty(ServerCache.class.getName());
       if (cache != null) return cache;
       cache = getXmlCache(configurable);
+      if (cache != null) return cache;
       return getDefaultCache();
    }
 
@@ -74,13 +74,13 @@ public class ServerCacheFeature implements Feature
 
    protected ServerCache getXmlCache(Configurable configurable)
    {
-      String path = (String)configurable.getProperty("infinispan.config.file");
-      if (path == null) path = getConfigProperty("infinispan.config.file");
+      String path = (String)configurable.getProperty("server.request.cache.infinispan.config.file");
+      if (path == null) path = getConfigProperty("server.request.cache.infinispan.config.file");
       if (path == null) return null;
 
-      String name = (String)configurable.getProperty("infinispan.cache.name");
-      if (name == null) name = getConfigProperty("infinispan.cache.name");
-      if (name == null) throw new RuntimeException("need to specify infinispan.cache.name");
+      String name = (String)configurable.getProperty("server.request.cache.infinispan.cache.name");
+      if (name == null) name = getConfigProperty("server.request.cache.infinispan.cache.name");
+      if (name == null) throw new RuntimeException("need to specify server.request.cache.infinispan.cache.name");
 
       try
       {

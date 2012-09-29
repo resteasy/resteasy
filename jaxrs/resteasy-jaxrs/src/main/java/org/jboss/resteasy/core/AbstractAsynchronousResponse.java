@@ -4,7 +4,6 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
-import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.ResumeCallback;
 import javax.ws.rs.container.TimeoutHandler;

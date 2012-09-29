@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MediaTypeEditor;
 import java.beans.PropertyEditor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TestMediaTypePropertyEditor
 {

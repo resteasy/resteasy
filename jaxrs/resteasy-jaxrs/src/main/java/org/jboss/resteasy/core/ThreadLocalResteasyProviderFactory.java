@@ -31,6 +31,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ParamConverter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -84,10 +85,17 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public String toString(Object object)
+   public ParamConverter getParamConverter(Class clazz, Type genericType, Annotation[] annotations)
    {
-      return getDelegate().toString(object);
+      return getDelegate().getParamConverter(clazz, genericType, annotations);
    }
+
+   @Override
+   public String toString(Object object, Class clazz, Type genericType, Annotation[] annotations)
+   {
+      return getDelegate().toString(object, clazz, genericType, annotations);
+   }
+
 
    @Override
    public String toHeaderString(Object object)
