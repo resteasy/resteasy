@@ -139,6 +139,41 @@ public class ResourceMethodRegistry implements Registry
       }
 
    }
+   
+   /**
+    * ResourceFactory.getScannableClass() is not used, only the clazz parameter and not any implemented interfaces
+    * of the clazz parameter.
+    *
+    * @param factory
+    * @param base    base URI path for any resources provided by the factory, in addition to rootPath
+    * @param clazz   specific class
+    * @param offset  path segment offset.  > 0 means we're within a locator.
+    */
+   public void addResourceFactory(ResourceFactory ref, String base, Class<?>[] classes)
+   {
+      if (ref != null) ref.registered(providerFactory);
+      for (Class<?> clazz: classes)
+      {
+         for (Method method : clazz.getMethods())
+         {
+            if(!method.isSynthetic())
+               processMethod(ref, base, clazz, method);
+
+         }
+      }
+      
+      // https://issues.jboss.org/browse/JBPAPP-7871
+      for (Class<?> clazz: classes)
+      {
+         for (Method method : clazz.getDeclaredMethods()) {
+            Method _method = findAnnotatedMethod(clazz, method);
+            if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers())) {
+               logger.warn("JAX-RS annotations found at non-public method: " + method.getDeclaringClass().getName() + "." + method.getName() + "(); Only public methods may be exposed as resource methods.");
+            }
+         }
+      }
+
+   }
 
 	private Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)
 	{
