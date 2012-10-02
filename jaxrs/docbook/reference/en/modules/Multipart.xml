@@ -497,7 +497,7 @@ public static class Xop {
 public static interface MultipartClient {
   @Path("xop")
   @PUT
-  @Consumes(MediaType.MULTIPART_RELATED)
+  @Consumes(MultipartConstants.MULTIPART_RELATED)
   public void putXop(@XopWithMultipartRelated Xop bean);
 }
 
@@ -512,7 +512,7 @@ public static interface MultipartClient {
   client.putXop(xop);
 }
 </programlisting>
-	<para>We used @Consumes(MediaType.MULTIPART_RELATED) to tell RESTEasy that we want to send multipart/related
+	<para>We used @Consumes(MultipartConstants.MULTIPART_RELATED) to tell RESTEasy that we want to send multipart/related
 	packages (that's the container format that will hold our Xop message). We used @XopWithMultipartRelated to tell
 	RESTEasy that we want to make Xop messages. So we have a POJO and a client service that is willing to send it. All
 	we need now a server that can read it:</para>
@@ -521,13 +521,13 @@ public static interface MultipartClient {
 public class XopService {
   @PUT
   @Path("xop")
-  @Consumes(MediaType.MULTIPART_RELATED)
+  @Consumes(MultipartConstants.MULTIPART_RELATED)
   public void putXopWithMultipartRelated(@XopWithMultipartRelated Xop xop) {
     // do very important things here
   }
 }
 </programlisting>
-	<para>We used @Consumes(MediaType.MULTIPART_RELATED) to tell RESTEasy that we want to read multipart/related
+	<para>We used @Consumes(MultipartConstants.MULTIPART_RELATED) to tell RESTEasy that we want to read multipart/related
 	packages. We used @XopWithMultipartRelated to tell RESTEasy that we want to read Xop messages. Of course we could
 	also produce Xop return values but we would than also need to annotate that and use a Produce annotation, too.</para>
    </sect1>
