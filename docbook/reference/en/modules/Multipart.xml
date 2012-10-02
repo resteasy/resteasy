@@ -565,4 +565,39 @@ public class ContentTypeSetterPreProcessorInterceptor implements
 </programlisting>
       </para>
    </sect1>
+   
+  <sect1 id="multipart_overwrite_default_charset">
+      <title>Overwriting the default fallback charset for multipart messages</title>
+      
+      <para>Sometimes, a part may have a Content-Type header with no charset parameter.  If the
+      <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code> property is set and the value has a charset parameter,
+      that value will be appended to an existing Content-Type header that has no charset parameter.
+      It is also possible to specify a default charset using the constant
+      <code>InputPart.DEFAULT_CHARSET_PROPERTY</code>
+      (actual value "resteasy.provider.multipart.inputpart.defaultCharset"):
+      </para>
+      
+<programlisting>
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+
+@Provider
+@ServerInterceptor
+public class ContentTypeSetterPreProcessorInterceptor implements
+		PreProcessInterceptor {
+
+	public ServerResponse preProcess(HttpRequest request,
+			ResourceMethod method) throws Failure, WebApplicationException {
+		request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, "UTF-8");
+		return null;
+	}
+
+}
+</programlisting>
+
+      <para>If both <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code> and
+      <code>InputPart.DEFAULT_CHARSET_PROPERTY</code> are set, then the value of
+      <code>InputPart.DEFAULT_CHARSET_PROPERTY</code> will override any charset in the value of
+      <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code>.
+      </para>
+  </sect1>
 </chapter>
