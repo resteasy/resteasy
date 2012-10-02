@@ -82,6 +82,12 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>commons-io</groupId>
+	        <artifactId>commons-io</artifactId>
+            <version>1.4</version>
+        </dependency>
 
         <dependency>
             <groupId>net.jcip</groupId>
@@ -98,4 +104,15 @@
         -->
 
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>3.1.6</version>
+            </plugin>
+        </plugins>
+    </build>
+    
 </project>
