@@ -694,5 +694,68 @@ whereas HTTP protocol errors are considered fatal and cannot be automatically re
          http://hc.apache.org/httpclient-3.x/exception-handling.html</ulink> for the details.
      </para>
    </sect1>
+   
+   <sect1 id="transport_layer_entity_buffering">
+     <title>Transport Layer Entity Buffering</title>
+     
+     <para>
+       If an entity is very large, a file, for example,
+       <classname>ApacheHttpClient4Executor</classname> can be configured to store it in the file
+       system, instead of attempting to keep it all in memory, if the size of the entity exceeds a
+       certain threshold.  The threshold is expressed in either bytes, kilobytes, megabytes, or
+       gigabytes, and the unit used by an instance of <classname>ApacheHttpClient4Executor</classname>
+       can be configured by calling the <classname>ApacheHttpClient4Executor</classname> method
+     </para>
+     
+     <programlisting>
+public void setFileUploadMemoryUnit(String pMemoryUnit);
+     </programlisting>
+     
+     <para>
+     where the value of <code>pMemoryUnit</code> may be one of
+     </para>
+     
+     <programlisting>
+public static final String BYTE_MEMORY_UNIT = "BY";
+public static final String KILOBYTE_MEMORY_UNIT = "KB";
+public static final String MEGABYTE_MEMORY_UNIT = "MB";
+public static final String GIGABYTE_MEMORY_UNIT = "GB";
+     </programlisting>
+     
+     <para>
+       The default unit is megabytes. The threshold, expressed in terms of the configured unit,
+       can be configured by calling the <classname>ApacheHttpClient4Executor</classname> method
+     </para>
+     
+     <programlisting>
+public void setFileUploadInMemoryThresholdLimit(int pInMemoryThresholdLimit);
+     </programlisting>
+     
+     <para>
+       The default value is 1, i.e., the default threshold is 1 megabyte.  The directory in which
+       entities are stored can be configured by calling the
+       <classname>ApacheHttpClient4Executor</classname> method
+     </para>
+     
+     <programlisting>
+public void setFileUploadTempFileDir(File pTempFileDir);
+     </programlisting>
+     
+     <para>
+       The default directory is the value of <code>System.getProperty("java.io.tmpdir")</code>.
+     </para>
+     
+     <para>
+       To use the buffering facility, then, create an instance of <classname>ApacheHttpClient4Executor</classname>,
+       configure it, and pass it to a <classname>ClientRequest</classname> or a proxy:
+     </para>
+     
+     <programlisting>
+ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor();
+executor.setFileUploadMemoryUnit(ApacheHttpClient4Executor.GIGABYTE_MEMORY_UNIT);
+executor.setFileUploadInMemoryThresholdLimit(4);
+ClientRequest request = new ClientRequest("http://localhost:8081/hello/", executor);
+     </programlisting>
+   </sect1>
 </chapter>
 
