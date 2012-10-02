@@ -26,6 +26,19 @@ public interface InputPart {
 	 * </p>
 	 */
 	static final String DEFAULT_CONTENT_TYPE_PROPERTY = "resteasy.provider.multipart.inputpart.defaultContentType";
+	
+	/**
+	 * If there is a content-type header without a charset parameter, charset=US-ASCII
+	 * is assumed.
+	 * <p>
+    * This can be overwritten by setting a different String value in
+    * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
+    * with this ("resteasy.provider.multipart.inputpart.defaultCharset")
+    * String as key. It should be done in a
+    * {@link org.jboss.resteasy.spi.interception.PreProcessInterceptor}.
+    * </p>
+	 */
+	static final String DEFAULT_CHARSET_PROPERTY = "resteasy.provider.multipart.inputpart.defaultCharset";
 
 	/**
 	 * @return headers of this part

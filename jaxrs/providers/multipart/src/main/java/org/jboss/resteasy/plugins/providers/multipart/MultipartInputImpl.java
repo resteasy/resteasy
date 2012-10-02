@@ -31,6 +31,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +47,7 @@ public class MultipartInputImpl implements MultipartInput
    protected List<InputPart> parts = new ArrayList<InputPart>();
    protected static final Annotation[] empty = {};
    protected MediaType defaultPartContentType = MultipartConstants.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
+   protected String defaultPartCharset = "us-ascii";
 
    public MultipartInputImpl(MediaType contentType, Providers workers)
    {
@@ -60,6 +62,20 @@ public class MultipartInputImpl implements MultipartInput
          if (defaultContentType != null)
             this.defaultPartContentType = MediaType
                     .valueOf(defaultContentType);
+         String defaultCharset = (String) httpRequest.getAttribute(InputPart.DEFAULT_CHARSET_PROPERTY);
+         if (defaultCharset != null)
+         {
+            this.defaultPartCharset = defaultCharset;
+            this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
+         }
+         else if (getCharset(this.defaultPartContentType) == null)
+         {
+            this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
+         }
+         else
+         {
+            this.defaultPartCharset = getCharset(this.defaultPartContentType);
+         }
       }
    }
 
@@ -80,7 +96,7 @@ public class MultipartInputImpl implements MultipartInput
    protected InputStream addHeaderToHeadlessStream(InputStream is)
            throws UnsupportedEncodingException
    {
-      return new SequenceInputStream(createHeaderInputStream(), is);
+      return new CharsetInsertionInputStream(new SequenceInputStream(createHeaderInputStream(), is), defaultPartContentType);
    }
 
    protected InputStream createHeaderInputStream()
@@ -120,6 +136,7 @@ public class MultipartInputImpl implements MultipartInput
       private MediaType contentType;
       private MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
       private boolean contentTypeFromMessage;
+      private boolean charsetFromMessage;
 
       public PartImpl(BodyPart bodyPart)
       {
@@ -131,6 +148,7 @@ public class MultipartInputImpl implements MultipartInput
             {
                contentType = MediaType.valueOf(field.getBody());
                contentTypeFromMessage = true;
+               charsetFromMessage = getCharset(contentType) != null;
             }
          }
          if (contentType == null)
@@ -146,8 +164,14 @@ public class MultipartInputImpl implements MultipartInput
          {
             throw new RuntimeException("Unable to find a MessageBodyReader for media type: " + contentType + " and class type " + type.getName());
          }
-         return reader.readFrom(type, genericType, empty, contentType,
-                 headers, getBody());
+         if (charsetFromMessage)
+         {
+            return reader.readFrom(type, genericType, empty, getMediaTypeWithoutCharset(contentType), headers, getBody()); 
+         }
+         else
+         {
+            return reader.readFrom(type, genericType, empty, contentType, headers, getBody());
+         }
       }
 
       public <T> T getBody(GenericType<T> type) throws IOException
@@ -165,59 +189,17 @@ public class MultipartInputImpl implements MultipartInput
             result = new ReaderBackedInputStream(reader);
          }
          else if (body instanceof BinaryBody)
-            result = ((BinaryBody) body).getInputStream();
+         {
+            bodyPart.getCharset();
+            Reader reader = new InputStreamReader(((BinaryBody) body).getInputStream(), bodyPart.getCharset());
+            result = new ReaderBackedInputStream(reader);
+         }
          return result;
       }
 
       public String getBodyAsString() throws IOException
       {
-         Body body = bodyPart.getBody();
-         String result = null;
-         if (body instanceof TextBody)
-         {
-            Reader reader = ((TextBody) body).getReader();
-            try
-            {
-               StringWriter writer = new StringWriter();
-               char[] buffer = new char[4048];
-               int n = 0;
-               while ((n = reader.read(buffer)) != -1)
-                  writer.write(buffer, 0, n);
-               result = writer.toString();
-            }
-            finally
-            {
-               reader.close();
-            }
-         }
-         else if (body instanceof BinaryBody)
-         {
-            InputStream inputStream = ((BinaryBody) body).getInputStream();
-            InputStreamReader inputStreamReader = null;
-            try
-            {
-               String charset = contentType.getParameters().get("charset");
-               if (charset != null)
-                  charset = CharsetUtil.toJavaCharset(charset);
-               inputStreamReader = charset == null ? new InputStreamReader(
-                       inputStream)
-                       : new InputStreamReader(inputStream, charset);
-               StringWriter writer = new StringWriter();
-               char[] buffer = new char[4048];
-               int n = 0;
-               while ((n = inputStreamReader.read(buffer)) != -1)
-                  writer.write(buffer, 0, n);
-               result = writer.toString();
-            }
-            finally
-            {
-               if (inputStreamReader != null)
-                  inputStreamReader.close();
-               inputStream.close();
-            }
-         }
-
-         return result;
+         return getBody(String.class, null);
       }
 
       public MultivaluedMap<String, String> getHeaders()
@@ -239,8 +221,14 @@ public class MultipartInputImpl implements MultipartInput
    private static class ReaderBackedInputStream extends InputStream
    {
       private final Reader reader;
+      private byte[] bytes = new byte[0];
+      private char[] chars = new char[1024];
+      private int bpos = 0;
+      private int cpos = 0;
+      private int limit = 0;
+      private boolean eof;
 
-      private ReaderBackedInputStream(Reader reader)
+      private ReaderBackedInputStream(Reader reader) throws IOException
       {
          this.reader = reader;
       }
@@ -248,7 +236,40 @@ public class MultipartInputImpl implements MultipartInput
       @Override
       public int read() throws IOException
       {
-         int c = reader.read();
+         if (eof)
+         {
+            return -1;
+         }
+         
+         int c;
+         if (bpos >= bytes.length)
+         {
+            bpos = 0;
+            if (cpos >= limit)
+            {
+               cpos = 0;
+               limit = reader.read(chars);
+               if (limit == -1)
+               {
+                  eof = true;
+                  c = -1;
+               }
+               else
+               {
+                  bytes = Character.toString(chars[cpos++]).getBytes();
+                  c = bytes[bpos++];
+               }
+            }
+            else
+            {
+               bytes = Character.toString(chars[cpos++]).getBytes();
+               c = bytes[bpos++];
+            }
+         }
+         else
+         {
+            c = bytes[bpos++];
+         }
          return c;
       }
 
@@ -319,5 +340,53 @@ public class MultipartInputImpl implements MultipartInput
    protected void finalize() throws Throwable
    {
       close();
+   }
+
+   protected String getCharset(MediaType mediaType)
+   {
+      for (Iterator<String> it = mediaType.getParameters().keySet().iterator(); it.hasNext(); )
+      {
+         String key = it.next();
+         if ("charset".equalsIgnoreCase(key))
+         {
+            return mediaType.getParameters().get(key);
+         }
+      }
+      return null;
+   }
+   
+   private MediaType getMediaTypeWithDefaultCharset(MediaType mediaType)
+   {
+      Map<String, String> params = mediaType.getParameters();
+      Map<String, String> newParams = new HashMap<String, String>();
+      newParams.put("charset", defaultPartCharset);
+      for (Iterator<String> it = params.keySet().iterator(); it.hasNext(); )
+      {
+         String key = it.next();
+         if (!"charset".equalsIgnoreCase(key))
+         {
+            newParams.put(key, params.get("charset"));
+         }
+      }
+      return new MediaType(mediaType.getType(), mediaType.getSubtype(), newParams);
+   }
+   
+   private MediaType getMediaTypeWithoutCharset(MediaType mediaType)
+   {
+      Map<String, String> params = mediaType.getParameters();
+      if (params.size() == 0)
+      {
+         return mediaType;
+      }
+      Map<String, String> newParams = new HashMap<String, String>();
+      for (Iterator<String> it = params.keySet().iterator(); it.hasNext(); )
+      {
+         String key = it.next();
+         if (!"charset".equalsIgnoreCase(key))
+         {
+            newParams.put(key, params.get("charset"));
+         }
+      }
+      return new MediaType(mediaType.getType(), mediaType.getSubtype(), newParams);
    }
 }
