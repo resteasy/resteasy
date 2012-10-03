@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.jaxrs.internal.engines;
+package org.jboss.resteasy.client.jaxrs.engines;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -177,7 +177,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       return response;
    }
 
-   private HttpRequestBase createHttpMethod(String url, String restVerb)
+   protected HttpRequestBase createHttpMethod(String url, String restVerb)
    {
       if ("GET".equals(restVerb))
       {
@@ -201,7 +201,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
    }
 
-   public void loadHttpMethod(final ClientInvocation request, HttpRequestBase httpMethod) throws Exception
+   protected void loadHttpMethod(final ClientInvocation request, HttpRequestBase httpMethod) throws Exception
    {
       if (httpMethod instanceof HttpGet && false) // todo  && request.followRedirects())
       {
@@ -244,7 +244,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
    }
 
-   public void commitHeaders(ClientInvocation request, HttpRequestBase httpMethod)
+   protected void commitHeaders(ClientInvocation request, HttpRequestBase httpMethod)
    {
       MultivaluedMap<String, String> headers = request.getHeaders().asMap();
       for (Map.Entry<String, List<String>> header : headers.entrySet())
