@@ -8,8 +8,8 @@
         <param-value>password</param-value>
     </context-param>
     <context-param>
-        <param-name>skeleton.key.security.domain</param-name>
-        <param-value>skeleton</param-value>
+        <param-name>skeleton.key.keyStoreFile</param-name>
+        <param-value>C:/Users/William/skeleton.jks</param-value>
     </context-param>
     <context-param>
         <param-name>skeleton.key.alias</param-name>
