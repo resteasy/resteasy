@@ -1,0 +1,131 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building RESTEASY-736-as71
+[INFO]    task-segment: [test]
+[INFO] ------------------------------------------------------------------------
+[INFO] [resources:resources]
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO] [compiler:compile]
+[INFO] Nothing to compile - all classes are up to date
+[INFO] [resources:testResources]
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 2 resources
+[INFO] [compiler:testCompile]
+[INFO] Nothing to compile - all classes are up to date
+[INFO] [dependency:unpack {execution: unpack}]
+[INFO] Configured Artifact: org.jboss.as:jboss-as-dist:7.1.1.Final:zip
+[INFO] jboss-as-dist-7.1.1.Final.zip already unpacked.
+[INFO] [surefire:test]
+[INFO] Surefire report directory: /home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/surefire-reports
+[WARNING] Build uses Maven 2.0.x, cannot propagate system properties from command line to tests (cf. SUREFIRE-121)
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running org.jboss.resteasy.test.resteasy736.AsyncTimeoutTest
+log4j:WARN No appenders could be found for logger (org.jboss.logging).
+log4j:WARN Please initialize the log4j system properly.
+Aug 30, 2012 11:19:29 PM org.jboss.as.arquillian.container.managed.ManagedDeployableContainer startInternal
+INFO: Starting container with: [/opt/local/java/jdk1.6.0_24/bin/java, -Xmx512m, -XX:MaxPermSize=128m, -Djava.library.path=target/jboss-as-7.1.1.Final/bin/native, -ea, -Djboss.home.dir=target/jboss-as-7.1.1.Final, -Dorg.jboss.boot.log.file=target/jboss-as-7.1.1.Final/standalone/log/boot.log, -Dlogging.configuration=file:target/jboss-as-7.1.1.Final/standalone/configuration/logging.properties, -Djboss.modules.dir=/home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/jboss-as-7.1.1.Final/modules, -Djboss.bundles.dir=/home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/jboss-as-7.1.1.Final/bundles, -jar, /home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/jboss-as-7.1.1.Final/jboss-modules.jar, -mp, target/jboss-as-7.1.1.Final/modules, -jaxpmodule, javax.xml.jaxp-provider, org.jboss.as.standalone, -server-config, standalone.xml]
+23:19:29,638 INFO  [org.jboss.modules] JBoss Modules version 1.1.1.GA
+23:19:29,768 INFO  [org.jboss.msc] JBoss MSC version 1.0.2.GA
+23:19:29,803 INFO  [org.jboss.as] JBAS015899: JBoss AS 7.1.1.Final "Brontes" starting
+23:19:30,342 INFO  [org.xnio] XNIO Version 3.0.3.GA
+23:19:30,341 INFO  [org.jboss.as.server] JBAS015888: Creating http management service using socket-binding (management-http)
+23:19:30,348 INFO  [org.xnio.nio] XNIO NIO Implementation Version 3.0.3.GA
+23:19:30,354 INFO  [org.jboss.remoting] JBoss Remoting version 3.2.3.GA
+23:19:30,363 INFO  [org.jboss.as.logging] JBAS011502: Removing bootstrap log handlers
+23:19:30,365 INFO  [org.jboss.as.configadmin] (ServerService Thread Pool -- 26) JBAS016200: Activating ConfigAdmin Subsystem
+23:19:30,373 INFO  [org.jboss.as.clustering.infinispan] (ServerService Thread Pool -- 31) JBAS010280: Activating Infinispan subsystem.
+23:19:30,396 INFO  [org.jboss.as.naming] (ServerService Thread Pool -- 38) JBAS011800: Activating Naming Subsystem
+23:19:30,402 INFO  [org.jboss.as.connector] (MSC service thread 1-2) JBAS010408: Starting JCA Subsystem (JBoss IronJacamar 1.0.9.Final)
+23:19:30,408 INFO  [org.jboss.as.osgi] (ServerService Thread Pool -- 39) JBAS011940: Activating OSGi Subsystem
+23:19:30,410 INFO  [org.jboss.as.security] (ServerService Thread Pool -- 44) JBAS013101: Activating Security Subsystem
+23:19:30,420 INFO  [org.jboss.as.connector.subsystems.datasources] (ServerService Thread Pool -- 27) JBAS010403: Deploying JDBC-compliant driver class org.h2.Driver (version 1.3)
+23:19:30,429 INFO  [org.jboss.as.security] (MSC service thread 1-13) JBAS013100: Current PicketBox version=4.0.7.Final
+23:19:30,433 INFO  [org.jboss.as.webservices] (ServerService Thread Pool -- 48) JBAS015537: Activating WebServices Extension
+23:19:30,454 INFO  [org.jboss.as.naming] (MSC service thread 1-6) JBAS011802: Starting Naming Service
+23:19:30,457 INFO  [org.jboss.as.mail.extension] (MSC service thread 1-6) JBAS015400: Bound mail session [java:jboss/mail/Default]
+23:19:30,561 INFO  [org.jboss.ws.common.management.AbstractServerConfig] (MSC service thread 1-7) JBoss Web Services - Stack CXF Server 4.0.2.GA
+23:19:30,561 INFO  [org.apache.coyote.http11.Http11Protocol] (MSC service thread 1-8) Starting Coyote HTTP/1.1 on http--127.0.0.1-8080
+23:19:30,894 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-14) JBAS010400: Bound data source [java:jboss/datasources/ExampleDS]
+23:19:30,916 INFO  [org.jboss.as.remoting] (MSC service thread 1-6) JBAS017100: Listening on /127.0.0.1:9999
+23:19:30,916 INFO  [org.jboss.as.server.deployment.scanner] (MSC service thread 1-3) JBAS015012: Started FileSystemDeploymentService for directory /home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/jboss-as-7.1.1.Final/standalone/deployments
+23:19:30,916 INFO  [org.jboss.as.remoting] (MSC service thread 1-2) JBAS017100: Listening on /127.0.0.1:4447
+23:19:31,058 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015951: Admin console listening on http://127.0.0.1:9990
+23:19:31,058 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015874: JBoss AS 7.1.1.Final "Brontes" started in 1606ms - Started 133 of 208 services (74 services are passive or on-demand)
+RESTEASY-736.war:
+/WEB-INF/
+/WEB-INF/web.xml
+/WEB-INF/classes/
+/WEB-INF/classes/org/
+/WEB-INF/classes/org/jboss/
+/WEB-INF/classes/org/jboss/resteasy/
+/WEB-INF/classes/org/jboss/resteasy/resteasy736/
+/WEB-INF/classes/org/jboss/resteasy/resteasy736/TestResource.class
+/WEB-INF/classes/org/jboss/resteasy/resteasy736/TestApplication.class
+/WEB-INF/classes/org/jboss/resteasy/resteasy736/TestResource$1.class
+/WEB-INF/classes/org/jboss/resteasy/test/
+/WEB-INF/classes/org/jboss/resteasy/test/resteasy736/
+/WEB-INF/classes/org/jboss/resteasy/test/resteasy736/AsyncTimeoutTest.class
+23:19:36,953 INFO  [org.jboss.as.repository] (management-handler-thread - 2) JBAS014900: Content added at location /home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/jboss-as-7.1.1.Final/standalone/data/content/97/eef23121e803d2b14ddf2b58987adfe4795c6e/content
+23:19:36,964 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-9) JBAS015876: Starting deployment of "RESTEASY-736.war"
+23:19:37,225 ERROR [org.jboss.msc.service.fail] (MSC service thread 1-8) MSC00001: Failed to start service jboss.deployment.unit."RESTEASY-736.war".POST_MODULE: org.jboss.msc.service.StartException in service jboss.deployment.unit."RESTEASY-736.war".POST_MODULE: Failed to process phase POST_MODULE of deployment "RESTEASY-736.war"
+	at org.jboss.as.server.deployment.DeploymentUnitPhaseService.start(DeploymentUnitPhaseService.java:119) [jboss-as-server-7.1.1.Final.jar:7.1.1.Final]
+	at org.jboss.msc.service.ServiceControllerImpl$StartTask.startService(ServiceControllerImpl.java:1811) [jboss-msc-1.0.2.GA.jar:1.0.2.GA]
+	at org.jboss.msc.service.ServiceControllerImpl$StartTask.run(ServiceControllerImpl.java:1746) [jboss-msc-1.0.2.GA.jar:1.0.2.GA]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [rt.jar:1.6.0_24]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [rt.jar:1.6.0_24]
+	at java.lang.Thread.run(Thread.java:662) [rt.jar:1.6.0_24]
+Caused by: java.lang.RuntimeException: Error getting reflective information for class org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher with ClassLoader ModuleClassLoader for Module "org.jboss.resteasy.resteasy-jaxrs:main" from local module loader @d8d9850 (roots: /home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/jboss-as-7.1.1.Final/modules)
+	at org.jboss.as.server.deployment.reflect.DeploymentReflectionIndex.getClassIndex(DeploymentReflectionIndex.java:70) [jboss-as-server-7.1.1.Final.jar:7.1.1.Final]
+	at org.jboss.as.ee.metadata.MethodAnnotationAggregator.runtimeAnnotationInformation(MethodAnnotationAggregator.java:58)
+	at org.jboss.as.ee.component.deployers.InterceptorAnnotationProcessor.handleAnnotations(InterceptorAnnotationProcessor.java:85)
+	at org.jboss.as.ee.component.deployers.InterceptorAnnotationProcessor.processComponentConfig(InterceptorAnnotationProcessor.java:70)
+	at org.jboss.as.ee.component.deployers.InterceptorAnnotationProcessor.deploy(InterceptorAnnotationProcessor.java:55)
+	at org.jboss.as.server.deployment.DeploymentUnitPhaseService.start(DeploymentUnitPhaseService.java:113) [jboss-as-server-7.1.1.Final.jar:7.1.1.Final]
+	... 5 more
+Caused by: java.lang.NoClassDefFoundError: org/jboss/resteasy/spi/ResteasyUriInfo
+	at java.lang.Class.getDeclaredMethods0(Native Method) [rt.jar:1.6.0_24]
+	at java.lang.Class.privateGetDeclaredMethods(Class.java:2427) [rt.jar:1.6.0_24]
+	at java.lang.Class.getDeclaredMethods(Class.java:1791) [rt.jar:1.6.0_24]
+	at org.jboss.as.server.deployment.reflect.ClassReflectionIndex.<init>(ClassReflectionIndex.java:65) [jboss-as-server-7.1.1.Final.jar:7.1.1.Final]
+	at org.jboss.as.server.deployment.reflect.DeploymentReflectionIndex.getClassIndex(DeploymentReflectionIndex.java:66) [jboss-as-server-7.1.1.Final.jar:7.1.1.Final]
+	... 10 more
+Caused by: java.lang.ClassNotFoundException: org.jboss.resteasy.spi.ResteasyUriInfo from [Module "org.jboss.resteasy.resteasy-jaxrs:main" from local module loader @d8d9850 (roots: /home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/jboss-as-7.1.1.Final/modules)]
+	at org.jboss.modules.ModuleClassLoader.findClass(ModuleClassLoader.java:190) [jboss-modules.jar:1.1.1.GA]
+	at org.jboss.modules.ConcurrentClassLoader.performLoadClassUnchecked(ConcurrentClassLoader.java:468) [jboss-modules.jar:1.1.1.GA]
+	at org.jboss.modules.ConcurrentClassLoader.performLoadClassChecked(ConcurrentClassLoader.java:456) [jboss-modules.jar:1.1.1.GA]
+	at org.jboss.modules.ConcurrentClassLoader.performLoadClassChecked(ConcurrentClassLoader.java:423) [jboss-modules.jar:1.1.1.GA]
+	at org.jboss.modules.ConcurrentClassLoader.performLoadClass(ConcurrentClassLoader.java:398) [jboss-modules.jar:1.1.1.GA]
+	at org.jboss.modules.ConcurrentClassLoader.loadClass(ConcurrentClassLoader.java:120) [jboss-modules.jar:1.1.1.GA]
+	... 15 more
+
+23:19:37,237 INFO  [org.jboss.as.server] (management-handler-thread - 2) JBAS015870: Deploy of deployment "RESTEASY-736.war" was rolled back with failure message {"JBAS014671: Failed services" => {"jboss.deployment.unit.\"RESTEASY-736.war\".POST_MODULE" => "org.jboss.msc.service.StartException in service jboss.deployment.unit.\"RESTEASY-736.war\".POST_MODULE: Failed to process phase POST_MODULE of deployment \"RESTEASY-736.war\""}}
+23:19:37,247 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-6) JBAS015877: Stopped deployment RESTEASY-736.war in 10ms
+23:19:37,248 INFO  [org.jboss.as.controller] (management-handler-thread - 2) JBAS014774: Service status report
+JBAS014777:   Services which failed to start:      service jboss.deployment.unit."RESTEASY-736.war".POST_MODULE: org.jboss.msc.service.StartException in service jboss.deployment.unit."RESTEASY-736.war".POST_MODULE: Failed to process phase POST_MODULE of deployment "RESTEASY-736.war"
+
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 8.238 sec <<< FAILURE!
+
+Results :
+
+Tests in error: 
+  org.jboss.resteasy.test.resteasy736.AsyncTimeoutTest: Could not deploy to container: {"JBAS014671: Failed services" => {"jboss.deployment.unit.\"RESTEASY-736.war\".POST_MODULE" => "org.jboss.msc.service.StartException in service jboss.deployment.unit.\"RESTEASY-736.war\".POST_MODULE: Failed to process phase POST_MODULE of deployment \"RESTEASY-736.war\""}}
+
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[ERROR] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] There are test failures.
+
+Please refer to /home/rsigal/git.Branch_2_3/arquillian/RESTEASY-736-as71/target/surefire-reports for the individual test results.
+[INFO] ------------------------------------------------------------------------
+[INFO] For more information, run Maven with the -e switch
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 21 seconds
+[INFO] Finished at: Thu Aug 30 23:19:37 EDT 2012
+[INFO] Final Memory: 74M/741M
+[INFO] ------------------------------------------------------------------------
