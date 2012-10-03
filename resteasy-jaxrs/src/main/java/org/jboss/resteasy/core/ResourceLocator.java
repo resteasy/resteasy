@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -130,8 +131,14 @@ public class ResourceLocator implements ResourceInvoker
             String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
             throw new InternalServerErrorException(msg);
          }
-         
-         registry.addResourceFactory(null, null, target.getClass());//subResourceClass);
+         if (Proxy.isProxyClass(target.getClass()))
+         {
+            registry.addResourceFactory(null, null, GetRestful.getSubResourceClass(target.getClass()));
+         }
+         else
+         {
+            registry.addResourceFactory(null, null, target.getClass());//subResourceClass);
+         }
          cachedSubresources.putIfAbsent(target.getClass(), registry);
       }
       ResourceInvoker invoker = registry.getResourceInvoker(request);
