@@ -82,7 +82,7 @@ public class FileExtensionMappingTest
       deployment = null;
    }
    
-   @Test
+//   @Test
    public void testFileExtensionMappingPlain() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:8081/test.txt?query=whosOnFirst");
@@ -94,7 +94,7 @@ public class FileExtensionMappingTest
    }
    
 
-   @Test
+//   @Test
    public void testFileExtensionMappingHtml() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:8081/test.html?query=whosOnFirst");
