@@ -1,0 +1,57 @@
+<chapter id="_FormParam">
+<title>@FormParam</title>
+
+<para>
+
+When the input request body is of the type &quot;application/x-www-form-urlencoded&quot;, a.k.a. an HTML Form, you can inject individual form parameters from the request body into method parameter values.
+</para>
+<para>
+
+<programlisting>
+&lt;form method="POST" action="/resources/service"&gt;
+First name: 
+&lt;input type="text" name="firstname"&gt;
+&lt;br&gt;
+Last name: 
+&lt;input type="text" name="lastname"&gt;
+&lt;/form&gt;
+</programlisting>
+</para>
+<para>
+
+If you post through that form, this is what the service might look like:
+</para>
+<para>
+
+<programlisting>
+@Path("/")
+public class NameRegistry {
+
+   @Path("/resources/service")
+   @POST
+   public void addName(@FormParam("firstname") String first, @FormParam("lastname") String last) {...}
+
+</programlisting>
+</para>
+<para>
+
+You cannot combine @FormParam with the default &quot;application/x-www-form-urlencoded&quot; that unmarshalls to a MultivaluedMap&lt;String, String&gt;.  i.e. This is illegal:
+</para>
+<para>
+
+<programlisting>
+@Path("/")
+public class NameRegistry {
+
+   @Path("/resources/service")
+   @POST
+   @Consumes("application/x-www-form-urlencoded")
+   public void addName(@FormParam("firstname") String first, MultivaluedMap&lt;String, String&gt; form) {...}
+
+</programlisting>
+</para>
+<para>
+
+
+</para>
+</chapter>

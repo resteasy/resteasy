@@ -9,14 +9,12 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.skeleton.key.keystone.model.Mappers;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.security.JSSESecurityDomain;
-import org.jboss.security.SecurityConstants;
 
-import javax.naming.InitialContext;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -80,14 +78,19 @@ public class SkeletonKeyApplication
          KeyStore keyStore = null;
          if (keyStoreFile == null)
          {
-            String securityDomain = getConfigProperty("skeleton.key.security.domain");
-            if (securityDomain == null)
+            String path = getConfigProperty("skeleton.key.keyStorePath");
+            if (path == null)
             {
-               logger.error("*********** security domain null");
+               logger.warn("No key store provided.");
                return;
             }
-            JSSESecurityDomain jsse = (JSSESecurityDomain)(new InitialContext().lookup(SecurityConstants.JAAS_CONTEXT_ROOT + securityDomain + "/jsse"));
-            keyStore = jsse.getKeyStore();
+            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+            if (is == null)
+            {
+               throw new RuntimeException("Keystore path invalid: " + path);
+            }
+            keyStore = KeyStore.getInstance("jks");
+            keyStore.load(is, keyStorePassword.toCharArray());
          }
          else
          {
