@@ -30,7 +30,7 @@ import org.junit.Test;
  *
  * Copyright Aug 3, 2012
  */
-public class FileExtensionMappingEmbeddedTest
+public class FileExtensionMappingTest
 {
    protected ResteasyDeployment deployment;
    
