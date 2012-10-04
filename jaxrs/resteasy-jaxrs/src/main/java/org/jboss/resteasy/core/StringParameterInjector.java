@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.util.StringToPrimitive;
 
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -35,6 +36,7 @@ public class StringParameterInjector
 {
    protected Class type;
    protected Class baseType;
+   protected Type baseGenericType;
    protected Constructor constructor;
    protected Method valueOf;
    protected String defaultValue;
@@ -43,6 +45,7 @@ public class StringParameterInjector
    protected boolean isCollection;
    protected Class<? extends Collection> collectionType;
    protected AccessibleObject target;
+   protected ParamConverter paramConverter;
    protected StringConverter converter;
    protected StringParameterUnmarshaller unmarshaller;
    protected RuntimeDelegate.HeaderDelegate delegate;
@@ -69,8 +72,9 @@ public class StringParameterInjector
       this.paramType = paramType;
       this.defaultValue = defaultValue;
       this.target = target;
-
       baseType = type;
+      baseGenericType = genericType;
+
       if (type.isArray()) baseType = type.getComponentType();
       if (List.class.isAssignableFrom(type))
       {
@@ -89,18 +93,23 @@ public class StringParameterInjector
       }
       if (isCollection)
       {
-         if (genericType instanceof ParameterizedType)
+         if (genericType != null && genericType instanceof ParameterizedType)
          {
             ParameterizedType zType = (ParameterizedType) genericType;
             baseType = (Class) zType.getActualTypeArguments()[0];
+            baseGenericType = zType.getActualTypeArguments()[0];
          }
          else
          {
             baseType = String.class;
+            baseGenericType = null;
          }
       }
       if (!baseType.isPrimitive())
       {
+         paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
+         if (paramConverter != null) return;
+
          unmarshaller = factory.createStringParameterUnmarshaller(baseType);
          if (unmarshaller != null)
          {
@@ -279,6 +288,10 @@ public class StringParameterInjector
          }
       }
       if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
+      if (paramConverter != null)
+      {
+         return paramConverter.fromString(strVal);
+      }
       if (converter != null)
       {
          return converter.fromString(strVal);

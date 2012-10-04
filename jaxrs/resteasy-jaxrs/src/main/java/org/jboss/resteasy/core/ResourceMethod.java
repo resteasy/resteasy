@@ -99,7 +99,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       };
 
       this.resourceMethodProviderFactory = new ResteasyProviderFactory(providerFactory);
-      for (DynamicFeature feature : providerFactory.getDynamicFeatures())
+      for (DynamicFeature feature : providerFactory.getServerDynamicFeatures())
       {
          feature.configure(resourceInfo, resourceMethodProviderFactory);
       }
@@ -182,7 +182,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
    public void registryUpdated(JaxrsInterceptorRegistry registry)
    {
       this.resourceMethodProviderFactory = new ResteasyProviderFactory(parentProviderFactory);
-      for (DynamicFeature feature : parentProviderFactory.getDynamicFeatures())
+      for (DynamicFeature feature : parentProviderFactory.getServerDynamicFeatures())
       {
          feature.configure(resourceInfo, resourceMethodProviderFactory);
       }

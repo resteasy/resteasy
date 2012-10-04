@@ -65,6 +65,8 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.RuntimeDelegate;
@@ -160,6 +162,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, ClientExceptionMapper> clientExceptionMappers;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
    protected Map<Class<?>, StringConverter> stringConverters;
+   protected List<ParamConverterProvider> paramConverterProviders;
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers;
 
    protected Map<Class<?>, HeaderDelegate> headerDelegates;
@@ -184,7 +187,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected InjectorFactory injectorFactory;
    protected ResteasyProviderFactory parent;
 
-   protected Set<DynamicFeature> dynamicFeatures;
+   protected Set<DynamicFeature> serverDynamicFeatures;
+   protected Set<DynamicFeature> clientDynamicFeatures;
    protected Set<Feature> features;
    protected Map<String, Object> properties;
    protected Set<Class<?>> providerClasses;
@@ -216,7 +220,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void initialize()
    {
-      dynamicFeatures = new HashSet<DynamicFeature>();
+      serverDynamicFeatures = new HashSet<DynamicFeature>();
+      clientDynamicFeatures = new HashSet<DynamicFeature>();
       features = new HashSet<Feature>();
       properties = Collections.synchronizedMap(new HashMap<String, Object>());
       providerClasses = new HashSet<Class<?>>();
@@ -226,6 +231,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
       clientExceptionMappers = new HashMap<Class<?>, ClientExceptionMapper>();
       contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+      paramConverterProviders = new ArrayList<ParamConverterProvider>();
       stringConverters = new HashMap<Class<?>, StringConverter>();
       stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
@@ -261,10 +267,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
    }
 
-   public Set<DynamicFeature> getDynamicFeatures()
+   public Set<DynamicFeature> getServerDynamicFeatures()
    {
-      if (dynamicFeatures == null && parent != null) return parent.getDynamicFeatures();
-      return dynamicFeatures;
+      if (serverDynamicFeatures == null && parent != null) return parent.getServerDynamicFeatures();
+      return serverDynamicFeatures;
+   }
+
+   public Set<DynamicFeature> getClientDynamicFeatures()
+   {
+      if (clientDynamicFeatures == null && parent != null) return parent.getClientDynamicFeatures();
+      return clientDynamicFeatures;
    }
 
 
@@ -303,6 +315,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (stringConverters == null && parent != null) return parent.getStringConverters();
       return stringConverters;
    }
+
+   protected List<ParamConverterProvider> getParamConverterProviders()
+   {
+      if (paramConverterProviders == null && parent != null) return parent.getParamConverterProviders();
+      return paramConverterProviders;
+   }
+
 
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> getStringParameterUnmarshallers()
    {
@@ -979,6 +998,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return rtn;
    }
 
+   public ParamConverter getParamConverter(Class clazz, Type genericType, Annotation[] annotations)
+   {
+      for (ParamConverterProvider provider : getParamConverterProviders())
+      {
+         ParamConverter converter = provider.getConverter(clazz, genericType, annotations);
+         if (converter != null) return converter;
+      }
+      return null;
+   }
+
    public StringConverter getStringConverter(Class<?> clazz)
    {
       if (getStringConverters().size() == 0) return null;
@@ -1006,10 +1035,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param object
     * @return
     */
-   public String toString(Object object)
+   public String toString(Object object, Class clazz, Type genericType, Annotation[] annotations)
    {
       if (object instanceof String)
          return (String) object;
+      ParamConverter paramConverter = getParamConverter(clazz, genericType, annotations);
+      if (paramConverter != null)
+      {
+         return paramConverter.toString(object);
+      }
       StringConverter converter = getStringConverter(object
               .getClass());
       if (converter != null)
@@ -1023,6 +1057,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public String toHeaderString(Object object)
    {
       if (object instanceof String) return (String)object;
+      ParamConverter paramConverter = getParamConverter(object.getClass(), null, null);
+      if (paramConverter != null)
+      {
+         return paramConverter.toString(object);
+      }
       StringConverter converter = getStringConverter(object
               .getClass());
       if (converter != null)
@@ -1065,6 +1104,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProvider(Class provider, boolean isBuiltin, int bindingPriority, Class<?>... contracts)
    {
+      if (isA(provider, ParamConverterProvider.class, contracts))
+      {
+         ParamConverterProvider paramConverterProvider = (ParamConverterProvider)injectedInstance(provider);
+         injectProperties(provider);
+         if (paramConverterProviders == null)
+         {
+            paramConverterProviders = new ArrayList<ParamConverterProvider>();
+            paramConverterProviders.addAll(parent.getParamConverterProviders());
+         }
+         paramConverterProviders.add(paramConverterProvider);
+      }
       if (isA(provider, MessageBodyReader.class, contracts))
       {
          try
@@ -1311,12 +1361,40 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, DynamicFeature.class, contracts))
       {
-         if (dynamicFeatures == null)
+         ConstrainedTo constrainedTo = (ConstrainedTo)provider.getAnnotation(ConstrainedTo.class);
+         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
          {
-            dynamicFeatures = new HashSet<DynamicFeature>();
-            dynamicFeatures.addAll(parent.getDynamicFeatures());
+            if (serverDynamicFeatures == null)
+            {
+               serverDynamicFeatures = new HashSet<DynamicFeature>();
+               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
-         dynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         {
+            if (clientDynamicFeatures == null)
+            {
+               clientDynamicFeatures = new HashSet<DynamicFeature>();
+               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+         }
+         if (constrainedTo == null)
+         {
+            if (serverDynamicFeatures == null)
+            {
+               serverDynamicFeatures = new HashSet<DynamicFeature>();
+               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+            if (clientDynamicFeatures == null)
+            {
+               clientDynamicFeatures = new HashSet<DynamicFeature>();
+               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
+         }
       }
       if (isA(provider, Feature.class, contracts))
       {
@@ -1344,6 +1422,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
    public void registerProviderInstance(Object provider, int bindingPriority, Class<?>... contracts)
    {
+      if (isA(provider, ParamConverterProvider.class, contracts))
+      {
+         injectProperties(provider);
+         if (paramConverterProviders == null)
+         {
+            paramConverterProviders = new ArrayList<ParamConverterProvider>();
+            paramConverterProviders.addAll(parent.getParamConverterProviders());
+         }
+         paramConverterProviders.add((ParamConverterProvider)provider);
+      }
       if (isA(provider, MessageBodyReader.class, contracts))
       {
          try
@@ -1407,7 +1495,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          clientRequestFilters.registerSingleton((ClientRequestFilter)provider, bindingPriority);
       }
-      if (isA(provider, ClientRequestFilter.class, contracts))
+      if (isA(provider, ClientResponseFilter.class, contracts))
       {
          if (clientResponseFilters == null)
          {
@@ -1579,12 +1667,40 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, DynamicFeature.class, contracts))
       {
-         if (dynamicFeatures == null)
+         ConstrainedTo constrainedTo = (ConstrainedTo)provider.getClass().getAnnotation(ConstrainedTo.class);
+         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
          {
-            dynamicFeatures = new HashSet<DynamicFeature>();
-            dynamicFeatures.addAll(parent.getDynamicFeatures());
+            if (serverDynamicFeatures == null)
+            {
+               serverDynamicFeatures = new HashSet<DynamicFeature>();
+               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) provider);
          }
-         dynamicFeatures.add((DynamicFeature)provider);
+         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         {
+            if (clientDynamicFeatures == null)
+            {
+               clientDynamicFeatures = new HashSet<DynamicFeature>();
+               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) provider);
+         }
+         if (constrainedTo == null)
+         {
+            if (serverDynamicFeatures == null)
+            {
+               serverDynamicFeatures = new HashSet<DynamicFeature>();
+               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) provider);
+            if (clientDynamicFeatures == null)
+            {
+               clientDynamicFeatures = new HashSet<DynamicFeature>();
+               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+            }
+            serverDynamicFeatures.add((DynamicFeature) provider);
+         }
       }
       if (isA(provider, Feature.class, contracts))
       {

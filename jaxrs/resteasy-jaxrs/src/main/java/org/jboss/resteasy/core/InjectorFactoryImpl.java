@@ -9,6 +9,7 @@ import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.jboss.resteasy.util.FindAnnotation.*;
+import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -91,7 +92,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if ((formParam = findAnnotation(annotations, FormParam.class)) != null)
       {
-         return new FormParamInjector(type, genericType, injectTarget, formParam.value(), defaultVal, annotations, providerFactory);
+         return new FormParamInjector(type, genericType, injectTarget, formParam.value(), defaultVal, encode, annotations, providerFactory);
       }
       else if ((cookie = findAnnotation(annotations, CookieParam.class)) != null)
       {
@@ -122,9 +123,13 @@ public class InjectorFactoryImpl implements InjectorFactory
          }
          return new FormInjector(type, providerFactory);
       }
+      else if (findAnnotation(annotations, BeanParam.class) != null)
+      {
+         return new FormInjector(type, providerFactory);
+      }
       else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null)
       {
-         return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, annotations, providerFactory);
+         return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, encode, annotations, providerFactory);
       }
       else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
       {

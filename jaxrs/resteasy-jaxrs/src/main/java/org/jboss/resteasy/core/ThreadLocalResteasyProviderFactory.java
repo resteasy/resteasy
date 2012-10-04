@@ -8,6 +8,7 @@ import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
+import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -18,6 +19,7 @@ import org.jboss.resteasy.util.ThreadLocalStack;
 
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Feature;
@@ -29,6 +31,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ParamConverter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -82,10 +85,17 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public String toString(Object object)
+   public ParamConverter getParamConverter(Class clazz, Type genericType, Annotation[] annotations)
    {
-      return getDelegate().toString(object);
+      return getDelegate().getParamConverter(clazz, genericType, annotations);
    }
+
+   @Override
+   public String toString(Object object, Class clazz, Type genericType, Annotation[] annotations)
+   {
+      return getDelegate().toString(object, clazz, genericType, annotations);
+   }
+
 
    @Override
    public String toHeaderString(Object object)
@@ -417,6 +427,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public <T> ConstructorInjector createConstructorInjector(Class<? extends T> clazz)
+   {
+      return getDelegate().createConstructorInjector(clazz);
+   }
+
+   @Override
    public <T> T injectedInstance(Class<? extends T> clazz)
    {
       return getDelegate().injectedInstance(clazz);
@@ -458,6 +474,33 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       getDelegate().insertInterceptorPrecedenceBefore(before, newPrecedence);
    }
 
+   @Override
+   public Set<DynamicFeature> getServerDynamicFeatures()
+   {
+      return getDelegate().getServerDynamicFeatures();
+   }
 
+   @Override
+   public void addClientExceptionMapper(Class<? extends ClientExceptionMapper<?>> providerClass)
+   {
+      getDelegate().addClientExceptionMapper(providerClass);
+   }
 
+   @Override
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider)
+   {
+      getDelegate().addClientExceptionMapper(provider);
+   }
+
+   @Override
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Class<?> providerClass)
+   {
+      getDelegate().addClientExceptionMapper(provider, providerClass);
+   }
+
+   @Override
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Type exceptionType)
+   {
+      getDelegate().addClientExceptionMapper(provider, exceptionType);
+   }
 }
