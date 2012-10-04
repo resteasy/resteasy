@@ -5,7 +5,6 @@ import org.jboss.resteasy.spi.NotImplementedYetException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientFactory;
-import javax.ws.rs.client.Configuration;
 import javax.ws.rs.core.Configurable;
 
 /**

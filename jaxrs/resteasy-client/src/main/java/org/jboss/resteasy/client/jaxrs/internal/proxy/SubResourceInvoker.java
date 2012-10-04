@@ -7,7 +7,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -41,13 +40,11 @@ public class SubResourceInvoker implements MethodInvoker
             }
          }
       }
-
-      UriBuilder builder = parent.getUriBuilder();
       if (method.isAnnotationPresent(Path.class))
       {
-         builder.path(method);
+         parent = parent.path(method.getAnnotation(Path.class).value());
       }
-      this.parent = (ResteasyWebTarget)parent.getResteasyClient().target(builder);
+      this.parent = parent;
 
    }
 
@@ -65,7 +62,7 @@ public class SubResourceInvoker implements MethodInvoker
                params.put(pathParams[i], args[i]);
             }
          }
-         target = parent.pathParams(params);
+         target = parent.resolveTemplates(params);
       }
       return ProxyBuilder.proxy(iface, target, config);
    }

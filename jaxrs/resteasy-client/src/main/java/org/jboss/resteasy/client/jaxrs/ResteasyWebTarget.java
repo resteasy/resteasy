@@ -21,13 +21,13 @@ public interface ResteasyWebTarget extends WebTarget
 
 
    @Override
+   ResteasyWebTarget resolveTemplate(String name, Object value) throws NullPointerException;
+
+   @Override
+   ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues) throws NullPointerException;
+
+   @Override
    ResteasyWebTarget path(String path) throws NullPointerException;
-
-   @Override
-   ResteasyWebTarget pathParam(String name, Object value) throws IllegalArgumentException, NullPointerException;
-
-   @Override
-   ResteasyWebTarget pathParams(Map<String, Object> parameters) throws IllegalArgumentException, NullPointerException;
 
    @Override
    ResteasyWebTarget matrixParam(String name, Object... values) throws NullPointerException;
@@ -41,4 +41,6 @@ public interface ResteasyWebTarget extends WebTarget
    ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException;
 
    ResteasyWebTarget path(Method method) throws IllegalArgumentException;
+
+   ResteasyWebTarget clone();
 }

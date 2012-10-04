@@ -1,12 +1,11 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.core.Headers;
-import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
+import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.LinkHeaders;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
-import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.InputStreamToByteArray;
@@ -14,33 +13,20 @@ import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.MessageProcessingException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -182,6 +168,11 @@ public abstract class ClientResponse extends BuiltResponse
                  media, genericType));
       }
 
+
+
+
+      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
+      ResteasyProviderFactory.pushContext(Providers.class, configuration);
       try
       {
          InputStream is = getEntityStream();
@@ -195,9 +186,11 @@ public abstract class ClientResponse extends BuiltResponse
 
          }
 
-         // todo put in reader interception
-         final Object obj = reader1.readFrom(type, genericType, annotations, media, getStringHeaders(), is);
+         ReaderInterceptor[] readerInterceptors = configuration.getReaderInterceptors(null, null);
 
+         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, reader1, useType,
+                 useGeneric, this.annotations, media, getStringHeaders(), is, properties)
+                 .proceed();
          if (isMarshalledEntity)
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
@@ -233,6 +226,12 @@ public abstract class ClientResponse extends BuiltResponse
          {
             throw new ReaderException(e);
          }
+      }
+      finally
+      {
+         ResteasyProviderFactory.popContextData(Providers.class);
+         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+
       }
    }
 

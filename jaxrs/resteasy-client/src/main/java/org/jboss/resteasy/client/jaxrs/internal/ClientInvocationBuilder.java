@@ -8,10 +8,12 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotAllowedException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.RedirectionException;
 import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.ClientException;
@@ -180,6 +182,8 @@ public class ClientInvocationBuilder implements Invocation.Builder
       {
          case 400:
             throw new BadRequestException(response);
+         case 401:
+            throw new NotAuthorizedException(response);
          case 404:
             throw new NotFoundException(response);
          case 405:
@@ -190,6 +194,8 @@ public class ClientInvocationBuilder implements Invocation.Builder
             throw new NotSupportedException(response);
          case 500:
             throw new InternalServerErrorException(response);
+         case 503:
+            throw new ServiceUnavailableException(response);
          default:
             break;
       }

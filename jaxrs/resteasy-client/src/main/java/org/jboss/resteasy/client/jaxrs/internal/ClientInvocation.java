@@ -21,6 +21,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -253,51 +254,61 @@ public class ClientInvocation implements Invocation
    @Override
    public Response invoke() throws ClientException
    {
-      ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
-      ClientRequestFilter[] requestFilters = getRequestFilters();
-      if (requestFilters != null && requestFilters.length > 0)
+      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
+      ResteasyProviderFactory.pushContext(Providers.class, configuration);
+      try
       {
-         for (ClientRequestFilter filter : requestFilters)
+         ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
+         ClientRequestFilter[] requestFilters = getRequestFilters();
+         if (requestFilters != null && requestFilters.length > 0)
          {
-            try
+            for (ClientRequestFilter filter : requestFilters)
             {
-               filter.filter(requestContext);
-               if (requestContext.getAbortedWithResponse() != null)
+               try
                {
-                  if (requestContext.getAbortedWithResponse() instanceof ClientResponse) return requestContext.getAbortedWithResponse();
-                  else return new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
+                  filter.filter(requestContext);
+                  if (requestContext.getAbortedWithResponse() != null)
+                  {
+                     if (requestContext.getAbortedWithResponse() instanceof ClientResponse) return requestContext.getAbortedWithResponse();
+                     else return new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
+                  }
+               }
+               catch (Throwable e)
+               {
+                  throw new ClientException(e);
                }
             }
-            catch (IOException e)
-            {
-               throw new RuntimeException(e);
-            }
          }
-      }
-      ClientResponse response = client.httpEngine().invoke(this);
-      response.setProperties(configuration.getMutableProperties());
+         ClientResponse response = client.httpEngine().invoke(this);
+         response.setProperties(configuration.getMutableProperties());
 
-      ClientResponseFilter[] responseFilters = getResponseFilters();
-      if (requestFilters != null && requestFilters.length > 0)
-      {
-         ClientResponseContextImpl responseContext = new ClientResponseContextImpl(response);
-         for (ClientResponseFilter filter : responseFilters)
+         ClientResponseFilter[] responseFilters = getResponseFilters();
+         if (requestFilters != null && requestFilters.length > 0)
          {
-            try
+            ClientResponseContextImpl responseContext = new ClientResponseContextImpl(response);
+            for (ClientResponseFilter filter : responseFilters)
             {
-               filter.filter(requestContext, responseContext);
-            }
-            catch (ClientException e)
-            {
-               throw e;
-            }
-            catch (Throwable e)
-            {
-               throw new ClientException(e);
+               try
+               {
+                  filter.filter(requestContext, responseContext);
+               }
+               catch (ClientException e)
+               {
+                  throw e;
+               }
+               catch (Throwable e)
+               {
+                  throw new ClientException(e);
+               }
             }
          }
+         return response;
       }
-      return response;
+      finally
+      {
+         ResteasyProviderFactory.popContextData(Providers.class);
+         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+      }
    }
 
    @Override
