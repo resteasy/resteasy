@@ -10,7 +10,7 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol;
 
-import static org.jboss.netty.channel.Channels.*;
+import static org.jboss.netty.channel.Channels.pipeline;
 
 /**
  * The {@link ChannelPipelineFactory} which is used to serve HTTP Traffic.
@@ -54,10 +54,8 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       ChannelPipeline pipeline = pipeline();
 
       pipeline.addLast("decoder", new HttpRequestDecoder());
-      pipeline.addLast("resteasyDecoder", resteasyDecoder);
-      
       pipeline.addLast("aggregator", new HttpChunkAggregator(maxRequestSize));
-      
+      pipeline.addLast("resteasyDecoder", resteasyDecoder);
       pipeline.addLast("encoder", new HttpResponseEncoder());
       pipeline.addLast("resteasyEncoder", resteasyEncoder);
 
