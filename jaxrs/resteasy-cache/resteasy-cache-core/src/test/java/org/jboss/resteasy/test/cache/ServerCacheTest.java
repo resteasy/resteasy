@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.cache;
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.cache.server.JBossCache;
+import org.jboss.resteasy.plugins.cache.server.ServerCacheFeature;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,7 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -91,10 +91,7 @@ public class ServerCacheTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      JBossCache cache = new JBossCache();
-      cache.setProviderFactory(getProviderFactory());
-      cache.start();
-
+      getProviderFactory().register(ServerCacheFeature.class);
       addPerRequestResource(MyService.class);
    }
 
