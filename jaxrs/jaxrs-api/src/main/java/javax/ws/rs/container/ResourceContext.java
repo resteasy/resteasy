@@ -39,26 +39,48 @@
  */
 package javax.ws.rs.container;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.ws.rs.core.Context;
 
 /**
- * Global binding annotation that can be applied to a {@link ContainerRequestFilter
- * container request filter} to indicate that such filter should be applied globally
- * on all resources in the application before the actual resource matching occurs.
+ * The resource context provides access to instances of resource classes.
  * <p>
- * The JAX-RS runtime will apply the filters marked with the {@code &#64;PreMatching}
- * annotation globally to all resources, before the incoming request has been matched
- * to a particular resource method.
+ * This interface can be injected using the {@link Context} annotation.
+ * </p>
+ * <p>
+ * The resource context can be utilized when instances of managed resource
+ * classes are to be returned by sub-resource locator methods. Such instances
+ * will be injected and managed within the declared scope just like instances
+ * of root resource classes.
  * </p>
  *
  * @author Marek Potociar
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface PreMatching {
+public interface ResourceContext {
+
+    /**
+     * Get a resolved instance of a resource or sub-resource class.
+     * <p>
+     * The resolved resource instance is properly initialized in the context of the
+     * current request processing scope. The scope of the resolved resource instance
+     * depends on the managing container. For resources managed by JAX-RS container
+     * the default scope is per-request.
+     * </p>
+     *
+     * @param <T>           the type of the resource class.
+     * @param resourceClass the resource class.
+     * @return an instance if it could be resolved, otherwise {@code null}.
+     */
+    public <T> T getResource(Class<T> resourceClass);
+
+    /**
+     * Initialize the resource or sub-resource instance.
+     *
+     * All JAX-RS injectable fields in the resource instance will be properly initialized in
+     * the context of the current request processing scope.
+     *
+     * @param <T>      resource instance type.
+     * @param resource resource instance.
+     * @return initialized (same) resource instance.
+     */
+    public <T> T initResource(T resource);
 }

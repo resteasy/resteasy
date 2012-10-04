@@ -46,14 +46,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks an implementation of an extension interface.
+ * Marks an implementation of an extension interface that should be discoverable
+ * by JAX-RS runtime during a provider scanning phase.
  *
  * @author Paul Sandoz
  * @author Marc Hadley
- * @see MessageBodyReader
- * @see MessageBodyWriter
- * @see ContextResolver
- * @see ExceptionMapper
  * @since 1.0
  */
 @Target({ElementType.TYPE})
