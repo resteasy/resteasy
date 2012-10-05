@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.jaxrs.internal.engines;
+package org.jboss.resteasy.client.jaxrs.engines;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
