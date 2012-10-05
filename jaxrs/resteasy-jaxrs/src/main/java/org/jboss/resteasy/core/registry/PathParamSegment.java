@@ -170,8 +170,8 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
          PathSegment[] decodedSegments = new PathSegment[numSegments];
          for (int i = 0; i < numSegments; i++)
          {
-            encodedSegments[i] = request.getUri().getPathSegments().get(segmentIndex + i);
-            decodedSegments[i] = request.getUri().getPathSegments(false).get(segmentIndex + i);
+            decodedSegments[i] = request.getUri().getPathSegments().get(segmentIndex + i);
+            encodedSegments[i] = request.getUri().getPathSegments(false).get(segmentIndex + i);
          }
          uriInfo.getEncodedPathParameterPathSegments().add(group.name, encodedSegments);
          uriInfo.getPathParameterPathSegments().add(group.name, decodedSegments);
