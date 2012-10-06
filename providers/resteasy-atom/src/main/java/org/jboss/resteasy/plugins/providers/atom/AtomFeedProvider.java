@@ -95,6 +95,10 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       set.add(Feed.class);
       for (Entry entry : feed.getEntries())
       {
+         if (entry.getAnyOtherJAXBObject() != null)
+         {
+            set.add(entry.getAnyOtherJAXBObject().getClass());
+         }
          if (entry.getContent() != null && entry.getContent().getJAXBObject() != null)
          {
             set.add(entry.getContent().getJAXBObject().getClass());

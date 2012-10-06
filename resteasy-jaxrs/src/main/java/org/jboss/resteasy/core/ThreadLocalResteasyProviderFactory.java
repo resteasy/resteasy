@@ -60,12 +60,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
    
    @Override
-   public void addClientExceptionMapper(ClientExceptionMapper provider, Type exceptionType)
-   {
-      getDelegate().addClientExceptionMapper(provider, exceptionType);
-   }
-
-   @Override
    public void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
    {
       getDelegate().addContextResolver(resolver, builtin);
@@ -171,6 +165,30 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public void addExceptionMapper(ExceptionMapper provider, Class providerClass)
    {
       getDelegate().addExceptionMapper(provider, providerClass);
+   }
+
+   @Override
+   public void addClientExceptionMapper(Class<? extends ClientExceptionMapper<?>> providerClass)
+   {
+      getDelegate().addClientExceptionMapper(providerClass);
+   }
+
+   @Override
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider)
+   {
+      getDelegate().addClientExceptionMapper(provider);
+   }
+
+   @Override
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Class<?> providerClass)
+   {
+      getDelegate().addClientExceptionMapper(provider, providerClass);
+   }
+
+   @Override
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Type exceptionType)
+   {
+      getDelegate().addClientExceptionMapper(provider, exceptionType);
    }
 
    @Override
