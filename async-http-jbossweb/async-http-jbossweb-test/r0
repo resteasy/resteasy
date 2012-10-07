@@ -1,116 +1,0 @@
-[INFO] Scanning for projects...
-[WARNING] 
-	Profile with id: 'jboss-maven2-brew' has not been activated.
-
-[INFO] ------------------------------------------------------------------------
-[INFO] Building Async HTTP JBoss Web Test
-[INFO]    task-segment: [test]
-[INFO] ------------------------------------------------------------------------
-[INFO] artifact org.codehaus.mojo:jboss-maven-plugin: checking for updates from central
-Downloading: https://repository.jboss.org/nexus/content/groups/developer//org/codehaus/mojo/jboss-maven-plugin/1.5.0/jboss-maven-plugin-1.5.0.pom
-3/3K3K downloaded
-Downloading: https://repository.jboss.org/nexus/content/groups/developer//org/codehaus/mojo/jboss-maven-plugin/1.5.0/jboss-maven-plugin-1.5.0.jar
-4/39K7/39K11/39K15/39K19/39K22/39K26/39K30/39K34/39K38/39K39/39K39K downloaded
-[INFO] [resources:resources]
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] Copying 2 resources
-[INFO] [compiler:compile]
-[INFO] Compiling 2 source files to /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/target/classes
-[INFO] -------------------------------------------------------------
-[ERROR] COMPILATION ERROR : 
-[INFO] -------------------------------------------------------------
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[3,20] package javax.servlet does not exist
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[4,20] package javax.servlet does not exist
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[5,20] package javax.servlet does not exist
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[6,20] package javax.servlet does not exist
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[7,20] package javax.servlet does not exist
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[8,20] package javax.servlet does not exist
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[15,33] cannot find symbol
-symbol: class Filter
-public class MyFilter implements Filter
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[17,20] cannot find symbol
-symbol  : class FilterConfig
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[17,54] cannot find symbol
-symbol  : class ServletException
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[21,24] cannot find symbol
-symbol  : class ServletRequest
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[21,55] cannot find symbol
-symbol  : class ServletResponse
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[21,88] cannot find symbol
-symbol  : class FilterChain
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-[ERROR] /home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[21,133] cannot find symbol
-symbol  : class ServletException
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-[INFO] 13 errors 
-[INFO] -------------------------------------------------------------
-[INFO] ------------------------------------------------------------------------
-[ERROR] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Compilation failure
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[3,20] package javax.servlet does not exist
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[4,20] package javax.servlet does not exist
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[5,20] package javax.servlet does not exist
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[6,20] package javax.servlet does not exist
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[7,20] package javax.servlet does not exist
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[8,20] package javax.servlet does not exist
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[15,33] cannot find symbol
-symbol: class Filter
-public class MyFilter implements Filter
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[17,20] cannot find symbol
-symbol  : class FilterConfig
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[17,54] cannot find symbol
-symbol  : class ServletException
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[21,24] cannot find symbol
-symbol  : class ServletRequest
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[21,55] cannot find symbol
-symbol  : class ServletResponse
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[21,88] cannot find symbol
-symbol  : class FilterChain
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-/home/rsigal/git.Branch_2_3/async-http-jbossweb/async-http-jbossweb-test/src/main/java/org/jboss/resteasy/test/smoke/MyFilter.java:[21,133] cannot find symbol
-symbol  : class ServletException
-location: class org.jboss.resteasy.test.smoke.MyFilter
-
-
-[INFO] ------------------------------------------------------------------------
-[INFO] For more information, run Maven with the -e switch
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 6 seconds
-[INFO] Finished at: Thu Aug 23 20:50:28 EDT 2012
-[INFO] Final Memory: 28M/484M
-[INFO] ------------------------------------------------------------------------
