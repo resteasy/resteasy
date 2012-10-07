@@ -29,7 +29,7 @@ import javax.ws.rs.ext.Provider;
  */
 public class InputPartDefaultContentTypeEncodingOverwriteTest extends
 		BaseResourceTest {
-	protected static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = "text/plain; charset=UTF-8";
+	protected static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 
 	@Path("/mime")
 	public static class MyService {
