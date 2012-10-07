@@ -9,12 +9,9 @@ import org.jboss.servlet.http.HttpEvent;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -22,7 +19,6 @@ import java.util.TimerTask;
  */
 public class JBossWebAsyncHttpRequest extends HttpServletInputMessage
 {
-   static protected Timer timer = new Timer("asyncTimer", true);
    protected HttpEvent event;
 
    public JBossWebAsyncHttpRequest(HttpServletRequest httpServletRequest, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uriInfo, String httpMethodName, SynchronousDispatcher synchronousDispatcher, HttpEvent event)
@@ -62,39 +58,8 @@ public class JBossWebAsyncHttpRequest extends HttpServletInputMessage
             }
          }
       };
-      timer.schedule(new AsyncTimerTask(asynchronousResponse), l);
       return asynchronousResponse;
    }
 
 
-   class AsyncTimerTask extends TimerTask
-   {
-      private AbstractAsynchronousResponse asyncResponse;
-
-      AsyncTimerTask(AbstractAsynchronousResponse asyncResponse)
-      {
-         this.asyncResponse = asyncResponse;
-      }
-
-      @Override
-      public void run()
-      {
-         try
-         {
-            Response response = Response.status(503).type(MediaType.TEXT_PLAIN).entity("timeout").build();
-            asyncResponse.setupResponse((ServerResponse) response);
-            dispatcher.asynchronousDelivery(JBossWebAsyncHttpRequest.this, httpResponse, response);
-         }
-         finally
-         {
-            try
-            {
-               event.close();
-            }
-            catch (IOException ignored)
-            {
-            }
-         }
-      } 
-   }
 }
