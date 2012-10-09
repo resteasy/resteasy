@@ -78,22 +78,25 @@ public class ServiceRegistry
 					ResourceLocator locator = (ResourceLocator) invoker;
 					Method method = locator.getMethod();
 					Class<?> locatorType = method.getReturnType();
-					Class<?> locatorResourceType = GetRestful.getSubResourceClass(locatorType);
-					if (locatorResourceType == null)
+					Class<?>[] locatorResourceTypes = GetRestful.getSubResourceClass(locatorType);
+					for (Class<?> locatorResourceType : locatorResourceTypes)
 					{
-						// FIXME: we could generate an error for the client, which would be more informative than
-						// just logging this
-						if(logger.isWarnEnabled()){
-							logger.warn("Impossible to generate JSAPI for subresource returned by method "+
-									method.getDeclaringClass().getName()+"."+method.getName()+
-									" since return type is not a static JAXRS resource type");
-						}
-						// skip this
-						continue;
+					   if (locatorResourceType == null)
+					   {
+					      // FIXME: we could generate an error for the client, which would be more informative than
+					      // just logging this
+					      if(logger.isWarnEnabled()){
+					         logger.warn("Impossible to generate JSAPI for subresource returned by method "+
+					               method.getDeclaringClass().getName()+"."+method.getName()+
+					               " since return type is not a static JAXRS resource type");
+					      }
+					      // skip this
+					      continue;
+					   }
+					   ResourceMethodRegistry locatorRegistry = new ResourceMethodRegistry(providerFactory);
+					   locatorRegistry.addResourceFactory(null, null, locatorResourceType);
+					   locators.add(new ServiceRegistry(this, locatorRegistry, providerFactory, locator));
 					}
-					ResourceMethodRegistry locatorRegistry = new ResourceMethodRegistry(providerFactory);
-					locatorRegistry.addResourceFactory(null, null, locatorResourceType);
-					locators.add(new ServiceRegistry(this, locatorRegistry, providerFactory, locator));
 				}
 			}
 		}

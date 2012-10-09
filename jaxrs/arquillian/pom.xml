@@ -12,7 +12,7 @@
 
     <modules>
         <module>RESTEASY-736-jetty</module>
-        <module>RESTEASY-736-as71</module>
+        <!--module>RESTEASY-736-as71</module-->
     </modules>
     
     <artifactId>arquillian</artifactId>
