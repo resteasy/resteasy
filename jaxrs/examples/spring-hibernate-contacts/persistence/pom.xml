@@ -27,11 +27,12 @@
             <version>4.7</version>
             <scope>test</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
             <version>1.0.1B</version>
-        </dependency>
+        </dependency>  -->
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
