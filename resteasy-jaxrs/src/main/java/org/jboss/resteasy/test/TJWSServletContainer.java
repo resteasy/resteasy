@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -59,6 +60,18 @@ public class TJWSServletContainer
       if (contextParams != null)
       {
          applicationClass = contextParams.get("javax.ws.rs.Application");
+         String mediaTypeMappingsString = contextParams.get("resteasy.media.type.mappings");
+         if (mediaTypeMappingsString != null)
+         {
+            Map<String, String> mediaTypeMappings = new HashMap<String, String>();
+            String[] mappings = mediaTypeMappingsString.split(",");
+            for (int i = 0; i < mappings.length; i++)
+            {
+               String[] mapping = mappings[i].split(":");
+               mediaTypeMappings.put(mapping[0], mapping[1]);
+            }
+            deployment.setMediaTypeMappings(mediaTypeMappings);
+         }
       }
       if (applicationClass == null && initParams != null)
       {

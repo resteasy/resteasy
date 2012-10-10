@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class TimeoutListener implements AsyncListener
 {
+   private boolean onTimeoutCalled;
+   
    @Override
    public void onComplete(AsyncEvent event) throws IOException
    {
@@ -25,6 +27,7 @@ public class TimeoutListener implements AsyncListener
    @Override
    public void onTimeout(AsyncEvent event) throws IOException
    {
+      onTimeoutCalled = true;
       ServletResponse response = event.getSuppliedResponse();
       if (response instanceof HttpServletResponse)
       {
@@ -46,4 +49,8 @@ public class TimeoutListener implements AsyncListener
       // Nothing to do.
    }
 
+   public boolean timedOut()
+   {
+      return onTimeoutCalled;
+   }
 }
