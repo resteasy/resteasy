@@ -164,14 +164,9 @@ public class MultipartInputImpl implements MultipartInput
          {
             throw new RuntimeException("Unable to find a MessageBodyReader for media type: " + contentType + " and class type " + type.getName());
          }
-         if (charsetFromMessage)
-         {
-            return reader.readFrom(type, genericType, empty, getMediaTypeWithoutCharset(contentType), headers, getBody()); 
-         }
-         else
-         {
-            return reader.readFrom(type, genericType, empty, contentType, headers, getBody());
-         }
+
+         return reader.readFrom(type, genericType, empty, contentType, headers, getBody());
+
       }
 
       public <T> T getBody(GenericType<T> type) throws IOException
@@ -185,14 +180,23 @@ public class MultipartInputImpl implements MultipartInput
          InputStream result = null;
          if (body instanceof TextBody)
          {
-            Reader reader = ((TextBody) body).getReader();
-            result = new ReaderBackedInputStream(reader);
+            InputStreamReader reader = (InputStreamReader)((TextBody) body).getReader();
+            StringBuilder inputBuilder = new StringBuilder();
+            char[] buffer = new char[1024];
+            while (true) {
+               int readCount = reader.read(buffer);
+               if (readCount < 0) {
+                  break;
+               }
+               inputBuilder.append(buffer, 0, readCount);
+            }
+            String str = inputBuilder.toString();
+            return new ByteArrayInputStream(str.getBytes(reader.getEncoding()));
+            //result = new ReaderBackedInputStream((InputStreamReader)reader);
          }
          else if (body instanceof BinaryBody)
          {
-            bodyPart.getCharset();
-            Reader reader = new InputStreamReader(((BinaryBody) body).getInputStream(), bodyPart.getCharset());
-            result = new ReaderBackedInputStream(reader);
+            return ((BinaryBody)body).getInputStream();
          }
          return result;
       }
@@ -220,17 +224,16 @@ public class MultipartInputImpl implements MultipartInput
 
    private static class ReaderBackedInputStream extends InputStream
    {
-      private final Reader reader;
+      private final InputStreamReader reader;
       private byte[] bytes = new byte[0];
-      private char[] chars = new char[1024];
       private int bpos = 0;
-      private int cpos = 0;
-      private int limit = 0;
       private boolean eof;
 
-      private ReaderBackedInputStream(Reader reader) throws IOException
+      private ReaderBackedInputStream(InputStreamReader reader) throws IOException
       {
          this.reader = reader;
+         String charset = reader.getEncoding();
+         System.out.println("encoding: " + charset);
       }
 
       @Override
@@ -245,32 +248,49 @@ public class MultipartInputImpl implements MultipartInput
          if (bpos >= bytes.length)
          {
             bpos = 0;
-            if (cpos >= limit)
+            int value = reader.read();
+            if (value == -1)
             {
-               cpos = 0;
-               limit = reader.read(chars);
-               if (limit == -1)
-               {
-                  eof = true;
-                  c = -1;
-               }
-               else
-               {
-                  bytes = Character.toString(chars[cpos++]).getBytes();
-                  c = bytes[bpos++];
-               }
+               eof = true;
+               return -1;
+            }
+            if (value > 0x00FFFFFF) // 4 bytes
+            {
+               bytes =new byte[] {
+                       (byte)value,
+                       (byte)(value >>> 8),
+                       (byte)(value >>> 16),
+                       (byte)(value >>> 24),
+               };
+               return bytes[bpos++];
+
+            }
+            else if (value > 0x0000FFFF) // 3 bytes
+            {
+               bytes =new byte[] {
+                       (byte)value,
+                       (byte)(value >>> 8),
+                       (byte)(value >>> 16),
+               };
+               return bytes[bpos++];
+            }
+            else if (value > 0x000000FF) // 2 bytes
+            {
+               bytes =new byte[] {
+                       (byte)value,
+                       (byte)(value >>> 8),
+               };
+               return bytes[bpos++];
             }
             else
             {
-               bytes = Character.toString(chars[cpos++]).getBytes();
-               c = bytes[bpos++];
+               return value;
             }
          }
          else
          {
-            c = bytes[bpos++];
+            return bytes[bpos++];
          }
-         return c;
       }
 
       @Override
@@ -365,7 +385,7 @@ public class MultipartInputImpl implements MultipartInput
          String key = it.next();
          if (!"charset".equalsIgnoreCase(key))
          {
-            newParams.put(key, params.get("charset"));
+            newParams.put(key, params.get(key));
          }
       }
       return new MediaType(mediaType.getType(), mediaType.getSubtype(), newParams);
@@ -384,7 +404,7 @@ public class MultipartInputImpl implements MultipartInput
          String key = it.next();
          if (!"charset".equalsIgnoreCase(key))
          {
-            newParams.put(key, params.get("charset"));
+            newParams.put(key, params.get(key));
          }
       }
       return new MediaType(mediaType.getType(), mediaType.getSubtype(), newParams);

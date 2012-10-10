@@ -160,51 +160,61 @@ public class ClientInvocationBuilder implements Invocation.Builder
    protected <T> T extractResult(GenericType<T> responseType, Response response)
    {
       int status = response.getStatus();
-      if (status == 200)
+      if (status >= 200 && status < 300)
       {
          try
          {
-            return response.readEntity(responseType);
+            if (response.getMediaType() == null)
+            {
+               return null;
+            }
+            else
+            {
+               return response.readEntity(responseType);
+            }
          }
          finally
          {
             response.close();
          }
       }
-      if (status >= 201 && status < 300)
+      try
       {
-         response.close();
-         return null;
-      }
-      if (status >= 300 && status < 400) throw new RedirectionException(response);
+         if (status >= 300 && status < 400) throw new RedirectionException(response);
 
-      switch (status)
+         switch (status)
+         {
+            case 400:
+               throw new BadRequestException(response);
+            case 401:
+               throw new NotAuthorizedException(response);
+            case 404:
+               throw new NotFoundException(response);
+            case 405:
+               throw new NotAllowedException(response);
+            case 406:
+               throw new NotAcceptableException(response);
+            case 415:
+               throw new NotSupportedException(response);
+            case 500:
+               throw new InternalServerErrorException(response);
+            case 503:
+               throw new ServiceUnavailableException(response);
+            default:
+               break;
+         }
+
+         if (status >= 400 && status < 500) throw new ClientErrorException(response);
+         if (status >= 500) throw new ServerErrorException(response);
+
+
+         throw new WebApplicationException(response);
+      }
+      finally
       {
-         case 400:
-            throw new BadRequestException(response);
-         case 401:
-            throw new NotAuthorizedException(response);
-         case 404:
-            throw new NotFoundException(response);
-         case 405:
-            throw new NotAllowedException(response);
-         case 406:
-            throw new NotAcceptableException(response);
-         case 415:
-            throw new NotSupportedException(response);
-         case 500:
-            throw new InternalServerErrorException(response);
-         case 503:
-            throw new ServiceUnavailableException(response);
-         default:
-            break;
+         // close if no content
+         if (response.getMediaType() == null) response.close();
       }
-
-      if (status >= 400 && status < 500) throw new ClientErrorException(response);
-      if (status >= 500) throw new ServerErrorException(response);
-
-
-      throw new WebApplicationException(response);
 
    }
 

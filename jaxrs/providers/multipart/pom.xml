@@ -5,7 +5,7 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>3.0-alpha-1-SNAPSHOT</version>
-	    <relativePath>../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-multipart-provider</artifactId>
     <packaging>jar</packaging>
@@ -65,8 +65,19 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
+                    <encoding>ISO8859_1</encoding>
                 </configuration>
             </plugin>
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>utf-8</encoding>
+                </configuration>
+            </plugin>
+            -->
         </plugins>
     </build>
 

@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import junit.framework.Assert;
@@ -72,7 +73,7 @@ public class InputPartDefaultCharsetOverwriteTest
       @Path("test")
       @Consumes(MediaType.MULTIPART_FORM_DATA)
       @Produces(MediaType.TEXT_PLAIN)
-      public String testDefaultContentType(MultipartInput input) throws IOException
+      public Response testDefaultContentType(MultipartInput input) throws IOException
       {
          List<InputPart> parts = input.getParts();
          InputPart part = parts.get(0);
@@ -80,7 +81,7 @@ public class InputPartDefaultCharsetOverwriteTest
          String s2 = part.getBodyAsString();
          String result = part.getMediaType() + ":" + s1 + ":" + s2; 
          System.out.println("server response: " + result);
-         return result;
+         return Response.ok(result, part.getMediaType()).build();
       }
    }
 
