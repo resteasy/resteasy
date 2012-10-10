@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import junit.framework.Assert;
@@ -72,7 +73,7 @@ public class InputPartDefaultCharsetOverwriteTest
       @Path("test")
       @Consumes(MediaType.MULTIPART_FORM_DATA)
       @Produces(MediaType.TEXT_PLAIN)
-      public String testDefaultContentType(MultipartInput input) throws IOException
+      public Response testDefaultContentType(MultipartInput input) throws IOException
       {
          List<InputPart> parts = input.getParts();
          InputPart part = parts.get(0);
@@ -80,7 +81,7 @@ public class InputPartDefaultCharsetOverwriteTest
          String s2 = part.getBodyAsString();
          String result = part.getMediaType() + ":" + s1 + ":" + s2; 
          System.out.println("server response: " + result);
-         return result;
+         return Response.ok(result, part.getMediaType()).build();
       }
    }
 
@@ -235,14 +236,14 @@ public class InputPartDefaultCharsetOverwriteTest
    @Test
    public void testContentTypeNoCharsetPreprocessorWithContentTypeNoCharsetUTF8() throws Exception
    {
-      setUp(PreProcessorInterceptorContentTypeNoCharsetUTF8.class);
+      setUp(PreProcessorInterceptorNoContentTypeCharsetUTF8.class);
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
    
    @Test
    public void testContentTypeNoCharsetPreprocessorWithContentTypeNoCharsetUTF16() throws Exception
    {
-      setUp(PreProcessorInterceptorContentTypeNoCharsetUTF16.class);
+      setUp(PreProcessorInterceptorNoContentTypeCharsetUTF16.class);
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_16);
    }
    
@@ -358,7 +359,7 @@ public class InputPartDefaultCharsetOverwriteTest
    public void testApplicationXmlUSAscii() throws Exception
    {
       setUp(null);
-      doTestWithContentTypeInMessage(abc_us_ascii_bytes, abc_us_ascii, APPLICATION_XML, APPLICATION_XML_WITH_CHARSET_US_ASCII);
+      doTestWithContentTypeInMessage(abc_us_ascii_bytes, abc_us_ascii, APPLICATION_XML_WITH_CHARSET_US_ASCII, APPLICATION_XML_WITH_CHARSET_US_ASCII);
    }
 
    @Test

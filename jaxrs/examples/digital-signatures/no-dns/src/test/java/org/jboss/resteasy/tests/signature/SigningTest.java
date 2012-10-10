@@ -2,15 +2,15 @@ package org.jboss.resteasy.tests.signature;
 
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.KeyRepository;
 import org.jboss.resteasy.security.doseta.UnauthorizedSignatureException;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.security.doseta.Verifier;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,9 +20,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import java.security.KeyPair;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -32,6 +34,7 @@ public class SigningTest
 {
    public static KeyPair keys;
    public static DosetaKeyRepository repository;
+   public static ResteasyClient client;
 
    @Path("/signed")
    public static interface SigningProxy
@@ -55,6 +58,13 @@ public class SigningTest
       repository.setKeyStorePassword("password");
       repository.setUseDns(false);
       repository.start();
+      client = new ResteasyClient();
+   }
+
+   @AfterClass
+   public static void shutdown() throws Exception
+   {
+
    }
 
    @Test
@@ -64,15 +74,17 @@ public class SigningTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest("http://localhost:9095/signed");
-      ClientResponse<String> response = request.get(String.class);
-      response.getAttributes().put(Verifier.class.getName(), verifier);
+      WebTarget target = client.target("http://localhost:9095/signed");
+      Invocation.Builder request = target.request();
+      request.configuration().setProperty(Verifier.class.getName(), verifier);
+      Response response = request.get();
 
-      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getHeaderString(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
 
       // If you don't extract the entity, then verification will not happen
-      System.out.println(response.getEntity());
+      System.out.println(response.readEntity(String.class));
+      response.close();
    }
 
    @Test
@@ -82,23 +94,26 @@ public class SigningTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest("http://localhost:9095/signed/bad-signature");
-      ClientResponse<String> response = request.get(String.class);
-      response.getAttributes().put(Verifier.class.getName(), verifier);
+      WebTarget target = client.target("http://localhost:9095/signed/bad-signature");
+      Invocation.Builder request = target.request();
+      request.configuration().setProperty(Verifier.class.getName(), verifier);
+      Response response = request.get();
 
-      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getHeaderString(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
 
       // If you don't extract the entity, then verification will not happen
       try
       {
-         System.out.println(response.getEntity());
+         System.out.println(response.readEntity(String.class));
          throw new RuntimeException("UNREACHABLE!!!");
       }
       catch (UnauthorizedSignatureException e)
       {
          System.out.println("We expect this failure: " + e.getMessage());
+
       }
+      response.close();
 
    }
 
@@ -106,18 +121,17 @@ public class SigningTest
    @Test
    public void testPost() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9095/signed");
+      WebTarget target = client.target("http://localhost:9095/signed");
       DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("test");
       contentSignature.setDomain("samplezone.org");
-      request.getAttributes().put(KeyRepository.class.getName(), repository);
+      Invocation.Builder request = target.request();
+      request.configuration().setProperty(KeyRepository.class.getName(), repository);
 
       request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
-      request.body("text/plain", "hello world");
-      ClientResponse response = request.post();
+      Response response = request.post(Entity.text("hello world"));
       Assert.assertEquals(204, response.getStatus());
-
-
+      response.close();
    }
 
    @Test
@@ -127,15 +141,17 @@ public class SigningTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest("http://localhost:9095/signed/expires-minute");
-      ClientResponse<String> response = request.get(String.class);
-      response.getAttributes().put(Verifier.class.getName(), verifier);
+      WebTarget target = client.target("http://localhost:9095/signed/expires-minute");
+      Invocation.Builder request = target.request();
+      request.configuration().setProperty(Verifier.class.getName(), verifier);
+      Response response = request.get();
 
-      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getHeaderString(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
 
       // If you don't extract the entity, then verification will not happen
-      System.out.println(response.getEntity());
+      System.out.println(response.readEntity(String.class));
+      response.close();
    }
 
    /**
@@ -150,21 +166,24 @@ public class SigningTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest("http://localhost:9095/signed/expires-short");
-      ClientResponse<String> response = request.get(String.class);
-      response.getAttributes().put(Verifier.class.getName(), verifier);
-      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      WebTarget target = client.target("http://localhost:9095/signed/expires-short");
+      Invocation.Builder request = target.request();
+      request.configuration().setProperty(Verifier.class.getName(), verifier);
+      Response response = request.get();
+
+      System.out.println(response.getHeaderString(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       Thread.sleep(1500);
       try
       {
-         String output = response.getEntity();
+         String output = response.readEntity(String.class);
          throw new Exception("unreachable!");
       }
       catch (UnauthorizedSignatureException e)
       {
          System.out.println("Verification failed: " + e.getMessage());
       }
+      response.close();
 
 
    }
@@ -172,9 +191,9 @@ public class SigningTest
    @Test
    public void testProxy() throws Exception
    {
-      Map<String, Object> attributes = new HashMap<String, Object>();
-      attributes.put(KeyRepository.class.getName(), repository);
-      SigningProxy proxy = ProxyFactory.create(SigningProxy.class, "http://localhost:9095", attributes);
+      ResteasyWebTarget target = client.target("http://localhost:9095");
+      target.configuration().setProperty(KeyRepository.class.getName(), repository);
+      SigningProxy proxy = target.proxy(SigningProxy.class);
       String output = proxy.hello();
       proxy.postSimple("hello world");
    }
