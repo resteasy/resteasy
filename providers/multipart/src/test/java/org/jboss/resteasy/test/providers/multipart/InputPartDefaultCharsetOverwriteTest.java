@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import junit.framework.Assert;
@@ -34,7 +35,7 @@ import org.junit.Test;
 
 /**
  * RESTEASY-723
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  */
 public class InputPartDefaultCharsetOverwriteTest
@@ -63,7 +64,7 @@ public class InputPartDefaultCharsetOverwriteTest
 
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
-   
+
    @Path("")
    public static class MyService
    {
@@ -72,15 +73,15 @@ public class InputPartDefaultCharsetOverwriteTest
       @Path("test")
       @Consumes(MediaType.MULTIPART_FORM_DATA)
       @Produces(MediaType.TEXT_PLAIN)
-      public String testDefaultContentType(MultipartInput input) throws IOException
+      public Response testDefaultContentType(MultipartInput input) throws IOException
       {
          List<InputPart> parts = input.getParts();
          InputPart part = parts.get(0);
          String s1 = part.getBody(String.class, null);
          String s2 = part.getBodyAsString();
-         String result = part.getMediaType() + ":" + s1 + ":" + s2; 
+         String result = part.getMediaType() + ":" + s1 + ":" + s2;
          System.out.println("server response: " + result);
-         return result;
+         return Response.ok(result, part.getMediaType()).build();
       }
    }
 
@@ -94,7 +95,7 @@ public class InputPartDefaultCharsetOverwriteTest
          return null;
       }
    }
-   
+
    @Provider
    @ServerInterceptor
    public static class PreProcessorInterceptorContentTypeNoCharsetUTF16 implements PreProcessInterceptor
@@ -105,7 +106,7 @@ public class InputPartDefaultCharsetOverwriteTest
          return null;
       }
    }
-   
+
    @Provider
    @ServerInterceptor
    public static class PreProcessorInterceptorNoContentTypeCharsetUTF8 implements PreProcessInterceptor
@@ -116,7 +117,7 @@ public class InputPartDefaultCharsetOverwriteTest
          return null;
       }
    }
-   
+
    @Provider
    @ServerInterceptor
    public static class PreProcessorInterceptorNoContentTypeCharsetUTF16 implements PreProcessInterceptor
@@ -127,7 +128,7 @@ public class InputPartDefaultCharsetOverwriteTest
          return null;
       }
    }
-   
+
    @Provider
    @ServerInterceptor
    public static class PreProcessorInterceptorContentTypeCharsetUTF8 implements PreProcessInterceptor
@@ -140,7 +141,7 @@ public class InputPartDefaultCharsetOverwriteTest
          return null;
       }
    }
-   
+
    @Provider
    @ServerInterceptor
    public static class PreProcessorInterceptorContentTypeCharsetUTF16 implements PreProcessInterceptor
@@ -160,7 +161,7 @@ public class InputPartDefaultCharsetOverwriteTest
       deployment = EmbeddedContainer.start();
       dispatcher = deployment.getDispatcher();
    }
-   
+
    public void setUp(Class<?> providerClass) throws Exception
    {
       dispatcher.getRegistry().addPerRequestResource(MyService.class);
@@ -169,21 +170,21 @@ public class InputPartDefaultCharsetOverwriteTest
          dispatcher.getProviderFactory().registerProvider(providerClass, false);
       }
    }
-   
+
    @After
    public void after() throws Exception
    {
       EmbeddedContainer.stop();
       deployment = null;
    }
-   
+
    @Test
    public void testUTF8ContentTypeNoCharsetPreprocessorWithNoContentTypeCharset() throws Exception
    {
       setUp(PreProcessorInterceptorNoContentTypeCharsetUTF8.class);
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
-   
+
    ////////////////////////////////////////////////////////
    // The following tests use no interceptor.
    ////////////////////////////////////////////////////////
@@ -193,7 +194,7 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(null);
       doTestNoContentTypeInMessage(abc_us_ascii_bytes, abc_us_ascii, TEXT_PLAIN_WITH_CHARSET_US_ASCII);
    }
-   
+
    @Test
    public void testContentTypeNoCharsetDefault() throws Exception
    {
@@ -207,14 +208,14 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(null);
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_HTTP_WITH_CHARSET_UTF_8, TEXT_HTTP_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testContentTypeCharsetDefaultUTF16() throws Exception
    {
       setUp(null);
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_HTTP_WITH_CHARSET_UTF_16, TEXT_HTTP_WITH_CHARSET_UTF_16);
    }
-   
+
    //////////////////////////////////////////////////////////////////////////////////////
    // The following tests use an interceptor that installs a content-type but no charset.
    //////////////////////////////////////////////////////////////////////////////////////
@@ -224,42 +225,42 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(PreProcessorInterceptorContentTypeNoCharsetUTF8.class);
       doTestNoContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_HTTP_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testNoContentTypePreprocessorWithContentTypeNoCharsetUTF16() throws Exception
    {
       setUp(PreProcessorInterceptorContentTypeNoCharsetUTF16.class);
       doTestNoContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_HTTP_WITH_CHARSET_UTF_16);
    }
-   
+
    @Test
    public void testContentTypeNoCharsetPreprocessorWithContentTypeNoCharsetUTF8() throws Exception
    {
-      setUp(PreProcessorInterceptorContentTypeNoCharsetUTF8.class);
+      setUp(PreProcessorInterceptorNoContentTypeCharsetUTF8.class);
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testContentTypeNoCharsetPreprocessorWithContentTypeNoCharsetUTF16() throws Exception
    {
-      setUp(PreProcessorInterceptorContentTypeNoCharsetUTF16.class);
+      setUp(PreProcessorInterceptorNoContentTypeCharsetUTF16.class);
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_16);
    }
-   
+
    @Test
    public void testContentTypeCharsetPreprocessorWithContentTypeNoCharsetUTF8() throws Exception
    {
       setUp(PreProcessorInterceptorContentTypeNoCharsetUTF16.class); // Should be ignored.
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN_WITH_CHARSET_UTF_8, TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testContentTypeCharsetPreprocessorWithContentTypeNoCharsetUTF16() throws Exception
    {
       setUp(PreProcessorInterceptorContentTypeNoCharsetUTF8.class); // Should be ignored.
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_PLAIN_WITH_CHARSET_UTF_16, TEXT_PLAIN_WITH_CHARSET_UTF_16);
    }
-   
+
    //////////////////////////////////////////////////////////////////////////////////////
    // The following tests use an interceptor that installs a charset but no content-type.
    //////////////////////////////////////////////////////////////////////////////////////
@@ -269,7 +270,7 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(PreProcessorInterceptorNoContentTypeCharsetUTF8.class);
       doTestNoContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testNoContentTypePreprocessorWithNoContentTypeCharsetUTF16() throws Exception
    {
@@ -283,7 +284,7 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(PreProcessorInterceptorNoContentTypeCharsetUTF8.class);
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_HTTP, TEXT_HTTP_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testContentTypeNoCharsetPreprocessorWithNoContentTypeCharsetUTF16() throws Exception
    {
@@ -297,14 +298,14 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(PreProcessorInterceptorNoContentTypeCharsetUTF16.class); // Should be ignored.
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN_WITH_CHARSET_UTF_8, TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testContentTypeCharsetPreprocessorWithNoContentTypeCharset16() throws Exception
    {
       setUp(PreProcessorInterceptorNoContentTypeCharsetUTF8.class); // Should be ignored.
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_PLAIN_WITH_CHARSET_UTF_16, TEXT_PLAIN_WITH_CHARSET_UTF_16);
    }
-   
+
    //////////////////////////////////////////////////////////////////////////////////////////
    // The following tests use an interceptor that installs both a content-type and a charset.
    //////////////////////////////////////////////////////////////////////////////////////////
@@ -314,7 +315,7 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(PreProcessorInterceptorContentTypeCharsetUTF8.class);
       doTestNoContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_HTTP_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testNoContentTypePreprocessorWithContentTypeCharset16() throws Exception
    {
@@ -328,28 +329,28 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(PreProcessorInterceptorContentTypeCharsetUTF8.class);
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testContentTypeNoCharsetPreprocessorWithContentTypeCharset16() throws Exception
    {
       setUp(PreProcessorInterceptorContentTypeCharsetUTF16.class);
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_16);
    }
-   
+
    @Test
    public void testContentTypeCharsetPreprocessorWithContentTypeCharset8() throws Exception
    {
       setUp(PreProcessorInterceptorContentTypeCharsetUTF16.class); // Should be ignored.
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN_WITH_CHARSET_UTF_8, TEXT_PLAIN_WITH_CHARSET_UTF_8);
-   }  
-   
+   }
+
    @Test
    public void testContentTypeCharsetPreprocessorWithContentTypeCharset16() throws Exception
    {
       setUp(PreProcessorInterceptorContentTypeCharsetUTF8.class); // Should be ignored.
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_PLAIN_WITH_CHARSET_UTF_16, TEXT_PLAIN_WITH_CHARSET_UTF_16);
-   }   
-   
+   }
+
    //////////////////////////////////////////////////////////////////////////////////////////
    // The following tests use a non-text media type, which causes mime4j to use a BinaryBody
    // instead of a TextBody.
@@ -358,7 +359,7 @@ public class InputPartDefaultCharsetOverwriteTest
    public void testApplicationXmlUSAscii() throws Exception
    {
       setUp(null);
-      doTestWithContentTypeInMessage(abc_us_ascii_bytes, abc_us_ascii, APPLICATION_XML, APPLICATION_XML_WITH_CHARSET_US_ASCII);
+      doTestWithContentTypeInMessage(abc_us_ascii_bytes, abc_us_ascii, APPLICATION_XML_WITH_CHARSET_US_ASCII, APPLICATION_XML_WITH_CHARSET_US_ASCII);
    }
 
    @Test
@@ -367,14 +368,14 @@ public class InputPartDefaultCharsetOverwriteTest
       setUp(null);
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, APPLICATION_XML_WITH_CHARSET_UTF_8, APPLICATION_XML_WITH_CHARSET_UTF_8);
    }
-   
+
    @Test
    public void testApplicationXmlUTF16() throws Exception
    {
       setUp(null);
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, APPLICATION_XML_WITH_CHARSET_UTF_16, APPLICATION_XML_WITH_CHARSET_UTF_16);
    }
-   
+
    static private void doTestNoContentTypeInMessage(byte[] body, String expectedBody, String expectedContentType) throws Exception
    {
       byte[] start = ("--boo\r\nContent-Disposition: form-data; name=\"foo\"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n").getBytes();
