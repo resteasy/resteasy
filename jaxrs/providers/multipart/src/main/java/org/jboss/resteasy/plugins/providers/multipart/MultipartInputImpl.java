@@ -62,8 +62,9 @@ public class MultipartInputImpl implements MultipartInput
    protected List<InputPart> parts = new ArrayList<InputPart>();
    protected static final Annotation[] empty = {};
    protected MediaType defaultPartContentType = MultipartConstants.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
-   protected String defaultPartCharset = "us-ascii";
+   protected String defaultPartCharset = null;
 
+   // We hack MIME4j so that it always returns a BinaryBody so we don't have to deal with Readers and their charset conversions
    private static class BinaryOnlyMessageBuilder extends MessageBuilder
    {
       private Method expectMethod;
@@ -102,6 +103,7 @@ public class MultipartInputImpl implements MultipartInput
       @Override
       public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException
       {
+         // the only thing different from the superclass is that we just return a BinaryBody no matter what
          try
          {
             expectMethod.invoke(this, Entity.class);
@@ -169,29 +171,25 @@ public class MultipartInputImpl implements MultipartInput
          if (defaultContentType != null)
             this.defaultPartContentType = MediaType
                     .valueOf(defaultContentType);
-         String defaultCharset = (String) httpRequest.getAttribute(InputPart.DEFAULT_CHARSET_PROPERTY);
-         if (defaultCharset != null)
-         {
-            this.defaultPartCharset = defaultCharset;
-            this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
-         }
-         else if (getCharset(this.defaultPartContentType) == null)
+         this.defaultPartCharset = (String) httpRequest.getAttribute(InputPart.DEFAULT_CHARSET_PROPERTY);
+         if (defaultPartCharset != null)
          {
             this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
-         }
-         else
-         {
-            this.defaultPartCharset = getCharset(this.defaultPartContentType);
          }
       }
    }
 
    public MultipartInputImpl(MediaType contentType, Providers workers,
-                             MediaType defaultPartContentType)
+                             MediaType defaultPartContentType, String defaultPartCharset)
    {
       this.contentType = contentType;
       this.workers = workers;
-      this.defaultPartContentType = defaultPartContentType;
+      if (defaultPartContentType != null) this.defaultPartContentType = defaultPartContentType;
+      this.defaultPartCharset = defaultPartCharset;
+      if (defaultPartCharset != null)
+      {
+         this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
+      }
    }
 
    public void parse(InputStream is) throws IOException
@@ -203,7 +201,7 @@ public class MultipartInputImpl implements MultipartInput
    protected InputStream addHeaderToHeadlessStream(InputStream is)
            throws UnsupportedEncodingException
    {
-      return new CharsetInsertionInputStream(new SequenceInputStream(createHeaderInputStream(), is), defaultPartContentType);
+      return new SequenceInputStream(createHeaderInputStream(), is);
    }
 
    protected InputStream createHeaderInputStream()
@@ -243,7 +241,6 @@ public class MultipartInputImpl implements MultipartInput
       private MediaType contentType;
       private MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
       private boolean contentTypeFromMessage;
-      private boolean charsetFromMessage;
 
       public PartImpl(BodyPart bodyPart)
       {
@@ -255,11 +252,29 @@ public class MultipartInputImpl implements MultipartInput
             {
                contentType = MediaType.valueOf(field.getBody());
                contentTypeFromMessage = true;
-               charsetFromMessage = getCharset(contentType) != null;
             }
          }
          if (contentType == null)
             contentType = defaultPartContentType;
+         if (getCharset(contentType) == null)
+         {
+            if (defaultPartCharset != null)
+            {
+               contentType = getMediaTypeWithDefaultCharset(contentType);
+            }
+            else if (contentType.getType().equalsIgnoreCase("text"))
+            {
+               contentType = getMediaTypeWithCharset(contentType, "us-ascii");
+            }
+         }
+      }
+
+      @Override
+      public void setMediaType(MediaType mediaType)
+      {
+         contentType = mediaType;
+         contentTypeFromMessage = false;
+         headers.putSingle("Content-Type", mediaType.toString());
       }
 
       public <T> T getBody(Class<T> type, Type genericType)
@@ -287,6 +302,8 @@ public class MultipartInputImpl implements MultipartInput
          InputStream result = null;
          if (body instanceof TextBody)
          {
+            throw new UnsupportedOperationException();
+            /*
             InputStreamReader reader = (InputStreamReader)((TextBody) body).getReader();
             StringBuilder inputBuilder = new StringBuilder();
             char[] buffer = new char[1024];
@@ -299,7 +316,7 @@ public class MultipartInputImpl implements MultipartInput
             }
             String str = inputBuilder.toString();
             return new ByteArrayInputStream(str.getBytes(reader.getEncoding()));
-            //result = new ReaderBackedInputStream((InputStreamReader)reader);
+            */
          }
          else if (body instanceof BinaryBody)
          {
@@ -405,28 +422,15 @@ public class MultipartInputImpl implements MultipartInput
    
    private MediaType getMediaTypeWithDefaultCharset(MediaType mediaType)
    {
-      Map<String, String> params = mediaType.getParameters();
-      Map<String, String> newParams = new HashMap<String, String>();
-      newParams.put("charset", defaultPartCharset);
-      for (Iterator<String> it = params.keySet().iterator(); it.hasNext(); )
-      {
-         String key = it.next();
-         if (!"charset".equalsIgnoreCase(key))
-         {
-            newParams.put(key, params.get(key));
-         }
-      }
-      return new MediaType(mediaType.getType(), mediaType.getSubtype(), newParams);
+      String charset = defaultPartCharset;
+      return getMediaTypeWithCharset(mediaType, charset);
    }
-   
-   private MediaType getMediaTypeWithoutCharset(MediaType mediaType)
+
+   private MediaType getMediaTypeWithCharset(MediaType mediaType, String charset)
    {
       Map<String, String> params = mediaType.getParameters();
-      if (params.size() == 0)
-      {
-         return mediaType;
-      }
       Map<String, String> newParams = new HashMap<String, String>();
+      newParams.put("charset", charset);
       for (Iterator<String> it = params.keySet().iterator(); it.hasNext(); )
       {
          String key = it.next();
@@ -437,4 +441,5 @@ public class MultipartInputImpl implements MultipartInput
       }
       return new MediaType(mediaType.getType(), mediaType.getSubtype(), newParams);
    }
+
 }

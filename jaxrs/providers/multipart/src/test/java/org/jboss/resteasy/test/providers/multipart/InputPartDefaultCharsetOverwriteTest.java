@@ -236,14 +236,14 @@ public class InputPartDefaultCharsetOverwriteTest
    @Test
    public void testContentTypeNoCharsetPreprocessorWithContentTypeNoCharsetUTF8() throws Exception
    {
-      setUp(PreProcessorInterceptorContentTypeNoCharsetUTF8.class);
+      setUp(PreProcessorInterceptorNoContentTypeCharsetUTF8.class);
       doTestWithContentTypeInMessage(abc_utf8_bytes, abc_utf8, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
    
    @Test
    public void testContentTypeNoCharsetPreprocessorWithContentTypeNoCharsetUTF16() throws Exception
    {
-      setUp(PreProcessorInterceptorContentTypeNoCharsetUTF16.class);
+      setUp(PreProcessorInterceptorNoContentTypeCharsetUTF16.class);
       doTestWithContentTypeInMessage(abc_utf16_bytes, abc_utf16, TEXT_PLAIN, TEXT_PLAIN_WITH_CHARSET_UTF_16);
    }
    
@@ -359,7 +359,7 @@ public class InputPartDefaultCharsetOverwriteTest
    public void testApplicationXmlUSAscii() throws Exception
    {
       setUp(null);
-      doTestWithContentTypeInMessage(abc_us_ascii_bytes, abc_us_ascii, APPLICATION_XML, APPLICATION_XML_WITH_CHARSET_US_ASCII);
+      doTestWithContentTypeInMessage(abc_us_ascii_bytes, abc_us_ascii, APPLICATION_XML_WITH_CHARSET_US_ASCII, APPLICATION_XML_WITH_CHARSET_US_ASCII);
    }
 
    @Test
