@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -55,24 +54,21 @@ public class GetRestful
     * @param clazz
     * @return list of class and interfaces that have jax-rs annotations
     */
-   public static Class[] getSubResourceClass(Class clazz)
+   public static Class<?>[] getSubResourceClass(Class<?> clazz)
    {
-      List<Class> classes = new ArrayList<Class>();
+       List<Class<?>> classes = new ArrayList<Class<?>>();
+       // check class & superclasses for JAX-RS annotations
+       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass()) {
+           if (hasJAXRSAnnotations(actualClass))
+              return new Class<?>[]{actualClass};
+       }
 
-      // check class & superclasses for JAX-RS annotations
-      for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
-      {
-         if (hasJAXRSAnnotations(actualClass))
-            classes.add(actualClass);
-      }
-
-      // ok, no @Path or @HttpMethods so look in interfaces.
-      for (Class intf : clazz.getInterfaces())
-      {
-         if (hasJAXRSAnnotations(intf))
-            classes.add(intf);
-      }
-      return (Class[]) classes.toArray();
+       // ok, no @Path or @HttpMethods so look in interfaces.
+       for (Class<?> intf : clazz.getInterfaces()) {
+           if (hasJAXRSAnnotations(intf))
+               classes.add(intf);
+       }
+       return classes.toArray(new Class<?>[classes.size()]);
    }
 
    private static boolean isTopObject(Class<?> actualClass)
