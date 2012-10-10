@@ -18,6 +18,7 @@ import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -97,12 +98,14 @@ public class EntityBufferingInFileTest
    }
    
    @Test
+   @Ignore  // we break VM max
    public void testInMemoryGigabytes() throws Exception
    {
       doTest(ApacheHttpClient4Executor.GIGABYTE_MEMORY_UNIT, 1, 500000000, true);
    }
    
    @Test
+   @Ignore  // we break VM max
    public void testOnDiskGigabytes() throws Exception
    {
       doTest(ApacheHttpClient4Executor.GIGABYTE_MEMORY_UNIT, 1, 2000000000, false);
