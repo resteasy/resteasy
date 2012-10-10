@@ -61,4 +61,11 @@ public interface InputPart {
 	 *         it was resolved from the server default
 	 */
 	boolean isContentTypeFromMessage();
+
+   /**
+    * Change the media type of the body part before you extract it.  Useful for specifying a charset.
+    *
+    * @param mediaType
+    */
+   void setMediaType(MediaType mediaType);
 }
