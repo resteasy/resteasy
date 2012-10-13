@@ -17,22 +17,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>abdera-atom-provider</artifactId>
-                <version>3.0-alpha-1-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>async-http-jbossweb</artifactId>
-                <version>3.0-alpha-1-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
                 <artifactId>async-http-servlet-3.0</artifactId>
-                <version>3.0-alpha-1-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>async-http-tomcat6</artifactId>
                 <version>3.0-alpha-1-SNAPSHOT</version>
             </dependency>
             <dependency>

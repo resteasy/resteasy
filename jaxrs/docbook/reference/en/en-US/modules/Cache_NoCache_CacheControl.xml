@@ -1,0 +1,165 @@
+<chapter id="Cache_NoCache_CacheControl">
+   <title>Resteasy Caching Features</title>
+   <para>
+     Resteasy provides numerous annotations and facilities to support HTTP caching semantics.  Annotations to make setting Cache-Control
+     headers easier and both server-side and client-side in-memory caches are available.
+   </para>
+  <sect1 id="Cache_Annotation">
+  <title>@Cache and @NoCache Annotations</title>
+   <para>
+      Resteasy provides an extension to JAX-RS that allows you to automatically set Cache-Control headers on a successful
+      GET request.  It can only be used on @GET annotated methods.  A successful @GET request is any request
+      that returns 200 OK response.
+   </para>
+   <programlisting>
+package org.jboss.resteasy.annotations.cache;
+
+public @interface Cache
+{
+   int maxAge() default -1;
+   int sMaxAge() default -1;
+   boolean noStore() default false;
+   boolean noTransform() default false;
+   boolean mustRevalidate() default false;
+   boolean proxyRevalidate() default false;
+   boolean isPrivate() default false;
+}
+
+public @interface NoCache
+{
+   String[] fields() default {};
+}
+
+   </programlisting>
+   <para>
+      While @Cache builds a complex Cache-Control header, @NoCache is a simplified notation to say that you don't
+      want anything cached i.e. Cache-Control: nocache.
+   </para>
+   <para>
+      These annotations can be put on the resource class or interface and specifies a default cache value for each
+      @GET resource method.  Or they can be put individually on each @GET resource method.
+   </para>
+   </sect1>
+   <sect1 id="client_cache">
+     <title>Client "Browser" Cache</title>
+     <para>
+        Resteasy has the ability to set up a client-side, browser-like, cache.  You can use it with the Client Proxy Framework, or with raw
+        ClientRequests.  This cache looks for Cache-Control headers sent back with a server response.  If the Cache-Control headers specify
+       that the client is allowed to cache the response, Resteasy caches it within local memory.  The cache obeys max-age requirements 
+       and will also automatically do HTTP 1.1 cache revalidation if either or both the Last-Modified and/or ETag headers are sent back with the
+       original response.  See the HTTP 1.1 specification for details on how Cache-Control or cache revalidation works.
+     </para>
+     <para>It is very simple to enable caching.  Here's an example of using the client cache with the Client Proxy Framework</para>
+<programlisting>
+@Path("/orders")
+public interface OrderServiceClient {
+
+   @Path("{id}")
+   @GET
+   @Produces("application/xml")
+   public Order getOrder(@PathParam("id") String id);
+}
+</programlisting>
+    <para>To create a proxy for this interface and enable caching for that proxy requires only a few simple steps:</para>
+<programlisting>
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.cache.CacheFactory;
+import org.jboss.resteasy.client.cache.LightweightBrowserCache;
+
+public static void main(String[] args) throws Exception
+{
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      OrderServiceClient proxy = ProxyFactory.create(OrderServiceClient.class, generateBaseUrl());
+
+      // This line enables caching
+      LightweightBrowserCache cache = CacheFactory.makeCacheable(proxy);
+}
+</programlisting>
+   <para>If you are using the ClientRequest class to make invocations rather than the proxy framework, it is just as easy</para>
+<programlisting>
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.cache.CacheFactory;
+import org.jboss.resteasy.client.cache.LightweightBrowserCache;
+
+public static void main(String[] args) throws Exception
+{
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+
+      // This line enables caching
+      LightweightBrowserCache cache = new LightweightBrowserCache();
+
+      ClientRequest request = new ClientRequest("http://example.com/orders/333");
+      CacheFactory.makeCacheable(request, cache);
+}
+</programlisting>
+   <para>The LightweightBrowserCache, by default, has a maximum 2 megabytes of caching space.  You can change this programmatically by callings
+         its setMaxBytes() method.   If the cache gets full, the cache completely wipes itself of all cached data.  This may seem
+         a bit draconian, but the cache was written to avoid unnecessary synchronizations in a concurrent environment where the cache is 
+         shared between multiple threads.  If you desire a more complex caching solution or if you want to plug in a thirdparty cache
+         please contact our resteasy-developers list and discuss it with the community.
+   </para>
+   </sect1>
+   <sect1 id="server_cache">
+      <title>Local Server-Side Response Cache</title>
+      <para>Resteasy has a server-side cache that can sit in front of your JAX-RS services.
+          It automatically caches marshalled responses from HTTP GET JAX-RS invocations if, and only if your
+          JAX-RS resource method sets a Cache-Control header.  When a GET comes in, the Resteasy Server Cache checks
+          to see if the URI is stored in the cache.  If it does, it returns the already marshalled response without
+          invoking your JAX-RS method.  Each cache entry has a max age to whatever is specified in the Cache-Control
+          header of the initial request.  The cache also will automatically generate an ETag using an MD5 hash on the
+          response body.  This allows the client to do HTTP 1.1 cache revalidation with the IF-NONE-MATCH header.
+          The cache is also smart enough to perform revalidation if there is no initial cache hit, but the jax-rs
+          method still returns a body that has the same ETag.
+      </para>
+       <para>
+         The cache is also automatically invalidated for a particular URI that has
+           PUT, POST, or DELETE invoked on it.  You can also obtain a reference to the cache by injecting a
+           org.jboss.resteasy.plugins.cache.ServerCache
+           via the @Context annotation
+       </para>
+<programlisting>
+
+    @Context
+    ServerCache cache;
+
+    @GET
+    public String get(@Context ServerCache cache) {...}
+
+</programlisting>
+      <para>To set up the server-side cache you must register an instance of org.jboss.resteasy.plugins.cache.server.ServerCacheFeature
+          via your Application getSingletons() or getClasses() methods.  The underlying cache is Infinispan.  By default,
+          Resteasy will create an Infinispan cache for you.  Alternatively, you can create and pass in an instance
+          of your cache to the ServerCacheFeature constructor.  You can also configure Infinispan by specifying
+          various context-param variables in your web.xml.  First, if you are using Maven you must depend on the resteasy-cache-core artifact:</para>
+<programlisting>
+<![CDATA[
+<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-cache-core</artifactId>
+   <version>3.0-alpha-1-SNAPSHOT</version>
+</dependency>
+]]>
+</programlisting>
+      <para>The next thing you should probably do is set up the Infinispan configuration in your web.xml.</para>
+<programlisting>
+<![CDATA[
+<web-app>
+    <context-param>
+        <param-name>server.request.cache.infinispan.config.file</param-name>
+        <param-value>infinispan.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>server.request.cache.infinispan.cache.name</param-name>
+        <param-value>MyCache</param-value>
+    </context-param>
+
+</web-app>
+]]>
+</programlisting>
+   <para>
+       server.request.cache.infinispan.config.file can either be a classpath or a file path. server.request.cache.infinispan.cache.name
+       is the name of the cache you want to reference that is declared in the config file.
+   </para>
+   </sect1>
+</chapter>

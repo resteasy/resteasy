@@ -1,16 +1,20 @@
 package org.jboss.resteasy.tests.smime;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.security.smime.EnvelopedInput;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;
 import org.jboss.resteasy.security.smime.SignedInput;
 import org.jboss.resteasy.security.smime.SignedOutput;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -23,6 +27,7 @@ public class SMIMETest
 {
    private static PrivateKey privateKey;
    private static X509Certificate cert;
+   private static Client client;
 
    @BeforeClass
    public static void setup() throws Exception
@@ -33,15 +38,22 @@ public class SMIMETest
 
       InputStream privatePem = Thread.currentThread().getContextClassLoader().getResourceAsStream("private.pem");
       privateKey = PemUtils.decodePrivateKey(privatePem);
+      client = new ResteasyClient();
 
 
+   }
+
+   @AfterClass
+   public static void shutdown() throws Exception
+   {
+      client.close();
    }
 
    @Test
    public void testEncryptedGet() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9095/smime/encrypted");
-      EnvelopedInput input = request.getTarget(EnvelopedInput.class);
+      WebTarget target = client.target("http://localhost:9095/smime/encrypted");
+      EnvelopedInput input = target.request().get(EnvelopedInput.class);
       Customer cust = (Customer)input.getEntity(Customer.class, privateKey, cert);
       System.out.println("Encrypted Message From Server:");
       System.out.println(cust);
@@ -49,21 +61,22 @@ public class SMIMETest
    @Test
    public void testEncryptedPost() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9095/smime/encrypted");
+      WebTarget target = client.target("http://localhost:9095/smime/encrypted");
       Customer cust = new Customer();
       cust.setName("Bill");
       EnvelopedOutput output = new EnvelopedOutput(cust, "application/xml");
       output.setCertificate(cert);
-      ClientResponse res = request.body("application/pkcs7-mime", output).post();
+      Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
       Assert.assertEquals(204, res.getStatus());
+      res.close();
 
    }
 
    @Test
    public void testSigned() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9095/smime/signed");
-      SignedInput input = request.getTarget(SignedInput.class);
+      WebTarget target = client.target("http://localhost:9095/smime/signed");
+      SignedInput input = target.request().get(SignedInput.class);
       Customer cust = (Customer)input.getEntity(Customer.class);
       System.out.println("Signed Message From Server: ");
       System.out.println(cust);
@@ -74,22 +87,22 @@ public class SMIMETest
    @Test
    public void testSignedPost() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9095/smime/signed");
+      WebTarget target = client.target("http://localhost:9095/smime/signed");
       Customer cust = new Customer();
       cust.setName("Bill");
       SignedOutput output = new SignedOutput(cust, "application/xml");
       output.setPrivateKey(privateKey);
       output.setCertificate(cert);
-      ClientResponse res = request.body("multipart/signed", output).post();
+      Response res = target.request().post(Entity.entity(output, "multipart/signed"));
       Assert.assertEquals(204, res.getStatus());
-
+      res.close();
    }
 
    @Test
    public void testEncryptedAndSignedGet() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9095/smime/encrypted/signed");
-      EnvelopedInput enveloped = request.getTarget(EnvelopedInput.class);
+      WebTarget target = client.target("http://localhost:9095/smime/encrypted/signed");
+      EnvelopedInput enveloped = target.request().get(EnvelopedInput.class);
       SignedInput signed = (SignedInput)enveloped.getEntity(SignedInput.class, privateKey, cert);
       Customer cust = (Customer)signed.getEntity(Customer.class);
       System.out.println(cust);
@@ -99,7 +112,7 @@ public class SMIMETest
    @Test
    public void testEncryptedSignedPost() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9095/smime/encrypted/signed");
+      WebTarget target = client.target("http://localhost:9095/smime/encrypted/signed");
       Customer cust = new Customer();
       cust.setName("Bill");
       SignedOutput signed = new SignedOutput(cust, "application/xml");
@@ -107,8 +120,9 @@ public class SMIMETest
       signed.setCertificate(cert);
       EnvelopedOutput output = new EnvelopedOutput(signed, "multipart/signed");
       output.setCertificate(cert);
-      ClientResponse res = request.body("application/pkcs7-mime", output).post();
+      Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
       Assert.assertEquals(204, res.getStatus());
+      res.close();
    }
 
 
