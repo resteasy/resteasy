@@ -24,7 +24,6 @@
 		<servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
 	</servlet>
 
-
 	<servlet>
 		<servlet-name>RESTEasy JSAPI</servlet-name>
 		<servlet-class>org.jboss.resteasy.jsapi.JSAPIServlet</servlet-class>
@@ -40,6 +39,5 @@
 		<servlet-name>RESTEasy JSAPI</servlet-name>
 		<url-pattern>/rest-js</url-pattern>
 	</servlet-mapping>
-
 
 </web-app>
