@@ -6,7 +6,7 @@ import javax.ws.rs.*;
  * @author Weinan Li
  * @created_at 08 24 2012
  */
-@Path("/")
+@Path("/smoke")
 public class SmokeTestResource {
     @Path("{id}")
     @GET
